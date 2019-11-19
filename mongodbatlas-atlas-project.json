@@ -1,0 +1,70 @@
+{
+    "typeName": "MongoDBAtlas::Atlas::Project",
+    "description": "This allows project to be created.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {},
+    "properties": {
+        "Name": {
+            "description": "Name of the project to create.",
+            "type": "string"
+        },
+        "OrgId": {
+            "description": "Unique identifier of the organization within which to create the project.",
+            "type": "string"
+
+        },
+        "Id": {
+            "description": "The unique identifier of the project.",
+            "type": "string"
+        },
+        "Created": {
+            "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
+            "type": "string",
+            "format": "date-time"
+        },
+        "ClusterCount": {
+            "description": "The number of Atlas clusters deployed in the project.",
+            "type": "integer"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "Properties",
+        "OrgId"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Created",
+        "/properties/ClusterCount"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "initech:CreateProject"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "initech:DescribeProject"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "initech:UpdateProject"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "initech:DeleteProject"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "initech:ListProjects"
+            ]
+        }
+    }
+}

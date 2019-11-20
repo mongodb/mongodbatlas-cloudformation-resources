@@ -5,6 +5,6 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": ""
+        "importpath": "github.com/mongodb/cloudformation/project"
     }
 }

@@ -23,11 +23,11 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                - "initech:CreateReport"
-                - "initech:DeleteReport"
-                - "initech:DescribeReport"
-                - "initech:ListReports"
-                - "initech:UpdateReport"
+                - "initech:CreateProject"
+                - "initech:DeleteProject"
+                - "initech:DescribeProject"
+                - "initech:ListProjects"
+                - "initech:UpdateProject"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

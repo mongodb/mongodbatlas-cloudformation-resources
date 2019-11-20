@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn"
 	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn/handler"
-	"cmd/resource"
+	"github.com/mongodb/cloudformation/project/cmd/resource"
 )
 
 /*
@@ -15,7 +15,6 @@ changes will be undone by the next 'cfn generate' command.
 */
 
 type Handler struct{}
-
 
 func (r *Handler) Create(req handler.Request) handler.ProgressEvent {
 	return wrap(req, resource.Create)

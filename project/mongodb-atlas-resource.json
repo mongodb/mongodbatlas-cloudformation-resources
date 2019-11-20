@@ -59,27 +59,27 @@
     "handlers": {
         "create": {
             "permissions": [
-                "initech:CreateProject"
+                ""
             ]
         },
         "read": {
             "permissions": [
-                "initech:DescribeProject"
+                ""
             ]
         },
         "update": {
             "permissions": [
-                "initech:UpdateProject"
+                ""
             ]
         },
         "delete": {
             "permissions": [
-                "initech:DeleteProject"
+                ""
             ]
         },
         "list": {
             "permissions": [
-                "initech:ListProjects"
+                ""
             ]
         }
     }

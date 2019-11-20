@@ -1,10 +1,10 @@
 {
-    "typeName": "MongoDBAtlas::Atlas::Project",
+    "typeName": "MongoDB::Atlas::Resource",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": "github.com/mongodb/cloudformation"
+        "importpath": ""
     }
 }

@@ -1,5 +1,5 @@
 {
-    "typeName": "MongoDBAtlas::Atlas::Project",
+    "typeName": "MongoDB::Atlas::Project",
     "description": "This allows project to be created.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {

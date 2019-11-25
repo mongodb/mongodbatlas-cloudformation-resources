@@ -1,10 +1,7 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
-  
-    "Description" : "AWS CloudFormation Sample Template AutoScalingMultiAZWithNotifications: Create a multi-az, load balanced and Auto Scaled sample web site running on an Apache Web Serever. The application is configured to span all Availability Zones in the region and is Auto-Scaled based on the CPU utilization of the web servers. Notifications will be sent to the operator email address on scaling events. The instances are load balanced with a simple health check against the default web page. **WARNING** This template creates one or more Amazon EC2 instances and an Application Load Balancer. You will be billed for the AWS resources used if you create a stack from this template.",
-  
+    "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
     "Parameters" : {
-  
       "PublicKey" : {
         "Type" : "String",
         "Description" : "",
@@ -25,25 +22,20 @@
         "Description" : "",
         "ConstraintDescription" : ""
       }
-      
     },
-  
     "Mappings" : {},
-  
     "Resources" : {
-        "Project": {
-            "Type": "MongoDB::Atlas::Project",
-            "Properties": {
-                "Name": { "Ref" : "Name" },
-                "Orgid": { "Ref" : "OrgId" },
-                "ApiKeys": {
-                    "PublicKey": { "Ref" : "PublicKey" },
-                    "PrivateKey": { "Ref" : "PrivateKey" }
-                }
-             
-            }
+      "Project": {
+        "Type": "MongoDB::Atlas::Project",
+        "Properties": {
+          "Name": { "Ref" : "Name" },
+          "Orgid": { "Ref" : "OrgId" },
+          "ApiKeys": {
+            "PublicKey": { "Ref" : "PublicKey" },
+            "PrivateKey": { "Ref" : "PrivateKey" }
           }
+        }
+      }
     },
-  
     "Outputs" : {}
   }

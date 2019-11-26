@@ -30,8 +30,19 @@
                     "minLength": 1
                   }
               }
-          }
-  
+          },
+          "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
     },
     "properties": {
         "DatabaseName": {
@@ -76,6 +87,9 @@
         "Username": {
             "description": "Username for authenticating to MongoDB.",
             "type": "string"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
         }
     },
     "additionalProperties": false,

@@ -1,0 +1,122 @@
+{
+    "typeName": "MongoDB::Atlas::DatabaseUser",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "labelDefinition": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "roleDefinition": {
+              "type": "object",
+              "properties": {
+                "collectionName": {
+                    "type": "string"
+                  },
+                  "databaseName": {
+                    "type": "string"
+                  },
+                  "roleName": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+              }
+          }
+  
+    },
+    "properties": {
+        "DatabaseName": {
+            "description": "The user’s authentication database. A user must provide both a username and authentication database to log into MongoDB. In Atlas deployments of MongoDB, the authentication database is always the admin database.",
+            "type": "string"
+        },
+        "Labels": {
+            "description": "Array containing key-value pairs that tag and categorize the database user.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/definitions/labelDefinition"
+            }
+          },
+        "LdapAuthType": {
+            "description": "Method by which the provided username is authenticated. If no value is given, Atlas uses the default value of NONE.",
+            "type": "string",
+            "enum": [
+                "NONE",
+                "USER",
+                "GROUP"
+            ]
+        },
+        "GroupId": {
+            "description": "Unique identifier of the Atlas project to which the user belongs.",
+            "type": "string"
+        },
+        "Roles": {
+            "description": "Array of this user’s roles and the databases / collections on which the roles apply. A role allows the user to perform particular actions on the specified database. A role on the admin database can include privileges that apply to the other databases as well.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/definitions/roleDefinition"
+            }
+        },
+        "Password": {
+            "description": "The user’s password. This field is not included in the entity returned from the server.",
+            "type": "string"
+        },
+        "Username": {
+            "description": "Username for authenticating to MongoDB.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "DatabaseName",
+        "GroupID",
+        "Roles",
+        "Password",
+        "Username"
+    ],
+    "readOnlyProperties": [
+        ""
+    ],
+    "primaryIdentifier": [
+        "/properties/Username"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
+        }
+    }
+}

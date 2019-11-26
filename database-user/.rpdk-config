@@ -5,6 +5,6 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources"
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/database-user"
     }
 }

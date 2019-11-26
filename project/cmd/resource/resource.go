@@ -5,31 +5,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
-
 	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
-
-func createMongoDBClient(publicKey, privateKey string) (*matlasClient.Client, error) {
-	// setup a transport to handle digest
-	transport := digest.NewTransport(publicKey, privateKey)
-
-	// initialize the client
-	client, err := transport.Client()
-	if err != nil {
-		return nil, err
-	}
-
-	//Initialize the MongoDB Atlas API Client.
-	return matlasClient.NewClient(client), nil
-
-}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := createMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -55,7 +39,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := createMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -94,7 +78,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 
-	client, err := createMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -116,7 +100,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := createMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}

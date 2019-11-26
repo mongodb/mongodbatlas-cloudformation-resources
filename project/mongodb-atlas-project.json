@@ -3,7 +3,7 @@
     "description": "This allows project to be created.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
-        "ApiKeys": {
+        "apiKeyDefinition": {
             "type": "object",
             "properties": {
                 "PublicKey": {
@@ -40,7 +40,7 @@
             "type": "integer"
         },
         "ApiKeys": {
-            "$ref": "#/definitions/ApiKeys"
+            "$ref": "#/definitions/apiKeyDefinition"
         }
     },
     "additionalProperties": false,

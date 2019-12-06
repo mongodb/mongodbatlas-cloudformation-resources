@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn"
-	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn/handler"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 )
 

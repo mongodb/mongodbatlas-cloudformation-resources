@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn/encoding"
-	"github.com/aws-cloudformation/aws-cloudformation-rpdk-go-plugin/cfn/handler"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )

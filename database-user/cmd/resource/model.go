@@ -15,7 +15,7 @@ type Model struct {
 	DatabaseName *encoding.String  `json:"DatabaseName,omitempty"`
 	Labels       []LabelDefinition `json:"Labels,omitempty"`
 	LdapAuthType *encoding.String  `json:"LdapAuthType,omitempty"`
-	GroupId      *encoding.String  `json:"GroupId,omitempty"`
+	ProjectId    *encoding.String  `json:"ProjectId,omitempty"`
 	Roles        []RoleDefinition  `json:"Roles,omitempty"`
 	Password     *encoding.String  `json:"Password,omitempty"`
 	Username     *encoding.String  `json:"Username,omitempty"`

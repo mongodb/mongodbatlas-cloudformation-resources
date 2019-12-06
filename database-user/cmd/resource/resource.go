@@ -37,7 +37,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		roles = append(roles, role)
 	}
 
-	groupID := *currentModel.GroupId.Value()
+	groupID := *currentModel.ProjectId.Value()
 
 	user := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
@@ -72,7 +72,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	groupID := *currentModel.GroupId.Value()
+	groupID := *currentModel.ProjectId.Value()
 	username := *currentModel.Username.Value()
 	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), groupID, username)
 	if err != nil {
@@ -120,7 +120,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		roles = append(roles, role)
 	}
 
-	groupID := *currentModel.GroupId.Value()
+	groupID := *currentModel.ProjectId.Value()
 	username := *currentModel.Username.Value()
 
 	_, _, err = client.DatabaseUsers.Update(context.Background(), groupID, username,
@@ -150,7 +150,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	groupID := *currentModel.GroupId.Value()
+	groupID := *currentModel.ProjectId.Value()
 	username := *currentModel.Username.Value()
 
 	_, err = client.DatabaseUsers.Delete(context.Background(), groupID, username)

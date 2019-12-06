@@ -67,7 +67,7 @@
                 "GROUP"
             ]
         },
-        "GroupId": {
+        "ProjectId": {
             "description": "Unique identifier of the Atlas project to which the user belongs.",
             "type": "string"
         },
@@ -95,7 +95,7 @@
     "additionalProperties": false,
     "required": [
         "DatabaseName",
-        "GroupID",
+        "ProjectId",
         "Roles",
         "Password",
         "Username"

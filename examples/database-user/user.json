@@ -31,7 +31,7 @@
         "Properties": {
           "Username": { "Ref" : "Username" },
           "Password": "changeme123",
-          "ProjectID": { "Ref" : "Project" },
+          "GroupID": { "Ref" : "Project" },
           "DatabaseName":"admin",
           "Roles":[{"RoleName":"atlasAdmin", "DatabaseName": "admin"}],
           "ApiKeys": {

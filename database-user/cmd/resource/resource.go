@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -19,10 +20,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	var roles []mongodbatlas.Role
 	for _, r := range currentModel.Roles {
-		role := mongodbatlas.Role{
-			CollectionName: *r.CollectionName.Value(),
-			DatabaseName:   *r.DatabaseName.Value(),
-			RoleName:       *r.RoleName.Value(),
+
+		role := mongodbatlas.Role{}
+		if r.CollectionName != nil {
+			role.CollectionName = *r.CollectionName.Value()
+		}
+
+		if r.DatabaseName != nil {
+			role.DatabaseName = *r.DatabaseName.Value()
+		}
+
+		if r.RoleName != nil {
+			role.RoleName = *r.RoleName.Value()
 		}
 
 		roles = append(roles, role)
@@ -30,15 +39,21 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.GroupId.Value()
 
-	_, _, err = client.DatabaseUsers.Create(context.Background(), groupID,
-		&mongodbatlas.DatabaseUser{
-			Roles:        roles,
-			GroupID:      groupID,
-			Username:     *currentModel.Username.Value(),
-			Password:     *currentModel.Password.Value(),
-			DatabaseName: *currentModel.Password.Value(),
-			LDAPAuthType: *currentModel.LdapAuthType.Value(),
-		})
+	user := &mongodbatlas.DatabaseUser{
+		Roles:        roles,
+		GroupID:      groupID,
+		Username:     *currentModel.Username.Value(),
+		Password:     *currentModel.Password.Value(),
+		DatabaseName: *currentModel.DatabaseName.Value(),
+	}
+
+	if currentModel.LdapAuthType != nil {
+		user.LDAPAuthType = *currentModel.LdapAuthType.Value()
+	}
+
+	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
+
+	_, _, err = client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
 	}

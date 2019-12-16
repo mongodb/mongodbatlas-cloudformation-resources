@@ -8,5 +8,5 @@ rpdk.log
 #compiled file
 bin/
 
-#vendor
-vendor/
+#vender
+vender/

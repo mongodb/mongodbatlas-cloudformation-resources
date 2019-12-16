@@ -1,0 +1,46 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "This template creates a Project and a Database User on the MongoDB Atlas API, this will be billed to your Atlas account.",
+    "Parameters" : {
+      "Username" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
+      "ProjectName" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      }
+    },
+    "Mappings" : {},
+    "Resources" : {
+      "Project": {
+        "Type": "MongoDB::Atlas::Project",
+        "Properties": {
+          "Name": { "Ref" : "ProjectName" },
+          "Orgid": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+          "ApiKeys": {
+            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          }
+        }
+      },
+      "DatabaseUser": {
+        "Type": "MongoDB::Atlas::DatabaseUser",
+        "Properties": {
+          "Username": { "Ref" : "Username" },
+          "Password": "changeme123",
+          "ProjectId": { "Ref" : "Project" },
+          "DatabaseName":"admin",
+          "Roles":[{"RoleName":"atlasAdmin", "DatabaseName": "admin"}],
+          "ApiKeys": {
+            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          }
+        }
+      }
+    },
+    "Outputs" : {}
+  }
+  

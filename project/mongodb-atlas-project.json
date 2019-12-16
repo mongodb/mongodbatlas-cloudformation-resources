@@ -1,9 +1,9 @@
 {
     "typeName": "MongoDB::Atlas::Project",
-    "description": "This allows project to be created.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "description": " Each project has its own Monitoring, Backup and Automations associated with the project. Projects within the same organization share the same billing settings.",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/database-users/project",
     "definitions": {
-        "ApiKeys": {
+        "apiKeyDefinition": {
             "type": "object",
             "properties": {
                 "PublicKey": {
@@ -40,7 +40,7 @@
             "type": "integer"
         },
         "ApiKeys": {
-            "$ref": "#/definitions/ApiKeys"
+            "$ref": "#/definitions/apiKeyDefinition"
         }
     },
     "additionalProperties": false,

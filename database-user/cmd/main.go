@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/database-user/cmd/resource"
 )
 
 /*

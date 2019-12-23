@@ -1,4 +1,6 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/avast/retry-go v2.4.3+incompatible h1:c/FTk2POrEQyZfaHBMkMrXdu3/6IESJUHwu8r3k1JEU=
+github.com/avast/retry-go v2.4.3+incompatible/go.mod h1:XtSnn+n/sHqQIpZ10K1qAevBhOOCWBLXXy3hyiqqBrY=
 github.com/aws-cloudformation/cloudformation-cli-go-plugin v0.1.2 h1:c/4QCCnn5VLToidpKeWhjIMVbnsKPOD17vQlqMVy4SA=
 github.com/aws-cloudformation/cloudformation-cli-go-plugin v0.1.2/go.mod h1:HOedBKKUU19CDA2+rmd0MLEgxD/zmRUvFjV0yrCAjxI=
 github.com/aws/aws-lambda-go v1.13.3 h1:SuCy7H3NLyp+1Mrfp+m80jcbi9KYWAs9/BXwppwRDzY=

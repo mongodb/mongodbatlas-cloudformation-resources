@@ -1,20 +1,42 @@
 {
     "typeName": "MongoDB::Atlas::EncryptionAtRest",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "description": "This resource allows administrators to enable, disable, configure, and retrieve the configuration for Encryption at Rest.",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/encryption-at-rest",
     "definitions": {
-        "InitechDateFormat": {
-            "$comment": "Use the `definitions` block to provide shared resource property schemas",
-            "type": "string",
-            "format": "date-time"
-        },
-        "Memo": {
+        "AwsKms": {
+            "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
             "type": "object",
             "properties": {
-                "Heading": {
+                "AccessKeyID": {
+                    "type": "string",
+                    "description": "The IAM access key ID with permissions to access the customer master key specified by customerMasterKeyID."
+                },
+                "CustomerMasterKeyID": {
+                    "type": "string",
+                    "description": "The AWS customer master key used to encrypt and decrypt the MongoDB master keys."
+                },
+                "Enabled": {
+                    "type": "boolean",
+                    "description": "Specifies whether Encryption at Rest is enabled for an Atlas project. To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details."
+                },
+                "Region": {
+                    "type": "string",
+                    "description": "The AWS region in which the AWS customer master key exists."
+                },
+                "SecretAccessKey": {
+                    "type": "string",
+                    "description": "The IAM secret access key with permissions to access the customer master key specified by customerMasterKeyID."
+                }
+            },
+            "additionalProperties": false
+        },
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
                     "type": "string"
                 },
-                "Body": {
+                "PrivateKey": {
                     "type": "string"
                 }
             },
@@ -22,58 +44,25 @@
         }
     },
     "properties": {
-        "TPSCode": {
-            "description": "A TPS Code is automatically generated on creation and assigned as the unique identifier.",
-            "type": "string",
-            "pattern": "^[A-Z]{3,5}[0-9]{8}-[0-9]{4}$"
+        "AwsKms": {
+            "$ref": "#/definitions/AwsKms"
         },
-        "Title": {
-            "description": "The title of the TPS report is a mandatory element.",
-            "type": "string",
-            "minLength": 20,
-            "maxLength": 250
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
         },
-        "CoverSheetIncluded": {
-            "description": "Required for all TPS Reports submitted after 2/19/1999",
-            "type": "boolean"
-        },
-        "DueDate": {
-            "$ref": "#/definitions/InitechDateFormat"
-        },
-        "ApprovalDate": {
-            "$ref": "#/definitions/InitechDateFormat"
-        },
-        "Memo": {
-            "$ref": "#/definitions/Memo"
-        },
-        "SecondCopyOfMemo": {
-            "description": "In case you didn't get the first one.",
-            "$ref": "#/definitions/Memo"
-        },
-        "TestCode": {
-            "type": "string",
-            "enum": [
-                "NOT_STARTED",
-                "CANCELLED"
-            ]
-        },
-        "Authors": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
+        "ProjectId": {
+            "description": "Unique identifier of the Atlas project to which the user belongs.",
+            "type": "string"
         }
     },
     "additionalProperties": false,
     "required": [
-        "TestCode",
-        "Title"
+        "AwsKms",
+        "ProjectId"
     ],
-    "readOnlyProperties": [
-        "/properties/TPSCode"
-    ],
+    "readOnlyProperties": [""],
     "primaryIdentifier": [
-        "/properties/TPSCode"
+        "/properties/ProjectId"
     ],
     "handlers": {
         "create": {

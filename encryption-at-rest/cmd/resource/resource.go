@@ -58,7 +58,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
 	if err != nil {
-		return handler.NewProgressEvent(), fmt.Errorf("error fetching encryption at rest configuration for project (%s)", projectID)
+		return handler.NewProgressEvent(), fmt.Errorf("error fetching encryption at rest configuration for project (%s): %s", projectID, err)
 	}
 
 	currentModel.AwsKms.AccessKeyID = encoding.NewString(encryptionAtRest.AwsKms.AccessKeyID)
@@ -99,25 +99,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Add your code here:
-	// * Make API calls (use req.Session)
-	// * Mutate the model
-	// * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
 
-	/*
-	   // Construct a new handler.ProgressEvent and return it
-	   response := handler.ProgressEvent{
-	       OperationStatus: handler.Success,
-	       Message: "Delete complete",
-	       ResourceModel: currentModel,
-	   }
+	projectID := *currentModel.ProjectId.Value()
 
-	   return response, nil
-	*/
+	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting encryption at rest configuration for project (%s): %s", projectID, err)
+	}
 
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: Delete")
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Delete Complete",
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 // List handles the List event from the Cloudformation service.

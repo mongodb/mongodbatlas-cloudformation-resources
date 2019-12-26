@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -48,25 +49,29 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Add your code here:
-	// * Make API calls (use req.Session)
-	// * Mutate the model
-	// * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
 
-	/*
-	   // Construct a new handler.ProgressEvent and return it
-	   response := handler.ProgressEvent{
-	       OperationStatus: handler.Success,
-	       Message: "Read complete",
-	       ResourceModel: currentModel,
-	   }
+	projectID := *currentModel.ProjectId.Value()
 
-	   return response, nil
-	*/
+	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
+	if err != nil {
+		return handler.NewProgressEvent(), fmt.Errorf("error fetching encryption at rest configuration for project (%s)", projectID)
+	}
 
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: Read")
+	currentModel.AwsKms.AccessKeyID = encoding.NewString(encryptionAtRest.AwsKms.AccessKeyID)
+	currentModel.AwsKms.CustomerMasterKeyID = encoding.NewString(encryptionAtRest.AwsKms.CustomerMasterKeyID)
+	currentModel.AwsKms.Enabled = encoding.NewBool(*encryptionAtRest.AwsKms.Enabled)
+	currentModel.AwsKms.Region = encoding.NewString(encryptionAtRest.AwsKms.Region)
+	currentModel.AwsKms.SecretAccessKey = encoding.NewString(encryptionAtRest.AwsKms.SecretAccessKey)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Read Complete",
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 // Update handles the Update event from the Cloudformation service.

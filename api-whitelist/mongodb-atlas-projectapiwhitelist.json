@@ -19,6 +19,18 @@
                     "type": "string"
                 }
             }
+        },
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
@@ -38,6 +50,9 @@
               "$ref": "#/definitions/whitelistDefinition"
             }
         },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
         "TotalCount": {
             "description": "The unique identifier for the Project API Whitelist rules.",
             "type": "integer"
@@ -47,7 +62,8 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "Whitelist"
+        "Whitelist",
+        "ApiKeys"
     ],
     "readOnlyProperties": [
         "/properties/Id",

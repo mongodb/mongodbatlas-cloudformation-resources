@@ -2,7 +2,6 @@ package resource
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
@@ -76,25 +75,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Add your code here:
-	// * Make API calls (use req.Session)
-	// * Mutate the model
-	// * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+	// no-op
 
-	/*
-	   // Construct a new handler.ProgressEvent and return it
-	   response := handler.ProgressEvent{
-	       OperationStatus: handler.Success,
-	       Message: "Update complete",
-	       ResourceModel: currentModel,
-	   }
-
-	   return response, nil
-	*/
-
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Update Complete",
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -120,23 +107,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Add your code here:
-	// * Make API calls (use req.Session)
-	// * Mutate the model
-	// * Check/set any callback context (req.CallbackContext / response.CallbackContext)
-
-	/*
-	   // Construct a new handler.ProgressEvent and return it
-	   response := handler.ProgressEvent{
-	       OperationStatus: handler.Success,
-	       Message: "List complete",
-	       ResourceModel: currentModel,
-	   }
-
-	   return response, nil
-	*/
-
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	// no-op
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List Complete",
+		ResourceModel:   currentModel,
+	}, nil
 }

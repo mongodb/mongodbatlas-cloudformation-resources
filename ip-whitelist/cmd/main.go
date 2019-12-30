@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/api-whitelist/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/ip-whitelist/cmd/resource"
 )
 
 /*

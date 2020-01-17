@@ -1,0 +1,169 @@
+{
+    "typeName": "MongoDB::Atlas::NetworkPeering",
+    "description": "Network peering ",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-peering",
+    "definitions": {
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "The unique identifier of the project.",
+            "type": "string"
+        },
+        "ContainerId": {
+            "description": "Unique identifier of the Atlas VPC container for the AWS region.",
+            "type": "string"
+
+        },
+        "AccepterRegionName": {
+            "description": " \tAWS region where the peer VPC resides. Returns null if the region is the same region in which the Atlas VPC resides.",
+            "type": "string"
+        },
+        "AwsAccountId": {
+            "description": " \tAWS account ID of the owner of the peer VPC.",
+            "type": "string"
+        },
+        "PeerId": {
+            "description": "Unique Identifier of the Peer",
+            "type": "string"
+        },
+        "ProviderName": {
+            "description": "The name of the provider",
+            "type": "string"
+        },
+        "RouteTableCidrBlock": {
+            "description": "Peer VPC CIDR block or subnet.",
+            "type": "string"
+        },
+        "VpcId": {
+            "description": "Unique identifier of the peer VPC.",
+            "type": "string"
+        },
+        "ConnectionId": {
+            "description": "Unique identifier for the peering connection.",
+            "type": "string"
+        },
+        "ErrorStateName": {
+            "description": "Error state, if any.",
+            "type": "string"
+        },
+        "AtlasId": {
+            "description": "",
+            "type": "string"
+        },
+        "StatusName": {
+            "description": "The VPC peering connection status",
+            "type": "string"
+        },
+        "AtlasCidrBlock": {
+            "description": "",
+            "type": "string"
+        },
+        "AzureDirectoryId": {
+            "description": "",
+            "type": "string"
+        },
+        "AzureSubscriptionId": {
+            "description": "Unique identifer of the Azure subscription in which the VNet resides.",
+            "type": "string"
+        },
+        "ResourceGroupName": {
+            "description": "Name of your Azure resource group.",
+            "type": "string"
+        },
+        "VnetName": {
+            "description": "Name of your Azure VNet.",
+            "type": "string"
+        },
+        "ErrorState": {
+            "description": "The state of error",
+            "type": "string"
+        },
+        "Id": {
+            "description": " The CIDR block that Atlas uses for the clusters in your project.",
+            "type": "string"
+        },
+        "Status": {
+            "description": "The status",
+            "type": "string"
+        },
+        "GcpProjectId": {
+            "description": "Unique identifier of GCP Project",
+            "type": "string"
+        },
+        "NetworkName": {
+            "description": "The name of the network",
+            "type": "string"
+        },
+        "AtlasGcpProjectId": {
+            "description": "",
+            "type": "string"
+        },
+        "AtlasVpcName": {
+            "description": "Unique identifier of the Atlas VPC",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "The message of an error",
+            "type": "string"
+        },
+        "PageNum": {
+            "description": "The number of page",
+            "type": "integer"
+        },
+        "ItemsPerPage": {
+            "description": "The numbers of items per page",
+            "type": "integer"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "ContainerId"],
+    "readOnlyProperties": [
+        "/properties/Id"],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
+        }
+    }
+}

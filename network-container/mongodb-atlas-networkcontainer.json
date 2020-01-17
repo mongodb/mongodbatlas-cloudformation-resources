@@ -1,0 +1,121 @@
+{
+    "typeName": "MongoDB::Atlas::NetworkContainer",
+    "description": "Network container ",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-container",
+    "definitions": {
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "The unique identifier of the project.",
+            "type": "string"
+        },
+        "ContainerId": {
+            "description": "Unique identifier of the Atlas VPC container for the AWS region.",
+            "type": "string"
+
+        },
+        "RegionName": {
+            "description": " Name of region",
+            "type": "string"
+        },
+        "Region": {
+            "description": " Region",
+            "type": "string"
+        },
+        "Provisioned": {
+            "description": " Flag that indicates if the project has clusters deployed in the Network Peering container.",
+            "type": "boolean"
+        },
+        "ProviderName": {
+            "description": "The name of the provider",
+            "type": "string"
+        },
+        "VpcId": {
+            "description": "Unique identifier of the peer VPC.",
+            "type": "string"
+        },
+        "AtlasCidrBlock": {
+            "description": "",
+            "type": "string"
+        },
+        "AzureSubscriptionId": {
+            "description": "Unique identifer of the Azure subscription in which the VNet resides.",
+            "type": "string"
+        },
+        "VnetName": {
+            "description": "Name of your Azure VNet.",
+            "type": "string"
+        },
+        "Id": {
+            "description": " The CIDR block that Atlas uses for the clusters in your project.",
+            "type": "string"
+        },
+        "GcpProjectId": {
+            "description": "Unique identifier of GCP Project",
+            "type": "string"
+        },
+        "NetworkName": {
+            "description": "The name of the network",
+            "type": "string"
+        },
+        "PageNum": {
+            "description": "The number of page",
+            "type": "integer"
+        },
+        "ItemsPerPage": {
+            "description": "The numbers of items per page",
+            "type": "integer"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "ContainerId"],
+    "readOnlyProperties": [
+        "/properties/Id"],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
+        }
+    }
+}

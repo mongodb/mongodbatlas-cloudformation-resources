@@ -21,7 +21,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	projectID := *currentModel.ProjectId.Value()
-
 	request := getProjectIPWhitelistRequest(currentModel)
 
 	_, _, err = client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
@@ -29,14 +28,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	var withelist []string
-	whiteListMap(request, func(entry string) {
-		withelist = append(withelist, entry)
+	var whitelist []string
+	whitelistMap(request, func(entry string) {
+		whitelist = append(whitelist, entry)
 	})
 
 	id := encodeStateID(map[string]string{
 		"project_id": projectID,
-		"entries":    strings.Join(withelist, ","),
+		"entries":    strings.Join(whitelist, ","),
 	})
 
 	currentModel.Id = encoding.NewString(id)
@@ -63,12 +62,11 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 		}
 
 		whitelist = append(whitelist, wl)
-
 	}
 	return whitelist
 }
 
-func whiteListMap(whitelist []*mongodbatlas.ProjectIPWhitelist, f func(string)) {
+func whitelistMap(whitelist []*mongodbatlas.ProjectIPWhitelist, f func(string)) {
 	for _, entry := range whitelist {
 		if entry.CIDRBlock != "" {
 			f(entry.CIDRBlock)
@@ -173,7 +171,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	whiteListMap(whitelist, func(entry string) {
+	whitelistMap(whitelist, func(entry string) {
 		_, err = client.ProjectIPWhitelist.Delete(context.Background(), ids["project_id"], entry)
 	})
 	if err != nil {
@@ -189,7 +187,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var withelist []string
-	whiteListMap(request, func(entry string) {
+	whitelistMap(request, func(entry string) {
 		withelist = append(withelist, entry)
 	})
 
@@ -221,7 +219,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	whiteListMap(whitelist, func(entry string) {
+	whitelistMap(whitelist, func(entry string) {
 		_, err = client.ProjectIPWhitelist.Delete(context.Background(), ids["project_id"], entry)
 	})
 	if err != nil {

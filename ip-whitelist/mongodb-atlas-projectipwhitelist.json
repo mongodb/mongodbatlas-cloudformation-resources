@@ -19,7 +19,7 @@
                     "type": "string"
                 },
                 "projectId": {
-                    "description": "Whitelist entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress.",
+                    "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
                     "type": "string"
                 }
             }

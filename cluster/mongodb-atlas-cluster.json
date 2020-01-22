@@ -1,20 +1,61 @@
 {
     "typeName": "MongoDB::Atlas::Cluster",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "description": "The cluster resource provides access to your cluster configurations. The resource lets you create, edit and delete clusters. The resource requires your Project ID.",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cluster",
     "definitions": {
-        "InitechDateFormat": {
-            "$comment": "Use the `definitions` block to provide shared resource property schemas",
-            "type": "string",
-            "format": "date-time"
-        },
-        "Memo": {
+        "AutoScalingProvider": {
             "type": "object",
             "properties": {
-                "Heading": {
+                "Compute": {
+                    "$ref": "#/definitions/AutoScalingProviderCompute"
+                }
+            }
+        },
+        "AutoScalingProviderCompute": {
+            "type": "object",
+            "properties": {
+                "MinInstanceSize": {
                     "type": "string"
                 },
-                "Body": {
+                "MaxInstanceSize": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "RegionsConfig": {
+            "type": "object",
+            "properties": {
+                "RegionName": {
+                    "type": "string"
+                },
+                "AnalyticsNodes": {
+                    "type": "integer"
+                },
+                "ElectableNodes": {
+                    "type": "integer"
+                },
+                "Priority": {
+                    "type": "integer"
+                },
+                "ReadOnlyNodes": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ReplicationSpec": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "NumShards": {
+                    "type": "string"
+                },
+                "RegionsConfig":{
+                    "$ref": "#/definitions/RegionsConfig"
+                },
+                "ZoneName": {
                     "type": "string"
                 }
             },
@@ -22,83 +63,218 @@
         }
     },
     "properties": {
-        "TPSCode": {
-            "description": "A TPS Code is automatically generated on creation and assigned as the unique identifier.",
-            "type": "string",
-            "pattern": "^[A-Z]{3,5}[0-9]{8}-[0-9]{4}$"
+        "AutoScaling": {
+            "type": "object",
+            "properties": {
+                "Compute": {
+                    "type": "object",
+                    "properties": {
+                        "Enabled": {
+                            "type": "boolean"
+                        },
+                        "ScaleDownEnabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "DiskGBEnabled": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
         },
-        "Title": {
-            "description": "The title of the TPS report is a mandatory element.",
-            "type": "string",
-            "minLength": 20,
-            "maxLength": 250
-        },
-        "CoverSheetIncluded": {
-            "description": "Required for all TPS Reports submitted after 2/19/1999",
+        "BackupEnabled": {
+            "description": "Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.",
             "type": "boolean"
         },
-        "DueDate": {
-            "$ref": "#/definitions/InitechDateFormat"
+        "BiConenctor": {
+            "type": "object",
+            "properties": {
+                "ReadPreference": {
+                    "type": "string"
+                },
+                "Enabled": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
         },
-        "ApprovalDate": {
-            "$ref": "#/definitions/InitechDateFormat"
+        "ClusterType": {
+            "description": "Type of the cluster that you want to create.",
+            "type": "string"
         },
-        "Memo": {
-            "$ref": "#/definitions/Memo"
+        "DiskSizeGB": {
+            "description": "Capacity, in gigabytes, of the host’s root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.",
+            "type": "integer"
         },
-        "SecondCopyOfMemo": {
-            "description": "In case you didn't get the first one.",
-            "$ref": "#/definitions/Memo"
-        },
-        "TestCode": {
+        "EncryptionAtRestProvider": {
+            "description": "Set the Encryption at Rest parameter.",
             "type": "string",
             "enum": [
-                "NOT_STARTED",
-                "CANCELLED"
+                "AWS",
+                "GCP",
+                "AZURE",
+                "NONE"
             ]
         },
-        "Authors": {
+        "ProjectID": {
+            "description":"Unique identifier of the project the cluster belongs to.",
+            "type": "string"
+        },
+        "ID": {
+            "description": "Unique identifier of the cluster.",
+            "type":"string"
+        },
+        "Labels": {
+            "description": "Array containing key-value pairs that tag and categorize the cluster.",
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                    "Key": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                    },
+                    "Value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                    }
+                },
+                "additionalProperties": false
             }
+        },
+        "MongoDBVersion": {
+            "description": "Version of MongoDB the cluster runs, in <major version>.<minor version> format.",
+            "type": "string"
+        },
+        "MongoDBMajorVersion": {
+            "description": "Version of the cluster to deploy.",
+            "type": "string"
+        },
+        "MongoURI": {
+            "description": "Base connection string for the cluster.",
+            "type": "string"
+        },
+        "MongoURIUpdated": {
+            "description": "Timestamp in ISO 8601 date and time format in UTC when the connection string was last updated. The connection string changes if you update any of the other values.",
+            "type": "string"
+        },
+        "MongoURIWithOptions": {
+            "description": "connection string for connecting to the Atlas cluster. Includes the replicaSet, ssl, and authSource query parameters in the connection string with values appropriate for the cluster.",
+            "type": "string"
+
+        },
+        "Name": {
+            "description": "Set the Encryption at Rest parameter.",
+            "type": "string"
+        },
+        "NumShards": {
+            "description": "Version of the cluster to deploy.",
+            "type": "integer"
+        },
+        "Paused": {
+            "description": "Flag that indicates whether the cluster is paused or not.",
+            "type": "boolean"
+        },
+        "PitEnabled": {
+            "description": "Flag that indicates if the cluster uses Point-in-Time backups. If set to true, providerBackupEnabled must also be set to true.",
+            "type": "boolean"
+        },
+        "ProviderBackupEnabled": {
+            "description": "Flag that indicates if the cluster uses Cloud Provider Snapshots for backups.",
+            "type": "boolean"
+        },
+        "ProviderSettings": {
+            "type": "object",
+            "properties": {
+                "AutoScaling": {
+                    "$ref": "#/definitions/AutoScalingProvider"
+                },
+                "BackingProviderName": {
+                    "type": "string"
+                },
+                "DiskIOPS": {
+                    "type": "string"
+                },
+                "EncryptEBSVolume": {
+                    "type": "boolean"
+                },
+                "InstanceSizeName": {
+                    "type": "string"
+                },
+                "RegionName": {
+                    "type": "string"
+                },
+                "VolumeType": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ReplicationFactor": {
+            "description": "ReplicationFactor is deprecated. Use replicationSpecs.",
+            "type": "integer"
+        },
+        "ReplicationSpecs": {
+            "description": "Configuration for cluster regions.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ReplicationSpec"
+            }
+        },
+        "SrvAddress": {
+            "description": "Connection string for connecting to the Atlas cluster. The +srv modifier forces the connection to use TLS. The mongoURI parameter lists additional options.",
+            "type": "string"
+        },
+        "StateName": {
+            "description": "Current state of the cluster.",
+            "type": "string"
         }
     },
     "additionalProperties": false,
     "required": [
-        "TestCode",
-        "Title"
+        "Name",
+        "ProviderSettings"
     ],
     "readOnlyProperties": [
-        "/properties/TPSCode"
+        "StateName",
+        "SrvAddress",
+        "Paused",
+        "MongoDBVersion",
+        "MongoURI",
+        "MongoURIUpdated",
+        "MongoURIWithOptions",
+        "ID"
     ],
     "primaryIdentifier": [
-        "/properties/TPSCode"
+        ""
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "initech:CreateReport"
+                ""
             ]
         },
         "read": {
             "permissions": [
-                "initech:DescribeReport"
+                ""
             ]
         },
         "update": {
             "permissions": [
-                "initech:UpdateReport"
+                ""
             ]
         },
         "delete": {
             "permissions": [
-                "initech:DeleteReport"
+                ""
             ]
         },
         "list": {
             "permissions": [
-                "initech:ListReports"
+                ""
             ]
         }
     }

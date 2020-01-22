@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkContainer",
-    "description": "Network container ",
+    "description": "This resource allows to create a network container",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-container",
     "definitions": {
         "apiKeyDefinition": {
@@ -30,10 +30,6 @@
             "description": " Name of region",
             "type": "string"
         },
-        "Region": {
-            "description": " Region",
-            "type": "string"
-        },
         "Provisioned": {
             "description": " Flag that indicates if the project has clusters deployed in the Network Peering container.",
             "type": "boolean"
@@ -50,24 +46,8 @@
             "description": "",
             "type": "string"
         },
-        "AzureSubscriptionId": {
-            "description": "Unique identifer of the Azure subscription in which the VNet resides.",
-            "type": "string"
-        },
-        "VnetName": {
-            "description": "Name of your Azure VNet.",
-            "type": "string"
-        },
         "Id": {
             "description": " The CIDR block that Atlas uses for the clusters in your project.",
-            "type": "string"
-        },
-        "GcpProjectId": {
-            "description": "Unique identifier of GCP Project",
-            "type": "string"
-        },
-        "NetworkName": {
-            "description": "The name of the network",
             "type": "string"
         },
         "PageNum": {
@@ -85,7 +65,8 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "ContainerId"],
+        "AtlasCidrBlock",
+        "RegionName"],
     "readOnlyProperties": [
         "/properties/Id"],
     "primaryIdentifier": [

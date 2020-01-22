@@ -1,0 +1,43 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Network Containers on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "GroupId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "RegionName" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "ProviderName" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "AtlasCidrBlock" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "NetworkContainer": {
+      "Type": "MongoDB::Atlas::NetworkContainer",
+      "Properties": {
+        "AtlasCidrBlock": { "Ref" : "AtlasCidrBlock" },
+        "RegionName":  { "Ref" : "RegionName" },
+        "ProviderName": { "Ref" : "ProviderName" },
+        "ProjectId": { "Ref" : "GroupId" },
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {}
+}

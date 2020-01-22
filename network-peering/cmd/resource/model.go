@@ -22,21 +22,9 @@ type Model struct {
 	VpcId               *encoding.String `json:"VpcId,omitempty"`
 	ConnectionId        *encoding.String `json:"ConnectionId,omitempty"`
 	ErrorStateName      *encoding.String `json:"ErrorStateName,omitempty"`
-	AtlasId             *encoding.String `json:"AtlasId,omitempty"`
 	StatusName          *encoding.String `json:"StatusName,omitempty"`
 	AtlasCidrBlock      *encoding.String `json:"AtlasCidrBlock,omitempty"`
-	AzureDirectoryId    *encoding.String `json:"AzureDirectoryId,omitempty"`
-	AzureSubscriptionId *encoding.String `json:"AzureSubscriptionId,omitempty"`
-	ResourceGroupName   *encoding.String `json:"ResourceGroupName,omitempty"`
-	VnetName            *encoding.String `json:"VnetName,omitempty"`
-	ErrorState          *encoding.String `json:"ErrorState,omitempty"`
 	Id                  *encoding.String `json:"Id,omitempty"`
-	Status              *encoding.String `json:"Status,omitempty"`
-	GcpProjectId        *encoding.String `json:"GcpProjectId,omitempty"`
-	NetworkName         *encoding.String `json:"NetworkName,omitempty"`
-	AtlasGcpProjectId   *encoding.String `json:"AtlasGcpProjectId,omitempty"`
-	AtlasVpcName        *encoding.String `json:"AtlasVpcName,omitempty"`
-	ErrorMessage        *encoding.String `json:"ErrorMessage,omitempty"`
 	PageNum             *encoding.Int    `json:"PageNum,omitempty"`
 	ItemsPerPage        *encoding.Int    `json:"ItemsPerPage,omitempty"`
 	ApiKeys             ApiKeyDefinition `json:"ApiKeys,omitempty"`

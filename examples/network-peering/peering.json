@@ -1,0 +1,72 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Network PPeering on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "GroupId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "VpcId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "AwsAccountId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "AwsRegionName" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "RegionName" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "RouteTableCidrBlock" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "AtlasCidrBlock" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "NetworkContainer": {
+      "Type": "MongoDB::Atlas::NetworkContainer",
+      "Properties": {
+        "AtlasCidrBlock": { "Ref" : "AtlasCidrBlock" },
+        "RegionName":  { "Ref" : "RegionName" },
+        "ProjectId": { "Ref" : "GroupId" },
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    },
+    "NetworkPeering": {
+      "Type": "MongoDB::Atlas::NetworkPeering",
+      "Properties": {
+        "ProjectId": { "Ref" : "GroupId" },
+        "ContainerId": { "Ref" : "NetworkContainer" },
+        "AccepterRegionName": { "Ref" : "AwsRegionName" },
+        "AwsAccountId": { "Ref" : "AwsAccountId" },
+        "RouteTableCidrBlock": { "Ref" : "RouteTableCidrBlock" },
+        "VpcId": { "Ref" : "VpcId" },
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {}
+}

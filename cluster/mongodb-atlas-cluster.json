@@ -50,12 +50,27 @@
                     "type": "string"
                 },
                 "NumShards": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "RegionsConfig":{
+                   "type":"array",
+                   "items": {
                     "$ref": "#/definitions/RegionsConfig"
+                   }
                 },
                 "ZoneName": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
                     "type": "string"
                 }
             },
@@ -63,6 +78,9 @@
         }
     },
     "properties": {
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
         "AutoScaling": {
             "type": "object",
             "properties": {
@@ -105,7 +123,7 @@
         },
         "DiskSizeGB": {
             "description": "Capacity, in gigabytes, of the host’s root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.",
-            "type": "integer"
+            "type": "number"
         },
         "EncryptionAtRestProvider": {
             "description": "Set the Encryption at Rest parameter.",
@@ -196,7 +214,7 @@
                     "type": "string"
                 },
                 "DiskIOPS": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "EncryptEBSVolume": {
                     "type": "boolean"

@@ -23,10 +23,7 @@ type Model struct {
 	ConnectionId        *encoding.String `json:"ConnectionId,omitempty"`
 	ErrorStateName      *encoding.String `json:"ErrorStateName,omitempty"`
 	StatusName          *encoding.String `json:"StatusName,omitempty"`
-	AtlasCidrBlock      *encoding.String `json:"AtlasCidrBlock,omitempty"`
 	Id                  *encoding.String `json:"Id,omitempty"`
-	PageNum             *encoding.Int    `json:"PageNum,omitempty"`
-	ItemsPerPage        *encoding.Int    `json:"ItemsPerPage,omitempty"`
 	ApiKeys             ApiKeyDefinition `json:"ApiKeys,omitempty"`
 }
 

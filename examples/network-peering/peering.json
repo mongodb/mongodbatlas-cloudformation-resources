@@ -1,8 +1,8 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Network PPeering on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description" : "This template creates a Network Peering on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
-    "GroupId" : {
+    "ProjectId" : {
       "Type" : "String",
       "Description" : "",
       "ConstraintDescription" : ""
@@ -22,17 +22,7 @@
       "Description" : "",
       "ConstraintDescription" : ""
     },
-    "RegionName" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
-    },
     "RouteTableCidrBlock" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
-    },
-    "AtlasCidrBlock" : {
       "Type" : "String",
       "Description" : "",
       "ConstraintDescription" : ""
@@ -43,9 +33,9 @@
     "NetworkContainer": {
       "Type": "MongoDB::Atlas::NetworkContainer",
       "Properties": {
-        "AtlasCidrBlock": { "Ref" : "AtlasCidrBlock" },
-        "RegionName":  { "Ref" : "RegionName" },
-        "ProjectId": { "Ref" : "GroupId" },
+        "AtlasCidrBlock": "10.8.2.0/24",
+        "RegionName":  "US_EAST_1",
+        "ProjectId": { "Ref" : "ProjectId" },
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
           "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
@@ -55,7 +45,7 @@
     "NetworkPeering": {
       "Type": "MongoDB::Atlas::NetworkPeering",
       "Properties": {
-        "ProjectId": { "Ref" : "GroupId" },
+        "ProjectId": { "Ref" : "ProjectId" },
         "ContainerId": { "Ref" : "NetworkContainer" },
         "AccepterRegionName": { "Ref" : "AwsRegionName" },
         "AwsAccountId": { "Ref" : "AwsAccountId" },

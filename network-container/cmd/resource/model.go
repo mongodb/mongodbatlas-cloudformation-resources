@@ -20,8 +20,6 @@ type Model struct {
 	VpcId          *encoding.String `json:"VpcId,omitempty"`
 	AtlasCidrBlock *encoding.String `json:"AtlasCidrBlock,omitempty"`
 	Id             *encoding.String `json:"Id,omitempty"`
-	PageNum        *encoding.Int    `json:"PageNum,omitempty"`
-	ItemsPerPage   *encoding.Int    `json:"ItemsPerPage,omitempty"`
 	ApiKeys        ApiKeyDefinition `json:"ApiKeys,omitempty"`
 }
 

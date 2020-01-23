@@ -9,23 +9,27 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-
+const(
+	defaultDefaultProviderName = "AWS"
+)
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-	defaultDefaultProviderName := "AWS"
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
+	projectID := currentModel.ProjectId.Value()
 	providerName := currentModel.ProviderName.Value()
 	containerRequest := &matlasClient.Container{}
 
-	if providerName == nil || *providerName == ""{
-		providerName = &defaultDefaultProviderName
+	if projectID == nil || *projectID == ""{
+		return handler.ProgressEvent{}, fmt.Errorf("`project_id` must be set")
 	}
-
+	if providerName == nil || *providerName == ""{
+		aws := defaultDefaultProviderName
+		providerName = &aws
+	}
 	regionName := currentModel.RegionName.Value()
 	if regionName == nil || *regionName == ""{
 		return handler.ProgressEvent{}, fmt.Errorf("`region_name` must be set when `provider_name` is AWS")
@@ -37,9 +41,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("`atlasCidrBlock` must be set when `provider_name` is AWS")
 	}
 	containerRequest.AtlasCIDRBlock = *atlasCIdRBlock
-
-	containerResponse, _, err := client.Containers.Create(context.Background(), projectID, containerRequest)
-
+	containerResponse, _, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
 	}
@@ -99,13 +101,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if atlasBlock != nil{
 		containerRequest.AtlasCIDRBlock = *atlasBlock
 	}
-	containerRequest.ProviderName = "AWS"
-	if prevModel.RegionName.Value() != currentModel.RegionName.Value(){
-	}
+	containerRequest.ProviderName = defaultDefaultProviderName
 	containerRequest.RegionName = ""
-
 	containerResponse, _, err := client.Containers.Update(context.Background(), projectID, containerID, containerRequest)
-
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error updating container with id(project: %s, container: %s): %s", projectID, containerRequest, err)
 	}
@@ -122,7 +120,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -145,24 +142,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
 	projectID := *currentModel.ProjectId.Value()
-	containerListOptions := matlasClient.ListOptions{
-		PageNum: int(*currentModel.PageNum.Value()),
-		ItemsPerPage: int(*currentModel.ItemsPerPage.Value()),
-	}
 	containerRequest := &matlasClient.ContainersListOptions{
 		ProviderName: *currentModel.ProviderName.Value(),
-		ListOptions: containerListOptions,
+		ListOptions: matlasClient.ListOptions{},
 	}
-
 	containerResponse, _, err := client.Containers.List(context.Background(), projectID, containerRequest)
 	var models []Model
-
 	for _, container := range containerResponse{
 		var model Model
 		model.RegionName = encoding.NewString(container.RegionName)
@@ -171,6 +161,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.ContainerId = encoding.NewString(container.ID)
 		model.AtlasCidrBlock = encoding.NewString(container.AtlasCIDRBlock)
 
+		models = append(models, model)
 	}
 
 	return handler.ProgressEvent{

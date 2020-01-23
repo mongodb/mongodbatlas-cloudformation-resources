@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkContainer",
-    "description": "This resource allows to create a network container",
+    "description": "This resource allows to create, read, update and delete a network container",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-container",
     "definitions": {
         "apiKeyDefinition": {
@@ -24,14 +24,13 @@
         "ContainerId": {
             "description": "Unique identifier of the Atlas VPC container for the AWS region.",
             "type": "string"
-
         },
         "RegionName": {
-            "description": " Name of region",
+            "description": "Name of region",
             "type": "string"
         },
         "Provisioned": {
-            "description": " Flag that indicates if the project has clusters deployed in the Network Peering container.",
+            "description": "Flag that indicates if the project has clusters deployed in the Network Peering container.",
             "type": "boolean"
         },
         "ProviderName": {
@@ -43,20 +42,12 @@
             "type": "string"
         },
         "AtlasCidrBlock": {
-            "description": "",
+            "description": "CIDR block that Atlas uses for your clusters.",
             "type": "string"
         },
         "Id": {
-            "description": " The CIDR block that Atlas uses for the clusters in your project.",
+            "description": "The CIDR block that Atlas uses for the clusters in your project.",
             "type": "string"
-        },
-        "PageNum": {
-            "description": "The number of page",
-            "type": "integer"
-        },
-        "ItemsPerPage": {
-            "description": "The numbers of items per page",
-            "type": "integer"
         },
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
@@ -66,7 +57,8 @@
     "required": [
         "ProjectId",
         "AtlasCidrBlock",
-        "RegionName"],
+        "RegionName",
+        "ApiKeys"],
     "readOnlyProperties": [
         "/properties/Id"],
     "primaryIdentifier": [

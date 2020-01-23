@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkPeering",
-    "description": "This resource allows to create a network peering",
+    "description": "This resource allows to create, read, update and delete a network peering",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-peering",
     "definitions": {
         "apiKeyDefinition": {
@@ -26,11 +26,11 @@
             "type": "string"
         },
         "AccepterRegionName": {
-            "description": " \tAWS region where the peer VPC resides. Returns null if the region is the same region in which the Atlas VPC resides.",
+            "description": "AWS region where the peer VPC resides. Returns null if the region is the same region in which the Atlas VPC resides.",
             "type": "string"
         },
         "AwsAccountId": {
-            "description": " \tAWS account ID of the owner of the peer VPC.",
+            "description": "AWS account ID of the owner of the peer VPC.",
             "type": "string"
         },
         "PeerId": {
@@ -61,21 +61,9 @@
             "description": "The VPC peering connection status",
             "type": "string"
         },
-        "AtlasCidrBlock": {
-            "description": "",
-            "type": "string"
-        },
         "Id": {
-            "description": " The CIDR block that Atlas uses for the clusters in your project.",
+            "description": "The CIDR block that Atlas uses for the clusters in your project.",
             "type": "string"
-        },
-        "PageNum": {
-            "description": "The number of page",
-            "type": "integer"
-        },
-        "ItemsPerPage": {
-            "description": "The numbers of items per page",
-            "type": "integer"
         },
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
@@ -84,7 +72,8 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "ContainerId"],
+        "ContainerId",
+        "ApiKeys"],
     "readOnlyProperties": [
         "/properties/Id"],
     "primaryIdentifier": [

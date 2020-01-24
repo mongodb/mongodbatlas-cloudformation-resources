@@ -163,13 +163,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
 	projectID := *currentModel.ProjectId.Value()
-
 	peerResponse, _, err := client.Peers.List(context.Background(), projectID, &matlasClient.ListOptions{})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading pf list peer with id(project: %s): %s", projectID, err)

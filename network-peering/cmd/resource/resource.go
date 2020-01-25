@@ -9,7 +9,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
@@ -17,31 +16,31 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	defaultDefaultProviderName := "AWS"
+	defaultProviderName := "AWS"
 	projectID := *currentModel.ProjectId.Value()
-	providerName := currentModel.ProviderName.Value()
 	peerRequest := matlasClient.Peer{
 		ContainerID: *currentModel.ContainerId.Value(),
 	}
 
 	region := currentModel.AccepterRegionName.Value()
-	if region == nil || *region == ""{
+	if region == nil || *region == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("`accepter_region_name` must be set when `provider_name` is `AWS`")
 	}
 	awsAccountId := currentModel.AwsAccountId.Value()
-	if awsAccountId == nil || *awsAccountId == ""{
+	if awsAccountId == nil || *awsAccountId == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("`aws_account_id` must be set when `provider_name` is `AWS`")
 	}
 	rtCIDR := currentModel.RouteTableCidrBlock.Value()
-	if rtCIDR == nil || *rtCIDR == ""{
-		return handler.ProgressEvent{}, fmt.Errorf("``route_table_cidr_block` must be set when `provider_name` is `AWS`")
+	if rtCIDR == nil || *rtCIDR == "" {
+		return handler.ProgressEvent{}, fmt.Errorf("`route_table_cidr_block` must be set when `provider_name` is `AWS`")
 	}
 	vpcID := currentModel.VpcId.Value()
-	if vpcID == nil || *vpcID == ""{
+	if vpcID == nil || *vpcID == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("`vpc_id` must be set when `provider_name` is `AWS`")
 	}
-	if providerName == nil || *providerName == ""{
-		providerName = &defaultDefaultProviderName
+	providerName := currentModel.ProviderName.Value()
+	if providerName == nil || *providerName == "" {
+		providerName = &defaultProviderName
 	}
 	peerRequest.AccepterRegionName = *region
 	peerRequest.AWSAccountId = *awsAccountId
@@ -49,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerRequest.VpcID = *vpcID
 	peerRequest.ProviderName = *providerName
 
-	peerResponse, _, err := client.Peers.Create(context.Background(),projectID, &peerRequest)
+	peerResponse, _, err := client.Peers.Create(context.Background(), projectID, &peerRequest)
 
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: %s", err)
@@ -59,8 +58,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message: "Create complete",
-		ResourceModel: currentModel,
+		Message:         "Create complete",
+		ResourceModel:   currentModel,
 	}, nil
 }
 
@@ -108,20 +107,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerRequest := matlasClient.Peer{}
 
 	region := currentModel.AccepterRegionName.Value()
-	if region != nil{
+	if region != nil {
 		peerRequest.AccepterRegionName = *region
 	}
 	accountID := currentModel.AwsAccountId.Value()
-	if accountID != nil{
+	if accountID != nil {
 		peerRequest.AWSAccountId = *accountID
 	}
 	peerRequest.ProviderName = "AWS"
 	rtTableBlock := currentModel.RouteTableCidrBlock.Value()
-	if rtTableBlock != nil{
+	if rtTableBlock != nil {
 		peerRequest.RouteTableCIDRBlock = *rtTableBlock
 	}
 	vpcId := currentModel.VpcId.Value()
-	if vpcId != nil{
+	if vpcId != nil {
 		peerRequest.VpcID = *vpcId
 	}
 	peerResponse, _, err := client.Peers.Update(context.Background(), projectID, peerID, &peerRequest)

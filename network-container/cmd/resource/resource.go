@@ -9,9 +9,10 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-const(
-	defaultDefaultProviderName = "AWS"
+const (
+	defaultProviderName = "AWS"
 )
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
@@ -23,22 +24,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	providerName := currentModel.ProviderName.Value()
 	containerRequest := &matlasClient.Container{}
 
-	if projectID == nil || *projectID == ""{
-		return handler.ProgressEvent{}, fmt.Errorf("`project_id` must be set")
+	if projectID == nil || *projectID == "" {
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `project_id` must be set")
 	}
-	if providerName == nil || *providerName == ""{
-		aws := defaultDefaultProviderName
+	if providerName == nil || *providerName == "" {
+		aws := defaultProviderName
 		providerName = &aws
 	}
 	regionName := currentModel.RegionName.Value()
-	if regionName == nil || *regionName == ""{
-		return handler.ProgressEvent{}, fmt.Errorf("`region_name` must be set when `provider_name` is AWS")
+	if regionName == nil || *regionName == "" {
+		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: region_name` must be set")
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = *providerName
 	atlasCIdRBlock := currentModel.AtlasCidrBlock.Value()
-	if atlasCIdRBlock == nil || *atlasCIdRBlock == ""{
-		return handler.ProgressEvent{}, fmt.Errorf("`atlasCidrBlock` must be set when `provider_name` is AWS")
+	if atlasCIdRBlock == nil || *atlasCIdRBlock == "" {
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `atlasCidrBlock`")
 	}
 	containerRequest.AtlasCIDRBlock = *atlasCIdRBlock
 	containerResponse, _, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
@@ -50,8 +51,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message: "Create complete",
-		ResourceModel: currentModel,
+		Message:         "Create complete",
+		ResourceModel:   currentModel,
 	}, nil
 }
 
@@ -93,19 +94,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-	containerID := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId.Value()
+	containerId := *currentModel.Id.Value()
 	containerRequest := &matlasClient.Container{}
-
+	providerName := currentModel.ProviderName.Value()
 	atlasBlock := currentModel.AtlasCidrBlock.Value()
-	if atlasBlock != nil{
+	if atlasBlock != nil {
 		containerRequest.AtlasCIDRBlock = *atlasBlock
 	}
-	containerRequest.ProviderName = defaultDefaultProviderName
-	containerRequest.RegionName = ""
-	containerResponse, _, err := client.Containers.Update(context.Background(), projectID, containerID, containerRequest)
+	if providerName == nil || *providerName == "" {
+		aws := defaultProviderName
+		providerName = &aws
+	}
+	containerRequest.ProviderName = *providerName
+	containerRequest.RegionName = *currentModel.RegionName.Value()
+	containerResponse, _, err := client.Containers.Update(context.Background(), projectId, containerId, containerRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error updating container with id(project: %s, container: %s): %s", projectID, containerRequest, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error updating container with id(project: %s, container: %s): %s", projectId, containerRequest, err)
 	}
 
 	currentModel.Id = encoding.NewString(containerResponse.ID)
@@ -124,12 +129,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-	containerID := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId.Value()
+	containerId := *currentModel.Id.Value()
 
-	_, err = client.Containers.Delete(context.Background(), projectID, containerID)
+	_, err = client.Containers.Delete(context.Background(), projectId, containerId)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting container with id(project: %s, container: %s): %s", projectID, containerID, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting container with id(project: %s, container: %s): %s", projectId, containerId, err)
 	}
 
 	return handler.ProgressEvent{
@@ -146,14 +151,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
+	projectId := *currentModel.ProjectId.Value()
 	containerRequest := &matlasClient.ContainersListOptions{
 		ProviderName: *currentModel.ProviderName.Value(),
-		ListOptions: matlasClient.ListOptions{},
+		ListOptions:  matlasClient.ListOptions{},
 	}
-	containerResponse, _, err := client.Containers.List(context.Background(), projectID, containerRequest)
+	containerResponse, _, err := client.Containers.List(context.Background(), projectId, containerRequest)
 	var models []Model
-	for _, container := range containerResponse{
+	for _, container := range containerResponse {
 		var model Model
 		model.RegionName = encoding.NewString(container.RegionName)
 		model.Provisioned = encoding.NewBool(*container.Provisioned)

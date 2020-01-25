@@ -62,7 +62,7 @@
             "type": "string"
         },
         "Id": {
-            "description": "The CIDR block that Atlas uses for the clusters in your project.",
+            "description": "Unique identifier of the Network Peer.",
             "type": "string"
         },
         "ApiKeys": {

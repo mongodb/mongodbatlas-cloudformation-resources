@@ -1,0 +1,42 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
+    "Parameters" : {
+      "ProjectName" : {
+        "Type" : "String"
+      }
+    },
+    "Mappings" : {},
+    "Resources" : {
+      "Project": {
+        "Type": "MongoDB::Atlas::Project",
+        "Properties": {
+          "Name": { "Ref" : "ProjectName" },
+          "Orgid": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+          "ApiKeys": {
+            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          }
+        }
+      },
+      "Cluster": {
+        "Type": "MongoDB::Atlas::Cluster",
+        "Properties": {
+          "ProjectId": { "Ref" : "Project" },
+          "Name": "testCluster-AWS-M10-1",
+          "NumShards":  1,
+          "ProviderName": "AWS",
+          "ReplicationFactor":  3,
+          "BackupEnabled":  true,
+          "AutoScaling":  {"DiskGBEnabled":  false},
+          "MongoDBVersion":  "4.0",
+          "ProviderSettings":  {"EncryptEBSVolume": false, "InstanceSizeName":"M10", "RegionName":"EU_CENTRAL_1" },
+          "ApiKeys": {
+            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          }
+        }
+      }
+    },
+    "Outputs" : {}
+  }

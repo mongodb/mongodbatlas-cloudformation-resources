@@ -16,7 +16,6 @@ type Model struct {
 	ContainerId         *encoding.String `json:"ContainerId,omitempty"`
 	AccepterRegionName  *encoding.String `json:"AccepterRegionName,omitempty"`
 	AwsAccountId        *encoding.String `json:"AwsAccountId,omitempty"`
-	PeerId              *encoding.String `json:"PeerId,omitempty"`
 	ProviderName        *encoding.String `json:"ProviderName,omitempty"`
 	RouteTableCidrBlock *encoding.String `json:"RouteTableCidrBlock,omitempty"`
 	VpcId               *encoding.String `json:"VpcId,omitempty"`

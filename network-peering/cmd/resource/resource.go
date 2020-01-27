@@ -24,19 +24,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	region := currentModel.AccepterRegionName.Value()
 	if region == nil || *region == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`accepter_region_name` must be set when `provider_name` is `AWS`")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `accepter_region_name` must be set")
 	}
 	awsAccountId := currentModel.AwsAccountId.Value()
 	if awsAccountId == nil || *awsAccountId == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`aws_account_id` must be set when `provider_name` is `AWS`")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `aws_account_id` must be set")
 	}
 	rtCIDR := currentModel.RouteTableCidrBlock.Value()
 	if rtCIDR == nil || *rtCIDR == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`route_table_cidr_block` must be set when `provider_name` is `AWS`")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `route_table_cidr_block` must be set")
 	}
 	vpcID := currentModel.VpcId.Value()
 	if vpcID == nil || *vpcID == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`vpc_id` must be set when `provider_name` is `AWS`")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `vpc_id` must be set")
 	}
 	providerName := currentModel.ProviderName.Value()
 	if providerName == nil || *providerName == "" {
@@ -85,7 +85,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.ConnectionId = encoding.NewString(peerResponse.ConnectionID)
 	currentModel.ErrorStateName = encoding.NewString(peerResponse.ErrorStateName)
 	currentModel.StatusName = encoding.NewString(peerResponse.StatusName)
-	currentModel.PeerId = encoding.NewString(peerResponse.ID)
 	currentModel.ProviderName = encoding.NewString(peerResponse.ProviderName)
 
 	return handler.ProgressEvent{
@@ -182,7 +181,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.ConnectionId = encoding.NewString(peer.ConnectionID)
 		model.ErrorStateName = encoding.NewString(peer.ErrorStateName)
 		model.StatusName = encoding.NewString(peer.StatusName)
-		model.PeerId = encoding.NewString(peer.ID)
 		model.ProviderName = encoding.NewString(peer.ProviderName)
 
 		models = append(models, model)

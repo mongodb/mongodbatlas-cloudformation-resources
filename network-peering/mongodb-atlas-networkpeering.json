@@ -33,10 +33,6 @@
             "description": "AWS account ID of the owner of the peer VPC.",
             "type": "string"
         },
-        "PeerId": {
-            "description": "Unique Identifier of the Peer",
-            "type": "string"
-        },
         "ProviderName": {
             "description": "The name of the provider",
             "type": "string"

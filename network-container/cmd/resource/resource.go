@@ -37,11 +37,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = *providerName
-	atlasCIdRBlock := currentModel.AtlasCidrBlock.Value()
-	if atlasCIdRBlock == nil || *atlasCIdRBlock == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `atlasCidrBlock`")
+	CIDR := currentModel.AtlasCidrBlock.Value()
+	if CIDR == nil || *CIDR == "" {
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `atlasCidrBlock` must be set")
 	}
-	containerRequest.AtlasCIDRBlock = *atlasCIdRBlock
+	containerRequest.AtlasCIDRBlock = *CIDR
 	containerResponse, _, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
@@ -76,7 +76,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.RegionName = encoding.NewString(containerResponse.RegionName)
 	currentModel.Provisioned = encoding.NewBool(*containerResponse.Provisioned)
 	currentModel.VpcId = encoding.NewString(containerResponse.VPCID)
-	currentModel.ContainerId = encoding.NewString(containerResponse.ID)
 	currentModel.AtlasCidrBlock = encoding.NewString(containerResponse.AtlasCIDRBlock)
 
 	return handler.ProgressEvent{
@@ -98,13 +97,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerId := *currentModel.Id.Value()
 	containerRequest := &matlasClient.Container{}
 	providerName := currentModel.ProviderName.Value()
-	atlasBlock := currentModel.AtlasCidrBlock.Value()
-	if atlasBlock != nil {
-		containerRequest.AtlasCIDRBlock = *atlasBlock
-	}
 	if providerName == nil || *providerName == "" {
 		aws := defaultProviderName
 		providerName = &aws
+	}
+	CIDR := currentModel.AtlasCidrBlock.Value()
+	if CIDR != nil {
+		containerRequest.AtlasCIDRBlock = *CIDR
 	}
 	containerRequest.ProviderName = *providerName
 	containerRequest.RegionName = *currentModel.RegionName.Value()
@@ -163,7 +162,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.RegionName = encoding.NewString(container.RegionName)
 		model.Provisioned = encoding.NewBool(*container.Provisioned)
 		model.VpcId = encoding.NewString(container.VPCID)
-		model.ContainerId = encoding.NewString(container.ID)
 		model.AtlasCidrBlock = encoding.NewString(container.AtlasCIDRBlock)
 
 		models = append(models, model)

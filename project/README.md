@@ -10,4 +10,4 @@ Next steps:
    You can also do this manually with the following command: `cfn-cli generate`
 3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
 
-Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
+Please don't modify files `model.go and main.go`, as they will be automatically overwritten.

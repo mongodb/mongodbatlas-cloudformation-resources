@@ -36,7 +36,7 @@ func (r *Handler) List(req handler.Request) handler.ProgressEvent {
 	return wrap(req, resource.List)
 }
 
-// main is the entry point of the applicaton.
+// main is the entry point of the application.
 func main() {
 	cfn.Start(&Handler{})
 }

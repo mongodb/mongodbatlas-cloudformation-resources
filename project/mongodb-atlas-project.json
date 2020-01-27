@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::Project",
-    "description": " Each project has its own Monitoring, Backup and Automations associated with the project. Projects within the same organization share the same billing settings.",
+    "description": "Each project has its own Monitoring, Backup and Automations associated with the project. Projects within the same organization share the same billing settings.",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/database-users/project",
     "definitions": {
         "apiKeyDefinition": {
@@ -24,7 +24,6 @@
         "OrgId": {
             "description": "Unique identifier of the organization within which to create the project.",
             "type": "string"
-
         },
         "Id": {
             "description": "The unique identifier of the project.",
@@ -58,29 +57,19 @@
     ],
     "handlers": {
         "create": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "read": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "update": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "delete": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "list": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         }
     }
 }

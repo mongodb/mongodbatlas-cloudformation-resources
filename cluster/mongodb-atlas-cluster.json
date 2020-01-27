@@ -1,7 +1,7 @@
 {
     "typeName": "MongoDB::Atlas::Cluster",
     "description": "The cluster resource provides access to your cluster configurations. The resource lets you create, edit and delete clusters. The resource requires your Project ID.",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cluster",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/cluster/cluster",
     "definitions": {
         "AutoScalingProvider": {
             "type": "object",
@@ -257,17 +257,17 @@
         "ProviderSettings"
     ],
     "readOnlyProperties": [
-        "StateName",
-        "SrvAddress",
-        "Paused",
-        "MongoDBVersion",
-        "MongoURI",
-        "MongoURIUpdated",
-        "MongoURIWithOptions",
-        "ID"
+        "/properties/StateName",
+        "/properties/SrvAddress",
+        "/properties/Paused",
+        "/properties/MongoDBVersion",
+        "/properties/MongoURI",
+        "/properties/MongoURIUpdated",
+        "/properties/MongoURIWithOptions",
+        "/properties/ID"
     ],
     "primaryIdentifier": [
-        ""
+        "/properties/ID"
     ],
     "handlers": {
         "create": {

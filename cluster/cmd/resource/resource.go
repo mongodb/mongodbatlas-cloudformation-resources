@@ -149,25 +149,70 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Add your code here:
-	// * Make API calls (use req.Session)
-	// * Mutate the model
-	// * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
 
-	/*
-	   // Construct a new handler.ProgressEvent and return it
-	   response := handler.ProgressEvent{
-	       OperationStatus: handler.Success,
-	       Message: "Update complete",
-	       ResourceModel: currentModel,
-	   }
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
 
-	   return response, nil
-	*/
+	projectID := *currentModel.ProjectID.Value()
+	clusterName := *currentModel.Name.Value()
 
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	if len(currentModel.ReplicationSpecs) > 0 {
+		if currentModel.ClusterType.Value() != nil {
+			return handler.ProgressEvent{}, errors.New("ClusterType should be set when `ReplicationSpecs` is set")
+		}
+
+		if currentModel.NumShards.Value() != nil {
+			return handler.ProgressEvent{}, errors.New("NumShards should be set when `ReplicationSpecs` is set")
+		}
+	}
+
+	autoScaling := mongodbatlas.AutoScaling{
+		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled.Value(),
+	}
+
+	clusterRequest := &mongodbatlas.Cluster{
+		Name:                     *currentModel.Name.Value(),
+		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider.Value(),
+		ClusterType:              *currentModel.ClusterType.Value(),
+		BackupEnabled:            currentModel.BackupEnabled.Value(),
+		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
+		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
+		AutoScaling:              autoScaling,
+		BiConnector:              expandBiConnector(currentModel.BiConenctor),
+		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
+		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
+		ReplicationFactor:        currentModel.ReplicationFactor.Value(),
+		NumShards:                currentModel.NumShards.Value(),
+	}
+
+	if currentModel.MongoDBMajorVersion.Value() != nil {
+		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion.Value())
+	}
+
+	cluster, _, err := client.Clusters.Update(context.Background(), projectID, clusterName, clusterRequest)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
+	}
+
+	log.Printf("[DEBUG] Cluster %+v", cluster)
+
+	currentModel.ID = encoding.NewString(cluster.ID)
+
+	if cluster.StateName == "IDLE" {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Update Cluster Complete",
+			ResourceModel:   currentModel,
+		}, nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.InProgress,
+		Message:         fmt.Sprintf("Update Cluster `%s`", cluster.SrvAddress),
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.

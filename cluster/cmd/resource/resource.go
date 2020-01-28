@@ -17,7 +17,6 @@ import (
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -39,9 +38,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	clusterRequest := &mongodbatlas.Cluster{
-		Name:                     *currentModel.Name.Value(),
-		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider.Value(),
-		ClusterType:              *currentModel.ClusterType.Value(),
+		Name:                     cast.ToString(currentModel.Name.Value()),
+		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider.Value()),
+		ClusterType:              cast.ToString(currentModel.ClusterType.Value()),
 		BackupEnabled:            currentModel.BackupEnabled.Value(),
 		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
@@ -62,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
 	}
 
-	log.Printf("[DEBUG] Cluster %+v", cluster)
+	log.Printf("Cluster %+v", cluster)
 
 	currentModel.ID = encoding.NewString(cluster.ID)
 
@@ -76,7 +75,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.InProgress,
-		Message:         fmt.Sprintf("Create Cluster `%s`", cluster.SrvAddress),
+		Message:         fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -265,7 +264,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func expandBiConnector(biConnector BiConenctor) mongodbatlas.BiConnector {
 	return mongodbatlas.BiConnector{
 		Enabled:        biConnector.Enabled.Value(),
-		ReadPreference: *biConnector.ReadPreference.Value(),
+		ReadPreference: cast.ToString(biConnector.ReadPreference.Value()),
 	}
 }
 
@@ -273,11 +272,11 @@ func expandProviderSettings(providerSettings ProviderSettings) *mongodbatlas.Pro
 	return &mongodbatlas.ProviderSettings{
 		DiskIOPS:            providerSettings.DiskIOPS.Value(),
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume.Value(),
-		RegionName:          *providerSettings.RegionName.Value(),
-		BackingProviderName: *providerSettings.BackingProviderName.Value(),
-		InstanceSizeName:    *providerSettings.InstanceSizeName.Value(),
+		RegionName:          cast.ToString(providerSettings.RegionName.Value()),
+		BackingProviderName: cast.ToString(providerSettings.BackingProviderName.Value()),
+		InstanceSizeName:    cast.ToString(providerSettings.InstanceSizeName.Value()),
 		ProviderName:        "AWS",
-		VolumeType:          *providerSettings.VolumeType.Value(),
+		VolumeType:          cast.ToString(providerSettings.VolumeType.Value()),
 	}
 }
 
@@ -286,9 +285,9 @@ func expandReplicationSpecs(replicationSpecs []ReplicationSpec) []mongodbatlas.R
 
 	for _, s := range replicationSpecs {
 		rSpec := mongodbatlas.ReplicationSpec{
-			ID:            *s.ID.Value(),
+			ID:            cast.ToString(s.ID.Value()),
 			NumShards:     s.NumShards.Value(),
-			ZoneName:      *s.ZoneName.Value(),
+			ZoneName:      cast.ToString(s.ZoneName.Value()),
 			RegionsConfig: expandRegionsConfig(s.RegionsConfig),
 		}
 

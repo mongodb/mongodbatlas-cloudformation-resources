@@ -61,6 +61,10 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 			wl.IPAddress = *w.IpAddress.Value()
 		}
 
+		if w.AwsSecurityGroup != nil {
+			wl.AwsSecurityGroup = *w.AwsSecurityGroup.Value()
+		}
+
 		whitelist = append(whitelist, wl)
 	}
 	return whitelist
@@ -83,7 +87,7 @@ func encodeStateID(values map[string]string) string {
 	for key, value := range values {
 		encodedValues = append(encodedValues, fmt.Sprintf("%s:%s", encode(key), encode(value)))
 	}
-	return strings.Join(encodedValues, "-")
+	return strings.Join(encodedValues, "\\")
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -113,10 +117,11 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 	var results []WhitelistDefinition
 	for _, wl := range whitelist {
 		r := WhitelistDefinition{
-			IpAddress: encoding.NewString(wl.IPAddress),
-			CidrBlock: encoding.NewString(wl.CIDRBlock),
-			Comment:   encoding.NewString(wl.Comment),
-			ProjectId: encoding.NewString(wl.GroupID),
+			IpAddress:        encoding.NewString(wl.IPAddress),
+			CidrBlock:        encoding.NewString(wl.CIDRBlock),
+			AwsSecurityGroup: encoding.NewString(wl.AwsSecurityGroup),
+			Comment:          encoding.NewString(wl.Comment),
+			ProjectId:        encoding.NewString(wl.GroupID),
 		}
 		results = append(results, r)
 	}

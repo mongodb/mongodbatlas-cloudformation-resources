@@ -18,6 +18,10 @@
                     "description": "Whitelist entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress.",
                     "type": "string"
                 },
+                "awsSecurityGroup":{
+                    "description": "ID of the AWS security group to whitelist. Mutually exclusive with cidrBlock and ipAddress.",
+                    "type": "string"
+                },
                 "projectId": {
                     "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
                     "type": "string"

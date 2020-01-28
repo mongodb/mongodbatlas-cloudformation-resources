@@ -14,11 +14,42 @@ import (
 	"github.com/spf13/cast"
 )
 
+func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
+	isReady, state, err := clusterIsReady(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	log.Printf("STATE NAME [%s]", state)
+
+	if !isReady {
+		p := handler.NewProgressEvent()
+		p.ResourceModel = currentModel
+		p.OperationStatus = handler.InProgress
+		p.CallbackDelaySeconds = 15
+		p.Message = "Pending"
+		p.CallbackContext = map[string]interface{}{
+			"stateName": state,
+		}
+		return p, nil
+	}
+
+	p := handler.NewProgressEvent()
+	p.ResourceModel = currentModel
+	p.OperationStatus = handler.Success
+	p.Message = "Complete"
+	return p, nil
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
 	if err != nil {
 		return handler.ProgressEvent{}, err
+	}
+
+	if _, ok := req.CallbackContext["stateName"]; ok {
+		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
 	}
 
 	projectID := *currentModel.ProjectID.Value()
@@ -65,25 +96,31 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.ID = encoding.NewString(cluster.ID)
 
-	if cluster.StateName == "IDLE" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "Create Cluster Complete",
-			ResourceModel:   currentModel,
-		}, nil
-	}
-
 	return handler.ProgressEvent{
-		OperationStatus: handler.InProgress,
-		Message:         fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
-		ResourceModel:   currentModel,
+		OperationStatus:      handler.InProgress,
+		Message:              fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 65,
+		CallbackContext: map[string]interface{}{
+			"stateName": cluster.StateName,
+		},
 	}, nil
+}
+
+func clusterIsReady(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, error) {
+	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+	if err != nil {
+		if resp.StatusCode == 404 {
+			return "DELETED" == targetState, "DELETED", nil
+		}
+		return false, "ERROR", fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+	}
+	return cluster.StateName == targetState, cluster.StateName, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -94,6 +131,21 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+	}
+
+	if _, ok := req.CallbackContext["stabilize"]; ok {
+		if cluster.StateName != "IDLE" {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.Failed,
+				Message:              cluster.StateName,
+				ResourceModel:        currentModel,
+				CallbackDelaySeconds: 15,
+				CallbackContext: map[string]interface{}{
+					"stabilize": true,
+					"stateName": cluster.StateName,
+				},
+			}, nil
+		}
 	}
 
 	currentModel.ID = encoding.NewString(cluster.ID)
@@ -149,7 +201,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -217,9 +268,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
+	}
+
+	if _, ok := req.CallbackContext["stateName"]; ok {
+		return validateProgress(client, req, currentModel, "DELETED", "DELETING")
 	}
 
 	projectID := *currentModel.ProjectID.Value()
@@ -231,9 +285,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Delete Complete",
-		ResourceModel:   currentModel,
+		OperationStatus:      handler.InProgress,
+		Message:              "Delete Complete",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 65,
+		CallbackContext: map[string]interface{}{
+			"stateName": "DELETING",
+		},
 	}, nil
 
 }

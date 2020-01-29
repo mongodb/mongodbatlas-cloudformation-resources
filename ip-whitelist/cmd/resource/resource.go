@@ -2,15 +2,13 @@ package resource
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
-	"log"
-	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/rs/xid"
 )
 
 // Create handles the Create event from the Cloudformation service.
@@ -28,23 +26,121 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	var whitelist []string
-	whitelistMap(request, func(entry string) {
-		whitelist = append(whitelist, entry)
-	})
+	guid := xid.New()
 
-	id := encodeStateID(map[string]string{
-		"project_id": projectID,
-		"entries":    strings.Join(whitelist, ","),
-	})
-
-	currentModel.Id = encoding.NewString(id)
+	currentModel.Id = encoding.NewString(guid.String())
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
 	}, nil
+}
+
+// Read handles the Read event from the Cloudformation service.
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	projectID := *currentModel.ProjectId.Value()
+
+	entries := []string{}
+	for _, wl := range currentModel.Whitelist {
+		entry := getEntry(wl)
+		entries = append(entries, entry)
+	}
+
+	whitelist, err := getProjectIPWhitelist(projectID, entries, client)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	currentModel.Whitelist = flattenWhitelist(whitelist)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Read Complete",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+// Update handles the Update event from the Cloudformation service.
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	err = deleteEntries(currentModel, client)
+
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         "Update Failed",
+		}, err
+	}
+
+	request := getProjectIPWhitelistRequest(currentModel)
+	projectID := *currentModel.ProjectId.Value()
+
+	_, _, err = client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Update Complete",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+// Delete handles the Delete event from the Cloudformation service.
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	err = deleteEntries(currentModel, client)
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         "Update Failed",
+		}, err
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Delete Complete",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+// List handles the List event from the Cloudformation service.
+// NO-OP
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List Complete",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func getProjectIPWhitelist(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPWhitelist, error) {
+
+	var whitelist []*mongodbatlas.ProjectIPWhitelist
+	for _, entry := range entries {
+		res, _, err := conn.ProjectIPWhitelist.Get(context.Background(), projectID, entry)
+		if err != nil {
+			return nil, fmt.Errorf("error getting project IP whitelist information: %s", err)
+		}
+		whitelist = append(whitelist, res)
+	}
+	return whitelist, nil
 }
 
 func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhitelist {
@@ -70,47 +166,17 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 	return whitelist
 }
 
-func whitelistMap(whitelist []*mongodbatlas.ProjectIPWhitelist, f func(string)) {
-	for _, entry := range whitelist {
-		if entry.CIDRBlock != "" {
-			f(entry.CIDRBlock)
-		} else if entry.IPAddress != "" {
-			f(entry.IPAddress)
-		}
+func getEntry(wl WhitelistDefinition) string {
+	if wl.IpAddress != nil {
+		return *wl.IpAddress.Value()
 	}
-}
-
-func encodeStateID(values map[string]string) string {
-	encode := func(e string) string { return base64.StdEncoding.EncodeToString([]byte(e)) }
-	encodedValues := make([]string, 0)
-
-	for key, value := range values {
-		encodedValues = append(encodedValues, fmt.Sprintf("%s:%s", encode(key), encode(value)))
+	if wl.CidrBlock != nil {
+		return *wl.CidrBlock.Value()
 	}
-	return strings.Join(encodedValues, "\\")
-}
-
-// Read handles the Read event from the Cloudformation service.
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	if wl.AwsSecurityGroup != nil {
+		return *wl.AwsSecurityGroup.Value()
 	}
-
-	ids := decodeStateID(*currentModel.Id.Value())
-
-	whitelist, err := getProjectIPWhitelist(ids, client)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	currentModel.Whitelist = flattenWhitelist(whitelist)
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Read Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return ""
 }
 
 func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistDefinition {
@@ -125,126 +191,28 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 		}
 		results = append(results, r)
 	}
-
 	return results
 }
 
-func decodeStateID(stateID string) map[string]string {
-	decode := func(d string) string {
-		decodedString, err := base64.StdEncoding.DecodeString(d)
-		if err != nil {
-			log.Printf("[WARN] error decoding state ID: %s", err)
+func createEntries(model *Model, client mongodbatlas.Client) error {
+	request := getProjectIPWhitelistRequest(model)
+	projectID := *model.ProjectId.Value()
+
+	_, _, err := client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	return err
+}
+
+func deleteEntries(model *Model, client *mongodbatlas.Client) error {
+	projectID := *model.ProjectId.Value()
+	var err error
+
+	for _, wl := range model.Whitelist {
+		entry := getEntry(wl)
+		_, errDelete := client.ProjectIPWhitelist.Delete(context.Background(), projectID, entry)
+		if errDelete != nil {
+			err = fmt.Errorf("error deleting(%s) %w ", entry, errDelete)
 		}
-		return string(decodedString)
-	}
-	decodedValues := make(map[string]string)
-	encodedValues := strings.Split(stateID, "-")
-
-	for _, value := range encodedValues {
-		keyValue := strings.Split(value, ":")
-		decodedValues[decode(keyValue[0])] = decode(keyValue[1])
-	}
-	return decodedValues
-}
-
-func getProjectIPWhitelist(ids map[string]string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPWhitelist, error) {
-	projectID := ids["project_id"]
-	entries := strings.Split(ids["entries"], ",")
-
-	var whitelist []*mongodbatlas.ProjectIPWhitelist
-	for _, entry := range entries {
-		res, _, err := conn.ProjectIPWhitelist.Get(context.Background(), projectID, entry)
-		if err != nil {
-			return nil, fmt.Errorf("error getting project IP whitelist information: %s", err)
-		}
-		whitelist = append(whitelist, res)
-	}
-	return whitelist, nil
-}
-
-// Update handles the Update event from the Cloudformation service.
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-	if err != nil {
-		return handler.ProgressEvent{}, err
 	}
 
-	ids := decodeStateID(*currentModel.Id.Value())
-
-	whitelist, err := getProjectIPWhitelist(ids, client)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	whitelistMap(whitelist, func(entry string) {
-		_, err = client.ProjectIPWhitelist.Delete(context.Background(), ids["project_id"], entry)
-	})
-	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting project IP whitelist: %s", err)
-	}
-
-	request := getProjectIPWhitelistRequest(currentModel)
-	projectID := *currentModel.ProjectId.Value()
-
-	_, _, err = client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	var withelist []string
-	whitelistMap(request, func(entry string) {
-		withelist = append(withelist, entry)
-	})
-
-	id := encodeStateID(map[string]string{
-		"project_id": projectID,
-		"entries":    strings.Join(withelist, ","),
-	})
-
-	currentModel.Id = encoding.NewString(id)
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Update Complete",
-		ResourceModel:   currentModel,
-	}, nil
-}
-
-// Delete handles the Delete event from the Cloudformation service.
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	ids := decodeStateID(*currentModel.Id.Value())
-
-	whitelist, err := getProjectIPWhitelist(ids, client)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	whitelistMap(whitelist, func(entry string) {
-		_, err = client.ProjectIPWhitelist.Delete(context.Background(), ids["project_id"], entry)
-	})
-	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting project IP whitelist: %s", err)
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Delete Complete",
-		ResourceModel:   currentModel,
-	}, nil
-}
-
-// List handles the List event from the Cloudformation service.
-// NO-OP
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "List Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return err
 }

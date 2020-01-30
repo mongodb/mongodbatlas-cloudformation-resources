@@ -143,18 +143,25 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-	peerID := *currentModel.Id.Value()
+	if _, ok := req.CallbackContext["stateName"]; ok {
+		return validateProgress(client, currentModel, "DELETED")
+	}
 
-	_, err = client.Peers.Delete(context.Background(), projectID, peerID)
+	projectId := *currentModel.ProjectId.Value()
+	peerId := *currentModel.Id.Value()
+	_, err = client.Peers.Delete(context.Background(), projectId, peerId)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting peer with id(project: %s, peer: %s): %s", projectID, peerID, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting peer with id(project: %s, peer: %s): %s", projectId, peerId, err)
 	}
 
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Delete Complete",
-		ResourceModel:   currentModel,
+		OperationStatus:      handler.InProgress,
+		Message:              "Delete Complete",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 10,
+		CallbackContext: map[string]interface{}{
+			"stateName": "DELETING",
+		},
 	}, nil
 }
 
@@ -191,4 +198,39 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModel:   models,
 	}, nil
+}
+
+func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
+	isReady, state, err := networkPeeringIsReady(client, *currentModel.ProjectId.Value(), *currentModel.Id.Value(), targetState)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	if !isReady {
+		p := handler.NewProgressEvent()
+		p.ResourceModel = currentModel
+		p.OperationStatus = handler.InProgress
+		p.CallbackDelaySeconds = 15
+		p.Message = "Pending"
+		p.CallbackContext = map[string]interface{}{
+			"stateName" : state,
+		}
+		return p, nil
+	}
+
+	p := handler.NewProgressEvent()
+	p.ResourceModel = currentModel
+	p.OperationStatus = handler.Success
+	p.Message = "Complete"
+	return p, nil
+}
+
+func networkPeeringIsReady(client *matlasClient.Client, projectId, peerId, targetState string)(bool, string, error){
+	peerResponse, resp, err := client.Peers.Get(context.Background(), projectId, peerId)
+	if err != nil {
+		if resp != nil && resp.StatusCode == 404{
+			return true, "DELETED", nil
+		}
+	}
+	return peerResponse.StatusName == targetState, peerResponse.StatusName, nil
 }

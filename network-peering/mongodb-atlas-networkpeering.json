@@ -71,7 +71,9 @@
         "ContainerId",
         "ApiKeys"],
     "readOnlyProperties": [
-        "/properties/Id"],
+        "/properties/Id",
+        "/properties/StatusName",
+        "/properties/ErrorStateName"],
     "primaryIdentifier": [
         "/properties/Id"
     ],

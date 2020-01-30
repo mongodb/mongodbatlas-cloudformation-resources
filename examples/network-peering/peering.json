@@ -69,5 +69,18 @@
       }
     }
   },
-  "Outputs" : {}
+  "Outputs" : {
+    "ProjectId": {
+      "Description": "Id of the project",
+      "Value" : { "Ref" : "Project" }
+    },
+    "ContainerId": {
+      "Description": "Id of the network container",
+      "Value" : { "Ref" : "NetworkContainer" }
+    },
+    "PeerId": {
+      "Description": "Id of the network peer",
+      "Value" : { "Ref" : "NetworkPeering" }
+    }
+  }
 }

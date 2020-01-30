@@ -10,3 +10,8 @@ bin/
 
 #vendor
 vendor/
+
+create.json
+delete.json
+update.json
+.hypothesis/

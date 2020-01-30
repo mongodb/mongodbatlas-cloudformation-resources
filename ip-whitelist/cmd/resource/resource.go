@@ -18,10 +18,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-	request := getProjectIPWhitelistRequest(currentModel)
-
-	_, _, err = client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	err = createEntries(currentModel, client)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -74,7 +71,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	err = deleteEntries(currentModel, client)
-
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
@@ -82,10 +78,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, err
 	}
 
-	request := getProjectIPWhitelistRequest(currentModel)
-	projectID := *currentModel.ProjectId.Value()
-
-	_, _, err = client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	err = createEntries(currentModel, client)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -108,7 +101,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
-			Message:         "Update Failed",
+			Message:         "Delete Failed",
 		}, err
 	}
 
@@ -156,7 +149,6 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 		if w.IpAddress != nil {
 			wl.IPAddress = *w.IpAddress.Value()
 		}
-
 		if w.AwsSecurityGroup != nil {
 			wl.AwsSecurityGroup = *w.AwsSecurityGroup.Value()
 		}
@@ -194,7 +186,7 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 	return results
 }
 
-func createEntries(model *Model, client mongodbatlas.Client) error {
+func createEntries(model *Model, client *mongodbatlas.Client) error {
 	request := getProjectIPWhitelistRequest(model)
 	projectID := *model.ProjectId.Value()
 

@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"os"
 	"reflect"
 	"testing"
 
@@ -12,9 +13,15 @@ import (
 )
 
 const (
-	publicKey  = "<Your key>"
-	privateKey = "<Your key>"
-	projectID  = "<Your ID>"
+	publicKeyEnv  = "ATLAS_PUBLIC_KEY"
+	privateKeyEnv = "ATLAS_PRIVATE_KEY"
+	projectIDEnv  = "ATLAS_PROJECT_ID"
+)
+
+var (
+	publicKey  = os.Getenv(publicKeyEnv)
+	privateKey = os.Getenv(privateKeyEnv)
+	projectID  = os.Getenv(projectIDEnv)
 )
 
 func new() *Model {

@@ -266,34 +266,25 @@
         "/properties/MongoURIWithOptions",
         "/properties/ID"
     ],
+    "writeOnlyProperties": [
+        "/properties/ApiKeys",
+        "/properties/ProjectID"
+    ],
     "primaryIdentifier": [
         "/properties/ID"
     ],
     "handlers": {
         "create": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "read": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "update": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         },
         "delete": {
-            "permissions": [
-                ""
-            ]
-        },
-        "list": {
-            "permissions": [
-                ""
-            ]
+            "permissions": []
         }
     }
 }

@@ -17,6 +17,7 @@ import (
 func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
 	isReady, state, err := clusterIsReady(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
 	if err != nil {
+		log.Printf("Error in clusterIsReady [%s]", err)
 		return handler.ProgressEvent{}, err
 	}
 
@@ -26,7 +27,7 @@ func validateProgress(client *mongodbatlas.Client, req handler.Request, currentM
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 15
+		p.CallbackDelaySeconds = 60
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
 			"stateName": state,
@@ -95,6 +96,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Printf("Cluster %+v", cluster)
 
 	currentModel.ID = encoding.NewString(cluster.ID)
+	currentModel.StateName = encoding.NewString(cluster.StateName)
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -109,8 +111,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func clusterIsReady(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, error) {
 	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+	log.Printf("clusterIsReady - cluster=%+v, resp=%+v, err=%s", cluster, resp, err)
 	if err != nil {
-		if resp.StatusCode == 404 {
+		if resp != nil && resp.StatusCode == 404 {
 			return "DELETED" == targetState, "DELETED", nil
 		}
 		return false, "ERROR", fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
@@ -131,21 +134,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
-	}
-
-	if _, ok := req.CallbackContext["stabilize"]; ok {
-		if cluster.StateName != "IDLE" {
-			return handler.ProgressEvent{
-				OperationStatus:      handler.Failed,
-				Message:              cluster.StateName,
-				ResourceModel:        currentModel,
-				CallbackDelaySeconds: 15,
-				CallbackContext: map[string]interface{}{
-					"stabilize": true,
-					"stateName": cluster.StateName,
-				},
-			}, nil
-		}
 	}
 
 	currentModel.ID = encoding.NewString(cluster.ID)
@@ -205,6 +193,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
+	if _, ok := req.CallbackContext["stateName"]; ok {
+		return validateProgress(client, req, currentModel, "IDLE", "UPDATING")
+	}
+
 	projectID := *currentModel.ProjectID.Value()
 	clusterName := *currentModel.Name.Value()
 
@@ -223,9 +215,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	clusterRequest := &mongodbatlas.Cluster{
-		Name:                     *currentModel.Name.Value(),
-		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider.Value(),
-		ClusterType:              *currentModel.ClusterType.Value(),
+		Name:                     cast.ToString(currentModel.Name.Value()),
+		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider.Value()),
+		ClusterType:              cast.ToString(currentModel.ClusterType.Value()),
 		BackupEnabled:            currentModel.BackupEnabled.Value(),
 		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
@@ -236,6 +228,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ReplicationFactor:        currentModel.ReplicationFactor.Value(),
 		NumShards:                currentModel.NumShards.Value(),
 	}
+
+	log.Printf("validate ClustrerRequest, %+v", clusterRequest)
 
 	if currentModel.MongoDBMajorVersion.Value() != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion.Value())
@@ -250,18 +244,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.ID = encoding.NewString(cluster.ID)
 
-	if cluster.StateName == "IDLE" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "Update Cluster Complete",
-			ResourceModel:   currentModel,
-		}, nil
-	}
-
 	return handler.ProgressEvent{
-		OperationStatus: handler.InProgress,
-		Message:         fmt.Sprintf("Update Cluster `%s`", cluster.SrvAddress),
-		ResourceModel:   currentModel,
+		OperationStatus:      handler.InProgress,
+		Message:              fmt.Sprintf("Update Cluster `%s`", cluster.StateName),
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 65,
+		CallbackContext: map[string]interface{}{
+			"stateName": cluster.StateName,
+		},
 	}, nil
 }
 

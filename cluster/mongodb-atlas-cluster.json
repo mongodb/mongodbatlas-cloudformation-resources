@@ -52,11 +52,11 @@
                 "NumShards": {
                     "type": "integer"
                 },
-                "RegionsConfig":{
-                   "type":"array",
-                   "items": {
-                    "$ref": "#/definitions/RegionsConfig"
-                   }
+                "RegionsConfig": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RegionsConfig"
+                    }
                 },
                 "ZoneName": {
                     "type": "string"
@@ -136,12 +136,12 @@
             ]
         },
         "ProjectID": {
-            "description":"Unique identifier of the project the cluster belongs to.",
+            "description": "Unique identifier of the project the cluster belongs to.",
             "type": "string"
         },
         "ID": {
             "description": "Unique identifier of the cluster.",
-            "type":"string"
+            "type": "string"
         },
         "Labels": {
             "description": "Array containing key-value pairs that tag and categorize the cluster.",
@@ -182,7 +182,6 @@
         "MongoURIWithOptions": {
             "description": "connection string for connecting to the Atlas cluster. Includes the replicaSet, ssl, and authSource query parameters in the connection string with values appropriate for the cluster.",
             "type": "string"
-
         },
         "Name": {
             "description": "Set the Encryption at Rest parameter.",

@@ -1,0 +1,46 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "ProjectName" : {
+      "Type" : "String"
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "Project": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": { "Ref" : "ProjectName" },
+        "Orgid": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    },
+    "NetworkContainer": {
+      "Type": "MongoDB::Atlas::NetworkContainer",
+      "Properties": {
+        "AtlasCidrBlock": "10.8.2.0/24",
+        "RegionName":  "US_EAST_1",
+        "ProviderName": "AWS",
+        "ProjectId": { "Ref" : "Project" },
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {
+    "ProjectId": {
+      "Description": "Id of the project",
+      "Value" : { "Ref" : "Project" }
+    },
+    "ContainerId": {
+      "Description": "Id of the network container",
+      "Value" : { "Ref" : "NetworkContainer" }
+    }
+  }
+}

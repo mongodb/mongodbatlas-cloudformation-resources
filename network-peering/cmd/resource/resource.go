@@ -43,7 +43,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		providerName = &defaultProviderName
 	}
 	peerRequest.AccepterRegionName = *region
-	peerRequest.AWSAccountId = *awsAccountId
+	peerRequest.AWSAccountID = *awsAccountId
 	peerRequest.RouteTableCIDRBlock = *rtCIDR
 	peerRequest.VpcID = *vpcID
 	peerRequest.ProviderName = *providerName
@@ -79,7 +79,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	currentModel.AccepterRegionName = encoding.NewString(peerResponse.AccepterRegionName)
-	currentModel.AwsAccountId = encoding.NewString(peerResponse.AWSAccountId)
+	currentModel.AwsAccountId = encoding.NewString(peerResponse.AWSAccountID)
 	currentModel.RouteTableCidrBlock = encoding.NewString(peerResponse.RouteTableCIDRBlock)
 	currentModel.VpcId = encoding.NewString(peerResponse.VpcID)
 	currentModel.ConnectionId = encoding.NewString(peerResponse.ConnectionID)
@@ -111,7 +111,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	accountID := currentModel.AwsAccountId.Value()
 	if accountID != nil {
-		peerRequest.AWSAccountId = *accountID
+		peerRequest.AWSAccountID = *accountID
 	}
 	peerRequest.ProviderName = "AWS"
 	rtTableBlock := currentModel.RouteTableCidrBlock.Value()
@@ -182,7 +182,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for _, peer := range peerResponse {
 		var model Model
 		model.AccepterRegionName = encoding.NewString(peer.AccepterRegionName)
-		model.AwsAccountId = encoding.NewString(peer.AWSAccountId)
+		model.AwsAccountId = encoding.NewString(peer.AWSAccountID)
 		model.RouteTableCidrBlock = encoding.NewString(peer.RouteTableCIDRBlock)
 		model.VpcId = encoding.NewString(peer.VpcID)
 		model.ConnectionId = encoding.NewString(peer.ConnectionID)

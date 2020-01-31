@@ -9,6 +9,10 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
+const (
+	automated = "automated"
+)
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
@@ -24,9 +28,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:   currentModel,
 		}, nil
 	}
+	requestParameters := &matlasClient.SnapshotReqPathParameters{}
+	snapshotRequest := &matlasClient.CloudProviderSnapshotRestoreJob{}
 	targetClusterName := currentModel.TargetClusterName.Value()
 	targetProjectId := currentModel.TargetProjectId.Value()
-	if *deliveryType == "automated" {
+	if *deliveryType == automated {
 		if targetClusterName == nil || *targetClusterName == "" {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
@@ -41,21 +47,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				ResourceModel:   currentModel,
 			}, nil
 		}
-	}
-	requestParameters := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     *currentModel.ProjectId.Value(),
-		ClusterName: *currentModel.ClusterName.Value(),
-	}
-	snapshotRequest := &matlasClient.CloudProviderSnapshotRestoreJob{
-		SnapshotID:   *currentModel.SnapshotId.Value(),
-		DeliveryType: *deliveryType,
-	}
-	if *deliveryType == "automated" {
 		snapshotRequest.TargetClusterName = *targetClusterName
 		snapshotRequest.TargetGroupID = *targetProjectId
 	}
+	requestParameters.GroupID = *currentModel.ProjectId.Value()
+	requestParameters.ClusterName = *currentModel.ClusterName.Value()
+	snapshotRequest.SnapshotID = *currentModel.SnapshotId.Value()
+	snapshotRequest.DeliveryType = *deliveryType
 
 	restoreJob, _, err := client.CloudProviderSnapshotRestoreJobs.Create(context.Background(), requestParameters, snapshotRequest)
+
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cloud provider snapshot restore job: %s", err)
 	}

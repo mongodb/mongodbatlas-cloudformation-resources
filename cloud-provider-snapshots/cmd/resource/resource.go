@@ -7,7 +7,6 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"log"
 )
 
 // Create handles the Create event from the Cloudformation service.
@@ -20,24 +19,21 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = encoding.NewString(req.CallbackContext["snapshot_id"].(string))
 		return validateProgress(client, currentModel, "completed")
 	}
-	log.Printf("[DEBUG] create cloud provider snapshot: currentmodel : %v", currentModel)
 
 	requestParameters := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     *currentModel.ProjectId.Value(),
 		ClusterName: *currentModel.ClusterName.Value(),
 	}
-	log.Printf("[DEBUG] create cloud provider snapshot: requestParameters : %v", requestParameters)
 	snapshotRequest := &matlasClient.CloudProviderSnapshot{
 		RetentionInDays: int(*currentModel.RetentionInDays.Value()),
 		Description:     *currentModel.Description.Value(),
 	}
-	log.Printf("[DEBUG] create cloud provider snapshot: snapshotRequest : %v", snapshotRequest)
+
 	snapshot, _, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cloud provider snapshot: %s", err)
 	}
 
-	log.Printf("[DEBUG] create cloud provider snapshot: %v", snapshot)
 	currentModel.Id = encoding.NewString(snapshot.ID)
 
 	return handler.ProgressEvent{
@@ -168,7 +164,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	log.Printf("[DEBUG] create cloud provider snapshot: currentModel progress : %v", currentModel)
 	isReady, state, err := snapshotIsReady(client, *currentModel.ProjectId.Value(), *currentModel.Id.Value(), *currentModel.ClusterName.Value(), targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -178,7 +173,7 @@ func validateProgress(client *matlasClient.Client, currentModel *Model, targetSt
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 15
+		p.CallbackDelaySeconds = 35
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
 			"status":      state,
@@ -202,9 +197,6 @@ func snapshotIsReady(client *matlasClient.Client, projectId, snapshotId, cluster
 	}
 
 	snapshot, resp, err := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
-	log.Printf("[DEBUG] progress cloud provider snapshot: snapshot : %v", snapshot)
-	log.Printf("[DEBUG] progress cloud provider snapshot: resp : %v", resp)
-	log.Printf("[DEBUG] progress cloud provider snapshot: err : %v", err)
 	if err != nil {
 		if snapshot == nil && resp == nil {
 			return false, "", err

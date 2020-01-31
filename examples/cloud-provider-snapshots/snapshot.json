@@ -20,7 +20,7 @@
       "Properties": {
         "ProjectId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },
-        "Description": "A testing for creating cloud provider snapshot",
+        "Description": "A testing for creating cloud provider snapshots",
         "RetentionInDays" : 3 ,
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",

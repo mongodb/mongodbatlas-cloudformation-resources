@@ -7,5 +7,6 @@ require (
 	github.com/avast/retry-go v2.4.2+incompatible // indirect
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v0.1.3-0.20200106150448-15659dcc4a8f
 	github.com/mongodb/go-client-mongodb-atlas v0.1.3
+	github.com/rs/xid v1.2.1
 	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect
 )

@@ -46,7 +46,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{
-			"status": snapshot.Status,
+			"status":      snapshot.Status,
 			"snapshot_id": snapshot.ID,
 		},
 	}, nil

@@ -29,5 +29,10 @@
       }
     }
   },
-  "Outputs" : {}
+  "Outputs" : {
+    "SnapshotId": {
+      "Description": "Id of the cloud provider snapshots",
+      "Value" : { "Ref" : "CloudProviderSnapshots" }
+    }
+  }
 }

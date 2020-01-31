@@ -17,15 +17,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	deliveryType := currentModel.DeliveryType.Value()
-	targetClusterName := currentModel.TargetClusterName.Value()
-	targetProjectId := currentModel.TargetProjectId.Value()
 	if deliveryType == nil || (*deliveryType != "automated" && *deliveryType != "download") {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
-			Message:         "error creating cloud provider snapshot restore job: you need to implement only one: `automated` and `download` delivery types",
+			Message:         "error creating cloud provider snapshot restore job: you need to implement only one, `automated` and `download` delivery types",
 			ResourceModel:   currentModel,
 		}, nil
 	}
+	targetClusterName := currentModel.TargetClusterName.Value()
+	targetProjectId := currentModel.TargetProjectId.Value()
 	if *deliveryType == "automated" {
 		if targetClusterName == nil || *targetClusterName == "" {
 			return handler.ProgressEvent{

@@ -74,7 +74,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Status = encoding.NewString(snapshot.Status)
 	currentModel.Type = encoding.NewString(snapshot.Type)
 	currentModel.CreatedAt = encoding.NewString(snapshot.CreatedAt)
-	currentModel.ExpiresAt = encoding.NewString(snapshot.ExpiresAt)
 	currentModel.MasterKeyUuid = encoding.NewString(snapshot.MasterKeyUUID)
 	currentModel.MongoVersion = encoding.NewString(snapshot.MongodVersion)
 	currentModel.StorageSizeBytes = encoding.NewInt(int64(snapshot.StorageSizeBytes))
@@ -88,10 +87,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// operation not available :(
+	// NO-OP
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
+		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -149,7 +148,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.Status = encoding.NewString(snapshot.Status)
 		model.Type = encoding.NewString(snapshot.Type)
 		model.CreatedAt = encoding.NewString(snapshot.CreatedAt)
-		model.ExpiresAt = encoding.NewString(snapshot.ExpiresAt)
 		model.MasterKeyUuid = encoding.NewString(snapshot.MasterKeyUUID)
 		model.MongoVersion = encoding.NewString(snapshot.MongodVersion)
 		model.StorageSizeBytes = encoding.NewInt(int64(snapshot.StorageSizeBytes))

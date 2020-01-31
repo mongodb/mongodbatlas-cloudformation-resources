@@ -18,7 +18,6 @@ type Model struct {
 	Description      *encoding.String `json:"Description,omitempty"`
 	RetentionInDays  *encoding.Int    `json:"RetentionInDays,omitempty"`
 	CreatedAt        *encoding.String `json:"CreatedAt,omitempty"`
-	ExpiresAt        *encoding.String `json:"ExpiresAt,omitempty"`
 	MasterKeyUuid    *encoding.String `json:"MasterKeyUuid,omitempty"`
 	MongoVersion     *encoding.String `json:"MongoVersion,omitempty"`
 	SnapshotType     *encoding.String `json:"SnapshotType,omitempty"`

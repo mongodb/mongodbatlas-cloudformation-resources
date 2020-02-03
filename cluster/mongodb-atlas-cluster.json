@@ -168,7 +168,7 @@
             "type": "string"
         },
         "MongoDBMajorVersion": {
-            "description": "Version of the cluster to deploy.",
+            "description": "Major version of the cluster to deploy.",
             "type": "string"
         },
         "MongoURI": {
@@ -184,11 +184,11 @@
             "type": "string"
         },
         "Name": {
-            "description": "Set the Encryption at Rest parameter.",
+            "description": "Name of the cluster. Once the cluster is created, its name cannot be changed.",
             "type": "string"
         },
         "NumShards": {
-            "description": "Version of the cluster to deploy.",
+            "description": "Positive integer that specifies the number of shards to deploy for a sharded cluster.",
             "type": "integer"
         },
         "Paused": {
@@ -200,7 +200,7 @@
             "type": "boolean"
         },
         "ProviderBackupEnabled": {
-            "description": "Flag that indicates if the cluster uses Cloud Provider Snapshots for backups.",
+            "description": "Applicable only for M10+ clusters. Set to true to enable Atlas Cloud Provider Snapshots backups for the cluster. Set to false to disable Cloud Provider Snapshots backups for the cluster. You cannot enable Cloud Provider Snapshots if you have an existing cluster in the project with continuous backups enabled. Note that you must set this value to true for NVMe clusters. The default value is false.",
             "type": "boolean"
         },
         "ProviderSettings": {

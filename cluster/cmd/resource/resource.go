@@ -53,11 +53,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType.Value() != nil {
-			return handler.ProgressEvent{}, errors.New("ClusterType should be set when `ReplicationSpecs` is set")
+			return handler.ProgressEvent{}, errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 		}
 
 		if currentModel.NumShards.Value() != nil {
-			return handler.ProgressEvent{}, errors.New("NumShards should be set when `ReplicationSpecs` is set")
+			return handler.ProgressEvent{}, errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
 		}
 	}
 
@@ -195,11 +195,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType.Value() != nil {
-			return handler.ProgressEvent{}, errors.New("ClusterType should be set when `ReplicationSpecs` is set")
+			return handler.ProgressEvent{}, errors.New("error updating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 		}
 
 		if currentModel.NumShards.Value() != nil {
-			return handler.ProgressEvent{}, errors.New("NumShards should be set when `ReplicationSpecs` is set")
+			return handler.ProgressEvent{}, errors.New("error updating cluster: NumShards should be set when `ReplicationSpecs` is set")
 		}
 	}
 

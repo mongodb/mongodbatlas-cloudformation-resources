@@ -2,7 +2,10 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
     "Parameters": {
-        "ProjectName": {
+        "ProjectID": {
+            "Type": "String"
+        },
+        "ClusterName": {
             "Type": "String"
         }
     },
@@ -11,8 +14,12 @@
         "Cluster": {
             "Type": "MongoDB::Atlas::Cluster",
             "Properties": {
-                "ProjectId": "5cf5a45a9ccf6400e60981b6",
-                "Name": "test-cluster-AWS-M10",
+                "ProjectId": {
+                    "Ref": "ProjectID"
+                },
+                "Name": {
+                    "Ref": "ClusterName"
+                },
                 "NumShards": 1,
                 "ProviderName": "AWS",
                 "ReplicationFactor": 3,

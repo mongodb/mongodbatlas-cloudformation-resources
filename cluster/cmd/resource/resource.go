@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
@@ -17,11 +16,8 @@ import (
 func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
 	isReady, state, err := clusterIsReady(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
 	if err != nil {
-		log.Printf("Error in clusterIsReady [%s]", err)
 		return handler.ProgressEvent{}, err
 	}
-
-	log.Printf("STATE NAME [%s]", state)
 
 	if !isReady {
 		p := handler.NewProgressEvent()
@@ -93,8 +89,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
 	}
 
-	log.Printf("Cluster %+v", cluster)
-
 	currentModel.ID = encoding.NewString(cluster.ID)
 	currentModel.StateName = encoding.NewString(cluster.StateName)
 
@@ -111,7 +105,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func clusterIsReady(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, error) {
 	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
-	log.Printf("clusterIsReady - cluster=%+v, resp=%+v, err=%s", cluster, resp, err)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			return "DELETED" == targetState, "DELETED", nil
@@ -229,8 +222,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		NumShards:                currentModel.NumShards.Value(),
 	}
 
-	log.Printf("validate ClustrerRequest, %+v", clusterRequest)
-
 	if currentModel.MongoDBMajorVersion.Value() != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion.Value())
 	}
@@ -239,8 +230,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
 	}
-
-	log.Printf("[DEBUG] Cluster %+v", cluster)
 
 	currentModel.ID = encoding.NewString(cluster.ID)
 

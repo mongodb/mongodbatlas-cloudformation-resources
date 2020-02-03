@@ -13,31 +13,6 @@ import (
 	"github.com/spf13/cast"
 )
 
-func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
-	isReady, state, err := clusterIsReady(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	if !isReady {
-		p := handler.NewProgressEvent()
-		p.ResourceModel = currentModel
-		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 60
-		p.Message = "Pending"
-		p.CallbackContext = map[string]interface{}{
-			"stateName": state,
-		}
-		return p, nil
-	}
-
-	p := handler.NewProgressEvent()
-	p.ResourceModel = currentModel
-	p.OperationStatus = handler.Success
-	p.Message = "Complete"
-	return p, nil
-}
-
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
@@ -272,7 +247,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"stateName": "DELETING",
 		},
 	}, nil
-
 }
 
 // List handles the List event from the Cloudformation service.
@@ -381,4 +355,29 @@ func flattenRegionsConfig(regionsConfig map[string]mongodbatlas.RegionsConfig) [
 		regions = append(regions, region)
 	}
 	return regions
+}
+
+func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
+	isReady, state, err := clusterIsReady(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+	if !isReady {
+		p := handler.NewProgressEvent()
+		p.ResourceModel = currentModel
+		p.OperationStatus = handler.InProgress
+		p.CallbackDelaySeconds = 60
+		p.Message = "Pending"
+		p.CallbackContext = map[string]interface{}{
+			"stateName": state,
+		}
+		return p, nil
+	}
+
+	p := handler.NewProgressEvent()
+	p.ResourceModel = currentModel
+	p.OperationStatus = handler.Success
+	p.Message = "Complete"
+	return p, nil
 }

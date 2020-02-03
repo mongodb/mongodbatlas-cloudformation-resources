@@ -1,0 +1,44 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a cloud provider snapshot on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "ClusterName" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "Project": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": { "Ref" : "ProjectName" },
+        "Orgid": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    },
+    "CloudProviderSnapshots": {
+      "Type": "MongoDB::Atlas::CloudProviderSnapshots",
+      "Properties": {
+        "ProjectId": { "Ref" : "Project" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "Description": "A testing for creating cloud provider snapshots",
+        "RetentionInDays" : 3 ,
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {
+    "SnapshotId": {
+      "Description": "Id of the cloud provider snapshots",
+      "Value" : { "Ref" : "CloudProviderSnapshots" }
+    }
+  }
+}

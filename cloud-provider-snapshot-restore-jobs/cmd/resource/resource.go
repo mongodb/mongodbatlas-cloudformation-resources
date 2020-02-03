@@ -11,6 +11,7 @@ import (
 
 const (
 	automated = "automated"
+	download = "download"
 )
 
 // Create handles the Create event from the Cloudformation service.
@@ -21,10 +22,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	deliveryType := currentModel.DeliveryType.Value()
-	if deliveryType == nil || (*deliveryType != "automated" && *deliveryType != "download") {
+	if deliveryType == nil || (*deliveryType != automated && *deliveryType != download) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
-			Message:         "error creating cloud provider snapshot restore job: you need to implement only one, `automated` and `download` delivery types",
+			Message:         "error creating cloud provider snapshot restore job: you must specify either `automated` or `download` delivery types",
 			ResourceModel:   currentModel,
 		}, nil
 	}
@@ -113,7 +114,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// operation not available :(
+	//NO-OP
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update complete",

@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::CloudProviderSnapshotRestoreJobs",
-    "description": "This resource allows to create, cancel, get one or list of cloud provider snapshot restore jobs.",
+    "description": "This resource allows you to create, cancel, get one or list all cloud provider snapshot restore jobs.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
         "apiKeyDefinition": {

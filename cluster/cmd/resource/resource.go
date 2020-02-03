@@ -48,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
 		AutoScaling:              autoScaling,
-		BiConnector:              expandBiConnector(currentModel.BiConenctor),
+		BiConnector:              expandBiConnector(currentModel.BiConnector),
 		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
 		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
 		ReplicationFactor:        currentModel.ReplicationFactor.Value(),
@@ -128,7 +128,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.SrvAddress = encoding.NewString(cluster.SrvAddress)
 	currentModel.StateName = encoding.NewString(cluster.StateName)
 
-	currentModel.BiConenctor = BiConenctor{
+	currentModel.BiConnector = BiConnector{
 		ReadPreference: encoding.NewString(cluster.BiConnector.ReadPreference),
 		Enabled:        encoding.NewBool(*cluster.BiConnector.Enabled),
 	}
@@ -190,7 +190,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
 		AutoScaling:              autoScaling,
-		BiConnector:              expandBiConnector(currentModel.BiConenctor),
+		BiConnector:              expandBiConnector(currentModel.BiConnector),
 		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
 		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
 		ReplicationFactor:        currentModel.ReplicationFactor.Value(),
@@ -272,7 +272,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("Not implemented: List")
 }
 
-func expandBiConnector(biConnector BiConenctor) mongodbatlas.BiConnector {
+func expandBiConnector(biConnector BiConnector) mongodbatlas.BiConnector {
 	return mongodbatlas.BiConnector{
 		Enabled:        biConnector.Enabled.Value(),
 		ReadPreference: cast.ToString(biConnector.ReadPreference.Value()),

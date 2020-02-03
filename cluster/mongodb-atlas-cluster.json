@@ -105,7 +105,7 @@
             "description": "Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.",
             "type": "boolean"
         },
-        "BiConenctor": {
+        "BiConnector": {
             "type": "object",
             "properties": {
                 "ReadPreference": {

@@ -78,17 +78,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func clusterIsReady(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, error) {
-	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
-	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			return "DELETED" == targetState, "DELETED", nil
-		}
-		return false, "ERROR", fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
-	}
-	return cluster.StateName == targetState, cluster.StateName, nil
-}
-
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
@@ -249,27 +238,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// List handles the List event from the Cloudformation service.
+// List NOOP
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Add your code here:
-	// * Make API calls (use req.Session)
-	// * Mutate the model
-	// * Check/set any callback context (req.CallbackContext / response.CallbackContext)
-
-	/*
-	   // Construct a new handler.ProgressEvent and return it
-	   response := handler.ProgressEvent{
-	       OperationStatus: handler.Success,
-	       Message: "List complete",
-	       ResourceModel: currentModel,
-	   }
-
-	   return response, nil
-	*/
-
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List Complete",
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 func expandBiConnector(biConnector BiConnector) mongodbatlas.BiConnector {
@@ -358,7 +333,7 @@ func flattenRegionsConfig(regionsConfig map[string]mongodbatlas.RegionsConfig) [
 }
 
 func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
-	isReady, state, err := clusterIsReady(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
+	isReady, state, err := isClusterInTargetState(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -380,4 +355,15 @@ func validateProgress(client *mongodbatlas.Client, req handler.Request, currentM
 	p.OperationStatus = handler.Success
 	p.Message = "Complete"
 	return p, nil
+}
+
+func isClusterInTargetState(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, error) {
+	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+	if err != nil {
+		if resp != nil && resp.StatusCode == 404 {
+			return "DELETED" == targetState, "DELETED", nil
+		}
+		return false, "ERROR", fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+	}
+	return cluster.StateName == targetState, cluster.StateName, nil
 }

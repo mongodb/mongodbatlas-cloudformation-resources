@@ -1,0 +1,57 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "ClusterName" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "CloudProviderSnapshots": {
+      "Type": "MongoDB::Atlas::CloudProviderSnapshots",
+      "Properties": {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "Description": "A testing for creating cloud provider snapshot 2",
+        "RetentionInDays" : 3 ,
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    },
+    "CloudProviderSnapshotRestoreJob": {
+      "Type": "MongoDB::Atlas::CloudProviderSnapshotRestoreJobs",
+      "Properties": {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "SnapshotId" : { "Ref" : "CloudProviderSnapshots" },
+        "DeliveryType": "download",
+        "TargetClusterName" : "",
+        "TargetProjectId" : "",
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {
+    "SnappshotId": {
+      "Description": "Id of the cloud provider snapshot",
+      "Value" : { "Ref" : "CloudProviderSnapshots" }
+    },
+    "RestoreJobId": {
+      "Description": "Id of the cloud provider snapshot restore job",
+      "Value" : { "Ref" : "CloudProviderSnapshotRestoreJob" }
+    }
+  }
+}

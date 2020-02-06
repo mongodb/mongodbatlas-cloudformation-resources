@@ -13,10 +13,10 @@ Next steps:
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
 ##Attributes
-`ProjectId` (required) : The unique identifier of the project for the Atlas cluster.<br>
-`ClusterName` (required) : The name of the Atlas cluster that contains the snapshots you want to retrieve.<br>
+`ProjectId` *(required)* : The unique identifier of the project for the Atlas cluster.<br>
+`ClusterName` *(required)* : The name of the Atlas cluster that contains the snapshots you want to retrieve.<br>
 `Id` : Unique identifier of the snapshot.<br>
-`Description` (required) : Description of the on-demand snapshot.<br>
+`Description` *(required)* : Description of the on-demand snapshot.<br>
 `RetentionInDays` : The number of days that Atlas should retain the on-demand snapshot. <br>
 `CreatedAt` : UTC ISO 8601, formatted point in time when Atlas took the snapshot.<br>
 `MasterKeyUuid` : Unique ID of the AWS KMS Customer Master Key used to encrypt the snapshot.<br>
@@ -25,4 +25,4 @@ Please don't modify files `model.go` and `main.go`, as they will be automaticall
 `Status` : Current status of the snapshot.<br>
 `StorageSizeBytes` : Specifies the size of the snapshot in bytes.<br>
 `Type` : Specifies the size of the snapshot in bytes.<br>
-`ApiKeys` (required) : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>

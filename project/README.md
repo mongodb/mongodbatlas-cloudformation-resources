@@ -11,3 +11,11 @@ Next steps:
 3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
+
+##Attributes
+`Name` *(required)* : Name of the project to create.<br>
+`OrgId` *(required)* : Unique identifier of the organization within which to create the project.<br>
+`Id` : The unique identifier of the project.<br>
+`Created` : The ISO-8601-formatted timestamp of when Atlas created the project.<br>
+`ClusterCount` : The number of Atlas clusters deployed in the project.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>

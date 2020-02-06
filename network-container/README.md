@@ -11,3 +11,13 @@ Next steps:
 3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
+
+##Attributes
+`ProjectId` *(required)* : The unique identifier of the project.<br>
+`Id` : Unique identifier of the Network Peer.<br>
+`RegionName` *(optional)* : Name of region<br>
+`Provisioned` : Flag that indicates if the project has clusters deployed in the Network Peering container.<br>
+`ProviderName` *(optional)* : The name of the provider.<br>
+`VpcId` : Unique identifier of the peer VPC.<br>
+`AtlasCidrBlock` *(required)* : CIDR block that Atlas uses for your clusters.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>

@@ -89,7 +89,7 @@
             "type": "string"
         },
         "PointInTimeUtcSeconds": {
-            "description": "",
+            "description": "If you performed a Point-in-Time restores at a time specified by a Unix time in seconds since epoch, pointInTimeUTCSeconds indicates the Unix time used.",
             "type": "integer"
         },
         "TargetProjectId": {

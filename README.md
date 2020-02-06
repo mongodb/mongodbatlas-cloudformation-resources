@@ -52,7 +52,7 @@ To create a stack of a resource provider
 ```
 $ aws cloudformation create-stack --stack-name myTestProject --template-body file://../examples/project/project.json --parameters ParameterKey=Name,ParameterValue=test-project
 ```
-If create is successful, it should return a stack id
+If errors are not shown, it should return a stack id
 
 To verify if it's working you can check on [AWS Cloudformation](https://console.aws.amazon.com/cloudformation)
 
@@ -60,21 +60,13 @@ To verify if it's working you can check on [AWS Cloudformation](https://console.
 
 In order to test a provider resource, there two ways to do that.
 
-1. Using AWS website
+1. Using AWS CloudFormation website
 
    After creating or updating or deleting a stack of a provider resource, you need to check on [AWS Cloudformation](https://console.aws.amazon.com/cloudformation) for events which shows a status of a resource provider.
    
-   To see logs, if create is successful automatically creates a log for [CloudWatch](https://console.aws.amazon.com/cloudwatch) in `Log groups`.
+   To see logs, after uploading a stack, it creates automatically a log for [CloudWatch](https://console.aws.amazon.com/cloudwatch) in `Log groups`.
    
    To print a log you need to add it in code `log.Print("")`.
     
-   **Advantages:**
-   
-   Making a good example with various resources, it can create all of it with one command.
-   
-   **Disadvantages:** 
-   
-   You cannot test locally and it takes more time for results.
-   
-2. Using AWS SAM for local (WIP)
+2. Using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for local (WIP)
 

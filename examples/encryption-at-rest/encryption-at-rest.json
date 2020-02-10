@@ -61,11 +61,11 @@
     },
     "Outputs" : {
       "ProjectId" : {
-        "Description:" : "Id of the project",
+        "Description": "Id of the project",
         "Value" : { "Ref" : "Project" }
       },
       "EncryptionId" : {
-        "Description:" : "Id of the encryption at rest",
+        "Description": "Id of the encryption at rest",
         "Value" : { "Ref" : "EncryptionAtRest" }
       }
     }

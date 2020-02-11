@@ -3,8 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"log"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
@@ -18,8 +16,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-
 	encryptionAtRest := &mongodbatlas.EncryptionAtRest{
 		AwsKms: mongodbatlas.AwsKms{
 			Enabled:             currentModel.AwsKms.Enabled.Value(),
@@ -31,10 +27,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		GroupID: *currentModel.ProjectId.Value(),
 	}
 
-	log.Printf("Arguments: Project ID: %s, Request %#+v", projectID, encryptionAtRest)
-
 	_, _, err = client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest)
-
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating encryption at rest: %s", err)
 	}
@@ -76,7 +69,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// no-op
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Complete",

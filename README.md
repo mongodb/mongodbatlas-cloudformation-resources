@@ -60,7 +60,7 @@ To verify if it's working you can check on [AWS Cloudformation](https://console.
 
 In order to test a provider resource, there are three ways to do that.
 
-1. Using AWS CloudFormation website
+1. ### Using AWS CloudFormation website
 
    After creating or updating or deleting a stack of a provider resource in AWS Cloudformation website, you need to check on [AWS Cloudformation](https://console.aws.amazon.com/cloudformation) for events which shows a status of a resource provider.
    
@@ -68,7 +68,7 @@ In order to test a provider resource, there are three ways to do that.
    
    To print a log you need to add it in code `log.Printf("")`.
    
-2.  Using AWS CLI Cloudformation
+2.  ### Using AWS CLI Cloudformation
     
     After creating or updating or deleting a stack of a provider resource with AWS CLI, you can use commands to see more info like events, describe stacks and more, [see cloudformation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html).
     
@@ -77,5 +77,9 @@ In order to test a provider resource, there are three ways to do that.
     To retrieve logs, you need the name of the `log group` and in some situations you need the name of the `log stream`, you can see [here](https://aws.amazon.com/cloudwatch/) in `Log groups`, then use commands of logs, see [logs commads](https://docs.aws.amazon.com/cli/latest/reference/logs/index.html)
 
     
-3. Using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for local (WIP)
+3.  ### Contract test
+
+    This example was create using Cloudformation's best practices. Therefore, it will pass all of the Cloudformation CLI's Contract test.
+    To run the contrast test, follow the directions the
+    [documentation.](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-test.html)
 

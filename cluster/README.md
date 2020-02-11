@@ -12,7 +12,7 @@ Next steps:
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
-##Attributes
+## Attributes
 `AutoScaling` *(optional)* : Configure your cluster to automatically scale its storage and cluster tier. For<br>
 `BackupEnabled` *(optional)* : Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.<br>
 `BiConnector` *(optional)* : Specifies BI Connector for Atlas configuration on this cluster.<br>

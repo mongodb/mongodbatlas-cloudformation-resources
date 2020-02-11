@@ -12,7 +12,7 @@ Next steps:
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
-##Attributes
+## Attributes
 
 `ProjectId` *(required)* : The unique identifier of the project for the Atlas cluster.<br>
 `ClusterName` *(required)* : The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.<br>

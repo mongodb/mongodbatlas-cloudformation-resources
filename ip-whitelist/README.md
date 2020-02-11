@@ -12,7 +12,7 @@ Next steps:
 
 Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
 
-##Attributes
+## Attributes
 `ProjectId` *(required)* : The unique identifier for the project to which you want to add one or more whitelist entries.<br>
 `Id` : The unique identifier for the Project API Whitelist rules.<br>
 `Whitelist.Comment` *(optional)* : Comment associated with the whitelist entry.<br>

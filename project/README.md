@@ -12,7 +12,7 @@ Next steps:
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
-##Attributes
+## Attributes
 `Name` *(required)* : Name of the project to create.<br>
 `OrgId` *(required)* : Unique identifier of the organization within which to create the project.<br>
 `Id` : The unique identifier of the project.<br>

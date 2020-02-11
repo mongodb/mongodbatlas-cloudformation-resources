@@ -12,7 +12,7 @@ Next steps:
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
-##Attributes
+## Attributes
 `ProjectId` *(required)* : The unique identifier of the project.<br>
 `Id` : Unique identifier of the Network Peer.<br>
 `RegionName` *(optional)* : Name of region<br>

@@ -12,7 +12,7 @@ Next steps:
 
 Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
 
-##Attributes
+## Attributes
 `ProjectId` *(required)* : Unique identifier of the Atlas project to which the user belongs.<br>
 `DatabaseName` *(required)* : The user’s authentication database. A user must provide both a username and authentication database to log into MongoDB. In Atlas deployments of MongoDB, the authentication database is always the admin database.<br>
 `Labels` *(optional)* : Array containing key-value pairs that tag and categorize the database user.<br>

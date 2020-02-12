@@ -12,10 +12,20 @@ Next steps:
 
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
+## Description
+Each project has its own Monitoring, Backup and Automations associated with the project. Projects within the same organization share the same billing settings.
+
 ## Attributes
-`Name` *(required)* : Name of the project to create.<br>
-`OrgId` *(required)* : Unique identifier of the organization within which to create the project.<br>
 `Id` : The unique identifier of the project.<br>
 `Created` : The ISO-8601-formatted timestamp of when Atlas created the project.<br>
 `ClusterCount` : The number of Atlas clusters deployed in the project.<br>
+
+##Parameters
+`Name` *(required)* : Name of the project to create.<br>
+`OrgId` *(required)* : Unique identifier of the organization within which to create the project.<br>
 `ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+
+## Installation
+    $ make
+    $ cfn submit
+    ...

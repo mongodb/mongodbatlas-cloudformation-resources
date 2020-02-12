@@ -12,7 +12,10 @@ Next steps:
 
 Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
 
-## Attributes
+## Description
+The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provide access to the project’s databases. A user’s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.
+
+## Parameters
 `ProjectId` *(required)* : Unique identifier of the Atlas project to which the user belongs.<br>
 `DatabaseName` *(required)* : The user’s authentication database. A user must provide both a username and authentication database to log into MongoDB. In Atlas deployments of MongoDB, the authentication database is always the admin database.<br>
 `Labels` *(optional)* : Array containing key-value pairs that tag and categorize the database user.<br>
@@ -21,3 +24,8 @@ Please don't modify files `model.go and main.go`, as they will be automatically 
 `Username` *(required)* : Username for authenticating to MongoDB.<br>
 `Password'` *(optional)* : The user’s password. This field is not included in the entity returned from the server.<br>
 `ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+
+## Installation
+    $ make
+    $ cfn submit
+    ...

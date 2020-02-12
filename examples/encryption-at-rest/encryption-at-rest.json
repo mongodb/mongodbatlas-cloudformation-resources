@@ -1,0 +1,72 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
+    "Parameters" : {
+      "ProjectName" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
+      "AccessKeyID" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
+      "SecretAccessKey" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
+      "CustomerMasterKeyID" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
+      "Region" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      }
+    },
+    "Mappings" : {},
+    "Resources" : {
+      "Project": {
+        "Type": "MongoDB::Atlas::Project",
+        "Properties": {
+          "Name": { "Ref" : "ProjectName" },
+          "Orgid": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+          "ApiKeys": {
+            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          }
+        }
+      },
+      "EncryptionAtRest": {
+        "Type": "MongoDB::Atlas::EncryptionAtRest",
+        "Properties": {
+          "ProjectId": { "Ref" : "Project" },
+          "AwsKms": {
+            "AccessKeyID": { "Ref" : "AccessKeyID" },
+            "SecretAccessKey": { "Ref" : "SecretAccessKey" },
+            "CustomerMasterKeyID": { "Ref" : "CustomerMasterKeyID" },
+            "Enabled": true,
+            "Region": { "Ref" : "Region" }
+          },
+          "ApiKeys": {
+            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          }
+        }
+      }
+    },
+    "Outputs" : {
+      "ProjectId" : {
+        "Description": "Id of the project",
+        "Value" : { "Ref" : "Project" }
+      },
+      "EncryptionId" : {
+        "Description": "Id of the encryption at rest",
+        "Value" : { "Ref" : "EncryptionAtRest" }
+      }
+    }
+  }

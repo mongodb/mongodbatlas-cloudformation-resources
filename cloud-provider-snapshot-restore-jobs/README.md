@@ -35,7 +35,7 @@ This resource allows you to create, cancel, get one or list all cloud provider s
 `ClusterName` *(required)* : The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.<br>
 `DeliveryType` *(required)* : Type of restore job to create. <br>
 `SnapshotId` *(required)* : Unique identifier of the source snapshot ID of the restore job.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 ## Installation
     $ make

@@ -13,7 +13,7 @@ Next steps:
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
 ## Description
-Each project has its own Monitoring, Backup and Automations associated with the project. Projects within the same organization share the same billing settings.
+This resource allows you to create a project, get one or a list of projects, and delete a project. Atlas provides a hierarchy based on organizations and projects to facilitate the management of your Atlas clusters. Projects allow you to isolate different environments (for instance, development/qa/prod environments) from each other, associate different users or teams with different environments, maintain separate cluster security configurations, and create different alert settings.
 
 ## Attributes
 `Id` : The unique identifier of the project.<br>
@@ -23,7 +23,7 @@ Each project has its own Monitoring, Backup and Automations associated with the 
 ##Parameters
 `Name` *(required)* : Name of the project to create.<br>
 `OrgId` *(required)* : Unique identifier of the organization within which to create the project.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 ## Installation
     $ make

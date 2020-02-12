@@ -26,7 +26,7 @@ The cluster resource provides access to your cluster configurations. The resourc
 `StateName` : Current state of the cluster.<br>
 
 ## Parameters
-`AutoScaling` *(optional)* : Configure your cluster to automatically scale its storage and cluster tier. For<br>
+`AutoScaling` *(optional)* : Configure your cluster to automatically scale its storage and cluster tier.<br>
 `BackupEnabled` *(optional)* : Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.<br>
 `BiConnector` *(optional)* : Specifies BI Connector for Atlas configuration on this cluster.<br>
 `ClusterType` *(optional)* : Type of the cluster that you want to create.<br>
@@ -42,7 +42,7 @@ The cluster resource provides access to your cluster configurations. The resourc
 `ProviderSettings` *(required)* : Configuration for the provisioned servers on which MongoDB runs.<br>
 `ReplicationFactor` *(optional)* : ReplicationFactor is deprecated. Use replicationSpecs.<br>
 `ReplicationSpecs` *(optional)* : Configuration for cluster regions.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 ## Installation
     $ make

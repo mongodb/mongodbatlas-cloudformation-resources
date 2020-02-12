@@ -10,10 +10,10 @@ Next steps:
    You can also do this manually with the following command: `cfn-cli generate`
 3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
 
-Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
+Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
 ## Description
-The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provide access to the project’s databases. A user’s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.
+The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provides access to the project’s databases. A user’s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.
 
 ## Parameters
 `ProjectId` *(required)* : Unique identifier of the Atlas project to which the user belongs.<br>
@@ -23,7 +23,7 @@ The databaseUsers resource lets you retrieve, create and modify the MongoDB user
 `Roles` *(optional)* : Array of this user’s roles and the databases / collections on which the roles apply. A role allows the user to perform particular actions on the specified database. A role on the admin database can include privileges that apply to the other databases as well.<br>
 `Username` *(required)* : Username for authenticating to MongoDB.<br>
 `Password'` *(optional)* : The user’s password. This field is not included in the entity returned from the server.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 ## Installation
     $ make

@@ -13,7 +13,7 @@ Next steps:
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
 ## Description
-This resource allows to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.
+This resource allows you to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.
 
 ## Attributes
 `Id` : Unique identifier of the snapshot.<br>
@@ -24,13 +24,13 @@ This resource allows to take one on-demand snapshot, get one or all cloud provid
 `SnapshotType` : Specified the type of snapshot.<br>
 `Status` : Current status of the snapshot.<br>
 `StorageSizeBytes` : Specifies the size of the snapshot in bytes.<br>
-`Type` : Specifies the size of the snapshot in bytes.<br>
+`Type` : Specifies the type of cluster.<br>
 
 ## Parameters
 `ProjectId` *(required)* : The unique identifier of the project for the Atlas cluster.<br>
 `ClusterName` *(required)* : The name of the Atlas cluster that contains the snapshots you want to retrieve.<br>
 `Description` *(required)* : Description of the on-demand snapshot.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 ## Installation
     $ make

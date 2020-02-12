@@ -13,7 +13,7 @@ Next steps:
 Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
 
 ## Description
-This resource allows to create, read, update and delete a network container
+This resource allows you to create, read, update and delete a network container
 
 ## Attributes
 `Id` : Unique identifier of the Network Peer.<br>
@@ -25,7 +25,7 @@ This resource allows to create, read, update and delete a network container
 `RegionName` *(optional)* : Name of region<br>
 `ProviderName` *(optional)* : The name of the provider.<br>
 `AtlasCidrBlock` *(required)* : CIDR block that Atlas uses for your clusters.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 ## Installation
     $ make

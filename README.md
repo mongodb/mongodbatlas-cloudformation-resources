@@ -1,14 +1,13 @@
-# MongoDB Atlas Cloudformation Resources
+# MongoDB Atlas Resource Provider for CloudFormation
 
-This is the repository for the Terraform MongoDB Atlas CloudFormation, which allows one to use Cloudformation with MongoDB's Database as a Service offering, Atlas.
+This is the repository for the MongoDB Atlas Resource Provider for CloudFormation, which allows one to use CloudFormation to programmatically manage MongoDB Atlas, MongoDB's Database as a Service offering.
 Learn more about Atlas at  [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
 
 For general information about CloudFormation, visit the [official website](https://aws.amazon.com/cloudformation) and the [GitHub project page](https://github.com/aws-cloudformation/).
 
 # Support, Bugs, Feature Requests
 
-Support for the MongoDB Atlas CloudFormation resource provider is provided under MongoDB Atlas support plans. Please submit support questions within the Atlas UI. Support questions submitted under the Issues section of this repo will be handled on a "best effort" basis.    
-
+Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. Support questions submitted under the Issues section of this repo will be handled on a "best effort" basis.
 Bugs should be filed under the Issues section of this repo.
 
 Feature requests can be submitted at https://feedback.mongodb.com/forums/924145-atlas - just select the CloudFormation resource provider as the category or vote for an already suggested feature.
@@ -43,7 +42,7 @@ $ cfn init
 ...
 ```
 
-# Using the CloudFormation resource
+# Using the CloudFormation Resource Provider
 
 To use a resource provider, you need a template, templates of this project are available on `/examples`, then you need to run commands, you can read about available commands in [AWS CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html)
 
@@ -60,25 +59,25 @@ To verify if it's working you can check on [AWS Cloudformation](https://console.
 
 In order to test a provider resource, there are three ways to do that.
 
-1. ### Using AWS CloudFormation website
+1. ### Using the AWS CloudFormation Console
 
-   After creating or updating or deleting a stack of a provider resource in AWS Cloudformation website, you need to check on [AWS CloudFormation](https://console.aws.amazon.com/cloudformation) for events which show the status of a resource provider.
+   After creating, updating or deleting a stack of a provider resource in the AWS CloudFormation console, you can check the [AWS CloudFormation](https://console.aws.amazon.com/cloudformation) for events which will show the status of a resource provider.
       
-   To see logs, after uploading a stack, it automatically creates logs in [AWS CloudWatch](https://console.aws.amazon.com/cloudwatch) in `Log groups`.
+   After uploading a stack logs are automatically created and may be viewed in [AWS CloudWatch](https://console.aws.amazon.com/cloudwatch) `Log groups`.
       
    To print a log you need to add it in code `log.Printf("")`.
    
-2.  ### Using AWS CloudFormation CLI
+2.  ### Using the AWS CloudFormation CLI
     
-    After creating or updating or deleting a stack of a provider resource with AWS CLI, you can use commands to see more info like events, describe stacks and more, see [CloudFormation CLI commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html).
+    After creating, updating or deleting a stack of a provider resource with the AWS CLI, you can use commands to see events, describe stacks and more. See [CloudFormation CLI commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html) for more.
         
-    After uploading a stack, it automatically creates logs in [AWS CloudWatch](https://aws.amazon.com/cloudwatch/).
+    After uploading a stack logs are automatically created and may be viewed in [AWS CloudWatch](https://aws.amazon.com/cloudwatch/) `Log groups`.
         
-    To retrieve logs, you need the name of the `log group` and in some situations you need the name of the `log stream`, you can see [here](https://aws.amazon.com/cloudwatch/) in `Log groups`, then use commands of logs, see [logs commads](https://docs.aws.amazon.com/cli/latest/reference/logs/index.html)
+    To retrieve logs you need the name of the `log group` and in some situations you need the name of the `log stream`. You can see more [here](https://aws.amazon.com/cloudwatch/) in `Log groups`, once there use [logs commads](https://docs.aws.amazon.com/cli/latest/reference/logs/index.html)
 
     
-3.  ### Contract test
+3.  ### Using the Contract Test
 
-    This example was created using CloudFormation best practices. Therefore, it will pass all of the CloudFormation CLI contract tests.
+    The resources of this repository was created using CloudFormation best practices. Therefore, it will pass all of the CloudFormation CLI contract tests.
     To run the contrast test, follow the directions in the 
     [documentation](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-test.html).

@@ -1,17 +1,5 @@
 # MongoDB::Atlas::Cluster
 
-Congratulations on starting development!
-
-Next steps:
-
-1. Populate the JSON schema describing your resource, `mongodb-atlas-cluster.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
-
-Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
-
 ## Description
 The cluster resource provides access to your cluster configurations. The resource lets you create, edit and delete clusters. The resource requires your Project ID.
 
@@ -21,7 +9,6 @@ The cluster resource provides access to your cluster configurations. The resourc
 `MongoURIUpdated` : Timestamp in ISO 8601 date and time format in UTC when the connection string was last updated. The connection string changes if you update any of the other values.<br>
 `MongoURIWithOptions` : Connection string for connecting to the Atlas cluster. Includes the replicaSet, ssl, and authSource query parameters in the connection string with values appropriate for the cluster.<br>
 `Paused` : Flag that indicates whether the cluster is paused or not.<br>
-`ProviderBackupEnabled` : Applicable only for M10+ clusters. Set to true to enable Atlas Cloud Provider Snapshots backups for the cluster. Set to false to disable Cloud Provider Snapshots backups for the cluster. You cannot enable Cloud Provider Snapshots if you have an existing cluster in the project with continuous backups enabled. Note that you must set this value to true for NVMe clusters. The default value is false.<br>
 `SrvAddress` : Connection string for connecting to the Atlas cluster. The +srv modifier forces the connection to use TLS. The mongoURI parameter lists additional options.<br>
 `StateName` : Current state of the cluster.<br>
 
@@ -40,6 +27,7 @@ The cluster resource provides access to your cluster configurations. The resourc
 `NumShards` *(optional)* : Positive integer that specifies the number of shards to deploy for a sharded cluster.<br>
 `PitEnabled` *(optional)* : Flag that indicates if the cluster uses Point-in-Time backups. If set to true, providerBackupEnabled must also be set to true.<br>
 `ProviderSettings` *(required)* : Configuration for the provisioned servers on which MongoDB runs.<br>
+`ProviderBackupEnabled` *(optional)* : Applicable only for M10+ clusters. Set to true to enable Atlas Cloud Provider Snapshots backups for the cluster. Set to false to disable Cloud Provider Snapshots backups for the cluster. You cannot enable Cloud Provider Snapshots if you have an existing cluster in the project with continuous backups enabled. Note that you must set this value to true for NVMe clusters. The default value is false.<br>
 `ReplicationFactor` *(optional)* : ReplicationFactor is deprecated. Use replicationSpecs.<br>
 `ReplicationSpecs` *(optional)* : Configuration for cluster regions.<br>
 `ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>

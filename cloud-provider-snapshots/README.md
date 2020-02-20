@@ -1,13 +1,26 @@
 # MongoDB::Atlas::CloudProviderSnapshots
 
-Congratulations on starting development!
+## Description
+This resource allows you to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.
 
-Next steps:
+## Attributes
+`Id` : Unique identifier of the snapshot.<br>
+`RetentionInDays` : The number of days that Atlas should retain the on-demand snapshot. <br>
+`CreatedAt` : UTC ISO 8601, formatted point in time when Atlas took the snapshot.<br>
+`MasterKeyUuid` : Unique ID of the AWS KMS Customer Master Key used to encrypt the snapshot.<br>
+`MongoVersion` : Version of the MongoDB server.<br>
+`SnapshotType` : Specified the type of snapshot.<br>
+`Status` : Current status of the snapshot.<br>
+`StorageSizeBytes` : Specifies the size of the snapshot in bytes.<br>
+`Type` : Specifies the type of cluster.<br>
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-cloudprovidersnapshots.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
+## Parameters
+`ProjectId` *(required)* : The unique identifier of the project for the Atlas cluster.<br>
+`ClusterName` *(required)* : The name of the Atlas cluster that contains the snapshots you want to retrieve.<br>
+`Description` *(required)* : Description of the on-demand snapshot.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
-Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
+## Installation
+    $ make
+    $ cfn submit
+    ...

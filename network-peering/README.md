@@ -1,13 +1,25 @@
 # MongoDB::Atlas::NetworkPeering
 
-Congratulations on starting development!
+## Description
+This resource allows you to create, read, update and delete a network peering.
 
-Next steps:
+## Attributes
+`Id` : Unique identifier of the Network Peer.<br>
+`ConnectionId` : Unique identifier for the peering connection.<br>
+`ErrorStateName` : Error state, if any.<br>
+`StatusNames` : The VPC peering connection status<br>
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-networkpeering.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
+## Parameters
+`ProjectId` *(required)* : The unique identifier of the project.<br>
+`ContainerId` *(required)* : Unique identifier of the Atlas VPC container for the AWS region.<br>
+`AccepterRegionName` *(optional)* : AWS region where the peer VPC resides. Returns null if the region is the same region in which the Atlas VPC resides.<br>
+`AwsAccountId` *(optional)* : AWS account ID of the owner of the peer VPC.<br>
+`ProviderName` *(required)* : The name of the provider.<br>
+`RouteTableCidrBlock` *(optional)* : Peer VPC CIDR block or subnet.<br>
+`VpcId` *(optional)* : Unique identifier of the peer VPC.<br>
+`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
-Please don't modify files `model.go` and `main.go`, as they will be automatically overwritten.
+## Installation
+    $ make
+    $ cfn submit
+    ...

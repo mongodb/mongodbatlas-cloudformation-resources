@@ -40,7 +40,7 @@ git clone https://github.com/mongodb/mongodbatlas-cloudformation-resources.git
 ## Use 
 To use a resource provider, you need a CloudFormation template; example templates for this resource provider are available in [`/examples`](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/examples) to help you get started.
 
-To create a stack of a resource provider, run the following command:
+To create a stack of a resource provider, run the following command (replacing the fields where appropriate):
 ```
 $ aws cloudformation create-stack --stack-name myTestProject --template-body file://../examples/project/project.json --parameters ParameterKey=Name,ParameterValue=test-project
 ```

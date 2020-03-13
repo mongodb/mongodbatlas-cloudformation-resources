@@ -34,7 +34,7 @@ git clone https://github.com/mongodb/mongodbatlas-cloudformation-resources.git
   - Additional details about each resource can be found in their respective READMEs.
   - See [AWS docs](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-submit.html) for additional options for `cfn submit` if needed.
   - You may need additional IAM permissions to register a resource provider, please see [AWS docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry.html#registry-register-permissions). 
-4. When the registration is successful, you will see `Registration complete`in your terminal. You will also be able to see it in the CloudFormation Stacks console.
+4. When the registration is successful, you will see `Registration complete` in your terminal. You will also be able to see it in the CloudFormation Stacks console.
 5. Repeat these steps for any resource you are trying to build.
 
 ## Use 
@@ -44,11 +44,9 @@ To create a stack of a resource provider, run the following command (replacing t
 ```
 $ aws cloudformation create-stack --stack-name myTestProject --template-body file://../examples/project/project.json --parameters ParameterKey=Name,ParameterValue=test-project
 ```
-It should return a stack id if there were no errors.
+It should return a stack id if there were no errors. To verify that everything is working correctly, please check in the [CloudFormation](https://console.aws.amazon.com/cloudformation) console.
 
 You can read about other available commands in [AWS CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html).
-
-To verify that everything is working correctly, please check in the [CloudFormation](https://console.aws.amazon.com/cloudformation) console.
 
 # Developing the CloudFormation Resource Provider
 

@@ -14,8 +14,41 @@ Feature requests can be submitted at https://feedback.mongodb.com/forums/924145-
 
 # Requirements
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.1.1
-- [AWS CloudFormation CLI Go Pluin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.2
+- [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.2
 - [Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
+
+# Using the CloudFormation Resource Provider
+## Set Up 
+1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
+2. Clone the repository: 
+```
+git clone https://github.com/mongodb/mongodbatlas-cloudformation-resources.git
+```
+1. Navigate to the resource that you are trying to build, eg the [project](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/project) resource
+2. Run `make` to auto-generate the code
+3. Run the following command to register the resource provider with CloudFormation in the specified region: 
+  ```
+  cfn submit -v --region <region>
+  ```
+  - This may take a few minutes.
+  - Additional details about each resource can be found in their respective READMEs.
+  - See [AWS docs](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-submit.html) for additional options for `cfn submit` if needed.
+  - You may need additional IAM permissions to register a resource provider, please see [AWS docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry.html#registry-register-permissions). 
+4. When the registration is successful, you will see `Registration complete`in your terminal. You will also be able to see it in the CloudFormation Stacks console.
+5. Repeat these steps for any resource you are trying to build.
+
+## Use 
+To use a resource provider, you need a CloudFormation template; example templates for this resource provider are available in [`/examples`](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/examples) to help you get started.
+
+To create a stack of a resource provider, run the following command:
+```
+$ aws cloudformation create-stack --stack-name myTestProject --template-body file://../examples/project/project.json --parameters ParameterKey=Name,ParameterValue=test-project
+```
+It should return a stack id if there were no errors.
+
+You can read about other available commands in [AWS CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html).
+
+To verify that everything is working correctly, please check in the [CloudFormation](https://console.aws.amazon.com/cloudformation) console.
 
 # Developing the CloudFormation Resource Provider
 
@@ -43,35 +76,7 @@ $ cfn init
 ...
 ```
 
-# Using the CloudFormation Resource Provider
-
-## Set Up 
-1. Navigate to the resource that you are trying to build, eg the [project](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/project) resource
-2. Run `make` to auto-generate the code
-3. Run the following command to register the resource provider with CloudFormation in the specified region: 
-```
-cfn submit -v --region <region>
-```
-  - This may take a few minutes.
-  - See [AWS docs](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-submit.html) for additional options for `cfn submit` if needed.
-  - You may need additional IAM permissions to register a resource provider, please see [AWS docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry.html#registry-register-permissions). 
-4. When the registration is successful, you will see `Registration complete.`in your terminal. You will also be able to see it in the CloudFormation Stacks console.
-5. Repeat these steps for any resource you are trying to build.
-
-## Use 
-To use a resource provider, you need a CloudFormation template; example templates for this resource provider are available in [`/examples`](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/examples) to help you get started.
-
-To create a stack of a resource provider, run the following command:
-```
-$ aws cloudformation create-stack --stack-name myTestProject --template-body file://../examples/project/project.json --parameters ParameterKey=Name,ParameterValue=test-project
-```
-It should return a stack id if there were no errors.
-
-You can read about other available commands in [AWS CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html).
-
-To verify that everything is working correctly, please check on the [Cloudformation](https://console.aws.amazon.com/cloudformation) console.
-
-# Testing the Provider
+# Testing the CloudFormation Resource Provider
 
 In order to test a provider resource, there are three ways to do that.
 

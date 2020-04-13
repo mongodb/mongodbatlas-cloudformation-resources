@@ -4,5 +4,24 @@ builds:
   binaries:
     - main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
       binary: cloud-provider-snapshot-restore-jobs
+
+      goos:
+        - windows
+        - linux
+        - darwin
     - main: ./cloud-provider-snapshots/cmd/main.go
       binary: cloud-provider-snapshots
+
+      goos:
+        - windows
+        - linux
+        - darwin
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+      format: zip

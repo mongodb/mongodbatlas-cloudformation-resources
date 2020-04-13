@@ -6,7 +6,3 @@ builds:
       binary: cloud-provider-snapshot-restore-jobs
     - main: ./cloud-provider-snapshots/cmd/main.go
       binary: cloud-provider-snapshots
-
-archives:
-  - replacements:
-    format: zip

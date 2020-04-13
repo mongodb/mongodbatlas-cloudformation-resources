@@ -26,7 +26,7 @@ jobs:
       -
         name: MyProject
           build:
-            binaries:
+           binaries:
                - main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
                  name: cloud-provider-snapshot-restore-jobs
                - main: ./cloud-provider-snapshots/cmd/main.go

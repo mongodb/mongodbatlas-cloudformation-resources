@@ -2,7 +2,7 @@ builds:
   - 
     id: "cloudprovidersnapshotrestorejobs"
     main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
-    binary: ./cloud-provider-snapshot-restore-jobs/cloud-provider-snapshot-restore-jobs
+    binary: ./bin/cloud-provider-snapshot-restore-jobs
     env:
       - CGO_ENABLED=0
     goos:
@@ -14,7 +14,7 @@ builds:
   - 
     id: "cloudprovidersnapshots"
     main: ./cloud-provider-snapshots/cmd/main.go
-    binary: ./cloud-provider-snapshots/cloud-provider-snapshots
+    binary: ./bin/cloud-provider-snapshots
     env:
       - CGO_ENABLED=0 
     goos:
@@ -26,7 +26,7 @@ builds:
   - 
     id: "cluster"
     main: ./cluster/cmd/main.go
-    binary: ./cluster/cluster
+    binary: ./bin/cluster
     env:
       - CGO_ENABLED=0 
     goos:
@@ -38,7 +38,7 @@ builds:
   - 
     id: "databaseuser"
     main: ./database-user/cmd/main.go
-    binary: ./database-user/database-user
+    binary: ./bin/database-user
     env:
       - CGO_ENABLED=0 
     goos:
@@ -50,7 +50,7 @@ builds:
   - 
     id: "encryptionatrest"
     main: ./encryption-at-rest/cmd/main.go
-    binary: ./encryption-at-rest/encryption-at-rest
+    binary: ./bin/encryption-at-rest
     env:
       - CGO_ENABLED=0 
     goos:
@@ -62,7 +62,7 @@ builds:
   - 
     id: "projectipwhitelist"
     main: ./ip-whitelist/cmd/main.go
-    binary: ./ip-whitelist/ip-whitelist
+    binary: ./bin/ip-whitelist
     env:
       - CGO_ENABLED=0 
     goos:
@@ -74,7 +74,7 @@ builds:
   - 
     id: "networkcontainer"
     main: ./network-container/cmd/main.go
-    binary: ./network-container/network-container
+    binary: ./bin/network-container
     env:
       - CGO_ENABLED=0 
     goos:
@@ -86,7 +86,7 @@ builds:
   - 
     id: "networkpeering"
     main: ./network-peering/cmd/main.go
-    binary: ./network-peering/network-peering
+    binary: ./bin/network-peering
     env:
       - CGO_ENABLED=0 
     goos:
@@ -98,7 +98,7 @@ builds:
   - 
     id: "project"
     main: ./project/cmd/main.go
-    binary: ./project/project
+    binary: ./bin/project
     env:
       - CGO_ENABLED=0 
     goos:
@@ -114,47 +114,38 @@ archives:
         linux: Linux
         format: zip
     files:
-        - ./cloud-provider-snapshot-restore-jobs/Makefile
         - ./cloud-provider-snapshot-restore-jobs/README.md
         - ./cloud-provider-snapshot-restore-jobs/mongodb-atlas-cloudprovidersnapshotrestorejobs.json
         - ./cloud-provider-snapshot-restore-jobs/resource-role.yaml
         - ./cloud-provider-snapshot-restore-jobs/template.yml
-        - ./cloud-provider-snapshots/Makefile
         - ./cloud-provider-snapshots/README.md
         - ./cloud-provider-snapshots/mongodb-atlas-cloudprovidersnapshots.json
         - ./cloud-provider-snapshots/resource-role.yaml
         - ./cloud-provider-snapshots/template.yml
-        - ./cluster/Makefile
         - ./cluster/README.md
         - ./cluster/mongodb-atlas-cluster.json
         - ./cluster/resource-role.yaml
         - ./cluster/template.yml
-        - ./database-user/Makefile
         - ./database-user/README.md
         - ./database-user/mongodb-atlas-databaseuser.json
         - ./database-user/resource-role.yaml
         - ./database-user/template.yml
-        - ./encryption-at-rest/Makefile
         - ./encryption-at-rest/README.md
         - ./encryption-at-rest/mongodb-atlas-encryptionatrest.json
         - ./encryption-at-rest/resource-role.yaml
         - ./encryption-at-rest/template.yml
-        - ./ip-whitelist/Makefile
         - ./ip-whitelist/README.md
         - ./ip-whitelist/mongodb-atlas-projectipwhitelist.json
         - ./ip-whitelist/resource-role.yaml
         - ./ip-whitelist/template.yml
-        - ./network-container/Makefile
         - ./network-container/README.md
         - ./network-container/mongodb-atlas-networkcontainer.json
         - ./network-container/resource-role.yaml
         - ./network-container/template.yml    
-        - ./project/Makefile
         - ./project/README.md
         - ./project/mongodb-atlas-project.json
         - ./project/resource-role.yaml
         - ./project/template.yml
-        - ./network-peering/Makefile
         - ./network-peering/README.md
         - ./network-peering/mongodb-atlas-networkpeering.json
         - ./network-peering/resource-role.yaml

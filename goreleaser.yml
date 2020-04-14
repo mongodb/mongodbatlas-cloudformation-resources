@@ -98,7 +98,7 @@ builds:
   - 
     id: "project"
     main: ./project/cmd/main.go
-    binary: project
+    binary: ./project/project
     env:
       - CGO_ENABLED=0 
     goos:

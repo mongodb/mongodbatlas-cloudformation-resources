@@ -1,100 +1,246 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 builds:
   - 
-    id: "restore"
+    id: "cloudprovidersnapshotrestorejobs"
     main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
     binary: cloud-provider-snapshot-restore-jobs
     env:
       - CGO_ENABLED=0
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
-    id: "snapshots"
+    id: "cloudprovidersnapshots"
     main: ./cloud-provider-snapshots/cmd/main.go
     binary: cloud-provider-snapshots
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
     id: "cluster"
     main: ./cluster/cmd/main.go
     binary: cluster
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
-    id: "database"
+    id: "databaseuser"
     main: ./database-user/cmd/main.go
     binary: database-user
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
-    id: "encryption"
+    id: "encryptionatrest"
     main: ./encryption-at-rest/cmd/main.go
     binary: encryption-at-rest
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
-    id: "whitelist"
+    id: "projectipwhitelist"
     main: ./ip-whitelist/cmd/main.go
     binary: ip-whitelist
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
-    id: "network"
+    id: "networkcontainer"
     main: ./network-container/cmd/main.go
     binary: network-container
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
-    id: "peering"
+    id: "networkpeering"
     main: ./network-peering/cmd/main.go
     binary: network-peering
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
   - 
     id: "project"
     main: ./project/cmd/main.go
     binary: project
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=0 
     goos:
-      - windows
       - linux
-      - darwin
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
 
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      format: zip
+  -
+    id: cloudprovidersnapshotrestorejobs-files
+    builds: 
+      - "cloudprovidersnapshotrestorejobs"
+    name_template: "cloudprovidersnapshotrestorejobs_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./cloud-provider-snapshot-restore-jobs/Makefile
+        - ./cloud-provider-snapshot-restore-jobs/README.md
+        - ./cloud-provider-snapshot-restore-jobs/mongodb-atlas-cloudprovidersnapshotrestorejobs.json
+        - ./cloud-provider-snapshot-restore-jobs/resource-role.yaml
+        - ./cloud-provider-snapshot-restore-jobs/template.yml
+  -
+    id: cloudprovidersnapshots-files
+    builds: 
+      - "cloudprovidersnapshots"
+    name_template: "cloudprovidersnapshots_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./cloud-provider-snapshots/Makefile
+        - ./cloud-provider-snapshots/README.md
+        - ./cloud-provider-snapshots/mongodb-atlas-cloudprovidersnapshots.json
+        - ./cloud-provider-snapshots/resource-role.yaml
+        - ./cloud-provider-snapshots/template.yml
+  -
+    id: cluster-files
+    builds: 
+      - "cluster"
+    name_template: "cluster_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./cluster/Makefile
+        - ./cluster/README.md
+        - ./cluster/mongodb-atlas-cluster.json
+        - ./cluster/resource-role.yaml
+        - ./cluster/template.yml
+  -
+    id: databaseuser-files
+    builds: 
+      - "databaseuser"
+    name_template: "databaseuser_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./database-user/Makefile
+        - ./database-user/README.md
+        - ./database-user/mongodb-atlas-databaseuser.json
+        - ./database-user/resource-role.yaml
+        - ./database-user/template.yml
+  -
+    id: encryptionatrest-files
+    builds: 
+      - "encryptionatrest"
+    name_template: "encryptionatrest_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./encryption-at-rest/Makefile
+        - ./encryption-at-rest/README.md
+        - ./encryption-at-rest/mongodb-atlas-encryptionatrest.json
+        - ./encryption-at-rest/resource-role.yaml
+        - ./encryption-at-rest/template.yml
+  -
+    id: ipwhitelist-files
+    builds: 
+      - "ipwhitelist"
+    name_template: "ipwhitelist_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./ip-whitelist/Makefile
+        - ./ip-whitelist/README.md
+        - ./ip-whitelist/mongodb-atlas-projectipwhitelist.json
+        - ./ip-whitelist/resource-role.yaml
+        - ./ip-whitelist/template.yml
+  -
+    id: networkcontainer-files
+    builds: 
+      - "networkcontainer"
+    name_template: "networkcontainer_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./network-container/Makefile
+        - ./network-container/README.md
+        - ./network-container/mongodb-atlas-networkcontainer.json
+        - ./network-container/resource-role.yaml
+        - ./network-container/template.yml
+  -
+    id: networkpeering-files
+    builds: 
+      - "networkpeering"
+    name_template: "networkpeering_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./network-peering/Makefile
+        - ./network-peering/README.md
+        - ./network-peering/mongodb-atlas-networkpeering.json
+        - ./network-peering/resource-role.yaml
+        - ./network-peering/template.yml
+  -
+    id: project-files
+    builds: 
+      - "project"
+    name_template: "project_{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./project/Makefile
+        - ./project/README.md
+        - ./project/mongodb-atlas-project.json
+        - ./project/resource-role.yaml
+        - ./project/template.yml

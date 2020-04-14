@@ -108,16 +108,46 @@ builds:
     ldflags:
       - -s -w
 
-archives:    
-  -
-    id: project-files
-    builds: 
-      - "project"
-    wrap_in_directory: true
+archives:
     replacements:
         linux: Linux
         format: zip
     files:
+        - ./cloud-provider-snapshot-restore-jobs/Makefile
+        - ./cloud-provider-snapshot-restore-jobs/README.md
+        - ./cloud-provider-snapshot-restore-jobs/mongodb-atlas-cloudprovidersnapshotrestorejobs.json
+        - ./cloud-provider-snapshot-restore-jobs/resource-role.yaml
+        - ./cloud-provider-snapshot-restore-jobs/template.yml
+        - ./cloud-provider-snapshots/Makefile
+        - ./cloud-provider-snapshots/README.md
+        - ./cloud-provider-snapshots/mongodb-atlas-cloudprovidersnapshots.json
+        - ./cloud-provider-snapshots/resource-role.yaml
+        - ./cloud-provider-snapshots/template.yml
+        - ./cluster/Makefile
+        - ./cluster/README.md
+        - ./cluster/mongodb-atlas-cluster.json
+        - ./cluster/resource-role.yaml
+        - ./cluster/template.yml
+        - ./database-user/Makefile
+        - ./database-user/README.md
+        - ./database-user/mongodb-atlas-databaseuser.json
+        - ./database-user/resource-role.yaml
+        - ./database-user/template.yml
+        - ./encryption-at-rest/Makefile
+        - ./encryption-at-rest/README.md
+        - ./encryption-at-rest/mongodb-atlas-encryptionatrest.json
+        - ./encryption-at-rest/resource-role.yaml
+        - ./encryption-at-rest/template.yml
+        - ./ip-whitelist/Makefile
+        - ./ip-whitelist/README.md
+        - ./ip-whitelist/mongodb-atlas-projectipwhitelist.json
+        - ./ip-whitelist/resource-role.yaml
+        - ./ip-whitelist/template.yml
+        - ./network-container/Makefile
+        - ./network-container/README.md
+        - ./network-container/mongodb-atlas-networkcontainer.json
+        - ./network-container/resource-role.yaml
+        - ./network-container/template.yml    
         - ./project/Makefile
         - ./project/README.md
         - ./project/mongodb-atlas-project.json

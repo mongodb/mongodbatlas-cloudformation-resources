@@ -2,7 +2,7 @@ builds:
   - 
     id: "cloudprovidersnapshotrestorejobs"
     main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
-    binary: cloud-provider-snapshot-restore-jobs
+    binary: ./cloud-provider-snapshot-restore-jobs/cloud-provider-snapshot-restore-jobs
     env:
       - CGO_ENABLED=0
     goos:
@@ -14,7 +14,7 @@ builds:
   - 
     id: "cloudprovidersnapshots"
     main: ./cloud-provider-snapshots/cmd/main.go
-    binary: cloud-provider-snapshots
+    binary: ./cloud-provider-snapshots/cloud-provider-snapshots
     env:
       - CGO_ENABLED=0 
     goos:
@@ -26,7 +26,7 @@ builds:
   - 
     id: "cluster"
     main: ./cluster/cmd/main.go
-    binary: cluster
+    binary: ./cluster/cluster
     env:
       - CGO_ENABLED=0 
     goos:
@@ -38,7 +38,7 @@ builds:
   - 
     id: "databaseuser"
     main: ./database-user/cmd/main.go
-    binary: database-user
+    binary: ./database-user/database-user
     env:
       - CGO_ENABLED=0 
     goos:
@@ -50,7 +50,7 @@ builds:
   - 
     id: "encryptionatrest"
     main: ./encryption-at-rest/cmd/main.go
-    binary: encryption-at-rest
+    binary: ./encryption-at-rest/encryption-at-rest
     env:
       - CGO_ENABLED=0 
     goos:
@@ -62,7 +62,7 @@ builds:
   - 
     id: "projectipwhitelist"
     main: ./ip-whitelist/cmd/main.go
-    binary: ip-whitelist
+    binary: ./ip-whitelist/ip-whitelist
     env:
       - CGO_ENABLED=0 
     goos:
@@ -74,7 +74,7 @@ builds:
   - 
     id: "networkcontainer"
     main: ./network-container/cmd/main.go
-    binary: network-container
+    binary: ./network-container/network-container
     env:
       - CGO_ENABLED=0 
     goos:
@@ -86,7 +86,7 @@ builds:
   - 
     id: "networkpeering"
     main: ./network-peering/cmd/main.go
-    binary: network-peering
+    binary: ./network-peering/network-peering
     env:
       - CGO_ENABLED=0 
     goos:

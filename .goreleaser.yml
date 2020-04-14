@@ -1,0 +1,100 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+builds:
+  - 
+    id: "restore"
+    main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
+    binary: cloud-provider-snapshot-restore-jobs
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "snapshots"
+    main: ./cloud-provider-snapshots/cmd/main.go
+    binary: cloud-provider-snapshots
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "cluster"
+    main: ./cluster/cmd/main.go
+    binary: cluster
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "database"
+    main: ./database-user/cmd/main.go
+    binary: database-user
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "encryption"
+    main: ./encryption-at-rest/cmd/main.go
+    binary: encryption-at-rest
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "whitelist"
+    main: ./ip-whitelist/cmd/main.go
+    binary: ip-whitelist
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "network"
+    main: ./network-container/cmd/main.go
+    binary: network-container
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "peering"
+    main: ./network-peering/cmd/main.go
+    binary: network-peering
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+  - 
+    id: "project"
+    main: ./project/cmd/main.go
+    binary: project
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      format: zip

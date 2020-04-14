@@ -1,0 +1,130 @@
+builds:
+  - 
+    id: "cloudprovidersnapshotrestorejobs"
+    main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
+    binary: cloud-provider-snapshot-restore-jobs
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "cloudprovidersnapshots"
+    main: ./cloud-provider-snapshots/cmd/main.go
+    binary: cloud-provider-snapshots
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "cluster"
+    main: ./cluster/cmd/main.go
+    binary: cluster
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "databaseuser"
+    main: ./database-user/cmd/main.go
+    binary: database-user
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "encryptionatrest"
+    main: ./encryption-at-rest/cmd/main.go
+    binary: encryption-at-rest
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "projectipwhitelist"
+    main: ./ip-whitelist/cmd/main.go
+    binary: ip-whitelist
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "networkcontainer"
+    main: ./network-container/cmd/main.go
+    binary: network-container
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "networkpeering"
+    main: ./network-peering/cmd/main.go
+    binary: network-peering
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+  - 
+    id: "project"
+    main: ./project/cmd/main.go
+    binary: project
+    env:
+      - CGO_ENABLED=0 
+    goos:
+      - linux
+    flags: 
+      - -tags="logging callback metrics scheduler"
+    ldflags:
+      - -s -w
+
+archives:    
+  -
+    id: project-files
+    builds: 
+      - "project"
+    wrap_in_directory: true
+    replacements:
+        linux: Linux
+        format: zip
+    files:
+        - ./project/Makefile
+        - ./project/README.md
+        - ./project/mongodb-atlas-project.json
+        - ./project/resource-role.yaml
+        - ./project/template.yml
+        - ./network-peering/Makefile
+        - ./network-peering/README.md
+        - ./network-peering/mongodb-atlas-networkpeering.json
+        - ./network-peering/resource-role.yaml
+        - ./network-peering/template.yml

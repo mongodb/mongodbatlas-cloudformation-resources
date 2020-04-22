@@ -2,11 +2,13 @@ builds:
   - 
     id: "cloudprovidersnapshotrestorejobs"
     main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
-    binary: ./bin/cloud-provider-snapshot-restore-jobs
+    binary: ./cloud-provider-snapshot-restore-jobs/bin/handler
     env:
       - CGO_ENABLED=0
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -14,11 +16,13 @@ builds:
   - 
     id: "cloudprovidersnapshots"
     main: ./cloud-provider-snapshots/cmd/main.go
-    binary: ./bin/cloud-provider-snapshots
+    binary: ./cloud-provider-snapshots/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -26,11 +30,13 @@ builds:
   - 
     id: "cluster"
     main: ./cluster/cmd/main.go
-    binary: ./bin/cluster
+    binary: ./cluster/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -38,11 +44,13 @@ builds:
   - 
     id: "databaseuser"
     main: ./database-user/cmd/main.go
-    binary: ./bin/database-user
+    binary: ./database-user/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -50,11 +58,13 @@ builds:
   - 
     id: "encryptionatrest"
     main: ./encryption-at-rest/cmd/main.go
-    binary: ./bin/encryption-at-rest
+    binary: ./encryption-at-rest/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -62,11 +72,13 @@ builds:
   - 
     id: "projectipwhitelist"
     main: ./ip-whitelist/cmd/main.go
-    binary: ./bin/ip-whitelist
+    binary: ./ip-whitelist/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -74,11 +86,13 @@ builds:
   - 
     id: "networkcontainer"
     main: ./network-container/cmd/main.go
-    binary: ./bin/network-container
+    binary: ./network-container/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -86,11 +100,13 @@ builds:
   - 
     id: "networkpeering"
     main: ./network-peering/cmd/main.go
-    binary: ./bin/network-peering
+    binary: ./network-peering/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -98,11 +114,13 @@ builds:
   - 
     id: "project"
     main: ./project/cmd/main.go
-    binary: ./bin/project
+    binary: ./project/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
       - linux
+    goarch:
+      - amd64
     flags: 
       - -tags="logging callback metrics scheduler"
     ldflags:
@@ -118,35 +136,61 @@ archives:
         - ./cloud-provider-snapshot-restore-jobs/mongodb-atlas-cloudprovidersnapshotrestorejobs.json
         - ./cloud-provider-snapshot-restore-jobs/resource-role.yaml
         - ./cloud-provider-snapshot-restore-jobs/template.yml
+        - ./cloud-provider-snapshot-restore-jobs/Makefile
+        - ./cloud-provider-snapshot-restore-jobs/.rpdk-config
+        
         - ./cloud-provider-snapshots/README.md
         - ./cloud-provider-snapshots/mongodb-atlas-cloudprovidersnapshots.json
         - ./cloud-provider-snapshots/resource-role.yaml
         - ./cloud-provider-snapshots/template.yml
+        - ./cloud-provider-snapshots/Makefile
+        - ./cloud-provider-snapshots/.rpdk-config
+        
         - ./cluster/README.md
         - ./cluster/mongodb-atlas-cluster.json
         - ./cluster/resource-role.yaml
         - ./cluster/template.yml
+        - ./cluster/Makefile
+        - ./cluster/.rpdk-config
+        
         - ./database-user/README.md
         - ./database-user/mongodb-atlas-databaseuser.json
         - ./database-user/resource-role.yaml
         - ./database-user/template.yml
+        - ./database-user/Makefile
+        - ./database-user/.rpdk-config
+
         - ./encryption-at-rest/README.md
         - ./encryption-at-rest/mongodb-atlas-encryptionatrest.json
         - ./encryption-at-rest/resource-role.yaml
         - ./encryption-at-rest/template.yml
+        - ./encryption-at-rest/Makefile
+        - ./encryption-at-rest/.rpdk-config
+
         - ./ip-whitelist/README.md
         - ./ip-whitelist/mongodb-atlas-projectipwhitelist.json
         - ./ip-whitelist/resource-role.yaml
         - ./ip-whitelist/template.yml
+        - ./ip-whitelist/Makefile
+        - ./ip-whitelist/.rpdk-config
+
         - ./network-container/README.md
         - ./network-container/mongodb-atlas-networkcontainer.json
         - ./network-container/resource-role.yaml
-        - ./network-container/template.yml    
+        - ./network-container/template.yml 
+        - ./network-container/Makefile
+        - ./network-container/.rpdk-config
+
         - ./project/README.md
         - ./project/mongodb-atlas-project.json
         - ./project/resource-role.yaml
         - ./project/template.yml
+        - ./project/Makefile
+        - ./project/.rpdk-config
+
         - ./network-peering/README.md
         - ./network-peering/mongodb-atlas-networkpeering.json
         - ./network-peering/resource-role.yaml
         - ./network-peering/template.yml
+        - ./network-peering/Makefile
+        - ./network-peering/.rpdk-config

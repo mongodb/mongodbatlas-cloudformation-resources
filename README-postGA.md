@@ -12,7 +12,8 @@ For general information about CloudFormation, visit the [official website](https
 Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. Support questions submitted under the Issues section of this repo will be handled on a "best effort" basis.
 Bugs should be filed under the Issues section of this repo.
 
-Feature requests can be submitted at https://feedback.mongodb.com/forums/924145-atlas - just select the CloudFormation resource provider as the category or vote for an already suggested feature.
+Feature requests can be submitted at [How can we improve the platform?
+](https://feedback.mongodb.com/forums/924145-atlas) - just select the CloudFormation resource provider as the category or vote for an already suggested feature.
 
 # Requirements
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.12+

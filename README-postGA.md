@@ -18,7 +18,7 @@ Feature requests can be submitted at [How can we improve the platform?
 # Requirements
 
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.1.1
-- [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.2
+- (Optional) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.2
 - (Optional) [Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
 
 # Using the CloudFormation Resource Provider
@@ -43,7 +43,7 @@ tar -xvzf mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz
 5. Repeat these steps for any resource you are trying to build.
 
 ## Creating stacks
-To use a resource provider, you need a template, templates of this project are available in `/examples`, then you need to run commands, you can read about available commands in [CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html)
+To use a resource provider, you need a template, templates of this project are available in `./examples`, then you need to run commands, you can read about available commands in [CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html)
 
 To create a stack of a resource
 ```

@@ -17,7 +17,7 @@ POST GA: Support for the MongoDB Atlas Resource Provider for CloudFormation is p
 # Requirements
 
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.1.1
-- (Optional) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.2
+- (Optional) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.3
 - (Optional) [Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
 
 # Using the CloudFormation Resource Provider

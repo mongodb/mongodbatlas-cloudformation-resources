@@ -42,13 +42,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	user := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
 		GroupID:      groupID,
-		Username:     *currentModel.Username.Value(),
-		Password:     *currentModel.Password.Value(),
-		DatabaseName: *currentModel.DatabaseName.Value(),
+		Username:     *currentModel.Username,
+		Password:     *currentModel.Password,
+		DatabaseName: *currentModel.DatabaseName,
 	}
 
 	if currentModel.LdapAuthType != nil {
-		user.LDAPAuthType = *currentModel.LdapAuthType.Value()
+		user.LDAPAuthType = *currentModel.LdapAuthType
 	}
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
@@ -72,8 +72,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	groupID := *currentModel.ProjectId.Value()
-	username := *currentModel.Username.Value()
+	groupID := *currentModel.ProjectId
+	username := *currentModel.Username
 	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), groupID, username)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching database user (%s): %s", username, err)
@@ -112,25 +112,25 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	var roles []mongodbatlas.Role
 	for _, r := range currentModel.Roles {
 		role := mongodbatlas.Role{
-			CollectionName: *r.CollectionName.Value(),
-			DatabaseName:   *r.DatabaseName.Value(),
-			RoleName:       *r.RoleName.Value(),
+			CollectionName: *r.CollectionName,
+			DatabaseName:   *r.DatabaseName,
+			RoleName:       *r.RoleName,
 		}
 
 		roles = append(roles, role)
 	}
 
-	groupID := *currentModel.ProjectId.Value()
-	username := *currentModel.Username.Value()
+	groupID := *currentModel.ProjectId
+	username := *currentModel.Username
 
 	_, _, err = client.DatabaseUsers.Update(context.Background(), groupID, username,
 		&mongodbatlas.DatabaseUser{
 			Roles:        roles,
 			GroupID:      groupID,
 			Username:     username,
-			Password:     *currentModel.Password.Value(),
-			DatabaseName: *currentModel.Password.Value(),
-			LDAPAuthType: *currentModel.LdapAuthType.Value(),
+			Password:     *currentModel.Password,
+			DatabaseName: *currentModel.Password,
+			LDAPAuthType: *currentModel.LdapAuthType,
 		})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error updating database user (%s): %s", username, err)
@@ -150,8 +150,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	groupID := *currentModel.ProjectId.Value()
-	username := *currentModel.Username.Value()
+	groupID := *currentModel.ProjectId
+	username := *currentModel.Username
 
 	_, err = client.DatabaseUsers.Delete(context.Background(), groupID, username)
 	if err != nil {

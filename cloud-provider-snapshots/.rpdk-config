@@ -5,6 +5,8 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-snapshots"
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-snapshots",
+        "protocolVersion": "1.0.0",
+        "pluginVersion": "0.1.6"
     }
 }

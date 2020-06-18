@@ -5,6 +5,8 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/network-container"
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/network-container",
+        "protocolVersion": "1.0.0",
+        "pluginVersion": "0.1.6"
     }
 }

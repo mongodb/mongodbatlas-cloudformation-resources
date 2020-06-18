@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -13,22 +12,22 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
 	project, _, err := client.Projects.Create(context.Background(), &matlasClient.Project{
-		Name:  *currentModel.Name.Value(),
-		OrgID: *currentModel.OrgId.Value(),
+		Name:  *currentModel.Name,
+		OrgID: *currentModel.OrgId,
 	})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating project: %s", err)
 	}
 
-	currentModel.Id = encoding.NewString(project.ID)
-	currentModel.Created = encoding.NewString(project.Created)
-	currentModel.ClusterCount = encoding.NewInt(int64(project.ClusterCount))
+	currentModel.Id = &project.ID
+	currentModel.Created = &project.Created
+	currentModel.ClusterCount = &project.ClusterCount
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -39,12 +38,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	id := *currentModel.Id.Value()
+	id := *currentModel.Id
 	log.Printf("Looking for project: %s", id)
 
 	project, _, err := client.Projects.GetOneProject(context.Background(), id)
@@ -52,10 +51,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, fmt.Errorf("error reading project with id(%s): %s", id, err)
 	}
 
-	currentModel.Name = encoding.NewString(project.Name)
-	currentModel.OrgId = encoding.NewString(project.OrgID)
-	currentModel.Created = encoding.NewString(project.Created)
-	currentModel.ClusterCount = encoding.NewInt(int64(project.ClusterCount))
+	currentModel.Name = &project.Name
+	currentModel.OrgId = &project.OrgID
+	currentModel.Created = &project.Created
+	currentModel.ClusterCount = &project.ClusterCount
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -78,12 +77,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	id := *currentModel.Id.Value()
+	id := *currentModel.Id
 	log.Printf("Deleting project with id(%s)", id)
 
 	_, err = client.Projects.Delete(context.Background(), id)
@@ -100,7 +99,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -113,11 +112,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var models []Model
 	for _, project := range projects.Results {
 		var m Model
-		m.Name = encoding.NewString(project.Name)
-		m.OrgId = encoding.NewString(project.OrgID)
-		m.Created = encoding.NewString(project.Created)
-		m.ClusterCount = encoding.NewInt(int64(project.ClusterCount))
-		m.Id = encoding.NewString(project.ID)
+		m.Name = &project.Name
+		m.OrgId = &project.OrgID
+		m.Created = &project.Created
+		m.ClusterCount = &project.ClusterCount
+		m.Id = &project.ID
 
 		models = append(models, m)
 	}

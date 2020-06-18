@@ -60,7 +60,6 @@
         "AwsKms",
         "ProjectId"
     ],
-    "readOnlyProperties": [""],
     "primaryIdentifier": [
         "/properties/ProjectId"
     ],

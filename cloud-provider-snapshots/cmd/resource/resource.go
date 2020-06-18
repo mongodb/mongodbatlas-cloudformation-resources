@@ -3,7 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -11,22 +10,23 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 	if _, ok := req.CallbackContext["status"]; ok {
-		currentModel.Id = encoding.NewString(req.CallbackContext["snapshot_id"].(string))
+        sid := req.CallbackContext["snapshot_id"].(string)
+		currentModel.Id = &sid 
 		return validateProgress(client, currentModel, "completed")
 	}
 
 	requestParameters := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     *currentModel.ProjectId.Value(),
-		ClusterName: *currentModel.ClusterName.Value(),
+		GroupID:     *currentModel.ProjectId,
+		ClusterName: *currentModel.ClusterName,
 	}
 	snapshotRequest := &matlasClient.CloudProviderSnapshot{
-		RetentionInDays: int(*currentModel.RetentionInDays.Value()),
-		Description:     *currentModel.Description.Value(),
+		RetentionInDays: int(*currentModel.RetentionInDays),
+		Description:     *currentModel.Description,
 	}
 
 	snapshot, _, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
@@ -34,7 +34,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cloud provider snapshot: %s", err)
 	}
 
-	currentModel.Id = encoding.NewString(snapshot.ID)
+	currentModel.Id = &snapshot.ID
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -50,17 +50,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId.Value()
-	snapshotId := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId
+	snapshotId := *currentModel.Id
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
 		SnapshotID:  snapshotId,
-		ClusterName: *currentModel.ClusterName.Value(),
+		ClusterName: *currentModel.ClusterName,
 	}
 
 	snapshot, _, err := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
@@ -68,15 +68,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot with id(project: %s, snapshot: %s): %s", projectId, snapshotId, err)
 	}
 
-	currentModel.Id = encoding.NewString(snapshot.ID)
-	currentModel.Description = encoding.NewString(snapshot.Description)
-	currentModel.RetentionInDays = encoding.NewInt(int64(snapshot.RetentionInDays))
-	currentModel.Status = encoding.NewString(snapshot.Status)
-	currentModel.Type = encoding.NewString(snapshot.Type)
-	currentModel.CreatedAt = encoding.NewString(snapshot.CreatedAt)
-	currentModel.MasterKeyUuid = encoding.NewString(snapshot.MasterKeyUUID)
-	currentModel.MongoVersion = encoding.NewString(snapshot.MongodVersion)
-	currentModel.StorageSizeBytes = encoding.NewInt(int64(snapshot.StorageSizeBytes))
+	currentModel.Id = &snapshot.ID
+	currentModel.Description = &snapshot.Description
+	currentModel.RetentionInDays = &snapshot.RetentionInDays
+	currentModel.Status = &snapshot.Status
+	currentModel.Type = &snapshot.Type
+	currentModel.CreatedAt = &snapshot.CreatedAt
+	currentModel.MasterKeyUuid = &snapshot.MasterKeyUUID
+	currentModel.MongoVersion = &snapshot.MongodVersion
+	currentModel.StorageSizeBytes = &snapshot.StorageSizeBytes
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -97,17 +97,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId.Value()
-	snapshotId := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId
+	snapshotId := *currentModel.Id
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
 		SnapshotID:  snapshotId,
-		ClusterName: *currentModel.ClusterName.Value(),
+		ClusterName: *currentModel.ClusterName,
 	}
 
 	_, err = client.CloudProviderSnapshots.Delete(context.Background(), snapshotRequest)
@@ -124,15 +124,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId.Value()
+	projectId := *currentModel.ProjectId
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
-		ClusterName: *currentModel.ClusterName.Value(),
+		ClusterName: *currentModel.ClusterName,
 	}
 
 	snapshots, _, err := client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest)
@@ -143,14 +143,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var models []Model
 	for _, snapshot := range snapshots.Results {
 		var model Model
-		model.Description = encoding.NewString(snapshot.Description)
-		model.RetentionInDays = encoding.NewInt(int64(snapshot.RetentionInDays))
-		model.Status = encoding.NewString(snapshot.Status)
-		model.Type = encoding.NewString(snapshot.Type)
-		model.CreatedAt = encoding.NewString(snapshot.CreatedAt)
-		model.MasterKeyUuid = encoding.NewString(snapshot.MasterKeyUUID)
-		model.MongoVersion = encoding.NewString(snapshot.MongodVersion)
-		model.StorageSizeBytes = encoding.NewInt(int64(snapshot.StorageSizeBytes))
+		model.Description = &snapshot.Description
+		model.RetentionInDays = &snapshot.RetentionInDays
+		model.Status = &snapshot.Status
+		model.Type = &snapshot.Type
+		model.CreatedAt = &snapshot.CreatedAt
+		model.MasterKeyUuid = &snapshot.MasterKeyUUID
+		model.MongoVersion = &snapshot.MongodVersion
+		model.StorageSizeBytes = &snapshot.StorageSizeBytes
 		models = append(models, model)
 	}
 
@@ -162,7 +162,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	isReady, state, err := snapshotIsReady(client, *currentModel.ProjectId.Value(), *currentModel.Id.Value(), *currentModel.ClusterName.Value(), targetState)
+	isReady, state, err := snapshotIsReady(client, *currentModel.ProjectId, *currentModel.Id, *currentModel.ClusterName, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -175,7 +175,7 @@ func validateProgress(client *matlasClient.Client, currentModel *Model, targetSt
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
 			"status":      state,
-			"snapshot_id": *currentModel.Id.Value(),
+			"snapshot_id": *currentModel.Id,
 		}
 		return p, nil
 	}

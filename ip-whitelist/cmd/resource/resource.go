@@ -3,8 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -13,7 +11,7 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -25,7 +23,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	guid := xid.New()
 
-	currentModel.Id = encoding.NewString(guid.String())
+    x := guid.String()
+	currentModel.Id = &x 
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -36,12 +35,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
+	projectID := *currentModel.ProjectId
 
 	entries := []string{}
 	for _, wl := range currentModel.Whitelist {
@@ -65,7 +64,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -92,7 +91,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -141,16 +140,16 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 	for _, w := range model.Whitelist {
 		wl := &mongodbatlas.ProjectIPWhitelist{}
 		if w.Comment != nil {
-			wl.Comment = *w.Comment.Value()
+			wl.Comment = *w.Comment
 		}
 		if w.CidrBlock != nil {
-			wl.CIDRBlock = *w.CidrBlock.Value()
+			wl.CIDRBlock = *w.CidrBlock
 		}
 		if w.IpAddress != nil {
-			wl.IPAddress = *w.IpAddress.Value()
+			wl.IPAddress = *w.IpAddress
 		}
 		if w.AwsSecurityGroup != nil {
-			wl.AwsSecurityGroup = *w.AwsSecurityGroup.Value()
+			wl.AwsSecurityGroup = *w.AwsSecurityGroup
 		}
 
 		whitelist = append(whitelist, wl)
@@ -160,13 +159,13 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 
 func getEntry(wl WhitelistDefinition) string {
 	if wl.IpAddress != nil {
-		return *wl.IpAddress.Value()
+		return *wl.IpAddress
 	}
 	if wl.CidrBlock != nil {
-		return *wl.CidrBlock.Value()
+		return *wl.CidrBlock
 	}
 	if wl.AwsSecurityGroup != nil {
-		return *wl.AwsSecurityGroup.Value()
+		return *wl.AwsSecurityGroup
 	}
 	return ""
 }
@@ -175,11 +174,11 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 	var results []WhitelistDefinition
 	for _, wl := range whitelist {
 		r := WhitelistDefinition{
-			IpAddress:        encoding.NewString(wl.IPAddress),
-			CidrBlock:        encoding.NewString(wl.CIDRBlock),
-			AwsSecurityGroup: encoding.NewString(wl.AwsSecurityGroup),
-			Comment:          encoding.NewString(wl.Comment),
-			ProjectId:        encoding.NewString(wl.GroupID),
+			IpAddress:        &wl.IPAddress,
+			CidrBlock:        &wl.CIDRBlock,
+			AwsSecurityGroup: &wl.AwsSecurityGroup,
+			Comment:          &wl.Comment,
+			ProjectId:        &wl.GroupID,
 		}
 		results = append(results, r)
 	}
@@ -188,14 +187,14 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 
 func createEntries(model *Model, client *mongodbatlas.Client) error {
 	request := getProjectIPWhitelistRequest(model)
-	projectID := *model.ProjectId.Value()
+	projectID := *model.ProjectId
 
 	_, _, err := client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
 	return err
 }
 
 func deleteEntries(model *Model, client *mongodbatlas.Client) error {
-	projectID := *model.ProjectId.Value()
+	projectID := *model.ProjectId
 	var err error
 
 	for _, wl := range model.Whitelist {

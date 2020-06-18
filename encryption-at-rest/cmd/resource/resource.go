@@ -3,7 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -11,20 +10,20 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
 	encryptionAtRest := &mongodbatlas.EncryptionAtRest{
 		AwsKms: mongodbatlas.AwsKms{
-			Enabled:             currentModel.AwsKms.Enabled.Value(),
-			AccessKeyID:         *currentModel.AwsKms.AccessKeyID.Value(),
-			SecretAccessKey:     *currentModel.AwsKms.SecretAccessKey.Value(),
-			CustomerMasterKeyID: *currentModel.AwsKms.CustomerMasterKeyID.Value(),
-			Region:              *currentModel.AwsKms.Region.Value(),
+			Enabled:             currentModel.AwsKms.Enabled,
+			AccessKeyID:         *currentModel.AwsKms.AccessKeyID,
+			SecretAccessKey:     *currentModel.AwsKms.SecretAccessKey,
+			CustomerMasterKeyID: *currentModel.AwsKms.CustomerMasterKeyID,
+			Region:              *currentModel.AwsKms.Region,
 		},
-		GroupID: *currentModel.ProjectId.Value(),
+		GroupID: *currentModel.ProjectId,
 	}
 
 	_, _, err = client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest)
@@ -41,23 +40,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
+	projectID := *currentModel.ProjectId
 
 	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
 	if err != nil {
 		return handler.NewProgressEvent(), fmt.Errorf("error fetching encryption at rest configuration for project (%s): %s", projectID, err)
 	}
 
-	currentModel.AwsKms.AccessKeyID = encoding.NewString(encryptionAtRest.AwsKms.AccessKeyID)
-	currentModel.AwsKms.CustomerMasterKeyID = encoding.NewString(encryptionAtRest.AwsKms.CustomerMasterKeyID)
-	currentModel.AwsKms.Enabled = encoding.NewBool(*encryptionAtRest.AwsKms.Enabled)
-	currentModel.AwsKms.Region = encoding.NewString(encryptionAtRest.AwsKms.Region)
-	currentModel.AwsKms.SecretAccessKey = encoding.NewString(encryptionAtRest.AwsKms.SecretAccessKey)
+	currentModel.AwsKms.AccessKeyID = &encryptionAtRest.AwsKms.AccessKeyID
+	currentModel.AwsKms.CustomerMasterKeyID = &encryptionAtRest.AwsKms.CustomerMasterKeyID
+	currentModel.AwsKms.Enabled = encryptionAtRest.AwsKms.Enabled
+	currentModel.AwsKms.Region = &encryptionAtRest.AwsKms.Region
+	currentModel.AwsKms.SecretAccessKey = &encryptionAtRest.AwsKms.SecretAccessKey
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -78,12 +77,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
+	projectID := *currentModel.ProjectId
 
 	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
 	if err != nil {

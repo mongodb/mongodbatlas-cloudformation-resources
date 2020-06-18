@@ -5,17 +5,23 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
 )
 
+func castNO64(i *int64) *int {
+    x := cast.ToInt(&i)
+    return &x
+}
+func cast64(i *int) *int64 {
+    x := cast.ToInt64(&i)
+    return &x
+}
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -24,39 +30,39 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
 	}
 
-	projectID := *currentModel.ProjectID.Value()
+	projectID := *currentModel.ProjectID
 
 	if len(currentModel.ReplicationSpecs) > 0 {
-		if currentModel.ClusterType.Value() != nil {
+		if currentModel.ClusterType != nil {
 			return handler.ProgressEvent{}, errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 		}
 
-		if currentModel.NumShards.Value() != nil {
+		if currentModel.NumShards != nil {
 			return handler.ProgressEvent{}, errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
 		}
 	}
 
 	autoScaling := mongodbatlas.AutoScaling{
-		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled.Value(),
+		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
 	}
 
 	clusterRequest := &mongodbatlas.Cluster{
-		Name:                     cast.ToString(currentModel.Name.Value()),
-		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider.Value()),
-		ClusterType:              cast.ToString(currentModel.ClusterType.Value()),
-		BackupEnabled:            currentModel.BackupEnabled.Value(),
-		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
-		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
+		Name:                     cast.ToString(currentModel.Name),
+		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider),
+		ClusterType:              cast.ToString(currentModel.ClusterType),
+		BackupEnabled:            currentModel.BackupEnabled,
+		DiskSizeGB:               currentModel.DiskSizeGB,
+		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
 		BiConnector:              expandBiConnector(currentModel.BiConnector),
 		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
 		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
-		ReplicationFactor:        currentModel.ReplicationFactor.Value(),
-		NumShards:                currentModel.NumShards.Value(),
+		ReplicationFactor:        cast64(currentModel.ReplicationFactor),
+		NumShards:                cast64(currentModel.NumShards),
 	}
 
-	if currentModel.MongoDBMajorVersion.Value() != nil {
-		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion.Value())
+	if currentModel.MongoDBMajorVersion != nil {
+		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
 	}
 
 	cluster, _, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
@@ -64,8 +70,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
 	}
 
-	currentModel.ID = encoding.NewString(cluster.ID)
-	currentModel.StateName = encoding.NewString(cluster.StateName)
+	currentModel.ID = &cluster.ID
+	currentModel.StateName = &cluster.StateName
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -80,61 +86,61 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectID.Value()
-	clusterName := *currentModel.Name.Value()
+	projectID := *currentModel.ProjectID
+	clusterName := *currentModel.Name
 
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
 
-	currentModel.ID = encoding.NewString(cluster.ID)
-	currentModel.AutoScaling = AutoScaling{
-		DiskGBEnabled: encoding.NewBool(*cluster.AutoScaling.DiskGBEnabled),
+	currentModel.ID = &cluster.ID
+	currentModel.AutoScaling = &AutoScaling{
+		DiskGBEnabled: cluster.AutoScaling.DiskGBEnabled,
 	}
 
-	currentModel.BackupEnabled = encoding.NewBool(*cluster.BackupEnabled)
-	currentModel.ProviderBackupEnabled = encoding.NewBool(*cluster.ProviderBackupEnabled)
-	currentModel.ClusterType = encoding.NewString(cluster.ClusterType)
-	currentModel.DiskSizeGB = encoding.NewFloat(*cluster.DiskSizeGB)
-	currentModel.EncryptionAtRestProvider = encoding.NewString(cluster.EncryptionAtRestProvider)
-	currentModel.MongoDBMajorVersion = encoding.NewString(cluster.MongoDBVersion)
+	currentModel.BackupEnabled = cluster.BackupEnabled
+	currentModel.ProviderBackupEnabled = cluster.ProviderBackupEnabled
+	currentModel.ClusterType = &cluster.ClusterType
+	currentModel.DiskSizeGB = cluster.DiskSizeGB
+	currentModel.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
+	currentModel.MongoDBMajorVersion = &cluster.MongoDBVersion
 
 	if cluster.NumShards != nil {
-		currentModel.NumShards = encoding.NewInt(*cluster.NumShards)
+		currentModel.NumShards = castNO64(cluster.NumShards)
 	}
 
-	currentModel.MongoDBVersion = encoding.NewString(cluster.MongoDBVersion)
-	currentModel.MongoURI = encoding.NewString(cluster.MongoURI)
-	currentModel.MongoURIUpdated = encoding.NewString(cluster.MongoURIUpdated)
-	currentModel.MongoURIWithOptions = encoding.NewString(cluster.MongoURIWithOptions)
-	currentModel.Paused = encoding.NewBool(*cluster.Paused)
-	currentModel.SrvAddress = encoding.NewString(cluster.SrvAddress)
-	currentModel.StateName = encoding.NewString(cluster.StateName)
+	currentModel.MongoDBVersion = &cluster.MongoDBVersion
+	currentModel.MongoURI = &cluster.MongoURI
+	currentModel.MongoURIUpdated = &cluster.MongoURIUpdated
+	currentModel.MongoURIWithOptions = &cluster.MongoURIWithOptions
+	currentModel.Paused = cluster.Paused
+	currentModel.SrvAddress = &cluster.SrvAddress
+	currentModel.StateName = &cluster.StateName
 
-	currentModel.BiConnector = BiConnector{
-		ReadPreference: encoding.NewString(cluster.BiConnector.ReadPreference),
-		Enabled:        encoding.NewBool(*cluster.BiConnector.Enabled),
+	currentModel.BiConnector = &BiConnector{
+		ReadPreference: &cluster.BiConnector.ReadPreference,
+		Enabled:        cluster.BiConnector.Enabled,
 	}
 
 	if cluster.ProviderSettings != nil {
-		currentModel.ProviderSettings = ProviderSettings{
-			BackingProviderName: encoding.NewString(cluster.ProviderSettings.BackingProviderName),
-			DiskIOPS:            encoding.NewInt(*cluster.ProviderSettings.DiskIOPS),
-			EncryptEBSVolume:    encoding.NewBool(*cluster.ProviderSettings.EncryptEBSVolume),
-			InstanceSizeName:    encoding.NewString(cluster.ProviderSettings.InstanceSizeName),
-			RegionName:          encoding.NewString(cluster.ProviderSettings.RegionName),
-			VolumeType:          encoding.NewString(cluster.ProviderSettings.VolumeType),
+		currentModel.ProviderSettings = &ProviderSettings{
+			BackingProviderName: &cluster.ProviderSettings.BackingProviderName,
+			DiskIOPS:            castNO64(cluster.ProviderSettings.DiskIOPS),
+			EncryptEBSVolume:    cluster.ProviderSettings.EncryptEBSVolume,
+			InstanceSizeName:    &cluster.ProviderSettings.InstanceSizeName,
+			RegionName:          &cluster.ProviderSettings.RegionName,
+			VolumeType:          &cluster.ProviderSettings.VolumeType,
 		}
 	}
 
 	currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
-	currentModel.ReplicationFactor = encoding.NewInt(*cluster.ReplicationFactor)
+	currentModel.ReplicationFactor = castNO64(cluster.ReplicationFactor)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -145,7 +151,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -154,40 +160,40 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "IDLE", "UPDATING")
 	}
 
-	projectID := *currentModel.ProjectID.Value()
-	clusterName := *currentModel.Name.Value()
+	projectID := *currentModel.ProjectID
+	clusterName := *currentModel.Name
 
 	if len(currentModel.ReplicationSpecs) > 0 {
-		if currentModel.ClusterType.Value() != nil {
+		if currentModel.ClusterType != nil {
 			return handler.ProgressEvent{}, errors.New("error updating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 		}
 
-		if currentModel.NumShards.Value() != nil {
+		if currentModel.NumShards != nil {
 			return handler.ProgressEvent{}, errors.New("error updating cluster: NumShards should be set when `ReplicationSpecs` is set")
 		}
 	}
 
 	autoScaling := mongodbatlas.AutoScaling{
-		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled.Value(),
+		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
 	}
 
 	clusterRequest := &mongodbatlas.Cluster{
-		Name:                     cast.ToString(currentModel.Name.Value()),
-		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider.Value()),
-		ClusterType:              cast.ToString(currentModel.ClusterType.Value()),
-		BackupEnabled:            currentModel.BackupEnabled.Value(),
-		DiskSizeGB:               currentModel.DiskSizeGB.Value(),
-		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled.Value(),
+		Name:                     cast.ToString(currentModel.Name),
+		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider),
+		ClusterType:              cast.ToString(currentModel.ClusterType),
+		BackupEnabled:            currentModel.BackupEnabled,
+		DiskSizeGB:               currentModel.DiskSizeGB,
+		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
 		BiConnector:              expandBiConnector(currentModel.BiConnector),
 		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
 		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
-		ReplicationFactor:        currentModel.ReplicationFactor.Value(),
-		NumShards:                currentModel.NumShards.Value(),
+		ReplicationFactor:        cast64(currentModel.ReplicationFactor),
+		NumShards:                cast64(currentModel.NumShards),
 	}
 
-	if currentModel.MongoDBMajorVersion.Value() != nil {
-		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion.Value())
+	if currentModel.MongoDBMajorVersion != nil {
+		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
 	}
 
 	cluster, _, err := client.Clusters.Update(context.Background(), projectID, clusterName, clusterRequest)
@@ -195,7 +201,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
 	}
 
-	currentModel.ID = encoding.NewString(cluster.ID)
+	currentModel.ID = &cluster.ID
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -210,7 +216,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -219,8 +225,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "DELETED", "DELETING")
 	}
 
-	projectID := *currentModel.ProjectID.Value()
-	clusterName := *currentModel.Name.Value()
+	projectID := *currentModel.ProjectID
+	clusterName := *currentModel.Name
 
 	_, err = client.Clusters.Delete(context.Background(), projectID, clusterName)
 	if err != nil {
@@ -247,22 +253,22 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func expandBiConnector(biConnector BiConnector) mongodbatlas.BiConnector {
-	return mongodbatlas.BiConnector{
-		Enabled:        biConnector.Enabled.Value(),
-		ReadPreference: cast.ToString(biConnector.ReadPreference.Value()),
+func expandBiConnector(biConnector *BiConnector) mongodbatlas.BiConnector {
+    return mongodbatlas.BiConnector{
+		Enabled:        biConnector.Enabled,
+		ReadPreference: cast.ToString(biConnector.ReadPreference),
 	}
 }
 
-func expandProviderSettings(providerSettings ProviderSettings) *mongodbatlas.ProviderSettings {
+func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
 	return &mongodbatlas.ProviderSettings{
-		DiskIOPS:            providerSettings.DiskIOPS.Value(),
-		EncryptEBSVolume:    providerSettings.EncryptEBSVolume.Value(),
-		RegionName:          cast.ToString(providerSettings.RegionName.Value()),
-		BackingProviderName: cast.ToString(providerSettings.BackingProviderName.Value()),
-		InstanceSizeName:    cast.ToString(providerSettings.InstanceSizeName.Value()),
+		DiskIOPS:            cast64(providerSettings.DiskIOPS),
+		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
+		RegionName:          cast.ToString(providerSettings.RegionName),
+		BackingProviderName: cast.ToString(providerSettings.BackingProviderName),
+		InstanceSizeName:    cast.ToString(providerSettings.InstanceSizeName),
 		ProviderName:        "AWS",
-		VolumeType:          cast.ToString(providerSettings.VolumeType.Value()),
+		VolumeType:          cast.ToString(providerSettings.VolumeType),
 	}
 }
 
@@ -271,9 +277,9 @@ func expandReplicationSpecs(replicationSpecs []ReplicationSpec) []mongodbatlas.R
 
 	for _, s := range replicationSpecs {
 		rSpec := mongodbatlas.ReplicationSpec{
-			ID:            cast.ToString(s.ID.Value()),
-			NumShards:     s.NumShards.Value(),
-			ZoneName:      cast.ToString(s.ZoneName.Value()),
+			ID:            cast.ToString(s.ID),
+			NumShards:     cast64(s.NumShards),
+			ZoneName:      cast.ToString(s.ZoneName),
 			RegionsConfig: expandRegionsConfig(s.RegionsConfig),
 		}
 
@@ -285,11 +291,11 @@ func expandReplicationSpecs(replicationSpecs []ReplicationSpec) []mongodbatlas.R
 func expandRegionsConfig(regions []RegionsConfig) map[string]mongodbatlas.RegionsConfig {
 	regionsConfig := make(map[string]mongodbatlas.RegionsConfig)
 	for _, region := range regions {
-		regionsConfig[*region.RegionName.Value()] = mongodbatlas.RegionsConfig{
-			AnalyticsNodes: region.AnalyticsNodes.Value(),
-			ElectableNodes: region.ElectableNodes.Value(),
-			Priority:       region.Priority.Value(),
-			ReadOnlyNodes:  region.ReadOnlyNodes.Value(),
+		regionsConfig[*region.RegionName] = mongodbatlas.RegionsConfig{
+			AnalyticsNodes: cast64(region.AnalyticsNodes),
+			ElectableNodes: cast64(region.ElectableNodes),
+			Priority:       cast64(region.Priority),
+			ReadOnlyNodes:  cast64(region.ReadOnlyNodes),
 		}
 	}
 	return regionsConfig
@@ -306,9 +312,9 @@ func flattenReplicationSpecs(rSpecs []mongodbatlas.ReplicationSpec) []Replicatio
 	specs := make([]ReplicationSpec, 0)
 	for _, rSpec := range rSpecs {
 		spec := ReplicationSpec{
-			ID:            encoding.NewString(rSpec.ID),
-			NumShards:     encoding.NewInt(*rSpec.NumShards),
-			ZoneName:      encoding.NewString(rSpec.ZoneName),
+			ID:            &rSpec.ID,
+			NumShards:     castNO64(rSpec.NumShards),
+			ZoneName:      &rSpec.ZoneName,
 			RegionsConfig: flattenRegionsConfig(rSpec.RegionsConfig),
 		}
 		specs = append(specs, spec)
@@ -321,11 +327,11 @@ func flattenRegionsConfig(regionsConfig map[string]mongodbatlas.RegionsConfig) [
 
 	for regionName, regionConfig := range regionsConfig {
 		region := RegionsConfig{
-			RegionName:     encoding.NewString(regionName),
-			Priority:       encoding.NewInt(*regionConfig.Priority),
-			AnalyticsNodes: encoding.NewInt(*regionConfig.AnalyticsNodes),
-			ElectableNodes: encoding.NewInt(*regionConfig.ElectableNodes),
-			ReadOnlyNodes:  encoding.NewInt(*regionConfig.ReadOnlyNodes),
+			RegionName:     &regionName,
+			Priority:       castNO64(regionConfig.Priority),
+			AnalyticsNodes: castNO64(regionConfig.AnalyticsNodes),
+			ElectableNodes: castNO64(regionConfig.ElectableNodes),
+			ReadOnlyNodes:  castNO64(regionConfig.ReadOnlyNodes),
 		}
 		regions = append(regions, region)
 	}
@@ -333,7 +339,7 @@ func flattenRegionsConfig(regionsConfig map[string]mongodbatlas.RegionsConfig) [
 }
 
 func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
-	isReady, state, err := isClusterInTargetState(client, *currentModel.ProjectID.Value(), *currentModel.Name.Value(), targetState)
+	isReady, state, err := isClusterInTargetState(client, *currentModel.ProjectID, *currentModel.Name, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}

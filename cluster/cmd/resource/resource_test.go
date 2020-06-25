@@ -3,9 +3,10 @@ package resource
 import (
 	"context"
     "fmt"
-
+    "github.com/docker/docker/pkg/namesgenerator"
     "os"
-	"reflect"
+    "strings"
+    "reflect"
 	"testing"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -27,23 +28,34 @@ var (
 
 
 func new() *Model {
-    comment := "Testing ip whitelist"
-    ipaddress := "192.168.0.1"
-    count := 1
+    clusterName := strings.Replace(namesgenerator.GetRandomName(2),"_","-",-1)
+    fmt.Printf(">>>>>>>>>Creating new cluster model name=%v",clusterName)
+    fmt.Printf("##################### %v, %v, %v",publicKey,privateKey, projectID)
     model := &Model{
-		ProjectId: &projectID,
-		Whitelist: []WhitelistDefinition{
-			WhitelistDefinition{
-				Comment:   &comment,
-			    IpAddress: &ipaddress,
-			 	ProjectId: &projectID,
-			},
-		},
+		ProjectID: &projectID,
+        Name: &clusterName, 
+        NumShards: intPtr(1),
+        ReplicationFactor: intPtr(3),
+        ProviderBackupEnabled: boolPtr(false),
+        AutoScaling: &AutoScaling{
+            DiskGBEnabled: boolPtr(false),
+        },
+        MongoDBVersion: stringPtr("4.0"),
+        ProviderSettings: &ProviderSettings{
+            ProviderName: stringPtr("AWS"),
+            EncryptEBSVolume: boolPtr(false),
+            InstanceSizeName: stringPtr("M10"),
+            RegionName: stringPtr("US_EAST_1"),
+            DiskIOPS: intPtr(100),
+        },
+        BiConnector: &BiConnector{	
+            ReadPreference: stringPtr(""), 
+            Enabled: boolPtr(false),
+        },
 		ApiKeys: &ApiKeyDefinition{
 			PublicKey:  &publicKey,
 			PrivateKey: &privateKey,
 		},
-		TotalCount: &count,
 	}
     spew.Dump(model)
     return model
@@ -53,15 +65,15 @@ func tearDown(model *Model) error {
     return nil
 }
 func xxtearDown(model *Model) error {
-	client, err := util.CreateMongoDBClient(publicKey, privateKey)
-	if err != nil {
-		return err
-	}
+	//client, err := util.CreateMongoDBClient(publicKey, privateKey)
+	//if err != nil {
+	//	return err
+	//}
 
-	err = deleteEntries(model, client)
-	if err != nil {
-		return err
-	}
+	//err = deleteEntries(model, client)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 
@@ -70,9 +82,10 @@ func setUp(model *Model) (*Model, error) {
     spew.Dump(model)
 
 	client, err := util.CreateMongoDBClient(*model.ApiKeys.PublicKey, *model.ApiKeys.PrivateKey)
-	projectID := *model.ProjectId
-	request := getProjectIPWhitelistRequest(model)
-    ipw, _, err := client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	projectID := *model.ProjectID
+    spew.Dump(projectID)
+	request := getClusterRequest(model)
+    ipw, _, err := client.Clusters.Create(context.Background(), projectID, request)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +94,7 @@ func setUp(model *Model) (*Model, error) {
     //spew.Dump(res)
 	guid := xid.New()
     modelId := guid.String()
-	model.Id = &modelId
+	model.ID = &modelId
 	return model, nil
 }
 

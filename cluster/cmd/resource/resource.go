@@ -19,6 +19,42 @@ func cast64(i *int) *int64 {
     x := cast.ToInt64(&i)
     return &x
 }
+func boolPtr(i bool) *bool {
+    return &i
+}
+func intPtr(i int) *int {
+    return &i
+}
+func stringPtr(i string) *string {
+    return &i
+}
+
+func getClusterRequest(model *Model) *mongodbatlas.Cluster{
+	autoScaling := mongodbatlas.AutoScaling{
+		DiskGBEnabled: model.AutoScaling.DiskGBEnabled,
+	}
+
+	clusterRequest := &mongodbatlas.Cluster{
+		Name:                     cast.ToString(model.Name),
+		EncryptionAtRestProvider: cast.ToString(model.EncryptionAtRestProvider),
+		ClusterType:              cast.ToString(model.ClusterType),
+		BackupEnabled:            model.BackupEnabled,
+		DiskSizeGB:               model.DiskSizeGB,
+		ProviderBackupEnabled:    model.ProviderBackupEnabled,
+		AutoScaling:              autoScaling,
+		BiConnector:              expandBiConnector(model.BiConnector),
+		ProviderSettings:         expandProviderSettings(model.ProviderSettings),
+		ReplicationSpecs:         expandReplicationSpecs(model.ReplicationSpecs),
+		ReplicationFactor:        cast64(model.ReplicationFactor),
+		NumShards:                cast64(model.NumShards),
+	}
+
+	if model.MongoDBMajorVersion != nil {
+		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*model.MongoDBMajorVersion)
+	}
+	return clusterRequest 
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)

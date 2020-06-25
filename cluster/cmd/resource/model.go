@@ -71,6 +71,7 @@ type Labels struct {
 type ProviderSettings struct {
 	AutoScaling         *AutoScalingProvider `json:",omitempty"`
 	BackingProviderName *string              `json:",omitempty"`
+	ProviderName        *string              `json:",omitempty"`
 	DiskIOPS            *int                 `json:",omitempty"`
 	EncryptEBSVolume    *bool                `json:",omitempty"`
 	InstanceSizeName    *string              `json:",omitempty"`

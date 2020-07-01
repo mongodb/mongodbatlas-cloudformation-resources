@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -83,6 +84,14 @@ func Test(t TestT, ts TestCase) {
 				t.Error(fmt.Sprintf("[ERROR] Expected %s Got Operation Status %s", h.OperationStatus, handler.Success))
 				break
 			}
+			if h.OperationStatus == handler.InProgress {
+				h2, err := waitForSuccess(h, test, ts.TestHandler.Update)
+				if err != nil {
+					t.Error(fmt.Sprintf("Error while waiting operation to conclude %s", err))
+					break
+				}
+				h = h2
+			}
 			model = h.ResourceModel
 		}
 		if _, err := runTestStepChecks(model, test); err != nil {
@@ -112,4 +121,27 @@ func runTestStepChecks(model interface{}, step TestStep) (interface{}, error) {
 		}
 	}
 	return model, nil
+}
+
+func waitForSuccess(h handler.ProgressEvent, test TestStep, op Operation) (handler.ProgressEvent, error) {
+	for h.OperationStatus != handler.Success {
+		d, err := time.ParseDuration(fmt.Sprintf("%ds", h.CallbackDelaySeconds))
+		if err != nil {
+			return h, fmt.Errorf("Failed to get duration: %s", err)
+		}
+
+		time.Sleep(d)
+
+		data, err := json.Marshal(h.ResourceModel)
+		if err != nil {
+			return h, err
+		}
+		ctx := h.CallbackContext
+		req := handler.NewRequest("id", ctx, &session.Session{}, nil, data)
+		h = op(req)
+		if h.OperationStatus == handler.Failed {
+			return h, fmt.Errorf("Failed performing operation: %s", h.Message)
+		}
+	}
+	return h, nil
 }

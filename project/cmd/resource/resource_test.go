@@ -45,7 +45,7 @@ func Test_CreatProject(t *testing.T) {
 func getConfiguration(id int, publicKey, privateKey, orgID string) string {
 	return fmt.Sprintf(`{
 "Name": "test-acc-cfn-%d",
-"Orgid": "%s",
+"OrgId": "%s",
 "ApiKeys": {
 	"PublicKey": "%s",
 	"PrivateKey": "%s"

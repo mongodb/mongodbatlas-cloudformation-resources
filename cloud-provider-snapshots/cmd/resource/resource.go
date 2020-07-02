@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -15,8 +16,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 	if _, ok := req.CallbackContext["status"]; ok {
-        sid := req.CallbackContext["snapshot_id"].(string)
-		currentModel.Id = &sid 
+		sid := req.CallbackContext["snapshot_id"].(string)
+		currentModel.Id = &sid
 		return validateProgress(client, currentModel, "completed")
 	}
 
@@ -135,7 +136,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ClusterName: *currentModel.ClusterName,
 	}
 
-	snapshots, _, err := client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest)
+	params := &matlasClient.ListOptions{
+		PageNum:      0,
+		ItemsPerPage: 100,
+	}
+
+	snapshots, _, err := client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot list with id(project: %s): %s", projectId, err)
 	}

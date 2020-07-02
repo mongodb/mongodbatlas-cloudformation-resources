@@ -104,7 +104,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projects, _, err := client.Projects.GetAllProjects(context.Background())
+	listOptions := &matlasClient.ListOptions{
+		PageNum:      0,
+		ItemsPerPage: 100,
+	}
+	projects, _, err := client.Projects.GetAllProjects(context.Background(), listOptions)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error retrieving projects: %s", err)
 	}

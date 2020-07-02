@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -10,7 +11,7 @@ import (
 
 const (
 	automated = "automated"
-	download = "download"
+	download  = "download"
 )
 
 // Create handles the Create event from the Cloudformation service.
@@ -166,7 +167,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		GroupID:     projectId,
 		ClusterName: *currentModel.ClusterName,
 	}
-	restoreJobs, _, err := client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest)
+	params := &matlasClient.ListOptions{
+		PageNum:      0,
+		ItemsPerPage: 100,
+	}
+	restoreJobs, _, err := client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest, params)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectId, err)
 	}

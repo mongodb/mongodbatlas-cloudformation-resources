@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -12,24 +13,24 @@ import (
 )
 
 func castNO64(i *int64) *int {
-    x := cast.ToInt(&i)
-    return &x
+	x := cast.ToInt(&i)
+	return &x
 }
 func cast64(i *int) *int64 {
-    x := cast.ToInt64(&i)
-    return &x
+	x := cast.ToInt64(&i)
+	return &x
 }
 func boolPtr(i bool) *bool {
-    return &i
+	return &i
 }
 func intPtr(i int) *int {
-    return &i
+	return &i
 }
 func stringPtr(i string) *string {
-    return &i
+	return &i
 }
 
-func getClusterRequest(model *Model) *mongodbatlas.Cluster{
+func getClusterRequest(model *Model) *mongodbatlas.Cluster {
 	autoScaling := mongodbatlas.AutoScaling{
 		DiskGBEnabled: model.AutoScaling.DiskGBEnabled,
 	}
@@ -41,7 +42,7 @@ func getClusterRequest(model *Model) *mongodbatlas.Cluster{
 		BackupEnabled:            model.BackupEnabled,
 		DiskSizeGB:               model.DiskSizeGB,
 		ProviderBackupEnabled:    model.ProviderBackupEnabled,
-		AutoScaling:              autoScaling,
+		AutoScaling:              &autoScaling,
 		BiConnector:              expandBiConnector(model.BiConnector),
 		ProviderSettings:         expandProviderSettings(model.ProviderSettings),
 		ReplicationSpecs:         expandReplicationSpecs(model.ReplicationSpecs),
@@ -52,7 +53,7 @@ func getClusterRequest(model *Model) *mongodbatlas.Cluster{
 	if model.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*model.MongoDBMajorVersion)
 	}
-	return clusterRequest 
+	return clusterRequest
 }
 
 // Create handles the Create event from the Cloudformation service.
@@ -78,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	autoScaling := mongodbatlas.AutoScaling{
+	autoScaling := &mongodbatlas.AutoScaling{
 		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
 	}
 
@@ -90,15 +91,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DiskSizeGB:               currentModel.DiskSizeGB,
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
-		BiConnector:              expandBiConnector(currentModel.BiConnector),
-		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
-		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
 		ReplicationFactor:        cast64(currentModel.ReplicationFactor),
 		NumShards:                cast64(currentModel.NumShards),
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
+	}
+
+	if currentModel.BiConnector != nil {
+		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
+	}
+
+	if currentModel.ProviderSettings != nil {
+		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
+	}
+
+	if currentModel.ReplicationSpecs != nil {
+		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
 	}
 
 	cluster, _, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
@@ -209,7 +219,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	autoScaling := mongodbatlas.AutoScaling{
+	autoScaling := &mongodbatlas.AutoScaling{
 		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
 	}
 
@@ -289,8 +299,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func expandBiConnector(biConnector *BiConnector) mongodbatlas.BiConnector {
-    return mongodbatlas.BiConnector{
+func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
+	return &mongodbatlas.BiConnector{
 		Enabled:        biConnector.Enabled,
 		ReadPreference: cast.ToString(biConnector.ReadPreference),
 	}

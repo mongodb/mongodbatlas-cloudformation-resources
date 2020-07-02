@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -72,7 +73,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
-	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), groupID, username)
+	dbName := *currentModel.DatabaseName
+	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching database user (%s): %s", username, err)
 	}
@@ -150,8 +152,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
+	dbName := *currentModel.DatabaseName
 
-	_, err = client.DatabaseUsers.Delete(context.Background(), groupID, username)
+	_, err = client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error deleting database user (%s): %s", username, err)
 	}

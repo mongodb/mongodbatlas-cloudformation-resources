@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"reflect"
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type TestCase struct {
@@ -74,22 +76,48 @@ func Test(t TestT, ts TestCase) {
 	log.Printf("[INFO] Running case %s\n", ts.Name)
 
 	var model interface{}
+	var data []byte
 	for i, test := range ts.Steps {
 		log.Printf("[DEBUG] Test: Executing step %d", i)
 		if model == nil {
-			data := []byte(test.Config)
+			data = []byte(test.Config)
 			req := handler.NewRequest("id", map[string]interface{}{}, &session.Session{}, nil, data)
 			h := ts.TestHandler.Create(req)
 
 			var err error
 			h, err = checkStatus(h, ts.TestHandler.Create)
 			if err != nil {
-				t.Error("Error performing CREATE Operation %s: %s", err, h.Message)
+				t.Error(fmt.Sprintf("Error performing CREATE Operation: %s", err))
 				return
+			}
+
+			if h.OperationStatus != handler.Failed {
+				return
+			}
+
+			log.Println("[DEBUG] Running READ Operation")
+			dataRead, err := json.Marshal(h.ResourceModel)
+			if err != nil {
+				t.Error(fmt.Sprintf("Error unmarshaling READ data %s", err))
+				return
+			}
+
+			req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
+			hRead := ts.TestHandler.Read(req)
+			if hRead.OperationStatus != handler.Success {
+				t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
+				return
+			}
+
+			if equal := reflect.DeepEqual(h.ResourceModel, hRead.ResourceModel); !equal {
+				want := spew.Sdump(h.ResourceModel)
+				got := spew.Sdump(hRead.ResourceModel)
+				t.Error(fmt.Sprintf("Mismatch between CREATE and READ want %s, got %s", want, got))
 			}
 
 			model = h.ResourceModel
 		}
+
 		if _, err := runTestStepChecks(model, test); err != nil {
 			t.Error(fmt.Sprintf("Error in check: %s", err))
 		}
@@ -123,7 +151,7 @@ func checkStatus(h handler.ProgressEvent, op Operation) (handler.ProgressEvent, 
 			return h, err
 		}
 	case handler.Failed:
-		return h, err
+		return h, fmt.Errorf("Failed with %s", h.Message)
 
 	}
 

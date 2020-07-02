@@ -80,18 +80,14 @@ func Test(t TestT, ts TestCase) {
 			data := []byte(test.Config)
 			req := handler.NewRequest("id", map[string]interface{}{}, &session.Session{}, nil, data)
 			h := ts.TestHandler.Create(req)
-			if h.OperationStatus != handler.Success {
-				t.Error(fmt.Sprintf("[ERROR] Expected %s Got Operation Status %s", h.OperationStatus, handler.Success))
-				break
+
+			var err error
+			h, err = checkStatus(h, ts.TestHandler.Create)
+			if err != nil {
+				t.Error("Error performing CREATE Operation %s: %s", err, h.Message)
+				return
 			}
-			if h.OperationStatus == handler.InProgress {
-				h2, err := waitForSuccess(h, test, ts.TestHandler.Update)
-				if err != nil {
-					t.Error(fmt.Sprintf("Error while waiting operation to conclude %s", err))
-					break
-				}
-				h = h2
-			}
+
 			model = h.ResourceModel
 		}
 		if _, err := runTestStepChecks(model, test); err != nil {
@@ -108,10 +104,30 @@ func Test(t TestT, ts TestCase) {
 		}
 		req := handler.NewRequest("id", map[string]interface{}{}, &session.Session{}, nil, data)
 		h := ts.TestHandler.Delete(req)
-		if h.OperationStatus != handler.Success {
-			t.Error(fmt.Sprintf("[ERROR] Expected %s Got Operation Status %s", h.OperationStatus, handler.Success))
+		h, err = checkStatus(h, ts.TestHandler.Delete)
+		if err != nil {
+			t.Error("Error performing DELETE Operation %s: %s", err, h.Message)
 		}
 	}
+}
+
+func checkStatus(h handler.ProgressEvent, op Operation) (handler.ProgressEvent, error) {
+	var err error
+
+	switch h.OperationStatus {
+	case handler.Success:
+		return h, nil
+	case handler.InProgress:
+		h, err = waitForSuccess(h, op)
+		if err != nil {
+			return h, err
+		}
+	case handler.Failed:
+		return h, err
+
+	}
+
+	return h, nil
 }
 
 func runTestStepChecks(model interface{}, step TestStep) (interface{}, error) {
@@ -123,7 +139,7 @@ func runTestStepChecks(model interface{}, step TestStep) (interface{}, error) {
 	return model, nil
 }
 
-func waitForSuccess(h handler.ProgressEvent, test TestStep, op Operation) (handler.ProgressEvent, error) {
+func waitForSuccess(h handler.ProgressEvent, op Operation) (handler.ProgressEvent, error) {
 	for h.OperationStatus != handler.Success {
 		d, err := time.ParseDuration(fmt.Sprintf("%ds", h.CallbackDelaySeconds))
 		if err != nil {
@@ -142,6 +158,8 @@ func waitForSuccess(h handler.ProgressEvent, test TestStep, op Operation) (handl
 		if h.OperationStatus == handler.Failed {
 			return h, fmt.Errorf("Failed performing operation: %s", h.Message)
 		}
+
+		log.Printf("[INFO] Operation has status %s", h.OperationStatus)
 	}
 	return h, nil
 }

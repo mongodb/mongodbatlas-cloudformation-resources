@@ -3,7 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -11,17 +11,17 @@ import (
 
 const (
 	automated = "automated"
-	download = "download"
+	download  = "download"
 )
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	deliveryType := currentModel.DeliveryType.Value()
+	deliveryType := currentModel.DeliveryType
 	if deliveryType == nil || (*deliveryType != automated && *deliveryType != download) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
@@ -31,8 +31,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	requestParameters := &matlasClient.SnapshotReqPathParameters{}
 	snapshotRequest := &matlasClient.CloudProviderSnapshotRestoreJob{}
-	targetClusterName := currentModel.TargetClusterName.Value()
-	targetProjectId := currentModel.TargetProjectId.Value()
+	targetClusterName := currentModel.TargetClusterName
+	targetProjectId := currentModel.TargetProjectId
 	if *deliveryType == automated {
 		if targetClusterName == nil || *targetClusterName == "" {
 			return handler.ProgressEvent{
@@ -51,9 +51,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		snapshotRequest.TargetClusterName = *targetClusterName
 		snapshotRequest.TargetGroupID = *targetProjectId
 	}
-	requestParameters.GroupID = *currentModel.ProjectId.Value()
-	requestParameters.ClusterName = *currentModel.ClusterName.Value()
-	snapshotRequest.SnapshotID = *currentModel.SnapshotId.Value()
+	requestParameters.GroupID = *currentModel.ProjectId
+	requestParameters.ClusterName = *currentModel.ClusterName
+	snapshotRequest.SnapshotID = *currentModel.SnapshotId
 	snapshotRequest.DeliveryType = *deliveryType
 
 	restoreJob, _, err := client.CloudProviderSnapshotRestoreJobs.Create(context.Background(), requestParameters, snapshotRequest)
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cloud provider snapshot restore job: %s", err)
 	}
 
-	currentModel.Id = encoding.NewString(restoreJob.ID)
+	currentModel.Id = &restoreJob.ID
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -73,16 +73,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId.Value()
-	jobId := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId
+	jobId := *currentModel.Id
 	requestParameters := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
-		ClusterName: *currentModel.ClusterName.Value(),
+		ClusterName: *currentModel.ClusterName,
 		JobID:       jobId,
 	}
 
@@ -91,18 +91,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectId, jobId, err)
 	}
 
-	currentModel.TargetClusterName = encoding.NewString(restoreJob.TargetClusterName)
-	currentModel.DeliveryType = encoding.NewString(restoreJob.DeliveryType)
-	currentModel.ExpiresAt = encoding.NewString(restoreJob.ExpiresAt)
-	currentModel.CreatedAt = encoding.NewString(restoreJob.CreatedAt)
-	currentModel.Id = encoding.NewString(restoreJob.ID)
-	currentModel.FinishedAt = encoding.NewString(restoreJob.FinishedAt)
-	currentModel.SnapshotId = encoding.NewString(restoreJob.SnapshotID)
-	currentModel.TargetProjectId = encoding.NewString(restoreJob.TargetGroupID)
-	currentModel.Timestamp = encoding.NewString(restoreJob.Timestamp)
-	currentModel.Cancelled = encoding.NewBool(restoreJob.Cancelled)
-	currentModel.Expired = encoding.NewBool(restoreJob.Expired)
-	currentModel.DeliveryUrl = flattenDeliveryUrl(restoreJob.DeliveryURL)
+	currentModel.TargetClusterName = &restoreJob.TargetClusterName
+	currentModel.DeliveryType = &restoreJob.DeliveryType
+	currentModel.ExpiresAt = &restoreJob.ExpiresAt
+	currentModel.CreatedAt = &restoreJob.CreatedAt
+	currentModel.Id = &restoreJob.ID
+	currentModel.FinishedAt = &restoreJob.FinishedAt
+	currentModel.SnapshotId = &restoreJob.SnapshotID
+	currentModel.TargetProjectId = &restoreJob.TargetGroupID
+	currentModel.Timestamp = &restoreJob.Timestamp
+	currentModel.Cancelled = &restoreJob.Cancelled
+	currentModel.Expired = &restoreJob.Expired
+	currentModel.DeliveryUrl = restoreJob.DeliveryURL
 	currentModel.Links = flattenLinks(restoreJob.Links)
 
 	return handler.ProgressEvent{
@@ -124,19 +124,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId.Value()
-	jobId := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId
+	jobId := *currentModel.Id
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
-		ClusterName: *currentModel.ClusterName.Value(),
+		ClusterName: *currentModel.ClusterName,
 		JobID:       jobId,
 	}
-	if *currentModel.DeliveryType.Value() == "automated" {
+	if *currentModel.DeliveryType == "automated" {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         "Automated restore cannot be cancelled",
@@ -157,17 +157,21 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId.Value()
+	projectId := *currentModel.ProjectId
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
-		ClusterName: *currentModel.ClusterName.Value(),
+		ClusterName: *currentModel.ClusterName,
 	}
-	restoreJobs, _, err := client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest)
+	params := &matlasClient.ListOptions{
+		PageNum:      0,
+		ItemsPerPage: 100,
+	}
+	restoreJobs, _, err := client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest, params)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectId, err)
 	}
@@ -175,18 +179,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var models []Model
 	for _, restoreJob := range restoreJobs.Results {
 		var model Model
-		model.TargetClusterName = encoding.NewString(restoreJob.TargetClusterName)
-		model.DeliveryType = encoding.NewString(restoreJob.DeliveryType)
-		model.ExpiresAt = encoding.NewString(restoreJob.ExpiresAt)
-		model.CreatedAt = encoding.NewString(restoreJob.CreatedAt)
-		model.Id = encoding.NewString(restoreJob.ID)
-		model.FinishedAt = encoding.NewString(restoreJob.FinishedAt)
-		model.SnapshotId = encoding.NewString(restoreJob.SnapshotID)
-		model.TargetProjectId = encoding.NewString(restoreJob.TargetGroupID)
-		model.Timestamp = encoding.NewString(restoreJob.Timestamp)
-		model.Cancelled = encoding.NewBool(restoreJob.Cancelled)
-		model.Expired = encoding.NewBool(restoreJob.Expired)
-		model.DeliveryUrl = flattenDeliveryUrl(restoreJob.DeliveryURL)
+		model.TargetClusterName = &restoreJob.TargetClusterName
+		model.DeliveryType = &restoreJob.DeliveryType
+		model.ExpiresAt = &restoreJob.ExpiresAt
+		model.CreatedAt = &restoreJob.CreatedAt
+		model.Id = &restoreJob.ID
+		model.FinishedAt = &restoreJob.FinishedAt
+		model.SnapshotId = &restoreJob.SnapshotID
+		model.TargetProjectId = &restoreJob.TargetGroupID
+		model.Timestamp = &restoreJob.Timestamp
+		model.Cancelled = &restoreJob.Cancelled
+		model.Expired = &restoreJob.Expired
+		model.DeliveryUrl = restoreJob.DeliveryURL
 		model.Links = flattenLinks(restoreJob.Links)
 		models = append(models, model)
 	}
@@ -198,10 +202,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func flattenDeliveryUrl(deliveryUrlResult []string) []*encoding.String {
-	deliveryUrls := make([]*encoding.String, 0)
+func flattenDeliveryUrl(deliveryUrlResult []string) []*string {
+	deliveryUrls := make([]*string, 0)
 	for _, deliveryUrl := range deliveryUrlResult {
-		deliveryUrls = append(deliveryUrls, encoding.NewString(deliveryUrl))
+		deliveryUrls = append(deliveryUrls, &deliveryUrl)
 	}
 	return deliveryUrls
 }
@@ -210,8 +214,8 @@ func flattenLinks(linksResult []*matlasClient.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {
 		var lin Links
-		lin.Href = encoding.NewString(link.Href)
-		lin.Rel = encoding.NewString(link.Rel)
+		lin.Href = &link.Href
+		lin.Rel = &link.Rel
 		links = append(links, lin)
 	}
 	return links

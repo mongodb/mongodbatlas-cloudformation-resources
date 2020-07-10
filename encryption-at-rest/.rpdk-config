@@ -5,6 +5,8 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/encryption-at-rest"
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/encryption-at-rest",
+        "protocolVersion": "1.0.0",
+        "pluginVersion": "0.1.6"
     }
 }

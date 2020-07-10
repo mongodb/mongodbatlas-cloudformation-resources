@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -13,7 +12,7 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -23,32 +22,32 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		role := mongodbatlas.Role{}
 		if r.CollectionName != nil {
-			role.CollectionName = *r.CollectionName.Value()
+			role.CollectionName = *r.CollectionName
 		}
 
 		if r.DatabaseName != nil {
-			role.DatabaseName = *r.DatabaseName.Value()
+			role.DatabaseName = *r.DatabaseName
 		}
 
 		if r.RoleName != nil {
-			role.RoleName = *r.RoleName.Value()
+			role.RoleName = *r.RoleName
 		}
 
 		roles = append(roles, role)
 	}
 
-	groupID := *currentModel.ProjectId.Value()
+	groupID := *currentModel.ProjectId
 
 	user := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
 		GroupID:      groupID,
-		Username:     *currentModel.Username.Value(),
-		Password:     *currentModel.Password.Value(),
-		DatabaseName: *currentModel.DatabaseName.Value(),
+		Username:     *currentModel.Username,
+		Password:     *currentModel.Password,
+		DatabaseName: *currentModel.DatabaseName,
 	}
 
 	if currentModel.LdapAuthType != nil {
-		user.LDAPAuthType = *currentModel.LdapAuthType.Value()
+		user.LDAPAuthType = *currentModel.LdapAuthType
 	}
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
@@ -67,28 +66,29 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	groupID := *currentModel.ProjectId.Value()
-	username := *currentModel.Username.Value()
-	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), groupID, username)
+	groupID := *currentModel.ProjectId
+	username := *currentModel.Username
+	dbName := *currentModel.DatabaseName
+	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching database user (%s): %s", username, err)
 	}
 
-	currentModel.DatabaseName = encoding.NewString(databaseUser.Username)
-	currentModel.LdapAuthType = encoding.NewString(databaseUser.LDAPAuthType)
+	currentModel.DatabaseName = &databaseUser.Username
+	currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 
 	var roles []RoleDefinition
 
 	for _, r := range databaseUser.Roles {
 		role := RoleDefinition{
-			CollectionName: encoding.NewString(r.CollectionName),
-			DatabaseName:   encoding.NewString(r.DatabaseName),
-			RoleName:       encoding.NewString(r.RoleName),
+			CollectionName: &r.CollectionName,
+			DatabaseName:   &r.DatabaseName,
+			RoleName:       &r.RoleName,
 		}
 
 		roles = append(roles, role)
@@ -104,7 +104,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -112,25 +112,25 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	var roles []mongodbatlas.Role
 	for _, r := range currentModel.Roles {
 		role := mongodbatlas.Role{
-			CollectionName: *r.CollectionName.Value(),
-			DatabaseName:   *r.DatabaseName.Value(),
-			RoleName:       *r.RoleName.Value(),
+			CollectionName: *r.CollectionName,
+			DatabaseName:   *r.DatabaseName,
+			RoleName:       *r.RoleName,
 		}
 
 		roles = append(roles, role)
 	}
 
-	groupID := *currentModel.ProjectId.Value()
-	username := *currentModel.Username.Value()
+	groupID := *currentModel.ProjectId
+	username := *currentModel.Username
 
 	_, _, err = client.DatabaseUsers.Update(context.Background(), groupID, username,
 		&mongodbatlas.DatabaseUser{
 			Roles:        roles,
 			GroupID:      groupID,
 			Username:     username,
-			Password:     *currentModel.Password.Value(),
-			DatabaseName: *currentModel.Password.Value(),
-			LDAPAuthType: *currentModel.LdapAuthType.Value(),
+			Password:     *currentModel.Password,
+			DatabaseName: *currentModel.Password,
+			LDAPAuthType: *currentModel.LdapAuthType,
 		})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error updating database user (%s): %s", username, err)
@@ -145,15 +145,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	groupID := *currentModel.ProjectId.Value()
-	username := *currentModel.Username.Value()
+	groupID := *currentModel.ProjectId
+	username := *currentModel.Username
+	dbName := *currentModel.DatabaseName
 
-	_, err = client.DatabaseUsers.Delete(context.Background(), groupID, username)
+	_, err = client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error deleting database user (%s): %s", username, err)
 	}

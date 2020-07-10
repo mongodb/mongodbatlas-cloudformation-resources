@@ -3,7 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -11,34 +10,34 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
 	defaultProviderName := "AWS"
-	projectID := *currentModel.ProjectId.Value()
+	projectID := *currentModel.ProjectId
 	peerRequest := matlasClient.Peer{
-		ContainerID: *currentModel.ContainerId.Value(),
+		ContainerID: *currentModel.ContainerId,
 	}
 
-	region := currentModel.AccepterRegionName.Value()
+	region := currentModel.AccepterRegionName
 	if region == nil || *region == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `accepter_region_name` must be set")
 	}
-	awsAccountId := currentModel.AwsAccountId.Value()
+	awsAccountId := currentModel.AwsAccountId
 	if awsAccountId == nil || *awsAccountId == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `aws_account_id` must be set")
 	}
-	rtCIDR := currentModel.RouteTableCidrBlock.Value()
+	rtCIDR := currentModel.RouteTableCidrBlock
 	if rtCIDR == nil || *rtCIDR == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `route_table_cidr_block` must be set")
 	}
-	vpcID := currentModel.VpcId.Value()
+	vpcID := currentModel.VpcId
 	if vpcID == nil || *vpcID == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `vpc_id` must be set")
 	}
-	providerName := currentModel.ProviderName.Value()
+	providerName := currentModel.ProviderName
 	if providerName == nil || *providerName == "" {
 		providerName = &defaultProviderName
 	}
@@ -54,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: %s", err)
 	}
 
-	currentModel.Id = encoding.NewString(peerResponse.ID)
+	currentModel.Id = &peerResponse.ID
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -65,27 +64,27 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-	peerID := *currentModel.Id.Value()
+	projectID := *currentModel.ProjectId
+	peerID := *currentModel.Id
 
 	peerResponse, _, err := client.Peers.Get(context.Background(), projectID, peerID)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading peer with id(project: %s, peer: %s): %s", projectID, peerID, err)
 	}
 
-	currentModel.AccepterRegionName = encoding.NewString(peerResponse.AccepterRegionName)
-	currentModel.AwsAccountId = encoding.NewString(peerResponse.AWSAccountID)
-	currentModel.RouteTableCidrBlock = encoding.NewString(peerResponse.RouteTableCIDRBlock)
-	currentModel.VpcId = encoding.NewString(peerResponse.VpcID)
-	currentModel.ConnectionId = encoding.NewString(peerResponse.ConnectionID)
-	currentModel.ErrorStateName = encoding.NewString(peerResponse.ErrorStateName)
-	currentModel.StatusName = encoding.NewString(peerResponse.StatusName)
-	currentModel.ProviderName = encoding.NewString(peerResponse.ProviderName)
+	currentModel.AccepterRegionName = &peerResponse.AccepterRegionName
+	currentModel.AwsAccountId = &peerResponse.AWSAccountID
+	currentModel.RouteTableCidrBlock = &peerResponse.RouteTableCIDRBlock
+	currentModel.VpcId = &peerResponse.VpcID
+	currentModel.ConnectionId = &peerResponse.ConnectionID
+	currentModel.ErrorStateName = &peerResponse.ErrorStateName
+	currentModel.StatusName = &peerResponse.StatusName
+	currentModel.ProviderName = &peerResponse.ProviderName
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -96,29 +95,29 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
-	peerID := *currentModel.Id.Value()
+	projectID := *currentModel.ProjectId
+	peerID := *currentModel.Id
 	peerRequest := matlasClient.Peer{}
 
-	region := currentModel.AccepterRegionName.Value()
+	region := currentModel.AccepterRegionName
 	if region != nil {
 		peerRequest.AccepterRegionName = *region
 	}
-	accountID := currentModel.AwsAccountId.Value()
+	accountID := currentModel.AwsAccountId
 	if accountID != nil {
 		peerRequest.AWSAccountID = *accountID
 	}
 	peerRequest.ProviderName = "AWS"
-	rtTableBlock := currentModel.RouteTableCidrBlock.Value()
+	rtTableBlock := currentModel.RouteTableCidrBlock
 	if rtTableBlock != nil {
 		peerRequest.RouteTableCIDRBlock = *rtTableBlock
 	}
-	vpcId := currentModel.VpcId.Value()
+	vpcId := currentModel.VpcId
 	if vpcId != nil {
 		peerRequest.VpcID = *vpcId
 	}
@@ -127,7 +126,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error updating peer with id(project: %s, peer: %s): %s", projectID, peerID, err)
 	}
 
-	currentModel.Id = encoding.NewString(peerResponse.ID)
+	currentModel.Id = &peerResponse.ID
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -138,7 +137,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -147,8 +146,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, "DELETED")
 	}
 
-	projectId := *currentModel.ProjectId.Value()
-	peerId := *currentModel.Id.Value()
+	projectId := *currentModel.ProjectId
+	peerId := *currentModel.Id
 	_, err = client.Peers.Delete(context.Background(), projectId, peerId)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error deleting peer with id(project: %s, peer: %s): %s", projectId, peerId, err)
@@ -167,12 +166,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey.Value(), *currentModel.ApiKeys.PrivateKey.Value())
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectId.Value()
+	projectID := *currentModel.ProjectId
 	peerResponse, _, err := client.Peers.List(context.Background(), projectID, &matlasClient.ListOptions{})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading pf list peer with id(project: %s): %s", projectID, err)
@@ -181,14 +180,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var models []Model
 	for _, peer := range peerResponse {
 		var model Model
-		model.AccepterRegionName = encoding.NewString(peer.AccepterRegionName)
-		model.AwsAccountId = encoding.NewString(peer.AWSAccountID)
-		model.RouteTableCidrBlock = encoding.NewString(peer.RouteTableCIDRBlock)
-		model.VpcId = encoding.NewString(peer.VpcID)
-		model.ConnectionId = encoding.NewString(peer.ConnectionID)
-		model.ErrorStateName = encoding.NewString(peer.ErrorStateName)
-		model.StatusName = encoding.NewString(peer.StatusName)
-		model.ProviderName = encoding.NewString(peer.ProviderName)
+		model.AccepterRegionName = &peer.AccepterRegionName
+		model.AwsAccountId = &peer.AWSAccountID
+		model.RouteTableCidrBlock = &peer.RouteTableCIDRBlock
+		model.VpcId = &peer.VpcID
+		model.ConnectionId = &peer.ConnectionID
+		model.ErrorStateName = &peer.ErrorStateName
+		model.StatusName = &peer.StatusName
+		model.ProviderName = &peer.ProviderName
 
 		models = append(models, model)
 	}
@@ -201,7 +200,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	isReady, state, err := networkPeeringIsReady(client, *currentModel.ProjectId.Value(), *currentModel.Id.Value(), targetState)
+	isReady, state, err := networkPeeringIsReady(client, *currentModel.ProjectId, *currentModel.Id, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}

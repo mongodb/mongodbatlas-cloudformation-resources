@@ -2,14 +2,15 @@ package resource
 
 import (
 	"context"
-	"os"
+    "fmt"
+
+    "os"
 	"reflect"
 	"testing"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/encoding"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/rs/xid"
+    "github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -24,25 +25,34 @@ var (
 	projectID  = os.Getenv(projectIDEnv)
 )
 
+
 func new() *Model {
-	return &Model{
-		ProjectId: encoding.NewString(projectID),
+    comment := "Testing ip whitelist"
+    ipaddress := "192.168.0.1"
+    count := 1
+    model := &Model{
+		ProjectId: &projectID,
 		Whitelist: []WhitelistDefinition{
 			WhitelistDefinition{
-				Comment:   encoding.NewString("Testing range"),
-				IpAddress: encoding.NewString("192.168.0.1"),
-				ProjectId: encoding.NewString(projectID),
+				Comment:   &comment,
+			    IpAddress: &ipaddress,
+			 	ProjectId: &projectID,
 			},
 		},
-		ApiKeys: ApiKeyDefinition{
-			PublicKey:  encoding.NewString(publicKey),
-			PrivateKey: encoding.NewString(privateKey),
+		ApiKeys: &ApiKeyDefinition{
+			PublicKey:  &publicKey,
+			PrivateKey: &privateKey,
 		},
-		TotalCount: encoding.NewInt(1),
+		TotalCount: &count,
 	}
+    spew.Dump(model)
+    return model
 }
 
 func tearDown(model *Model) error {
+    return nil
+}
+func xxtearDown(model *Model) error {
 	client, err := util.CreateMongoDBClient(publicKey, privateKey)
 	if err != nil {
 		return err
@@ -56,18 +66,22 @@ func tearDown(model *Model) error {
 }
 
 func setUp(model *Model) (*Model, error) {
-	client, err := util.CreateMongoDBClient(*model.ApiKeys.PublicKey.Value(), *model.ApiKeys.PrivateKey.Value())
-	projectID := *model.ProjectId.Value()
-	request := getProjectIPWhitelistRequest(model)
+    fmt.Println("setUp>>>>>>")
+    spew.Dump(model)
 
-	_, _, err = client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	client, err := util.CreateMongoDBClient(*model.ApiKeys.PublicKey, *model.ApiKeys.PrivateKey)
+	projectID := *model.ProjectId
+	request := getProjectIPWhitelistRequest(model)
+    ipw, _, err := client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
 	if err != nil {
 		return nil, err
 	}
 
+    spew.Dump(ipw)
+    //spew.Dump(res)
 	guid := xid.New()
-
-	model.Id = encoding.NewString(guid.String())
+    modelId := guid.String()
+	model.Id = &modelId
 	return model, nil
 }
 

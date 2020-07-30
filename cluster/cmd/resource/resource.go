@@ -79,20 +79,32 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	autoScaling := &mongodbatlas.AutoScaling{
-		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
+	var autoScaling *mongodbatlas.AutoScaling
+	if currentModel.AutoScaling != nil {
+		autoScaling = &mongodbatlas.AutoScaling{
+			DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
+		}
 	}
 
 	clusterRequest := &mongodbatlas.Cluster{
 		Name:                     cast.ToString(currentModel.Name),
 		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider),
 		ClusterType:              cast.ToString(currentModel.ClusterType),
-		BackupEnabled:            currentModel.BackupEnabled,
-		DiskSizeGB:               currentModel.DiskSizeGB,
-		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
 		ReplicationFactor:        cast64(currentModel.ReplicationFactor),
 		NumShards:                cast64(currentModel.NumShards),
+	}
+
+	if currentModel.BackupEnabled != nil {
+		clusterRequest.BackupEnabled = currentModel.BackupEnabled
+	}
+
+	if currentModel.ProviderBackupEnabled != nil {
+		clusterRequest.ProviderBackupEnabled = currentModel.ProviderBackupEnabled
+	}
+
+	if currentModel.DiskSizeGB != nil {
+		currentModel.DiskSizeGB = clusterRequest.DiskSizeGB
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {

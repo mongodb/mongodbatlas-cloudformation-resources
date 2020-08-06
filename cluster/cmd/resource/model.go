@@ -17,8 +17,8 @@ type Model struct {
 	ClusterType              *string           `json:",omitempty"`
 	DiskSizeGB               *float64          `json:",omitempty"`
 	EncryptionAtRestProvider *string           `json:",omitempty"`
-	ProjectID                *string           `json:",omitempty"`
-	ID                       *string           `json:",omitempty"`
+	ProjectId                *string           `json:",omitempty"`
+	Id                       *string           `json:",omitempty"`
 	Labels                   []Labels          `json:",omitempty"`
 	MongoDBVersion           *string           `json:",omitempty"`
 	MongoDBMajorVersion      *string           `json:",omitempty"`

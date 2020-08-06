@@ -100,9 +100,6 @@
         "Password",
         "Username"
     ],
-    "readOnlyProperties": [
-        ""
-    ],
     "primaryIdentifier": [
         "/properties/Username"
     ],

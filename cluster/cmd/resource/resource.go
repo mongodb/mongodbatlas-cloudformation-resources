@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
 	}
 
-	projectID := *currentModel.ProjectID
+	projectID := *currentModel.ProjectId
 
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType != nil {
@@ -116,19 +116,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.ProviderSettings != nil {
-		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
+	    clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
 	}
 
 	if currentModel.ReplicationSpecs != nil {
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
 	}
 
-	cluster, _, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
+	cluster, resp, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
+		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %w %v", err, &resp)
 	}
 
-	currentModel.ID = &cluster.ID
+	currentModel.Id = &cluster.ID
 	currentModel.StateName = &cluster.StateName
 
 	return handler.ProgressEvent{
@@ -149,7 +149,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectID := *currentModel.ProjectID
+	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.Name
 
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
@@ -157,7 +157,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
 
-	currentModel.ID = &cluster.ID
+	currentModel.Id = &cluster.ID
 	currentModel.AutoScaling = &AutoScaling{
 		DiskGBEnabled: cluster.AutoScaling.DiskGBEnabled,
 	}
@@ -218,7 +218,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "IDLE", "UPDATING")
 	}
 
-	projectID := *currentModel.ProjectID
+	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.Name
 
 	if len(currentModel.ReplicationSpecs) > 0 {
@@ -259,7 +259,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
 	}
 
-	currentModel.ID = &cluster.ID
+	currentModel.Id = &cluster.ID
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -283,7 +283,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "DELETED", "DELETING")
 	}
 
-	projectID := *currentModel.ProjectID
+	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.Name
 
 	_, err = client.Clusters.Delete(context.Background(), projectID, clusterName)
@@ -319,8 +319,7 @@ func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
 }
 
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
-	return &mongodbatlas.ProviderSettings{
-		DiskIOPS:            cast64(providerSettings.DiskIOPS),
+    ps := &mongodbatlas.ProviderSettings{
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
 		RegionName:          cast.ToString(providerSettings.RegionName),
 		BackingProviderName: cast.ToString(providerSettings.BackingProviderName),
@@ -328,6 +327,11 @@ func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.Pr
 		ProviderName:        "AWS",
 		VolumeType:          cast.ToString(providerSettings.VolumeType),
 	}
+    if providerSettings.DiskIOPS!=nil {
+		ps.DiskIOPS = cast64(providerSettings.DiskIOPS)
+    }
+    return ps
+
 }
 
 func expandReplicationSpecs(replicationSpecs []ReplicationSpec) []mongodbatlas.ReplicationSpec {
@@ -397,7 +401,7 @@ func flattenRegionsConfig(regionsConfig map[string]mongodbatlas.RegionsConfig) [
 }
 
 func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
-	isReady, state, err := isClusterInTargetState(client, *currentModel.ProjectID, *currentModel.Name, targetState)
+	isReady, state, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}

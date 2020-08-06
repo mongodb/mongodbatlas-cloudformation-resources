@@ -135,11 +135,11 @@
                 "NONE"
             ]
         },
-        "ProjectID": {
+        "ProjectId": {
             "description": "Unique identifier of the project the cluster belongs to.",
             "type": "string"
         },
-        "ID": {
+        "Id": {
             "description": "Unique identifier of the cluster.",
             "type": "string"
         },
@@ -266,14 +266,14 @@
         "/properties/MongoURI",
         "/properties/MongoURIUpdated",
         "/properties/MongoURIWithOptions",
-        "/properties/ID"
+        "/properties/Id"
     ],
     "writeOnlyProperties": [
         "/properties/ApiKeys",
-        "/properties/ProjectID"
+        "/properties/ProjectId"
     ],
     "primaryIdentifier": [
-        "/properties/ID"
+        "/properties/Id"
     ],
     "handlers": {
         "create": {

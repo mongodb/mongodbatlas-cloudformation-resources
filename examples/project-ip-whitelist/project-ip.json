@@ -25,7 +25,7 @@
       "Type": "MongoDB::Atlas::ProjectIPWhitelist",
       "Properties": {
         "ProjectId": { "Ref" : "Project" },
-        "Whitelist":[{"ipAddress":"192.168.1.1", "comment": "test-ip"}, {"cidrBlock":"192.168.100.14/24", "comment": "test-cidr"}],
+        "Whitelist":[{"IpAddress":"192.168.1.1", "Comment": "test-ip"}, {"CidrBlock":"192.168.100.14/24", "Comment": "test-cidr"}],
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
           "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"

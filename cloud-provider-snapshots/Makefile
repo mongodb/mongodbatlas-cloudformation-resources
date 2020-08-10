@@ -2,7 +2,7 @@
 
 build:
 	cfn generate
-	env GOOS=linux go build -ldflags="-s -w" -tags="logging callback scheduler" -o bin/handler cmd/main.go
+	env GOOS=linux go build -ldflags="-s -w" -tags="logging" -o bin/handler cmd/main.go
 
 test:
 	cfn generate

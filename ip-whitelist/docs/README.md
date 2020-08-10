@@ -13,8 +13,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::ProjectIPWhitelist",
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#whitelist" title="Whitelist">Whitelist</a>" : <i>[ <a href="whitelistdefinition.md">whitelistDefinition</a>, ... ]</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#whitelist" title="Whitelist">Whitelist</a>" : <i>[ <a href="whitelist.md">Whitelist</a>, ... ]</i>,
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeys.md">ApiKeys</a></i>,
     }
 }
 </pre>
@@ -26,8 +26,8 @@ Type: MongoDB::Atlas::ProjectIPWhitelist
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#whitelist" title="Whitelist">Whitelist</a>: <i>
-      - <a href="whitelistdefinition.md">whitelistDefinition</a></i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+      - <a href="whitelist.md">Whitelist</a></i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeys.md">ApiKeys</a></i>
 </pre>
 
 ## Properties
@@ -46,7 +46,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 _Required_: Yes
 
-_Type_: List of <a href="whitelistdefinition.md">whitelistDefinition</a>
+_Type_: List of <a href="whitelist.md">Whitelist</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -54,7 +54,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 _Required_: Yes
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: <a href="apikeys.md">ApiKeys</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

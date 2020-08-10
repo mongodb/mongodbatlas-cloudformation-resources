@@ -6,23 +6,23 @@
         "whitelistDefinition": {
             "type": "object",
             "properties": {
-              "comment": {
+                "Comment": {
                     "description": "Comment associated with the whitelist entry.",
                     "type": "string"
                 },
-                "ipAddress": {
+                "IpAddress": {
                     "description": "Whitelisted IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.",
                     "type": "string"
                 },
-                "cidrBlock": {
+                "CidrBlock": {
                     "description": "Whitelist entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.",
                     "type": "string"
                 },
-                "awsSecurityGroup":{
+                "AwsSecurityGroup":{
                     "description": "ID of the AWS security group to whitelist. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.",
                     "type": "string"
                 },
-                "projectId": {
+                "ProjectId": {
                     "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
                     "type": "string"
                 }

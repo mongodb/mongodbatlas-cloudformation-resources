@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -15,6 +16,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
+	fmt.Printf("%#+v\n", currentModel)
 
 	err = createEntries(currentModel, client)
 	if err != nil {
@@ -23,8 +25,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	guid := xid.New()
 
-    x := guid.String()
-	currentModel.Id = &x 
+	x := guid.String()
+	currentModel.Id = &x
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -151,6 +153,8 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 		if w.AwsSecurityGroup != nil {
 			wl.AwsSecurityGroup = *w.AwsSecurityGroup
 		}
+
+		fmt.Printf("%+#v\n", wl)
 
 		whitelist = append(whitelist, wl)
 	}

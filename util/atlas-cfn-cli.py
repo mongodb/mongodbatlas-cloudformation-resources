@@ -48,7 +48,10 @@ def main(parameters: ('resource parameters','option','p')
                 command.append(["--parameters",f"{parameters}"])
             res = subprocess.run(command)
 
-            print(res)
+            print("---------------------------------------------------------")
+            print(f"Resource: {resource}\nCommand: {command}\bResponse:{res}")
+            print("---------------------------------------------------------")
+
     else:
         submit_cmd=["cfn","submit", "-v", "--region", f"{region}","--set-default"]
         cwd = os.getcwd()
@@ -56,9 +59,7 @@ def main(parameters: ('resource parameters','option','p')
         try:
             res = os.chdir(f'{noun}')
             print(res)
-            make_clean = subprocess.run(["make"])
-            print(make_clean)
-            make_response = subprocess.run(["make","build"])
+            make_response = subprocess.run(["make"])
             print(make_response)
             submit_response = subprocess.run(submit_cmd)
             print(submit_response)

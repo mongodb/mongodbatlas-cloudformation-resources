@@ -1,4 +1,4 @@
-# MongoDB::Atlas::ProjectIPWhitelist apiKeyDefinition
+# MongoDB::Atlas::ProjectIPWhitelist ApiKeys
 
 ## Syntax
 

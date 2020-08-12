@@ -34,19 +34,5 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.P_TOKEN }}
-  atlas-cfn-deploy:
-    name: atlas-cfn-deploy 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.3.1
-      
-      - name: Run the atlas-cfn-deploy custom action.
-        uses: ./.github/actions/atlas-cfn-deploy
-        with:
-          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          ATLAS_PUBLIC_KEY: ${{secrets.ATLAS_PUBLIC_KEY}}
-          ATLAS_PRIVATE_KEY: ${{secrets.ATLAS_PRIVATE_KEY}}
-          ATLAS_ORG_ID: ${{secrets.ATLAS_ORG_ID}}
 
 

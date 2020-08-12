@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 REGION="${1:-us-east-1}"
-STACKS=$(aws cloudformation describe-stacks --region ${REGION} --output text --query 'Stacks[*].{Stack:StackName}')
+STACKS=$(aws cloudformation describe-stacks --region ${REGION} --output text --query 'Stacks[*].{Stack:StackName}'  | grep mongodb-atlas | grep role-stack)
 if [[ "$*" == *dry-run* ]]
 then
     echo "dry-run"

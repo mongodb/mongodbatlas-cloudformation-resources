@@ -35,6 +35,10 @@ aws configure --profile ${AWS_PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID
 aws configure --profile ${AWS_PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
 aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
-ls -l
+echo "Cleaning up any 'mongodb-atlas-*-role-stack's' in region: ${AWS_REGION}"
+./util/atlas-cfn-stack-cleaner.sh
 
+echo "Deploying all MongoDB Atlas CFN resources to ${AWS_REGION}"
 ./util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+
+
+echo "Deployment complete. Be calm and data on."

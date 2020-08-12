@@ -1,7 +1,17 @@
-name: atlas-cfn-deploy 
+name: Deploy MongoDB Atlas CFN Resources to AWS 
 
 on:
   workflow_dispatch:
+    inputs:
+      region: 
+        description: "Target AWS region to deploy MongoDB Atlas CloudFormatio custom resources."
+        default: "us-east-1"     # default to ${{secrets.AWS_REGION}} ?  
+        required: true
+      testCluster:
+        description: "Deploy a test cluster. Boolean"
+        default: "false"
+        required: true
+      
 
 jobs:
   atlas-cfn-deploy:
@@ -18,5 +28,7 @@ jobs:
         ATLAS_PUBLIC_KEY: ${{secrets.ATLAS_PUBLIC_KEY}}
         ATLAS_PRIVATE_KEY: ${{secrets.ATLAS_PRIVATE_KEY}}
         ATLAS_ORG_ID: ${{secrets.ATLAS_ORG_ID}}
+        AWS_REGION: ${{ github.event.inputs.region }}
+        LAUNCH_TEST_CLUSTER: ${{ github.event.inputs.testCluster }}
 
 

@@ -41,4 +41,6 @@ echo "Cleaning up any 'mongodb-atlas-*-role-stack's' in region: ${AWS_REGION}"
 echo "Deploying all MongoDB Atlas CFN resources to ${AWS_REGION}"
 ./util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+
 
+
+echo "LAUNCH_TEST_CLUSTER:${LAUNCH_TEST_CLUSTER}"
 echo "Deployment complete. Be calm and data on."

@@ -7,6 +7,32 @@ Learn more about Atlas at  [https://www.mongodb.com/cloud/atlas](https://www.mon
 
 For general information about CloudFormation, visit the [official website](https://aws.amazon.com/cloudformation) and the [GitHub project page](https://github.com/aws-cloudformation/).
 
+The quickest way to get started:
+
+1. Clone this repo
+2. Create secrets for your AWS and MongoDB accounts:
+
+![atlas-cfn-deploy-secrets](https://gist.github.com/jasonmimick/68f402c378ed364ea1684fda1a7ef5d2#file-atlas-cfn-deploy-secrets-png)
+
+3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://github.com/jasonmimick/mongodbatlas-cloudformation-resources/actions?query=workflow%3A%22Deploy+MongoDB+Atlas+CFN+Resources+to+AWS%22)
+
+Or - if you prefer cli;
+
+```bash
+cat << EOF > .env
+AWS_ACCESS_KEY_ID=aaaaaaaaaaaaaaaaa
+AWS_SECRET_ACCESS_KEY=bbbbbbbbbbbbbb
+AWS_REGION=us-east-1
+ATLAS_PUBLIC_KEY=ccccccccccccccc
+ATLAS_PRIVATE_KEY=dddddddddddddcc
+ATLAS_ORG_ID=12345
+EOF
+git clone https://github.com/jasonmimick/mongodbatlas-cloudformation-resources
+act -j atlas-cfn-deploy
+```
+
+This requires git, [act](https://github.com/nektos/act), docker, typical developer tools.
+
 # Support, Bugs, Feature Requests
 
 CURRENT BETA INFO: Support questions submitted under the Issues section of this repo will be handled on a "best effort" basis.

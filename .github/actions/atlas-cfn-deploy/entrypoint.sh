@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit  # same as -e
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch if the pipe fucntion fails
+set -o pipefail
+set -x
+
+
+echo "GITHUB_REF=${GITHUB_REF}"
+
+echo "Setting up deploy tool dependencies"
+python3 -m pip install -r util/atlas-cfn-deploy/requirements.txt
+
+AWS_PROFILE="default"
+
+#Check AWS credetials are defined in Gitlab Secrets
+if [[ -z "$AWS_ACCESS_KEY_ID" ]];then
+    echo "AWS_ACCESS_KEY_ID is not SET!"; exit 1
+fi
+
+if [[ -z "$AWS_SECRET_ACCESS_KEY" ]];then
+    echo "AWS_SECRET_ACCESS_KEY is not SET!"; exit 2
+fi
+
+if [[ -z "$AWS_REGION" ]];then
+echo "AWS_REGION is not SET!"; exit 3
+fi
+
+aws configure --profile ${AWS_PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+aws configure --profile ${AWS_PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+
+ls -l
+
+./util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+

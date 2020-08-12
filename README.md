@@ -14,7 +14,7 @@ The quickest way to get started:
 
 ![atlas-cfn-deploy-secrets](https://gist.github.com/jasonmimick/68f402c378ed364ea1684fda1a7ef5d2#file-atlas-cfn-deploy-secrets-png)
 
-3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://github.com/jasonmimick/mongodbatlas-cloudformation-resources/actions?query=workflow%3A%22Deploy+MongoDB+Atlas+CFN+Resources+to+AWS%22)
+3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://gist.githubusercontent.com/jasonmimick/68f402c378ed364ea1684fda1a7ef5d2/raw/f6966dc725038efc53729fef75aa3ebfd1766dfc/atlas-cfn-deploy-secrets.png)
 
 Or - if you prefer cli;
 

@@ -1,5 +1,4 @@
 name: Deploy MongoDB Atlas CFN Resources to AWS 
-
 on:
   workflow_dispatch:
     inputs:
@@ -11,15 +10,13 @@ on:
         description: "Deploy a test cluster. Boolean"
         default: "false"
         required: true
-      
-
 jobs:
   atlas-cfn-deploy:
     name: atlas-cfn-deploy 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2.3.1
-      
+      name: pull code
     - name: Run the atlas-cfn-deploy custom action.
       uses: ./.github/actions/atlas-cfn-deploy
       with:

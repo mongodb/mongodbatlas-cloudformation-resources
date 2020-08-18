@@ -36,7 +36,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		roles = append(roles, role)
 	}
 
-	groupID := *currentModel.ProjectId
+    var labels []mongodbatlas.Label
+	for _, l := range currentModel.Labels {
+
+		label := mongodbatlas.Label{
+            Key: *l.Key,
+            Value: *l.Value,
+        }
+		labels = append(labels, label)
+    }
+	
+    groupID := *currentModel.ProjectId
 
 	user := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
@@ -44,6 +54,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Username:     *currentModel.Username,
 		Password:     *currentModel.Password,
 		DatabaseName: *currentModel.DatabaseName,
+        Labels:       labels,
 	}
 
 	if currentModel.LdapAuthType != nil {
@@ -95,6 +106,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	currentModel.Roles = roles
 
+	var labels []LabelDefinition
+
+	for _, l := range databaseUser.Labels {
+		label := LabelDefinition{
+			Key: &l.Key,
+			Value:   &l.Value,
+		}
+
+		labels = append(labels, label)
+	}
+	currentModel.Labels = labels
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
@@ -119,6 +141,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		roles = append(roles, role)
 	}
+    var labels []mongodbatlas.Label
+	for _, l := range currentModel.Labels {
+
+		label := mongodbatlas.Label{
+            Key: *l.Key,
+            Value: *l.Value,
+        }
+		labels = append(labels, label)
+    }
 
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
@@ -131,6 +162,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Password:     *currentModel.Password,
 			DatabaseName: *currentModel.Password,
 			LDAPAuthType: *currentModel.LdapAuthType,
+			Labels:       labels,
 		})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error updating database user (%s): %s", username, err)

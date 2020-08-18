@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::Project",
-    "description": " Each project has its own Monitoring, Backup and Automations associated with the project. Projects within the same organization share the same billing settings.",
+    "description": "Retrieves or creates projects in any given Atlas organization.",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/database-users/project",
     "definitions": {
         "apiKeyDefinition": {

@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::ProjectIPWhitelist",
-    "description": "Atlas only allows client connections to the cluster from entries in the project’s whitelist. Each entry is either a single IP address or a CIDR-notated range of addresses.",
+    "description": "The whitelist endpoint manages a Atlas project’s IP whitelist.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
         "whitelistDefinition": {

@@ -8,6 +8,44 @@ on:
         required: true
 
 jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-20.04
+    env:
+      CAPABLITIES: CAPABILITY_IAM
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      AWS_REGION: ${{ github.event.inputs.region }}
+    steps:
+    - uses: actions/checkout@v2.3.1
+      name: Pull Code
+    - uses: FranzDiebold/github-env-vars-action@v1.2.0
+    - name: deploy project 
+      run: |
+        cd project
+        make
+        cfn submit -v --region=$AWS_REGION --set-default
+    - name: deploy cluster 
+      run: |
+        cd cluster  
+        make
+        cfn submit -v --region=$AWS_REGION --set-default
+    - name: deploy cloud-provider-snapshot-restore-jobs  
+      run: |
+        cd cloud-provider-snapshot-restore-jobs  
+        make
+        cfn submit -v --region=$AWS_REGION --set-default
+    - name: deploy database-user
+      run: |
+        cd database-user  
+        make
+        cfn submit -v --region=$AWS_REGION --set-default
+        #encryption-at-rest  
+        #network-peering  
+        #cloud-provider-snapshots              
+        #ip-whitelist    
+        #network-container  
+
   atlas-cfn-deploy:
     name: atlas-cfn-deploy 
     runs-on: ubuntu-latest

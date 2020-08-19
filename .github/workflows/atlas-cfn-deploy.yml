@@ -1,12 +1,21 @@
 name: Deploy MongoDB Atlas CFN Resources
 on:
   workflow_dispatch:
+    inputs:
+      region: 
+        description: "AWS region"
+        default: "us-east-1"
+        required: true
 
 jobs:
   atlas-cfn-deploy:
-    name: atlas-cfn-deploy 
-    id: atlas_cfn_deploy
-    runs-on: ubuntu-latest
+    name: atlas-cfn-deploy
+    runs-on: ubuntu-20.04
+    env:
+      CAPABLITIES: CAPABILITY_IAM
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      AWS_REGION: ${{ github.event.inputs.region }}
     steps:
     - uses: actions/checkout@v2.3.1
       name: pull code
@@ -15,9 +24,4 @@ jobs:
       with:
         AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
         AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        ATLAS_PUBLIC_KEY: ${{secrets.ATLAS_PUBLIC_KEY}}
-        ATLAS_PRIVATE_KEY: ${{secrets.ATLAS_PRIVATE_KEY}}
-        ATLAS_ORG_ID: ${{secrets.ATLAS_ORG_ID}}
-        ATLAS_REGION: ${{secrets.ATLAS_REGION}}
-
-
+        AWS_REGION: ${{ github.event.inputs.region }}

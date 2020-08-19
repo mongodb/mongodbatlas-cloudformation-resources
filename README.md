@@ -7,6 +7,25 @@ Learn more about Atlas at  [https://www.mongodb.com/cloud/atlas](https://www.mon
 
 For general information about CloudFormation, visit the [official website](https://aws.amazon.com/cloudformation) and the [GitHub project page](https://github.com/aws-cloudformation/).
 
+The quickest way to get started:
+
+1. Clone this repo
+2. Create Github Secrets for your AWS account
+3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions)
+
+Or - if you prefer cli;
+
+```bash
+cat << EOF > .env
+AWS_ACCESS_KEY_ID=aaaaaaaaaaaaaaaaa
+AWS_SECRET_ACCESS_KEY=bbbbbbbbbbbbbb
+EOF
+git clone https://github.com/mongodb/mongodbatlas-cloudformation-resources
+act -j atlas-cfn-deploy
+```
+
+This requires git, [act](https://github.com/nektos/act), docker, typical developer tools.
+
 # Support, Bugs, Feature Requests
 
 CURRENT BETA INFO: Support questions submitted under the Issues section of this repo will be handled on a "best effort" basis.
@@ -23,6 +42,10 @@ POST GA: Support for the MongoDB Atlas Resource Provider for CloudFormation is p
 # Using the CloudFormation Resource Provider
 
 ## Registering resources 
+
+These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.
+You can use these steps, or leverage the [utils/atlas-cfn-deploy](utils/atlas-cfn-deploy) tool.
+
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
 2. Head over to [releases](https://github.com/mongodb/mongodbatlas-cloudformation-resources/releases) and download the binary for the most recent release, `mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz`
 3. Extract the tarball with

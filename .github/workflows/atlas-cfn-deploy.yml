@@ -27,7 +27,7 @@ jobs:
         #cloudformation-cli-python-plugin
         cd project
         make
-        cfn submit -v --region=$AWS_REGION --set-default
+        /usr/local/bin/cfn submit -v --region=$AWS_REGION --set-default
     - name: deploy cluster 
       run: |
         cd cluster  

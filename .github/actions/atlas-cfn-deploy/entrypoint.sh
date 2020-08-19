@@ -40,10 +40,6 @@ if [[ -z "$AWS_REGION" ]];then
     echo "AWS_REGION is not SET!"; exit 3
 fi
 
-env | grep "INPUT_"
-env | grep AWS
-env | grep ATLAS
-
 aws configure --profile ${AWS_PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID}
 aws configure --profile ${AWS_PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
 aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}

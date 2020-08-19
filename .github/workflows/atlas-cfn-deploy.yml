@@ -8,9 +8,8 @@ on:
         required: true
 
 jobs:
-  deploy-project:
-    name: deploy-project
-    runs-on: ubuntu-20.04
+  atlas-cfn-deploy:
+    name: atlas-cfn-deploy
     env:
       CAPABLITIES: CAPABILITY_IAM
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
@@ -18,36 +17,10 @@ jobs:
       AWS_REGION: ${{ github.event.inputs.region }}
     steps:
     - uses: actions/checkout@v2.3.1
-      name: Pull Code
-    - uses: FranzDiebold/github-env-vars-action@v1.2.0
-    - name: deploy project 
-      run: |
-        echo "Setting up deploy tool dependencies"
-        export PATH=$PATH:~/.local/bin
-        pip3 install cloudformation-cli cloudformation-cli-go-plugin 
-        pip3 show cloudformation-cli cloudformation-cli-go-plugin 
-        #cloudformation-cli-python-plugin
-        cd project
-        make
-        /usr/local/bin/cfn submit -v --region=$AWS_REGION --set-default
-    - name: deploy cluster 
-      run: |
-        cd cluster  
-        make
-        cfn submit -v --region=$AWS_REGION --set-default
-    - name: deploy cloud-provider-snapshot-restore-jobs  
-      run: |
-        cd cloud-provider-snapshot-restore-jobs  
-        make
-        cfn submit -v --region=$AWS_REGION --set-default
-    - name: deploy database-user
-      run: |
-        cd database-user  
-        make
-        cfn submit -v --region=$AWS_REGION --set-default
-        #encryption-at-rest  
-        #network-peering  
-        #cloud-provider-snapshots              
-        #ip-whitelist    
-        #network-container  
-
+      name: pull code
+    - name: Run the atlas-cfn-deploy custom action.
+      uses: ./.github/actions/atlas-cfn-deploy
+      with:
+        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        AWS_REGION: ${{ github.event.inputs.region }}

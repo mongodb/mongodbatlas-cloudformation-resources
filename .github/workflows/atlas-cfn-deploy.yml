@@ -10,7 +10,7 @@ on:
 jobs:
   atlas-cfn-deploy:
     name: atlas-cfn-deploy
-    runs-on: ubuntu:20.04
+    runs-on: ubuntu-20.04
     env:
       CAPABLITIES: CAPABILITY_IAM
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}

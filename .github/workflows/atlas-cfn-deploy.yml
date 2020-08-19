@@ -8,8 +8,8 @@ on:
         required: true
 
 jobs:
-  deploy:
-    name: deploy
+  deploy-project:
+    name: deploy-project
     runs-on: ubuntu-20.04
     env:
       CAPABLITIES: CAPABILITY_IAM
@@ -22,6 +22,8 @@ jobs:
     - uses: FranzDiebold/github-env-vars-action@v1.2.0
     - name: deploy project 
       run: |
+        echo "Setting up deploy tool dependencies"
+        python3 -m pip install -r util/atlas-cfn-deploy/requirements.txt
         cd project
         make
         cfn submit -v --region=$AWS_REGION --set-default

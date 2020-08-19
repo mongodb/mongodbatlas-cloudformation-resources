@@ -33,9 +33,13 @@ if [[ -z "$AWS_SECRET_ACCESS_KEY" ]];then
     echo "AWS_SECRET_ACCESS_KEY is not SET!"; exit 2
 fi
 
-if [[ "$INPUT_AWS_REGION" ]];then
-    AWS_REGION=$INPUT_AWS_REGION
+if [[ "$INPUT_AWS_REGION_SECRET" ]];then
+    AWS_REGION=$INPUT_AWS_REGION_SECRET
 fi
+if [[ "$INPUT_AWS_REGION_INPUT" ]];then
+    AWS_REGION=$INPUT_AWS_REGION_INPUT
+fi
+
 if [[ -z "$AWS_REGION" ]];then
     echo "AWS_REGION is not SET!"; exit 3
 fi

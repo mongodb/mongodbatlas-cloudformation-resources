@@ -10,11 +10,8 @@ For general information about CloudFormation, visit the [official website](https
 The quickest way to get started:
 
 1. Clone this repo
-2. Create secrets for your AWS and MongoDB accounts:
-
-![atlas-cfn-deploy-secrets](https://gist.githubusercontent.com/jasonmimick/68f402c378ed364ea1684fda1a7ef5d2/raw/f6966dc725038efc53729fef75aa3ebfd1766dfc/atlas-cfn-deploy-secrets.png)
-
-3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://github.com/jasonmimick/mongodbatlas-cloudformation-resources/actions?query=workflow%3A%22Deploy+MongoDB+Atlas+CFN+Resources+to+AWS%22)
+2. Create Github Secrets for your AWS account
+3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions)
 
 Or - if you prefer cli;
 
@@ -22,12 +19,8 @@ Or - if you prefer cli;
 cat << EOF > .env
 AWS_ACCESS_KEY_ID=aaaaaaaaaaaaaaaaa
 AWS_SECRET_ACCESS_KEY=bbbbbbbbbbbbbb
-AWS_REGION=us-east-1
-ATLAS_PUBLIC_KEY=ccccccccccccccc
-ATLAS_PRIVATE_KEY=dddddddddddddcc
-ATLAS_ORG_ID=12345
 EOF
-git clone https://github.com/jasonmimick/mongodbatlas-cloudformation-resources
+git clone https://github.com/mongodb/mongodbatlas-cloudformation-resources
 act -j atlas-cfn-deploy
 ```
 

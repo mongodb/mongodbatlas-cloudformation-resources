@@ -19,16 +19,25 @@ python3 -m pip install -r util/atlas-cfn-deploy/requirements.txt
 AWS_PROFILE="default"
 
 #Check AWS credetials are defined in Gitlab Secrets
+if [[ "$INPUT_AWS_ACCESS_KEY_ID" ]];then
+    AWS_ACCESS_KEY_ID=$INPUT_AWS_ACCESS_KEY_ID
+fi
 if [[ -z "$AWS_ACCESS_KEY_ID" ]];then
     echo "AWS_ACCESS_KEY_ID is not SET!"; exit 1
 fi
 
+if [[ "$INPUT_AWS_SECRET_ACCESS_KEY" ]];then
+    AWS_SECRET_ACCESS_KEY=$INPUT_AWS_SECRET_ACCESS_KEY
+fi
 if [[ -z "$AWS_SECRET_ACCESS_KEY" ]];then
     echo "AWS_SECRET_ACCESS_KEY is not SET!"; exit 2
 fi
 
+if [[ "$INPUT_AWS_REGION" ]];then
+    AWS_REGION=$INPUT_AWS_REGION
+fi
 if [[ -z "$AWS_REGION" ]];then
-echo "AWS_REGION is not SET!"; exit 3
+    echo "AWS_REGION is not SET!"; exit 3
 fi
 
 env | grep "INPUT_"

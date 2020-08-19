@@ -49,6 +49,10 @@ POST GA: Support for the MongoDB Atlas Resource Provider for CloudFormation is p
 # Using the CloudFormation Resource Provider
 
 ## Registering resources 
+
+These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.
+You can use these steps, or leverage the [utils/atlas-cfn-deploy](utils/atlas-cfn-deploy) tool.
+
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
 2. Head over to [releases](https://github.com/mongodb/mongodbatlas-cloudformation-resources/releases) and download the binary for the most recent release, `mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz`
 3. Extract the tarball with

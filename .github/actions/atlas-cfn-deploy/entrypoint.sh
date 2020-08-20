@@ -14,7 +14,7 @@ set -x
 echo "GITHUB_REF=${GITHUB_REF}"
 
 echo "Setting up deploy tool dependencies"
-python3 -m pip install -r util/atlas-cfn-deploy/requirements.txt
+python3 -m pip install -r cfn-resources/util/atlas-cfn-deploy/requirements.txt
 
 AWS_PROFILE="default"
 

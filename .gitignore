@@ -15,3 +15,8 @@ create.json
 delete.json
 update.json
 .hypothesis/
+
+# any "dot"-file, anywhere almost
+**/.*
+!/.github
+!/.gitignore

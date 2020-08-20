@@ -48,6 +48,8 @@ aws configure --profile ${AWS_PROFILE} set aws_access_key_id ${AWS_ACCESS_KEY_ID
 aws configure --profile ${AWS_PROFILE} set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
 aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
+cf cfn-resources
+
 echo "Cleaning up any 'mongodb-atlas-*-role-stack's' in region: ${AWS_REGION}"
 ./util/atlas-cfn-stack-cleaner.sh
 

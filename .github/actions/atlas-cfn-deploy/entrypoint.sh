@@ -14,7 +14,7 @@ set -x
 echo "GITHUB_REF=${GITHUB_REF}"
 
 echo "Setting up deploy tool dependencies"
-python3 -m pip install -r util/atlas-cfn-deploy/requirements.txt
+python3 -m pip install -r cfn-resouces/util/atlas-cfn-deploy/requirements.txt
 
 AWS_PROFILE="default"
 
@@ -51,9 +51,9 @@ aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 cd cfn-resources
 
 echo "Cleaning up any 'mongodb-atlas-*-role-stack's' in region: ${AWS_REGION}"
-./util/atlas-cfn-stack-cleaner.sh
+./cfn-resources/util/atlas-cfn-stack-cleaner.sh
 
 echo "Deploying all MongoDB Atlas CFN resources to ${AWS_REGION}"
-./util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+
+./cfn-resources/util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+
 
 echo "Deployment complete. Be calm and data on."

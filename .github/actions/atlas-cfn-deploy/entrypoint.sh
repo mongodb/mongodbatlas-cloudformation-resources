@@ -51,9 +51,9 @@ aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 cd cfn-resources
 
 echo "Cleaning up any 'mongodb-atlas-*-role-stack's' in region: ${AWS_REGION}"
-./cfn-resources/util/atlas-cfn-stack-cleaner.sh
+./util/atlas-cfn-stack-cleaner.sh
 
 echo "Deploying all MongoDB Atlas CFN resources to ${AWS_REGION}"
-./cfn-resources/util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+
+./util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=${AWS_REGION} all+
 
 echo "Deployment complete. Be calm and data on."

@@ -1,21 +1,19 @@
-# cfn-deploy
-<img src="https://github.com/intuit/cfn-deploy/blob/master/.github/cfn-deploy-logo.png" align=right alt="cfn-deploy" width="250"> 
-A simple github action to deploy cloudformation yaml files to AWS
+# atlas-cfn-deploy
+
+Credit to: https://github.com/marketplace/actions/cfn-deploy-action 
 
 ## Usage
 
-An example workflow for deploying a cloudformation template follows.
+An example workflow for deploying a all the MongoDB Atlas AWS CloudFormation Custom Resources
 
 ```
- - uses: intuit/cfn-deploy@master
-      env:
-        AWS_REGION: us-east-2
-        STACK_NAME: cfn-deploy
-        TEMPLATE_FILE: ec2.yml
-        PARAMETERS_FILE: parameter.json
-        CAPABLITIES: CAPABILITY_IAM
-        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+    - name: Run the atlas-cfn-deploy custom action.
+      uses: ./.github/actions/atlas-cfn-deploy
+      with:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION_INPUT: ${{ github.event.inputs.region }}
+        AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
 
 ```
 
@@ -32,11 +30,5 @@ All environment variables listed in the official documentation are supported.
 The custom env variables to be added are:
 
 `AWS_REGION` - Region to which you need to deploy your app<br>
-`STACK_NAME` - Cloudformation Stack Name <br>
-`TEMPLATE_FILE` - Cloudformation template yaml file<br>
-`PARAMETERS_FILE` - Input parameters to the cloudformation stack as json file<br>
 `CAPABLITIES` - IAM capablities for the cloudformation stack<br>
 
-## Contributing
-
-See [Contributing](https://github.com/intuit/cfn-deploy/blob/master/.github/CONTRIBUTING.md)

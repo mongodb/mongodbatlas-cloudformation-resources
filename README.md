@@ -1,16 +1,15 @@
-# MongoDB Atlas Resource Provider for CloudFormation
+# MongoDB Atlas AWS CloudFormation Resources & Quickstart
 
 ***This file will be accurate post GA of the MongoDB Atlas Resource Provider for CloudFormation***
 
-This is the repository for the MongoDB Atlas Resource Provider for CloudFormation, which allows one to use CloudFormation to programmatically manage MongoDB Atlas, MongoDB's Database as a Service offering.
-Learn more about Atlas at  [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+### Status: early-ALPHA (actively looking for feedback)
 
-For general information about CloudFormation, visit the [official website](https://aws.amazon.com/cloudformation) and the [GitHub project page](https://github.com/aws-cloudformation/).
+Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
 
 The quickest way to get started:
 
 1. Clone this repo
-2. Create Github Secrets for your AWS account
+2. Create Github Secrets for your AWS and MongoDB accounts
 3. Run the Github action to [Deploy MongoDB Atlas CFN Resources to AWS](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions)
 
 Or - if you prefer cli;

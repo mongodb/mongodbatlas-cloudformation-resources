@@ -14,29 +14,22 @@ on:
         description: "Instance size, defaults to M10"
         default: "M10"
         required: true
-      databaseusername:
+      databaseUsername:
         description: "Database username"
         default: "atlas"
         required: true
-      databasepassword:
+      databasePassword:
         description: "Database password"
         default: "atlas123"
         required: true
       deployResources:
-        description: "Deploy MongoDB Atlas cfn resources"
+        description: "Also deploy the MongoDB Atlas cfn resources? (yes/no)"
         default: "no"
         required: true
-        
 jobs:
   atlas-cfn-deploy:
     name: atlas-cfn-deploy
     runs-on: ubuntu-20.04
-    env:
-      CAPABLITIES: CAPABILITY_IAM
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION_INPUT: ${{ github.event.inputs.region }}
-      AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
     steps:
     - uses: actions/checkout@v2.3.1
       name: pull code
@@ -44,6 +37,7 @@ jobs:
       if: contains(${{ github.event.inputs.deployResources }},"yes")
       uses: ./.github/actions/atlas-cfn-deploy
       with:
+        CAPABLITIES: CAPABILITY_IAM
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION_INPUT: ${{ github.event.inputs.region }}

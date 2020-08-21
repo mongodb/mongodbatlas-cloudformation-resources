@@ -2,17 +2,11 @@ quickstart-mongodbatlas
 =============
 ## MongoDB Atlas on the AWS Cloud
 
-### Status: early-ALPHA (actively looking for feedback)
-
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/jasonmimick/quickstart-mongodbatlas?include_prereleases&style=for-the-badge)
-
-[![MongoDB Atlas Go Client](https://img.shields.io/badge/Powered%20by%20-go--client--mongodb--atlas-%2313AA52?style=for-the-badge)](https://github.com/mongodb/go-client-mongodb-atlas)
-
 Start here: [beta-launch.md](beta-launch.md)
 
 This Quick Start sets up a flexible, scalable AWS environment for MongoDB Atlas through AWS CloudFormation resources.
 
-|marketing-update-here|MongoDB Atlas is an open source, NoSQL database that provides support for JSON-styled, document-oriented storage systems. 
+MongoDB Atlas is an open source, NoSQL database that provides support for JSON-styled, document-oriented storage systems. 
 Its flexible data model enables you to store data of any structure, and it provides full index support, sharding, and replication.
 
 The Quick Start offers two deployment options:

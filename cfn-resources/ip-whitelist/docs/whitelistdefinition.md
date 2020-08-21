@@ -1,4 +1,4 @@
-# MongoDB::Atlas::ProjectIPWhitelist Whitelist
+# MongoDB::Atlas::ProjectIPWhitelist whitelistDefinition
 
 ## Syntax
 

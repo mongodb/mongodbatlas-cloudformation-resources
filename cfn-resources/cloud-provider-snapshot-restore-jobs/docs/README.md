@@ -25,10 +25,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#snapshotid" title="SnapshotId">SnapshotId</a>" : <i>String</i>,
         "<a href="#links" title="Links">Links</a>" : <i>[ <a href="links.md">Links</a>, ... ]</i>,
         "<a href="#oplogts" title="OpLogTs">OpLogTs</a>" : <i>String</i>,
-        "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Double</i>,
+        "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Integer</i>,
         "<a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>" : <i>String</i>,
         "<a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeys.md">ApiKeys</a></i>
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
 </pre>
@@ -53,10 +53,10 @@ Properties:
     <a href="#links" title="Links">Links</a>: <i>
       - <a href="links.md">Links</a></i>
     <a href="#oplogts" title="OpLogTs">OpLogTs</a>: <i>String</i>
-    <a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>: <i>Double</i>
+    <a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>: <i>Integer</i>
     <a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>: <i>String</i>
     <a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeys.md">ApiKeys</a></i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
 ## Properties
@@ -197,7 +197,7 @@ If you performed a Point-in-Time restores at a time specified by a Unix time in 
 
 _Required_: No
 
-_Type_: Double
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -225,7 +225,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 _Required_: Yes
 
-_Type_: <a href="apikeys.md">ApiKeys</a>
+_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

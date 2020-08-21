@@ -18,7 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
         "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
         "<a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeys.md">ApiKeys</a></i>
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
 </pre>
@@ -34,7 +34,7 @@ Properties:
     <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
     <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
     <a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeys.md">ApiKeys</a></i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
 ## Properties
@@ -103,7 +103,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 _Required_: Yes
 
-_Type_: <a href="apikeys.md">ApiKeys</a>
+_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

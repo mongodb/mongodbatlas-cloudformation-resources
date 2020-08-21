@@ -1,4 +1,4 @@
-# MongoDB::Atlas::NetworkContainer ApiKeys
+# MongoDB::Atlas::CloudProviderSnapshotRestoreJobs apiKeyDefinition
 
 ## Syntax
 

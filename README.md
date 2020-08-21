@@ -4,7 +4,7 @@
 
 ### Status: pre-BETA (actively looking for [feedback](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources))
 
-Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
+Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
 The quickest way to get started:
 

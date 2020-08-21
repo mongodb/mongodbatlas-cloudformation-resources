@@ -1,4 +1,4 @@
-# MongoDB::Atlas::NetworkPeering ApiKeys
+# MongoDB::Atlas::ProjectIPWhitelist apiKeyDefinition
 
 ## Syntax
 

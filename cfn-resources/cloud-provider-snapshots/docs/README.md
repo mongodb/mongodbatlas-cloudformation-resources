@@ -15,15 +15,15 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
-        "<a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>" : <i>Double</i>,
+        "<a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>" : <i>Integer</i>,
         "<a href="#createdat" title="CreatedAt">CreatedAt</a>" : <i>String</i>,
         "<a href="#masterkeyuuid" title="MasterKeyUuid">MasterKeyUuid</a>" : <i>String</i>,
         "<a href="#mongoversion" title="MongoVersion">MongoVersion</a>" : <i>String</i>,
         "<a href="#snapshottype" title="SnapshotType">SnapshotType</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
-        "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>Double</i>,
+        "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>Integer</i>,
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeys.md">ApiKeys</a></i>
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
 </pre>
@@ -36,15 +36,15 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#description" title="Description">Description</a>: <i>String</i>
-    <a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>: <i>Double</i>
+    <a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>: <i>Integer</i>
     <a href="#createdat" title="CreatedAt">CreatedAt</a>: <i>String</i>
     <a href="#masterkeyuuid" title="MasterKeyUuid">MasterKeyUuid</a>: <i>String</i>
     <a href="#mongoversion" title="MongoVersion">MongoVersion</a>: <i>String</i>
     <a href="#snapshottype" title="SnapshotType">SnapshotType</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
-    <a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>Double</i>
+    <a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>Integer</i>
     <a href="#type" title="Type">Type</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeys.md">ApiKeys</a></i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
 ## Properties
@@ -85,7 +85,7 @@ The number of days that Atlas should retain the on-demand snapshot.
 
 _Required_: No
 
-_Type_: Double
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -145,7 +145,7 @@ Specifies the size of the snapshot in bytes.
 
 _Required_: No
 
-_Type_: Double
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -163,7 +163,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 _Required_: Yes
 
-_Type_: <a href="apikeys.md">ApiKeys</a>
+_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

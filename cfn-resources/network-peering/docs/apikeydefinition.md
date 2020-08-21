@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudProviderSnapshotRestoreJobs ApiKeys
+# MongoDB::Atlas::NetworkPeering apiKeyDefinition
 
 ## Syntax
 

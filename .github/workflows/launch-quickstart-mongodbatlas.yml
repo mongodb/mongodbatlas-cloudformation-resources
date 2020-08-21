@@ -41,7 +41,7 @@ jobs:
     - uses: actions/checkout@v2.3.1
       name: pull code
     - name: Run the atlas-cfn-deploy custom action.
-      if: ${{ github.event.inputs.deployResources }}
+      if: contains(${{ github.event.inputs.deployResources }},"yes")
       uses: ./.github/actions/atlas-cfn-deploy
       with:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

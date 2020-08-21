@@ -34,7 +34,7 @@ def main(parameters: ('resource parameters','option','p')
     ## HOME is parent of `util` folder, my grandma
     ##ATLAS_CFN_HOME = os.path.dirname(os.path.join(tool_path,"..","..",".."))
     repo = git.Repo('.', search_parent_directories=True)
-    ATLAS_CFN_HOME = repo.working_tree_dir
+    ATLAS_CFN_HOME = os.path.join(repo.working_tree_dir,"cfn-resources")
     logger.info("atlas-cfn-deploy is a tool to deploy MongoDB Atlas CFN Custom Resource to the AWS region of your choice.")
 
     logger.info("WARNING: This tool is in active development. Swim at your own risk.")

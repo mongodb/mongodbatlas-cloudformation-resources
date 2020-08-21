@@ -42,6 +42,10 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION_INPUT: ${{ github.event.inputs.region }}
         AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
+    - name: Deploy wrap up
+      if: ${{ github.event.inputs.deployResources }} != 'yes'
+      run: |
+        echo "Wrap up"
   launch-quickstart-mongodbatlas:
     name: launch-quickstart-mongodbatlas
     needs: atlas-cfn-deploy
@@ -67,7 +71,6 @@ jobs:
     - name: Configure Environment Outputs
       id: vars
       run: |
-        #echo "HACK - aws=echo" && cp $(which echo) /usr/bin/aws
         echo ::set-output name=sha_short::$(git rev-parse --short=5 ${{ github.sha }})
     - name: Configure Environment
       id: cfg_env

@@ -7,8 +7,6 @@
 This note is intended for early adopters and testers interested in trying out the brand new MongoDB Atlas custom resources for Amazon AWS Cloud Formation. 
 Note: this software and the Cloud Formation custom resource SDK from AWS are both still pre-GA products.
 
-![Launch the MongoDB Atlas AWS Quickstart](https://github.com/jasonmimick/quickstart-mongodbatlas/workflows/Launch%20the%20MongoDB%20Atlas%20AWS%20Quickstart/badge.svg?event=workflow_dispatch)
-
 ## Getting Started
 
 1. Clone our CFN resources from the source repository: 
@@ -21,6 +19,7 @@ git clone https://github.com/mongodb/mongodbatlas-cloudformation-resources
 
 ```bash
 cd mongodbatlas-cloudformation-resources
+docker build -t mongodb/atlas-cfn-deploy .github/actions/atlas-cfn-deploy/Dockerfile
 
 ./util/atlas-cfn-deploy/atlas-cfn-deploy.py --region=us-east-1 all+
 ```
@@ -44,7 +43,7 @@ aws secretsmanager create-secret --name "mongodb/atlas/key" \
 
 *Note* the name of the secret we used here is `mongodb/atlas/key` (this is the default in the template) but we recommend a more suitable name for your project. We will refactor the names of the "keys" in this json format too.
 
-4. Select, edit, and deploy the sample CFN Template of your choice. We suggest the [MongoDB Atlas Cloud Native CFN Quickstart](/templates/mongodbatlas-cfn-quickstart.template.json). This template will provision an Atlas Project, Cluster, Database User, and (optionally) a VPC Peering to the AWS VPC of your choice (BYO-VPC).
+4. Select, edit, and deploy the sample CFN Template of your choice. We suggest the [MongoDB Cloud CFN Quickstart](/quickstart-mongodbatlas/templates/mongodbatlas-cfn-quickstart.template.json). This template will provision an Atlas Project, Cluster, Database User, and (optionally) a VPC Peering to the AWS VPC of your choice (BYO-VPC).
 
 Here's an example. Create a file for your parameters, like this:
 
@@ -60,7 +59,7 @@ Here's an example. Create a file for your parameters, like this:
  },
  {
     "ParameterKey": "MongoDBAtlasPassword",
-    "ParameterValue": "g3tr3adyAWS12345"
+    "ParameterValue": ""
  },
  {
     "ParameterKey": "MongoDBAtlasAPIKeySecretName",

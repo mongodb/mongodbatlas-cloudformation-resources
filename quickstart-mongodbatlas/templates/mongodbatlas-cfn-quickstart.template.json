@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Deploy a MongoDB Atlas Replica Set on AWS (existing VPC).",
+  "Description": "Deploy MongoDB Atlas on AWS (with existing VPC)",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [

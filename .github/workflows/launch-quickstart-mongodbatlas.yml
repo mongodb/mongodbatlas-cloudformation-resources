@@ -34,7 +34,7 @@ jobs:
     - uses: actions/checkout@v2.3.1
       name: pull code
     - name: Run the atlas-cfn-deploy custom action.
-      if: contains(${{ github.event.inputs.deployResources }},"yes")
+      if: ${{ github.event.inputs.deployResources }} == 'yes'
       uses: ./.github/actions/atlas-cfn-deploy
       with:
         CAPABLITIES: CAPABILITY_IAM
@@ -67,7 +67,6 @@ jobs:
     - name: Configure Environment Outputs
       id: vars
       run: |
-        #echo "HACK - aws=echo" && cp $(which echo) /usr/bin/aws
         echo ::set-output name=sha_short::$(git rev-parse --short=5 ${{ github.sha }})
     - name: Configure Environment
       id: cfg_env

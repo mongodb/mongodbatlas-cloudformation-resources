@@ -58,6 +58,9 @@ At this time, the [act]() tool doesn't support the `ubuntu-20.04` image as a loc
 
 You can build and run the action to deploy like this:
 
+```bash
+docker run -v mongodbatlas-cloudformation-resources/cfn-resources:/atlas-cfn/cfn-resources --env-file local.env -t jmimick/atlas-cfn-deploy
+```
 ## Registering resources 
 
 These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.

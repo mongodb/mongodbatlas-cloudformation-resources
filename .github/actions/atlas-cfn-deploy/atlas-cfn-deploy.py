@@ -34,7 +34,7 @@ def main(parameters: ('resource parameters','option','p')
     logger.info( f"TOOL_HOME listdir: {os.listdir(TOOL_HOME)}" )
     ATLAS_CFN_HOME = os.path.join( TOOL_HOME, "cfn-resources")
     if TOOL_HOME == "/github/workspace/.github/actions/atlas-cfn-deploy":
-        logger.info(f"Did not detect \"cfn-resources\" folder in {ATLAS_TOOL_HOME}, checking running from Github Action.")
+        logger.info(f"Did not detect \"cfn-resources\" folder in {ATLAS_CFN_HOME}, checking running from Github Action.")
         ATLAS_CFN_HOME="/github/workspace/cfn-resources"
     logger.info(f"TOOL: {TOOL}")
     logger.info(f"TOOL_HOME: {TOOL_HOME}")

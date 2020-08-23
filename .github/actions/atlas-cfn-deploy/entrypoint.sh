@@ -50,8 +50,8 @@ CLEANER="./atlas-cfn-stack-cleaner.sh"
 DEPLOYER="./atlas-cfn-deploy.py --region=${AWS_REGION} all+"
 if [[ -d .github ]]
 then
-    CLEANER="$(pwd).github/actions/atlas-cfn-deploy/${CLEANER}"
-    DEPLOYER="$(pwd).github/actions/atlas-cfn-deploy/${DEPLOYER}"
+    CLEANER="$(pwd)/.github/actions/atlas-cfn-deploy/${CLEANER}"
+    DEPLOYER="$(pwd)/.github/actions/atlas-cfn-deploy/${DEPLOYER}"
 fi
 
 echo "Cleaning up any 'mongodb-atlas-*-role-stack's' in region: ${AWS_REGION}"

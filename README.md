@@ -38,6 +38,21 @@ ATLAS_PRIVATE_KEY
 ATLAS_ORG_ID
 ```
 
+## MongoDB Atlas Programmatic API key
+It's necessary to generate and configure an API key for your organization for the acceptance test to succeed. To grant programmatic access to an organization or project using only the API you need to know:
+
+The programmatic API key has two parts: a Public Key and a Private Key. To see more details on how to create a programmatic API key visit https://docs.atlas.mongodb.com/configure-api-access/#programmatic-api-keys.
+
+The programmatic API key must be granted roles sufficient for the acceptance test to succeed. The Organization Owner and Project Owner roles should be sufficient. You can see the available roles at https://docs.atlas.mongodb.com/reference/user-roles.
+
+You must configure Atlas API Access for your programmatic API key. You should allow API access for the IP address from which the acceptance test runs.
+
+## Security - Setup 
+
+Step 1) Create and note your MongoDB Atlas API Key.
+Step 2) Create and note your AWS Access Key and AWS Secret Key ID.
+Step 3) Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
+
 # Requirements
 
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.1.3

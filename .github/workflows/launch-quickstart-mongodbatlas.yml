@@ -74,7 +74,7 @@ jobs:
          --secret-string="file://./secret.json" ) 
         echo "secret_info=$secret_info"
         echo ::set-output name=secret_info::$(echo $secret_info)
-    - name: Create a new MongoDB Atlas Cloud Native CFN Quickstart stack
+    - name: Create a new MongoDB Atlas CloudFormation Quickstart stack
       id: create_stack
       env:
         NAME: ${{ github.event.inputs.projectName }}-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}

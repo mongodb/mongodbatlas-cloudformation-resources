@@ -6,22 +6,6 @@ on:
         description: "AWS region"
         default: "us-east-1"
         required: true
-      projectName:
-        description: "Name"
-        default: "atlas-cfn-quickstart"
-        required: true
-      instanceSize:
-        description: "Instance size, defaults to M10"
-        default: "M10"
-        required: true
-      databaseUsername:
-        description: "Database username"
-        default: "atlas"
-        required: true
-      databasePassword:
-        description: "Database password"
-        default: "atlas123"
-        required: true
 jobs:
   atlas-cfn-deploy:
     name: atlas-cfn-deploy

@@ -31,14 +31,23 @@ def main(parameters: ('resource parameters','option','p')
 
     TOOL = os.path.realpath(__file__)
     TOOL_HOME = os.path.dirname( TOOL )
+    logger.info( f"TOOL_HOME listdir: {os.listdir(TOOL_HOME)}" )
     ATLAS_CFN_HOME = os.path.join( TOOL_HOME, "cfn-resources")
+    if TOOL_HOME == "/github/workspace/.github/actions/atlas-cfn-deploy":
+        logger.info(f"Did not detect \"cfn-resources\" folder in {ATLAS_CFN_HOME}, checking running from Github Action.")
+        ATLAS_CFN_HOME="/github/workspace/cfn-resources"
     logger.info(f"TOOL: {TOOL}")
     logger.info(f"TOOL_HOME: {TOOL_HOME}")
     logger.info(f"ATLAS_CFN_HOME: {ATLAS_CFN_HOME}")
     logger.info(f"atlas-cfn-deploy deploying MongoDB Atlas CFN Custom Resources to AWS region {region}.")
     logger.info("WARNING: This tool is in active development. Swim at your own risk.")
-    logger.info(f"ATLAS_CFN_HOME: {ATLAS_CFN_HOME}")
-    logger.info(f"sys.argv: {sys.argv}")
+
+    check_res = os.listdir(ATLAS_CFN_HOME)
+    if not len(check_res):
+        logger.error(f"os.listdir('{ATLAS_CFN_HOME}'): {check_res}")
+        logger.fatal("Can't find any cfn-resources to deploy, unable to process.")
+        sys.exit(1)
+
     if parameters:
         params=dict( kvp.strip().split('=') for kvp in parameters.strip().split(',') )
     else:

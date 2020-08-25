@@ -350,6 +350,7 @@
       "Value": {
           "Fn::GetAtt": [ "Cluster", "ConnectionStrings" ]
       },
+    },
     "User": {
       "Description": "The user",
       "Value": {

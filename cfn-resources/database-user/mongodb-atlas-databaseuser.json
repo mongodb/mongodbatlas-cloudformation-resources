@@ -101,6 +101,8 @@
         "Username"
     ],
     "primaryIdentifier": [
+        "/properties/ProjectId",
+        "-",
         "/properties/Username"
     ],
     "handlers": {

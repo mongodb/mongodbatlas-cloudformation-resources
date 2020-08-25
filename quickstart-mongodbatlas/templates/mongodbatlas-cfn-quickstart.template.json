@@ -345,6 +345,11 @@
         "Ref": "Cluster"
       }
     },
+    "ConnectionStrings": {
+      "Description": "The connection string of the cluster",
+      "Value": {
+          "Fn::GetAtt": [ "Cluster", "ConnectionStrings" ]
+      },
     "User": {
       "Description": "The user",
       "Value": {

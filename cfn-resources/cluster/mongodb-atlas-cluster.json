@@ -75,6 +75,24 @@
                 }
             },
             "additionalProperties": false
+        },
+        "connectionStrings": {
+            "type": "object",
+            "properties": {
+                "Standard": {
+                    "type": "string"
+                },
+                "StandardSrv": {
+                    "type": "string"
+                },
+                "Private": {
+                    "type": "string"
+                },
+                "PrivateSrv": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
@@ -120,6 +138,10 @@
         "ClusterType": {
             "description": "Type of the cluster that you want to create.",
             "type": "string"
+        },
+        "ConnectionStrings": {
+            "description": "Set of connection strings that your applications use to connect to this cluster. Use the parameters in this object to connect your applications to this cluster. See the MongoDB [Connection String URI Format](https://docs.mongodb.com/manual/reference/connection-string/) reference for further details.",
+            "$ref": "#/definitions/connectionStrings"
         },
         "DiskSizeGB": {
             "description": "Capacity, in gigabytes, of the host’s root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.",

@@ -88,6 +88,10 @@
             "description": "Username for authenticating to MongoDB.",
             "type": "string"
         },
+        "UserCNFIdentifier": {
+            "description": "A unique identifier comprised of the Atlas Project ID and Username",
+            "type": "string"
+        },
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
         }
@@ -101,9 +105,7 @@
         "Username"
     ],
     "primaryIdentifier": [
-        "/properties/ProjectId",
-        "-",
-        "/properties/Username"
+        "/properties/UserId"
     ],
     "handlers": {
         "create": {

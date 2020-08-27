@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-
 # Generate a random name for this push
-echo "Loading secrets and env from ../.env"
-echo $(dirname "$0")
+ENV=${4}
+echo "Loading secrets/environment from ${ENV}"
 echo ----
-source ../.env
+source "${ENV}"
 NAME=$(curl -s https://random-word-api.herokuapp.com/word\?number\=3\&swear\=0 | jq -r '. | join("-")')
 NAME_TRUNC=$( echo ${NAME} | cut -d- -f1 )
 TEMPLATE=${1}
@@ -12,20 +11,28 @@ REGION=${2}
 INSTANCE_SIZE=${3}
 
 env | grep ATLAS
-# create the secret for the apikey if env
-if [[ ! -z ${ATLAS_PUBLIC_KEY+x} ]]; then
-  echo "creating secret"
-  aws secretsmanager create-secret --name "mongodbatlas/atlas-cfn-quickstart/${NAME}" \
-  --secret-string '{\"AtlasMongoDBPrivateKey\": \"${ATLAS_PRIVATE_KEY}\", \"AtlasMongoDBOrgID\": \"${ATLAS_ORG_ID}\", \"AtlasMongoDBPublicKey\" : \"${ATLAS_PUBLIC_KEY\"}' \
-  --region us-east-2
 
-fi
+secret=$(mktemp)
+cat << EOF > "${secret}"
+{
+    "AtlasMongoDBPrivateKey": "${ATLAS_PRIVATE_KEY}",
+    "AtlasMongoDBOrgID": "${ATLAS_ORG_ID}",
+    "AtlasMongoDBPublicKey" : "${ATLAS_PUBLIC_KEY}"
+}
+EOF
+
+echo "${secret}"
+cat "${secret}"
+echo "standby, baking a fresh yummy secret for your MongoDB Atlas API Key..."
+echo "Provisioning AWS Secret for MongoDB Atlas API Key called 'mongodbatlas/atlas-cfn-quickstart/$NAME"
+secret_info=$(aws secretsmanager create-secret \
+ --name="mongodbatlas/atlas-cfn-quickstart/$NAME" \
+ --region="${REGION}" \
+ --secret-string="file://${secret}" )
+echo "secret_info=$secret_info"
 
 echo "Creating ${NAME} (${INSTANCE_SIZE}) from ${TEMPLATE} in ${REGION}"
-# {
-#    "ParameterKey": "VPC",
-#    "ParameterValue": "vpc-03330ad23571b081a"
-# },
+
 PARAMS=$(cat <<PARAMETERS
 [
  {

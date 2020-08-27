@@ -117,6 +117,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		labels = append(labels, label)
 	}
 	currentModel.Labels = labels
+
+    cnfid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    currentModel.UserCNFIdentifier = &cnfid
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",

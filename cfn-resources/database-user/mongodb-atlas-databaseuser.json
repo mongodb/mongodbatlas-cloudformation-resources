@@ -105,7 +105,7 @@
         "Username"
     ],
     "primaryIdentifier": [
-        "/properties/UserId"
+        "/properties/UserCNFIdentifier"
     ],
     "handlers": {
         "create": {

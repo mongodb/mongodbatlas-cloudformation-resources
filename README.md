@@ -55,9 +55,10 @@ Step 3) Follow the Github docs on how to [create a Secret](https://docs.github.c
 
 # Requirements
 
-- [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.1.3
-- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.6
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) 1.13 (to build the provider plugin)
+- [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 
+- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 1.0
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) 1.14 
+
 
 # Using the Atlas CFN Resources 
 
@@ -82,7 +83,7 @@ docker run -v mongodbatlas-cloudformation-resources/cfn-resources:/atlas-cfn/cfn
 ## Registering resources 
 
 These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.
-You can use these steps, or leverage the [cfn-resources/utils/atlas-cfn-deploy](cfn-resources/utils/atlas-cfn-deploy) tool.
+You can use these steps, or leverage the [.github/actions/atlas-cfn-deploy](.github/actions/atlas-cfn-deploy) Github Action.
 
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
 2. Clone this repo, or head over to [releases](https://github.com/mongodb/mongodbatlas-cloudformation-resources/releases) and download the binary for the most recent release, `mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz`

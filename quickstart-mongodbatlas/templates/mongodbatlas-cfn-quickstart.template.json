@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Deploy MongoDB Atlas on AWS (with existing VPC)",
+  "Description": "MongoDB Atlas AWS CloudFormation Quickstart",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [

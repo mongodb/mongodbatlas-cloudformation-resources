@@ -62,5 +62,3 @@ Examples:
 ```bash
 ➜  atlas-cfn-deploy git:(master) ✗ ./atlas-cfn-deploy.py --region=us-east-2 all+ 
 ```
-
-There are probably easier ways to do this.

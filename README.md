@@ -2,7 +2,7 @@
 
 ***This file will be accurate post GA of the MongoDB Atlas Resource Provider for CloudFormation***
 
-### Status: pre-BETA (actively looking for [feedback](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources))
+### Status: BETA (actively looking for [feedback](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) and [comments](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues/new))
 
 Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
@@ -38,33 +38,52 @@ ATLAS_PRIVATE_KEY
 ATLAS_ORG_ID
 ```
 
+## MongoDB Atlas Programmatic API key
+It's necessary to generate and configure an API key for your organization for the acceptance test to succeed. To grant programmatic access to an organization or project using only the API you need to know:
+
+The programmatic API key has two parts: a Public Key and a Private Key. To see more details on how to create a programmatic API key visit https://docs.atlas.mongodb.com/configure-api-access/#programmatic-api-keys.
+
+The programmatic API key must be granted roles sufficient for the acceptance test to succeed. The Organization Owner and Project Owner roles should be sufficient. You can see the available roles at https://docs.atlas.mongodb.com/reference/user-roles.
+
+You must configure Atlas API Access for your programmatic API key. You should allow API access for the IP address from which the acceptance test runs.
+
+## Security - Setup 
+
+Step 1) Create and note your MongoDB Atlas API Key.
+Step 2) Create and note your AWS Access Key and AWS Secret Key ID.
+Step 3) Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
+
 # Requirements
 
-- [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 0.1.3
-- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 0.1.6
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) 1.13 (to build the provider plugin)
+- [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 
+- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 1.0
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) 1.14 
+
 
 # Using the Atlas CFN Resources 
 
 This project contains 2 main items:
 
-1. [quickstart-mongodbatlas](quickstart-mongodbatlas)tA sample quickstart AWS CloudFormation template to launch a full MongoDB Atlas deployment. This template uses the Atlas custom CFN resources. It is an example and starting point for your own CloudFormation projects using MongoDB Atlas.
+1. [quickstart-mongodbatlas](quickstart-mongodbatlas) A sample quickstart AWS CloudFormation template to launch a MongoDB Atlas deployment stack. This template uses the Atlas custom CFN resources. It is provided as an example starting point from which to build your own CloudFormation projects using MongoDB Atlas.
 
-2. [cfn-resources](cfn-resources) A set of AWS CloudFormation custom resource providers for MongoDB Atlas Resources. Currently, AWS requires users to manually deploy these resources manually in each AWS region of need. We support this workflow through the standard AWS `cfn submit` tooling, and there are scripts and Github actions which demonstrate automating this process.   
+2. [cfn-resources](cfn-resources) A set of AWS CloudFormation custom resource providers for MongoDB Atlas Resources. Currently, AWS requires users to manually deploy these resources in each AWS region one one desires to use them in. We support this workflow through the standard AWS cfn submit tooling. Scripts and Github actions are contained in this repository which demonstrate automating this deployment process.
+
 
 ## Running the Github workflows locally
 
-At this time, the [act]() tool doesn't support the `ubuntu-20.04` image as a local runner, so our actions won't running easily out of the box locally yet. 
+At this time, the [act](https://github.com/nektos/act) tool doesn't support the `ubuntu-20.04` image as a local runner, so our actions won't running easily out of the box locally yet. 
 
 You can build and run the action to deploy like this:
 
 ```bash
-docker run -v mongodbatlas-cloudformation-resources/cfn-resources:/atlas-cfn/cfn-resources --env-file local.env -t jmimick/atlas-cfn-deploy
+cd .github/actions/atlas-cfn-deploy
+docker build -t mongodbatlas/atlas-cfn-deploy .
+docker run -v mongodbatlas-cloudformation-resources/cfn-resources:/atlas-cfn/cfn-resources --env-file local.env -t mongodbatlas/atlas-cfn-deploy
 ```
 ## Registering resources 
 
 These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.
-You can use these steps, or leverage the [cfn-resources/utils/atlas-cfn-deploy](cfn-resources/utils/atlas-cfn-deploy) tool.
+You can use these steps, or leverage the [.github/actions/atlas-cfn-deploy](.github/actions/atlas-cfn-deploy) Github Action.
 
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
 2. Clone this repo, or head over to [releases](https://github.com/mongodb/mongodbatlas-cloudformation-resources/releases) and download the binary for the most recent release, `mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz`

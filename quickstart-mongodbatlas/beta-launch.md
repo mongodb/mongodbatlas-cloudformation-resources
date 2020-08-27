@@ -82,7 +82,7 @@ Consult the [templates/create-stack.sh](template/create-stack.sh) helper for an 
 
 The [.github/workflows/launch-quickstart-mongodbatlas.yml](.github/workflows/launch-quickstart-mongodbatlas.yml) Github workflow is another useful example.
 
-4. Check cloud.mongodb.com for your new Atlas stack.
+4. Check the Atlas UI, cloud.mongodb.com, for your new CloudFormation build Atlas stack.
 
 5. Connect a simple Flask app from EC2.
 
@@ -90,7 +90,7 @@ The [.github/workflows/launch-quickstart-mongodbatlas.yml](.github/workflows/lau
 
 ## Getting Help & Getting Involved
 
-+ If you found an error, very very likely - please file an [Issue](https://github.com/jasonmimick/quickstart-mongodbatlas/issues/new)
++ If you found an error, very very likely - please file an [Issue](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues/new)
 
 + Share your results to @MongoDBAtlasCFN
 

@@ -20,7 +20,7 @@ on:
         required: true
       databasePassword:
         description: "Database password"
-        default: "atlas123"
+        default: ""
         required: true
 jobs:
   launch-quickstart-mongodbatlas:

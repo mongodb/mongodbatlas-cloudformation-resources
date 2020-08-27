@@ -2,7 +2,7 @@
 
 ***This file will be accurate post GA of the MongoDB Atlas Resource Provider for CloudFormation***
 
-### Status: pre-BETA (actively looking for [feedback](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) and [comments](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues/new))
+### Status: BETA (actively looking for [feedback](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) and [comments](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues/new))
 
 Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 

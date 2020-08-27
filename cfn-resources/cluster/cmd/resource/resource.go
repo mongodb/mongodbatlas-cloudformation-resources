@@ -186,6 +186,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Enabled:        cluster.BiConnector.Enabled,
 	}
 
+	currentModel.ConnectionStrings = &ConnectionStrings{
+        Standard:               &cluster.ConnectionStrings.Standard,
+        StandardSrv:            &cluster.ConnectionStrings.StandardSrv,
+	    Private:                &cluster.ConnectionStrings.Private,
+        PrivateSrv:             &cluster.ConnectionStrings.PrivateSrv,
+	    //AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
+	    //AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
+	}
+
 	if cluster.ProviderSettings != nil {
 		currentModel.ProviderSettings = &ProviderSettings{
 			BackingProviderName: &cluster.ProviderSettings.BackingProviderName,

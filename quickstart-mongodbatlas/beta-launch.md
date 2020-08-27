@@ -2,12 +2,10 @@
 ![atlas-cfn](https://gist.githubusercontent.com/jasonmimick/68f402c378ed364ea1684fda1a7ef5d2/raw/3094b7a2f77d4a8d3e0a8acf4a876844acb39685/atlas-cfn.png "atlas-cfn") MongoDB Atlas Cloud Formation Custom Resources
 =====
 
-# (Pre)-Beta Launch "README"
-
 This note is intended for early adopters and testers interested in trying out the brand new MongoDB Atlas custom resources for Amazon AWS Cloud Formation. 
-Note: this software and the Cloud Formation custom resource SDK from AWS are both still pre-GA products.
+Note: this software and the Cloud Formation custom resource SDK from AWS are both still Beta products.
 
-## Getting Started
+# Getting Started
 
 1. Clone our CFN resources from the source repository: 
 
@@ -88,7 +86,7 @@ The [.github/workflows/launch-quickstart-mongodbatlas.yml](.github/workflows/lau
 
 :construction:
 
-## Getting Help & Getting Involved
+# Getting Help & Getting Involved
 
 + If you found an error, very very likely - please file an [Issue](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues/new)
 

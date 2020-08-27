@@ -40,7 +40,7 @@ def main(parameters: ('resource parameters','option','p')
     logger.info(f"TOOL_HOME: {TOOL_HOME}")
     logger.info(f"ATLAS_CFN_HOME: {ATLAS_CFN_HOME}")
     logger.info(f"atlas-cfn-deploy deploying MongoDB Atlas CFN Custom Resources to AWS region {region}.")
-    logger.info("WARNING: This tool is in active development. Swim at your own risk.")
+    logger.info("WARNING: This tool is beta. Swim at your own risk.")
 
     check_res = os.listdir(ATLAS_CFN_HOME)
     if not len(check_res):

@@ -4,6 +4,8 @@ github.com/Sectorbob/mlab-ns2 v0.0.0-20171030222938-d3aa0c295a8a h1:KFHLI4QGttB0
 github.com/Sectorbob/mlab-ns2 v0.0.0-20171030222938-d3aa0c295a8a/go.mod h1:D73UAuEPckrDorYZdtlCu2ySOLuPB5W4rhIkmmc/XbI=
 github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.0.0 h1:0alwcOwTDDR8fly8FeVHe7v4LxoGdTiNO1fjqytfqkA=
 github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.0.0/go.mod h1:1HPQYCN2LOcOvP0iHUb9OpO/UEdK7ffBZ5RZw7kAexc=
+github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.0.1 h1:+Kr0kooDwSDexwT25a8mudYbsQA5A+bDEbej00nGfTk=
+github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.0.1/go.mod h1:1HPQYCN2LOcOvP0iHUb9OpO/UEdK7ffBZ5RZw7kAexc=
 github.com/aws/aws-lambda-go v1.13.3 h1:SuCy7H3NLyp+1Mrfp+m80jcbi9KYWAs9/BXwppwRDzY=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.25.37 h1:gBtB/F3dophWpsUQKN/Kni+JzYEH2mGHF4hWNtfED1w=

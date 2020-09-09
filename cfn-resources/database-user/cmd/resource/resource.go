@@ -6,13 +6,15 @@ import (
 	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("19 currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+    log.Printf("Back from clieint:  %#+v",client)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -35,6 +37,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		roles = append(roles, role)
 	}
+    log.Printf("roles: %#+v", roles)
 
     var labels []mongodbatlas.Label
 	for _, l := range currentModel.Labels {
@@ -45,8 +48,38 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         }
 		labels = append(labels, label)
     }
-	
+    log.Printf("labels: %#+v", labels)
+
+    var scopes []mongodbatlas.Scope
+	for _, l := range currentModel.Scopes {
+
+		scope := mongodbatlas.Scope{
+            Name: *l.Name,
+            Type: *l.Type,
+        }
+		scopes = append(scopes, scope)
+    }
+    log.Printf("scopes: %#+v", scopes)
+
     groupID := *currentModel.ProjectId
+    log.Printf("groupID: %#+v", groupID)
+
+    none := "NONE"
+	if currentModel.LdapAuthType == nil {
+        currentModel.LdapAuthType = &none
+	}
+
+	if currentModel.AWSIAMType == nil {
+        currentModel.AWSIAMType = &none
+	}
+
+    if currentModel.Password == nil {
+        if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) {
+            return handler.ProgressEvent{}, fmt.Errorf("Password cannot be empty if not LDAP or IAM: %v",currentModel)
+        }
+        s := ""
+        currentModel.Password = &s
+    }
 
 	user := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
@@ -55,21 +88,25 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Password:     *currentModel.Password,
 		DatabaseName: *currentModel.DatabaseName,
         Labels:       labels,
+        Scopes:       scopes,
+        LDAPAuthType: *currentModel.LdapAuthType,
+        AWSIAMType:   *currentModel.AWSIAMType,
 	}
-
-	if currentModel.LdapAuthType != nil {
-		user.LDAPAuthType = *currentModel.LdapAuthType
-	}
+    log.Printf("user: %#+v", user)
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
-    cfnid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    pid := currentModel.ProjectId
+    cfnid := fmt.Sprintf("%v-%v",pid,currentModel.Username)
     currentModel.UserCNFIdentifier = &cfnid
     log.Printf("UserCFNIdentifier: %s",cfnid)
 
-	_, _, err = client.DatabaseUsers.Create(context.Background(), groupID, user)
+
+    newUser, _, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
 	}
+    log.Printf("newUser: %s", newUser)
+
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -121,7 +158,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	currentModel.Labels = labels
 
-    cfnid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    cfnid := fmt.Sprintf("%v-%v",&currentModel.ProjectId,currentModel.Username)
     currentModel.UserCNFIdentifier = &cfnid
 
 	return handler.ProgressEvent{

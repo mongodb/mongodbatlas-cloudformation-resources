@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+    "log"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
 )
@@ -58,17 +59,22 @@ func getClusterRequest(model *Model) *mongodbatlas.Cluster {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("cluster Create")
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+		log.Printf("Error - %+v",err)
+        return handler.ProgressEvent{}, err
+
 	}
+    log.Printf("got client - %v",client)
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
 		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
-	}
+	} 
+
 
 	projectID := *currentModel.ProjectId
-
+    log.Printf("cluster Create projectID=%s", projectID)
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType != nil {
 			return handler.ProgressEvent{}, errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
@@ -131,6 +137,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.Id = &cluster.ID
 	currentModel.StateName = &cluster.StateName
 
+    // This is the intial call to Create, so inject a deployment
+    // secret for this resource in order to lookup progress properly
+    projectResID := &util.ResourceIdentifier{ 
+        ResourceType: "Project", 
+        ResourceID: projectID,
+    }
+    log.Printf("Created projectResID:%s",projectResID)
+    resourceID := util.NewResourceIdentifier("Cluster", cluster.ID, projectResID)
+    log.Printf("Created resourceID:%s",resourceID)
+    resourceProps := map[string]string{
+        "ClusterName": cluster.Name,
+    }
+    secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
+    if err != nil {
+        log.Printf("Error - %+v",err)
+        return handler.ProgressEvent{}, err
+    }
+
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
@@ -138,13 +162,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{
 			"stateName": cluster.StateName,
+            "projectId": projectID,
+            "clusterName": *currentModel.Name,
+            "deploymentSecret": secretName,
 		},
 	}, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+
+    callback := map[string]interface{}(req.CallbackContext)
+    log.Printf("Read -  callback: %v",callback)
+
+    //if  callback != nil {
+    //}
+
+    client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -328,9 +362,11 @@ func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
 }
 
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
+    // convert AWS- regions to MDB regions
+    regionName := strings.ToUpper(strings.Replace(string(*providerSettings.RegionName),"-","_",-1))
     ps := &mongodbatlas.ProviderSettings{
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
-		RegionName:          cast.ToString(providerSettings.RegionName),
+		RegionName:          regionName,
 		BackingProviderName: cast.ToString(providerSettings.BackingProviderName),
 		InstanceSizeName:    cast.ToString(providerSettings.InstanceSizeName),
 		ProviderName:        "AWS",

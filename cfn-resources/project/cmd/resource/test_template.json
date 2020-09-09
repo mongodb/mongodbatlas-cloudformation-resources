@@ -1,0 +1,8 @@
+{
+    "Name": "test-acc-cfn-{{ .id }}",
+    "OrgId": "{{ env `ATLAS_ORG_ID` }}",
+    "ApiKeys": { 
+        "PublicKey": "{{ env `ATLAS_PUBLIC_KEY` }}",
+        "PrivateKey": "{{ env `ATLAS_PRIVATE_KEY` }}"
+    }
+}

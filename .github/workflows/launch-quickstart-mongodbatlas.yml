@@ -83,6 +83,8 @@ jobs:
       run: |
         echo "NAME=$NAME"
         echo "SECRET_INFO=${SECRET_INFO}"
+        ATLAS_REGION=$(echo $AWS_REGION | tr "-" "_" | tr a-z A-Z)
+        echo "Converted AWS Region ${AWS_REGION} to MongoDB Atlas Region ${ATLAS_REGION}"
         cat << EOF > ./parameters.json
         [
          {
@@ -91,7 +93,7 @@ jobs:
          },
          {
             "ParameterKey": "MongoDBAtlasClusterRegion",
-            "ParameterValue": "${AWS_REGION}"
+            "ParameterValue": "${ATLAS_REGION}"
          },
          {
             "ParameterKey": "MongoDBAtlasUsername",

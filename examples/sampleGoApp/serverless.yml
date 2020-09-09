@@ -1,0 +1,116 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: ${opt:TableName}Lambda 
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-resources-env
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: go1.x
+  stackName: "${self:service}-${self:provider.stage}" 
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# role: "${opt:TableName}" 
+# you can add statements to the Lambda function's IAM Role here
+#iamRoleStatementsName: "arn:aws:iam:#{AWS::AccountId}:
+#  iamRoleStatementsName: "role/mongodb-atlas-table-lambdaRole-${opt:TableName}"
+
+  #  iamRoleStatements:
+  #  - Effect: Allow
+  # Resource: "arn:aws:iam::#{AWS::AccountId}:root"
+  # Action: 'sts:AssumeRole'
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  hello:
+    handler: bin/hello
+    custom:
+      env-resources:
+      - AtlasTable
+    events:
+      - http:
+          path: hello
+          method: get
+  world:
+    handler: bin/world
+    events:
+      - http:
+          path: world
+          method: get
+
+#    Define function environment variables here
+    environment:
+        #ATLAS_ROLE_ARN: "${cf:#{AWS::StackName}.RoleArn}"  
+        #ATLAS_URI: "${cf:#{AWS::StackName}.ConnectionString}"  
+
+# you can add CloudFormation resource templates here
+#
+#
+#  ${service.name}-${stage}-${region}-lambdaRole
+#  is we know the name of the execution role, then generate db user anme -- try this out!
+#
+resources:
+  Resources:
+    AtlasTable:
+      Type: MongoDB::Atlas::Table
+      Properties:
+        ProjectId: "${opt:ProjectId}" 
+        PublicApiKey: ${env:ATLAS_PUBLIC_KEY} 
+        PrivateApiKey: ${env:ATLAS_PRIVATE_KEY}
+        TableName: "${opt:TableName}"
+        Username: "arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${AWS::Region}-lambdaRole"
+        ClusterName: "${opt:ClusterName}"
+        RegionName: "us-east-1"
+  Outputs:
+    AtlasTable:
+      Description: "Info on your Atlas table"
+      Value: !Ref AtlasTable
+    ConnectionString:
+      Description: "Hostname for mongodb+srv:// connection string"
+      Value: !GetAtt "AtlasTable.ConnectionStringsStandardSrv"
+    RoleARN:
+      Description: "AWS IAM Role ARN for db connection"
+      Value: !GetAtt "AtlasTable.Username"

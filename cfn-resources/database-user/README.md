@@ -13,7 +13,27 @@ The databaseUsers resource lets you retrieve, create and modify the MongoDB user
 `Password'` *(optional)* : The user’s password. This field is not included in the entity returned from the server.<br>
 `ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
+
+## Testing
+
+To test the db user resource locally you can do this,
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+ cfn invoke CREATE <(./create-sample-request.sh pid user)
+```
+
 ## Installation
     $ make
     $ cfn submit
     ...
+
+## Using
+
+You can use the sample.database-user.template.yaml to create a stack to test the resource.
+```
+ ./quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ./sample.database-user.template.yaml iam-user-222123 ParameterKey=ProjectId,ParameterValue=5fd13ed20e7df8312f816101 ParameterKey=Username,ParameterValue=arn:aws:iam::466197078724:role/Squib-2-AtlasIAMRole-N3XHEILW2XE3
+ ```

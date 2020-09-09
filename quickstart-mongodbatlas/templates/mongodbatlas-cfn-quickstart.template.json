@@ -25,7 +25,8 @@
             "default": "MongoDB Atlas Configuration"
           },
           "Parameters": [
-            "MongoDBAtlasClustName",
+            "MongoDBAtlasClusterName",
+            "MongoDBAtlasClusterRegion",
             "MongoDBAtlasUsername",
             "MongoDBAtlasPassword",
             "MongoDBAtlasInstanceSize"
@@ -46,6 +47,11 @@
         "MongoDBAtlasClusterName": {
           "default": "atlas-cfn-quickstart"
         },
+        "MongoDBAtlasClusterRegion": {
+          "default": {
+              "Ref": "AWS::Region"
+          }
+        },
         "MongoDBAtlasAPIKeySecretName": {
           "default": "mongodb/atlas/secrets"
         },
@@ -65,7 +71,9 @@
           "default": "Quick Start S3 Key Prefix"
         },
         "QSS3BucketRegion": {
-          "default": "Quick Start S3 bucket region"
+          "default": {
+              "Ref": "AWS::Region"
+          }
         },
         "VPC": {
           "default": "VPC"
@@ -76,6 +84,13 @@
   "Parameters": {
     "MongoDBAtlasClusterName": {
       "Description": "Name of the cluster as it appears in Atlas. Once the cluster is created, its name cannot be changed.",
+      "Type": "String"
+    },
+    "MongoDBAtlasClusterRegion": {
+      "Default": {
+          "Ref" : "AWS::Region"
+      },
+      "Description": "The AWS Region where the Atlas DB Cluster will run.",
       "Type": "String"
     },
     "MongoDBAtlasAPIKeySecretName": {
@@ -297,7 +312,9 @@
           "InstanceSizeName": {
             "Ref": "MongoDBAtlasInstanceSize"
           },
-          "RegionName": "US_EAST_2"
+          "RegionName": {
+              "Ref" : "MongoDBAtlasClusterRegion"
+          }
         },
         "Name": {
           "Ref": "MongoDBAtlasClusterName"
@@ -349,7 +366,7 @@
       "Description": "The connection string of the cluster",
       "Value": {
           "Fn::GetAtt": [ "Cluster", "ConnectionStrings" ]
-      },
+      }
     },
     "User": {
       "Description": "The user",

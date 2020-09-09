@@ -25,7 +25,8 @@ on:
 jobs:
   launch-quickstart-mongodbatlas:
     name: launch-quickstart-mongodbatlas
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       STACK_NAME: ${{ github.event.inputs.projectName }}
       INSTANCE_SIZE: ${{ github.event.inputs.instanceSize }}

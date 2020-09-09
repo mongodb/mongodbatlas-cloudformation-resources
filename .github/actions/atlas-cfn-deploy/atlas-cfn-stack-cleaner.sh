@@ -7,6 +7,11 @@ then
     echo "Region: ${REGION} Stacks: ${STACKS}"
     exit 0
 fi
+if [[ -z "${STACKS}" ]]; then
+    echo "Skys look clear, no stacks in sight, proceed."
+    exit 0
+fi
+
 # Start output structured YAML 'log'
 echo "\"atlas-cfn-stack-cleaner\":"
 echo "-"

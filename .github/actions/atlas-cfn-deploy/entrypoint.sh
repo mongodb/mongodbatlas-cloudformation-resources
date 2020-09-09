@@ -46,7 +46,7 @@ aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 ls -al
 ls -l cfn-resources
 
-CLEANER="./atlas-cfn-stack-cleaner.sh"
+CLEANER="./atlas-cfn-stack-cleaner.sh ${AWS_REGION}"
 DEPLOYER="./atlas-cfn-deploy.py --region=${AWS_REGION} all+"
 if [[ -d .github ]]
 then

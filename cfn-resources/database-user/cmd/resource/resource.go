@@ -62,6 +62,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
+    cfnid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    currentModel.UserCNFIdentifier = &cfnid
+    log.Printf("UserCFNIdentifier: %s",cfnid)
 
 	_, _, err = client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
@@ -117,6 +120,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		labels = append(labels, label)
 	}
 	currentModel.Labels = labels
+
+    cfnid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    currentModel.UserCNFIdentifier = &cfnid
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",

@@ -9,7 +9,6 @@ on:
 jobs:
   atlas-cfn-deploy:
     name: atlas-cfn-deploy
-    #runs-on: ubuntu-20.04
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2.3.1
@@ -20,7 +19,6 @@ jobs:
         env
         echo "#############################################################"
     - name: Run the atlas-cfn-deploy custom action.
-      if: ${{ github.event.inputs.deployResources }} == "yes"
       uses: ./.github/actions/atlas-cfn-deploy
       with:
         CAPABLITIES: CAPABILITY_IAM
@@ -29,6 +27,3 @@ jobs:
         AWS_REGION_INPUT: ${{ github.event.inputs.region }}
         AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
         XXINPUTS: $${{ github.event.inputs }}
-    - name: Deploy wrap up
-      run: |
-        echo "Wrap up"

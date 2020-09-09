@@ -4,7 +4,7 @@ on:
     inputs:
       region: 
         description: "AWS region"
-        default: "us-east-1"
+        default: ""
         required: true
       projectName:
         description: "Name"
@@ -25,7 +25,8 @@ on:
 jobs:
   launch-quickstart-mongodbatlas:
     name: launch-quickstart-mongodbatlas
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       STACK_NAME: ${{ github.event.inputs.projectName }}
       INSTANCE_SIZE: ${{ github.event.inputs.instanceSize }}
@@ -82,11 +83,17 @@ jobs:
       run: |
         echo "NAME=$NAME"
         echo "SECRET_INFO=${SECRET_INFO}"
+        ATLAS_REGION=$(echo $AWS_REGION | tr "-" "_" | tr a-z A-Z)
+        echo "Converted AWS Region ${AWS_REGION} to MongoDB Atlas Region ${ATLAS_REGION}"
         cat << EOF > ./parameters.json
         [
          {
             "ParameterKey": "MongoDBAtlasClusterName",
             "ParameterValue": "${NAME}"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasClusterRegion",
+            "ParameterValue": "${ATLAS_REGION}"
          },
          {
             "ParameterKey": "MongoDBAtlasUsername",

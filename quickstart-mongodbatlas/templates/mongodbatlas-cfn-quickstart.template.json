@@ -31,16 +31,6 @@
             "MongoDBAtlasPassword",
             "MongoDBAtlasInstanceSize"
           ]
-        },
-        {
-          "Label": {
-            "default": "AWS Quick Start Configuration"
-          },
-          "Parameters": [
-            "QSS3BucketName",
-            "QSS3KeyPrefix",
-            "QSS3BucketRegion"
-          ]
         }
       ],
       "ParameterLabels": {
@@ -63,17 +53,6 @@
         },
         "MongoDBAtlasInstanceSize": {
           "default": "MongoDB Atlas Instance Size"
-        },
-        "QSS3BucketName": {
-          "default": "Quick Start S3 Bucket Name"
-        },
-        "QSS3KeyPrefix": {
-          "default": "Quick Start S3 Key Prefix"
-        },
-        "QSS3BucketRegion": {
-          "default": {
-              "Ref": "AWS::Region"
-          }
         },
         "VPC": {
           "default": "VPC"
@@ -120,18 +99,6 @@
       "Type": "String",
       "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
       "Description": "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
-    },
-    "QSS3KeyPrefix": {
-      "AllowedPattern": "^[0-9a-zA-Z-/]*$",
-      "Default": "quickstart-mongodb/",
-      "Type": "String",
-      "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
-      "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a hyphen (-)."
-    },
-    "QSS3BucketRegion": {
-      "Default": "us-east-1",
-      "Description": "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.",
-      "Type": "String"
     },
     "MongoDBAtlasInstanceSize": {
       "Description": "Atlas provides different cluster tiers, each with a default storage capacity and RAM size. The cluster you select is used for all the data-bearing servers in your cluster tier.",

@@ -4,7 +4,7 @@ on:
     inputs:
       region: 
         description: "AWS region"
-        default: "us-east-1"
+        default: ""
         required: true
       projectName:
         description: "Name"
@@ -87,6 +87,10 @@ jobs:
          {
             "ParameterKey": "MongoDBAtlasClusterName",
             "ParameterValue": "${NAME}"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasClusterRegion",
+            "ParameterValue": "${AWS_REGION}"
          },
          {
             "ParameterKey": "MongoDBAtlasUsername",

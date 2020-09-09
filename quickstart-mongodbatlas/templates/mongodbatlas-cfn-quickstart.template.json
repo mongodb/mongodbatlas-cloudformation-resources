@@ -38,9 +38,7 @@
           "default": "atlas-cfn-quickstart"
         },
         "MongoDBAtlasClusterRegion": {
-          "default": {
-              "Ref": "AWS::Region"
-          }
+          "default": "us-east-1" 
         },
         "MongoDBAtlasAPIKeySecretName": {
           "default": "mongodb/atlas/secrets"
@@ -66,9 +64,7 @@
       "Type": "String"
     },
     "MongoDBAtlasClusterRegion": {
-      "Default": {
-          "Ref" : "AWS::Region"
-      },
+      "Default": "us-east-1",
       "Description": "The AWS Region where the Atlas DB Cluster will run.",
       "Type": "String"
     },

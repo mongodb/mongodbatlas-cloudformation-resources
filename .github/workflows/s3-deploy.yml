@@ -1,0 +1,27 @@
+name: Package and deploy resources to s3 
+on:
+  workflow_dispatch:
+    inputs:
+      bucket: 
+        description: "AWS S3 Bucket with MongoDB Atlas CloudFormation Resources"
+        default: "s3://mongodbatlas-cloudformation-resource/latest"
+        required: true
+jobs:
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    #runs-on: ubuntu-20.04
+    env:
+      CAPABLITIES: CAPABILITY_IAM
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      S3_BUCKET: ${{ github.event.inputs.bucket }}
+    steps:
+    - uses: actions/checkout@v2.3.1
+      name: Pull Code
+    - name: Run packager
+      id: run_packager
+      run: |
+        ls -l "${GITHUB_WORKSPACE}"
+        ls -l /
+        ls -lR /github/workspace

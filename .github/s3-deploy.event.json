@@ -1,0 +1,6 @@
+{
+    "action" : "workflow_dispatch",
+    "inputs" : {
+       "bucket" : "s3://mongodbatlas-cloudformation-resources-beta/latest"
+    }
+}

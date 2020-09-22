@@ -21,13 +21,11 @@ set -o nounset
 set -o pipefail
 source ./log.sh
 
-region="${AWS_REGION}"
-version=$(git rev-parse --short HEAD)
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-$(ls -F **/mongodb-atlas-*.json | cut -d/ -f1)}"
 bucket="${2:-"s3://mongodb-cloudformation-resources-beta"}"
+version="${VERSION:-$(git rev-parse --short HEAD)}"
 log_info "packager.sh hello"
-log_info "region: ${region}"
 log_info "version: ${version}"
 log_info "bucket: ${bucket}"
 log_info "resources: $(echo ${resources}| tr '\n' ' ')"

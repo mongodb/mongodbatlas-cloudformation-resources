@@ -22,6 +22,6 @@ jobs:
     - name: Run packager
       id: run_packager
       run: |
-        ls -l "${GITHUB_WORKSPACE}"
-        ls -l /
-        ls -lR /github/workspace
+        cd cfn-resources
+        VERSION=beta-1 ./packager.sh 
+

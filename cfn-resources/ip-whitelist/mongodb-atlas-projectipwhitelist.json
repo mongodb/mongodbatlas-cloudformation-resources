@@ -1,29 +1,28 @@
 {
-    "typeName": "MongoDB::Atlas::ProjectIPWhitelist",
-    "description": "The whitelist endpoint manages a Atlas project’s IP whitelist.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "typeName": "MongoDB::Atlas::IPAccessList",
+    "description": "The IPAccessList endpoint manages an Atlas IP Access List.",
     "definitions": {
         "whitelistDefinition": {
             "type": "object",
             "properties": {
                 "Comment": {
-                    "description": "Comment associated with the whitelist entry.",
+                    "description": "Comment associated with the ip access list entry.",
                     "type": "string"
                 },
                 "IpAddress": {
-                    "description": "Whitelisted IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.",
+                    "description": "Accessable IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.",
                     "type": "string"
                 },
                 "CidrBlock": {
-                    "description": "Whitelist entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.",
+                    "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.",
                     "type": "string"
                 },
                 "AwsSecurityGroup":{
-                    "description": "ID of the AWS security group to whitelist. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.",
+                    "description": "ID of the AWS security group to allow access. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.",
                     "type": "string"
                 },
                 "ProjectId": {
-                    "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
+                    "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
                     "type": "string"
                 }
             }
@@ -43,11 +42,11 @@
     },
     "properties": {
         "ProjectId": {
-            "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
+            "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
             "type": "string"
         },
         "Id": {
-            "description": "The unique identifier for the Project API Whitelist rules.",
+            "description": "The unique identifier for the Project API ip access list rules.",
             "type": "string"
         },
         "Whitelist": {
@@ -62,7 +61,7 @@
             "$ref": "#/definitions/apiKeyDefinition"
         },
         "TotalCount": {
-            "description": "The unique identifier for the Project API Whitelist rules.",
+            "description": "The unique identifier for the Project ip access list rules.",
             "type": "integer"
         }
 

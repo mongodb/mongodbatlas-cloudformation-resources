@@ -93,11 +93,11 @@ def main(parameters: ('resource parameters','option','p')
             res_path = os.path.join(f"{ATLAS_CFN_HOME}",noun)
             res = os.chdir(f'{res_path}')
             try_log_error(res,f"Changed to resource: {noun} in {res_path}")
-            process = subprocess.Popen(["make"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            output, error = process.communicate()
-            if error:
-                logger.error(error)
-            logger.info(output)
+            #process = subprocess.Popen(["make"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            #output, error = process.communicate()
+            #if error:
+            #    logger.error(error)
+            #logger.info(output)
 
             process = subprocess.Popen(submit_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             output, error = process.communicate()

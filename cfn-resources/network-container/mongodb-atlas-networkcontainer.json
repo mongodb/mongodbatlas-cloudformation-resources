@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkContainer",
     "description": "This resource allows to create, read, update and delete a network container",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-container",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",

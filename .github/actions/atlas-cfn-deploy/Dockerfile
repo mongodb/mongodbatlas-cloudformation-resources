@@ -13,14 +13,15 @@ LABEL com.github.actions.color="green"
 
 RUN apt-get update && apt-get install -y awscli git build-essential python3-pip 
 RUN rm -rf /var/lib/apt/lists/*
-RUN pip3 install cloudformation-cli cloudformation-cli-java-plugin cloudformation-cli-go-plugin cloudformation-cli-python-plugin
+RUN pip3 install cloudformation-cli cloudformation-cli-java-plugin cloudformation-cli-go-plugin cloudformation-cli-python-plugin --upgrade
 COPY requirements.txt /
 RUN pip3 install -r /requirements.txt
 
 WORKDIR /atlas-cfn
 COPY atlas-cfn-deploy.py atlas-cfn-deploy.py  
 COPY atlas-cfn-stack-cleaner.sh atlas-cfn-stack-cleaner.sh
+COPY s3wipe s3wipe
 RUN chmod +x atlas-cfn-stack-cleaner.sh
-
+RUN echo "cfn --version $(cfn --version)"
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

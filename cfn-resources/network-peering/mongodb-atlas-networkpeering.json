@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkPeering",
     "description": "This resource allows to create, read, update and delete a network peering",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-peering",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",

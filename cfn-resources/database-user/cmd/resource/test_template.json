@@ -1,0 +1,21 @@
+{
+    "Username": "{{ .Username}}",
+    "Password": "{{ .Password }}",
+    "ProjectId": "{{ .ProjectID }}",
+    "DatabaseName": "{{ .DatabaseName }}",
+    "Roles": [ 
+{{$first := true}}
+{{range $key, $role := .Roles}}
+    {{if $first}}
+        {{$first = false}}
+    {{else}}
+        ,
+    {{end}}
+       {"RoleName":"{{ $role.RoleName }}", "DatabaseName": "{{ $role.DatabaseName }}" }
+{{end}}
+    ],
+    "ApiKeys": { 
+        "PublicKey": "{{ env `ATLAS_PUBLIC_KEY` }}",
+        "PrivateKey": "{{ env `ATLAS_PRIVATE_KEY` }}"
+    }
+}

@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::Project",
     "description": "Retrieves or creates projects in any given Atlas organization.",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/database-users/project",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",
@@ -50,6 +49,7 @@
     ],
     "readOnlyProperties": [
         "/properties/Id",
+        "/properties/Name",
         "/properties/Created",
         "/properties/ClusterCount"
     ],

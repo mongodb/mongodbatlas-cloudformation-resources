@@ -3,7 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
-
+    "log"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -19,6 +19,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	fmt.Printf("%#+v\n", currentModel)
 
 	err = createEntries(currentModel, client)
+    log.Printf("Create err:%v",err)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -158,6 +159,7 @@ func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhiteli
 
 		whitelist = append(whitelist, wl)
 	}
+    log.Printf("getProjectIPWhitelistRequest whitelist:%v",whitelist)
 	return whitelist
 }
 
@@ -192,7 +194,7 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 func createEntries(model *Model, client *mongodbatlas.Client) error {
 	request := getProjectIPWhitelistRequest(model)
 	projectID := *model.ProjectId
-
+    log.Printf("createEntries : projectID:%s, model:%v", projectID, model)
 	_, _, err := client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
 	return err
 }

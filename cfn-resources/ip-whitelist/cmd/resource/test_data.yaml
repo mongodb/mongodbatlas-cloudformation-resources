@@ -1,0 +1,6 @@
+Whitelist:
+- IpAddress: "192.168.1.1"
+  Comment: "test-ip"
+- CidrBlock: "192.168.100.14/24"
+  Comment: "test-cidr"
+

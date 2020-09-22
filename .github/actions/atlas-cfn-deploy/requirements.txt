@@ -1,3 +1,5 @@
 loguru
 pyyaml
 plac
+# for s3wipe
+boto

@@ -62,7 +62,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
-    cfnid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    pid := currentModel.ProjectId
+    cfnid := fmt.Sprintf("%v-%v",pid,currentModel.Username)
     currentModel.UserCNFIdentifier = &cfnid
     log.Printf("UserCFNIdentifier: %s",cfnid)
 
@@ -121,7 +122,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	currentModel.Labels = labels
 
-    cfnid := fmt.Sprintf("%s-%s",currentModel.ProjectId,currentModel.Username)
+    cfnid := fmt.Sprintf("%v-%v",&currentModel.ProjectId,currentModel.Username)
     currentModel.UserCNFIdentifier = &cfnid
 
 	return handler.ProgressEvent{

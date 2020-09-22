@@ -12,11 +12,12 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("Create -- currentModel: %v", currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
+    log.Printf("Create -- currentModel: %v", currentModel)
 	project, _, err := client.Projects.Create(context.Background(), &matlasClient.Project{
 		Name:  *currentModel.Name,
 		OrgID: *currentModel.OrgId,
@@ -43,9 +44,26 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
+    name := *currentModel.Name
+    
+    if len(name) > 0 {
+	    project, _, err := client.Projects.GetOneProjectByName(context.Background(), name)
+        currentModel.Name = &project.Name
+        currentModel.OrgId = &project.OrgID
+        currentModel.Created = &project.Created
+        currentModel.ClusterCount = &project.ClusterCount
+
+        if err == nil {
+            return handler.ProgressEvent{
+                OperationStatus: handler.Success,
+                Message:         "Read Complete",
+                ResourceModel:   currentModel,
+            }, nil
+        }
+    } 
+
 	id := *currentModel.Id
 	log.Printf("Looking for project: %s", id)
-
 	project, _, err := client.Projects.GetOneProject(context.Background(), id)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading project with id(%s): %s", id, err)

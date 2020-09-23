@@ -1,0 +1,14 @@
+:quickstart-project-name: quickstart-mongodb-atlas
+:partner-product-name: MongoDB Cloud Formation Resources
+:partner-product-short-name: MongoDB Cloud Formation Resources
+:partner-company-name: MongoDB, Inc.
+:doc-month: Spet
+:doc-year: 2020
+:partner-contributors: Cloud Team - {partner-company-name}
+:deployment_time: 30 minutes / 1 hour
+:default_deployment_region: us-east-1
+// Uncomment these two attributes if you are leveraging
+// - an AWS Marketplace listing.
+// Additional content will be auto-generated based on these attributes.
+// :marketplace_subscription:
+:marketplace_listing_url: https://aws.amazon.com/marketplace/pp/MongoDB-MongoDB-Atlas-for-AWS/B077D557RX 

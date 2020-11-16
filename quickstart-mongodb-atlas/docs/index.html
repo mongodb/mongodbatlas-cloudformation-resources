@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.8">
-<title>MongoDB Cloud Formation Resources on the AWS Cloud</title>
+<title>MongoDB Atlas AWS Quickstart on the AWS Cloud</title>
 <style>
 
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -787,7 +787,7 @@ a img {
 <div id="toctitle"></div>
 <ul class="sectlevel1">
 <li><a href="#_overview">Overview</a></li>
-<li><a href="#_mongodb_cloud_formation_resources_on_aws">MongoDB Cloud Formation Resources on AWS</a></li>
+<li><a href="#_mongodb_atlas_aws_quickstart_on_aws">MongoDB Atlas AWS Quickstart on AWS</a></li>
 <li><a href="#_cost">Cost</a></li>
 <li><a href="#_software_licenses">Software licenses</a></li>
 <li><a href="#_architecture">Architecture</a></li>
@@ -806,7 +806,7 @@ a img {
 </li>
 <li><a href="#_test_the_deployment">Test the deployment</a></li>
 <li><a href="#_post_deployment_steps">Post deployment steps</a></li>
-<li><a href="#_best_practices_for_using_mongodb_cloud_formation_resources_on_aws">Best practices for using MongoDB Cloud Formation Resources on AWS</a></li>
+<li><a href="#_best_practices_for_using_mongodb_atlas_aws_quickstart_on_aws">Best practices for using MongoDB Atlas AWS Quickstart on AWS</a></li>
 <li><a href="#_security">Security</a></li>
 <li><a href="#_other_useful_information">Other useful information</a></li>
 <li><a href="#_faq">FAQ</a></li>
@@ -821,7 +821,7 @@ a img {
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_mongodb_cloud_formation_resources_on_the_aws_cloud" class="discrete text-center">MongoDB Cloud Formation Resources on the AWS Cloud</h2>
+<h2 id="_mongodb_atlas_aws_quickstart_on_the_aws_cloud" class="discrete text-center">MongoDB Atlas AWS Quickstart on the AWS Cloud</h2>
 <h2 id="_quick_start_reference_deployment" class="discrete text-left text-center">Quick Start Reference Deployment</h2>
 <div class="imageblock text-center">
 <div class="content">
@@ -829,9 +829,9 @@ a img {
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>Spet, 2020</strong><br>
+<p><strong>Oct, 2020</strong><br>
 <em>Cloud Team - MongoDB, Inc.</em><br>
-<em>{quickstart-contributors}</em></p>
+<em>jason.mimick@mongodb.com</em></p>
 </div>
 <div class="admonitionblock tip text-left">
 <table>
@@ -855,10 +855,10 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying MongoDB Cloud Formation Resources on the AWS Cloud.</p>
+<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying MongoDB Atlas AWS Quickstart on the AWS Cloud.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start is for users who &lt;target audience and usage scenario&gt;</p>
+<p>This Quick Start is for CloudFormation users who need to manage and access data services running on the MongoDB Cloud. The template included will provision a complete MongoDB Atlas deployment which includes a Project, Cluster, AWS IAM Role for database access, and a &lt;SECURE_PEERING_HERE&gt;.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -877,10 +877,32 @@ collaborated with AWS on the content of the Quick Start.
 </div>
 </div>
 <div class="sect1">
-<h2 id="_mongodb_cloud_formation_resources_on_aws">MongoDB Cloud Formation Resources on AWS</h2>
+<h2 id="_mongodb_atlas_aws_quickstart_on_aws">MongoDB Atlas AWS Quickstart on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This is MongoDB Atlas.</p>
+<p>This quickstart is powered by a lightweight lambda-controller which connects your AWS CloudFormation control plane directly into the MongoDB Cloud.</p>
+</div>
+<div class="paragraph">
+<p>The templates/mongodbatlas-quickstart.template.yaml stack will provision a complete you MongoDB Atlas Deployment for you. This includes the follow resources</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>AWS IAM Role</p>
+</li>
+<li>
+<p>MongoDB Atlas Project</p>
+</li>
+<li>
+<p>MongoDB Atlas Cluster</p>
+</li>
+<li>
+<p>MongoDB Atlas DatabaseUser via AWS IAM Role</p>
+</li>
+<li>
+<p>MongoDB Atlas PrivateEndpoint via AWS PrivateLink?</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -922,13 +944,13 @@ After you deploy the Quick Start, enable the <a href="https://docs.aws.amazon.co
 <p>Example content below:</p>
 </div>
 <div class="paragraph">
-<p><em>&lt;license information&gt;This Quick Start requires a license for MongoDB Cloud Formation Resources. To use the Quick Start in your production environment, sign up for a license at &lt;link&gt;. When you launch the Quick Start, place the license key in an S3 bucket and specify its location.</em></p>
+<p><em>&lt;license information&gt;This Quick Start requires a license for MongoDB Atlas AWS Quickstart. To use the Quick Start in your production environment, sign up for a license at &lt;link&gt;. When you launch the Quick Start, place the license key in an S3 bucket and specify its location.</em></p>
 </div>
 <div class="paragraph">
 <p><em>If you don’t have a license, the Quick Start deploys with a trial license. The trial license gives you &lt;n&gt; days of free usage in a non-production environment. After this time, you can upgrade to a production license by following the instructions at &lt;link&gt;.</em></p>
 </div>
 <div class="paragraph">
-<p><em>&lt;AMI information&gt;The Quick Start requires a subscription to the Amazon Machine Image (AMI) for MongoDB Cloud Formation Resources, which is available from <a href="https://aws.amazon.com/marketplace/" target="_blank" rel="noopener">AWS Marketplace</a>. Additional pricing, terms, and conditions may apply. For instructions, see <a href="#step-2.-subscribe-to-the-software-ami">step 2</a> in the deployment section.</em></p>
+<p><em>&lt;AMI information&gt;The Quick Start requires a subscription to the Amazon Machine Image (AMI) for MongoDB Atlas AWS Quickstart, which is available from <a href="https://aws.amazon.com/marketplace/" target="_blank" rel="noopener">AWS Marketplace</a>. Additional pricing, terms, and conditions may apply. For instructions, see <a href="#step-2.-subscribe-to-the-software-ami">step 2</a> in the deployment section.</em></p>
 </div>
 </div>
 </div>
@@ -937,14 +959,14 @@ After you deploy the Quick Start, enable the <a href="https://docs.aws.amazon.co
 <div class="sectionbody">
 <div class="paragraph">
 <p>Deploying this Quick Start for a new virtual private cloud (VPC) with
-default parameters builds the following <em>MongoDB Cloud Formation Resources</em> environment in the
+default parameters builds the following <em>MongoDB Atlas AWS Quickstart</em> environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
 <div class="content">
-<a class="image" href="images/architecture_diagram.png"><img src="images/architecture_diagram.png" alt="Architecture" width="648" height="439"></a>
+<a class="image" href="images/simple-quickstart-arch.png"><img src="images/simple-quickstart-arch.png" alt="Architecture" width="648" height="439"></a>
 </div>
-<div class="title">Figure 1. Quick Start architecture for <em>MongoDB Cloud Formation Resources</em> on AWS</div>
+<div class="title">Figure 1. Quick Start architecture for <em>MongoDB Atlas AWS Quickstart</em> on AWS</div>
 </div>
 <div class="paragraph">
 <p>As shown in Figure 1, the Quick Start sets up the following:</p>
@@ -1133,15 +1155,15 @@ Certain Regions are available on an opt-in basis. Refer to the AWS Documentation
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Deploy MongoDB Cloud Formation Resources into a new VPC (end-to-end deployment)</strong>. This option builds a new AWS environment consisting of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys MongoDB Cloud Formation Resources into this new VPC.</p>
+<p><strong>Deploy MongoDB Atlas AWS Quickstart into a new VPC (end-to-end deployment)</strong>. This option builds a new AWS environment consisting of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys MongoDB Atlas AWS Quickstart into this new VPC.</p>
 </li>
 <li>
-<p><strong>Deploy MongoDB Cloud Formation Resources into an existing VPC</strong>. This option provisions MongoDB Cloud Formation Resources in your existing AWS infrastructure.</p>
+<p><strong>Deploy MongoDB Atlas AWS Quickstart into an existing VPC</strong>. This option provisions MongoDB Atlas AWS Quickstart in your existing AWS infrastructure.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and MongoDB Cloud Formation Resources settings, as discussed later in this guide.</p>
+<p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and MongoDB Atlas AWS Quickstart settings, as discussed later in this guide.</p>
 </div>
 </div>
 </div>
@@ -1191,11 +1213,11 @@ You are responsible for the cost of the AWS services used while running this Qui
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Cloud Formation Resources into a new VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Atlas AWS Quickstart into a new VPC on AWS</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_link" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Cloud Formation Resources into an existing VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Atlas AWS Quickstart into an existing VPC on AWS</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_link" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 </tbody>
@@ -1207,7 +1229,7 @@ You are responsible for the cost of the AWS services used while running this Qui
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-If you’re deploying MongoDB Cloud Formation Resources into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances, and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables, to allow the instances to download packages and software without exposing them to the internet.
+If you’re deploying MongoDB Atlas AWS Quickstart into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances, and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables, to allow the instances to download packages and software without exposing them to the internet.
 </td>
 </tr>
 </table>
@@ -1216,12 +1238,12 @@ If you’re deploying MongoDB Cloud Formation Resources into an existing VPC, ma
 <p>Also, make sure that the domain name option in the DHCP options is configured as explained in the <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">Amazon VPC documentation</a>. You provide your VPC settings when you launch the Quick Start.</p>
 </div>
 <div class="paragraph">
-<p>Each deployment takes about 30 minutes / 1 hour to complete.</p>
+<p>Each deployment takes about 15 minutes to complete.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic" start="2">
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for MongoDB Cloud Formation Resources will be built. The template is launched in the us-east-1 Region by default.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for MongoDB Atlas AWS Quickstart will be built. The template is launched in the us-east-1 Region by default.</p>
 </li>
 </ol>
 </div>
@@ -1263,10 +1285,10 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
 </li>
 <li>
-<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the MongoDB Cloud Formation Resources deployment is ready.</p>
+<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the MongoDB Atlas AWS Quickstart deployment is ready.</p>
 </li>
 <li>
-<p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">MongoDB Cloud Formation Resources outputs after successful deployment</a>, to view the created resources.</p>
+<p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">MongoDB Atlas AWS Quickstart outputs after successful deployment</a>, to view the created resources.</p>
 </li>
 </ol>
 </div>
@@ -1274,7 +1296,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <div class="content">
 <a class="image" href="images/cfn_outputs.png"><img src="images/cfn_outputs.png" alt="cfn_outputs" width="648" height="439"></a>
 </div>
-<div class="title">Figure 2. MongoDB Cloud Formation Resources outputs after successful deployment</div>
+<div class="title">Figure 2. MongoDB Atlas AWS Quickstart outputs after successful deployment</div>
 </div>
 </div>
 </div>
@@ -1292,7 +1314,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </div>
 </div>
 <div class="sect1">
-<h2 id="_best_practices_for_using_mongodb_cloud_formation_resources_on_aws">Best practices for using MongoDB Cloud Formation Resources on AWS</h2>
+<h2 id="_best_practices_for_using_mongodb_atlas_aws_quickstart_on_aws">Best practices for using MongoDB Atlas AWS Quickstart on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><em>Add any best practices for using the software.</em></p>
@@ -1399,7 +1421,7 @@ and to share your customizations with others.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-09-23 12:18:40 -0400
+Last updated 2020-10-15 10:20:51 -0400
 </div>
 </div>
 </body>

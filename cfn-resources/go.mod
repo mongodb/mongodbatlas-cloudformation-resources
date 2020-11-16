@@ -8,8 +8,8 @@ require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.0.0
 	github.com/aws/aws-sdk-go v1.34.7
 	github.com/davecgh/go-spew v1.1.1
-	github.com/mongodb/go-client-mongodb-atlas v0.3.0
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1
+	go.mongodb.org/atlas v0.5.0
 	gopkg.in/yaml.v2 v2.2.2
 )

@@ -4,20 +4,20 @@ import (
 	"context"
 	"fmt"
 	"log"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    matlasClient "go.mongodb.org/atlas/mongodbatlas"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+    "github.com/davecgh/go-spew/spew"
 )
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    log.Printf("Create -- currentModel: %v", currentModel)
+    log.Printf("Create -- currentModel: %+v", currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-    log.Printf("Create -- currentModel: %v", currentModel)
 	project, _, err := client.Projects.Create(context.Background(), &matlasClient.Project{
 		Name:  *currentModel.Name,
 		OrgID: *currentModel.OrgId,
@@ -39,6 +39,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    spew.Dump(currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
 )
@@ -62,9 +62,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     log.Printf("cluster Create")
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
+		log.Printf("Error - %+v",err)
+        return handler.ProgressEvent{}, err
 
+	}
+    log.Printf("got client - %v",client)
 	if _, ok := req.CallbackContext["stateName"]; ok {
 		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
 	}
@@ -330,9 +332,11 @@ func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
 }
 
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
+    // convert AWS- regions to MDB regions
+    regionName := strings.ToUpper(strings.Replace(string(*providerSettings.RegionName),"-","_",-1))
     ps := &mongodbatlas.ProviderSettings{
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
-		RegionName:          cast.ToString(providerSettings.RegionName),
+		RegionName:          regionName,
 		BackingProviderName: cast.ToString(providerSettings.BackingProviderName),
 		InstanceSizeName:    cast.ToString(providerSettings.InstanceSizeName),
 		ProviderName:        "AWS",

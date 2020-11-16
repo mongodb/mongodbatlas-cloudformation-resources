@@ -12,6 +12,7 @@ type Model struct {
 	Password          *string           `json:",omitempty"`
 	Username          *string           `json:",omitempty"`
 	UserCNFIdentifier *string           `json:",omitempty"`
+	AWSIAMType        *string           `json:",omitempty"`
 	ApiKeys           *ApiKeyDefinition `json:",omitempty"`
 }
 

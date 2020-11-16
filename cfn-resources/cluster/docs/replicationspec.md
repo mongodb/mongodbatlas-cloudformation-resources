@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "<a href="#id" title="ID">ID</a>" : <i>String</i>,
     "<a href="#numshards" title="NumShards">NumShards</a>" : <i>Integer</i>,
-    "<a href="#regionsconfig" title="RegionsConfig">RegionsConfig</a>" : <i>[ <a href="regionsconfig.md">RegionsConfig</a>, ... ]</i>,
+    "<a href="#regionsconfig" title="RegionsConfig">RegionsConfig</a>" : <i>[ [ <a href="regionsconfig.md">RegionsConfig</a>, ... ], ... ]</i>,
     "<a href="#zonename" title="ZoneName">ZoneName</a>" : <i>String</i>
 }
 </pre>
@@ -21,6 +21,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#id" title="ID">ID</a>: <i>String</i>
 <a href="#numshards" title="NumShards">NumShards</a>: <i>Integer</i>
 <a href="#regionsconfig" title="RegionsConfig">RegionsConfig</a>: <i>
+      - 
       - <a href="regionsconfig.md">RegionsConfig</a></i>
 <a href="#zonename" title="ZoneName">ZoneName</a>: <i>String</i>
 </pre>
@@ -47,7 +48,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 _Required_: No
 
-_Type_: List of <a href="regionsconfig.md">RegionsConfig</a>
+_Type_: List of List of <a href="regionsconfig.md">RegionsConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

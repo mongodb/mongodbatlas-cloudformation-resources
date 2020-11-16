@@ -8,29 +8,29 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#enabled" title="Enabled">Enabled</a>" : <i>Boolean</i>,
-    "<a href="#scaledownenabled" title="ScaleDownEnabled">ScaleDownEnabled</a>" : <i>Boolean</i>
+    "<a href="#compute" title="Compute">Compute</a>" : <i><a href="autoscaling.md">AutoScaling</a></i>,
+    "<a href="#diskgbenabled" title="DiskGBEnabled">DiskGBEnabled</a>" : <i>Boolean</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#enabled" title="Enabled">Enabled</a>: <i>Boolean</i>
-<a href="#scaledownenabled" title="ScaleDownEnabled">ScaleDownEnabled</a>: <i>Boolean</i>
+<a href="#compute" title="Compute">Compute</a>: <i><a href="autoscaling.md">AutoScaling</a></i>
+<a href="#diskgbenabled" title="DiskGBEnabled">DiskGBEnabled</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
 
-#### Enabled
+#### Compute
 
 _Required_: No
 
-_Type_: Boolean
+_Type_: <a href="autoscaling.md">AutoScaling</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ScaleDownEnabled
+#### DiskGBEnabled
 
 _Required_: No
 

@@ -91,6 +91,16 @@
             "description": "A unique identifier comprised of the Atlas Project ID and Username",
             "type": "string"
         },
+        "AWSIAMType": {
+            "description": "If this value is set, the new database user authenticates with AWS IAM credentials.",
+            "type": "string",
+            "enum": [
+                "NONE",
+                "USER",
+                "GROUP"
+            ]
+        },
+
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
         }

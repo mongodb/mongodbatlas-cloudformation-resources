@@ -21,7 +21,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>" : <i>Double</i>,
         "<a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labels.md">Labels</a>, ... ]</i>,
+        "<a href="#labels" title="Labels">Labels</a>" : <i>[ [ <a href="labels.md">Labels</a>, ... ], ... ]</i>,
         "<a href="#mongodbmajorversion" title="MongoDBMajorVersion">MongoDBMajorVersion</a>" : <i>String</i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#numshards" title="NumShards">NumShards</a>" : <i>Integer</i>,
@@ -49,6 +49,7 @@ Properties:
     <a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
+      - 
       - <a href="labels.md">Labels</a></i>
     <a href="#mongodbmajorversion" title="MongoDBMajorVersion">MongoDBMajorVersion</a>: <i>String</i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
@@ -153,7 +154,7 @@ Array containing key-value pairs that tag and categorize the cluster.
 
 _Required_: No
 
-_Type_: List of <a href="labels.md">Labels</a>
+_Type_: List of List of <a href="labels.md">Labels</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -19,6 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
         "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#username" title="Username">Username</a>" : <i>String</i>,
+        "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
@@ -38,6 +39,7 @@ Properties:
       - <a href="roledefinition.md">roleDefinition</a></i>
     <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#username" title="Username">Username</a>: <i>String</i>
+    <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
@@ -112,6 +114,18 @@ Username for authenticating to MongoDB.
 _Required_: Yes
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AWSIAMType
+
+If this value is set, the new database user authenticates with AWS IAM credentials.
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>GROUP</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

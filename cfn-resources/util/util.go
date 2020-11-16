@@ -2,7 +2,9 @@ package util
 
 import (
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
+
+    "log"
 )
 
 const (
@@ -11,6 +13,7 @@ const (
 
 func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
 	// setup a transport to handle digest
+    log.Printf("CreateMongoDBClient--- publicKey:%s", publicKey)
 	transport := digest.NewTransport(publicKey, privateKey)
 
 	// initialize the client

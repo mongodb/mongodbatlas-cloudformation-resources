@@ -17,6 +17,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
+        "<a href="#scopes" title="Scopes">Scopes</a>" : <i>[ <a href="scopedefinition.md">scopeDefinition</a>, ... ]</i>,
         "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#username" title="Username">Username</a>" : <i>String</i>,
         "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
@@ -37,6 +38,8 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
       - <a href="roledefinition.md">roleDefinition</a></i>
+    <a href="#scopes" title="Scopes">Scopes</a>: <i>
+      - <a href="scopedefinition.md">scopeDefinition</a></i>
     <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#username" title="Username">Username</a>: <i>String</i>
     <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
@@ -97,11 +100,21 @@ _Type_: List of <a href="roledefinition.md">roleDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Scopes
+
+Array of clusters and Atlas Data Lakes that this user has access to. If omitted, Atlas grants the user access to all the clusters and Atlas Data Lakes in the project by default.
+
+_Required_: No
+
+_Type_: List of <a href="scopedefinition.md">scopeDefinition</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### Password
 
 The user’s password. This field is not included in the entity returned from the server.
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
@@ -125,7 +138,7 @@ _Required_: No
 
 _Type_: String
 
-_Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>GROUP</code>
+_Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>ROLE</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

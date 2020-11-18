@@ -1,28 +1,20 @@
-quickstart-mongodbatlas
-=============
-## MongoDB Atlas on the AWS Cloud
+# quickstart-mongodbatlas
+## MongoDB Atlas on AWS
 
-Start here: [beta-launch.md](beta-launch.md)
+### Fully managed document database on the AWS Cloud
 
-This Quick Start sets up a flexible, scalable AWS environment for MongoDB Atlas through AWS CloudFormation resources.
+Use this Quick Start to launch a fully managed MongoDB Atlas deployment on AWS in 15 minutes.
 
-MongoDB Atlas is the global cloud database service for modern applications. Deploy fully managed MongoDB across AWS, Azure, or GCP. Best-in-class automation and proven practices guarantee availability, scalability, and compliance with the most demanding data security and privacy standards.
+MongoDB Atlas is the leading global cloud database service for modern applications. Deploy fully managed MongoDB with best-in-class automation and proven practices that guarantee availability, scalability, and compliance with security standards. Extend your data with the MongoDB Cloud platform, including full-text search, mobile sync, and automated data tiering.
 
-The Quick Start offers two deployment options:
+This Quick Start is for developers and DevOps professionals who want to create flexible, fully managed clusters on MongoDB Atlas. The template creates an Atlas project with a standard, single-region M10 cluster, and can be customized for different cluster configurations and project settings.
 
-- Deploying MongoDB Atlas into a new virtual private cloud (VPC) on AWS
-- Deploying MongoDB Atlas into an existing VPC on AWS
+By default, every MongoDB Atlas cluster comes with the following:
+Support for the latest MongoDB Enterprise database versions
+A minimum three-node replica set for high availability, deployed in a new virtual private cloud (VPC)
+Built-in security defaults, including always-on authentication and end-to-end encryption
+Fully managed database lifecycle with automated patches, backups, and monitoring
+Performance optimization features like auto-scaling, index suggestions, and intelligent data tiering
 
-You can also use the (sample)[templates/mongodbatlas-cfn-quickstart.template.json] AWS CloudFormation templates as a starting point for your own implementation.
-
-:construction: 
-
-![Quick Start architecture for MongoDB on AWS](atlas-cfn-dataplatform.png)
-
-:construction: 
-
-For architectural details, best practices, step-by-step instructions, and customization options, see the 
-[deployment guide](atlas-cfn-dataplatform.png).
-
-To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
+This Quick Start was developed by MongoDB in collaboration with AWS. MongoDB is an AWS partner.
 

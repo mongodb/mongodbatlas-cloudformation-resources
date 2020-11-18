@@ -4,6 +4,7 @@
 
 # our logs
 rpdk.log
+makebuild
 
 #compiled file
 bin/

@@ -2,6 +2,22 @@
     "typeName": "MongoDB::Atlas::DatabaseUser",
     "description": "The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provide access to the project’s databases. A user’s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.",
     "definitions": {
+        "scopeDefinition": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                    "CLUSTER",
+                    "DATA_LAKE"
+                ]
+              }
+            }
+          },
         "labelDefinition": {
             "type": "object",
             "properties": {
@@ -79,6 +95,15 @@
               "$ref": "#/definitions/roleDefinition"
             }
         },
+        "Scopes": {
+            "description": "Array of clusters and Atlas Data Lakes that this user has access to. If omitted, Atlas grants the user access to all the clusters and Atlas Data Lakes in the project by default.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/definitions/scopeDefinition"
+            }
+        },
         "Password": {
             "description": "The user’s password. This field is not included in the entity returned from the server.",
             "type": "string"
@@ -91,6 +116,16 @@
             "description": "A unique identifier comprised of the Atlas Project ID and Username",
             "type": "string"
         },
+        "AWSIAMType": {
+            "description": "If this value is set, the new database user authenticates with AWS IAM credentials.",
+            "type": "string",
+            "enum": [
+                "NONE",
+                "USER",
+                "ROLE"
+            ]
+        },
+
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
         }
@@ -100,7 +135,6 @@
         "DatabaseName",
         "ProjectId",
         "Roles",
-        "Password",
         "Username"
     ],
     "readOnlyProperties": [

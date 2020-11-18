@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudProviderSnapshotRestoreJobs Links
+# MongoDB::Atlas::DatabaseUser scopeDefinition
 
 ## Syntax
 
@@ -8,33 +8,37 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#rel" title="Rel">Rel</a>" : <i>String</i>,
-    "<a href="#href" title="Href">Href</a>" : <i>String</i>
+    "<a href="#name" title="name">name</a>" : <i>String</i>,
+    "<a href="#type" title="type">type</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#rel" title="Rel">Rel</a>: <i>String</i>
-<a href="#href" title="Href">Href</a>: <i>String</i>
+<a href="#name" title="name">name</a>: <i>String</i>
+<a href="#type" title="type">type</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### Rel
+#### name
 
 _Required_: No
 
 _Type_: String
+
+_Minimum_: <code>1</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Href
+#### type
 
 _Required_: No
 
 _Type_: String
+
+_Allowed Values_: <code>CLUSTER</code> | <code>DATA_LAKE</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

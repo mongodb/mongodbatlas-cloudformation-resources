@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
@@ -16,6 +16,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
+    log.Printf("19 currentModel: %s, prevModel: %#+v", currentModel, prevModel)
 
 	var roles []mongodbatlas.Role
 	for _, r := range currentModel.Roles {
@@ -45,7 +46,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         }
 		labels = append(labels, label)
     }
-	
+
+    var scopes []mongodbatlas.Scope
+	for _, l := range currentModel.Scopes {
+
+		scope := mongodbatlas.Scope{
+            Name: *l.Name,
+            Type: *l.Type,
+        }
+		scopes = append(scopes, scope)
+    }
+
     groupID := *currentModel.ProjectId
 
 	user := &mongodbatlas.DatabaseUser{
@@ -55,10 +66,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Password:     *currentModel.Password,
 		DatabaseName: *currentModel.DatabaseName,
         Labels:       labels,
+        Scopes:       scopes,
 	}
 
 	if currentModel.LdapAuthType != nil {
 		user.LDAPAuthType = *currentModel.LdapAuthType
+	}
+	if currentModel.AWSIAMType != nil {
+		user.AWSIAMType = *currentModel.AWSIAMType
 	}
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)

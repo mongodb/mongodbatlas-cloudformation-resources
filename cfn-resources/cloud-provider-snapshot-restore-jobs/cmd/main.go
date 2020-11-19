@@ -9,11 +9,11 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-snapshot-restore-jobs/cmd/resource"
-	"go.mongodb.org/atlas"
 )
 
 // Handler is a container for the CRUDL actions exported by resources
 type Handler struct{}
+
 
 // Create wraps the related Create function exposed by the resource code
 func (r *Handler) Create(req handler.Request) handler.ProgressEvent {
@@ -63,24 +63,14 @@ func wrap(req handler.Request, f handlerFunc) (response handler.ProgressEvent) {
 	}()
 
 	// Populate the previous model
-	//prevModel := &resource.Model{}
-	currentModel := &atlas.CloudProviderSnapshotRestoreJobs
-	// Here we will tell the tool WHAT type we want, we already have our
-
-	// ************
-	// {'models': {'ResourceModel': {'ProjectId': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'ClusterName': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'Id': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'DeliveryType': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'DeliveryUrl': <ResolvedType(ContainerType.LIST, <ResolvedType(ContainerType.PRIMITIVE, string)>)>, 'Cancelled': <ResolvedType(ContainerType.PRIMITIVE, boolean)>, 'CreatedAt': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'Expired': <ResolvedType(ContainerType.PRIMITIVE, boolean)>, 'ExpiresAt': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'FinishedAt': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'Timestamp': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'SnapshotId': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'Links': <ResolvedType(ContainerType.LIST, <ResolvedType(ContainerType.MODEL, Links)>)>, 'OpLogTs': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'PointInTimeUtcSeconds': <ResolvedType(ContainerType.PRIMITIVE, integer)>, 'TargetProjectId': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'TargetClusterName': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'ApiKeys': <ResolvedType(ContainerType.MODEL, ApiKeyDefinition)>}, 'Links': {'Rel': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'Href': <ResolvedType(ContainerType.PRIMITIVE, string)>}, 'ApiKeyDefinition': {'PublicKey': <ResolvedType(ContainerType.PRIMITIVE, string)>, 'PrivateKey': <ResolvedType(ContainerType.PRIMITIVE, string)>}}, 'path': PosixPath('/home/jason/work/mongodbatlas-cloudformation-resources/cfn-resources/cloud-provider-snapshot-restore-jobs/cmd/main.go'), 'type_name': 'MongoDB::Atlas::CloudProviderSnapshotRestoreJobs', 'client_type': 'CloudProviderSnapshotRestoreJobs', 'imports': 'go.mongodb.org/atlas'}
-	// ************
-
-	// types in the mongodbatlas go client!
+	prevModel := &resource.Model{}
 	if err := req.UnmarshalPrevious(prevModel); err != nil {
 		log.Printf("Error unmarshaling prev model: %v", err)
 		return handler.NewFailedEvent(err)
 	}
 
 	// Populate the current model
-	//currentModel := &resource.Model{}
-	currentModel := &atlas.CloudProviderSnapshotRestoreJobs
-
+	currentModel := &resource.Model{}
 	if err := req.Unmarshal(currentModel); err != nil {
 		log.Printf("Error unmarshaling model: %v", err)
 		return handler.NewFailedEvent(err)

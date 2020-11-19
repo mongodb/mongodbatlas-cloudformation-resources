@@ -29,7 +29,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if awsAccountId == nil || *awsAccountId == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `aws_account_id` must be set")
 	}
-	rtCIDR := currentModel.RouteTableCidrBlock
+	rtCIDR := currentModel.RouteTableCIDRBlock
 	if rtCIDR == nil || *rtCIDR == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `route_table_cidr_block` must be set")
 	}
@@ -79,7 +79,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.AccepterRegionName = &peerResponse.AccepterRegionName
 	currentModel.AwsAccountId = &peerResponse.AWSAccountID
-	currentModel.RouteTableCidrBlock = &peerResponse.RouteTableCIDRBlock
+	currentModel.RouteTableCIDRBlock = &peerResponse.RouteTableCIDRBlock
 	currentModel.VpcId = &peerResponse.VpcID
 	currentModel.ConnectionId = &peerResponse.ConnectionID
 	currentModel.ErrorStateName = &peerResponse.ErrorStateName
@@ -113,7 +113,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		peerRequest.AWSAccountID = *accountID
 	}
 	peerRequest.ProviderName = "AWS"
-	rtTableBlock := currentModel.RouteTableCidrBlock
+	rtTableBlock := currentModel.RouteTableCIDRBlock
 	if rtTableBlock != nil {
 		peerRequest.RouteTableCIDRBlock = *rtTableBlock
 	}
@@ -182,7 +182,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		var model Model
 		model.AccepterRegionName = &peer.AccepterRegionName
 		model.AwsAccountId = &peer.AWSAccountID
-		model.RouteTableCidrBlock = &peer.RouteTableCIDRBlock
+		model.RouteTableCIDRBlock = &peer.RouteTableCIDRBlock
 		model.VpcId = &peer.VpcID
 		model.ConnectionId = &peer.ConnectionID
 		model.ErrorStateName = &peer.ErrorStateName

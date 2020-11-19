@@ -9,7 +9,7 @@ type Model struct {
 	Provisioned    *bool             `json:",omitempty"`
 	ProviderName   *string           `json:",omitempty"`
 	VpcId          *string           `json:",omitempty"`
-	AtlasCidrBlock *string           `json:",omitempty"`
+	AtlasCIDRBlock *string           `json:",omitempty"`
 	Id             *string           `json:",omitempty"`
 	ApiKeys        *ApiKeyDefinition `json:",omitempty"`
 }

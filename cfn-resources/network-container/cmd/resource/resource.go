@@ -36,7 +36,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = *providerName
-	CIDR := currentModel.AtlasCidrBlock
+	CIDR := currentModel.AtlasCIDRBlock
 	if CIDR == nil || *CIDR == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `atlasCidrBlock` must be set")
 	}
@@ -75,7 +75,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.RegionName = &containerResponse.RegionName
 	currentModel.Provisioned = containerResponse.Provisioned
 	currentModel.VpcId = &containerResponse.VPCID
-	currentModel.AtlasCidrBlock = &containerResponse.AtlasCIDRBlock
+	currentModel.AtlasCIDRBlock = &containerResponse.AtlasCIDRBlock
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -100,7 +100,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		aws := defaultProviderName
 		providerName = &aws
 	}
-	CIDR := currentModel.AtlasCidrBlock
+	CIDR := currentModel.AtlasCIDRBlock
 	if CIDR != nil {
 		containerRequest.AtlasCIDRBlock = *CIDR
 	}
@@ -161,7 +161,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.RegionName = &container.RegionName
 		model.Provisioned = container.Provisioned
 		model.VpcId = &container.VPCID
-		model.AtlasCidrBlock = &container.AtlasCIDRBlock
+		model.AtlasCIDRBlock = &container.AtlasCIDRBlock
 
 		models = append(models, model)
 	}

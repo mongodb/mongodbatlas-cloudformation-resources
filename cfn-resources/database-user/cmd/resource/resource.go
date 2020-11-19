@@ -12,11 +12,12 @@ import (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("19 currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+    log.Printf("Back from clieint:  %#+v",client)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-    log.Printf("19 currentModel: %s, prevModel: %#+v", currentModel, prevModel)
 
 	var roles []mongodbatlas.Role
 	for _, r := range currentModel.Roles {
@@ -36,6 +37,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		roles = append(roles, role)
 	}
+    log.Printf("roles: %#+v", roles)
 
     var labels []mongodbatlas.Label
 	for _, l := range currentModel.Labels {
@@ -46,6 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         }
 		labels = append(labels, label)
     }
+    log.Printf("labels: %#+v", labels)
 
     var scopes []mongodbatlas.Scope
 	for _, l := range currentModel.Scopes {
@@ -56,8 +59,27 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         }
 		scopes = append(scopes, scope)
     }
+    log.Printf("scopes: %#+v", scopes)
 
     groupID := *currentModel.ProjectId
+    log.Printf("groupID: %#+v", groupID)
+
+    none := "NONE"
+	if currentModel.LdapAuthType == nil {
+        currentModel.LdapAuthType = &none
+	}
+
+	if currentModel.AWSIAMType == nil {
+        currentModel.AWSIAMType = &none
+	}
+
+    if currentModel.Password == nil {
+        if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) {
+            return handler.ProgressEvent{}, fmt.Errorf("Password cannot be empty if not LDAP or IAM: %v",currentModel)
+        }
+        s := ""
+        currentModel.Password = &s
+    }
 
 	user := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
@@ -67,14 +89,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DatabaseName: *currentModel.DatabaseName,
         Labels:       labels,
         Scopes:       scopes,
+        LDAPAuthType: *currentModel.LdapAuthType,
+        AWSIAMType:   *currentModel.AWSIAMType,
 	}
-
-	if currentModel.LdapAuthType != nil {
-		user.LDAPAuthType = *currentModel.LdapAuthType
-	}
-	if currentModel.AWSIAMType != nil {
-		user.AWSIAMType = *currentModel.AWSIAMType
-	}
+    log.Printf("user: %#+v", user)
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
     pid := currentModel.ProjectId
@@ -82,10 +100,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     currentModel.UserCNFIdentifier = &cfnid
     log.Printf("UserCFNIdentifier: %s",cfnid)
 
-	_, _, err = client.DatabaseUsers.Create(context.Background(), groupID, user)
+    newUser, _, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
 	}
+    log.Printf("newUser: %s", newUser)
+
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

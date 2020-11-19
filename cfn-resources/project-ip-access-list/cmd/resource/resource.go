@@ -1,14 +1,16 @@
 package resource
 
 import (
-	"context"
-	"fmt"
+	//"errors"
+    "context"
+    "fmt"
     "log"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/rs/xid"
 )
+
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -16,7 +18,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-	fmt.Printf("%#+v\n", currentModel)
+	log.Printf("%#+v\n", currentModel)
 
 	err = createEntries(currentModel, client)
     log.Printf("Create err:%v",err)
@@ -46,23 +48,24 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	projectID := *currentModel.ProjectId
 
 	entries := []string{}
-	for _, wl := range currentModel.Whitelist {
+	for _, wl := range currentModel.AccessList {
 		entry := getEntry(wl)
 		entries = append(entries, entry)
 	}
 
-	whitelist, err := getProjectIPWhitelist(projectID, entries, client)
+	accesslist, err := getProjectIPAccessList(projectID, entries, client)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	currentModel.Whitelist = flattenWhitelist(whitelist)
+	currentModel.AccessList = flattenAccessList(accesslist)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
+
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -90,6 +93,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 	}, nil
+
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -112,63 +116,66 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Delete Complete",
 		ResourceModel:   currentModel,
 	}, nil
+
 }
 
 // List handles the List event from the Cloudformation service.
 // NO-OP
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("Got list request - returning read - %v",currentModel)
+    return Read(req,prevModel,currentModel)
+	//return handler.ProgressEvent{
+	//	OperationStatus: handler.Success,
+	//	Message:         "List Complete",
+	//	ResourceModel:   currentModel,
+	//}, nil
 
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "List Complete",
-		ResourceModel:   currentModel,
-	}, nil
 }
 
-func getProjectIPWhitelist(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPWhitelist, error) {
+func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPAccessList, error) {
 
-	var whitelist []*mongodbatlas.ProjectIPWhitelist
+	var accesslist []*mongodbatlas.ProjectIPAccessList
 	for _, entry := range entries {
-		res, _, err := conn.ProjectIPWhitelist.Get(context.Background(), projectID, entry)
+		res, _, err := conn.ProjectIPAccessList.Get(context.Background(), projectID, entry)
 		if err != nil {
-			return nil, fmt.Errorf("error getting project IP whitelist information: %s", err)
+			return nil, fmt.Errorf("error getting project IP accesslist information: %s", err)
 		}
-		whitelist = append(whitelist, res)
+		accesslist = append(accesslist, res)
 	}
-	return whitelist, nil
+	return accesslist, nil
 }
 
-func getProjectIPWhitelistRequest(model *Model) []*mongodbatlas.ProjectIPWhitelist {
-	var whitelist []*mongodbatlas.ProjectIPWhitelist
-	for _, w := range model.Whitelist {
-		wl := &mongodbatlas.ProjectIPWhitelist{}
+func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
+	var accesslist []*mongodbatlas.ProjectIPAccessList
+	for _, w := range model.AccessList {
+		wl := &mongodbatlas.ProjectIPAccessList{}
 		if w.Comment != nil {
 			wl.Comment = *w.Comment
 		}
-		if w.CidrBlock != nil {
-			wl.CIDRBlock = *w.CidrBlock
+		if w.CIDRBlock != nil {
+			wl.CIDRBlock = *w.CIDRBlock
 		}
-		if w.IpAddress != nil {
-			wl.IPAddress = *w.IpAddress
+		if w.IPAddress != nil {
+			wl.IPAddress = *w.IPAddress
 		}
 		if w.AwsSecurityGroup != nil {
 			wl.AwsSecurityGroup = *w.AwsSecurityGroup
 		}
 
-		fmt.Printf("%+#v\n", wl)
+        log.Printf("getProjectIPAccessListRequest: %+#v\n", wl)
 
-		whitelist = append(whitelist, wl)
+		accesslist = append(accesslist, wl)
 	}
-    log.Printf("getProjectIPWhitelistRequest whitelist:%v",whitelist)
-	return whitelist
+    log.Printf("getProjectIPAccessListRequest accesslist:%v",accesslist)
+	return accesslist
 }
 
-func getEntry(wl WhitelistDefinition) string {
-	if wl.IpAddress != nil {
-		return *wl.IpAddress
+func getEntry(wl AccessListDefinition) string {
+	if wl.IPAddress != nil {
+		return *wl.IPAddress
 	}
-	if wl.CidrBlock != nil {
-		return *wl.CidrBlock
+	if wl.CIDRBlock != nil {
+		return *wl.CIDRBlock
 	}
 	if wl.AwsSecurityGroup != nil {
 		return *wl.AwsSecurityGroup
@@ -176,12 +183,12 @@ func getEntry(wl WhitelistDefinition) string {
 	return ""
 }
 
-func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistDefinition {
-	var results []WhitelistDefinition
-	for _, wl := range whitelist {
-		r := WhitelistDefinition{
-			IpAddress:        &wl.IPAddress,
-			CidrBlock:        &wl.CIDRBlock,
+func flattenAccessList(accesslist []*mongodbatlas.ProjectIPAccessList) []AccessListDefinition {
+	var results []AccessListDefinition
+	for _, wl := range accesslist {
+		r := AccessListDefinition{
+			IPAddress:        &wl.IPAddress,
+			CIDRBlock:        &wl.CIDRBlock,
 			AwsSecurityGroup: &wl.AwsSecurityGroup,
 			Comment:          &wl.Comment,
 			ProjectId:        &wl.GroupID,
@@ -192,10 +199,10 @@ func flattenWhitelist(whitelist []*mongodbatlas.ProjectIPWhitelist) []WhitelistD
 }
 
 func createEntries(model *Model, client *mongodbatlas.Client) error {
-	request := getProjectIPWhitelistRequest(model)
+	request := getProjectIPAccessListRequest(model)
 	projectID := *model.ProjectId
     log.Printf("createEntries : projectID:%s, model:%v", projectID, model)
-	_, _, err := client.ProjectIPWhitelist.Create(context.Background(), projectID, request)
+	_, _, err := client.ProjectIPAccessList.Create(context.Background(), projectID, request)
 	return err
 }
 
@@ -203,9 +210,9 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) error {
 	projectID := *model.ProjectId
 	var err error
 
-	for _, wl := range model.Whitelist {
+	for _, wl := range model.AccessList {
 		entry := getEntry(wl)
-		_, errDelete := client.ProjectIPWhitelist.Delete(context.Background(), projectID, entry)
+		_, errDelete := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry)
 		if errDelete != nil {
 			err = fmt.Errorf("error deleting(%s) %w ", entry, errDelete)
 		}
@@ -213,3 +220,4 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) error {
 
 	return err
 }
+

@@ -1,4 +1,4 @@
-# MongoDB::Atlas::ProjectIPWhitelist whitelistDefinition
+# MongoDB::Atlas::ProjectIpAccessList accessListDefinition
 
 ## Syntax
 
@@ -9,8 +9,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 {
     "<a href="#comment" title="Comment">Comment</a>" : <i>String</i>,
-    "<a href="#ipaddress" title="IpAddress">IpAddress</a>" : <i>String</i>,
-    "<a href="#cidrblock" title="CidrBlock">CidrBlock</a>" : <i>String</i>,
+    "<a href="#ipaddress" title="IPAddress">IPAddress</a>" : <i>String</i>,
+    "<a href="#cidrblock" title="CIDRBlock">CIDRBlock</a>" : <i>String</i>,
     "<a href="#awssecuritygroup" title="AwsSecurityGroup">AwsSecurityGroup</a>" : <i>String</i>,
     "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>
 }
@@ -20,8 +20,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#comment" title="Comment">Comment</a>: <i>String</i>
-<a href="#ipaddress" title="IpAddress">IpAddress</a>: <i>String</i>
-<a href="#cidrblock" title="CidrBlock">CidrBlock</a>: <i>String</i>
+<a href="#ipaddress" title="IPAddress">IPAddress</a>: <i>String</i>
+<a href="#cidrblock" title="CIDRBlock">CIDRBlock</a>: <i>String</i>
 <a href="#awssecuritygroup" title="AwsSecurityGroup">AwsSecurityGroup</a>: <i>String</i>
 <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
 </pre>
@@ -30,7 +30,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### Comment
 
-Comment associated with the whitelist entry.
+Comment associated with the ip access list entry.
 
 _Required_: No
 
@@ -38,9 +38,9 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### IpAddress
+#### IPAddress
 
-Whitelisted IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.
+Accessable IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.
 
 _Required_: No
 
@@ -48,9 +48,9 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### CidrBlock
+#### CIDRBlock
 
-Whitelist entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.
+Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.
 
 _Required_: No
 
@@ -60,7 +60,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### AwsSecurityGroup
 
-ID of the AWS security group to whitelist. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.
+ID of the AWS security group to allow access. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.
 
 _Required_: No
 
@@ -70,7 +70,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ProjectId
 
-The unique identifier for the project to which you want to add one or more whitelist entries.
+The unique identifier for the project to which you want to add one or more ip access list entries.
 
 _Required_: No
 

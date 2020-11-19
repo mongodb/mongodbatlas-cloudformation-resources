@@ -1,6 +1,6 @@
-# MongoDB::Atlas::ProjectIPWhitelist
+# MongoDB::Atlas::ProjectIpAccessList
 
-The whitelist endpoint manages a Atlas project’s IP whitelist.
+An example resource schema demonstrating some basic constructs and validation rules.
 
 ## Syntax
 
@@ -10,10 +10,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::ProjectIPWhitelist",
+    "Type" : "MongoDB::Atlas::ProjectIpAccessList",
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#whitelist" title="Whitelist">Whitelist</a>" : <i>[ <a href="whitelistdefinition.md">whitelistDefinition</a>, ... ]</i>,
+        "<a href="#accesslist" title="AccessList">AccessList</a>" : <i>[ <a href="accesslistdefinition.md">accessListDefinition</a>, ... ]</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
     }
 }
@@ -22,11 +22,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::ProjectIPWhitelist
+Type: MongoDB::Atlas::ProjectIpAccessList
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#whitelist" title="Whitelist">Whitelist</a>: <i>
-      - <a href="whitelistdefinition.md">whitelistDefinition</a></i>
+    <a href="#accesslist" title="AccessList">AccessList</a>: <i>
+      - <a href="accesslistdefinition.md">accessListDefinition</a></i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
@@ -34,7 +34,7 @@ Properties:
 
 #### ProjectId
 
-The unique identifier for the project to which you want to add one or more whitelist entries.
+The unique identifier for the project to which you want to add one or more ip access list entries.
 
 _Required_: Yes
 
@@ -42,11 +42,11 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Whitelist
+#### AccessList
 
 _Required_: Yes
 
-_Type_: List of <a href="whitelistdefinition.md">whitelistDefinition</a>
+_Type_: List of <a href="accesslistdefinition.md">accessListDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -72,9 +72,9 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### Id
 
-The unique identifier for the Project API Whitelist rules.
+The unique identifier for the Project API ip access list rules.
 
 #### TotalCount
 
-The unique identifier for the Project API Whitelist rules.
+The unique identifier for the Project ip access list rules.
 

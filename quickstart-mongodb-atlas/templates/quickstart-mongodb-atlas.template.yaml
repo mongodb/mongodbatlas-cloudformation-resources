@@ -184,10 +184,6 @@ Resources:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       Name: !Sub "${AWS::StackName}"
-      #AccessList:
-      #  accessListType: !Ref "AccessListType"
-      #  accessListValue: !Ref "AccessListValue"
-      #  comment: "mongodb-atlas-resource-provider access list entry"
   AtlasCluster:
     Type: MongoDB::Atlas::Cluster
     DependsOn: AtlasProject

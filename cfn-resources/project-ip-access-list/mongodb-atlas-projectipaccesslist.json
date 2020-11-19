@@ -1,19 +1,20 @@
 {
-    "typeName": "MongoDB::Atlas::IPAccessList",
-    "description": "The IPAccessList endpoint manages an Atlas IP Access List.",
+    "typeName": "MongoDB::Atlas::ProjectIpAccessList",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
-        "whitelistDefinition": {
+        "accessListDefinition": {
             "type": "object",
             "properties": {
                 "Comment": {
                     "description": "Comment associated with the ip access list entry.",
                     "type": "string"
                 },
-                "IpAddress": {
+                "IPAddress": {
                     "description": "Accessable IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.",
                     "type": "string"
                 },
-                "CidrBlock": {
+                "CIDRBlock": {
                     "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.",
                     "type": "string"
                 },
@@ -49,12 +50,12 @@
             "description": "The unique identifier for the Project API ip access list rules.",
             "type": "string"
         },
-        "Whitelist": {
+        "AccessList": {
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
             "items": {
-              "$ref": "#/definitions/whitelistDefinition"
+              "$ref": "#/definitions/accessListDefinition"
             }
         },
         "ApiKeys": {
@@ -69,7 +70,7 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "Whitelist",
+        "AccessList",
         "ApiKeys"
     ],
     "readOnlyProperties": [

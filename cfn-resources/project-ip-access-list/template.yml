@@ -1,10 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: AWS SAM template for the MongoDB::Atlas::ProjectIPWhitelist resource type
+Description: AWS SAM template for the MongoDB::Atlas::ProjectIpAccessList resource type
 
 Globals:
   Function:
-    Timeout: 60  # docker start-up times can be long for SAM CLI
+    Timeout: 180  # docker start-up times can be long for SAM CLI
+    MemorySize: 256
 
 Resources:
   TypeFunction:
@@ -20,4 +21,7 @@ Resources:
       Handler: handler
       Runtime: go1.x
       CodeUri: bin/
+      Environment: 
+        Variables: 
+          MODE: Test
 

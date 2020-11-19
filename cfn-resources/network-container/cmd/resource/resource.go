@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
@@ -21,7 +21,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := currentModel.ProjectId
 	providerName := currentModel.ProviderName
-	containerRequest := &matlasClient.Container{}
+	containerRequest := &mongodbatlas.Container{}
 
 	if projectID == nil || *projectID == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `project_id` must be set")
@@ -94,7 +94,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectId := *currentModel.ProjectId
 	containerId := *currentModel.Id
-	containerRequest := &matlasClient.Container{}
+	containerRequest := &mongodbatlas.Container{}
 	providerName := currentModel.ProviderName
 	if providerName == nil || *providerName == "" {
 		aws := defaultProviderName
@@ -150,9 +150,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	projectId := *currentModel.ProjectId
-	containerRequest := &matlasClient.ContainersListOptions{
+	containerRequest := &mongodbatlas.ContainersListOptions{
 		ProviderName: *currentModel.ProviderName,
-		ListOptions:  matlasClient.ListOptions{},
+		ListOptions:  mongodbatlas.ListOptions{},
 	}
 	containerResponse, _, err := client.Containers.List(context.Background(), projectId, containerRequest)
 	var models []Model

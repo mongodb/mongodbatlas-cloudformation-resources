@@ -40,7 +40,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### IPAddress
 
-Accessable IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.
+Accessable IP address. Mutually exclusive with CIDRBlock and AwsSecurityGroup.
 
 _Required_: No
 
@@ -50,7 +50,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### CIDRBlock
 
-Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.
+Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and AwsSecurityGroup.
 
 _Required_: No
 
@@ -60,7 +60,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### AwsSecurityGroup
 
-ID of the AWS security group to allow access. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.
+ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.
 
 _Required_: No
 

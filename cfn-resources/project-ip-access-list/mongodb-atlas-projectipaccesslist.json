@@ -11,15 +11,15 @@
                     "type": "string"
                 },
                 "IPAddress": {
-                    "description": "Accessable IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.",
+                    "description": "Accessable IP address. Mutually exclusive with CIDRBlock and AwsSecurityGroup.",
                     "type": "string"
                 },
                 "CIDRBlock": {
-                    "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.",
+                    "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and AwsSecurityGroup.",
                     "type": "string"
                 },
                 "AwsSecurityGroup":{
-                    "description": "ID of the AWS security group to allow access. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.",
+                    "description": "ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.",
                     "type": "string"
                 },
                 "ProjectId": {

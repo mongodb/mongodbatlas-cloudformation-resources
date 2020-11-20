@@ -24,7 +24,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerRequest := &mongodbatlas.Container{}
 
 	if projectID == nil || *projectID == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `project_id` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `ProjectID` must be set")
 	}
 	if providerName == nil || *providerName == "" {
 		aws := defaultProviderName
@@ -32,13 +32,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	regionName := currentModel.RegionName
 	if regionName == nil || *regionName == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: region_name` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: RegionName` must be set")
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = *providerName
 	CIDR := currentModel.AtlasCIDRBlock
 	if CIDR == nil || *CIDR == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `atlasCidrBlock` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCIDRBlock` must be set")
 	}
 	containerRequest.AtlasCIDRBlock = *CIDR
 	containerResponse, _, err := client.Containers.Create(context.Background(), *projectID, containerRequest)

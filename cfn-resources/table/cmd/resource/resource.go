@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"errors"
 	"context"
 	"fmt"
 	"log"
@@ -63,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     regionName := strings.ToUpper(strings.Replace(string(*currentModel.RegionName),"-","_",-1))
     log.Printf("regionName:%s",regionName)
 
-    cfnid := fmt.Sprintf("%v-%s-%s",currentModel.ProjectId,tableName,username)
+    cfnid := fmt.Sprintf("%s-%s-%s",cast.ToString(currentModel.ProjectId),tableName,username)
     currentModel.TableCNFIdentifier = &cfnid
     log.Printf("TableCFNIdentifier: %s",cfnid)
 
@@ -224,74 +223,95 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
     // Not implemented, return an empty handler.ProgressEvent
     // and an error
-    return handler.ProgressEvent{}, errors.New("Not implemented: Read")
+    log.Printf("Read - currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+
+    /* Create - this will look for a table and create it if it doesn't exist
+    */
+
+    thisCallbackContext := req.CallbackContext
+    log.Printf("thisCallbackContext:%+v",thisCallbackContext)
+    callbackCount, gotCount := thisCallbackContext["count"].(int)
+    if ! gotCount {
+        callbackCount = 1
+    } else {
+        callbackCount += 1
+    }
+
+    log.Printf("callbackCount: %i",callbackCount)
+
+	projectID := *currentModel.ProjectId
+	tableName := *currentModel.TableName
+
+    username := tableName
+    if currentModel.Username != nil {
+	    username = cast.ToString(currentModel.Username)
+    }
+    databaseName := tableName
+    if currentModel.DatabaseName != nil {
+	    databaseName = *currentModel.DatabaseName
+    }
+
+    clusterName := tableName
+    if currentModel.ClusterName != nil {
+	    clusterName = *currentModel.ClusterName
+    }
+    cfnid := fmt.Sprintf("%s-%s-%s",cast.ToString(currentModel.ProjectId),tableName,username)
+    currentModel.TableCNFIdentifier = &cfnid
+    log.Printf("TableCFNIdentifier: %s",cfnid)
+    log.Printf("Read - Get clusterName:%s databaseName:%s",clusterName,databaseName)
+	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+	if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error reading cluster: %w %v", err, &resp)
+    }
+	currentModel.ConnectionStrings = &ConnectionStringsDefinition{
+        Standard:               &cluster.ConnectionStrings.Standard,
+        StandardSrv:            &cluster.ConnectionStrings.StandardSrv,
+	    Private:                &cluster.ConnectionStrings.Private,
+        PrivateSrv:             &cluster.ConnectionStrings.PrivateSrv,
+	    //AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
+	    //AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
+	}
+    log.Printf("Read - currentModel:+%v",currentModel)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Read Complete",
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    // Add your code here:
-    // * Make API calls (use req.Session)
-    // * Mutate the model
-    // * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+    response := handler.ProgressEvent{
+        OperationStatus: handler.Success,
+        Message: "Update Complete - no changes applied, please use mongocli or the Atlas UI",
+        ResourceModel: currentModel,
+    }
 
-    /*
-        // Construct a new handler.ProgressEvent and return it
-        response := handler.ProgressEvent{
-            OperationStatus: handler.Success,
-            Message: "Update complete",
-            ResourceModel: currentModel,
-        }
-
-        return response, nil
-    */
-
-    // Not implemented, return an empty handler.ProgressEvent
-    // and an error
-    return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+    return response, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    // Add your code here:
-    // * Make API calls (use req.Session)
-    // * Mutate the model
-    // * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+    response := handler.ProgressEvent{
+        OperationStatus: handler.Success,
+        Message: "Delete Complete - no changes applied, please use mongocli or the Atlas UI to delete clusters",
+        ResourceModel: currentModel,
+    }
 
-    /*
-        // Construct a new handler.ProgressEvent and return it
-        response := handler.ProgressEvent{
-            OperationStatus: handler.Success,
-            Message: "Delete complete",
-            ResourceModel: currentModel,
-        }
-
-        return response, nil
-    */
-
-    // Not implemented, return an empty handler.ProgressEvent
-    // and an error
-    return handler.ProgressEvent{}, errors.New("Not implemented: Delete")
+    return response, nil
 }
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    // Add your code here:
-    // * Make API calls (use req.Session)
-    // * Mutate the model
-    // * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+    response := handler.ProgressEvent{
+        OperationStatus: handler.Success,
+        Message: "List Complete",
+        ResourceModel: currentModel,
+    }
 
-    /*
-        // Construct a new handler.ProgressEvent and return it
-        response := handler.ProgressEvent{
-            OperationStatus: handler.Success,
-            Message: "List complete",
-            ResourceModel: currentModel,
-        }
-
-        return response, nil
-    */
-
-    // Not implemented, return an empty handler.ProgressEvent
-    // and an error
-    return handler.ProgressEvent{}, errors.New("Not implemented: List")
+    return response, nil
 }

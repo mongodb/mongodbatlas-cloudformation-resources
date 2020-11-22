@@ -114,6 +114,14 @@ Returns the <code>RegionName</code> value.
 
 Returns the <code>ConnectionStrings</code> value.
 
+#### Standard
+
+Returns the <code>Standard</code> value.
+
+#### StandardSrv
+
+Returns the <code>StandardSrv</code> value.
+
 #### TableCNFIdentifier
 
 A unique identifier comprised of the Atlas Project ID, TableName, and Username

@@ -118,6 +118,8 @@
         "/properties/DatabaseName",
         "/properties/RegionName",
         "/properties/ConnectionStrings",
+        "/properties/ConnectionStrings/Standard",
+        "/properties/ConnectionStrings/StandardSrv",
         "/properties/TableCNFIdentifier"
     ],
     "primaryIdentifier": [

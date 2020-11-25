@@ -19,7 +19,7 @@ do
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    make
+    TAGS=logging make
     cfn submit --verbose --set-default
     cd -
 done

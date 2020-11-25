@@ -2,13 +2,18 @@ package resource
 
 import (
 	"context"
+    "errors"
 	"fmt"
 	"log"
+    "os"
     "strings"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
     "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
+    "encoding/json"
+    "github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/service/secretsmanager"
 )
 
 func castNO64(i *int64) *int {
@@ -20,10 +25,117 @@ func cast64(i int) *int64 {
 	return &x
 }
 
+type TableCFNIdentifier struct {
+    ProjectId           string
+    ClusterName         string
+    DatabaseName        string
+    TableName           string
+}
+/* Note string version is "+" delimited string of the fields, in proper heirachry
+*/
+func (t TableCFNIdentifier) String() string {
+    fields := []string{t.ProjectId,t.ClusterName,t.DatabaseName,t.TableName}
+    return strings.Join(fields, "+")
+}
+
+func parseTableId(tableId string) (TableCFNIdentifier, error) {
+    var t TableCFNIdentifier
+    log.Printf("parseTableId tableId:%v",tableId)
+    if ! strings.Contains(tableId,"+") {
+        return t, errors.New("Invalid format TableCFNIdentifier")
+    }
+    parts := strings.Split(tableId,"+")
+    log.Printf("parseTableId parts:%v",parts)
+    //if len(parts)==3 {
+    //    return t, errors.New("Invalid format TableCFNIdentifier")
+    //}
+    t = TableCFNIdentifier{
+        ProjectId:          parts[0],
+        ClusterName:        parts[1],
+        DatabaseName:       parts[2],
+        TableName:          parts[3],
+    }
+    return t, nil
+}
+
+type DeploymentSecret struct {
+    PublicKey           string  `json:"PublicKey"`
+    PrivateKey          string  `json:"PrivateKey"`
+    ResourceID          string  `json:"ResourceID"`
+}
+
+func createDeploymentSecret(req *handler.Request, tid *TableCFNIdentifier, publicKey string, privateKey string) (*string, error) {
+    deploySecret := &DeploymentSecret{
+        PublicKey:      publicKey,
+        PrivateKey:     privateKey,
+        ResourceID:     fmt.Sprintf("%v",tid),
+    }
+    log.Printf("deploySecret: %v", deploySecret)
+    deploySecretString, err := json.Marshal(deploySecret)
+    log.Printf("deploySecretString: %s", deploySecretString)
+
+    log.Println("===============================================")
+    log.Printf("%+v",os.Environ())
+    log.Println("===============================================")
+
+    //sess := credentials.SessionFromCredentialsProvider(creds)
+    // create a new secret from this struct with the json string
+
+
+    // Create service client value configured for credentials
+    // from assumed role.
+    svc := secretsmanager.New(req.Session)
+
+    //config := &aws.Config{
+    //    Region: aws.String("us-east-1"),
+    //}
+    //svc := secretsmanager.New(session.New(), config)
+
+    input := &secretsmanager.CreateSecretInput{
+        Description:        aws.String("MongoDB Atlas Quickstart Deployment Secret"),
+        Name:               aws.String(fmt.Sprintf("%v",tid)),
+        SecretString:       aws.String(string(deploySecretString)),
+    }
+
+    result, err := svc.CreateSecret(input)
+    if err != nil {
+        // Print the error, cast err to awserr.Error to get the Code and
+        // Message from an error.
+        log.Printf("error create secret: %+v", err.Error())
+		return nil, err
+        //fmt.Println(err.Error())
+
+    }
+    log.Printf("Created secret result:%+v",result)
+    return result.Name, nil
+
+}
+
+
+func getApiKeyFromDeploymentSecret(req *handler.Request, secretName string) (DeploymentSecret, error) {
+   fmt.Printf("secretName=%s\n",secretName)
+   sm := secretsmanager.New(req.Session)
+   output, err := sm.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretName})
+   if err != nil {
+      panic(err.Error())
+   }
+   fmt.Println(*output.SecretString)
+   var key DeploymentSecret
+   err = json.Unmarshal( []byte(*output.SecretString), &key )
+   if err != nil {
+       log.Printf("Error --- %#+v", err.Error())
+       return key, err
+   }
+   fmt.Println("%v",key)
+   return key, nil
+}
+
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
     log.Printf("Create - currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	log.Printf("APIKEYS=======>%v,%v",*currentModel.PublicApiKey, *currentModel.PrivateApiKey)
+	client, err := util.CreateMongoDBClient(*currentModel.PublicApiKey, *currentModel.PrivateApiKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -44,7 +156,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	tableName := *currentModel.TableName
-
+    log.Printf("projectID=%v, tableName=%v",projectID,tableName)
     username := tableName
     if currentModel.Username != nil {
 	    username = cast.ToString(currentModel.Username)
@@ -58,13 +170,27 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     if currentModel.ClusterName != nil {
 	    clusterName = *currentModel.ClusterName
     }
+
+
     // convert AWS- regions to MDB regions
     regionName := strings.ToUpper(strings.Replace(string(*currentModel.RegionName),"-","_",-1))
     log.Printf("regionName:%s",regionName)
 
-    cfnid := fmt.Sprintf("%s-%s-%s",cast.ToString(currentModel.ProjectId),tableName,username)
-    currentModel.TableCNFIdentifier = &cfnid
-    log.Printf("TableCFNIdentifier: %s",cfnid)
+    tid := &TableCFNIdentifier{
+        ProjectId:          projectID,
+        ClusterName:        clusterName,
+        DatabaseName:       databaseName,
+        TableName:          tableName,
+    }
+    tidString := fmt.Sprintf("%v",tid) 
+    currentModel.TableCNFIdentifier = &tidString
+    log.Printf("tid: %v, TableCFNIdentifier: %s",tid,currentModel.TableCNFIdentifier)
+
+    secretName, err := createDeploymentSecret(&req, tid, *currentModel.PublicApiKey, *currentModel.PrivateApiKey)
+	if err != nil {
+		return handler.ProgressEvent{}, err
+	}
+    log.Printf("secretName: %s",secretName)
 
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
@@ -89,6 +215,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
             "status": "cluster-create",
             "cluster": cluster,
             "counter": callbackCount,
+            "publicKey": *currentModel.PublicApiKey,
+            "privateKey": *currentModel.PublicApiKey,
+            "TableCFNIdentifier": fmt.Sprintf("%v",tid),
         }
         log.Printf("Created cluster- request callback in 30 seconds cluster:%+v",cluster)
         return handler.ProgressEvent{
@@ -96,7 +225,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
             Message:              "In Progress, provisioning cluster",
             CallbackDelaySeconds: 30,
             CallbackContext:      cc,
-            ResourceModel:        &currentModel,
+            ResourceModel:        currentModel,
         }, nil
 	}
     log.Printf("cluster:%+v",cluster)
@@ -107,13 +236,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
             "status": "cluster-create-wait",
             "cluster": cluster,
             "counter": callbackCount,
+            "publicKey": *currentModel.PublicApiKey,
+            "privateKey": *currentModel.PublicApiKey,
         }
         return handler.ProgressEvent{
             OperationStatus:      handler.InProgress,
             Message:              fmt.Sprintf("In Progress, cluster state %s",cluster.StateName),
             CallbackDelaySeconds: 30,
             CallbackContext:      cc,
-            ResourceModel:        &currentModel,
+            ResourceModel:        currentModel,
         }, nil
 
     }
@@ -186,15 +317,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     // Once here everything should be provisioned, setup the
     // return properties
 
-	currentModel.ConnectionStrings = &ConnectionStringsDefinition{
-        Standard:               &cluster.ConnectionStrings.Standard,
-        StandardSrv:            &cluster.ConnectionStrings.StandardSrv,
-	    Private:                &cluster.ConnectionStrings.Private,
-        PrivateSrv:             &cluster.ConnectionStrings.PrivateSrv,
-	    //AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
-	    //AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
-	}
-
+	currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
+	currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
+    //pubkey := currentModel.PublicApiKey
+    //prikey := currentModel.PrivateApiKey
+    //currentModel.PublicApiKey = pubkey
+    //currentModel.PrivateApiKey = prikey
+    log.Printf("read-------> cluster:%#+v",cluster)
+    log.Printf("about to return currentModel: %#+v", currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -203,78 +333,52 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 }
 
+
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    // Add your code here:
-    // * Make API calls (use req.Session)
-    // * Mutate the model
-    // * Check/set any callback context (req.CallbackContext / response.CallbackContext)
+    // * Check/set any callback context (
+    callback := map[string]interface{}(req.CallbackContext)
+    log.Printf("Read -  callback: %#+v",callback)
 
-    /*
-        // Construct a new handler.ProgressEvent and return it
-        response := handler.ProgressEvent{
-            OperationStatus: handler.Success,
-            Message: "Read complete",
-            ResourceModel: currentModel,
-        }
+    if currentModel != nil {
+        log.Printf("Read - currentModel: %#+v", currentModel)
+    }
+    if prevModel != nil {
+        log.Printf("Read - prevModel: %#+v", prevModel)
+    }
 
-        return response, nil
+    key, err := getApiKeyFromDeploymentSecret(&req, *currentModel.TableCNFIdentifier)
+    if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error lookupSecret: %w", err)
+    }
+    log.Printf("key:%+v",key)
+
+
+
+    /* Read - this 
+       needs to grab the TableCFNIdentifier since that's gonna be all we get?
     */
 
-    // Not implemented, return an empty handler.ProgressEvent
-    // and an error
-    log.Printf("Read - currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+    //fmt.Sprintf("%s-%s-%s",cast.ToString(currentModel.ProjectId),tableName,username)
+    cfnid, err := parseTableId(*currentModel.TableCNFIdentifier)
 	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-    /* Create - this will look for a table and create it if it doesn't exist
-    */
-
-    thisCallbackContext := req.CallbackContext
-    log.Printf("thisCallbackContext:%+v",thisCallbackContext)
-    callbackCount, gotCount := thisCallbackContext["count"].(int)
-    if ! gotCount {
-        callbackCount = 1
-    } else {
-        callbackCount += 1
+        return handler.ProgressEvent{}, fmt.Errorf("error parsing TableId: %w %v", err, *currentModel.TableCNFIdentifier)
     }
+    log.Printf("cfnid: %v",cfnid)
 
-    log.Printf("callbackCount: %i",callbackCount)
+    log.Printf("Read - Get clusterName:%s databaseName:%s",cfnid.ClusterName,cfnid.DatabaseName)
 
-	projectID := *currentModel.ProjectId
-	tableName := *currentModel.TableName
-
-    username := tableName
-    if currentModel.Username != nil {
-	    username = cast.ToString(currentModel.Username)
+    client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
+    if err != nil {
+        return handler.ProgressEvent{}, err
     }
-    databaseName := tableName
-    if currentModel.DatabaseName != nil {
-	    databaseName = *currentModel.DatabaseName
-    }
-
-    clusterName := tableName
-    if currentModel.ClusterName != nil {
-	    clusterName = *currentModel.ClusterName
-    }
-    cfnid := fmt.Sprintf("%s-%s-%s",cast.ToString(currentModel.ProjectId),tableName,username)
-    currentModel.TableCNFIdentifier = &cfnid
-    log.Printf("TableCFNIdentifier: %s",cfnid)
-    log.Printf("Read - Get clusterName:%s databaseName:%s",clusterName,databaseName)
-	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
-	if err != nil {
+    cluster, resp, err := client.Clusters.Get(context.Background(), cfnid.ProjectId, cfnid.ClusterName)
+    if err != nil {
         return handler.ProgressEvent{}, fmt.Errorf("error reading cluster: %w %v", err, &resp)
     }
-	currentModel.ConnectionStrings = &ConnectionStringsDefinition{
-        Standard:               &cluster.ConnectionStrings.Standard,
-        StandardSrv:            &cluster.ConnectionStrings.StandardSrv,
-	    Private:                &cluster.ConnectionStrings.Private,
-        PrivateSrv:             &cluster.ConnectionStrings.PrivateSrv,
-	    //AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
-	    //AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
-	}
+    currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
+    currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
+
     log.Printf("Read - currentModel:+%v",currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

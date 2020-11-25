@@ -3,43 +3,6 @@
     "description": "The MongoDB::Atlas::Table resource creates a MongoDB collection in a new or existing MongoDB Atlas cluster and a database user for accessing the connection. For more information, see Table in the MongoDB API Reference..",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
-        "connectionStringsDefinition": {
-            "type": "object",
-            "properties": {
-                "Standard": {
-                    "type": "string"
-                },
-                "StandardSrv": {
-                    "type": "string"
-                },
-                "AwsPrivateLink": {
-                    "type": "string"
-                },
-                "AwsPrivateLinkSrv": {
-                    "type": "string"
-                },
-                "Private": {
-                    "type": "string"
-                },
-                "PrivateSrv": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
         "labelDefinition": {
             "type": "object",
             "properties": {
@@ -55,16 +18,25 @@
           }
     },
     "properties": {
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "PublicApiKey": {
+            "type": "string"
         },
-        "ConnectionStrings": {
+        "PrivateApiKey": {
+            "type": "string"
+        },
+        "ConnectionStringsStandard": {
             "description": "Connection strings for your MongoDB Table.",
-            "$ref": "#/definitions/connectionStringsDefinition"
+            "type": "string"
+        },
+        "ConnectionStringsStandardSrv": {
+            "description": "Connection strings for your MongoDB Table.",
+            "type": "string"
         },
         "ProjectId": {
             "description": "Unique identifier of the Atlas project to which this Table belongs.",
-            "type": "string"
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250
         },
         "TableName": {
             "description": "A name for the table. If you don't specify a name, MongoDB Atlas will generate a unique ID and uses that ID for the table name. This is synomous with a MongoDB Collection",
@@ -81,8 +53,8 @@
         "ClusterName": {
             "description": "Name of the the MongoDB Atlas Cluster.",
             "type": "string",
-            "minLength": 20,
-            "maxLength": 250
+            "minLength": 2,
+            "maxLength": 64 
         },
         "RegionName": {
             "type": "string"
@@ -107,7 +79,8 @@
     },
     "additionalProperties": false,
     "required": [
-        "ApiKeys",
+        "PublicApiKey",
+        "PrivateApiKey",
         "ProjectId",
         "TableName",
         "RegionName"
@@ -117,9 +90,8 @@
         "/properties/ClusterName",
         "/properties/DatabaseName",
         "/properties/RegionName",
-        "/properties/ConnectionStrings",
-        "/properties/ConnectionStrings/Standard",
-        "/properties/ConnectionStrings/StandardSrv",
+        "/properties/ConnectionStringsStandard",
+        "/properties/ConnectionStringsStandardSrv",
         "/properties/TableCNFIdentifier"
     ],
     "primaryIdentifier": [
@@ -128,27 +100,28 @@
     "handlers": {
         "create": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         },
         "read": {
             "permissions": [
-                ""
+                "secretsmanager:*"
+                
             ]
         },
         "update": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         },
         "delete": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         },
         "list": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         }
     }

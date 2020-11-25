@@ -12,8 +12,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::Table",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
-        "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="connectionstringsdefinition.md">connectionStringsDefinition</a></i>,
+        "<a href="#publicapikey" title="PublicApiKey">PublicApiKey</a>" : <i>String</i>,
+        "<a href="#privateapikey" title="PrivateApiKey">PrivateApiKey</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#username" title="Username">Username</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>
@@ -26,8 +26,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::Table
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
-    <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="connectionstringsdefinition.md">connectionStringsDefinition</a></i>
+    <a href="#publicapikey" title="PublicApiKey">PublicApiKey</a>: <i>String</i>
+    <a href="#privateapikey" title="PrivateApiKey">PrivateApiKey</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#username" title="Username">Username</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
@@ -36,19 +36,19 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### PublicApiKey
 
 _Required_: Yes
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ConnectionStrings
+#### PrivateApiKey
 
-_Required_: No
+_Required_: Yes
 
-_Type_: <a href="connectionstringsdefinition.md">connectionStringsDefinition</a>
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -59,6 +59,10 @@ Unique identifier of the Atlas project to which this Table belongs.
 _Required_: Yes
 
 _Type_: String
+
+_Minimum_: <code>2</code>
+
+_Maximum_: <code>250</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -110,17 +114,13 @@ Name of the the MongoDB Atlas Database.
 
 Returns the <code>RegionName</code> value.
 
-#### ConnectionStrings
+#### ConnectionStringsStandard
 
-Returns the <code>ConnectionStrings</code> value.
+Connection strings for your MongoDB Table.
 
-#### Standard
+#### ConnectionStringsStandardSrv
 
-Returns the <code>Standard</code> value.
-
-#### StandardSrv
-
-Returns the <code>StandardSrv</code> value.
+Connection strings for your MongoDB Table.
 
 #### TableCNFIdentifier
 

@@ -21,9 +21,9 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Deny
+              - Effect: Allow
                 Action:
-                - "*"
+                - "secretsmanager:*"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

@@ -10,6 +10,10 @@ Parameters:
     Description: "Your MongoDB Cloud Private API Key"
     Type: String
     Default: ""
+  OrgId:
+    Description: "Your MongoDB Cloud Private OrgId, optional"
+    Type: String
+    Default: ""
   ProjectId:
     Description: "A MongoDB Atlas Project for your Table"
     Type: String
@@ -17,7 +21,11 @@ Parameters:
   TableName:
     Description: Name of the Table as it appears in Atlas. Once the table is created, its name cannot be changed.
     Type: String
-    Default: "QuickstartTable"
+    Default: ""
+  ClusterName:
+    Description: Name of the Table as it appears in Atlas. Once the table is created, its name cannot be changed.
+    Type: String
+    Default: "Quickstart"
   RegionName:
     Default: us-east-1
     Description: The AWS Region where the Atlas DB Cluster will run.
@@ -45,14 +53,26 @@ Parameters:
     - "me-south-1"
     - "af-south-1"
 Resources:
+  AtlasApiKeySecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub "${AWS::StackName}-ApiKey-Secret"
+      Description: This secret has a hardcoded password in SecretString, how can i make this optional?
+      #
+      # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
+      #
+      SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
+      Tags:
+      - Key: mongodb-atlas-quickstart
+        Value: !Sub "${AWS::StackName}"
   AtlasTable:
     Type: MongoDB::Atlas::Table
     Properties:
       ProjectId: !Ref "ProjectId" 
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      PublicApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PublicKey}}" ] ]
+      PrivateApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PrivateKey}}" ] ]
       TableName: !Sub "${AWS::StackName}"
+      ClusterName: !Ref "ClusterName"
       RegionName: !Ref "RegionName"
 
 Outputs:
@@ -63,7 +83,7 @@ Outputs:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasTable" ] ]
   ConnectionString:
     Description: "Hostname for mongodb+srv:// connection string"
-    Value: !GetAtt "AtlasTable.ConnectionStrings.StandardSrv"
+    Value: !GetAtt "AtlasTable.ConnectionStringsStandardSrv"
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","TableSrvAddress" ] ]
 

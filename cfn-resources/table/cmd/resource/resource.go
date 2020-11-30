@@ -7,12 +7,14 @@ import (
 	"log"
     "os"
     "strings"
+    "time"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
     "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
     "encoding/json"
     "github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/service/iam"
     "github.com/aws/aws-sdk-go/service/secretsmanager"
 )
 
@@ -24,6 +26,20 @@ func cast64(i int) *int64 {
 	x := cast.ToInt64(&i)
 	return &x
 }
+
+type PolicyDocument struct {
+    Version   string
+    Statement []StatementEntry
+}
+
+type StatementEntry struct {
+    Effect          string
+    Action          []string
+    Resource        string
+    Principal       map[string]interface{}
+    Condition       map[string]interface{}
+}
+
 
 type TableCFNIdentifier struct {
     ProjectId           string
@@ -63,6 +79,70 @@ type DeploymentSecret struct {
     PrivateKey          string  `json:"PrivateKey"`
     ResourceID          string  `json:"ResourceID"`
 }
+
+func addRoleWithTrustPolicy(req *handler.Request, tid *TableCFNIdentifier, atlasIAMARN *string, projectID *string, targetAWSIAMRoleARN *string) error {
+    log.Printf("addRoleTrustPolicy atlasIAMARN:%s, targetAWSIAMRoleARN:%s, projectID:%s",atlasIAMARN, targetAWSIAMRoleARN, projectID)
+    iamService := iam.New(req.Session)
+    policy := PolicyDocument{
+        Version: "2012-10-17",
+        Statement: []StatementEntry{
+            StatementEntry{
+                Effect: "Allow",
+                Action: []string{
+                    "sts:AssumeRole", // Allow for creating log groups
+                },
+                Resource: "RESOURCE ARN FOR logs:*",
+                Principal: map[string]interface{}{
+                    "AWS": atlasIAMARN,
+                },
+                Condition: map[string]interface{}{
+                    "StringEquals": map[string]interface{}{
+                        "sts:ExternalId": projectID,
+                    },
+                },
+            },
+        },
+    }
+    log.Printf("addRoleTrustPolicy policy:%+v",policy)
+    b, err := json.Marshal(&policy)
+    if err != nil {
+        log.Println(fmt.Println("Error marshaling policy", err))
+        return err
+    }
+    newPolicyName := fmt.Sprintf("MongoDBAtlas+ClusterAccessRole+%v",tid)
+    log.Printf("newPolicyName:%s",newPolicyName)
+
+    createPolicyResult, err := iamService.CreatePolicy(&iam.CreatePolicyInput{
+        PolicyDocument: aws.String(string(b)),
+        PolicyName:     aws.String(newPolicyName),
+    })
+
+    if err != nil {
+        fmt.Println("Error", err)
+        return err
+    }
+
+    log.Println("createPolicyResult: %+v", createPolicyResult)
+
+
+    // now create the AttachRolePolicyInput
+    //arpi := &iam.AttachRolePolicyInput{
+    //    PolicyArn: aws.String(*createPolicyResult.Policy.Arn),
+    //    RoleName: targetAWSIAMRoleARN,
+    //}
+    // and attach the policy
+    attachResult, err := iamService.AttachRolePolicy(&iam.AttachRolePolicyInput{
+        PolicyArn: aws.String(*createPolicyResult.Policy.Arn),
+        RoleName: aws.String(*targetAWSIAMRoleARN),
+    })
+    if err != nil {
+        log.Printf("attachRolePolicy error:%v",err)
+        return err
+    }
+    log.Printf("attachRolePolicyResult: %+v", attachResult)
+    return nil
+}
+
 
 func createDeploymentSecret(req *handler.Request, tid *TableCFNIdentifier, publicKey string, privateKey string) (*string, error) {
     deploySecret := &DeploymentSecret{
@@ -267,17 +347,51 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.CreateRole AWS: %s", err)
     }
 
-    log.Printf("create - iam role db user iamRole:%+v",iamRole)
+    log.Printf("create - CloudProviderAccess role db user iamRole:%+v",iamRole)
 
-    /*
-    authReq := mongodbatlas.CloudProviderAuthorizationRequest{ProviderName: "AWS",IAMAssumedRoleARN: username}
-    iamRole2, _, err := client.CloudProviderAccess.AuthorizeRole(ctx, projectID, iamRole.RoleID, &authReq)
+    /* In order to authorize this AWS intergration we need to add a trust policy so
+    that the new IAM Role Atlas just generated is allowed to connect. this is linked through
+    the projectID setting, so we really only need one per project (think)
+
+    */
+    err = addRoleWithTrustPolicy(&req, tid, &iamRole.AtlasAWSAccountARN, &projectID, &username)
     if err != nil {
-        return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.CreateRole AWS: %s", err)
+        return handler.ProgressEvent{}, fmt.Errorf("error addRoleWithTrustPolicy: %s", err)
+    }
+
+    /**/
+    authReq := mongodbatlas.CloudProviderAuthorizationRequest{ProviderName: "AWS",IAMAssumedRoleARN: username}
+    log.Printf("create - CloudProviderAccess - attempt authorize role RoleID:%s, authReq:+%V",iamRole.RoleID,authReq)
+    iamRole2, _, err := client.CloudProviderAccess.AuthorizeRole(ctx, projectID, iamRole.RoleID, &authReq)
+
+    if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.AuthorizeRole AWS: %s", err)
     }
 
     log.Printf("authorize - iam role db user iamRole2:%+v",iamRole2)
-    */
+    /**/
+
+    // By default, open up access for a temporary duration.
+    // TODO - Review this with the team!
+    // ? Should we just generate an AWS Security Group on the fly (or allow passed in),
+    // then users could just add that group to their app's VPCs?
+
+    tomorrow := time.Now().Add(time.Hour*24)
+	accessListRequest := []*mongodbatlas.ProjectIPAccessList{
+		{
+			GroupID:   projectID,
+		    IPAddress: "0.0.0.0/1",
+            DeleteAfterDate: tomorrow.Format(time.RFC3339),
+		},
+	}
+
+	projectIPAccessList, _, err := client.ProjectIPAccessList.Create(ctx, projectID, accessListRequest)
+	if err != nil {
+		log.Printf("ProjectIPAccessList.Create returned error: %v", err)
+        return handler.ProgressEvent{}, fmt.Errorf("ProjectIPAccessList.Create returned error: %v", err)
+	}
+
+    log.Printf("projectIDAccessList: %#+v",projectIPAccessList)
 
     var labels []mongodbatlas.Label
     labels = append(labels, mongodbatlas.Label{Key:"Comment",Value:"Created from AWS Quickstart"})

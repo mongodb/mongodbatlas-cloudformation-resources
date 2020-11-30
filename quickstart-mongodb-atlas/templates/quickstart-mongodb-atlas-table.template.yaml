@@ -65,13 +65,28 @@ Resources:
       Tags:
       - Key: mongodb-atlas-quickstart
         Value: !Sub "${AWS::StackName}"
+  AtlasIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+          Action: 'sts:AssumeRole'
   AtlasTable:
     Type: MongoDB::Atlas::Table
+    DependsOn: AtlasIAMRole
     Properties:
       ProjectId: !Ref "ProjectId" 
-      PublicApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PublicKey}}" ] ]
-      PrivateApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PrivateKey}}" ] ]
+      #PublicApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PublicKey}}" ] ]
+      #PrivateApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PrivateKey}}" ] ]
+      #The Table deployment creates it's own secret and cache's it's apikey, so we don't need a secret here really
+      PublicApiKey: !Ref "PublicKey"
+      PrivateApiKey: !Ref "PrivateKey"
       TableName: !Sub "${AWS::StackName}"
+      Username: !GetAtt "AtlasIAMRole.Arn"
       ClusterName: !Ref "ClusterName"
       RegionName: !Ref "RegionName"
 

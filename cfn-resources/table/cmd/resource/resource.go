@@ -157,10 +157,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	tableName := *currentModel.TableName
     log.Printf("projectID=%v, tableName=%v",projectID,tableName)
-    username := tableName
-    if currentModel.Username != nil {
-	    username = cast.ToString(currentModel.Username)
-    }
+
     databaseName := tableName
     if currentModel.DatabaseName != nil {
 	    databaseName = *currentModel.DatabaseName
@@ -192,7 +189,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
     log.Printf("secretName: %s",secretName)
 
-	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+    ctx, cancel := context.WithCancel(context.Background())
+    defer cancel() // Cancel ctx as soon as this returns.
+	cluster, _, err := client.Clusters.Get(ctx, projectID, clusterName)
 	if err != nil {
         log.Printf("Cluster was not found, creating it now... clusterName:(%s) err:%s", clusterName, err)
         clusterRequest := &mongodbatlas.Cluster{
@@ -207,7 +206,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
             NumShards:                cast64(1),
         }
         log.Printf("clusterRequest: %+v",clusterRequest)
-        cluster, resp, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
+        cluster, resp, err := client.Clusters.Create(ctx, projectID, clusterRequest)
         if err != nil {
             return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %w %v", err, &resp)
         }
@@ -249,80 +248,81 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
     }
 
-    // cluster must be ready. see if we have the db-user
-    dbUserDBName := "admin" // Or will allow "$external" TODO
+    // cluster must be ready. 
+    // Enable AWS cloud provider access and add a DB user for the new IAM Role
+
     // For example, "arn:aws:iam::466197078724:role/puffin-123-AtlasIAMRole-FO9UEDNJ9MZL"
-    awsIAMType := "NONE"
-    password := username
-    if strings.HasPrefix(username,"arn:aws:iam:") {
-        dbUserDBName = "$external" 
-        iamType := strings.Split(strings.Split(username,":")[5], "/")[0]
-        awsIAMType = strings.ToUpper(iamType)
-        password = ""
-
-        // TODO - need add call to CloudProviderAccess to enable IAM
+    log.Println("++++++++++++ IAM setup now +++++++++++++++")
+    username := *currentModel.Username
+    if !strings.HasPrefix(username,"arn:aws:iam:") {
+        return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess username must be AWS IAM Role or User: %s", username)
     }
-	databaseUser, _, err := client.DatabaseUsers.Get(context.Background(), dbUserDBName, projectID, username)
-	if err != nil {
-		//return handler.ProgressEvent{}, 
-        log.Printf("error fetching database user (%s): %s", username, err)
-        log.Printf("create - got error, user does not exist, try create them, %s", err)
-
-        var labels []mongodbatlas.Label
-        for _, l := range currentModel.Labels {
-
-            label := mongodbatlas.Label{
-                Key: *l.Key,
-                Value: *l.Value,
-            }
-            labels = append(labels, label)
-        }
-        log.Printf("labels: %#+v", labels)
-
-        var scopes []mongodbatlas.Scope
-        scopes = append(scopes, mongodbatlas.Scope{clusterName,"CLUSTER"})
-        log.Printf("scopes: %#+v", scopes)
-
-	    var roles []mongodbatlas.Role
-        roles = append(roles, mongodbatlas.Role{
-                    RoleName:       "readWrite",
-                    DatabaseName:   databaseName,
-                    CollectionName: tableName,
-            })
-        log.Printf("roles: %#+v", roles)
-
-        user := &mongodbatlas.DatabaseUser{
-            Roles:        roles,
-            GroupID:      projectID,
-            Username:     username,
-            Password:     password,
-            DatabaseName: dbUserDBName,
-            Labels:       labels,
-            Scopes:       scopes,
-            AWSIAMType:   awsIAMType,
-        }
-        log.Printf("user: %#+v", user)
-
-        log.Printf("Arguments: Project ID: %s, Request %#+v", projectID, user)
-
-        newUser, _, err := client.DatabaseUsers.Create(context.Background(), projectID, user)
-        if err != nil {
-            return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
-        }
-        log.Printf("newUser: %s", newUser)
-	} else {
-        log.Printf("Found existing user: %+v",databaseUser)
+    iamType := strings.Split(strings.Split(username,":")[5], "/")[0]
+    awsIAMType := strings.ToUpper(iamType)
+    dbUserDBName := "$external"
+    log.Printf("username:%s",username)
+    cpaReq := mongodbatlas.CloudProviderAccessRoleRequest{ProviderName: "AWS"}
+    iamRole, _, err := client.CloudProviderAccess.CreateRole(ctx, projectID, &cpaReq)
+    if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.CreateRole AWS: %s", err)
     }
 
-    // Once here everything should be provisioned, setup the
+    log.Printf("create - iam role db user iamRole:%+v",iamRole)
+
+    /*
+    authReq := mongodbatlas.CloudProviderAuthorizationRequest{ProviderName: "AWS",IAMAssumedRoleARN: username}
+    iamRole2, _, err := client.CloudProviderAccess.AuthorizeRole(ctx, projectID, iamRole.RoleID, &authReq)
+    if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.CreateRole AWS: %s", err)
+    }
+
+    log.Printf("authorize - iam role db user iamRole2:%+v",iamRole2)
+    */
+
+    var labels []mongodbatlas.Label
+    labels = append(labels, mongodbatlas.Label{Key:"Comment",Value:"Created from AWS Quickstart"})
+    log.Printf("labels: %#+v", labels)
+    var scopes []mongodbatlas.Scope
+    scopes = append(scopes, mongodbatlas.Scope{clusterName,"CLUSTER"})
+    log.Printf("scopes: %#+v", scopes)
+
+    var roles []mongodbatlas.Role
+    roles = append(roles, mongodbatlas.Role{
+                RoleName:       "readWrite",
+                DatabaseName:   databaseName,
+                CollectionName: tableName,
+        })
+    log.Printf("roles: %#+v", roles)
+    user := &mongodbatlas.DatabaseUser{
+        Roles:        roles,
+        GroupID:      projectID,
+        Username:     username,
+        DatabaseName: dbUserDBName,
+        Labels:       labels,
+        Scopes:       scopes,
+        AWSIAMType:   awsIAMType,
+    }
+
+
+    log.Printf("user: %#+v", user)
+
+    log.Printf("Arguments: Project ID: %s, Request %#+v", projectID, user)
+
+    newUser, _, err := client.DatabaseUsers.Create(ctx, projectID, user)
+    if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
+    }
+    log.Printf("newUser: %s", newUser)
+
+    // Once here everything should be provisioned,
+    
+    // TODO// Issue ONE more callback to create the collection using driver connection.
+    // This step can fail but the whole stack still be OK.
     // return properties
+    // todo - util/mongodb
 
 	currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
 	currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
-    //pubkey := currentModel.PublicApiKey
-    //prikey := currentModel.PrivateApiKey
-    //currentModel.PublicApiKey = pubkey
-    //currentModel.PrivateApiKey = prikey
     log.Printf("read-------> cluster:%#+v",cluster)
     log.Printf("about to return currentModel: %#+v", currentModel)
 	return handler.ProgressEvent{
@@ -353,13 +353,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
     }
     log.Printf("key:%+v",key)
 
-
-
-    /* Read - this 
-       needs to grab the TableCFNIdentifier since that's gonna be all we get?
-    */
-
-    //fmt.Sprintf("%s-%s-%s",cast.ToString(currentModel.ProjectId),tableName,username)
     cfnid, err := parseTableId(*currentModel.TableCNFIdentifier)
 	if err != nil {
         return handler.ProgressEvent{}, fmt.Errorf("error parsing TableId: %w %v", err, *currentModel.TableCNFIdentifier)
@@ -372,7 +365,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
     if err != nil {
         return handler.ProgressEvent{}, err
     }
-    cluster, resp, err := client.Clusters.Get(context.Background(), cfnid.ProjectId, cfnid.ClusterName)
+    ctx, cancel := context.WithCancel(context.Background())
+    defer cancel() // Cancel ctx as soon as this returns.
+    cluster, resp, err := client.Clusters.Get(ctx, cfnid.ProjectId, cfnid.ClusterName)
     if err != nil {
         return handler.ProgressEvent{}, fmt.Errorf("error reading cluster: %w %v", err, &resp)
     }
@@ -411,11 +406,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    /*
     response := handler.ProgressEvent{
         OperationStatus: handler.Success,
         Message: "List Complete",
         ResourceModel: currentModel,
     }
-
-    return response, nil
+    */
+    log.Printf("List called - alias for Read")
+    return Read(req, prevModel, currentModel)
+    //return response, nil
 }

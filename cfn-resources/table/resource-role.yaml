@@ -23,6 +23,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                - "iam:UpdateAssumeRolePolicy"
                 - "secretsmanager:*"
                 Resource: "*"
 Outputs:

@@ -1,12 +1,14 @@
 package resource
 
 import (
+    "bytes"
 	"context"
     "errors"
 	"fmt"
 	"log"
     "os"
     "strings"
+    "text/template"
     "time"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
     "go.mongodb.org/atlas/mongodbatlas"
@@ -17,6 +19,8 @@ import (
     "github.com/aws/aws-sdk-go/service/iam"
     "github.com/aws/aws-sdk-go/service/secretsmanager"
 )
+
+const DefaultMongoDBVersion = "4.4"
 
 func castNO64(i *int64) *int {
 	x := cast.ToInt(&i)
@@ -80,66 +84,84 @@ type DeploymentSecret struct {
     ResourceID          string  `json:"ResourceID"`
 }
 
-func addRoleWithTrustPolicy(req *handler.Request, tid *TableCFNIdentifier, atlasIAMARN *string, projectID *string, targetAWSIAMRoleARN *string) error {
-    log.Printf("addRoleTrustPolicy atlasIAMARN:%s, targetAWSIAMRoleARN:%s, projectID:%s",atlasIAMARN, targetAWSIAMRoleARN, projectID)
+
+//(&req, iamRole.AtlasAWSAccountARN, iamRole.AtlasAssumedRoleExternalID, username
+const roleTrustPolicyTemplate = `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "{{ .AtlasAWSAccountARN }}"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "{{ .AtlasAssumedRoleExternalID }}"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "{{ .AWSUserPrincipalARN }}"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}`
+
+func addRoleWithTrustPolicy(req *handler.Request, atlasAWSAccountARN string, atlasAssumedRoleExternalID string, targetAWSIAMRoleARN string) error {
+    log.Printf("addRoleWithTrustPolicy -- atlasAWSAccountARN:%s, atlasAssumedRoleExternalID:%s, targetAWSIAMRoleARN:%s",atlasAWSAccountARN, atlasAssumedRoleExternalID, targetAWSIAMRoleARN)
     iamService := iam.New(req.Session)
-    policy := PolicyDocument{
-        Version: "2012-10-17",
-        Statement: []StatementEntry{
-            StatementEntry{
-                Effect: "Allow",
-                Action: []string{
-                    "sts:AssumeRole", // Allow for creating log groups
-                },
-                Resource: "RESOURCE ARN FOR logs:*",
-                Principal: map[string]interface{}{
-                    "AWS": atlasIAMARN,
-                },
-                Condition: map[string]interface{}{
-                    "StringEquals": map[string]interface{}{
-                        "sts:ExternalId": projectID,
-                    },
-                },
-            },
-        },
-    }
-    log.Printf("addRoleTrustPolicy policy:%+v",policy)
-    b, err := json.Marshal(&policy)
+
+
+    t := strings.Split(targetAWSIAMRoleARN,"/")
+    roleName := t[1]
+    ap := strings.Split(t[0],":")
+    awsUserPrincipalARN := fmt.Sprintf("%s:root",strings.Join(ap[0:len(ap)-1],":"))
+    log.Printf("addROleWithTrustPolicy roleName:%s awsUserPrincipalARN:%s",roleName, awsUserPrincipalARN)
+
+    trustTemplate, err := template.New("todos").Parse( roleTrustPolicyTemplate )
     if err != nil {
-        log.Println(fmt.Println("Error marshaling policy", err))
+        log.Printf("Error parsing role trust policy %v",err)
         return err
     }
-    newPolicyName := fmt.Sprintf("MongoDBAtlas+ClusterAccessRole+%v",tid)
-    log.Printf("newPolicyName:%s",newPolicyName)
+    trustPolicyContext := struct {
+        AtlasAWSAccountARN,
+        AtlasAssumedRoleExternalID,
+        AWSUserPrincipalARN string
+    }{
+        atlasAWSAccountARN,
+        atlasAssumedRoleExternalID,
+        awsUserPrincipalARN,
+    }
 
-    createPolicyResult, err := iamService.CreatePolicy(&iam.CreatePolicyInput{
-        PolicyDocument: aws.String(string(b)),
-        PolicyName:     aws.String(newPolicyName),
-    })
+    log.Printf("addRoleWithTrustPolicy trustPolicyContext:%v",trustPolicyContext)
 
+    var rawTrustPolicy bytes.Buffer
+    err = trustTemplate.Execute(&rawTrustPolicy, trustPolicyContext)
     if err != nil {
-        fmt.Println("Error", err)
+        log.Printf("Error executing role trust policy template %v",err)
         return err
     }
 
-    log.Println("createPolicyResult: %+v", createPolicyResult)
 
-
-    // now create the AttachRolePolicyInput
-    //arpi := &iam.AttachRolePolicyInput{
-    //    PolicyArn: aws.String(*createPolicyResult.Policy.Arn),
-    //    RoleName: targetAWSIAMRoleARN,
-    //}
-    // and attach the policy
-    attachResult, err := iamService.AttachRolePolicy(&iam.AttachRolePolicyInput{
-        PolicyArn: aws.String(*createPolicyResult.Policy.Arn),
-        RoleName: aws.String(*targetAWSIAMRoleARN),
-    })
-    if err != nil {
-        log.Printf("attachRolePolicy error:%v",err)
-        return err
+    log.Printf("trustPolicyDoc:   string(rawTrustPolicy):%s",rawTrustPolicy.String())
+    input := &iam.UpdateAssumeRolePolicyInput{
+        PolicyDocument: aws.String(rawTrustPolicy.String()),
+        RoleName:       aws.String(roleName),
     }
-    log.Printf("attachRolePolicyResult: %+v", attachResult)
+    log.Printf("UpdateAssumeRolePolicyInput input:%v",input)
+    result, err := iamService.UpdateAssumeRolePolicy(input)
+
+
+    if err != nil {
+      log.Printf("createRole error:%v",err)
+      //fmt.Println(err.Error())
+      return err
+    }
+    log.Printf("UpdateAssumeRolePolicy result:%v",result)
     return nil
 }
 
@@ -203,7 +225,7 @@ func getApiKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
    var key DeploymentSecret
    err = json.Unmarshal( []byte(*output.SecretString), &key )
    if err != nil {
-       log.Printf("Error --- %#+v", err.Error())
+       log.Printf("Error --- %v", err.Error())
        return key, err
    }
    fmt.Println("%v",key)
@@ -213,7 +235,7 @@ func getApiKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    log.Printf("Create - currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
+    log.Printf("Create - currentModel: %v, prevModel: %v", currentModel, prevModel)
 	log.Printf("APIKEYS=======>%v,%v",*currentModel.PublicApiKey, *currentModel.PrivateApiKey)
 	client, err := util.CreateMongoDBClient(*currentModel.PublicApiKey, *currentModel.PrivateApiKey)
 	if err != nil {
@@ -231,6 +253,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     } else {
         callbackCount += 1
     }
+
+
+
 
     log.Printf("callbackCount: %i",callbackCount)
 
@@ -263,11 +288,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     currentModel.TableCNFIdentifier = &tidString
     log.Printf("tid: %v, TableCFNIdentifier: %s",tid,currentModel.TableCNFIdentifier)
 
-    secretName, err := createDeploymentSecret(&req, tid, *currentModel.PublicApiKey, *currentModel.PrivateApiKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-    log.Printf("secretName: %s",secretName)
+    // If this is first call, create a deployment secret to cache the api keys
+    if _, ok := thisCallbackContext["TableCFNIdentifier"]; !ok {
+
+        secretName, err := createDeploymentSecret(&req, tid, *currentModel.PublicApiKey, *currentModel.PrivateApiKey)
+        if err != nil {
+            return handler.ProgressEvent{}, err
+        }
+        log.Printf("secretName: %s",secretName)
+    }
 
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel() // Cancel ctx as soon as this returns.
@@ -277,8 +306,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         clusterRequest := &mongodbatlas.Cluster{
             Name:                     clusterName,
             ClusterType:              "REPLICASET",
+            MongoDBMajorVersion:      DefaultMongoDBVersion,
             ProviderSettings:         &mongodbatlas.ProviderSettings{
-                ProviderName:           "AWS",
+                ProviderName:         "AWS",
                 RegionName:           regionName,
                 InstanceSizeName:     "M10",    //TODO: Wish could be M0!
             },
@@ -317,6 +347,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
             "counter": callbackCount,
             "publicKey": *currentModel.PublicApiKey,
             "privateKey": *currentModel.PublicApiKey,
+            "TableCFNIdentifier": fmt.Sprintf("%v",tid),
         }
         return handler.ProgressEvent{
             OperationStatus:      handler.InProgress,
@@ -354,11 +385,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     the projectID setting, so we really only need one per project (think)
 
     */
-    err = addRoleWithTrustPolicy(&req, tid, &iamRole.AtlasAWSAccountARN, &projectID, &username)
+    err = addRoleWithTrustPolicy(&req, iamRole.AtlasAWSAccountARN, iamRole.AtlasAssumedRoleExternalID, username)
     if err != nil {
         return handler.ProgressEvent{}, fmt.Errorf("error addRoleWithTrustPolicy: %s", err)
     }
 
+    // pause a moment to allow the new trust policy to "settle in" to AWS
+    time.Sleep(10 * time.Second)
     /**/
     authReq := mongodbatlas.CloudProviderAuthorizationRequest{ProviderName: "AWS",IAMAssumedRoleARN: username}
     log.Printf("create - CloudProviderAccess - attempt authorize role RoleID:%s, authReq:+%V",iamRole.RoleID,authReq)
@@ -391,14 +424,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         return handler.ProgressEvent{}, fmt.Errorf("ProjectIPAccessList.Create returned error: %v", err)
 	}
 
-    log.Printf("projectIDAccessList: %#+v",projectIPAccessList)
+    log.Printf("projectIDAccessList: %v",projectIPAccessList)
 
     var labels []mongodbatlas.Label
     labels = append(labels, mongodbatlas.Label{Key:"Comment",Value:"Created from AWS Quickstart"})
-    log.Printf("labels: %#+v", labels)
+    log.Printf("labels: %v", labels)
     var scopes []mongodbatlas.Scope
     scopes = append(scopes, mongodbatlas.Scope{clusterName,"CLUSTER"})
-    log.Printf("scopes: %#+v", scopes)
+    log.Printf("scopes: %v", scopes)
 
     var roles []mongodbatlas.Role
     roles = append(roles, mongodbatlas.Role{
@@ -406,7 +439,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
                 DatabaseName:   databaseName,
                 CollectionName: tableName,
         })
-    log.Printf("roles: %#+v", roles)
+    log.Printf("roles: %v", roles)
     user := &mongodbatlas.DatabaseUser{
         Roles:        roles,
         GroupID:      projectID,
@@ -418,9 +451,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     }
 
 
-    log.Printf("user: %#+v", user)
+    log.Printf("user: %v", user)
 
-    log.Printf("Arguments: Project ID: %s, Request %#+v", projectID, user)
+    log.Printf("Arguments: Project ID: %s, Request %v", projectID, user)
 
     newUser, _, err := client.DatabaseUsers.Create(ctx, projectID, user)
     if err != nil {
@@ -437,8 +470,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
 	currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
-    log.Printf("read-------> cluster:%#+v",cluster)
-    log.Printf("about to return currentModel: %#+v", currentModel)
+    log.Printf("read-------> cluster:%v",cluster)
+    log.Printf("about to return currentModel: %v", currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -452,13 +485,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
     // * Check/set any callback context (
     callback := map[string]interface{}(req.CallbackContext)
-    log.Printf("Read -  callback: %#+v",callback)
+    log.Printf("Read -  callback: %v",callback)
 
     if currentModel != nil {
-        log.Printf("Read - currentModel: %#+v", currentModel)
+        log.Printf("Read - currentModel: %v", currentModel)
     }
     if prevModel != nil {
-        log.Printf("Read - prevModel: %#+v", prevModel)
+        log.Printf("Read - prevModel: %v", prevModel)
     }
 
     key, err := getApiKeyFromDeploymentSecret(&req, *currentModel.TableCNFIdentifier)
@@ -531,3 +564,60 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
     return Read(req, prevModel, currentModel)
     //return response, nil
 }
+
+
+/*
+
+
+
+
+    policy := PolicyDocument{
+        Version: "2012-10-17",
+        Statement: []StatementEntry{
+            StatementEntry{
+                Effect: "Allow",
+                Action: []string{
+                    "sts:AssumeRole", // Allow for creating log groups
+                },
+            },
+        },
+    }
+    log.Printf("addRoleTrustPolicy policy:%+v",policy)
+    b, err := json.Marshal(&policy)
+    if err != nil {
+        log.Println(fmt.Println("Error marshaling policy", err))
+        return err
+    }
+
+    createPolicyResult, err := iamService.CreatePolicy(&iam.CreatePolicyInput{
+        PolicyDocument: aws.String(string(b)),
+        PolicyName:     aws.String(newPolicyName),
+    })
+
+    if err != nil {
+        fmt.Println("Error", err)
+        return err
+    }
+
+    log.Println("createPolicyResult: %+v", createPolicyResult)
+ 
+    params := &iam.CreateRoleInput{
+        AssumeRolePolicyDocument: aws.String(fmt.Sprintf("{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"%s\"},\"Action\": \"sts:AssumeRole\",\"Condition\": {\"StringEquals\" : { \"sts:ExternalId\" : \"%s\" } }}]}",atlasIAMARN,projectID)),
+      Description:              aws.String("Role description"),
+      PermissionsBoundary:      aws.String(*createPolicyResult.Policy.Arn),
+      RoleName:                 aws.String("rolename"),
+    }
+
+    resp, err := iamService.CreateRole(params)
+
+    /*
+    attachResult, err := iamService.AttachRolePolicy(&iam.AttachRolePolicyInput{
+        PolicyArn: aws.String(*createPolicyResult.Policy.Arn),
+        RoleName: aws.String(*targetAWSIAMRoleARN),
+    })
+    if err != nil {
+        log.Printf("attachRolePolicy error:%v",err)
+        return err
+    }
+    log.Printf("attachRolePolicyResult: %+v", attachResult)
+*/

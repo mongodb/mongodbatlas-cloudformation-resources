@@ -100,7 +100,8 @@
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:*"
+                "secretsmanager:*",
+                "iam:UpdateAssumeRolePolicy"
             ]
         },
         "read": {

@@ -53,18 +53,6 @@ Parameters:
     - "me-south-1"
     - "af-south-1"
 Resources:
-  AtlasApiKeySecret:
-    Type: 'AWS::SecretsManager::Secret'
-    Properties:
-      Name: !Sub "${AWS::StackName}-ApiKey-Secret"
-      Description: This secret has a hardcoded password in SecretString, how can i make this optional?
-      #
-      # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
-      #
-      SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
-      Tags:
-      - Key: mongodb-atlas-quickstart
-        Value: !Sub "${AWS::StackName}"
   AtlasIAMRole:
     Type: AWS::IAM::Role
     Properties:
@@ -80,9 +68,6 @@ Resources:
     DependsOn: AtlasIAMRole
     Properties:
       ProjectId: !Ref "ProjectId" 
-      #PublicApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PublicKey}}" ] ]
-      #PrivateApiKey: !Join [ "", [ "{{resolve:secretsmanager:", !Ref "AtlasApiKeySecret", ":SecretString:PrivateKey}}" ] ]
-      #The Table deployment creates it's own secret and cache's it's apikey, so we don't need a secret here really
       PublicApiKey: !Ref "PublicKey"
       PrivateApiKey: !Ref "PrivateKey"
       TableName: !Sub "${AWS::StackName}"

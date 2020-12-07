@@ -15,7 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#publicapikey" title="PublicApiKey">PublicApiKey</a>" : <i>String</i>,
         "<a href="#privateapikey" title="PrivateApiKey">PrivateApiKey</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#username" title="Username">Username</a>" : <i>String</i>,
+        "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>
     }
 }
@@ -29,7 +29,7 @@ Properties:
     <a href="#publicapikey" title="PublicApiKey">PublicApiKey</a>: <i>String</i>
     <a href="#privateapikey" title="PrivateApiKey">PrivateApiKey</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#username" title="Username">Username</a>: <i>String</i>
+    <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
       - <a href="labeldefinition.md">labelDefinition</a></i>
 </pre>
@@ -66,9 +66,9 @@ _Maximum_: <code>250</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Username
+#### Password
 
-Username for authenticating to MongoDB, this is optional. TODO: Support IAM
+Password for authenticating to MongoDB, this is optional. Not needed for IAM - TODO/implement SCRAM
 
 _Required_: No
 
@@ -113,6 +113,10 @@ Name of the the MongoDB Atlas Database.
 #### RegionName
 
 Returns the <code>RegionName</code> value.
+
+#### Username
+
+Username for authenticating to MongoDB, this is optional. Recommended to use IAM, pass the ARN for a Role here for readWrite access
 
 #### ConnectionStringsStandard
 

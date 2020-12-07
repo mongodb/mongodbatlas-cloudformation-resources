@@ -82,10 +82,13 @@ type DeploymentSecret struct {
     PublicKey           string  `json:"PublicKey"`
     PrivateKey          string  `json:"PrivateKey"`
     ResourceID          string  `json:"ResourceID"`
+    DBUsername          string  `json:"DBUsername"` 
 }
 
 
 //(&req, iamRole.AtlasAWSAccountARN, iamRole.AtlasAssumedRoleExternalID, username
+// TODO - this should be much more graceful, we should be able to just
+// inject the trust policy we need not overwrite it all.
 const roleTrustPolicyTemplate = `{
   "Version": "2012-10-17",
   "Statement": [
@@ -105,6 +108,13 @@ const roleTrustPolicyTemplate = `{
       "Effect": "Allow",
       "Principal": {
         "AWS": "{{ .AWSUserPrincipalARN }}"
+      },
+      "Action": "sts:AssumeRole"
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
       },
       "Action": "sts:AssumeRole"
     }
@@ -166,11 +176,12 @@ func addRoleWithTrustPolicy(req *handler.Request, atlasAWSAccountARN string, atl
 }
 
 
-func createDeploymentSecret(req *handler.Request, tid *TableCFNIdentifier, publicKey string, privateKey string) (*string, error) {
+func createDeploymentSecret(req *handler.Request, tid *TableCFNIdentifier, publicKey string, privateKey string, dbUsername string) (*string, error) {
     deploySecret := &DeploymentSecret{
         PublicKey:      publicKey,
         PrivateKey:     privateKey,
         ResourceID:     fmt.Sprintf("%v",tid),
+        DBUsername:     dbUsername,
     }
     log.Printf("deploySecret: %v", deploySecret)
     deploySecretString, err := json.Marshal(deploySecret)
@@ -290,8 +301,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
     // If this is first call, create a deployment secret to cache the api keys
     if _, ok := thisCallbackContext["TableCFNIdentifier"]; !ok {
-
-        secretName, err := createDeploymentSecret(&req, tid, *currentModel.PublicApiKey, *currentModel.PrivateApiKey)
+        secretName, err := createDeploymentSecret(&req, tid, *currentModel.PublicApiKey, *currentModel.PrivateApiKey,*currentModel.Username)
         if err != nil {
             return handler.ProgressEvent{}, err
         }
@@ -300,6 +310,39 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel() // Cancel ctx as soon as this returns.
+
+    // Check if this is the FINAL callback after Cluster, IAM, DBUser is all set.
+    // If so - issue the driver interaction to setup the actual Database/Collection - 
+    // Write some simple document (TODO/ inject sample data from our sets here)
+    if status, ok := thisCallbackContext["status"]; ok {
+        log.Printf("Had a status for callback:%s",status)
+        if status == "table-setup" {
+            log.Printf("TABLE_SETUP!!!!!!!! os.Environ():%v",os.Environ())
+            log.Printf("HERE -----> call util/mongodb with ......")
+            cluster, _, err := client.Clusters.Get(ctx, projectID, clusterName)
+            if err != nil {
+                return handler.ProgressEvent{}, err
+            }
+            roleArn := thisCallbackContext["table-setup-role-arn"].(string)
+
+            currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
+            currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
+            log.Printf("try list db names roleArn: %s, srv:%v", roleArn, *currentModel.ConnectionStringsStandardSrv)
+
+            dbs, err := util.ListDatabaseNames(&req, *currentModel.ConnectionStringsStandardSrv,roleArn)
+            if err != nil {
+                log.Printf("ListDatabaseNames err:%v",err)
+                return handler.ProgressEvent{}, err
+            }
+            log.Printf("ListDatabaseNames - did it work????? dbs:%v",dbs) 
+            return handler.ProgressEvent{
+                OperationStatus: handler.Success,
+                Message:         "Create Complete, Go Data.",
+                ResourceModel:   currentModel,
+            }, nil
+        }
+    }
+
 	cluster, _, err := client.Clusters.Get(ctx, projectID, clusterName)
 	if err != nil {
         log.Printf("Cluster was not found, creating it now... clusterName:(%s) err:%s", clusterName, err)
@@ -363,12 +406,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     // Enable AWS cloud provider access and add a DB user for the new IAM Role
 
     // For example, "arn:aws:iam::466197078724:role/puffin-123-AtlasIAMRole-FO9UEDNJ9MZL"
-    log.Println("++++++++++++ IAM setup now +++++++++++++++")
     username := *currentModel.Username
+    log.Printf("++++++++++++ IAM setup now +++++++++++++++ username:%s",username)
     if !strings.HasPrefix(username,"arn:aws:iam:") {
         return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess username must be AWS IAM Role or User: %s", username)
     }
-    iamType := strings.Split(strings.Split(username,":")[5], "/")[0]
+    up := strings.Split(username,":")
+    log.Printf(" ~~~~~~~~~~~~~ up:%v",up)
+    iamType := strings.Split(up[len(up)-1], "/")[0]
     awsIAMType := strings.ToUpper(iamType)
     dbUserDBName := "$external"
     log.Printf("username:%s",username)
@@ -395,10 +440,30 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     /**/
     authReq := mongodbatlas.CloudProviderAuthorizationRequest{ProviderName: "AWS",IAMAssumedRoleARN: username}
     log.Printf("create - CloudProviderAccess - attempt authorize role RoleID:%s, authReq:+%V",iamRole.RoleID,authReq)
-    iamRole2, _, err := client.CloudProviderAccess.AuthorizeRole(ctx, projectID, iamRole.RoleID, &authReq)
+    iamRole2, res, err := client.CloudProviderAccess.AuthorizeRole(ctx, projectID, iamRole.RoleID, &authReq)
+    log.Printf("AuthorizeRole res.StatusCode: %v", res.StatusCode)
 
     if err != nil {
-        return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.AuthorizeRole AWS: %s", err)
+        if res.StatusCode == 409 {
+            log.Printf("IAM Role already authorized, provisioning continuing. err: %v", err)
+            iamRoles, _, err2 := client.CloudProviderAccess.ListRoles(ctx, projectID)
+            if err2 != nil {
+                log.Printf("Error ListRoles err:%v",err)
+                return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.ListRoles err:%v", err)
+            }
+            log.Printf("iamRoles:%v",iamRoles)
+            for _,role := range iamRoles.AWSIAMRoles {
+                log.Printf("role:%v",role)
+                if role.IAMAssumedRoleARN == username {
+                    iamRole2 = &role
+                    log.Printf("Found existing role!  iamRole2:%v", iamRole2)
+                }
+            }
+
+        } else {
+            log.Printf("was NOT 409 Conflict, err: %v", err)
+            return handler.ProgressEvent{}, fmt.Errorf("error CloudProviderAccess.AuthorizeRole AWS: %s", err)
+        }
     }
 
     log.Printf("authorize - iam role db user iamRole2:%+v",iamRole2)
@@ -434,11 +499,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     log.Printf("scopes: %v", scopes)
 
     var roles []mongodbatlas.Role
-    roles = append(roles, mongodbatlas.Role{
-                RoleName:       "readWrite",
-                DatabaseName:   databaseName,
-                CollectionName: tableName,
-        })
+    newDBRole := mongodbatlas.Role{
+        RoleName:       "readWrite",
+        DatabaseName:   databaseName,
+        CollectionName: tableName,
+    }
+    roles = append(roles, newDBRole)
     log.Printf("roles: %v", roles)
     user := &mongodbatlas.DatabaseUser{
         Roles:        roles,
@@ -455,9 +521,47 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
     log.Printf("Arguments: Project ID: %s, Request %v", projectID, user)
 
-    newUser, _, err := client.DatabaseUsers.Create(ctx, projectID, user)
+    newUser, res2, err := client.DatabaseUsers.Create(ctx, projectID, user)
     if err != nil {
-        return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
+        if res2.StatusCode == 409 {
+            log.Printf("DatabaseUser already exists, provisioning continuing. err: %v", err)
+            // Now we need check we have a role to access this new "Table"
+            user, _, err2 := client.DatabaseUsers.Get(ctx,dbUserDBName,projectID,user.Username)
+            if err2 != nil {
+                log.Printf("DatabaseUser.Get returned error: %v", err)
+                return handler.ProgressEvent{}, fmt.Errorf("DatabaseUser.Get returned error: %v", err)
+            }
+            log.Printf("Found existing dbuser user:%v, attempt add new role",user)
+
+            isSameRole := func(r1 mongodbatlas.Role, r2 mongodbatlas.Role) bool {
+                log.Printf("isSameRole r1:%v r2:%v",r1,r2)
+                if r1.RoleName != r2.RoleName { return false }
+                if r1.DatabaseName != r2.DatabaseName { return false }
+                if r1.CollectionName != r2.CollectionName { return false }
+                log.Println("isSameRole - passed all checks")
+                return true
+
+            }
+            foundRole := false
+            for _, role := range user.Roles {
+                foundRole = isSameRole(role, newDBRole)
+            }
+            if !foundRole {   // didn't find it, so add it
+
+                user.Roles = append(user.Roles, newDBRole)
+                fixedUser, _, err3 := client.DatabaseUsers.Update(ctx,dbUserDBName,projectID, user)
+                if err2 != nil {
+                    log.Printf("DatabaseUser.Update returned error: %v", err3)
+                    return handler.ProgressEvent{}, fmt.Errorf("DatabaseUser.Update returned error: %v", err3)
+                }
+                log.Printf("Found existing dbuser user:%v, attempt add new role",fixedUser)
+
+            }
+
+
+        } else {
+            return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
+        }
     }
     log.Printf("newUser: %s", newUser)
 
@@ -467,9 +571,34 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     // This step can fail but the whole stack still be OK.
     // return properties
     // todo - util/mongodb
+    // this means the "user" running this function (the lambda iam execution role, needs to also be a dbuser)
+    // or we need something else here.
 
+
+    /*
+    log.Printf("AtlasTable provisioning penultimate step complete. Issuing final callback 'status':'table-setup' ")
+    cc := map[string]interface{}{
+        "status": "table-setup",
+        "table-setup-role-arn": newUser.Username,
+        "cluster": cluster,
+        "counter": callbackCount,
+        "publicKey": *currentModel.PublicApiKey,
+        "privateKey": *currentModel.PublicApiKey,
+        "TableCFNIdentifier": fmt.Sprintf("%v",tid),
+    }
+    return handler.ProgressEvent{
+        OperationStatus:      handler.InProgress,
+        Message:              fmt.Sprintf("Final step, connecting to cluster and creating Database.Collection %s.%s",databaseName, tableName),
+        CallbackDelaySeconds: 30,
+        CallbackContext:      cc,
+        ResourceModel:        currentModel,
+    }, nil
+    */
+    
+    /**/
 	currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
 	currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
+    currentModel.Username = &newUser.Username
     log.Printf("read-------> cluster:%v",cluster)
     log.Printf("about to return currentModel: %v", currentModel)
 	return handler.ProgressEvent{
@@ -477,7 +606,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
 	}, nil
-
+    /**/
 }
 
 
@@ -520,7 +649,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
     }
     currentModel.ConnectionStringsStandard = &cluster.ConnectionStrings.Standard
     currentModel.ConnectionStringsStandardSrv = &cluster.ConnectionStrings.StandardSrv
-
+    currentModel.Username = &key.DBUsername
     log.Printf("Read - currentModel:+%v",currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

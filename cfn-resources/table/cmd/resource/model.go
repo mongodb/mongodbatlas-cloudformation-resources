@@ -14,6 +14,7 @@ type Model struct {
 	ClusterName                  *string           `json:",omitempty"`
 	RegionName                   *string           `json:",omitempty"`
 	Username                     *string           `json:",omitempty"`
+	Password                     *string           `json:",omitempty"`
 	TableCNFIdentifier           *string           `json:",omitempty"`
 	Labels                       []LabelDefinition `json:",omitempty"`
 }

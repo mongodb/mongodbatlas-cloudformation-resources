@@ -11,9 +11,10 @@
 #
 # Happy Coding!
 
-service: samplegoapp
+service: ${opt:TableName}Lambda 
 plugins:
   - serverless-pseudo-parameters
+  - serverless-resources-env
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -25,14 +26,20 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: go1.x
-
+  stackName: "${self:service}-${self:provider.stage}" 
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
 
-  role: myAtlasFunctionRole 
+# role: "${opt:TableName}" 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
+#iamRoleStatementsName: "arn:aws:iam:#{AWS::AccountId}:
+#  iamRoleStatementsName: "role/mongodb-atlas-table-lambdaRole-${opt:TableName}"
+
+  #  iamRoleStatements:
+  #  - Effect: Allow
+  # Resource: "arn:aws:iam::#{AWS::AccountId}:root"
+  # Action: 'sts:AssumeRole'
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:ListBucket"
@@ -60,6 +67,9 @@ package:
 functions:
   hello:
     handler: bin/hello
+    custom:
+      env-resources:
+      - AtlasTable
     events:
       - http:
           path: hello
@@ -72,67 +82,26 @@ functions:
           method: get
 
 #    Define function environment variables here
-#    environment:
-#      variable2: value2
+    environment:
+        #ATLAS_ROLE_ARN: "${cf:#{AWS::StackName}.RoleArn}"  
+        #ATLAS_URI: "${cf:#{AWS::StackName}.ConnectionString}"  
 
 # you can add CloudFormation resource templates here
+#
+#
+#  ${service.name}-${stage}-${region}-lambdaRole
+#  is we know the name of the execution role, then generate db user anme -- try this out!
+#
 resources:
   Resources:
-    myAtlasFunctionRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: myAtlasFunctionRole 
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-          - Effect: Allow
-            Principal:
-              AWS: "arn:aws:iam::#{AWS::AccountId}:root"
-            Action: 'sts:AssumeRole'
-          - Effect: Allow
-            Principal:
-              Service: "lambda.amazonaws.com"
-            Action: 'sts:AssumeRole'
-        # note that these rights are needed if you want your function to be able to communicate with resources within your vpc
-        ManagedPolicyArns:
-          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-          - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
-          - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
-        Policies:
-          - PolicyName: myPolicyName
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource:
-                    - 'Fn::Join':
-                      - ':'
-                      -
-                        - 'arn:aws:logs'
-                        - Ref: 'AWS::Region'
-                        - Ref: 'AWS::AccountId'
-                        - 'log-group:/aws/lambda/*:*:*'
-                -  Effect: "Allow"
-                   Action:
-                     - "s3:PutObject"
-                   Resource:
-                     Fn::Join:
-                       - ""
-                       - - "arn:aws:s3:::"
-                         - "Ref" : "ServerlessDeploymentBucket"
     AtlasTable:
       Type: MongoDB::Atlas::Table
-      DependsOn: myAtlasFunctionRole 
       Properties:
         ProjectId: "${opt:ProjectId}" 
         PublicApiKey: ${env:ATLAS_PUBLIC_KEY} 
         PrivateApiKey: ${env:ATLAS_PRIVATE_KEY}
         TableName: "${opt:TableName}"
-        Username: !GetAtt [ 'myAtlasFunctionRole','Arn']
+        Username: "arn:aws:iam::#{AWS::AccountId}:role/${self:service}-${self:provider.stage}-${AWS::Region}-lambdaRole"
         ClusterName: "${opt:ClusterName}"
         RegionName: "us-east-1"
   Outputs:
@@ -142,3 +111,6 @@ resources:
     ConnectionString:
       Description: "Hostname for mongodb+srv:// connection string"
       Value: !GetAtt "AtlasTable.ConnectionStringsStandardSrv"
+    RoleARN:
+      Description: "AWS IAM Role ARN for db connection"
+      Value: !GetAtt "AtlasTable.Username"

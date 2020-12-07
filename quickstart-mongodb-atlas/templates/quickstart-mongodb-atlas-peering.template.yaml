@@ -142,6 +142,9 @@ Resources:
       Description: This secret has a hardcoded password in SecretString, how can i make this optional?
       #
       # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
+      
+      
+      
       #
       SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
       Tags:
@@ -196,8 +199,6 @@ Resources:
       Scopes:
       - Name: !Sub "${AWS::StackName}"
         Type: "CLUSTER"
-
-
   AtlasContainer:  
     Type: MongoDB::Atlas::NetworkContainer
     DependsOn: AtlasCluster
@@ -216,8 +217,6 @@ Resources:
       ApiKeys:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      
-      
       AccepterRegionName: !Ref "ClusterRegion"
       AWSAccountId: !Sub "${AWS::AccountId}" 
       ContainerId: !Ref "AtlasContainer"

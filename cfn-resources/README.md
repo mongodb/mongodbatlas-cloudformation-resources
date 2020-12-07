@@ -10,7 +10,7 @@ MongoDB Atlas Resource Types.
 
 | Resource | Status | Examples |
 | --- | --- | --- |
-| cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [](../examples/cloud-provider-snapshot-restore-jobs) | 
+| cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/cloud-provider-snapshot-restore-jobs](../examples/cloud-provider-snapshot-restore-jobs) | 
 
 
 

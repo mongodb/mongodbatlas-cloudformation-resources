@@ -205,6 +205,9 @@ Resources:
     DependsOn: AtlasCluster
     Properties:
       ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
       Username: !GetAtt "AtlasIAMRole.Arn"
       DatabaseName: "$external"
       AWSIAMType: "ROLE"

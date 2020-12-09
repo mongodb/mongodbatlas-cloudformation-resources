@@ -30,6 +30,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 
+    // This is the intial call to Create, so inject a deployment
+    // secret for this resource in order to lookup progress properly
+    resourceID := util.NewResourceIdentifier("Project", project.ID, nil)
+    log.Printf("Created resourceID:%s",resourceID)
+    resourceProps := map[string]string{
+        "Name": project.Name,
+        "OrgID": project.OrgID,
+        "ResourceID": resourceID.String(),
+    }
+    secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
+    if err != nil {
+        log.Printf("Error - %+v",err)
+        return handler.ProgressEvent{}, err
+    }
+
+    log.Printf("Created deployment secret:%s this should be set to the resource priary key",secretName)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",

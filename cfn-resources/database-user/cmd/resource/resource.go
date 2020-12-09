@@ -100,6 +100,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     currentModel.UserCNFIdentifier = &cfnid
     log.Printf("UserCFNIdentifier: %s",cfnid)
 
+
     newUser, _, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)

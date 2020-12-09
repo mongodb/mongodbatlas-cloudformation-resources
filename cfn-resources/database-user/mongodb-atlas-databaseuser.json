@@ -146,27 +146,28 @@
     "handlers": {
         "create": {
             "permissions": [
-                ""
+                "secretsmanager:*",
+                "iam:UpdateAssumeRolePolicy"
             ]
         },
         "read": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         },
         "update": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         },
         "delete": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         },
         "list": {
             "permissions": [
-                ""
+                "secretsmanager:*"
             ]
         }
     }

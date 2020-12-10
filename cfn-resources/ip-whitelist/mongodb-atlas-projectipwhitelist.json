@@ -1,0 +1,110 @@
+{
+    "typeName": "MongoDB::Atlas::ProjectIPWhitelist",
+    "description": "The whitelist endpoint manages a Atlas project’s IP whitelist.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "whitelistDefinition": {
+            "type": "object",
+            "properties": {
+                "Comment": {
+                    "description": "Comment associated with the whitelist entry.",
+                    "type": "string"
+                },
+                "IpAddress": {
+                    "description": "Whitelisted IP address. Mutually exclusive with cidrBlock and awsSecurityGroup.",
+                    "type": "string"
+                },
+                "CidrBlock": {
+                    "description": "Whitelist entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and awsSecurityGroup.",
+                    "type": "string"
+                },
+                "AwsSecurityGroup":{
+                    "description": "ID of the AWS security group to whitelist. Mutually exclusive with cidrBlock and ipAddress and cidrBlock.",
+                    "type": "string"
+                },
+                "ProjectId": {
+                    "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
+                    "type": "string"
+                }
+            }
+        },
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "The unique identifier for the project to which you want to add one or more whitelist entries.",
+            "type": "string"
+        },
+        "Id": {
+            "description": "The unique identifier for the Project API Whitelist rules.",
+            "type": "string"
+        },
+        "Whitelist": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/definitions/whitelistDefinition"
+            }
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "TotalCount": {
+            "description": "The unique identifier for the Project API Whitelist rules.",
+            "type": "integer"
+        }
+
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Whitelist",
+        "ApiKeys"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/TotalCount"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
+        }
+    }
+}

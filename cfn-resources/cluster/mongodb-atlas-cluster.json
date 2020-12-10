@@ -1,6 +1,7 @@
 {
     "typeName": "MongoDB::Atlas::Cluster",
     "description": "The cluster resource provides access to your cluster configurations. The resource lets you create, edit and delete clusters. The resource requires your Project ID.",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/cluster/cluster",
     "definitions": {
         "AutoScalingProvider": {
             "type": "object",
@@ -298,25 +299,16 @@
     ],
     "handlers": {
         "create": {
-            "permissions": [
-                "secretsmanager:*",
-                "iam:UpdateAssumeRolePolicy"
-            ]
+            "permissions": []
         },
         "read": {
-            "permissions": [
-                "secretsmanager:*"
-            ]
+            "permissions": []
         },
         "update": {
-            "permissions": [
-                "secretsmanager:*"
-            ]
+            "permissions": []
         },
         "delete": {
-            "permissions": [
-                "secretsmanager:*"
-            ]
+            "permissions": []
         }
     }
 }

@@ -17,7 +17,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#provisioned" title="Provisioned">Provisioned</a>" : <i>Boolean</i>,
         "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
         "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
-        "<a href="#atlascidrblock" title="AtlasCIDRBlock">AtlasCIDRBlock</a>" : <i>String</i>,
+        "<a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
@@ -33,7 +33,7 @@ Properties:
     <a href="#provisioned" title="Provisioned">Provisioned</a>: <i>Boolean</i>
     <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
     <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
-    <a href="#atlascidrblock" title="AtlasCIDRBlock">AtlasCIDRBlock</a>: <i>String</i>
+    <a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
@@ -89,7 +89,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### AtlasCIDRBlock
+#### AtlasCidrBlock
 
 CIDR block that Atlas uses for your clusters.
 

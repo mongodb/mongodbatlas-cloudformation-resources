@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-    "go.mongodb.org/atlas/mongodbatlas"
+	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
@@ -17,7 +17,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	defaultProviderName := "AWS"
 	projectID := *currentModel.ProjectId
-	peerRequest := mongodbatlas.Peer{
+	peerRequest := matlasClient.Peer{
 		ContainerID: *currentModel.ContainerId,
 	}
 
@@ -29,7 +29,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if awsAccountId == nil || *awsAccountId == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `aws_account_id` must be set")
 	}
-	rtCIDR := currentModel.RouteTableCIDRBlock
+	rtCIDR := currentModel.RouteTableCidrBlock
 	if rtCIDR == nil || *rtCIDR == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network peering: `route_table_cidr_block` must be set")
 	}
@@ -79,7 +79,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.AccepterRegionName = &peerResponse.AccepterRegionName
 	currentModel.AwsAccountId = &peerResponse.AWSAccountID
-	currentModel.RouteTableCIDRBlock = &peerResponse.RouteTableCIDRBlock
+	currentModel.RouteTableCidrBlock = &peerResponse.RouteTableCIDRBlock
 	currentModel.VpcId = &peerResponse.VpcID
 	currentModel.ConnectionId = &peerResponse.ConnectionID
 	currentModel.ErrorStateName = &peerResponse.ErrorStateName
@@ -102,7 +102,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	peerID := *currentModel.Id
-	peerRequest := mongodbatlas.Peer{}
+	peerRequest := matlasClient.Peer{}
 
 	region := currentModel.AccepterRegionName
 	if region != nil {
@@ -113,7 +113,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		peerRequest.AWSAccountID = *accountID
 	}
 	peerRequest.ProviderName = "AWS"
-	rtTableBlock := currentModel.RouteTableCIDRBlock
+	rtTableBlock := currentModel.RouteTableCidrBlock
 	if rtTableBlock != nil {
 		peerRequest.RouteTableCIDRBlock = *rtTableBlock
 	}
@@ -172,7 +172,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	projectID := *currentModel.ProjectId
-	peerResponse, _, err := client.Peers.List(context.Background(), projectID, &mongodbatlas.ContainersListOptions{})
+	peerResponse, _, err := client.Peers.List(context.Background(), projectID, &matlasClient.ListOptions{})
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading pf list peer with id(project: %s): %s", projectID, err)
 	}
@@ -182,7 +182,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		var model Model
 		model.AccepterRegionName = &peer.AccepterRegionName
 		model.AwsAccountId = &peer.AWSAccountID
-		model.RouteTableCIDRBlock = &peer.RouteTableCIDRBlock
+		model.RouteTableCidrBlock = &peer.RouteTableCIDRBlock
 		model.VpcId = &peer.VpcID
 		model.ConnectionId = &peer.ConnectionID
 		model.ErrorStateName = &peer.ErrorStateName
@@ -199,7 +199,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
+func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	isReady, state, err := networkPeeringIsReady(client, *currentModel.ProjectId, *currentModel.Id, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -224,7 +224,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	return p, nil
 }
 
-func networkPeeringIsReady(client *mongodbatlas.Client, projectId, peerId, targetState string)(bool, string, error){
+func networkPeeringIsReady(client *matlasClient.Client, projectId, peerId, targetState string)(bool, string, error){
 	peerResponse, resp, err := client.Peers.Get(context.Background(), projectId, peerId)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404{

@@ -69,6 +69,17 @@ This project contains 2 main items:
 2. [cfn-resources](cfn-resources) A set of AWS CloudFormation custom resource providers for MongoDB Atlas Resources. Currently, AWS requires users to manually deploy these resources in each AWS region one one desires to use them in. We support this workflow through the standard AWS cfn submit tooling. Scripts and Github actions are contained in this repository which demonstrate automating this deployment process.
 
 
+## Running the Github workflows locally
+
+At this time, the [act](https://github.com/nektos/act) tool doesn't support the `ubuntu-20.04` image as a local runner, so our actions won't running easily out of the box locally yet. 
+
+You can build and run the action to deploy like this:
+
+```bash
+cd .github/actions/atlas-cfn-deploy
+docker build -t mongodbatlas/atlas-cfn-deploy .
+docker run -v mongodbatlas-cloudformation-resources/cfn-resources:/atlas-cfn/cfn-resources --env-file local.env -t mongodbatlas/atlas-cfn-deploy
+```
 ## Registering resources 
 
 These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.
@@ -83,7 +94,7 @@ tar -xvzf mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz
 3. Once extracted, navigate to the resource that you are trying to build, eg `./project`
 4. Run the following command to register the resource provider with CloudFormation in the specified region: 
   ```
-  cfn submit -v --region <region> --set-default
+  cfn submit -v --region <region>
   ```
   - This may take a few minutes.
   - Additional details about each resource can be found in their respective READMEs.

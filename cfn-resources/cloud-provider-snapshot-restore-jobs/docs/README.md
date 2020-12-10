@@ -23,7 +23,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#finishedat" title="FinishedAt">FinishedAt</a>" : <i>String</i>,
         "<a href="#timestamp" title="Timestamp">Timestamp</a>" : <i>String</i>,
         "<a href="#snapshotid" title="SnapshotId">SnapshotId</a>" : <i>String</i>,
-        "<a href="#links" title="Links">Links</a>" : <i>[ [ <a href="links.md">Links</a>, ... ], ... ]</i>,
+        "<a href="#links" title="Links">Links</a>" : <i>[ <a href="links.md">Links</a>, ... ]</i>,
         "<a href="#oplogts" title="OpLogTs">OpLogTs</a>" : <i>String</i>,
         "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Integer</i>,
         "<a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>" : <i>String</i>,
@@ -51,7 +51,6 @@ Properties:
     <a href="#timestamp" title="Timestamp">Timestamp</a>: <i>String</i>
     <a href="#snapshotid" title="SnapshotId">SnapshotId</a>: <i>String</i>
     <a href="#links" title="Links">Links</a>: <i>
-      - 
       - <a href="links.md">Links</a></i>
     <a href="#oplogts" title="OpLogTs">OpLogTs</a>: <i>String</i>
     <a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>: <i>Integer</i>
@@ -178,7 +177,7 @@ One or more links to sub-resources and/or related resources.
 
 _Required_: No
 
-_Type_: List of List of <a href="links.md">Links</a>
+_Type_: List of <a href="links.md">Links</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -1,15 +1,53 @@
 package resource
 
 import (
-    "os"
-    "testing"
-    "github.com/mongodb/mongodbatlas-cloudformation-resources/testutil"
+	"fmt"
+	"math/rand"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil"
 )
 
-func Test(t *testing.T) {
-    dir, _ := os.Getwd()
-    handler := &Handler{}
-    model := &Model{}
-    testutil.TestResource( dir, handler, model, t )
+const (
+	publicKeyEnv  = "ATLAS_PUBLIC_KEY"
+	privateKeyEnv = "ATLAS_PRIVATE_KEY"
+	orgIDEnv      = "ATLAS_ORG_ID"
+)
+
+var (
+	publicKey  = os.Getenv(publicKeyEnv)
+	privateKey = os.Getenv(privateKeyEnv)
+	orgID      = os.Getenv(orgIDEnv)
+)
+
+func Test_CreatProject(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	id := rand.Int()
+	config := getConfiguration(id, publicKey, privateKey, orgID)
+
+	testutil.Test(t, testutil.TestCase{
+		Name:        "Test Create",
+		TestHandler: &Handler{},
+		Steps: []testutil.TestStep{
+			{
+				Config: config,
+				Check: testutil.ComposeTestCheckFunc(
+					testutil.TestCheckResourceAttr("Name", fmt.Sprintf("test-acc-cfn-%d", id)),
+				),
+			},
+		},
+	})
+
 }
 
+func getConfiguration(id int, publicKey, privateKey, orgID string) string {
+	return fmt.Sprintf(`{
+"Name": "test-acc-cfn-%d",
+"OrgId": "%s",
+"ApiKeys": {
+	"PublicKey": "%s",
+	"PrivateKey": "%s"
+}}`, id, orgID, publicKey, privateKey)
+}

@@ -1,0 +1,8 @@
+name: 'cfn-deploy Action'
+description: 'Deploy Cloudformation Templates'
+branding:
+  icon: 'upload-cloud'
+  color: 'orange'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

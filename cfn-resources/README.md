@@ -1,5 +1,4 @@
-cfn-resources
-====
+# cfn-resources
 
 ## MongoDB Atlas AWS CloudFormation Custom Resource Type
 

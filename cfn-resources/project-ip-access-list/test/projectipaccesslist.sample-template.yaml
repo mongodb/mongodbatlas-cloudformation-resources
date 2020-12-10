@@ -17,7 +17,6 @@ Parameters:
 Resources:
   AtlasProjectIPAccessList:
     Type: MongoDB::Atlas::ProjectIpAccessList
-    DependsOn: AtlasProject
     Properties:
       ProjectId: !Ref "ProjectId"
       ApiKeys:

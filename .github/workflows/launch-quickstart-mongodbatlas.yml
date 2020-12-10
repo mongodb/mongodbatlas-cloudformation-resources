@@ -1,0 +1,137 @@
+name: Launch Quickstart 
+on:
+  workflow_dispatch:
+    inputs:
+      region: 
+        description: "AWS region"
+        default: ""
+        required: true
+      projectName:
+        description: "Name"
+        default: "atlas-cfn-quickstart"
+        required: true
+      instanceSize:
+        description: "Instance size, defaults to M10"
+        default: "M10"
+        required: true
+      databaseUsername:
+        description: "Database username"
+        default: "atlas"
+        required: true
+      databasePassword:
+        description: "Database password"
+        default: ""
+        required: true
+jobs:
+  launch-quickstart-mongodbatlas:
+    name: launch-quickstart-mongodbatlas
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    env:
+      STACK_NAME: ${{ github.event.inputs.projectName }}
+      INSTANCE_SIZE: ${{ github.event.inputs.instanceSize }}
+      DATABASE_USERNAME: ${{ github.event.inputs.databaseUsername }}
+      DATABASE_PASSWORD: ${{ github.event.inputs.databasePassword }}
+      ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+      ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+      ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID }}
+      TEMPLATE_FILE: quickstart-mongodbatlas/templates/mongodbatlas-cfn-quickstart.template.json 
+      CAPABLITIES: CAPABILITY_IAM
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      AWS_REGION: ${{ github.event.inputs.region }}
+    steps:
+    - uses: actions/checkout@v2.3.1
+      name: Pull Code
+    - uses: FranzDiebold/github-env-vars-action@v1.2.0
+    - name: Configure Environment Outputs
+      id: vars
+      run: |
+        echo ::set-output name=sha_short::$(git rev-parse --short=5 ${{ github.sha }})
+    - name: Configure Environment
+      id: cfg_env
+      run: |
+        echo "NAME=$NAME"
+      env:
+        NAME: ${{ github.event.inputs.projectName }}-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}
+    - name: Create AWS Secret for Atlas API Key (if needed)
+      id: create_secret
+      env:
+        NAME: ${{ github.event.inputs.projectName }}-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}
+      run: |
+        cat << EOF > ./secret.json
+        {
+            "AtlasMongoDBPrivateKey": "${ATLAS_PRIVATE_KEY}",
+            "AtlasMongoDBOrgID": "${ATLAS_ORG_ID}",
+            "AtlasMongoDBPublicKey" : "${ATLAS_PUBLIC_KEY}"
+        }
+        EOF
+        cat ./secret.json
+        echo "standby, baking a fresh yummy secret for your MongoDB Atlas API Key..."
+        echo "Provisioning AWS Secret for MongoDB Atlas API Key called 'mongodbatlas/atlas-cfn-quickstart/$NAME"
+        secret_info=$(aws secretsmanager create-secret \
+         --name="mongodbatlas/atlas-cfn-quickstart/$NAME" \
+         --region="${AWS_REGION}" \
+         --secret-string="file://./secret.json" ) 
+        echo "secret_info=$secret_info"
+        echo ::set-output name=secret_info::$(echo $secret_info)
+    - name: Create a new MongoDB Atlas CloudFormation Quickstart stack
+      id: create_stack
+      env:
+        NAME: ${{ github.event.inputs.projectName }}-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}
+        SECRET_INFO: $${{ steps.create_secret.outputs.secret_info }}
+      run: |
+        echo "NAME=$NAME"
+        echo "SECRET_INFO=${SECRET_INFO}"
+        ATLAS_REGION=$(echo $AWS_REGION | tr "-" "_" | tr a-z A-Z)
+        echo "Converted AWS Region ${AWS_REGION} to MongoDB Atlas Region ${ATLAS_REGION}"
+        cat << EOF > ./parameters.json
+        [
+         {
+            "ParameterKey": "MongoDBAtlasClusterName",
+            "ParameterValue": "${NAME}"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasClusterRegion",
+            "ParameterValue": "${ATLAS_REGION}"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasUsername",
+            "ParameterValue": "${DATABASE_USERNAME}"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasPassword",
+            "ParameterValue": "${DATABASE_PASSWORD}"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasAPIKeySecretName",
+            "ParameterValue": "mongodbatlas/atlas-cfn-quickstart/$NAME"
+         },
+         {
+            "ParameterKey": "MongoDBAtlasInstanceSize",
+            "ParameterValue": "${INSTANCE_SIZE}"
+         }
+        ]
+        EOF
+        cat ./parameters.json
+        echo "standby, investigating a category theory and homological algebra framework for various types of Fourier transforms and efficient methods for their implementation..."
+        echo "Creating stack NAME=${NAME} REGION=${AWS_REGION} TEMPLATE_FILE=${TEMPLATE_FILE}"
+        stack_info=$(aws cloudformation create-stack \
+         --disable-rollback \
+         --stack-name="${NAME}" \
+         --region="${AWS_REGION}" \
+         --template-body="file://${TEMPLATE_FILE}" \
+         --parameters="file://./parameters.json")
+        echo "stack_info=$stack_info"
+        echo ::set-output name=stack_info::$(echo $stack_info)
+    - name: Wait for stack to build
+      id: wait_create_stack
+      env:
+        NAME: ${{ github.event.inputs.projectName }}-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}
+        SECRET_INFO: $${{ steps.create_secret.outputs.secret_info }}
+        STACK_INFO: $${{ steps.create_stack.outputs.stack_info }}
+      run: |
+        echo "NAME=$NAME"
+        echo "SECRET_INFO=$SECRET_INFO"       
+        echo "STACK_INFO=$STACK_INFO"       
+

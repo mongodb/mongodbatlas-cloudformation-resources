@@ -116,9 +116,26 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
+    log.Printf("Delet Project prevModel:%+v currentModel:%+v", prevModel, currentModel)
 
-	id := *currentModel.Id
-	log.Printf("Deleting project with id(%s)", id)
+    var id string
+    if currentModel.Id != nil {
+	    id = *currentModel.Id
+    } else {
+        name := *currentModel.Name
+        if len(name) > 0 {
+            log.Printf("Project id was nil, try lookup name:%s",name)
+            project, _, err := client.Projects.GetOneProjectByName(context.Background(), name)
+            if err != nil {
+                return handler.ProgressEvent{}, err
+            }
+            log.Printf("Looked up project:%+v",project)
+            id = project.ID
+        } else {
+            return handler.ProgressEvent{}, fmt.Errorf("Error deleting project. No Id or Name found currentModel:%+v)", currentModel)
+        }
+    }
+    log.Printf("Deleting project with id(%s)", id)
 
 	_, err = client.Projects.Delete(context.Background(), id)
 	if err != nil {

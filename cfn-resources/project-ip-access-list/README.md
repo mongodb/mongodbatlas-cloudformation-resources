@@ -14,7 +14,7 @@ The Access List endpoint supports creating temporary Access List entries that au
 `ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
 
-## Local Testing
+## Unit Testing Locally
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
@@ -39,7 +39,7 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Usage
+## Integration Testing w/ AWS
 
 The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
@@ -60,6 +60,6 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/project/test/projectipaccesslist.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/projectipaccesslist/test/projectipaccesslist.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
 ```
 

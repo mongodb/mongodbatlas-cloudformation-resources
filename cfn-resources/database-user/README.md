@@ -13,27 +13,53 @@ The databaseUsers resource lets you retrieve, create and modify the MongoDB user
 `Password'` *(optional)* : The user’s password. This field is not included in the entity returned from the server.<br>
 `ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
 
+## Unit Testing Locally
 
-## Testing
-
-To test the db user resource locally you can do this,
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
 ```
 sam local start-lambda --skip-pull-image
 ```
 then in another shell:
 ```bash
- cfn invoke CREATE <(./create-sample-request.sh pid user)
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/database-user
+./test/databaseuser.create-sample-cfn-request.sh YourProjectID SomeIAMRole > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
 ```
+
+Both CREATE & DELETE tests must pass.
 
 ## Installation
-    $ make
-    $ cfn submit
-    ...
+TAGS=logging make
+cfn submit --verbose --set-default
 
-## Using
+## Integration Testing w/ AWS
 
-You can use the sample.database-user.template.yaml to create a stack to test the resource.
+The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
+CloudFormation stack template along with the other neccessary parameters.
+
+You can use the project.sample-template.yaml to create a stack using the resource.
+Similar to the local testing described above you can follow the logs for the deployed
+lambda function which handles the request for the Resource Type.
+
+In one shell session:
 ```
- ./quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ./sample.database-user.template.yaml iam-user-222123 ParameterKey=ProjectId,ParameterValue=5fd13ed20e7df8312f816101 ParameterKey=Username,ParameterValue=arn:aws:iam::466197078724:role/Squib-2-AtlasIAMRole-N3XHEILW2XE3
- ```
+aws logs tail mongodb-atlas-project-logs --follow
+```
+
+And then you can create the stack with a helper script it insert the apikeys for you:
+
+
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/database-user/test/databaseuser.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=Username,ParameterValue=<USERNAME> ParameterKey=Password,ParameterValue=<PWD> 
+```
+
+

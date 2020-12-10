@@ -1,0 +1,15 @@
+{
+  "desiredResourceState": {
+    "resourceType": "MongoDB::Atlas::Project",
+    "properties": {
+      "Name": "ProjectFoo",
+      "OrgId": "5ea0477597999053a5f9cbec",
+      "ApiKeys": {
+        "PublicKey": "LMNVSPHZ",
+        "PrivateKey": "f3b41d38-25be-4bd5-96ad-b80e97b0ef7d"
+      }
+    }
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
+}

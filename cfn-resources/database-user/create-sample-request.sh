@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# databaseuser.create-sample-request.sh
+#
+# This tool generates text for a `cfn invoke` request json message.
+#
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
 
 function usage {
     echo "usage:$0 <projectId> <databaseuser.username>"
@@ -14,4 +23,4 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg projectId "$projectId" \
    --arg username "$username" \
    '.desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.properties.Username?|=$username | .desiredResourceState.properties.ProjectId?|=$projectId' \
-   "sample-request.databaseuser.json"
+   "databaseuser.json"

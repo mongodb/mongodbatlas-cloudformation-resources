@@ -104,7 +104,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.DiskSizeGB != nil {
-		currentModel.DiskSizeGB = clusterRequest.DiskSizeGB
+		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {

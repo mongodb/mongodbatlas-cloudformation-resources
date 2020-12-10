@@ -1,0 +1,15 @@
+:quickstart-project-name: quickstart-mongodb-atlas
+:partner-product-name: MongoDB Atlas AWS Quickstart
+:partner-product-short-name: MongoDB Atlas AWS Quickstart
+:partner-company-name: MongoDB, Inc.
+:doc-month: Oct
+:doc-year: 2020
+:partner-contributors: Cloud Team - {partner-company-name}
+:quickstart-contributors: jason.mimick@mongodb.com
+:deployment_time: 15 minutes
+:default_deployment_region: us-east-1
+// Uncomment these two attributes if you are leveraging
+// - an AWS Marketplace listing.
+// Additional content will be auto-generated based on these attributes.
+// :marketplace_subscription:
+:marketplace_listing_url: https://aws.amazon.com/marketplace/pp/MongoDB-MongoDB-Atlas-for-AWS/B077D557RX 

@@ -1,0 +1,32 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  OrgId:
+    Description: "Your MongoDB Cloud OrgId"
+    Type: String
+    Default: ""
+Resources:
+  AtlasProject:
+    Type: MongoDB::Atlas::Project
+    Properties:
+      ApiKeys:
+        PublicKey: !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      OrgId: !Ref "OrgId"
+      Name: !Sub "${AWS::StackName}"
+Outputs:
+  AtlasProject:
+    Description: "Info on your Atlas Projet"
+    Value: !Ref AtlasProject
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProject" ] ]
+

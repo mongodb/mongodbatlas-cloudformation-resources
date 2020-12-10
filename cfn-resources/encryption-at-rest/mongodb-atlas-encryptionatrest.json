@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::EncryptionAtRest",
     "description": "This resource allows administrators to enable, disable, configure, and retrieve the configuration for Encryption at Rest.",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/encryption-at-rest",
     "definitions": {
         "AwsKms": {
             "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
@@ -59,6 +58,9 @@
     "required": [
         "AwsKms",
         "ProjectId"
+    ],
+    "readOnlyProperties": [
+        "/properties/ProjectId"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId"

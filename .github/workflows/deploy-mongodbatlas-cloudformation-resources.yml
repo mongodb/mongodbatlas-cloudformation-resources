@@ -6,6 +6,10 @@ on:
         description: "AWS region"
         default: "us-east-1"
         required: true
+      resources:
+        description: "List of Resource Types to submit, e.g. 'project cluster database-user'. By default all types are submitted"
+        default: ""
+        required: true
 jobs:
   atlas-cfn-deploy:
     name: atlas-cfn-deploy
@@ -18,12 +22,14 @@ jobs:
         echo "#############################################################"
         env
         echo "#############################################################"
-    - name: Run the atlas-cfn-deploy custom action.
-      uses: ./.github/actions/atlas-cfn-deploy
+    - name: Submit all the resources
       with:
         CAPABLITIES: CAPABILITY_IAM
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION_INPUT: ${{ github.event.inputs.region }}
-        AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
-        XXINPUTS: $${{ github.event.inputs }}
+        AWS_REGION: ${{ github.event.inputs.region }}
+        RESOURCES: ${{ github.event.inputs.resources }}
+      run: |
+        echo "Submit step - RESOURCES=${RESOURCES}"
+        cd cfn-resources
+        ./cfn-submit-resources "${RESOURCES}"

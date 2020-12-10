@@ -1,0 +1,44 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  Username:
+    Type: String
+    Description: ""
+    Default: ""
+  ProjectId:
+    Description: "Your MongoDB Cloud ProjectId"
+    Type: String
+    Default: ""
+Resources:
+  DatabaseUser:
+    Type: MongoDB::Atlas::DatabaseUser
+    Properties:
+      Username: !Ref Username
+      ProjectId: !Ref ProjectId
+      DatabaseName: "$external"
+      AWSIAMType: "ROLE"
+      Roles:
+      - RoleName: readWrite
+        DatabaseName: "testdb"
+      Scopes:
+      - Type: CLUSTER
+        Name: "testdb"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+Outputs:
+  DatabaseUser:
+    Description: "Info on the db user"
+    Value: !Ref DatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
+

@@ -1,0 +1,14 @@
+Name: "TestCFNCluster"
+ProjectID: "5f60e78572abe16322c7eb0f"
+NumShards: 1
+ProviderName: "AWS"
+ReplicationFactor: 3
+ProviderBackupEnabled: false
+AutoScaling:
+  DiskGBEnabled: false
+MongoDBVersion: "4.2"
+ProviderSettings:
+  EncryptEBSVolume: false
+  InstanceSizeName: "M10"
+  RegionName: "US_EAST_1"
+

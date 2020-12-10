@@ -25,6 +25,14 @@ MongoDB Atlas Resource Types.
 
 ## Test framework
 
+### Requirements for local dev testing
+
+* aws cli
+* cfn cli
+* python
+* go
+* bash
+* [mongocli](mongocli) (you don't *need* this but you want it)
 
 ### How we handle ApiKeys
 

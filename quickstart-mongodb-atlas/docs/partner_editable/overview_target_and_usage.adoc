@@ -1,0 +1,8 @@
+// Replace the content in <>
+// Identify your target audience and explain how/why they would use this Quick Start.
+//Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
+
+This Quick Start reference deployment guide provides step-by-step instructions for deploying {partner-product-short-name} on the AWS Cloud.
+
+This Quick Start is for CloudFormation users who need to manage and access data services running on the MongoDB Cloud. The template included will provision a complete MongoDB Atlas deployment which includes a Project, Cluster, AWS IAM Role for database access, and a <SECURE_PEERING_HERE>.
+

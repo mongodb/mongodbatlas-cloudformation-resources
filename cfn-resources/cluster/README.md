@@ -30,10 +30,19 @@ cd -
 Both CREATE & DELETE tests must pass.
 
 ## Installation
+
+Installation currently requires the follow 2 steps to build and then submit/register the 
+new MongoDB::Atlas::Cluster Resource Type into your AWS Region. Note, this command uses the
+default AWS region.
+
+```bash
 TAGS=logging make
 cfn submit --verbose --set-default
+```
 
 ## Integration Testing w/ AWS
+
+Once the resource is installed, you can do integrated testing from your shell to AWS.
 
 The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example

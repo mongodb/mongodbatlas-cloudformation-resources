@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+    "log"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
     "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -41,13 +42,28 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCIDRBlock` must be set")
 	}
 	containerRequest.AtlasCIDRBlock = *CIDR
-	containerResponse, _, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
+	containerResponse, res, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
-	}
+        if res.StatusCode == 409 {
+            log.Printf("Container already exists for this group. Try return existing container. err: %v", err)
+            containers, _, err2 := client.Containers.ListAll(context.Background(), *projectID, nil)
+            if err2 != nil {
+                log.Printf("Error Containers.ListAll err:%v",err)
+                return handler.ProgressEvent{}, fmt.Errorf("error Containers.ListAll err:%v", err)
+            }
+            log.Printf("containers:%v",containers)
+            first := containers[0]
+            log.Printf("Will return reference to first container: first:%+v",first)
+	        currentModel.Id = &first.ID
+        } else {
+		    return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
+        }
 
-	currentModel.Id = &containerResponse.ID
-
+	} else {
+	    currentModel.Id = &containerResponse.ID
+    }
+    
+    log.Printf("Create about to return this --->> currentModel:%+v",currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create complete",
@@ -112,6 +128,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.Id = &containerResponse.ID
+    log.Printf("Create network container - Id:%v",currentModel.Id)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -127,6 +144,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
+    log.Printf("Delete currentModel:%+v",currentModel)
 	projectId := *currentModel.ProjectId
 	containerId := *currentModel.Id
 

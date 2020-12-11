@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	matlasClient "github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
+    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
@@ -21,10 +21,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := currentModel.ProjectId
 	providerName := currentModel.ProviderName
-	containerRequest := &matlasClient.Container{}
+	containerRequest := &mongodbatlas.Container{}
 
 	if projectID == nil || *projectID == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `project_id` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `ProjectID` must be set")
 	}
 	if providerName == nil || *providerName == "" {
 		aws := defaultProviderName
@@ -32,13 +32,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	regionName := currentModel.RegionName
 	if regionName == nil || *regionName == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: region_name` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: RegionName` must be set")
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = *providerName
-	CIDR := currentModel.AtlasCidrBlock
+	CIDR := currentModel.AtlasCIDRBlock
 	if CIDR == nil || *CIDR == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `atlasCidrBlock` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCIDRBlock` must be set")
 	}
 	containerRequest.AtlasCIDRBlock = *CIDR
 	containerResponse, _, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
@@ -75,7 +75,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.RegionName = &containerResponse.RegionName
 	currentModel.Provisioned = containerResponse.Provisioned
 	currentModel.VpcId = &containerResponse.VPCID
-	currentModel.AtlasCidrBlock = &containerResponse.AtlasCIDRBlock
+	currentModel.AtlasCIDRBlock = &containerResponse.AtlasCIDRBlock
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -94,13 +94,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectId := *currentModel.ProjectId
 	containerId := *currentModel.Id
-	containerRequest := &matlasClient.Container{}
+	containerRequest := &mongodbatlas.Container{}
 	providerName := currentModel.ProviderName
 	if providerName == nil || *providerName == "" {
 		aws := defaultProviderName
 		providerName = &aws
 	}
-	CIDR := currentModel.AtlasCidrBlock
+	CIDR := currentModel.AtlasCIDRBlock
 	if CIDR != nil {
 		containerRequest.AtlasCIDRBlock = *CIDR
 	}
@@ -150,9 +150,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	projectId := *currentModel.ProjectId
-	containerRequest := &matlasClient.ContainersListOptions{
+	containerRequest := &mongodbatlas.ContainersListOptions{
 		ProviderName: *currentModel.ProviderName,
-		ListOptions:  matlasClient.ListOptions{},
+		ListOptions:  mongodbatlas.ListOptions{},
 	}
 	containerResponse, _, err := client.Containers.List(context.Background(), projectId, containerRequest)
 	var models []Model
@@ -161,7 +161,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.RegionName = &container.RegionName
 		model.Provisioned = container.Provisioned
 		model.VpcId = &container.VPCID
-		model.AtlasCidrBlock = &container.AtlasCIDRBlock
+		model.AtlasCIDRBlock = &container.AtlasCIDRBlock
 
 		models = append(models, model)
 	}

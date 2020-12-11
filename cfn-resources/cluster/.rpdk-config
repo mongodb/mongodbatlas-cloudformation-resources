@@ -7,6 +7,6 @@
     "settings": {
         "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/cluster",
         "protocolVersion": "2.0.0",
-        "pluginVersion": "2.0.0"
+        "pluginVersion": "2.0.3"
     }
 }

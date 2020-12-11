@@ -21,9 +21,10 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Deny
+              - Effect: Allow
                 Action:
-                - "*"
+                - "iam:UpdateAssumeRolePolicy"
+                - "secretsmanager:*"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

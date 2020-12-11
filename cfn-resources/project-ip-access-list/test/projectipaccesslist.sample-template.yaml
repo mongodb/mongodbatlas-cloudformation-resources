@@ -1,0 +1,36 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  ProjectId:
+    Description: "Your MongoDB Cloud Project ID"
+    Type: String
+    Default: ""
+Resources:
+  AtlasProjectIPAccessList:
+    Type: MongoDB::Atlas::ProjectIpAccessList
+    Properties:
+      ProjectId: !Ref "ProjectId"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccessList:
+      - IPAddress: "0.0.0.0/1"
+        Comment: "Testing open all ips"
+      - CIDRBlock: "203.0.113.0/24"
+        Comment: "CIDR block for Application Server B - D"
+Outputs:
+  AtlasProjectIpAccessList:
+    Description: "Info on your Atlas Project IP Access List resource"
+    Value: !Ref AtlasProjectIPAccessList
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
+

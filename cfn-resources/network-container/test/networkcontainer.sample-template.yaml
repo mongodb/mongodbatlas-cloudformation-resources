@@ -10,14 +10,6 @@ Parameters:
     Description: "Your MongoDB Cloud Private API Key"
     Type: String
     Default: ""
-  Username:
-    Type: String
-    Description: ""
-    Default: ""
-  Password:
-    Type: String
-    Description: ""
-    Default: ""
   ProjectId:
     Description: "Your MongoDB Cloud ProjectId"
     Type: String
@@ -30,8 +22,6 @@ Resources:
       ApiKeys:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      RegionName: !Ref "ClusterRegion" 
-      AtlasCIDRBlock: !Ref "AtlasCIDRBlock"
 Outputs:
   NetworkContainer:
     Description: "Info on the network container"

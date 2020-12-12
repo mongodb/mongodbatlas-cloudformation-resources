@@ -15,6 +15,12 @@ const (
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Create Not Supported",
+		ResourceModel:   currentModel,
+	}, nil
+    /*
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -69,10 +75,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Create complete",
 		ResourceModel:   currentModel,
 	}, nil
+    */
 }
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Read Not Supported",
+		ResourceModel:   currentModel,
+	}, nil
+    /*
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 
 	if err != nil {
@@ -98,10 +111,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
+    */
 }
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Update Not Supported",
+		ResourceModel:   currentModel,
+	}, nil
+    /*
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 
 	if err != nil {
@@ -135,6 +155,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 	}, nil
+    */
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -162,22 +183,39 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.SetFlags(log.LstdFlags | log.Lshortfile)
+    log.Printf("List currentModel:%+v",currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
 	projectId := *currentModel.ProjectId
+	providerName := currentModel.ProviderName
+	if providerName == nil || *providerName == "" {
+		aws := defaultProviderName
+		providerName = &aws
+	}
+    log.Printf("projectId:%v",projectId)
+    log.Printf("providerName:%v",providerName)
 	containerRequest := &mongodbatlas.ContainersListOptions{
-		ProviderName: *currentModel.ProviderName,
+		ProviderName: *providerName,
 		ListOptions:  mongodbatlas.ListOptions{},
 	}
-	containerResponse, _, err := client.Containers.List(context.Background(), projectId, containerRequest)
+    log.Printf("List projectId:%v, containerRequest:%v",projectId, containerRequest)
+	containerResponse, _, err := client.Containers.List(context.TODO(), projectId, containerRequest)
+	if err != nil {
+        log.Printf("Error %v",err)
+		return handler.ProgressEvent{}, err
+	}
+    log.Printf("containerResponse:%v",containerResponse)
+
 	var models []Model
 	for _, container := range containerResponse {
 		var model Model
 		model.RegionName = &container.RegionName
 		model.Provisioned = container.Provisioned
+		model.Id = &container.ID
 		model.VpcId = &container.VPCID
 		model.AtlasCIDRBlock = &container.AtlasCIDRBlock
 

@@ -1,13 +1,16 @@
 # MongoDB::Atlas::NetworkContainer
 
 ## Description
-This resource allows you to create, read, update and delete a network container. A network container must be created before one can enable network peering. You need one container per AWS region that will be peered with.
+This resource allows you to list and delete network containers, ONLY. 
+Network containers are required for network peering. With each Atlas Project having exactly 1 container per AWS region that will be peered with. The containers are provisioned dyanmically through the [Network Peering](../network-peering) resource. Direct use of this Resource Type is not expected, however it is included for completeness and supportability.
 
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
 
 ## Unit Testing Locally
+
+The Network Container resource and it's companion [Network Peering](../network-peering) should be unit tested together.
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
@@ -19,15 +22,45 @@ then in another shell:
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
 cd ${repo_root}/cfn-resources/network-container
-./test/networkcontainer.create-sample-cfn-request.sh <PROJECT_ID> US_EAST_1 "203.0.113.0/24" > test.request.json
+./test/networkcontainer.create-sample-cfn-request.sh <PROJECT_ID> > test.request.json
 echo "Sample request:"
 cat test.request.json
-cfn invoke CREATE test.request.json 
+```
+There is only 1 Network Container resource per Atlas project for AWS. So depending on your project the CREATE test may fail.
+
+```
+cfn invoke LIST test.request.json 
 cfn invoke DELETE test.request.json 
-cd -
 ```
 
-Both CREATE & DELETE tests must pass.
+Use the `LIST` method to find the id of any existing
+network container. Here is an example of the command and sample output. 
+
+```
+cfn invoke LIST test.request.json
+...<output omitted>...
+=== Handler response ===
+{
+  "message": "List Complete",
+  "status": "SUCCESS",
+  "resourceModel": [
+    {
+      "RegionName": "US_EAST_1",
+      "Provisioned": "true",
+      "VpcId": "vpc-ffffgggghhhhijj1232",
+      "AtlasCIDRBlock": "192.168.248.0/21",
+      "Id": "5f871f997cd85921961f62a5",
+      "ApiKeys": {}
+    }
+  ],
+  "bearerToken": "92f914c7-23b3-4ea5-a1e1-8215a6aa4b78",
+  "resourceModels": null
+}
+```
+
+You can use the `resourceModel.Id` property as the container id when creating a [Network Peering](../network-peering).
+
+CREATE, LIST, & DELETE tests must pass (for a new PROJECT)
 
 ## Installation
 

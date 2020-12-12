@@ -6,9 +6,7 @@
             "ApiKeys" : {
                 "PublicKey" : "$ATLAS_PUBLIC_KEY",
                 "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-            },
-            "RegionName": "RegionNameAtlasStyle", 
-            "AtlasCIDRBlock": "AtlasCIDRBlock"
+            }
         }
     },
     "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",

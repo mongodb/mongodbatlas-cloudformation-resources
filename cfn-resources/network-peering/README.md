@@ -2,12 +2,18 @@
 
 ## Description
 This resource allows you to create, read, update and delete a network peering.
+The NetworkPeering resource will automatically manage the corresponding MongoDB::Atlas::NetworkContainer for the given Project and AWS Region specified. 
+
+The peering resource will either return an existing Atlas network container for a given (ProjectID, AWS Region) pair, or create a new one on the fly and use that for the new peering resource. This means that users of VPC Peering should not normally need to ever directly use network container resource.
 
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
 
 ## Unit Testing Locally
+
+Suggested to use a new Project to test the Network Peering resource.
+(Shortcut: `mongocli iam projects create Network-Peering-Test-1` can grab the id)
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
@@ -18,8 +24,8 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/network-container
-./test/networkpeering.create-sample-cfn-request.sh <PROJECT_ID> US_EAST_1 "203.0.113.0/24" > test.request.json
+cd ${repo_root}/cfn-resources/network-peering
+ ./test/networkpeering.create-sample-cfn-request.sh <PROJECT_ID> "10.0.0.0/16" <YOUR_VPC_ID>  > test.request.json
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 
@@ -63,8 +69,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/network-container/test/networkpeering.sample-template.yaml Samplenetworkpeering-123 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
- 
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/network-peering/test/networkpeering.sample-template.yaml Sample-NetworkPeering-1 ParameterKey=ProjectId,ParameterValue=<PROJECT_ID> ParameterKey=RouteTableCIDRBlock,ParameterValue=192.168.0.0/24 ParameterKey=VPC,ParameterValue=<YOUR_VPC_ID>  
  
 ```
 

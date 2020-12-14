@@ -67,12 +67,17 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "ContainerId",
+        "VpcId",
         "ApiKeys"],
+    "createOnlyProperties": [
+        "/properties/AwsAccountId",
+        "/properties/VpcId"
+    ],
     "readOnlyProperties": [
         "/properties/Id",
         "/properties/StatusName",
-        "/properties/ErrorStateName"],
+        "/properties/ErrorStateName"
+    ],
     "primaryIdentifier": [
         "/properties/Id"
     ],

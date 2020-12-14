@@ -8,10 +8,9 @@
                 "PrivateKey" : "$ATLAS_PRIVATE_KEY"
             },
             "AccepterRegionName": "${AWS_REGION}",
-            "AWSAccountId": "${AWS_ACCOUNTID}", 
-            "ContainerId": "AtlasContainer",
-            "RouteTableCidrBlock": "AtlasCIDRBlock", 
-            "VPCId": "VPC"
+            "AwsAccountId": "${AWS_ACCOUNTID}", 
+            "RouteTableCIDRBlock": "AtlasCIDRBlock", 
+            "VpcId": "VPC"
         }
     },
     "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",

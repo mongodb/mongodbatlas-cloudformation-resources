@@ -60,7 +60,7 @@ cfn invoke LIST test.request.json
 
 You can use the `resourceModel.Id` property as the container id when creating a [Network Peering](../network-peering).
 
-CREATE, LIST, & DELETE tests must pass (for a new PROJECT)
+LIST, & DELETE tests must pass 
 
 ## Installation
 

@@ -1,0 +1,42 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  RouteTableCIDRBlock:
+    Type: String
+    Description: ""
+    Default: ""
+  ProjectId:
+    Description: "Your MongoDB Cloud ProjectId"
+    Type: String
+    Default: ""
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC-ID of your existing Virtual Private Cloud (VPC) which you wish to peer to your new MongoDB Atlas cluster. This is the VPC that your application uses usually.
+Resources:
+  NetworkPeering:  
+    Type: MongoDB::Atlas::NetworkPeering
+    Properties:
+      ProjectId: !Ref "ProjectId"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccepterRegionName: !Ref "AWS::Region"
+      AwsAccountId: !Ref "AWS::AccountId" 
+      RouteTableCIDRBlock: !Ref "RouteTableCIDRBlock" 
+      VpcId: !Ref "VPC"
+Outputs:
+  NetworkPeering:
+    Description: "Info on the network container"
+    Value: !Ref NetworkPeering
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasNetworkPeering" ] ]
+

@@ -363,7 +363,7 @@ func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
 
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
     // convert AWS- regions to MDB regions
-    regionName := strings.ToUpper(strings.Replace(string(*providerSettings.RegionName),"-","_",-1))
+    regionName := util.EnsureAtlasRegion(*providerSettings.RegionName)
     ps := &mongodbatlas.ProviderSettings{
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
 		RegionName:          regionName,

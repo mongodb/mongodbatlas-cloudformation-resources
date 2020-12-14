@@ -1,6 +1,6 @@
 {
     "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::Project",
+        "resourceType" : "MongoDB::Atlas::DatabaseUser",
         "properties" : {
             "Username" : "Name",
             "ProjectId" : "ProjectId",

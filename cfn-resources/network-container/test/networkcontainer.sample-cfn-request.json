@@ -1,0 +1,14 @@
+{
+    "desiredResourceState" : {
+        "resourceType" : "MongoDB::Atlas::NetworkContainer",
+        "properties" : {
+            "ProjectId" : "ProjectId",
+            "ApiKeys" : {
+                "PublicKey" : "$ATLAS_PUBLIC_KEY",
+                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+            }
+        }
+    },
+    "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",
+    "previousResourceState": { }
+}

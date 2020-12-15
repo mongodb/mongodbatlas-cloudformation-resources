@@ -66,6 +66,7 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
     // if passed a ContainerId and it does not match, then
     // return an ERROR, explain to remove the ContainerId parameter
     opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
+    log.Printf("Looking for any AWS containers for this project:%s. opt:%+v",projectId, opt)
     cr, _, err := client.Containers.List(context.TODO(), projectId, opt)
     if err != nil {
         return &container, err
@@ -73,6 +74,7 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
     log.Printf("found AWS containers for project:%+v",cr)
     // cr is a list, need filter on our region?
     for i := range cr {
+        log.Printf("RegionName:%s, region:%s",cr[i].RegionName, *region)
         if cr[i].RegionName == *region {
             log.Printf("Found AWS container for region:%v, %v",region, cr[i])
             if currentModel.ContainerId != nil {

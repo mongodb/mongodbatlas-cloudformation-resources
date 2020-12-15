@@ -1,6 +1,8 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
 //Should any sections not be applicable, remove them
 
+*TODO - NOT UPDATED YET*
+
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
 
@@ -17,6 +19,7 @@ _Add any best practices for using the software._
 
 _Add any security-related information._
 
+*TODO* Document IAM and connecting
 == Other useful information
 //Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
 

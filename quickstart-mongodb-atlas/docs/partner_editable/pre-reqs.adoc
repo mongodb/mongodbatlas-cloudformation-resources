@@ -2,11 +2,16 @@
 
 ==== Prepare your AWS account
 
-_Describe any setup required in the AWS account prior to template launch_
+This quickstart the MongoDB Atlas CloudFormation Resource Types and so requires that these types are registered in the AWS region you wish to launch the quickstart. To register the resource types:
+
+```bash
+aws cloudformation register-type ... TODO
+```
 
 ==== Prepare your {partner-company-name} account
 
-_Describe any setup required in the partner portal/account prior to template launch_
+In order to setup authentication with the MongoDB Atlas provider a programmatic API key must be generated for MongoDB Atlas with the appropriate permissions and IP whitelist entries. 
+The [MongoDB Atlas documentation](https://docs.atlas.mongodb.com/tutorial/manage-programmatic-access) contains the most up-to-date instructions for creating and managing your key(s) and IP access. 
 
 ==== Prepare for the deployment
 

@@ -1,4 +1,7 @@
 // We need to work around Step numbers here if we are going to potentially exclude the AMI subscription
+
+*TODO - NOT UPDATED YET*
+
 === Sign in to your AWS account
 
 . Sign in to your AWS account at https://aws.amazon.com with an IAM user role that has the necessary permissions. For details, see link:#_planning_the_deployment[Planning the deployment] earlier in this guide.

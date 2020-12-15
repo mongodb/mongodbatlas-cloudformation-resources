@@ -2,9 +2,7 @@
 
 MongoDB Atlas in the AWS Cloud
 
-This Quick Start deploys a MongoDB Atlas Resource Provider for CloudFormation.
-The resource provider allows you to create and manage complete Enterprise-ready MongoDB Atlas
-deployment directly through CloudFormation. 
+This Quick Start provisions complete MongoDB Atlas deployments through CloudFormation using official MongoDB Atlas AWS CloudFormation Resource Types.
 
 ![Quick Start architecture for MongoDB Atlas on AWS](docs/images/simple-quickstart-arch.png)
 
@@ -13,16 +11,14 @@ Includes support for:
 * MongoDB Atlas Clusters
 * MongoDB Atlas Database Users via AWS IAM Integration
 * VPC Peering
-* (Private Link)
-
 
 For architectural details, best practices, step-by-step instructions, and customization options, see the deployment guide.
 
 To post feedback, submit feature ideas, or report bugs, use the [Issues](/issues) section of this GitHub repo. If you'd like to submit code for this Quick Start, please review the AWS Quick Start Contributor's Kit.
 
-# Getting Started
+## Getting Started
 
-## Setup AWS & API Keys
+### Setup AWS & API Keys
 
 If needed, install the awscli and mongocli.
 
@@ -51,7 +47,7 @@ MongoDB Atlas API keys (read from mongocli config)
 source <(./scripts/export-mongocli-config.py)
 ```
 
-## Deploy the MongoDB Atlas Resource Types into your AWS region.
+### Deploy the MongoDB Atlas Resource Types into your AWS region.
 
 This quickstart is powered by a set of official MongoDB AWS CloudFormation Resource Types
 which connect your AWS CloudFormation control plane directly into
@@ -64,7 +60,7 @@ Resource Types into the `AWS_REGION` of your choice before running the quickstar
 TODO
 ```
 
-# Launch the quickstart stack
+### Launch the quickstart stack
 
 The `quickstart-mongodb-atlas.template.yaml` template will
 provision a complete you MongoDB Atlas Deployment for you.
@@ -88,30 +84,8 @@ The stack will take ~7-10 minutes to provision. When complete you can find the `
 aws cloudformation describe-stacks --stack-name ${STACK_NAME} | jq -r '.Stacks[0]|.Outputs'
 ```
 
-Currently there are 3 outputs:
-TODO: *NEEDS UPDATE*
-```
-[
-  {
-    "OutputKey": "AtlasDatabaseUser",
-    "OutputValue": "org:5ea0477597999053a5f9cbec,project:5f8723ae20f10f128d3d6a07",
-    "Description": "AWS IAM ARN for database user"
-  },
-  {
-    "OutputKey": "SrvHost",
-    "OutputValue": "mongodb+srv://cookies-99-5x.cqpb3.mongodb.net",
-    "Description": "Hostname for mongodb+srv:// connection string",
-    "ExportName": "cookies-99-5x-standardSrv"
-  },
-  {
-    "OutputKey": "AtlasDeployment",
-    "OutputValue": "org:5ea0477597999053a5f9cbec,project:5f8723ae20f10f128d3d6a07",
-    "Description": "Info on your Atlas deployment"
-  }
-]
-```
-
-## Connect to your database
+When complete, you can [connect](#connecttoyourdatabase) using the `mongo` shell.
+#### Connect to your database
 
 After the cluster provisions, you can connect with the `mongo` shell or MongoDB Compass.
 
@@ -139,8 +113,7 @@ mongo "${MDB}/${STACK_NAME}?authSource=%24external&authMechanism=MONGODB-AWS" \
 
 see [scripts/aws-iam-mongo-shell.sh](scripts/aws-iam-mongo-shell.sh).
 
-
-# Launch the quickstart stack with Peering
+### Launch the quickstart stack with Peering
 
 The `quickstart-mongodb-atlas-peering.template.yaml` stack will 
 provision a complete you MongoDB Atlas Deployment with VPC Peering for a given AWS VPC enabled. 
@@ -154,4 +127,17 @@ This includes the follow resources:
 * [MongoDB::Atlas::NetworkPeering](/cfn-resources/network-peering)
     * With automatic network container management
 
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/quickstart-mongodb-atlas/templates/quickstart-mongodb-atlas-peering.template.yaml MongoDB-Atlas-Quickstart ParameterKey=OrgId,ParameterValue=${ATLAS_ORG_ID}  ParameterKey=RouteTableCIDRBlock,ParameterValue=192.168.0.0/24 ParameterKey=VPC,ParameterValue=<YOUR_VPC_ID> 
+```
+
+The stack will take ~7-10 minutes to provision. When complete you can find the `mongodb+srv` connection information in the stack outputs.
+
+```
+aws cloudformation describe-stacks --stack-name ${STACK_NAME} | jq -r '.Stacks[0]|.Outputs'
+```
+
+*TODO* add steps for connect with vpc, add a test lambda function in vpc?
 

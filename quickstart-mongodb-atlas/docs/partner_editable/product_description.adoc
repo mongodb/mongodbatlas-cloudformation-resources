@@ -2,12 +2,15 @@
 // Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-This quickstart is powered by a lightweight lambda-controller which connects your AWS CloudFormation control plane directly into the MongoDB Cloud. 
 
-The templates/mongodbatlas-quickstart.template.yaml stack will provision a complete you MongoDB Atlas Deployment for you. This includes the follow resources
+This Quick Start provisions complete MongoDB Atlas deployments through CloudFormation using official MongoDB Atlas AWS CloudFormation Resource Types.
 
-* AWS IAM Role
-* MongoDB Atlas Project
-* MongoDB Atlas Cluster
-* MongoDB Atlas DatabaseUser via AWS IAM Role
-* MongoDB Atlas PrivateEndpoint via AWS PrivateLink?
+
+Includes support for:
+
+* MongoDB Atlas Projects
+* MongoDB Atlas Clusters
+* MongoDB Atlas Database Users via AWS IAM Integration
+* MongoDB Atlas Project IP Access Lists
+* VPC Peerings via MongoDB Atlas Network Container and Peering
+

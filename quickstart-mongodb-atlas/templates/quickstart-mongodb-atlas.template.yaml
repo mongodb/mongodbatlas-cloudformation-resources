@@ -121,16 +121,6 @@ Parameters:
     - "4.0"
     - "4.2"
     - "4.4"
-  QSS3BucketName:
-    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
-    Default: aws-quickstart
-    Type: String
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
-      (-).
-    Description: S3 bucket name for the Quick Start assets. Quick Start bucket name
-      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
-      It cannot start or end with a hyphen (-).
 Resources:
   AtlasApiKeySecret:
     Type: 'AWS::SecretsManager::Secret'
@@ -183,7 +173,7 @@ Resources:
         PrivateKey: !Ref "PrivateKey"
       ProjectId: !Ref "AtlasProject"
       Name: !Sub "${AWS::StackName}"
-      MongoDBMajorVersion: "4.4"
+      MongoDBMajorVersion: !Ref "ClusterMongoDBMajorVersion"
       ReplicationFactor: 3
       NumShards: 1
       ProviderSettings:

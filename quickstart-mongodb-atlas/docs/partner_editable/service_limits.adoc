@@ -3,12 +3,12 @@
 |Resource |This deployment uses
 
 // Space needed to maintain table headers
-|VPCs |<n>
-|Elastic IP addresses |<n>
-|AWS Identity and Access Management (IAM) security groups |<n>
-|IAM roles |<n>
-|Auto Scaling groups |<n>
-|Application Load Balancers |<n>
-|Network Load Balancers |<n>
-|<type> instances |<n>
+|MongoDB::Atlas::Project |1
+|MongoDB::Atlas::Cluster |1
+|MongoDB::Atlas::DatabaseUser |1
+|MongoDB::Atlas::ProjectIPAccessList |1
+|MongoDB::Atlas::NetworkPeering |1
+|VPCs |1
+|IAM roles |1
+|Secrets |1
 |===

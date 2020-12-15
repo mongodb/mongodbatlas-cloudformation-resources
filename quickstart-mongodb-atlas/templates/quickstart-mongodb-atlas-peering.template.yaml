@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart
+Description: MongoDB Atlas AWS CloudFormation Quickstart with VPC Peering
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -114,26 +114,12 @@ Parameters:
     - "4.0"
     - "4.2"
     - "4.4"
-  QSS3BucketName:
-    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
-    Default: aws-quickstart
-    Type: String
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
-      (-).
-    Description: S3 bucket name for the Quick Start assets. Quick Start bucket name
-      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
-      It cannot start or end with a hyphen (-).
-  MongoDBAtlasResourceProviderLambda:
-    Description: The name of the MongoDB Atlas Resource Provider instance to use.
-    Type: String
-    Default: "mongodb-atlas-resource-provider"
   VPC:
     Type: AWS::EC2::VPC::Id
     Description: VPC-ID of your existing Virtual Private Cloud (VPC) which you wish to peer to your new MongoDB Atlas cluster. This is the VPC that your application uses usually.
-  AtlasCIDRBlock:
+  RouteTableCIDRBlock:
     Type: String
-    Description: CIDR block that Atlas uses for your clusters.
+    Description: CIDR block to use for your VPC Peering.
 Resources:
   AtlasApiKeySecret:
     Type: 'AWS::SecretsManager::Secret'
@@ -142,9 +128,6 @@ Resources:
       Description: This secret has a hardcoded password in SecretString, how can i make this optional?
       #
       # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
-      
-      
-      
       #
       SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
       Tags:
@@ -169,6 +152,29 @@ Resources:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       Name: !Sub "${AWS::StackName}"
+  AtlasProjectIPAccessList:
+    Type: MongoDB::Atlas::ProjectIpAccessList
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccessList:
+      - IPAddress: "0.0.0.0/1"
+        Comment: "Testing open all ips"
+  AtlasNetworkPeering:  
+    Type: MongoDB::Atlas::NetworkPeering
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccepterRegionName: !Ref "ClusterRegion"
+      AwsAccountId: !Sub "${AWS::AccountId}" 
+      RouteTableCIDRBlock: !Ref "RouteTableCIDRBlock" 
+      VpcId: !Ref "VPC"
   AtlasCluster:
     Type: MongoDB::Atlas::Cluster
     DependsOn: AtlasProject
@@ -178,7 +184,7 @@ Resources:
         PrivateKey: !Ref "PrivateKey"
       ProjectId: !Ref "AtlasProject"
       Name: !Sub "${AWS::StackName}"
-      MongoDBMajorVersion: "4.4"
+      MongoDBMajorVersion: !Ref "ClusterMongoDBMajorVersion"
       ReplicationFactor: 3
       NumShards: 1
       ProviderSettings:
@@ -190,6 +196,9 @@ Resources:
     DependsOn: AtlasCluster
     Properties:
       ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
       Username: !GetAtt "AtlasIAMRole.Arn"
       DatabaseName: "$external"
       AWSIAMType: "ROLE"
@@ -199,40 +208,27 @@ Resources:
       Scopes:
       - Name: !Sub "${AWS::StackName}"
         Type: "CLUSTER"
-  AtlasContainer:  
-    Type: MongoDB::Atlas::NetworkContainer
-    DependsOn: AtlasCluster
-    Properties:
-      ProjectId: !Ref "AtlasProject"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      RegionName: !Ref "ClusterRegion" 
-      AtlasCIDRBlock: !Ref "AtlasCIDRBlock"
-  AtlasPeering:  
-    Type: MongoDB::Atlas::NetworkPeering
-    DependsOn: AtlasCluster
-    Properties:
-      ProjectId: !Ref "AtlasProject"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      AccepterRegionName: !Ref "ClusterRegion"
-      AWSAccountId: !Sub "${AWS::AccountId}" 
-      ContainerId: !Ref "AtlasContainer"
-      RouteTableCidrBlock: !Ref "AtlasCIDRBlock" 
-      VPCId: !Ref "VPC"
 Outputs:
   AtlasIAMRole:
     Description: "ARN for AWS IAM Role database cluster access"
     Value: !GetAtt "AtlasIAMRole.Arn"
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasIAMRoleARN" ] ]
+  AtlasDatabaseUser:
+    Description: "Atlas database user, configured for AWS IAM Role access."
+    Value: !Ref AtlasDatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
   AtlasProject:
     Description: "Info on your Atlas deployment"
     Value: !Ref AtlasProject
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectId" ] ]
+  AtlasProjectIPAccessList:
+    Description: "Atlas project ip access list"
+    Value: !Ref AtlasProjectIPAccessList
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
   AtlasCluster:
     Description: "Info on your Atlas Cluster"
     Value: !Ref AtlasCluster
@@ -248,3 +244,9 @@ Outputs:
     Value: !GetAtt "AtlasCluster.SrvAddress"
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","ClusterSrvAddress" ] ]
+  AtlasNetworkPeering:
+    Description: "Info on the network peering connection"
+    Value: !Ref AtlasNetworkPeering
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasNetworkPeering" ] ]
+

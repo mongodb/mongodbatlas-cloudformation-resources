@@ -2,7 +2,7 @@
 :partner-product-name: MongoDB Atlas AWS Quickstart
 :partner-product-short-name: MongoDB Atlas AWS Quickstart
 :partner-company-name: MongoDB, Inc.
-:doc-month: Oct
+:doc-month: December
 :doc-year: 2020
 :partner-contributors: Cloud Team - {partner-company-name}
 :quickstart-contributors: jason.mimick@mongodb.com

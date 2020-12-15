@@ -1,4 +1,2 @@
-The following Regions are currently supported by this Quick Start.
+Please see the [AWS Region](https://docs.atlas.mongodb.com/reference/amazon-aws) reference in the MongoDB Atlas documentation for a complete and most up to date information.
 
-- _us-east-1 (N. Virginia)_ (EXAMPLE)
-- _us-east-2 (Ohio)_ (EXAMPLE)

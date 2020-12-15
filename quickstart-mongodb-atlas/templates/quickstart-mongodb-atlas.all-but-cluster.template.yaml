@@ -50,6 +50,12 @@ Parameters:
   OrgId:
     Description: "Your MongoDB Cloud Organization Id"
     Type: String
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC-ID of your existing Virtual Private Cloud (VPC) which you wish to peer to your new MongoDB Atlas cluster. This is the VPC that your application uses usually.
+  RouteTableCIDRBlock:
+    Type: String
+    Description: CIDR block to use for your VPC Peering.
     Default: "OrgId"
 Resources:
   AtlasApiKeySecret:
@@ -94,6 +100,18 @@ Resources:
       AccessList:
       - IPAddress: "0.0.0.0/1"
         Comment: "Testing open all ips"
+  AtlasNetworkPeering:  
+    Type: MongoDB::Atlas::NetworkPeering
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccepterRegionName: !Sub "${AWS::Region}"
+      AwsAccountId: !Sub "${AWS::AccountId}" 
+      RouteTableCIDRBlock: !Ref "RouteTableCIDRBlock" 
+      VpcId: !Ref "VPC"
   AtlasDatabaseUser:
     Type: MongoDB::Atlas::DatabaseUser
     DependsOn: AtlasProject

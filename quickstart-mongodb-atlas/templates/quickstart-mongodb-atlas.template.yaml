@@ -131,27 +131,6 @@ Parameters:
     Description: S3 bucket name for the Quick Start assets. Quick Start bucket name
       can include numbers, lowercase letters, uppercase letters, and hyphens (-).
       It cannot start or end with a hyphen (-).
-  MongoDBAtlasResourceProviderLambda:
-    Description: The name of the MongoDB Atlas Resource Provider instance to use.
-    Type: String
-    Default: "mongodb-atlas-resource-provider"
-  AccessListType:
-    Description: The kind of access list entry for this quickstart, if any
-    Type: String
-    Default: "NONE"
-    AllowedValues:
-    - "NONE"
-    - "ipAddress"
-    - "cidrBlock"
-    - "awsSecurityGroup"
-  AccessListValue:
-    Type: String
-    Description: Value for access list item formatted based on the AccessListType
-    Default: ""
-  AccessListDeleteAfterDate:
-    Type: String
-    Description: Not sure how to properly type this for ISO 8601
-    Default: "NEVER"
 Resources:
   AtlasApiKeySecret:
     Type: 'AWS::SecretsManager::Secret'
@@ -184,6 +163,17 @@ Resources:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       Name: !Sub "${AWS::StackName}"
+  AtlasProjectIPAccessList:
+    Type: MongoDB::Atlas::ProjectIpAccessList
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccessList:
+      - IPAddress: "0.0.0.0/1"
+        Comment: "Testing open all ips"
   AtlasCluster:
     Type: MongoDB::Atlas::Cluster
     DependsOn: AtlasProject
@@ -223,11 +213,21 @@ Outputs:
     Value: !GetAtt "AtlasIAMRole.Arn"
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasIAMRoleARN" ] ]
+  AtlasDatabaseUser:
+    Description: "Atlas database user, configured for AWS IAM Role access."
+    Value: !Ref AtlasDatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
   AtlasProject:
     Description: "Info on your Atlas deployment"
     Value: !Ref AtlasProject
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectId" ] ]
+  AtlasProjectIPAccessList:
+    Description: "Atlas project ip access list"
+    Value: !Ref AtlasProjectIPAccessList
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
   AtlasCluster:
     Description: "Info on your Atlas Cluster"
     Value: !Ref AtlasCluster

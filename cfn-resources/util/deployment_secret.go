@@ -3,55 +3,13 @@ import (
     "fmt"
     "log"
     "encoding/json"
-    "strings"
     "os"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-    //"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
     "github.com/aws/aws-sdk-go/aws"
-    //"github.com/aws/aws-sdk-go/service/iam"
     "github.com/aws/aws-sdk-go/service/secretsmanager"
-    "github.com/rs/xid"
 )
 
 
-// Resource id's are used to generate
-/// deployment secrets, which contain all the
-// apikey and properties for a given resource.
-
-type ResourceIdentifier struct {
-    DeploymentID        string
-    ResourceType        string
-    ResourceID          string
-    Parent              *ResourceIdentifier
-}
-
-//Note string version is "+" delimited string of the fields, in proper heirachry
-func (t ResourceIdentifier) String() string {
-    fields := []string{}
-    if t.DeploymentID != "" {
-        fields = append(fields,"mongodb",t.DeploymentID)
-    }
-    fields = append(fields,t.ResourceType,t.ResourceID)
-    if t.Parent != nil {
-        fields = append(fields, t.Parent.String())        
-    }
-    return strings.Join(fields, "+")
-}
-
-func NewResourceIdentifier(resourceType string, resourceID string, parent *ResourceIdentifier) *ResourceIdentifier {
-
-    deployID := xid.New()
-    log.Printf("NewResourceIdentifier new deployID:%s",deployID.String())
-    r := ResourceIdentifier{
-        DeploymentID: deployID.String(),
-        ResourceType: resourceType,
-        ResourceID:   resourceID,
-    }
-    if parent != nil {
-        r.Parent = parent
-    }
-    return &r
-}
 
 type DeploymentSecret struct {
     PublicKey           string  `json:"PublicKey"`

@@ -8,6 +8,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
     "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+    "github.com/davecgh/go-spew/spew"
 )
 
 // Create handles the Create event from the Cloudformation service.
@@ -92,21 +93,27 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         LDAPAuthType: *currentModel.LdapAuthType,
         AWSIAMType:   *currentModel.AWSIAMType,
 	}
-    log.Printf("user: %#+v", user)
 
-	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
-    pid := currentModel.ProjectId
-    cfnid := fmt.Sprintf("%v-%v",pid,currentModel.Username)
-    currentModel.UserCNFIdentifier = &cfnid
+    projectResID := &util.ResourceIdentifier{
+        ResourceType: "Project",
+        ResourceID: groupID,
+    }
+    resourceID := util.NewResourceIdentifier("DBUser", user.Username, projectResID)
+    log.Printf("Created resourceID:%s",resourceID)
+
+    //cfnid := fmt.Sprintf("%s-%s",pid,*currentModel.Username)
+    //currentModel.UserCNFIdentifier = &cfnid
+    cfnid := resourceID.String()
+    currentModel.UserCNFIdentifier = &cfnid 
     log.Printf("UserCFNIdentifier: %s",cfnid)
 
+	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
 
     newUser, _, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
 	}
     log.Printf("newUser: %s", newUser)
-
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -221,6 +228,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("Create req:%+v, prevModel:%s, currentModel:%s",req,spew.Sdump(prevModel),spew.Sdump(currentModel))
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -230,10 +238,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
 
-	_, err = client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
+    resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting database user (%s): %s", username, err)
-	}
+        // Log and handle 404 ok
+		if resp != nil && resp.StatusCode == 404 {
+            log.Printf("Resource not found for Delete. Returning SUCCESS to clean orphan AWS resource. resp:%+v, error:%+v",resp,err)
+		} else {
+            return handler.ProgressEvent{}, fmt.Errorf("error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
+	    }
+    }
+
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

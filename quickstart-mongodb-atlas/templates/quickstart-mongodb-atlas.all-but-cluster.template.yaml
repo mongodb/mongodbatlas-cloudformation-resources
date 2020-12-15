@@ -1,12 +1,13 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart
+Description: MongoDB Atlas AWS CloudFormation Quickstart - without Cluster
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
         default: Network Configuration
       Parameters:
+      - VPC
       - AccessList
     - Label:
         default: Security Configuration
@@ -18,10 +19,26 @@ Metadata:
         default: MongoDB Atlas Configuration
       Parameters:
       - ProjectName
+      - ClusterName
+      - ClusterRegion
+      - ClusterInstanceSize
     ParameterLabels:
       ProjectName:
         default: atlas-cfn-quickstart
+      ClusterName:
+        default: cluster-1
+      ClusterRegion:
+        default: us-east-1
+      ClusterInstanceSize:
+        default: MongoDB Atlas Instance Size
 Parameters:
+  EnableSecretForApiKey:
+    AllowedValues:
+    - 'true'
+    - 'false'
+    Default: 'false'
+    Description: "Set to true to enable adding an AWS Secret for your MongoDB API Key"
+    Type: String
   PublicKey:
     Description: "Your MongoDB Cloud Public API Key"
     Type: String
@@ -34,16 +51,6 @@ Parameters:
     Description: "Your MongoDB Cloud Organization Id"
     Type: String
     Default: "OrgId"
-  QSS3BucketName:
-    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
-    Default: aws-quickstart
-    Type: String
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
-      (-).
-    Description: S3 bucket name for the Quick Start assets. Quick Start bucket name
-      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
-      It cannot start or end with a hyphen (-).
 Resources:
   AtlasApiKeySecret:
     Type: 'AWS::SecretsManager::Secret'
@@ -87,18 +94,14 @@ Resources:
       AccessList:
       - IPAddress: "0.0.0.0/1"
         Comment: "Testing open all ips"
-      - CIDRBlock: "203.0.113.0/24"
-        Comment: "CIDR block for Application Server B - D"
-      #- AwsSecurityGroup: "sg-0026348ec11780bd1"
-      #  Comment: "Access Listed AWS Security Group"
   AtlasDatabaseUser:
     Type: MongoDB::Atlas::DatabaseUser
     DependsOn: AtlasProject
     Properties:
+      ProjectId: !Ref "AtlasProject"
       ApiKeys:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      ProjectId: !Ref "AtlasProject"
       Username: !GetAtt "AtlasIAMRole.Arn"
       DatabaseName: "$external"
       AWSIAMType: "ROLE"
@@ -114,9 +117,18 @@ Outputs:
     Value: !GetAtt "AtlasIAMRole.Arn"
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasIAMRoleARN" ] ]
+  AtlasDatabaseUser:
+    Description: "Atlas database user, configured for AWS IAM Role access."
+    Value: !Ref AtlasDatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
   AtlasProject:
     Description: "Info on your Atlas deployment"
     Value: !Ref AtlasProject
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectId" ] ]
-
+  AtlasProjectIPAccessList:
+    Description: "Atlas project ip access list"
+    Value: !Ref AtlasProjectIPAccessList
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]

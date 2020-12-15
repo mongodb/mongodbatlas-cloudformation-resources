@@ -11,6 +11,7 @@ import (
     "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
+    "github.com/davecgh/go-spew/spew"
 )
 
 func castNO64(i *int64) *int {
@@ -66,7 +67,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         return handler.ProgressEvent{}, err
 
 	}
-    log.Printf("got client - %v",client)
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
 		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
@@ -134,17 +134,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %w %v", err, &resp)
 	}
 
-	currentModel.Id = &cluster.ID
 	currentModel.StateName = &cluster.StateName
 
     // This is the intial call to Create, so inject a deployment
     // secret for this resource in order to lookup progress properly
-    projectResID := &util.ResourceIdentifier{ 
-        ResourceType: "Project", 
+    projectResID := &util.ResourceIdentifier{
+        ResourceType: "Project",
         ResourceID: projectID,
     }
     log.Printf("Created projectResID:%s",projectResID)
-    resourceID := util.NewResourceIdentifier("Cluster", cluster.ID, projectResID)
+    resourceID := util.NewResourceIdentifier("Cluster", cluster.Name, projectResID)
     log.Printf("Created resourceID:%s",resourceID)
     resourceProps := map[string]string{
         "ClusterName": cluster.Name,
@@ -154,6 +153,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
         log.Printf("Error - %+v",err)
         return handler.ProgressEvent{}, err
     }
+    
+    log.Printf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s",secretName)
+	currentModel.Id = secretName
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -172,26 +174,46 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 
+    log.Printf("Read req:%+v, prevModel:%s, currentModel:%s",req,spew.Sdump(prevModel),spew.Sdump(currentModel))
     callback := map[string]interface{}(req.CallbackContext)
     log.Printf("Read -  callback: %v",callback)
 
-    //if  callback != nil {
-    //}
+    secretName := *currentModel.Id
+    log.Printf("Read for Cluster Id/SecretName:%s",secretName)
+    key, err := util.GetApiKeyFromDeploymentSecret(&req, secretName)
+    if err != nil {
+        return handler.ProgressEvent{}, fmt.Errorf("error lookupSecret: %w", err)
+    }
+    log.Printf("key:%+v",key)
 
-    client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+    //client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+    client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
+    
+    // currentModel is NOT populated on the Read after long-running Cluster create
+    // need to parse pid and cluster name from Id (deployment secret name).
 
-	projectID := *currentModel.ProjectId
-	clusterName := *currentModel.Name
+	//projectID := *currentModel.ProjectId
+	//clusterName := *currentModel.Name
 
+    // key.ResourceID should == *currentModel.Id
+    id, err := util.ParseResourceIdentifier(*currentModel.Id)
+    if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error parsing res if (%s): %s", id, err)
+    }
+    log.Printf("Parsed resource identifier: id:%+v",id)
+
+    projectID := id.Parent.ResourceID
+    clusterName := id.ResourceID
+
+    log.Printf("Got projectID:%s, clusterName:%s, from id:%+v",projectID, clusterName, id)
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
 
-	currentModel.Id = &cluster.ID
 	currentModel.AutoScaling = &AutoScaling{
 		DiskGBEnabled: cluster.AutoScaling.DiskGBEnabled,
 	}

@@ -12,7 +12,7 @@ const (
 )
 
 // This takes either "us-east-1" or "US_EAST_1"
-// and returns "US_EAST_1" -- i.e. a valida Atlas region
+// and returns "US_EAST_1" -- i.e. a valid Atlas region
 func EnsureAtlasRegion(region string) string {
     r := strings.ToUpper(strings.Replace(string(region),"-","_",-1))
     return r

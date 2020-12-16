@@ -10,7 +10,7 @@ Includes support for:
 
 * MongoDB Atlas Projects
 * MongoDB Atlas Clusters
-* MongoDB Atlas Database Users via AWS IAM Integration
+* MongoDB Atlas Database Users
 * MongoDB Atlas Project IP Access Lists
-* VPC Peerings via MongoDB Atlas Network Container and Peering
+* MongoDB Atlas VPC Peering 
 

@@ -69,50 +69,18 @@ This project contains 2 main items:
 2. [cfn-resources](cfn-resources) A set of AWS CloudFormation custom resource providers for MongoDB Atlas Resources. Currently, AWS requires users to manually deploy these resources in each AWS region one one desires to use them in. We support this workflow through the standard AWS cfn submit tooling. Scripts and Github actions are contained in this repository which demonstrate automating this deployment process.
 
 
-## Running the Github workflows locally
-
-At this time, the [act](https://github.com/nektos/act) tool doesn't support the `ubuntu-20.04` image as a local runner, so our actions won't running easily out of the box locally yet. 
-
-You can build and run the action to deploy like this:
-
-```bash
-cd .github/actions/atlas-cfn-deploy
-docker build -t mongodbatlas/atlas-cfn-deploy .
-docker run -v mongodbatlas-cloudformation-resources/cfn-resources:/atlas-cfn/cfn-resources --env-file local.env -t mongodbatlas/atlas-cfn-deploy
-```
 ## Registering resources 
 
-These are the detailed steps which are automated in the atlas-cfn-deploy Github workflow found in this repository.
-You can use these steps, or leverage the [.github/actions/atlas-cfn-deploy](.github/actions/atlas-cfn-deploy) Github Action.
-
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
-2. Clone this repo, or head over to [releases](https://github.com/mongodb/mongodbatlas-cloudformation-resources/releases) and download the binary for the most recent release, `mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz`
-3. If needed, extract the tarball with
-```
-tar -xvzf mongodbatlas-cloudformation-resources_<version>_Linux_amd64.tar.gz
-```
-3. Once extracted, navigate to the resource that you are trying to build, eg `./project`
-4. Run the following command to register the resource provider with CloudFormation in the specified region: 
-  ```
-  cfn submit -v --region <region>
-  ```
-  - This may take a few minutes.
-  - Additional details about each resource can be found in their respective READMEs.
-  - See [AWS docs](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-submit.html) for additional options for `cfn submit` if needed.
-  - You may need additional IAM permissions to register a resource provider, please see [AWS docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry.html#registry-register-permissions). 
-4. When the registration is successful, you will see `Registration complete` in your terminal. You will also be able to see it in the CloudFormation Stacks console.
-5. Repeat these steps for any resource you are trying to build.
+2. Clone this repo. 
+3. A helper script `cfn-submit-helper.sh` will build and submit each resource for you. You can also run the `cfn submit` tool yourself. Note- this step will soon not be required when AWS launch a public registry. 
 
-## Creating stacks
-To use a resource provider, you need a template, templates of this project are available in `./examples`, then you need to run commands, you can read about available commands in [CloudFormation commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html)
+The following command builds and registers all the types used in the quickstart:
 
-To create a stack of a resource
 ```
-$ aws cloudformation create-stack --stack-name myTestProject --template-body file://../examples/project/project.json --parameters ParameterKey=Name,ParameterValue=test-project
+cd mongodbatlas-cloudformation-resources\cfn-resources
+./cfn-submit-helper.sh project cluster database-user project-ip-access-list network-peering
 ```
-If errors are not shown, it should return a stack id
-
-To verify if it's working you can check in the [Cloudformation console](https://console.aws.amazon.com/cloudformation)
 
 # Developing the CloudFormation Resource Provider
 
@@ -142,27 +110,5 @@ $ cfn init
 
 # Testing the Provider
 
-In order to test a provider resource, there are three ways to do that.
+Please see README for each resource for details on unit and integrated AWS testing.
 
-1. ### Using the AWS CloudFormation Console
-
-   After creating, updating or deleting a stack of a provider resource in the AWS CloudFormation console, you can check the [AWS CloudFormation](https://console.aws.amazon.com/cloudformation) for events which will show the status of a resource provider.
-
-   After uploading a stack logs are automatically created and may be viewed in [AWS CloudWatch](https://console.aws.amazon.com/cloudwatch) `Log groups`.
-
-   To print a log you need to add it in code `log.Printf("")`.
-
-2.  ### Using the AWS CloudFormation CLI
-
-    After creating, updating or deleting a stack of a provider resource with the AWS CLI, you can use commands to see events, describe stacks and more. See [CloudFormation CLI commands](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html) for more.
-
-    After uploading a stack logs are automatically created and may be viewed in [AWS CloudWatch](https://aws.amazon.com/cloudwatch/) `Log groups`.
-
-    To retrieve logs you need the name of the `log group` and in some situations you need the name of the `log stream`. You can see more [here](https://aws.amazon.com/cloudwatch/) in `Log groups`, once there use [logs commads](https://docs.aws.amazon.com/cli/latest/reference/logs/index.html)
-
-
-3.  ### Using the Contract Test
-
-    The resources of this repository was created using CloudFormation best practices. Therefore, it will pass all of the CloudFormation CLI contract tests.
-    To run the contrast test, follow the directions in the
-    [documentation](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-cli-test.html).

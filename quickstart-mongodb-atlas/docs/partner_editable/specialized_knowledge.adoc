@@ -3,4 +3,7 @@
 
 This Quick Start assumes familiarity with MongoDB Atlas.
 
+The [Getting Started](https://docs.atlas.mongodb.com/getting-started) guides in the Atlas documentation are a great place to start.
+
+
 

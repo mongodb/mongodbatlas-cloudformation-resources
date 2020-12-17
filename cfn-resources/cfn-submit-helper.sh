@@ -19,6 +19,10 @@ if [ $# -eq 0 ]
 fi
 echo "Submitting the following resources: ${resources}"
 
+if [[ -d ../output ]]; then
+    rm -rf ../output
+fi
+mkdir -p ../output
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
@@ -26,6 +30,11 @@ do
     cd "${resource}"
     echo "resource: ${resource}"
     TAGS=logging make
-    cfn submit --verbose --set-default
+    cfn submit --verbose --set-default --dry-run
+    cp mongodb-atlas-*.zip ../../output/
     cd -
 done
+ls -l output
+
+
+

@@ -56,8 +56,9 @@ the MongoDB Cloud. Right now, these resources need to be registered in each AWS 
 Run this command to install the MongoDB Atlas
 Resource Types into the `AWS_REGION` of your choice before running the quickstart.
 
-```bash
-TODO
+```
+cd mongodbatlas-cloudformation-resources\cfn-resources
+./cfn-submit-helper.sh project cluster database-user project-ip-access-list network-peering
 ```
 
 ### Launch the quickstart stack

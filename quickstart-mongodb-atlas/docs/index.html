@@ -854,10 +854,10 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying MongoDB Atlas AWS Quickstart on the AWS Cloud.</p>
+<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying MongoDB Atlas AWS Quickstart.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start is for CloudFormation users who need to manage and access data services running on the MongoDB Cloud. The template included will provision a complete MongoDB Atlas deployment which includes a Project, Cluster, AWS IAM Role for database access, Project IP Access List and optional AWS VPC Peering.</p>
+<p>This Quick Start is for CloudFormation users who want to deploy a fully managed, global cloud database with MongoDB Atlas. The template included will provision a complete MongoDB Atlas deployment, which includes a project, cluster, IP access list, AWS IAM role for database access, and VPC network peering connection.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -882,24 +882,27 @@ collaborated with AWS on the content of the Quick Start.
 <p>This Quick Start provisions complete MongoDB Atlas deployments through CloudFormation using official MongoDB Atlas AWS CloudFormation Resource Types.</p>
 </div>
 <div class="paragraph">
-<p>Includes support for:</p>
+<p>The templates/mongodbatlas-quickstart.template.yaml stack will provision a complete MongoDB Atlas deployment for you. This includes the follow resources:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>MongoDB Atlas Projects</p>
+<p>AWS IAM role</p>
 </li>
 <li>
-<p>MongoDB Atlas Clusters</p>
+<p>MongoDB Atlas project in a dedicated VPC</p>
 </li>
 <li>
-<p>MongoDB Atlas Database Users</p>
+<p>MongoDB Atlas cluster</p>
 </li>
 <li>
-<p>MongoDB Atlas Project IP Access Lists</p>
+<p>MongoDB Atlas IP access list entry</p>
 </li>
 <li>
-<p>MongoDB Atlas VPC Peering</p>
+<p>MongoDB Atlas database user via AWS IAM role</p>
+</li>
+<li>
+<p>MongoDB Atlas VPC network peering connection</p>
 </li>
 </ul>
 </div>
@@ -937,25 +940,16 @@ After you deploy the Quick Start, enable the <a href="https://docs.aws.amazon.co
 <h2 id="_software_licenses">Software licenses</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>These two paragraphs provide an example of the details you can provide. Provide links as appropriate.</p>
-</div>
-<div class="paragraph">
-<p>Example content below:</p>
-</div>
-<div class="paragraph">
-<p><em>&lt;license information&gt;This Quick Start requires a license for MongoDB Atlas AWS Quickstart. To use the Quick Start in your production environment, sign up for a license at &lt;link&gt;. When you launch the Quick Start, place the license key in an S3 bucket and specify its location.</em></p>
-</div>
-<div class="paragraph">
-<p><em>If you don’t have a license, the Quick Start deploys with a trial license. The trial license gives you &lt;n&gt; days of free usage in a non-production environment. After this time, you can upgrade to a production license by following the instructions at &lt;link&gt;.</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;AMI information&gt;The Quick Start requires a subscription to the Amazon Machine Image (AMI) for MongoDB Atlas AWS Quickstart, which is available from <a href="https://aws.amazon.com/marketplace/" target="_blank" rel="noopener">AWS Marketplace</a>. Additional pricing, terms, and conditions may apply. For instructions, see <a href="#step-2.-subscribe-to-the-software-ami">step 2</a> in the deployment section.</em></p>
+<p>The Quick Start deploys MongoDB Atlas with the latest stable MongoDB Enterprise Edition version, which is licensed and distributed under ^|https://www.mongodb.com/licensing/server-side-public-license[Server Side Public License (SSPL)^]</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_architecture">Architecture</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Deploying this Quick Start for a new virtual private cloud (VPC) with default parameters builds the following MongoDB Atlas AWS Quickstart deployment.</p>
+</div>
 <div class="paragraph">
 <p>Deploying this Quick Start for an existing virtual private cloud (VPC) with
 default parameters builds the following <em>MongoDB Atlas AWS Quickstart</em> environment in the
@@ -965,7 +959,7 @@ AWS Cloud.</p>
 <div class="content">
 <a class="image" href="images/simple-quickstart-arch.png"><img src="images/simple-quickstart-arch.png" alt="Architecture" width="648" height="439"></a>
 </div>
-<div class="title">Figure 1. Quick Start architecture for <em>MongoDB Atlas AWS Quickstart</em> on AWS</div>
+<div class="title">Figure 1. Quick Start architecture for <em>MongoDB Atlas AWS Quickstart</em></div>
 </div>
 <div class="paragraph">
 <p>As shown in Figure 1, the Quick Start sets up the following:</p>
@@ -973,13 +967,13 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A highly available architecture that spans two Availability Zones.</p>
+<p>A highly available architecture that spans at least three Availability Zones.</p>
 </li>
 <li>
 <p>MongoDB Atlas Project, Database User, Cluster, Project IP Access List</p>
 </li>
 <li>
-<p>A configured VPC Peering between your existing VPC and your new Atlas Deployment.</p>
+<p>An optional VPC Peering between your existing VPC and your new Atlas Deployment.</p>
 </li>
 </ul>
 </div>

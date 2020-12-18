@@ -106,6 +106,7 @@ Resources:
         Value: !Sub "${AWS::StackName}"
   AtlasIAMRole:
     Type: AWS::IAM::Role
+    DependsOn: CustomLambdaStack
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17

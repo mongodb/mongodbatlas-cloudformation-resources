@@ -20,5 +20,5 @@ update.json
 **/.*
 !/.github
 !/.gitignore
-
+.taskcat_overrides.yml
 

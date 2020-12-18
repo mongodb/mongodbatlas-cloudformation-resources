@@ -9,6 +9,7 @@ project:
   #QSS3BucketRegion: $[taskcat_current_region]
   lambda_source_path: functions/source
   lambda_zip_path: functions/packages
+  shorten_stack_name: true
 tests:
   mongodb-atlas:
     parameters:

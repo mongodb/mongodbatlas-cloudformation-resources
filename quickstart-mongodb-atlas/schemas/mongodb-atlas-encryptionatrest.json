@@ -1,0 +1,95 @@
+{
+    "typeName": "MongoDB::Atlas::EncryptionAtRest",
+    "description": "This resource allows administrators to enable, disable, configure, and retrieve the configuration for Encryption at Rest.",
+    "definitions": {
+        "AwsKms": {
+            "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
+            "type": "object",
+            "properties": {
+                "AccessKeyID": {
+                    "type": "string",
+                    "description": "The IAM access key ID with permissions to access the customer master key specified by customerMasterKeyID."
+                },
+                "CustomerMasterKeyID": {
+                    "type": "string",
+                    "description": "The AWS customer master key used to encrypt and decrypt the MongoDB master keys."
+                },
+                "Enabled": {
+                    "type": "boolean",
+                    "description": "Specifies whether Encryption at Rest is enabled for an Atlas project. To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details."
+                },
+                "Region": {
+                    "type": "string",
+                    "description": "The AWS region in which the AWS customer master key exists."
+                },
+                "SecretAccessKey": {
+                    "type": "string",
+                    "description": "The IAM secret access key with permissions to access the customer master key specified by customerMasterKeyID."
+                }
+            },
+            "additionalProperties": false
+        },
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "AwsKms": {
+            "$ref": "#/definitions/AwsKms"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ProjectId": {
+            "description": "Unique identifier of the Atlas project to which the user belongs.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "AwsKms",
+        "ProjectId"
+    ],
+    "readOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
+        }
+    }
+}

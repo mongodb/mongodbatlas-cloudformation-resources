@@ -893,13 +893,13 @@ collaborated with AWS on the content of the Quick Start.
 <p>MongoDB Atlas Clusters</p>
 </li>
 <li>
-<p>MongoDB Atlas Database Users via AWS IAM Integration</p>
+<p>MongoDB Atlas Database Users</p>
 </li>
 <li>
 <p>MongoDB Atlas Project IP Access Lists</p>
 </li>
 <li>
-<p>VPC Peerings via MongoDB Atlas Network Container and Peering</p>
+<p>MongoDB Atlas VPC Peering</p>
 </li>
 </ul>
 </div>
@@ -1001,6 +1001,9 @@ Cloud.</p>
 </div>
 <div class="paragraph">
 <p>This Quick Start assumes familiarity with MongoDB Atlas.</p>
+</div>
+<div class="paragraph">
+<p>The [Getting Started](<a href="https://docs.atlas.mongodb.com/getting-started" class="bare">https://docs.atlas.mongodb.com/getting-started</a>) guides in the Atlas documentation are a great place to start.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1145,9 +1148,6 @@ The [MongoDB Atlas documentation](<a href="https://docs.atlas.mongodb.com/tutori
 <div class="sect1">
 <h2 id="_deployment_steps">Deployment steps</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p><strong>TODO - NOT UPDATED YET</strong></p>
-</div>
 <div class="sect2">
 <h3 id="_sign_in_to_your_aws_account">Sign in to your AWS account</h3>
 <div class="olist arabic">
@@ -1189,37 +1189,22 @@ You are responsible for the cost of the AWS services used while running this Qui
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Atlas AWS Quickstart into a new VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Atlas AWS Quickstart on AWS</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_link" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Atlas AWS Quickstart into an existing VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy MongoDB Atlas AWS Quickstart and peer with an existing VPC on AWS</a></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_link" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 </tbody>
 </table>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-If you’re deploying MongoDB Atlas AWS Quickstart into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances, and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables, to allow the instances to download packages and software without exposing them to the internet.
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
-<p>Also, make sure that the domain name option in the DHCP options is configured as explained in the <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">Amazon VPC documentation</a>. You provide your VPC settings when you launch the Quick Start.</p>
-</div>
-<div class="paragraph">
-<p>Each deployment takes about 15 minutes to complete.</p>
+<p>Each deployment takes about 10 minutes to complete.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic" start="2">
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for MongoDB Atlas AWS Quickstart will be built. The template is launched in the us-east-1 Region by default.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the CloudFormation Resource Types for MongoDB Atlas AWS Quickstart will be built and deployed into. The template is launched in the us-east-1 Region by default. Note, resource types must currently be registrered within each Region you wish to use them.</p>
 </li>
 </ol>
 </div>

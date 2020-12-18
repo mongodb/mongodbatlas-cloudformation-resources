@@ -1,0 +1,134 @@
+{
+    "typeName": "MongoDB::Atlas::Table",
+    "description": "The MongoDB::Atlas::Table resource creates a MongoDB collection in a new or existing MongoDB Atlas cluster and a database user for accessing the connection. For more information, see Table in the MongoDB API Reference..",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "labelDefinition": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+    },
+    "properties": {
+        "PublicApiKey": {
+            "type": "string"
+        },
+        "PrivateApiKey": {
+            "type": "string"
+        },
+        "ConnectionStringsStandard": {
+            "description": "Connection strings for your MongoDB Table.",
+            "type": "string"
+        },
+        "ConnectionStringsStandardSrv": {
+            "description": "Connection strings for your MongoDB Table.",
+            "type": "string"
+        },
+        "ProjectId": {
+            "description": "Unique identifier of the Atlas project to which this Table belongs.",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250
+        },
+        "TableName": {
+            "description": "A name for the table. If you don't specify a name, MongoDB Atlas will generate a unique ID and uses that ID for the table name. This is synomous with a MongoDB Collection",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 250
+        },
+        "DatabaseName": {
+            "description": "Name of the the MongoDB Atlas Database.",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 64
+        },
+        "ClusterName": {
+            "description": "Name of the the MongoDB Atlas Cluster.",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 64 
+        },
+        "RegionName": {
+            "type": "string"
+        },
+        "Username": {
+            "description": "Username for authenticating to MongoDB, this is optional. Recommended to use IAM, pass the ARN for a Role here for readWrite access",
+            "type": "string"
+        },
+        "Password": {
+            "description": "Password for authenticating to MongoDB, this is optional. Not needed for IAM - TODO/implement SCRAM",
+            "type": "string"
+        },
+        "TableCNFIdentifier": {
+            "description": "A unique identifier comprised of the Atlas Project ID, TableName, and Username",
+            "type": "string"
+        },
+        "Labels": {
+            "description": "Array containing key-value pairs that tag and categorize the database user.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/definitions/labelDefinition"
+            }
+          }
+    },
+    "additionalProperties": false,
+    "required": [
+        "PublicApiKey",
+        "PrivateApiKey",
+        "ProjectId",
+        "TableName",
+        "RegionName"
+    ],
+    "readOnlyProperties": [
+        "/properties/TableName",
+        "/properties/ClusterName",
+        "/properties/DatabaseName",
+        "/properties/RegionName",
+        "/properties/Username",
+        "/properties/ConnectionStringsStandard",
+        "/properties/ConnectionStringsStandardSrv",
+        "/properties/TableCNFIdentifier"
+    ],
+    "primaryIdentifier": [
+        "/properties/TableCNFIdentifier"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:*",
+                "iam:UpdateAssumeRolePolicy"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:*"
+                
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        }
+    }
+}

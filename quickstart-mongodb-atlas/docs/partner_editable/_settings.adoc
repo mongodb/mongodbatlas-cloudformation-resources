@@ -1,6 +1,6 @@
 :quickstart-project-name: quickstart-mongodb-atlas
-:partner-product-name: MongoDB Atlas AWS Quickstart
-:partner-product-short-name: MongoDB Atlas AWS Quickstart
+:partner-product-name: MongoDB Atlas 
+:partner-product-short-name: MongoDB Atlas
 :partner-company-name: MongoDB, Inc.
 :doc-month: December
 :doc-year: 2020

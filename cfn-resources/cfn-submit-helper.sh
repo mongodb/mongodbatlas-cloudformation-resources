@@ -24,10 +24,12 @@ do
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    echo "Building: with TAGS=\"logging callback\""
+    echo "Building (Pass 1/2): with TAGS=\"logging callback\""
     TAGS="logging callback" make
-    echo "Running `gofmt cmd/`"
+    echo "Running gofmt before pass 2 `gofmt cmd/`"
     gofmt cmd/
+    echo "Building (Pass 2/2): with TAGS=\"logging callback\""
+    TAGS="logging callback" make
     if [[ "${_BUILD_ONLY}" == "true" ]]; then
         echo "BUILD_ONLY true, skipping submit to CloudFormation"
         cd -

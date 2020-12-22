@@ -15,10 +15,10 @@ import (
 type TestOperation int
 
 const (
-    CreateOp TestOperation = iota
-    ReadOp
-    UpdateOp
-    DeleteOp
+	CreateOp TestOperation = iota
+	ReadOp
+	UpdateOp
+	DeleteOp
 )
 
 type TestCase struct {
@@ -28,9 +28,9 @@ type TestCase struct {
 }
 
 type TestStep struct {
-	Config string
-	Check  TestCheckFunc
-    Operation TestOperation
+	Config    string
+	Check     TestCheckFunc
+	Operation TestOperation
 }
 
 type TestCheckFunc func(model interface{}) error
@@ -82,7 +82,7 @@ func TestCheckResourceAttr(key string, value interface{}) TestCheckFunc {
 	}
 }
 func Test(t TestT, ts TestCase) {
-    log.Printf("[INFO] Running case %s\n", ts.Name)
+	log.Printf("[INFO] Running case %s\n", ts.Name)
 
 	var model interface{}
 	var data []byte
@@ -91,95 +91,95 @@ func Test(t TestT, ts TestCase) {
 		if model == nil {
 			data = []byte(test.Config)
 			req := handler.NewRequest("id", map[string]interface{}{}, &session.Session{}, nil, data)
-            switch test.Operation {
+			switch test.Operation {
 
-            case CreateOp:
-                h := ts.TestHandler.Create(req)
+			case CreateOp:
+				h := ts.TestHandler.Create(req)
 
-                var err error
-                h, err = checkStatus(h, ts.TestHandler.Create)
-                if err != nil {
-                    t.Error(fmt.Sprintf("Error performing %s Operation: %s", test.Operation, err))
-                    return
-                }
+				var err error
+				h, err = checkStatus(h, ts.TestHandler.Create)
+				if err != nil {
+					t.Error(fmt.Sprintf("Error performing %s Operation: %s", test.Operation, err))
+					return
+				}
 
-                if h.OperationStatus != handler.Failed {
-                    return
-                }
-                log.Println("[DEBUG] Running READ Operation after create")
-			    dataRead, err := json.Marshal(h.ResourceModel)
-			    if err != nil {
-				    t.Error(fmt.Sprintf("Error unmarshaling READ data %s", err))
-				    return
-			    }
-                // Force default read op below to use update data
-                req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
-                hRead := ts.TestHandler.Read(req)
-                if hRead.OperationStatus != handler.Success {
-                    t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
-                    return
-                }
+				if h.OperationStatus != handler.Failed {
+					return
+				}
+				log.Println("[DEBUG] Running READ Operation after create")
+				dataRead, err := json.Marshal(h.ResourceModel)
+				if err != nil {
+					t.Error(fmt.Sprintf("Error unmarshaling READ data %s", err))
+					return
+				}
+				// Force default read op below to use update data
+				req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
+				hRead := ts.TestHandler.Read(req)
+				if hRead.OperationStatus != handler.Success {
+					t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
+					return
+				}
 
-                if equal := reflect.DeepEqual(h.ResourceModel, hRead.ResourceModel); !equal {
-                    want := spew.Sdump(h.ResourceModel)
-                    got := spew.Sdump(hRead.ResourceModel)
-                    t.Error(fmt.Sprintf("Mismatch between CREATE and READ want %s, got %s", want, got))
-                }
-            case UpdateOp:
-                h := ts.TestHandler.Update(req)
+				if equal := reflect.DeepEqual(h.ResourceModel, hRead.ResourceModel); !equal {
+					want := spew.Sdump(h.ResourceModel)
+					got := spew.Sdump(hRead.ResourceModel)
+					t.Error(fmt.Sprintf("Mismatch between CREATE and READ want %s, got %s", want, got))
+				}
+			case UpdateOp:
+				h := ts.TestHandler.Update(req)
 
-                var err error
-                h, err = checkStatus(h, ts.TestHandler.Update)
-                if err != nil {
-                    t.Error(fmt.Sprintf("Error performing %s Operation: %s", test.Operation, err))
-                    return
-                }
+				var err error
+				h, err = checkStatus(h, ts.TestHandler.Update)
+				if err != nil {
+					t.Error(fmt.Sprintf("Error performing %s Operation: %s", test.Operation, err))
+					return
+				}
 
-                if h.OperationStatus != handler.Failed {
-                    return
-                }
-                log.Println("[DEBUG] Running READ Operation after update")
-			    dataRead, err := json.Marshal(h.ResourceModel)
-			    if err != nil {
-				    t.Error(fmt.Sprintf("Error unmarshaling READ data %s", err))
-				    return
-			    }
-                // Force default read op below to use update data
-                req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
-                hRead := ts.TestHandler.Read(req)
-                if hRead.OperationStatus != handler.Success {
-                    t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
-                    return
-                }
+				if h.OperationStatus != handler.Failed {
+					return
+				}
+				log.Println("[DEBUG] Running READ Operation after update")
+				dataRead, err := json.Marshal(h.ResourceModel)
+				if err != nil {
+					t.Error(fmt.Sprintf("Error unmarshaling READ data %s", err))
+					return
+				}
+				// Force default read op below to use update data
+				req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
+				hRead := ts.TestHandler.Read(req)
+				if hRead.OperationStatus != handler.Success {
+					t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
+					return
+				}
 
-                if equal := reflect.DeepEqual(h.ResourceModel, hRead.ResourceModel); !equal {
-                    want := spew.Sdump(h.ResourceModel)
-                    got := spew.Sdump(hRead.ResourceModel)
-                    t.Error(fmt.Sprintf("Mismatch between CREATE and READ want %s, got %s", want, got))
-                }
-            case DeleteOp:
-                h := ts.TestHandler.Delete(req)
+				if equal := reflect.DeepEqual(h.ResourceModel, hRead.ResourceModel); !equal {
+					want := spew.Sdump(h.ResourceModel)
+					got := spew.Sdump(hRead.ResourceModel)
+					t.Error(fmt.Sprintf("Mismatch between CREATE and READ want %s, got %s", want, got))
+				}
+			case DeleteOp:
+				h := ts.TestHandler.Delete(req)
 
-                var err error
-                h, err = checkStatus(h, ts.TestHandler.Delete)
-                if err != nil {
-                    t.Error(fmt.Sprintf("Error performing %s Operation: %s", test.Operation, err))
-                    return
-                }
+				var err error
+				h, err = checkStatus(h, ts.TestHandler.Delete)
+				if err != nil {
+					t.Error(fmt.Sprintf("Error performing %s Operation: %s", test.Operation, err))
+					return
+				}
 
-                if h.OperationStatus != handler.Failed {
-                    return
-                }
-			    model = h.ResourceModel
-            
-            default:
-			    log.Println("[DEBUG] DEFAULT - operation was READ, fall through")
-                h := ts.TestHandler.Read(req)
-                if h.OperationStatus != handler.Success {
-                    t.Error(fmt.Sprintf("Error Performing READ Request %s", h.Message))
-                    return
-                }
-            }
+				if h.OperationStatus != handler.Failed {
+					return
+				}
+				model = h.ResourceModel
+
+			default:
+				log.Println("[DEBUG] DEFAULT - operation was READ, fall through")
+				h := ts.TestHandler.Read(req)
+				if h.OperationStatus != handler.Success {
+					t.Error(fmt.Sprintf("Error Performing READ Request %s", h.Message))
+					return
+				}
+			}
 
 		}
 
@@ -242,5 +242,3 @@ func waitForSuccess(h handler.ProgressEvent, op Operation) (handler.ProgressEven
 	}
 	return h, nil
 }
-
-

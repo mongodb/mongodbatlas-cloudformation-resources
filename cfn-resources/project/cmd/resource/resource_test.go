@@ -1,15 +1,14 @@
 package resource
 
 import (
-    "os"
-    "testing"
-    "github.com/mongodb/mongodbatlas-cloudformation-resources/testutil"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil"
+	"os"
+	"testing"
 )
 
 func Test(t *testing.T) {
-    dir, _ := os.Getwd()
-    handler := &Handler{}
-    model := &Model{}
-    testutil.TestResource( dir, handler, model, t )
+	dir, _ := os.Getwd()
+	handler := &Handler{}
+	model := &Model{}
+	testutil.TestResource(dir, handler, model, t)
 }
-

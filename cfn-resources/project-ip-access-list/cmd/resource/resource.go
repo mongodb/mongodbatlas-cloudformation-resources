@@ -2,15 +2,14 @@ package resource
 
 import (
 	//"errors"
-    "context"
-    "fmt"
-    "log"
+	"context"
+	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-    "go.mongodb.org/atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/rs/xid"
+	"go.mongodb.org/atlas/mongodbatlas"
+	"log"
 )
-
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -21,7 +20,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Printf("%#+v\n", currentModel)
 
 	err = createEntries(currentModel, client)
-    log.Printf("Create err:%v",err)
+	log.Printf("Create err:%v", err)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -122,8 +121,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List handles the List event from the Cloudformation service.
 // NO-OP
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    log.Printf("Got list request - returning read - %v",currentModel)
-    return Read(req,prevModel,currentModel)
+	log.Printf("Got list request - returning read - %v", currentModel)
+	return Read(req, prevModel, currentModel)
 	//return handler.ProgressEvent{
 	//	OperationStatus: handler.Success,
 	//	Message:         "List Complete",
@@ -162,11 +161,11 @@ func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccess
 			wl.AwsSecurityGroup = *w.AwsSecurityGroup
 		}
 
-        log.Printf("getProjectIPAccessListRequest: %+#v\n", wl)
+		log.Printf("getProjectIPAccessListRequest: %+#v\n", wl)
 
 		accesslist = append(accesslist, wl)
 	}
-    log.Printf("getProjectIPAccessListRequest accesslist:%v",accesslist)
+	log.Printf("getProjectIPAccessListRequest accesslist:%v", accesslist)
 	return accesslist
 }
 
@@ -201,7 +200,7 @@ func flattenAccessList(accesslist []*mongodbatlas.ProjectIPAccessList) []AccessL
 func createEntries(model *Model, client *mongodbatlas.Client) error {
 	request := getProjectIPAccessListRequest(model)
 	projectID := *model.ProjectId
-    log.Printf("createEntries : projectID:%s, model:%v", projectID, model)
+	log.Printf("createEntries : projectID:%s, model:%v", projectID, model)
 	_, _, err := client.ProjectIPAccessList.Create(context.Background(), projectID, request)
 	return err
 }
@@ -220,4 +219,3 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) error {
 
 	return err
 }
-

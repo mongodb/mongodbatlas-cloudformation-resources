@@ -11,9 +11,13 @@ set -o nounset
 set -o pipefail
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-$(ls -F **/mongodb-atlas-*.json | cut -d/ -f1)}"
+resources="${@: 1}"
+if [ $# -eq 0 ]
+  then
+    echo "No arguments supplied, will submit all resource"
+    resources=$(ls -F **/mongodb-atlas-*.json | cut -d/ -f1)
+fi
 echo "Submitting the following resources: ${resources}"
-
 
 _CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
 
@@ -21,6 +25,7 @@ _BUILD_ONLY=${BUILD_ONLY:-0}
 
 for resource in ${resources};
 do
+    echo "Working on resource:${resource}"
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
@@ -39,3 +44,7 @@ do
     cfn submit ${_CFN_FLAGS}
     cd -
 done
+ls -l output
+
+
+

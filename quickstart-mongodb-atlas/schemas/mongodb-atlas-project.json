@@ -1,0 +1,87 @@
+{
+    "typeName": "MongoDB::Atlas::Project",
+    "description": "Retrieves or creates projects in any given Atlas organization.",
+    "definitions": {
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Name": {
+            "description": "Name of the project to create.",
+            "type": "string"
+        },
+        "OrgId": {
+            "description": "Unique identifier of the organization within which to create the project.",
+            "type": "string"
+
+        },
+        "Id": {
+            "description": "The unique identifier of the project.",
+            "type": "string"
+        },
+        "Created": {
+            "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
+            "type": "string",
+            "format": "date-time"
+        },
+        "ClusterCount": {
+            "description": "The number of Atlas clusters deployed in the project.",
+            "type": "integer"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "Name",
+        "OrgId"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Name",
+        "/properties/Created",
+        "/properties/ClusterCount"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:*",
+                "iam:UpdateAssumeRolePolicy"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:*"
+            ]
+        }
+    }
+}

@@ -1,0 +1,8 @@
+// There are generally two deployment options. If additional are required, add them here
+
+This Quick Start provides two deployment options:
+
+* *Deploy {partner-product-short-name} (end-to-end deployment)*. This option builds a new complete MongoDB Atlas environment within AWS consisting of the a project, cluster, and more.
+* *Deploy {partner-product-short-name} into an existing VPC*. This option peers {partner-product-short-name} in your existing AWS infrastructure.
+
+The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and {partner-product-short-name} settings, as discussed later in this guide.

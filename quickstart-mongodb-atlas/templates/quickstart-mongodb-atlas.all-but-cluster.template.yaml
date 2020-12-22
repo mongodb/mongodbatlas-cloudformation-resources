@@ -1,0 +1,152 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart - without Cluster
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Network Configuration
+      Parameters:
+      - VPC
+      - AccessList
+    - Label:
+        default: Security Configuration
+      Parameters:
+      - PublicKey
+      - PrivateKey 
+      - OrgId
+    - Label:
+        default: MongoDB Atlas Configuration
+      Parameters:
+      - ProjectName
+      - ClusterName
+      - ClusterRegion
+      - ClusterInstanceSize
+    ParameterLabels:
+      ProjectName:
+        default: atlas-cfn-quickstart
+      ClusterName:
+        default: cluster-1
+      ClusterRegion:
+        default: us-east-1
+      ClusterInstanceSize:
+        default: MongoDB Atlas Instance Size
+Parameters:
+  EnableSecretForApiKey:
+    AllowedValues:
+    - 'true'
+    - 'false'
+    Default: 'false'
+    Description: "Set to true to enable adding an AWS Secret for your MongoDB API Key"
+    Type: String
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: "PublicKey"
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: "PrivateKey"
+  OrgId:
+    Description: "Your MongoDB Cloud Organization Id"
+    Type: String
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC-ID of your existing Virtual Private Cloud (VPC) which you wish to peer to your new MongoDB Atlas cluster. This is the VPC that your application uses usually.
+  RouteTableCIDRBlock:
+    Type: String
+    Description: CIDR block to use for your VPC Peering.
+    Default: "OrgId"
+Resources:
+  AtlasApiKeySecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub "${AWS::StackName}-ApiKey-Secret"
+      Description: This secret has a hardcoded password in SecretString, how can i make this optional?
+      #
+      # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
+      #
+      SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
+      Tags:
+      - Key: mongodb-atlas-quickstart-stack 
+        Value: !Sub "${AWS::StackName}"
+  AtlasIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+          Action: 'sts:AssumeRole'
+  AtlasProject:
+    Type: MongoDB::Atlas::Project
+    DependsOn: AtlasIAMRole
+    Properties:
+      OrgId: !Ref "OrgId" 
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      Name: !Sub "${AWS::StackName}"
+  AtlasProjectIPAccessList:
+    Type: MongoDB::Atlas::ProjectIpAccessList
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccessList:
+      - IPAddress: "0.0.0.0/1"
+        Comment: "Testing open all ips"
+  AtlasNetworkPeering:  
+    Type: MongoDB::Atlas::NetworkPeering
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccepterRegionName: !Sub "${AWS::Region}"
+      AwsAccountId: !Sub "${AWS::AccountId}" 
+      RouteTableCIDRBlock: !Ref "RouteTableCIDRBlock" 
+      VpcId: !Ref "VPC"
+  AtlasDatabaseUser:
+    Type: MongoDB::Atlas::DatabaseUser
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      Username: !GetAtt "AtlasIAMRole.Arn"
+      DatabaseName: "$external"
+      AWSIAMType: "ROLE"
+      Roles:
+      - RoleName: "readWrite"
+        DatabaseName: !Sub "${AWS::StackName}"
+      Scopes:
+      - Name: !Sub "${AWS::StackName}"
+        Type: "CLUSTER"
+Outputs:
+  AtlasIAMRole:
+    Description: "ARN for AWS IAM Role database cluster access"
+    Value: !GetAtt "AtlasIAMRole.Arn"
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasIAMRoleARN" ] ]
+  AtlasDatabaseUser:
+    Description: "Atlas database user, configured for AWS IAM Role access."
+    Value: !Ref AtlasDatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
+  AtlasProject:
+    Description: "Info on your Atlas deployment"
+    Value: !Ref AtlasProject
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectId" ] ]
+  AtlasProjectIPAccessList:
+    Description: "Atlas project ip access list"
+    Value: !Ref AtlasProjectIPAccessList
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]

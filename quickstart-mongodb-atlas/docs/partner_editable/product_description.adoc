@@ -1,0 +1,17 @@
+// Replace the content in <>
+// Briefly describe the software. Use consistent and clear branding. 
+// Include the benefits of using the software on AWS, and provide details on usage scenarios.
+
+
+This Quick Start provisions complete MongoDB Atlas deployments through CloudFormation using official MongoDB Atlas AWS CloudFormation Resource Types.
+
+The templates/mongodbatlas-quickstart.template.yaml stack will provision a complete MongoDB Atlas deployment for you. This includes the follow resources:
+
+* AWS IAM role
+* MongoDB Atlas project in a dedicated VPC
+* MongoDB Atlas cluster
+* MongoDB Atlas IP access list entry
+* MongoDB Atlas database user via AWS IAM role
+* MongoDB Atlas VPC network peering connection
+
+

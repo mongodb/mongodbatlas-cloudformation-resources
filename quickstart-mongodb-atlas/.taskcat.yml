@@ -16,9 +16,19 @@ tests:
       PublicKey: $[TASKCAT_project_ATLAS_PUBLIC_KEY]
       PrivateKey: $[TASKCAT_project_ATLAS_PRIVATE_KEY]
       OrgId: $[TASKCAT_project_ATLAS_ORD_ID]
-      ClusterName: "atlas-cfn-quickstart-taskcat-$[taskcat_current_region]"
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]
       #RemoteAccessCIDR: 10.0.0.0/16
     s3_bucket: ''
     template: templates/taskcat-qs.yaml
+  mongodb-atlas-peering:
+    parameters:
+      PublicKey: $[TASKCAT_project_ATLAS_PUBLIC_KEY]
+      PrivateKey: $[TASKCAT_project_ATLAS_PRIVATE_KEY]
+      OrgId: $[TASKCAT_project_ATLAS_ORD_ID]
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      #RemoteAccessCIDR: 10.0.0.0/16
+    s3_bucket: ''
+    template: templates/taskcat-peering-qs.yaml
+

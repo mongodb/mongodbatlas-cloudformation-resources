@@ -19,19 +19,29 @@ if [ $# -eq 0 ]
 fi
 echo "Submitting the following resources: ${resources}"
 
-if [[ -d ../output ]]; then
-    rm -rf ../output
-fi
-mkdir -p ../output
+_CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
+
+_BUILD_ONLY=${BUILD_ONLY:-0}
+
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    TAGS=logging make
-    cfn submit --verbose --set-default --dry-run
-    cp mongodb-atlas-*.zip ../../output/
+    echo "Building (Pass 1/2): with TAGS=\"logging callback\""
+    TAGS="logging callback" make
+    echo "Running gofmt before pass 2 `gofmt cmd/`"
+    gofmt cmd/
+    echo "Building (Pass 2/2): with TAGS=\"logging callback\""
+    TAGS="logging callback" make
+    if [[ "${_BUILD_ONLY}" == "true" ]]; then
+        echo "BUILD_ONLY true, skipping submit to CloudFormation"
+        cd -
+        continue
+    fi
+    echo "Submiting to CloudFormation with flags: ${_CFN_FLAGS}"
+    cfn submit ${_CFN_FLAGS}
     cd -
 done
 ls -l output

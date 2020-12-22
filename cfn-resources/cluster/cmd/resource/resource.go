@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-    "log"
+	"log"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-    "go.mongodb.org/atlas/mongodbatlas"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
-    "github.com/davecgh/go-spew/spew"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 func castNO64(i *int64) *int {
@@ -60,21 +60,20 @@ func getClusterRequest(model *Model) *mongodbatlas.Cluster {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    log.Printf("cluster Create")
+	log.Printf("cluster Create")
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Printf("Error - %+v",err)
-        return handler.ProgressEvent{}, err
+		log.Printf("Error - %+v", err)
+		return handler.ProgressEvent{}, err
 
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
 		return validateProgress(client, req, currentModel, "IDLE", "CREATING")
-	} 
-
+	}
 
 	projectID := *currentModel.ProjectId
-    log.Printf("cluster Create projectID=%s", projectID)
+	log.Printf("cluster Create projectID=%s", projectID)
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType != nil {
 			return handler.ProgressEvent{}, errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
@@ -122,7 +121,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.ProviderSettings != nil {
-	    clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
+		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
 	}
 
 	if currentModel.ReplicationSpecs != nil {
@@ -155,6 +154,25 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     }
     
     log.Printf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s",secretName)
+	// This is the intial call to Create, so inject a deployment
+	// secret for this resource in order to lookup progress properly
+	projectResID := &util.ResourceIdentifier{
+		ResourceType: "Project",
+		ResourceID:   projectID,
+	}
+	log.Printf("Created projectResID:%s", projectResID)
+	resourceID := util.NewResourceIdentifier("Cluster", cluster.Name, projectResID)
+	log.Printf("Created resourceID:%s", resourceID)
+	resourceProps := map[string]string{
+		"ClusterName": cluster.Name,
+	}
+	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
+	if err != nil {
+		log.Printf("Error - %+v", err)
+		return handler.ProgressEvent{}, err
+	}
+
+	log.Printf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s", secretName)
 	currentModel.Id = secretName
 
 	return handler.ProgressEvent{
@@ -163,10 +181,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{
-			"stateName": cluster.StateName,
-            "projectId": projectID,
-            "clusterName": *currentModel.Name,
-            "deploymentSecret": secretName,
+			"stateName":        cluster.StateName,
+			"projectId":        projectID,
+			"clusterName":      *currentModel.Name,
+			"deploymentSecret": secretName,
 		},
 	}, nil
 }
@@ -188,6 +206,20 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
     //client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
     client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
+	log.Printf("Read req:%+v, prevModel:%s, currentModel:%s", req, spew.Sdump(prevModel), spew.Sdump(currentModel))
+	callback := map[string]interface{}(req.CallbackContext)
+	log.Printf("Read -  callback: %v", callback)
+
+	secretName := *currentModel.Id
+	log.Printf("Read for Cluster Id/SecretName:%s", secretName)
+	key, err := util.GetApiKeyFromDeploymentSecret(&req, secretName)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error lookupSecret: %w", err)
+	}
+	log.Printf("key:%+v", key)
+
+	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -209,6 +241,23 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
     clusterName := id.ResourceID
 
     log.Printf("Got projectID:%s, clusterName:%s, from id:%+v",projectID, clusterName, id)
+	// currentModel is NOT populated on the Read after long-running Cluster create
+	// need to parse pid and cluster name from Id (deployment secret name).
+
+	//projectID := *currentModel.ProjectId
+	//clusterName := *currentModel.Name
+
+	// key.ResourceID should == *currentModel.Id
+	id, err := util.ParseResourceIdentifier(*currentModel.Id)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error parsing res if (%s): %s", id, err)
+	}
+	log.Printf("Parsed resource identifier: id:%+v", id)
+
+	projectID := id.Parent.ResourceID
+	clusterName := id.ResourceID
+
+	log.Printf("Got projectID:%s, clusterName:%s, from id:%+v", projectID, clusterName, id)
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
@@ -243,12 +292,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	currentModel.ConnectionStrings = &ConnectionStrings{
-        Standard:               &cluster.ConnectionStrings.Standard,
-        StandardSrv:            &cluster.ConnectionStrings.StandardSrv,
-	    Private:                &cluster.ConnectionStrings.Private,
-        PrivateSrv:             &cluster.ConnectionStrings.PrivateSrv,
-	    //AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
-	    //AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
+		Standard:    &cluster.ConnectionStrings.Standard,
+		StandardSrv: &cluster.ConnectionStrings.StandardSrv,
+		Private:     &cluster.ConnectionStrings.Private,
+		PrivateSrv:  &cluster.ConnectionStrings.PrivateSrv,
+		//AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
+		//AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
 	}
 
 	if cluster.ProviderSettings != nil {
@@ -384,9 +433,9 @@ func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
 }
 
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
-    // convert AWS- regions to MDB regions
-    regionName := util.EnsureAtlasRegion(*providerSettings.RegionName)
-    ps := &mongodbatlas.ProviderSettings{
+	// convert AWS- regions to MDB regions
+	regionName := util.EnsureAtlasRegion(*providerSettings.RegionName)
+	ps := &mongodbatlas.ProviderSettings{
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
 		RegionName:          regionName,
 		BackingProviderName: cast.ToString(providerSettings.BackingProviderName),
@@ -394,10 +443,10 @@ func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.Pr
 		ProviderName:        "AWS",
 		VolumeType:          cast.ToString(providerSettings.VolumeType),
 	}
-    if providerSettings.DiskIOPS!=nil {
+	if providerSettings.DiskIOPS != nil {
 		ps.DiskIOPS = cast64(providerSettings.DiskIOPS)
-    }
-    return ps
+	}
+	return ps
 
 }
 

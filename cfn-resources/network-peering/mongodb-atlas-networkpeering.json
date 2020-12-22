@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkPeering",
     "description": "This resource allows to create, read, update and delete a network peering",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-peering",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",
@@ -37,7 +36,7 @@
             "description": "The name of the provider",
             "type": "string"
         },
-        "RouteTableCidrBlock": {
+        "RouteTableCIDRBlock": {
             "description": "Peer VPC CIDR block or subnet.",
             "type": "string"
         },
@@ -68,12 +67,17 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "ContainerId",
+        "VpcId",
         "ApiKeys"],
+    "createOnlyProperties": [
+        "/properties/AwsAccountId",
+        "/properties/VpcId"
+    ],
     "readOnlyProperties": [
         "/properties/Id",
         "/properties/StatusName",
-        "/properties/ErrorStateName"],
+        "/properties/ErrorStateName"
+    ],
     "primaryIdentifier": [
         "/properties/Id"
     ],

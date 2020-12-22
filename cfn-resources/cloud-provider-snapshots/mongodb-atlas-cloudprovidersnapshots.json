@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::CloudProviderSnapshots",
     "description": "This resource allows to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",

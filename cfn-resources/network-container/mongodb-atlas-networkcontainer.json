@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkContainer",
     "description": "This resource allows to create, read, update and delete a network container",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/network-container",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",
@@ -37,7 +36,7 @@
             "description": "Unique identifier of the peer VPC.",
             "type": "string"
         },
-        "AtlasCidrBlock": {
+        "AtlasCIDRBlock": {
             "description": "CIDR block that Atlas uses for your clusters.",
             "type": "string"
         },
@@ -52,7 +51,7 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "AtlasCidrBlock",
+        "AtlasCIDRBlock",
         "RegionName",
         "ApiKeys"],
     "readOnlyProperties": [
@@ -61,21 +60,6 @@
         "/properties/Id"
     ],
     "handlers": {
-        "create": {
-            "permissions": [
-                ""
-            ]
-        },
-        "read": {
-            "permissions": [
-                ""
-            ]
-        },
-        "update": {
-            "permissions": [
-                ""
-            ]
-        },
         "delete": {
             "permissions": [
                 ""

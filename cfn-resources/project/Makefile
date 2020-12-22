@@ -1,8 +1,8 @@
 .PHONY: build test clean
 
 build:
-	cfn generate
-	env GOOS=linux go build -ldflags="-s -w" -tags="logging" -o bin/handler cmd/main.go
+	cfn generate || cat rpdk.log
+	env GOOS=linux go build -ldflags="-s -w" -tags="logging callback scheduler" -o bin/handler cmd/main.go
 
 test:
 	cfn generate

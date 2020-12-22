@@ -1,0 +1,25 @@
+{
+    "desiredResourceState" : {
+        "resourceType" : "MongoDB::Atlas::Cluster",
+        "properties" : {
+            "Name" : "Name",
+            "ProjectId" : "ProjectId",
+            "ApiKeys" : {
+                "PublicKey" : "$ATLAS_PUBLIC_KEY",
+                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+            },
+            "NumShards": 1,
+            "ProviderName": "AWS",
+            "ReplicationFactor": 3,
+            "MongoDBVersion": "4.4",
+            "ProviderSettings": {
+                "EncryptEBSVolume": false,
+                "InstanceSizeName": "M10",
+                "RegionName": "Region"
+            }
+
+        }
+    },
+    "providerLogGroupName" : "mongodb-atlas-cluster-logs",
+    "previousResourceState": { }
+}

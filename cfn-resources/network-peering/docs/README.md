@@ -17,7 +17,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#accepterregionname" title="AccepterRegionName">AccepterRegionName</a>" : <i>String</i>,
         "<a href="#awsaccountid" title="AwsAccountId">AwsAccountId</a>" : <i>String</i>,
         "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
-        "<a href="#routetablecidrblock" title="RouteTableCidrBlock">RouteTableCidrBlock</a>" : <i>String</i>,
+        "<a href="#routetablecidrblock" title="RouteTableCIDRBlock">RouteTableCIDRBlock</a>" : <i>String</i>,
         "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
         "<a href="#connectionid" title="ConnectionId">ConnectionId</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
@@ -35,7 +35,7 @@ Properties:
     <a href="#accepterregionname" title="AccepterRegionName">AccepterRegionName</a>: <i>String</i>
     <a href="#awsaccountid" title="AwsAccountId">AwsAccountId</a>: <i>String</i>
     <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
-    <a href="#routetablecidrblock" title="RouteTableCidrBlock">RouteTableCidrBlock</a>: <i>String</i>
+    <a href="#routetablecidrblock" title="RouteTableCIDRBlock">RouteTableCIDRBlock</a>: <i>String</i>
     <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
     <a href="#connectionid" title="ConnectionId">ConnectionId</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
@@ -57,7 +57,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique identifier of the Atlas VPC container for the AWS region.
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
@@ -81,7 +81,7 @@ _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ProviderName
 
@@ -93,7 +93,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### RouteTableCidrBlock
+#### RouteTableCIDRBlock
 
 Peer VPC CIDR block or subnet.
 
@@ -107,11 +107,11 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique identifier of the peer VPC.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ConnectionId
 

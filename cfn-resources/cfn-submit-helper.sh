@@ -44,7 +44,6 @@ do
     cfn submit ${_CFN_FLAGS}
     cd -
 done
-ls -l output
 
 
 

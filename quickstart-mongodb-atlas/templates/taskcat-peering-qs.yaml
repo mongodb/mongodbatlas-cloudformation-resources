@@ -1,0 +1,299 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: "PublicKey"
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: "PrivateKey"
+  OrgId:
+    Description: "Your MongoDB Cloud Organization Id"
+    Type: String
+    Default: "OrgId"
+  ClusterName:
+    Description: Name of the cluster as it appears in Atlas. Once the cluster is created,
+      its name cannot be changed.
+    Type: String
+    Default: "Cluster-1"
+  ClusterInstanceSize:
+    Default: "M10" 
+    Description: Atlas provides different cluster tiers, each with a default storage capacity and RAM size. The cluster you select is used for all the data-bearing hosts in your cluster tier. See https://docs.atlas.mongodb.com/reference/amazon-aws/#amazon-aws.
+    Type: String
+    AllowedValues:
+    - "M10"
+    - "M20"
+    - "M30"
+    - "M40"
+    - "R40"
+    - "M40_NVME"
+    - "M50"
+    - "R50"
+    - "M50_NVME"
+    - "M60"
+    - "R60"
+    - "M60_NVME"
+    - "M80"
+    - "R80"
+    - "M80_NVME"
+    - "M100"
+    - "M140"
+    - "M200"
+    - "R200"
+    - "M200_NVME"
+    - "M300"
+    - "R300"
+    - "R400"
+    - "M400_NVME"
+    - "R700"
+  ClusterRegion:
+    Default: us-east-1
+    Description: The AWS Region where the Atlas DB Cluster will run.
+    Type: String
+    AllowedValues:
+    - "us-east-1"
+    - "us-east-2"
+    - "ca-central-1"
+    - "us-west-1"
+    - "us-west-2"
+    - "sa-east-1"
+    - "ap-south-1"
+    - "ap-east-2"
+    - "ap-southeast-1"
+    - "ap-southeast-2"
+    - "ap-northeast-1"
+    - "ap-northeast-2"
+    - "eu-central-1"
+    - "eu-west-1"
+    - "eu-north-1"
+    - "eu-west-1"
+    - "eu-west-2"
+    - "eu-west-3"
+    - "eu-south-1"
+    - "me-south-1"
+    - "af-south-1"
+  ClusterMongoDBMajorVersion:
+    Description: The version of MongoDB
+    Type: String
+    Default: "4.4"
+    AllowedValues:
+    - "3.6"
+    - "4.0"
+    - "4.2"
+    - "4.4"
+  PrivateSubnet1CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/19
+    Description: CIDR block for private subnet 1 located in Availability Zone 1
+    Type: String
+  PrivateSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.32.0/19
+    Description: CIDR block for private subnet 2 located in Availability Zone 2
+    Type: String
+  PrivateSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.64.0/19
+    Description: CIDR block for private subnet 2 located in Availability Zone 3
+    Type: String
+  PublicSubnet1CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.128.0/20
+    Description: CIDR block for the public (DMZ) subnet 1 located in Availability
+      Zone 1
+    Type: String
+  PublicSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.144.0/20
+    Description: CIDR block for the public (DMZ) subnet 2 located in Availability
+      Zone 2
+    Type: String
+  PublicSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.160.0/20
+    Description: CIDR block for the public (DMZ) subnet 2 located in Availability
+      Zone 3
+    Type: String
+  VPCCIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+    Type: String
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
+      (-).
+    Default: aws-quickstart
+    Description: S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
+      or end with a hyphen (-).
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/.]*$
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slash (/).
+    Default: quickstart-redhat-openshift-4.3-preview/
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slash (/).
+    Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
+      hosted. When using your own bucket, you must specify this value.
+    Type: String
+  AvailabilityZones:
+    Description: List of Availability Zones to use for the subnets in the VPC. Three
+      Availability Zones are used for this deployment, and the logical order of your
+      selections is preserved.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+Resources:
+  #
+  # Creates the VPC Network for the cluster
+  #
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        AvailabilityZones: !Join [ ',', !Ref 'AvailabilityZones' ]
+        NumberOfAZs: '3'
+        PrivateSubnet1ACIDR: !Ref 'PrivateSubnet1CIDR'
+        PrivateSubnet2ACIDR: !Ref 'PrivateSubnet2CIDR'
+        PrivateSubnet3ACIDR: !Ref 'PrivateSubnet3CIDR'
+        PublicSubnet1CIDR: !Ref 'PublicSubnet1CIDR'
+        PublicSubnet2CIDR: !Ref 'PublicSubnet2CIDR'
+        PublicSubnet3CIDR: !Ref 'PublicSubnet3CIDR'
+        VPCCIDR: !Ref 'VPCCIDR'
+  AtlasApiKeySecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub "${AWS::StackName}-ApiKey-Secret"
+      Description: This secret has a hardcoded password in SecretString, how can i make this optional?
+      #
+      # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
+      #
+      SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
+      Tags:
+      - Key: mongodb-atlas-quickstart-stack 
+        Value: !Sub "${AWS::StackName}"
+  AtlasIAMRole:
+    Type: AWS::IAM::Role
+    DependsOn: VPCStack 
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+          Action: 'sts:AssumeRole'
+  AtlasProject:
+    Type: MongoDB::Atlas::Project
+    DependsOn: AtlasIAMRole
+    Properties:
+      OrgId: !Ref "OrgId" 
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      Name: !Sub "${AWS::StackName}"
+  AtlasProjectIPAccessList:
+    Type: MongoDB::Atlas::ProjectIpAccessList
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccessList:
+      - IPAddress: "0.0.0.0/1"
+        Comment: "Testing open all ips"
+  AtlasNetworkPeering:  
+    Type: MongoDB::Atlas::NetworkPeering
+    DependsOn: AtlasProject
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      AccepterRegionName: !Ref "ClusterRegion"
+      AwsAccountId: !Sub "${AWS::AccountId}" 
+      #RouteTableCIDRBlock: !Ref "RouteTableCIDRBlock" 
+      RouteTableCIDRBlock: !GetAtt 'VPCStack.Outputs.VPCCIDR'
+      VpcId: !GetAtt 'VPCStack.Outputs.VPCID'
+  AtlasCluster:
+    Type: MongoDB::Atlas::Cluster
+    DependsOn: AtlasProject
+    Properties:
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      ProjectId: !Ref "AtlasProject"
+      Name: !Sub "${AWS::StackName}"
+      MongoDBMajorVersion: !Ref "ClusterMongoDBMajorVersion"
+      ReplicationFactor: 3
+      NumShards: 1
+      ProviderSettings:
+        ProviderName: "AWS"
+        InstanceSizeName: !Ref "ClusterInstanceSize" 
+        RegionName: !Ref "ClusterRegion"
+  AtlasDatabaseUser:
+    Type: MongoDB::Atlas::DatabaseUser
+    DependsOn: AtlasCluster
+    Properties:
+      ProjectId: !Ref "AtlasProject"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      Username: !GetAtt "AtlasIAMRole.Arn"
+      DatabaseName: "$external"
+      AWSIAMType: "ROLE"
+      Roles:
+      - RoleName: "readWrite"
+        DatabaseName: !Sub "${AWS::StackName}"
+      Scopes:
+      - Name: !Sub "${AWS::StackName}"
+        Type: "CLUSTER"
+Outputs:
+  AtlasIAMRole:
+    Description: "ARN for AWS IAM Role database cluster access"
+    Value: !GetAtt "AtlasIAMRole.Arn"
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasIAMRoleARN" ] ]
+  AtlasDatabaseUser:
+    Description: "Atlas database user, configured for AWS IAM Role access."
+    Value: !Ref AtlasDatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
+  AtlasProject:
+    Description: "Info on your Atlas deployment"
+    Value: !Ref AtlasProject
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectId" ] ]
+  AtlasProjectIPAccessList:
+    Description: "Atlas project ip access list"
+    Value: !Ref AtlasProjectIPAccessList
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
+  AtlasCluster:
+    Description: "Info on your Atlas Cluster"
+    Value: !Ref AtlasCluster
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasCluster" ] ]
+

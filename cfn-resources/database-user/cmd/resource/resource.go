@@ -106,18 +106,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
     cfnid := resourceID.String()
     currentModel.UserCNFIdentifier = &cfnid 
     log.Printf("UserCFNIdentifier: %s",cfnid)
-	projectResID := &util.ResourceIdentifier{
-		ResourceType: "Project",
-		ResourceID:   groupID,
-	}
-	resourceID := util.NewResourceIdentifier("DBUser", user.Username, projectResID)
-	log.Printf("Created resourceID:%s", resourceID)
-
-	//cfnid := fmt.Sprintf("%s-%s",pid,*currentModel.Username)
-	//currentModel.UserCNFIdentifier = &cfnid
-	cfnid := resourceID.String()
-	currentModel.UserCNFIdentifier = &cfnid
-	log.Printf("UserCFNIdentifier: %s", cfnid)
 
 	log.Printf("Arguments: Project ID: %s, Request %#+v", groupID, user)
 

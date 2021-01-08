@@ -9,18 +9,25 @@ MongoDB Atlas Resource Types.
 
 | Resource | Status | Examples |
 | --- | --- | --- |
-| cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [](../examples/cloud-provider-snapshot-restore-jobs) | 
-| cloud-provider-snapshots | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/cloud-provider-snapshots](../examples/cloud-provider-snapshots) |
-| cluster | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/cluster](../examples/cluster) |
-| database-user | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | (../examples/database-user)[../examples/ database-user] |
-| encryption-at-rest | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/encryption-at-rest](../examples/encryption-at-rest) |
-| network-container | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/network-container](../examples/network-container) |
-| network-peering | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/network-peering](../examples/network-peering) |
-| project | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/project](../examples/project) |
-| project-ip-access-list | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../project-ip-access-list](../examples/project-ip-access-list) |
-| table | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/table](../examples/table)] |
-| cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Ipsum-Lorem-orange) | [../examples/cloud-provider-snapshot-restore-jobs](../examples/cloud-provider-snapshot-restore-jobs) | 
+| project | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project/test](./project/test) |
+| project-ip-access-list | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project-ip-access-list/test](./project-ip-access-list/test) |
+| cluster | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cluster/test](./cluster/test) |
+| database-user | ![Build](https://img.shields.io/badge/Beta-yellow) | [./database-user/test](./database-user/test) |
+| network-peering | ![Build](https://img.shields.io/badge/Beta-yellow) | [./network-peering/test](./network-peering/test) |
+| encryption-at-rest | ![Build](https://img.shields.io/badge/Unstable-orange) | [./encryption-at-rest/test](./encryption-at-rest/test) |
+| cloud-provider-snapshots | ![Build](https://img.shields.io/badge/Unstable-orange) | [../cloud-provider-snapshots/test](./cloud-provider-snapshots/test) |
+| cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Unstable-orange) | [./cloud-provider-snapshot-restore-jobs/test](./cloud-provider-snapshot-restore-jobs/test) | 
+| network-container | ![Build](https://img.shields.io/badge/Beta-Admin-grey) | [./network-container/test](./network-container/test) |
 
+
+Legend
+---
+| Badge | Meaning |
+| --- | --- |
+| ![Build](https://img.shields.io/badge/GA-green) | GA, production ready |
+| ![Build](https://img.shields.io/badge/Beta-yellow) | Beta status, stable dev/testing |
+| ![Build](https://img.shields.io/badge/Unstable-orange) | Not fully tested |
+| ![Build](https://img.shields.io/badge/Beta-Admin-grey) | Beta status, stable for dev/testing but not only for advanced use |
 
 ## Test framework
 
@@ -31,7 +38,7 @@ MongoDB Atlas Resource Types.
 * python
 * go
 * bash
-* [mongocli](mongocli) (you don't *need* this but you want it)
+* [mongocli](https://github.com/mongodb/mongocli) (you don't *need* this but you want it)
 
 ### How we handle ApiKeys
 

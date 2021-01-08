@@ -11,19 +11,19 @@ jobs:
     name: atlas-cfn-deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.1
+    - uses: actions/checkout@v2
       name: pull code
-    - name: echo env
-      run: |
-        echo "#############################################################"
-        env
-        echo "#############################################################"
-    - name: Run the atlas-cfn-deploy custom action.
+    - name: Deploy the resources 
       uses: ./.github/actions/atlas-cfn-deploy
       with:
         CAPABLITIES: CAPABILITY_IAM
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION_INPUT: ${{ github.event.inputs.region }}
+        AWS_DEFAULT_REGION: ${{ github.event.inputs.region }}
         AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
-        XXINPUTS: $${{ github.event.inputs }}
+      run: |
+        echo "#############################################################"
+        env
+        cd cfn-resources
+        BUILD_ONLY=1 CFN_FLAGS="--verbose --set-default --region ${AWS_DEFAULT_REGION}" ./cfn-submit-helper.sh

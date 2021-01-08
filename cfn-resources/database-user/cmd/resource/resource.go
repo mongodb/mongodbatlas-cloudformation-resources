@@ -94,18 +94,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		AWSIAMType:   *currentModel.AWSIAMType,
 	}
 
-    projectResID := &util.ResourceIdentifier{
-        ResourceType: "Project",
-        ResourceID: groupID,
-    }
-    resourceID := util.NewResourceIdentifier("DBUser", user.Username, projectResID)
-    log.Printf("Created resourceID:%s",resourceID)
-
-    //cfnid := fmt.Sprintf("%s-%s",pid,*currentModel.Username)
-    //currentModel.UserCNFIdentifier = &cfnid
-    cfnid := resourceID.String()
-    currentModel.UserCNFIdentifier = &cfnid 
-    log.Printf("UserCFNIdentifier: %s",cfnid)
 	projectResID := &util.ResourceIdentifier{
 		ResourceType: "Project",
 		ResourceID:   groupID,
@@ -125,7 +113,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating database user: %s", err)
 	}
-    log.Printf("newUser: %s", newUser)
+	log.Printf("newUser: %s", newUser)
 	log.Printf("newUser: %s", newUser)
 
 	return handler.ProgressEvent{
@@ -251,16 +239,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
 
-    resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
+	resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
-        // Log and handle 404 ok
+		// Log and handle 404 ok
 		if resp != nil && resp.StatusCode == 404 {
-            log.Printf("Resource not found for Delete. Returning SUCCESS to clean orphan AWS resource. resp:%+v, error:%+v",resp,err)
+			log.Printf("Resource not found for Delete. Returning SUCCESS to clean orphan AWS resource. resp:%+v, error:%+v", resp, err)
 		} else {
-            return handler.ProgressEvent{}, fmt.Errorf("error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
-	    }
-    }
-
+			return handler.ProgressEvent{}, fmt.Errorf("error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
+		}
+	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

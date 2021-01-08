@@ -39,54 +39,53 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 		return &container, err
 	}
 
-    var ar string
-    if currentModel.AccepterRegionName == nil { // use lambda default
-        r := os.Getenv("AWS_REGION")
-        log.Printf("AccepterRegionName was nil, found AWS_REGION region:%v",r)
-        ar = util.EnsureAtlasRegion(r)
-    } else {
-        r := *currentModel.AccepterRegionName
-        log.Printf("AccepterRegionName was SET to:%v",r)
-        ar = util.EnsureAtlasRegion(r)
-    }
-    log.Printf("converted to atlas region :%v",ar)
-    CIDR := currentModel.RouteTableCIDRBlock
-    if CIDR == nil {
-        CIDR := &DefaultAWSCIDR
-        log.Printf("CIDR was not set, default to:%v",*CIDR)
+	var ar string
+	if currentModel.AccepterRegionName == nil { // use lambda default
+		r := os.Getenv("AWS_REGION")
+		log.Printf("AccepterRegionName was nil, found AWS_REGION region:%v", r)
+		ar = util.EnsureAtlasRegion(r)
+	} else {
+		r := *currentModel.AccepterRegionName
+		log.Printf("AccepterRegionName was SET to:%v", r)
+		ar = util.EnsureAtlasRegion(r)
+	}
+	log.Printf("converted to atlas region :%v", ar)
+	CIDR := currentModel.RouteTableCIDRBlock
+	if CIDR == nil {
+		CIDR := &DefaultAWSCIDR
+		log.Printf("CIDR was not set, default to:%v", *CIDR)
 	}
 
-    projectId := *currentModel.ProjectId
-    region := &ar
-    cidr := CIDR
+	projectId := *currentModel.ProjectId
+	region := &ar
+	cidr := CIDR
 
-
-    // Check if have AWS container for this group, 
-    // if so return it - 
-    // if passed a ContainerId and it does not match, then
-    // return an ERROR, explain to remove the ContainerId parameter
-    opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
-    log.Printf("Looking for any AWS containers for this project:%s. opt:%+v",projectId, opt)
-    cr, _, err := client.Containers.List(context.TODO(), projectId, opt)
-    if err != nil {
-        return &container, err
-    }
-    log.Printf("found AWS containers for project:%+v",cr)
-    // cr is a list, need filter on our region?
-    for i := range cr {
-        log.Printf("RegionName:%s, region:%s",cr[i].RegionName, *region)
-        if cr[i].RegionName == *region {
-            log.Printf("Found AWS container for region:%v, %v",region, cr[i])
-            if currentModel.ContainerId != nil {
-                if cr[i].ID != *currentModel.ContainerId {
-                    log.Printf("Error: resource has ContainerId set to %v, however there is already an AWS Network Container for this Atlas Project:%+v. Remove the ContainerId property from your template and rety.",*currentModel.ContainerId, cr[i])
-                }
-            }
-            return &cr[i], nil
-        }
-    }
-    // Didn't find one for this AWS region, need to create
-    log.Printf("projectId:%v, region:%v, cidr:%+v", projectId, region, cidr)
+	// Check if have AWS container for this group,
+	// if so return it -
+	// if passed a ContainerId and it does not match, then
+	// return an ERROR, explain to remove the ContainerId parameter
+	opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
+	log.Printf("Looking for any AWS containers for this project:%s. opt:%+v", projectId, opt)
+	cr, _, err := client.Containers.List(context.TODO(), projectId, opt)
+	if err != nil {
+		return &container, err
+	}
+	log.Printf("found AWS containers for project:%+v", cr)
+	// cr is a list, need filter on our region?
+	for i := range cr {
+		log.Printf("RegionName:%s, region:%s", cr[i].RegionName, *region)
+		if cr[i].RegionName == *region {
+			log.Printf("Found AWS container for region:%v, %v", region, cr[i])
+			if currentModel.ContainerId != nil {
+				if cr[i].ID != *currentModel.ContainerId {
+					log.Printf("Error: resource has ContainerId set to %v, however there is already an AWS Network Container for this Atlas Project:%+v. Remove the ContainerId property from your template and rety.", *currentModel.ContainerId, cr[i])
+				}
+			}
+			return &cr[i], nil
+		}
+	}
+	// Didn't find one for this AWS region, need to create
+	log.Printf("projectId:%v, region:%v, cidr:%+v", projectId, region, cidr)
 	containerRequest := &mongodbatlas.Container{}
 	containerRequest.RegionName = *region
 	containerRequest.ProviderName = "AWS"

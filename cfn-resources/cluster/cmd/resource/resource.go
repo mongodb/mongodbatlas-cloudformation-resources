@@ -135,25 +135,25 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.StateName = &cluster.StateName
 
-    // This is the intial call to Create, so inject a deployment
-    // secret for this resource in order to lookup progress properly
-    projectResID := &util.ResourceIdentifier{
-        ResourceType: "Project",
-        ResourceID: projectID,
-    }
-    log.Printf("Created projectResID:%s",projectResID)
-    resourceID := util.NewResourceIdentifier("Cluster", cluster.Name, projectResID)
-    log.Printf("Created resourceID:%s",resourceID)
-    resourceProps := map[string]string{
-        "ClusterName": cluster.Name,
-    }
-    secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
-    if err != nil {
-        log.Printf("Error - %+v",err)
-        return handler.ProgressEvent{}, err
-    }
-    
-    log.Printf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s",secretName)
+	// This is the intial call to Create, so inject a deployment
+	// secret for this resource in order to lookup progress properly
+	projectResID := &util.ResourceIdentifier{
+		ResourceType: "Project",
+		ResourceID:   projectID,
+	}
+	log.Printf("Created projectResID:%s", projectResID)
+	resourceID := util.NewResourceIdentifier("Cluster", cluster.Name, projectResID)
+	log.Printf("Created resourceID:%s", resourceID)
+	resourceProps := map[string]string{
+		"ClusterName": cluster.Name,
+	}
+	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
+	if err != nil {
+		log.Printf("Error - %+v", err)
+		return handler.ProgressEvent{}, err
+	}
+
+	log.Printf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s", secretName)
 	currentModel.Id = secretName
 
 	return handler.ProgressEvent{
@@ -173,39 +173,39 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 
-    log.Printf("Read req:%+v, prevModel:%s, currentModel:%s",req,spew.Sdump(prevModel),spew.Sdump(currentModel))
-    callback := map[string]interface{}(req.CallbackContext)
-    log.Printf("Read -  callback: %v",callback)
+	log.Printf("Read req:%+v, prevModel:%s, currentModel:%s", req, spew.Sdump(prevModel), spew.Sdump(currentModel))
+	callback := map[string]interface{}(req.CallbackContext)
+	log.Printf("Read -  callback: %v", callback)
 
-    secretName := *currentModel.Id
-    log.Printf("Read for Cluster Id/SecretName:%s",secretName)
-    key, err := util.GetApiKeyFromDeploymentSecret(&req, secretName)
-    if err != nil {
-        return handler.ProgressEvent{}, fmt.Errorf("error lookupSecret: %w", err)
-    }
-    log.Printf("key:%+v",key)
+	secretName := *currentModel.Id
+	log.Printf("Read for Cluster Id/SecretName:%s", secretName)
+	key, err := util.GetApiKeyFromDeploymentSecret(&req, secretName)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error lookupSecret: %w", err)
+	}
+	log.Printf("key:%+v", key)
 
 	client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-    // currentModel is NOT populated on the Read after long-running Cluster create
-    // need to parse pid and cluster name from Id (deployment secret name).
+	// currentModel is NOT populated on the Read after long-running Cluster create
+	// need to parse pid and cluster name from Id (deployment secret name).
 
 	//projectID := *currentModel.ProjectId
 	//clusterName := *currentModel.Name
 
-    // key.ResourceID should == *currentModel.Id
-    id, err := util.ParseResourceIdentifier(*currentModel.Id)
-    if err != nil {
+	// key.ResourceID should == *currentModel.Id
+	id, err := util.ParseResourceIdentifier(*currentModel.Id)
+	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error parsing res if (%s): %s", id, err)
-    }
-    log.Printf("Parsed resource identifier: id:%+v",id)
+	}
+	log.Printf("Parsed resource identifier: id:%+v", id)
 
-    projectID := id.Parent.ResourceID
-    clusterName := id.ResourceID
+	projectID := id.Parent.ResourceID
+	clusterName := id.ResourceID
 
-    log.Printf("Got projectID:%s, clusterName:%s, from id:%+v",projectID, clusterName, id)
+	log.Printf("Got projectID:%s, clusterName:%s, from id:%+v", projectID, clusterName, id)
 	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)

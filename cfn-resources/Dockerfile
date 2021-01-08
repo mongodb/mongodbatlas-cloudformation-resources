@@ -1,28 +1,27 @@
-##
-## BASE dockerfile - can build and one resource type
+FROM golang:latest
 
-FROM golang:latest as base
+LABEL version="1.0.0"
 
+LABEL "maintainer"="Jason Mimick <jason.mimick@mongodb.com>"
+LABEL "repository"="https://github.com/mongodb/mongodbatlas-cloudformation-resources"
+LABEL "original-credit"="https://github.com/mridhul/cfn-deploy"
 
-# Install python-pip, zip
-RUN apt-get update && apt-get install -y zip python3-pip
+LABEL com.github.actions.name="MongoDB Atlas Cloudformation Github Deploy"
+LABEL com.github.actions.description="Deploy the MongoDB Atlas Cloudformation custom resources to any AWS region with a Github action."
+LABEL com.github.actions.icon="upload-cloud"
+LABEL com.github.actions.color="green"
 
-FROM base as awstools
+RUN apt-get update && apt-get install -y git build-essential python3-pip 
+RUN rm -rf /var/lib/apt/lists/*
+RUN pip3 install awscli cloudformation-cli cloudformation-cli-java-plugin cloudformation-cli-go-plugin cloudformation-cli-python-plugin
+#COPY requirements.txt /
+#RUN pip3 install -r /requirements.txt
 
-RUN pip3 install cloudformation-cli cloudformation-cli-go-plugin cfn-lint taskcat 
+#WORKDIR /atlas-cfn
+#COPY atlas-cfn-deploy.py atlas-cfn-deploy.py  
+#COPY atlas-cfn-stack-cleaner.sh atlas-cfn-stack-cleaner.sh
+#RUN chmod +x atlas-cfn-stack-cleaner.sh
 
-FROM awstools as builder
-
-COPY . /build/
-#COPY requirements.txt Makefile .rpdk-config mongodb-atlas-project.json /build/
-
-#COPY cmd/ /build/cmd/
-#COPY ../go.mod /build/go.mod
-WORKDIR /build
-RUN pwd && ls -alh
-CMD ./cfn-submit-helper.sh project cluster database-user
-#RUN echo "build complete: " && pwd && ls -lah
-
-#RUN mkdir -p /output/ && cp **/mongodb-atlas-*.zip /output/
-
-#RUN echo "Build output:" && ls -lah /output
+COPY . .
+ADD entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

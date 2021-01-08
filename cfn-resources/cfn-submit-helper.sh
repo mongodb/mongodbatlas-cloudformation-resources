@@ -5,7 +5,7 @@
 #
 # This tool works by running `cfn submit` on each resource
 #
-
+set -x
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -21,25 +21,36 @@ echo "Submitting the following resources: ${resources}"
 
 _CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
 
-_BUILD_ONLY=${BUILD_ONLY:-0}
+_BUILD_ONLY=${BUILD_ONLY:-false}
+_SUBMIT_ONLY=${SUBMIT_ONLY:-false}
+BUILD_TAGS="logging callback"
 
+echo "Step 1/2: Building"
+if [[ "${_SUBMIT_ONLY}" == "true" ]]; then
+    echo "SUBMIT_ONLY, skipping build."
+else
+    for resource in ${resources};
+    do
+        echo "Working on resource:${resource}"
+        cwd=$(pwd)
+        cd "${resource}"
+        echo "resource: ${resource}"
+        echo "Building: with TAGS=${BUILD_TAGS}"
+        TAGS=${BUILD_TAGS} make
+        cd -
+    done
+fi
+if [[ "${_BUILD_ONLY}" == "true" ]]; then
+    echo "BUILD_ONLY true, skipping submit to CloudFormation"
+    exit 0
+fi
+echo "Step 2/2: Submit resource type to CloudFormation Private Registry"
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    echo "Building (Pass 1/2): with TAGS=\"logging callback\""
-    TAGS="logging callback" make
-    echo "Running gofmt before pass 2 `gofmt cmd/`"
-    gofmt cmd/
-    echo "Building (Pass 2/2): with TAGS=\"logging callback\""
-    TAGS="logging callback" make
-    if [[ "${_BUILD_ONLY}" == "true" ]]; then
-        echo "BUILD_ONLY true, skipping submit to CloudFormation"
-        cd -
-        continue
-    fi
     echo "Submiting to CloudFormation with flags: ${_CFN_FLAGS}"
     cfn submit ${_CFN_FLAGS}
     cd -

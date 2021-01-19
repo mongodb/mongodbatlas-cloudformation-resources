@@ -12,6 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::Project",
     "Properties" : {
+        "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
@@ -23,11 +24,22 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::Project
 Properties:
+    <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
 ## Properties
+
+#### Name
+
+Name of the project to create.
+
+_Required_: Yes
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### OrgId
 
@@ -36,6 +48,8 @@ Unique identifier of the organization within which to create the project.
 _Required_: Yes
 
 _Type_: String
+
+_Pattern_: <code>{{resolve:.*:[a-zA-Z0-9_.-/]+}}</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -62,10 +76,6 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
 The unique identifier of the project.
-
-#### Name
-
-Name of the project to create.
 
 #### Created
 

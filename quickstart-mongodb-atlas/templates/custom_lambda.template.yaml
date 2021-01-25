@@ -178,23 +178,6 @@ Resources:
                   - "cloudwatch:PutMetricData"
                 Resource: "*"
 
-  CustomResourceExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      MaxSessionDuration: 8400
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - "lambda.amazonaws.com"
-                - "resources.cloudformation.amazonaws.com"
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AdministratorAccess
-      Path: "/"
-
   CopyZipsFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -336,8 +319,6 @@ Resources:
                   TypeName=type_name,
                   SchemaHandlerPackage=schema_package,
                   LoggingConfig={"LogRoleArn": "${CustomResourceLogDeliveryRole.Arn}", "LogGroupName": "mongodb-atlas-custom-resource-logs"}
-                  #,
-                  #ExecutionRoleArn="${CustomResourceExecutionRole.Arn}"
               )
               status, version_arn = stabilize(response['RegistrationToken'], cfn)
               cfn.set_type_default_version(Arn=version_arn)

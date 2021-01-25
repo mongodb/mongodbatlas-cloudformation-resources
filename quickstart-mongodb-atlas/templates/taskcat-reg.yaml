@@ -105,7 +105,7 @@ Parameters:
     AllowedPattern: ^[0-9a-zA-Z-/.]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/).
-    Default: quickstart-redhat-openshift-4.3-preview/
+    Default: quickstart-mongodb-atlas/
     Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
@@ -122,112 +122,9 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/common/custom_lambda.template.yaml'
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/custom_lambda.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-  AtlasApiKeySecret:
-    Type: 'AWS::SecretsManager::Secret'
-    Properties:
-      Name: !Sub "${AWS::StackName}-ApiKey-Secret"
-      Description: This secret has a hardcoded password in SecretString, how can i make this optional?
-      #
-      # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
-      #
-      SecretString: !Join ['', ['{"PublicKey":"', !Ref "PublicKey",'", "PrivateKey":"', !Ref "PrivateKey", '", "OrgId":"', !Ref "OrgId", '"}'] ]
-      Tags:
-      - Key: mongodb-atlas-quickstart-stack 
-        Value: !Sub "${AWS::StackName}"
-  AtlasIAMRole:
-    DependsOn: CustomLambdaStack
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-        - Effect: Allow
-          Principal:
-            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-          Action: 'sts:AssumeRole'
-  AtlasProject:
-    Type: MongoDB::Atlas::Project
-    DependsOn: AtlasIAMRole
-    Properties:
-      OrgId: !Ref "OrgId" 
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      Name: !Sub "${AWS::StackName}"
-  AtlasProjectIPAccessList:
-    Type: MongoDB::Atlas::ProjectIpAccessList
-    DependsOn: AtlasProject
-    Properties:
-      ProjectId: !Ref "AtlasProject"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      AccessList:
-      - IPAddress: "0.0.0.0/1"
-        Comment: "Testing open all ips"
-  AtlasCluster:
-    Type: MongoDB::Atlas::Cluster
-    DependsOn: AtlasProject
-    Properties:
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      ProjectId: !Ref "AtlasProject"
-      Name: !Sub "${AWS::StackName}"
-      MongoDBMajorVersion: !Ref "ClusterMongoDBMajorVersion"
-      ReplicationFactor: 3
-      NumShards: 1
-      ProviderSettings:
-        ProviderName: "AWS"
-        InstanceSizeName: !Ref "ClusterInstanceSize" 
-        RegionName: !Ref "ClusterRegion"
-  AtlasDatabaseUser:
-    Type: MongoDB::Atlas::DatabaseUser
-    DependsOn: AtlasCluster
-    Properties:
-      ProjectId: !Ref "AtlasProject"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      Username: !GetAtt "AtlasIAMRole.Arn"
-      DatabaseName: "$external"
-      AWSIAMType: "ROLE"
-      Roles:
-      - RoleName: "readWrite"
-        DatabaseName: !Sub "${AWS::StackName}"
-      Scopes:
-      - Name: !Sub "${AWS::StackName}"
-        Type: "CLUSTER"
-Outputs:
-  AtlasIAMRole:
-    Description: "ARN for AWS IAM Role database cluster access"
-    Value: !GetAtt "AtlasIAMRole.Arn"
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasIAMRoleARN" ] ]
-  AtlasDatabaseUser:
-    Description: "Atlas database user, configured for AWS IAM Role access."
-    Value: !Ref AtlasDatabaseUser
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasDatabaseUser" ] ]
-  AtlasProject:
-    Description: "Info on your Atlas deployment"
-    Value: !Ref AtlasProject
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectId" ] ]
-  AtlasProjectIPAccessList:
-    Description: "Atlas project ip access list"
-    Value: !Ref AtlasProjectIPAccessList
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
-  AtlasCluster:
-    Description: "Info on your Atlas Cluster"
-    Value: !Ref AtlasCluster
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasCluster" ] ]
-

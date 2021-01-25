@@ -22,3 +22,6 @@ update.json
 !/.gitignore
 .taskcat_overrides.yml
 
+**/makebuild
+**/functions/packages
+**/taskcat_outputs/

@@ -245,50 +245,10 @@ Resources:
                   timer.cancel()
                   cfnresponse.send(event, context, status, {}, None)
 
-  RegeisterProjectType:
-    DependsOn: CopyZips
-    Type: "AWS::CloudFormation::CustomResource"
-    Properties:
-      ServiceToken: !GetAtt RegisterTypeFunction.Arn
-      TypeName: 'MongoDB::Atlas::Project'
-      ArchiveName: 'mongodb-atlas-project.zip'
-
-  RegeisterClusterType:
-    DependsOn: CopyZips
-    Type: "AWS::CloudFormation::CustomResource"
-    Properties:
-      ServiceToken: !GetAtt RegisterTypeFunction.Arn
-      TypeName: 'MongoDB::Atlas::Cluster'
-      ArchiveName: 'mongodb-atlas-cluster.zip'
-
-  RegeisterDatabaseUserType:
-    DependsOn: CopyZips
-    Type: "AWS::CloudFormation::CustomResource"
-    Properties:
-      ServiceToken: !GetAtt RegisterTypeFunction.Arn
-      TypeName: 'MongoDB::Atlas::DatabaseUser'
-      ArchiveName: 'mongodb-atlas-databaseuser.zip'
-
-
-  RegeisterNetworkPeeringType:
-    DependsOn: CopyZips
-    Type: "AWS::CloudFormation::CustomResource"
-    Properties:
-      ServiceToken: !GetAtt RegisterTypeFunction.Arn
-      TypeName: 'MongoDB::Atlas::NetworkPeering'
-      ArchiveName: 'mongodb-atlas-networkpeering.zip'
-
-
-  RegeisterProjectIpAccessListType:
-    DependsOn: CopyZips
-    Type: "AWS::CloudFormation::CustomResource"
-    Properties:
-      ServiceToken: !GetAtt RegisterTypeFunction.Arn
-      TypeName: 'MongoDB::Atlas::ProjectIpAccessList'
-      ArchiveName: 'mongodb-atlas-projectipaccesslist.zip'
 
   RegisterTypeFunction:
     Type: "AWS::Lambda::Function"
+    DependsOn: CopyZips
     Properties:
       Timeout: 900
       Runtime: python3.7
@@ -352,6 +312,47 @@ Resources:
               finally:
                   cfnresponse.send(event, context, status, {}, physicalResourceId=physical_id)
 
+  RegisterProjectType:
+    DependsOn: RegisterTypeFunction
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt RegisterTypeFunction.Arn
+      TypeName: 'MongoDB::Atlas::Project'
+      ArchiveName: 'mongodb-atlas-project.zip'
+
+  RegisterClusterType:
+    DependsOn: RegisterTypeFunction
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt RegisterTypeFunction.Arn
+      TypeName: 'MongoDB::Atlas::Cluster'
+      ArchiveName: 'mongodb-atlas-cluster.zip'
+
+  RegisterDatabaseUserType:
+    DependsOn: RegisterTypeFunction
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt RegisterTypeFunction.Arn
+      TypeName: 'MongoDB::Atlas::DatabaseUser'
+      ArchiveName: 'mongodb-atlas-databaseuser.zip'
+
+
+  RegisterNetworkPeeringType:
+    DependsOn: RegisterTypeFunction
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt RegisterTypeFunction.Arn
+      TypeName: 'MongoDB::Atlas::NetworkPeering'
+      ArchiveName: 'mongodb-atlas-networkpeering.zip'
+
+
+  RegisterProjectIpAccessListType:
+    DependsOn: RegisterTypeFunction
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt RegisterTypeFunction.Arn
+      TypeName: 'MongoDB::Atlas::ProjectIpAccessList'
+      ArchiveName: 'mongodb-atlas-projectipaccesslist.zip'
 Outputs:
   LambdaZipsBucket:
     Description: "The S3 Bucket to store all custom Lambda functions"

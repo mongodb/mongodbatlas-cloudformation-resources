@@ -6,10 +6,12 @@
             "type": "object",
             "properties": {
                 "PublicKey": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "{{resolve:.*:[a-zA-Z0-9_.-/]+}}"
                 },
                 "PrivateKey": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "{{resolve:.*:[a-zA-Z0-9_.-/]+}}"
                 }
             },
             "additionalProperties": false
@@ -22,7 +24,8 @@
         },
         "OrgId": {
             "description": "Unique identifier of the organization within which to create the project.",
-            "type": "string"
+            "type": "string",
+            "pattern": "{{resolve:.*:[a-zA-Z0-9_.-/]+}}"
 
         },
         "Id": {
@@ -31,8 +34,7 @@
         },
         "Created": {
             "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
         },
         "ClusterCount": {
             "description": "The number of Atlas clusters deployed in the project.",
@@ -47,9 +49,11 @@
         "Name",
         "OrgId"
     ],
+    "createOnlyProperties": [
+        "/properties/Name"
+    ],
     "readOnlyProperties": [
         "/properties/Id",
-        "/properties/Name",
         "/properties/Created",
         "/properties/ClusterCount"
     ],
@@ -64,11 +68,6 @@
             ]
         },
         "read": {
-            "permissions": [
-                "secretsmanager:*"
-            ]
-        },
-        "update": {
             "permissions": [
                 "secretsmanager:*"
             ]

@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.34.28
 	github.com/davecgh/go-spew v1.1.1
 	github.com/rs/xid v1.2.1
+	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cast v1.3.1
 	go.mongodb.org/atlas v0.5.1-0.20201123170532-371c0d8194fe
 	go.mongodb.org/mongo-driver v1.4.3

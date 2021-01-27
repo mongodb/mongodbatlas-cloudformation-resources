@@ -23,7 +23,6 @@ _CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
 
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
-BUILD_TAGS="logging callback"
 
 echo "Step 1/2: Building"
 if [[ "${_SUBMIT_ONLY}" == "true" ]]; then
@@ -35,8 +34,7 @@ else
         cwd=$(pwd)
         cd "${resource}"
         echo "resource: ${resource}"
-        echo "Building: with TAGS=${BUILD_TAGS}"
-        TAGS=${BUILD_TAGS} make
+        make
         cd -
     done
 fi

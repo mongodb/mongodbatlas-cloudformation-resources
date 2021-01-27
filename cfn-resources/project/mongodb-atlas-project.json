@@ -6,12 +6,10 @@
             "type": "object",
             "properties": {
                 "PublicKey": {
-                    "type": "string",
-                    "pattern": "{{resolve:.*:[a-zA-Z0-9_.-/]+}}"
+                    "type": "string"
                 },
                 "PrivateKey": {
-                    "type": "string",
-                    "pattern": "{{resolve:.*:[a-zA-Z0-9_.-/]+}}"
+                    "type": "string"
                 }
             },
             "additionalProperties": false
@@ -24,8 +22,7 @@
         },
         "OrgId": {
             "description": "Unique identifier of the organization within which to create the project.",
-            "type": "string",
-            "pattern": "{{resolve:.*:[a-zA-Z0-9_.-/]+}}"
+            "type": "string"
 
         },
         "Id": {
@@ -63,23 +60,18 @@
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:*",
-                "iam:UpdateAssumeRolePolicy"
             ]
         },
         "read": {
             "permissions": [
-                "secretsmanager:*"
             ]
         },
         "delete": {
             "permissions": [
-                "secretsmanager:*"
             ]
         },
         "list": {
             "permissions": [
-                "secretsmanager:*"
             ]
         }
     }

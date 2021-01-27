@@ -112,7 +112,7 @@
             "description": "Username for authenticating to MongoDB.",
             "type": "string"
         },
-        "UserCNFIdentifier": {
+        "UserCFNIdentifier": {
             "description": "A unique identifier comprised of the Atlas Project ID and Username",
             "type": "string"
         },
@@ -138,36 +138,30 @@
         "Username"
     ],
     "readOnlyProperties": [
-        "/properties/UserCNFIdentifier"
+        "/properties/UserCFNIdentifier"
     ],
     "primaryIdentifier": [
-        "/properties/UserCNFIdentifier"
+        "/properties/UserCFNIdentifier"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:*",
-                "iam:UpdateAssumeRolePolicy"
             ]
         },
         "read": {
             "permissions": [
-                "secretsmanager:*"
             ]
         },
         "update": {
             "permissions": [
-                "secretsmanager:*"
             ]
         },
         "delete": {
             "permissions": [
-                "secretsmanager:*"
             ]
         },
         "list": {
             "permissions": [
-                "secretsmanager:*"
             ]
         }
     }

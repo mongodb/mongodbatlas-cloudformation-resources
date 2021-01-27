@@ -1,0 +1,23 @@
+{
+    "Username" : "Very((8@dNam  00E",
+    "Password" : "OO999###22211!!!",
+    "ProjectId" : "ProjectId",
+    "ApiKeys" : {
+        "PublicKey" : "$ATLAS_PUBLIC_KEY",
+        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    },
+    "DatabaseName": "admin",
+    "Roles": [
+        { "RoleName": "readWrite",
+          "DatabaseName": "testdb",
+          "CollectionName": "col1"
+        }
+    ],
+    "Scopes": [    
+        { "Type": "CLUSTER",
+          "Name": "testdb"
+        }
+    ]
+
+
+}

@@ -1,0 +1,19 @@
+{
+        "ApiKeys": {
+            "PublicKey" : "$ATLAS_PUBLIC_KEY",
+            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+        },
+        "Name": "CFNTest-123",
+        "Id": "6009a513cd1def768c3aaaaa",
+        "ProjectId": "BADID",
+        "NumShards": 1,
+        "ProviderName": "AWS",
+        "ReplicationFactor": 3,
+        "MongoDBVersion": "4.4",
+        "ProviderSettings": {
+            "EncryptEBSVolume": false,
+            "InstanceSizeName": "M21",
+            "RegionName": "us-east-1"
+        }
+
+}

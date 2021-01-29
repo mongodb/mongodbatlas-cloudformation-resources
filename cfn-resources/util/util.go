@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
     log "github.com/sirupsen/logrus"
 	"strings"
+    "os"
 )
 
 const (
@@ -34,3 +35,19 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	atlas.UserAgent = "mongodbatlas-cloudformation-resources/" + Version
 	return atlas, nil
 }
+
+// call this from each resource init() to setup
+// the logger consistently
+func InitLogger() {
+  // Log as JSON instead of the default ASCII formatter.
+  log.SetFormatter(&log.JSONFormatter{})
+
+  // Output to stdout instead of the default stderr
+  // Can be any io.Writer, see below for File example
+  log.SetOutput(os.Stdout)
+
+  // Only log the warning severity or above.
+  log.SetLevel(log.DebugLevel)
+  //log.SetLevel(log.WarnLevel)
+}
+

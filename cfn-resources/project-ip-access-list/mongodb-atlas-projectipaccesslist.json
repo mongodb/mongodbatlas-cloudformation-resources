@@ -100,11 +100,6 @@
             "permissions": [
                 ""
             ]
-        },
-        "list": {
-            "permissions": [
-                ""
-            ]
         }
     }
 }

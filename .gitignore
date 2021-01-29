@@ -25,3 +25,5 @@ update.json
 **/makebuild
 **/functions/packages
 **/taskcat_outputs/
+**/inputs/**
+pytestdebug.log

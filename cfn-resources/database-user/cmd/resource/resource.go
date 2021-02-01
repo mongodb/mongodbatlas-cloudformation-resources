@@ -3,7 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-    "os"
     log "github.com/sirupsen/logrus"
     "github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"

@@ -1,0 +1,180 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template will deploy the MongoDB::Atlas::Project resources into the CloudFormation registry"
+Resources:
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      MaxSessionDuration: 8400
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "resources.cloudformation.amazonaws.com"
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ResourceTypePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ec2:DeleteSecurityGroup"
+                  - "ec2:DescribeAccountAttributes"
+                  - "ec2:DescribeImages"
+                  - "ec2:DescribeInstances"
+                  - "ec2:DescribeInternetGateways"
+                  - "ec2:DescribeRouteTables"
+                  - "ec2:DescribeSecurityGroups"
+                  - "ec2:DescribeSubnets"
+                  - "ec2:DescribeTags"
+                  - "ec2:DescribeVolumes"
+                  - "ec2:DescribeVpcAttribute"
+                  - "ec2:DescribeVpcClassicLink"
+                  - "ec2:DescribeVpcClassicLinkDnsSupport"
+                  - "ec2:DescribeVpcEndpoints"
+                  - "ec2:DescribeVpcs"
+                  - "ec2:RevokeSecurityGroupIngress"
+                  - "ec2:TerminateInstances"
+                  - "elasticloadbalancing:*"
+                  - "iam:GetRole"
+                  - "iam:GetRolePolicy"
+                  - "iam:GetUser"
+                  - "iam:ListAccessKeys"
+                  - "route53:ChangeResourceRecordSets"
+                  - "route53:GetChange"
+                  - "route53:GetHostedZone"
+                  - "route53:ListHostedZones"
+                  - "route53:ListHostedZonesByName"
+                  - "route53:ListQueryLoggingConfigs"
+                  - "route53:ListResourceRecordSets"
+                  - "s3:*"
+                  - "secretsmanager:CreateSecret"
+                  - "secretsmanager:DeleteSecret"
+                  - "secretsmanager:DescribeSecret"
+                  - "secretsmanager:GetSecretValue"
+                  - "secretsmanager:ListSecrets"
+                  - "secretsmanager:PutSecretValue"
+                  - "secretsmanager:TagResource"
+                  - "ssm:*"
+                  - "tag:GetResources"
+                Resource: "*"
+  LogDeliveryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+                - resources.cloudformation.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ResourceTypePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:DescribeLogGroups"
+                  - "logs:DescribeLogStreams"
+                  - "logs:PutLogEvents"
+                  - "cloudwatch:ListMetrics"
+                  - "cloudwatch:PutMetricData"
+                Resource: "*"
+  RegisterTypeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: ResourceTypePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:*"
+                  - "iam:PassRole"
+                Resource: "*"
+
+  RegisterTypeFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Timeout: 900
+      Runtime: python3.7
+      Handler: index.handler
+      Role: !GetAtt RegisterTypeRole.Arn
+      Code:
+        ZipFile: !Sub |
+          import cfnresponse
+          import logging
+          import boto3
+          from time import sleep
+
+          def stabilize(token, cfn):
+              p = cfn.describe_type_registration(RegistrationToken=token)
+              while p['ProgressStatus'] == "IN_PROGRESS":
+                  sleep(5)
+                  p = cfn.describe_type_registration(RegistrationToken=token)
+              if p['ProgressStatus'] == 'FAILED':
+                  logging.error(p)
+                  return cfnresponse.FAILED, p['TypeVersionArn']
+              return cfnresponse.SUCCESS, p['TypeVersionArn']
+
+          def register(cfn):
+              response = cfn.register_type(
+                  Type='RESOURCE',
+                  TypeName='MongoDB::Atlas::Project',
+                  SchemaHandlerPackage="s3://simple-quickstart-mongodb-atlas/resources/mongodb-atlas-project.zip",
+                  LoggingConfig={"LogRoleArn": "${LogDeliveryRole.Arn}", "LogGroupName": "mongodb-atlas-project-logs"},
+                  ExecutionRoleArn="${ExecutionRole.Arn}"
+              )
+              status, version_arn = stabilize(response['RegistrationToken'], cfn)
+              cfn.set_type_default_version(Arn=version_arn)
+              return status, version_arn
+
+          def handler(event, context):
+              print(event)
+              status = cfnresponse.SUCCESS
+              physical_id = event.get('PhysicalResourceId')
+              try:
+                  cfn = boto3.client('cloudformation')
+                  if event['RequestType'] == 'Create':
+                      status, physical_id = register(cfn)
+                  if event['RequestType'] == 'Update':
+                      status, physical_id = register(cfn)
+                  if event['RequestType'] == 'Delete':
+                      versions = cfn.list_type_versions(Type='RESOURCE', TypeName='MongoDB::Atlas::Project')['TypeVersionSummaries']
+                      if len(versions) > 1:
+                          cfn.deregister_type(Arn=physical_id)
+                      else:
+                          cfn.deregister_type(Type='RESOURCE', TypeName='MongoDB::Atlas::Project')
+              except Exception:
+                  logging.error('Unhandled exception', exc_info=True)
+                  status = cfnresponse.FAILED
+              finally:
+                  cfnresponse.send(event, context, status, {}, physicalResourceId=physical_id)
+  RegisterType:
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt RegisterTypeFunction.Arn
+Outputs:
+  ExecutionRoleArn:
+    Value: !GetAtt ExecutionRole.Arn

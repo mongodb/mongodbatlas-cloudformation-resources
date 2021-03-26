@@ -4,13 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+    "log"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/spf13/cast"
+	"go.mongodb.org/atlas/mongodbatlas"
+    "github.com/aws/aws-sdk-go/service/cloudformation"
 )
+
 
 func castNO64(i *int64) *int {
 	x := cast.ToInt(&i)
@@ -30,37 +33,18 @@ func stringPtr(i string) *string {
 	return &i
 }
 
-func getClusterRequest(model *Model) *mongodbatlas.Cluster {
-	autoScaling := mongodbatlas.AutoScaling{
-		DiskGBEnabled: model.AutoScaling.DiskGBEnabled,
-	}
-
-	clusterRequest := &mongodbatlas.Cluster{
-		Name:                     cast.ToString(model.Name),
-		EncryptionAtRestProvider: cast.ToString(model.EncryptionAtRestProvider),
-		ClusterType:              cast.ToString(model.ClusterType),
-		BackupEnabled:            model.BackupEnabled,
-		DiskSizeGB:               model.DiskSizeGB,
-		ProviderBackupEnabled:    model.ProviderBackupEnabled,
-		AutoScaling:              &autoScaling,
-		BiConnector:              expandBiConnector(model.BiConnector),
-		ProviderSettings:         expandProviderSettings(model.ProviderSettings),
-		ReplicationSpecs:         expandReplicationSpecs(model.ReplicationSpecs),
-		ReplicationFactor:        cast64(model.ReplicationFactor),
-		NumShards:                cast64(model.NumShards),
-	}
-
-	if model.MongoDBMajorVersion != nil {
-		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*model.MongoDBMajorVersion)
-	}
-	return clusterRequest
-}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("Create() currentModel:%+v",currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+        log.Printf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
@@ -68,31 +52,75 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	projectID := *currentModel.ProjectId
-
+	log.Printf("cluster Create projectID=%s", projectID)
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType != nil {
-			return handler.ProgressEvent{}, errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
+            err := errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
+            log.Printf("Create - error: %+v", err)
+            return handler.ProgressEvent{
+                OperationStatus: handler.Failed,
+                Message: err.Error(),
+                HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 
 		if currentModel.NumShards != nil {
-			return handler.ProgressEvent{}, errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
+            err := errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
+            log.Printf("Create - error: %+v", err)
+            return handler.ProgressEvent{
+                OperationStatus: handler.Failed,
+                Message: err.Error(),
+                HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 	}
 
-	var autoScaling *mongodbatlas.AutoScaling
-	if currentModel.AutoScaling != nil {
-		autoScaling = &mongodbatlas.AutoScaling{
-			DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
-		}
+	// This is the intial call to Create, so inject a deployment
+	// secret for this resource in order to lookup progress properly
+	projectResID := &util.ResourceIdentifier{
+		ResourceType: "Project",
+		ResourceID:   projectID,
 	}
+	log.Printf("Created projectResID:%s", projectResID)
+	resourceID := util.NewResourceIdentifier("Cluster", *currentModel.Name, projectResID)
+	log.Printf("Created resourceID:%s", resourceID)
+	resourceProps := map[string]string{
+        "Clust:erName": *currentModel.Name,
+	}
+	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
+	if err != nil {
+        log.Printf("Create - CreateDeploymentSecret - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+	}
+
+	log.Printf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s", *secretName)
+	currentModel.Id = secretName
+
+    one := int64(1)
+    three := int64(3)
+    replicationFactor := &three
+    if currentModel.ReplicationFactor != nil {
+        rf := int64(*currentModel.ReplicationFactor)
+        replicationFactor = &rf
+    } else {
+        log.Printf("Default setting ReplicationFactor to 3")
+    }
+
+    numShards := &one
+    if currentModel.NumShards != nil {
+        ns := int64(*currentModel.NumShards)
+        numShards = &ns
+    } else {
+        log.Printf("Default setting NumShards to 1")
+    }
 
 	clusterRequest := &mongodbatlas.Cluster{
 		Name:                     cast.ToString(currentModel.Name),
 		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider),
 		ClusterType:              cast.ToString(currentModel.ClusterType),
-		AutoScaling:              autoScaling,
-		ReplicationFactor:        cast64(currentModel.ReplicationFactor),
-		NumShards:                cast64(currentModel.NumShards),
+		ReplicationFactor:        replicationFactor,
+		NumShards:                numShards,
 	}
 
 	if currentModel.BackupEnabled != nil {
@@ -104,7 +132,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.DiskSizeGB != nil {
-		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
+		currentModel.DiskSizeGB = clusterRequest.DiskSizeGB
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
@@ -116,58 +144,172 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.ProviderSettings != nil {
-	    clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
+		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
 	}
 
 	if currentModel.ReplicationSpecs != nil {
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
 	}
 
-	cluster, resp, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
+    if currentModel.AutoScaling != nil {
+		clusterRequest.AutoScaling = &mongodbatlas.AutoScaling{
+            DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
+        }
+        if currentModel.AutoScaling.Compute != nil {
+            compute := &mongodbatlas.Compute{}
+            if currentModel.AutoScaling.Compute.Enabled != nil {
+                compute.Enabled = currentModel.AutoScaling.Compute.Enabled
+            }
+            if currentModel.AutoScaling.Compute.ScaleDownEnabled != nil {
+                compute.ScaleDownEnabled = currentModel.AutoScaling.Compute.ScaleDownEnabled
+            }
+            if currentModel.AutoScaling.Compute.MinInstanceSize != nil { 
+                compute.MinInstanceSize = *currentModel.AutoScaling.Compute.MinInstanceSize
+            }
+            if currentModel.AutoScaling.Compute.MaxInstanceSize != nil {
+                compute.MaxInstanceSize = *currentModel.AutoScaling.Compute.MaxInstanceSize
+            }
+            clusterRequest.AutoScaling.Compute = compute
+        }
+    }
+
+	cluster, _, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %w %v", err, &resp)
+        log.Printf("Create - Cluster.Create() - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	currentModel.Id = &cluster.ID
 	currentModel.StateName = &cluster.StateName
-
-	return handler.ProgressEvent{
+    log.Printf("Created cluster currentModel: %+v",currentModel)
+    event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{
-			"stateName": cluster.StateName,
+			"stateName":        cluster.StateName,
+			"projectId":        projectID,
+			"clusterName":      *currentModel.Name,
+			"deploymentSecret": secretName,
 		},
-	}, nil
+	}
+    log.Printf("Create() return event:%+v",event)
+    return event, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+    log.Printf("Read() currentModel:%+v",currentModel)
+
+    // Callback is not called - Create() and Update() get recalled on 
+    // long running operations
+	callback := map[string]interface{}(req.CallbackContext)
+	log.Printf("Read -  callback: %v", callback)
+    if currentModel.Id == nil {
+        err := errors.New("No Id found in currentModel")
+        log.Printf("Read - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+    }
+	secretName := *currentModel.Id
+	log.Printf("Read for Cluster Id/SecretName:%s", secretName)
+	key, err := util.GetApiKeyFromDeploymentSecret(&req, secretName)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+        log.Printf("Read - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
+	log.Printf("key:%+v", key)
 
-	projectID := *currentModel.ProjectId
-	clusterName := *currentModel.Name
-
-	cluster, _, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+	client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+        log.Printf("Read - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+	// currentModel is NOT populated on the Read after long-running Cluster create
+	// need to parse pid and cluster name from Id (deployment secret name).
 
-	currentModel.Id = &cluster.ID
-	currentModel.AutoScaling = &AutoScaling{
-		DiskGBEnabled: cluster.AutoScaling.DiskGBEnabled,
+	//projectID := *currentModel.ProjectId
+	//clusterName := *currentModel.Name
+
+	// key.ResourceID should == *currentModel.Id
+	id, err := util.ParseResourceIdentifier(*currentModel.Id)
+	if err != nil {
+        log.Printf("Read - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
+	log.Printf("Parsed resource identifier: id:%+v", id)
+    log.Printf("parent --->%+v", id.Parent)
 
-	currentModel.BackupEnabled = cluster.BackupEnabled
-	currentModel.ProviderBackupEnabled = cluster.ProviderBackupEnabled
-	currentModel.ClusterType = &cluster.ClusterType
-	currentModel.DiskSizeGB = cluster.DiskSizeGB
-	currentModel.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
-	currentModel.MongoDBMajorVersion = &cluster.MongoDBVersion
+	projectID := id.Parent.ResourceID
+	clusterName := id.ResourceID
+
+	log.Printf("Got projectID:%s, clusterName:%s, from id:%+v", projectID, clusterName, id)
+	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
+	if err != nil {
+        if resp != nil && resp.StatusCode == 404 {
+            log.Printf("error 404- err:%+v resp:%+v",err,resp)
+            return handler.ProgressEvent{
+                Message: err.Error(),
+                OperationStatus: handler.Failed,
+                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+        } else {
+            log.Printf("error cluster get- err:%+v resp:%+v",err,resp)
+            return handler.ProgressEvent{
+                Message: err.Error(),
+                OperationStatus: handler.Failed,
+                HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+        }
+	}
+    if currentModel.AutoScaling != nil {
+	    currentModel.AutoScaling = &AutoScaling{
+		    DiskGBEnabled: cluster.AutoScaling.DiskGBEnabled,
+	    }
+        if currentModel.AutoScaling.Compute != nil {
+            compute := &Compute{
+                Enabled: cluster.AutoScaling.Compute.Enabled,
+                ScaleDownEnabled: cluster.AutoScaling.Compute.ScaleDownEnabled,
+                MinInstanceSize: &cluster.AutoScaling.Compute.MinInstanceSize,
+                MaxInstanceSize: &cluster.AutoScaling.Compute.MaxInstanceSize,
+            }
+            currentModel.AutoScaling.Compute = compute
+        }
+
+    }
+
+	if currentModel.BackupEnabled != nil {
+	    currentModel.BackupEnabled = cluster.BackupEnabled
+    }
+
+	if currentModel.ProviderBackupEnabled != nil {
+	    currentModel.ProviderBackupEnabled = cluster.ProviderBackupEnabled
+    }
+
+	if currentModel.ClusterType != nil {
+	    currentModel.ClusterType = &cluster.ClusterType
+    }
+	if currentModel.DiskSizeGB != nil {
+	    currentModel.DiskSizeGB = cluster.DiskSizeGB
+    }
+	if currentModel.EncryptionAtRestProvider != nil {
+	    currentModel.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
+    }
+	if currentModel.MongoDBMajorVersion != nil {
+	    currentModel.MongoDBMajorVersion = &cluster.MongoDBMajorVersion
+    }
 
 	if cluster.NumShards != nil {
 		currentModel.NumShards = castNO64(cluster.NumShards)
@@ -181,33 +323,69 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.SrvAddress = &cluster.SrvAddress
 	currentModel.StateName = &cluster.StateName
 
-	currentModel.BiConnector = &BiConnector{
-		ReadPreference: &cluster.BiConnector.ReadPreference,
-		Enabled:        cluster.BiConnector.Enabled,
-	}
-
+    if currentModel.BiConnector != nil {
+        currentModel.BiConnector = &BiConnector{
+            ReadPreference: &cluster.BiConnector.ReadPreference,
+            Enabled:        cluster.BiConnector.Enabled,
+        }
+    }
 	currentModel.ConnectionStrings = &ConnectionStrings{
-        Standard:               &cluster.ConnectionStrings.Standard,
-        StandardSrv:            &cluster.ConnectionStrings.StandardSrv,
-	    Private:                &cluster.ConnectionStrings.Private,
-        PrivateSrv:             &cluster.ConnectionStrings.PrivateSrv,
-	    //AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
-	    //AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
+		Standard:    &cluster.ConnectionStrings.Standard,
+		StandardSrv: &cluster.ConnectionStrings.StandardSrv,
+		Private:     &cluster.ConnectionStrings.Private,
+		PrivateSrv:  &cluster.ConnectionStrings.PrivateSrv,
+		//AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
+		//AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
 	}
+    log.Printf("step 2 cluster:+%v",cluster)
 
+    /*
 	if cluster.ProviderSettings != nil {
-		currentModel.ProviderSettings = &ProviderSettings{
+        ps := &ProviderSettings{
 			BackingProviderName: &cluster.ProviderSettings.BackingProviderName,
 			DiskIOPS:            castNO64(cluster.ProviderSettings.DiskIOPS),
 			EncryptEBSVolume:    cluster.ProviderSettings.EncryptEBSVolume,
 			InstanceSizeName:    &cluster.ProviderSettings.InstanceSizeName,
-			RegionName:          &cluster.ProviderSettings.RegionName,
 			VolumeType:          &cluster.ProviderSettings.VolumeType,
 		}
+        rn := util.EnsureAWSRegion(cluster.ProviderSettings.RegionName)
+        ps.RegionName = &rn 
+        if currentModel.ProviderSettings.AutoScaling != nil {
+            ps.AutoScaling = &AutoScaling{
+                DiskGBEnabled: cluster.ProviderSettings.AutoScaling.DiskGBEnabled,
+            }
+            if currentModel.ProviderSettings.AutoScaling.Compute != nil {
+                compute := &Compute{}
+
+                if currentModel.ProviderSettings.AutoScaling.Compute.Enabled != nil {
+                    compute.Enabled = cluster.ProviderSettings.AutoScaling.Compute.Enabled
+                }
+                if currentModel.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
+                    compute.ScaleDownEnabled = cluster.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled
+                }
+                if currentModel.ProviderSettings.AutoScaling.Compute.MinInstanceSize != nil { 
+                    compute.MinInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MinInstanceSize
+                }
+                if currentModel.ProviderSettings.AutoScaling.Compute.MaxInstanceSize != nil {
+                    compute.MaxInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MaxInstanceSize
+                }
+                log.Printf("compute -- what?> +%v",compute)
+                ps.AutoScaling.Compute = compute
+            }
+        }
+
+        currentModel.ProviderSettings = ps
 	}
 
-	currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
-	currentModel.ReplicationFactor = castNO64(cluster.ReplicationFactor)
+    if currentModel.ReplicationSpecs != nil {
+	    currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
+    }
+
+	if currentModel.ReplicationFactor != nil {
+	    currentModel.ReplicationFactor = castNO64(cluster.ReplicationFactor)
+    }
+    */
+    log.Printf("Read() end currentModel:%+v",currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -218,9 +396,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("Update() currentModel:%+v",currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+        log.Printf("Update - error: %+v", err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
@@ -229,21 +412,38 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.Name
-
+    log.Printf("Update - clusterName:%s",clusterName)
 	if len(currentModel.ReplicationSpecs) > 0 {
 		if currentModel.ClusterType != nil {
-			return handler.ProgressEvent{}, errors.New("error updating cluster: ClusterType should be set when `ReplicationSpecs` is set")
+            err := errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
+            log.Printf("Update - error: %+v", err)
+            return handler.ProgressEvent{
+                OperationStatus: handler.Failed,
+                Message: err.Error(),
+                HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 
 		if currentModel.NumShards != nil {
-			return handler.ProgressEvent{}, errors.New("error updating cluster: NumShards should be set when `ReplicationSpecs` is set")
+            err := errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
+            log.Printf("Update - error: %+v", err)
+            return handler.ProgressEvent{
+                OperationStatus: handler.Failed,
+                Message: err.Error(),
+                HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 	}
 
-	autoScaling := &mongodbatlas.AutoScaling{
-		DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
-	}
+	var autoScaling *mongodbatlas.AutoScaling
+	if currentModel.AutoScaling != nil {
+		autoScaling = &mongodbatlas.AutoScaling{
+			DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
+		}
+	} else {
+        autoScaling = &mongodbatlas.AutoScaling{}
+    }
 
+
+    log.Printf("Update - autoScaling:%v",autoScaling)
 	clusterRequest := &mongodbatlas.Cluster{
 		Name:                     cast.ToString(currentModel.Name),
 		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider),
@@ -252,23 +452,52 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DiskSizeGB:               currentModel.DiskSizeGB,
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
-		BiConnector:              expandBiConnector(currentModel.BiConnector),
-		ProviderSettings:         expandProviderSettings(currentModel.ProviderSettings),
-		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
-		ReplicationFactor:        cast64(currentModel.ReplicationFactor),
-		NumShards:                cast64(currentModel.NumShards),
-	}
+    }
+    if currentModel.BiConnector != nil {
+	    clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
+    }
+    if currentModel.ProviderSettings != nil {
+		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
+    }
+    if currentModel.ReplicationSpecs != nil {
+		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
+    }
+    if currentModel.ReplicationFactor != nil {
+		clusterRequest.ReplicationFactor = cast64(currentModel.ReplicationFactor)
+    }
+
+    if currentModel.NumShards != nil {
+		clusterRequest.NumShards = cast64(currentModel.NumShards)
+    }
 
 	if currentModel.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
 	}
 
-	cluster, _, err := client.Clusters.Update(context.Background(), projectID, clusterName, clusterRequest)
+    log.Printf("Cluster update clusterRequest:%+v",clusterRequest)
+	cluster, resp, err := client.Clusters.Update(context.Background(), projectID, clusterName, clusterRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating cluster: %s", err)
+        if resp != nil && resp.StatusCode == 404 {
+            log.Printf("update 404 err: %+v",err)
+            return handler.ProgressEvent{
+                Message: err.Error(),
+                OperationStatus: handler.Failed,
+                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+        } else {
+            log.Printf("update err: %+v",err)
+            code := cloudformation.HandlerErrorCodeServiceInternalError
+            if strings.Contains(err.Error(),"not exist") {     // cfn test needs 404
+                code = cloudformation.HandlerErrorCodeNotFound
+            }
+            if strings.Contains(err.Error(),"being deleted") {
+                code = cloudformation.HandlerErrorCodeNotFound       // cfn test needs 404
+            }
+            return handler.ProgressEvent{
+                Message: err.Error(),
+                OperationStatus: handler.Failed,
+                HandlerErrorCode: code}, nil
+        }
 	}
-
-	currentModel.Id = &cluster.ID
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -283,9 +512,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+    log.Printf("Delete() currentModel:%+v",currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+        log.Printf("Delete err: %+v",err)
+		return handler.ProgressEvent{
+            OperationStatus: handler.Failed,
+            Message: err.Error(),
+            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
@@ -295,11 +529,24 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.Name
 
-	_, err = client.Clusters.Delete(context.Background(), projectID, clusterName)
+    resp, err := client.Clusters.Delete(context.Background(), projectID, clusterName)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting cluster info (%s): %s", clusterName, err)
+        if resp != nil && resp.StatusCode == 404 {
+            log.Printf("Delete 404 err: %+v",err)
+            return handler.ProgressEvent{
+                Message: err.Error(),
+                OperationStatus: handler.Failed,
+                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+        } else {
+            log.Printf("Delete err: %+v",err)
+            return handler.ProgressEvent{
+                Message: err.Error(),
+                OperationStatus: handler.Failed,
+                HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+        }
 	}
-
+    mm := fmt.Sprintf("%s-Deleting", projectID)
+    currentModel.Id = &mm 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              "Delete Complete",
@@ -328,18 +575,20 @@ func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
 }
 
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
-    ps := &mongodbatlas.ProviderSettings{
+	// convert AWS- regions to MDB regions
+	regionName := util.EnsureAtlasRegion(*providerSettings.RegionName)
+	ps := &mongodbatlas.ProviderSettings{
 		EncryptEBSVolume:    providerSettings.EncryptEBSVolume,
-		RegionName:          cast.ToString(providerSettings.RegionName),
+		RegionName:          regionName,
 		BackingProviderName: cast.ToString(providerSettings.BackingProviderName),
 		InstanceSizeName:    cast.ToString(providerSettings.InstanceSizeName),
 		ProviderName:        "AWS",
 		VolumeType:          cast.ToString(providerSettings.VolumeType),
 	}
-    if providerSettings.DiskIOPS!=nil {
+	if providerSettings.DiskIOPS != nil {
 		ps.DiskIOPS = cast64(providerSettings.DiskIOPS)
-    }
-    return ps
+	}
+	return ps
 
 }
 
@@ -410,9 +659,15 @@ func flattenRegionsConfig(regionsConfig map[string]mongodbatlas.RegionsConfig) [
 }
 
 func validateProgress(client *mongodbatlas.Client, req handler.Request, currentModel *Model, targetState string, pendingState string) (handler.ProgressEvent, error) {
-	isReady, state, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
+    log.Printf(" Cluster validateProgress() currentModel:%+v",currentModel)
+	isReady, state, cluster, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
+    log.Printf("Cluster validateProgress() isReady:%+v, state:+%v, cluster:%+v",isReady,state,cluster)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+        log.Printf("ERROR Cluster validateProgress() err:%+v", err)
+        return handler.ProgressEvent{
+            Message: err.Error(),
+            OperationStatus: handler.Failed,
+            HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
 	if !isReady {
@@ -428,19 +683,21 @@ func validateProgress(client *mongodbatlas.Client, req handler.Request, currentM
 	}
 
 	p := handler.NewProgressEvent()
-	p.ResourceModel = currentModel
 	p.OperationStatus = handler.Success
 	p.Message = "Complete"
+    if targetState != "DELETED" {
+	    p.ResourceModel = currentModel
+    }
 	return p, nil
 }
 
-func isClusterInTargetState(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, error) {
+func isClusterInTargetState(client *mongodbatlas.Client, projectID, clusterName, targetState string) (bool, string, *mongodbatlas.Cluster, error) {
 	cluster, resp, err := client.Clusters.Get(context.Background(), projectID, clusterName)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			return "DELETED" == targetState, "DELETED", nil
+			return "DELETED" == targetState, "DELETED", nil, nil
 		}
-		return false, "ERROR", fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+		return false, "ERROR", nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
-	return cluster.StateName == targetState, cluster.StateName, nil
+	return cluster.StateName == targetState, cluster.StateName, cluster, nil
 }

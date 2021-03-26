@@ -1,0 +1,12 @@
+{
+    "Name" : "CFN-Test-AccessList-1",
+    "ProjectId" : "ProjectId",
+    "ApiKeys" : {
+        "PublicKey" : "$ATLAS_PUBLIC_KEY",
+        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    },
+    "AccessList" : [
+        { "IPAddress": "10.Not.An.Ip.167",
+          "Comment": "Testing not a real ip address" }
+    ]
+}

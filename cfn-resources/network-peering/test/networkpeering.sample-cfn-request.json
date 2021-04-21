@@ -1,0 +1,23 @@
+{
+    "desiredResourceState" : {
+        "resourceType" : "MongoDB::Atlas::NetworkPeering",
+        "properties" : {
+            "ProjectId" : "ProjectId",
+            "ApiKeys" : {
+                "PublicKey" : "$ATLAS_PUBLIC_KEY",
+                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+            },
+            "AccepterRegionName": "${AWS_REGION}",
+            "AwsAccountId": "${AWS_ACCOUNTID}", 
+            "RouteTableCIDRBlock": "AtlasCIDRBlock", 
+            "VpcId": "VPC"
+        }
+    },
+    "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",
+    "previousResourceState": { 
+        "resourceType" : "MongoDB::Atlas::NetworkPeering",
+        "properties" : {
+            "Id" : "Id"
+        }
+    }
+}

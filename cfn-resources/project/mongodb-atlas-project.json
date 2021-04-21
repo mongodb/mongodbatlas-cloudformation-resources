@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::Project",
     "description": "Retrieves or creates projects in any given Atlas organization.",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/database-users/project",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",
@@ -32,8 +31,7 @@
         },
         "Created": {
             "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
         },
         "ClusterCount": {
             "description": "The number of Atlas clusters deployed in the project.",
@@ -48,6 +46,9 @@
         "Name",
         "OrgId"
     ],
+    "createOnlyProperties": [
+        "/properties/Name"
+    ],
     "readOnlyProperties": [
         "/properties/Id",
         "/properties/Created",
@@ -59,27 +60,18 @@
     "handlers": {
         "create": {
             "permissions": [
-                ""
             ]
         },
         "read": {
             "permissions": [
-                ""
-            ]
-        },
-        "update": {
-            "permissions": [
-                ""
             ]
         },
         "delete": {
             "permissions": [
-                ""
             ]
         },
         "list": {
             "permissions": [
-                ""
             ]
         }
     }

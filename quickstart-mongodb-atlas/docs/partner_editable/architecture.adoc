@@ -1,0 +1,18 @@
+Deploying this Quick Start for a new virtual private cloud (VPC) with default parameters builds the following {partner-product-short-name} deployment.
+
+Deploying this Quick Start for an existing virtual private cloud (VPC) with
+default parameters builds the following _{partner-product-short-name}_ environment in the
+AWS Cloud.
+
+// Replace this example diagram with your own. Send us your source PowerPoint file. Be sure to follow our guidelines here : http://(we should include these points on our contributors giude)
+[#architecture1]
+.Quick Start architecture for _{partner-product-short-name}_
+[link=images/simple-quickstart-arch.png]
+image::../images/simple-quickstart-arch.png[Architecture,width=648,height=439]
+
+As shown in Figure 1, the Quick Start sets up the following:
+
+* A highly available architecture that spans at least three Availability Zones.
+* MongoDB Atlas Project, Database User, Cluster, Project IP Access List
+* An optional VPC Peering between your existing VPC and your new Atlas Deployment.
+

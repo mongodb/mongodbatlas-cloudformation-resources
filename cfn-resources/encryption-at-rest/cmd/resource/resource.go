@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/go-client-mongodb-atlas/mongodbatlas"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 // Create handles the Create event from the Cloudformation service.

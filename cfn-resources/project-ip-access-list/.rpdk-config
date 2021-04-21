@@ -1,0 +1,12 @@
+{
+    "typeName": "MongoDB::Atlas::ProjectIpAccessList",
+    "language": "go",
+    "runtime": "go1.x",
+    "entrypoint": "handler",
+    "testEntrypoint": "handler",
+    "settings": {
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/project-ip-access-list",
+        "protocolVersion": "2.0.0",
+        "pluginVersion": "2.0.4"
+    }
+}

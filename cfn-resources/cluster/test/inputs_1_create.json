@@ -1,0 +1,29 @@
+{
+        "ApiKeys": {
+            "PublicKey" : "$ATLAS_PUBLIC_KEY",
+            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+        },
+        "Name": "CFNTest-123",
+        "ProjectId": "600738d8cce4a06c4783b3be",
+        "MongoDBMajorVersion": "4.4",
+        "AutoScaling": {
+            "DiskGBEnabled": "true",
+            "Compute": {}
+        }, 
+        "NumShards": "1",
+        "BiConnector": {
+            "ReadPreference": "secondary",
+            "Enabled": "false"
+        }, 
+        "ProviderSettings": {
+            "AutoScaling": {
+                "Compute": {}
+            }, 
+            "InstanceSizeName": "M10",
+            "RegionName": "us-east-1",
+            "DiskIOPS": "100",
+            "EncryptEBSVolume": "true",
+            "VolumeType": "STANDARD"
+        }
+
+}

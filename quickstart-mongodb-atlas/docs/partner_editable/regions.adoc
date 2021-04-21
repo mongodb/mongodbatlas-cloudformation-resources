@@ -1,0 +1,2 @@
+Please see the [AWS Region](https://docs.atlas.mongodb.com/reference/amazon-aws) reference in the MongoDB Atlas documentation for a complete and most up to date information.
+

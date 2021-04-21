@@ -17,10 +17,10 @@ RUN pip3 install cloudformation-cli cloudformation-cli-java-plugin cloudformatio
 COPY requirements.txt /
 RUN pip3 install -r /requirements.txt
 
-WORKDIR /atlas-cfn
-COPY atlas-cfn-deploy.py atlas-cfn-deploy.py  
-COPY atlas-cfn-stack-cleaner.sh atlas-cfn-stack-cleaner.sh
-RUN chmod +x atlas-cfn-stack-cleaner.sh
+#WORKDIR /atlas-cfn
+#COPY atlas-cfn-deploy.py atlas-cfn-deploy.py  
+#COPY atlas-cfn-stack-cleaner.sh atlas-cfn-stack-cleaner.sh
+#RUN chmod +x atlas-cfn-stack-cleaner.sh
 
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

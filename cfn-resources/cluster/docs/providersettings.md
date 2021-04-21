@@ -8,7 +8,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#autoscaling" title="AutoScaling">AutoScaling</a>" : <i><a href="autoscalingprovider.md">AutoScalingProvider</a></i>,
+    "<a href="#autoscaling" title="AutoScaling">AutoScaling</a>" : <i><a href="autoscaling.md">autoScaling</a></i>,
     "<a href="#backingprovidername" title="BackingProviderName">BackingProviderName</a>" : <i>String</i>,
     "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
     "<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>" : <i>Integer</i>,
@@ -22,7 +22,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#autoscaling" title="AutoScaling">AutoScaling</a>: <i><a href="autoscalingprovider.md">AutoScalingProvider</a></i>
+<a href="#autoscaling" title="AutoScaling">AutoScaling</a>: <i><a href="autoscaling.md">autoScaling</a></i>
 <a href="#backingprovidername" title="BackingProviderName">BackingProviderName</a>: <i>String</i>
 <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
 <a href="#diskiops" title="DiskIOPS">DiskIOPS</a>: <i>Integer</i>
@@ -38,7 +38,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 _Required_: No
 
-_Type_: <a href="autoscalingprovider.md">AutoScalingProvider</a>
+_Type_: <a href="autoscaling.md">autoScaling</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

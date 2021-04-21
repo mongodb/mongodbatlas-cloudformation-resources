@@ -8,21 +8,21 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#name" title="name">name</a>" : <i>String</i>,
-    "<a href="#type" title="type">type</a>" : <i>String</i>
+    "<a href="#name" title="Name">Name</a>" : <i>String</i>,
+    "<a href="#type" title="Type">Type</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#name" title="name">name</a>: <i>String</i>
-<a href="#type" title="type">type</a>: <i>String</i>
+<a href="#name" title="Name">Name</a>: <i>String</i>
+<a href="#type" title="Type">Type</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### name
+#### Name
 
 _Required_: No
 
@@ -32,7 +32,7 @@ _Minimum_: <code>1</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### type
+#### Type
 
 _Required_: No
 

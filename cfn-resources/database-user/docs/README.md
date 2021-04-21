@@ -12,16 +12,16 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::DatabaseUser",
     "Properties" : {
+        "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#databasename" title="DatabaseName">DatabaseName</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>,
         "<a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>" : <i>String</i>,
+        "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
         "<a href="#scopes" title="Scopes">Scopes</a>" : <i>[ <a href="scopedefinition.md">scopeDefinition</a>, ... ]</i>,
-        "<a href="#password" title="Password">Password</a>" : <i>String</i>,
-        "<a href="#username" title="Username">Username</a>" : <i>String</i>,
-        "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+        "<a href="#username" title="Username">Username</a>" : <i>String</i>
     }
 }
 </pre>
@@ -31,22 +31,42 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::DatabaseUser
 Properties:
+    <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#databasename" title="DatabaseName">DatabaseName</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
       - <a href="labeldefinition.md">labelDefinition</a></i>
     <a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>: <i>String</i>
+    <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
       - <a href="roledefinition.md">roleDefinition</a></i>
     <a href="#scopes" title="Scopes">Scopes</a>: <i>
       - <a href="scopedefinition.md">scopeDefinition</a></i>
-    <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#username" title="Username">Username</a>: <i>String</i>
-    <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
 ## Properties
+
+#### AWSIAMType
+
+If this value is set, the new database user authenticates with AWS IAM credentials.
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>ROLE</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ApiKeys
+
+_Required_: No
+
+_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### DatabaseName
 
@@ -80,6 +100,16 @@ _Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>GROUP</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Password
+
+The user’s password. This field is not included in the entity returned from the server.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### ProjectId
 
 Unique identifier of the Atlas project to which the user belongs.
@@ -110,16 +140,6 @@ _Type_: List of <a href="scopedefinition.md">scopeDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Password
-
-The user’s password. This field is not included in the entity returned from the server.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### Username
 
 Username for authenticating to MongoDB.
@@ -127,26 +147,6 @@ Username for authenticating to MongoDB.
 _Required_: Yes
 
 _Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AWSIAMType
-
-If this value is set, the new database user authenticates with AWS IAM credentials.
-
-_Required_: No
-
-_Type_: String
-
-_Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>ROLE</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ApiKeys
-
-_Required_: No
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

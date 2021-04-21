@@ -8,21 +8,21 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#publickey" title="PublicKey">PublicKey</a>" : <i>String</i>,
-    "<a href="#privatekey" title="PrivateKey">PrivateKey</a>" : <i>String</i>
+    "<a href="#privatekey" title="PrivateKey">PrivateKey</a>" : <i>String</i>,
+    "<a href="#publickey" title="PublicKey">PublicKey</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#publickey" title="PublicKey">PublicKey</a>: <i>String</i>
 <a href="#privatekey" title="PrivateKey">PrivateKey</a>: <i>String</i>
+<a href="#publickey" title="PublicKey">PublicKey</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### PublicKey
+#### PrivateKey
 
 _Required_: No
 
@@ -30,7 +30,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### PrivateKey
+#### PublicKey
 
 _Required_: No
 

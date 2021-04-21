@@ -2,17 +2,27 @@
     "typeName": "MongoDB::Atlas::Cluster",
     "description": "The cluster resource provides access to your cluster configurations. The resource lets you create, edit and delete clusters. The resource requires your Project ID.",
     "definitions": {
-        "AutoScalingProvider": {
+        "autoScaling": {
             "type": "object",
             "properties": {
+                "DiskGBEnabled": {
+                    "type": "boolean"
+                },
                 "Compute": {
-                    "$ref": "#/definitions/AutoScalingProviderCompute"
+                    "$ref": "#/definitions/compute"
                 }
-            }
+            },
+            "additionalProperties": false
         },
-        "AutoScalingProviderCompute": {
+        "compute": {
             "type": "object",
             "properties": {
+                "Enabled": {
+                    "type": "boolean"
+                },
+                "ScaleDownEnabled": {
+                    "type": "boolean"
+                },
                 "MinInstanceSize": {
                     "type": "string"
                 },
@@ -40,7 +50,8 @@
                 "ReadOnlyNodes": {
                     "type": "integer"
                 }
-            }
+            },
+            "additionalProperties": false
         },
         "ReplicationSpec": {
             "type": "object",
@@ -99,24 +110,7 @@
             "$ref": "#/definitions/apiKeyDefinition"
         },
         "AutoScaling": {
-            "type": "object",
-            "properties": {
-                "Compute": {
-                    "type": "object",
-                    "properties": {
-                        "Enabled": {
-                            "type": "boolean"
-                        },
-                        "ScaleDownEnabled": {
-                            "type": "boolean"
-                        }
-                    }
-                },
-                "DiskGBEnabled": {
-                    "type": "boolean"
-                }
-            },
-            "additionalProperties": false
+            "$ref": "#/definitions/autoScaling"
         },
         "BackupEnabled": {
             "description": "Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.",
@@ -228,7 +222,7 @@
             "type": "object",
             "properties": {
                 "AutoScaling": {
-                    "$ref": "#/definitions/AutoScalingProvider"
+                    "$ref": "#/definitions/autoScaling"
                 },
                 "BackingProviderName": {
                     "type": "string"
@@ -276,10 +270,13 @@
     },
     "additionalProperties": false,
     "required": [
-        "Name",
-        "ProviderSettings"
+        "Name"
     ],
     "readOnlyProperties": [
+        "/properties/ConnectionStrings/Standard",
+        "/properties/ConnectionStrings/StandardSrv",
+        "/properties/ConnectionStrings/Private",
+        "/properties/ConnectionStrings/PrivateSrv",
         "/properties/StateName",
         "/properties/SrvAddress",
         "/properties/Paused",
@@ -289,33 +286,48 @@
         "/properties/MongoURIWithOptions",
         "/properties/Id"
     ],
-    "writeOnlyProperties": [
-        "/properties/ApiKeys",
-        "/properties/ProjectId"
-    ],
     "primaryIdentifier": [
         "/properties/Id"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:*",
-                "iam:UpdateAssumeRolePolicy"
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:UpdateSecretVersionStage",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:CreateSecretInput"
             ]
         },
         "read": {
             "permissions": [
-                "secretsmanager:*"
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:UpdateSecretVersionStage",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:CreateSecretInput"
             ]
         },
         "update": {
             "permissions": [
-                "secretsmanager:*"
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:UpdateSecretVersionStage",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:CreateSecretInput"
             ]
         },
         "delete": {
             "permissions": [
-                "secretsmanager:*"
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:UpdateSecretVersionStage",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:CreateSecretInput"
             ]
         }
     }

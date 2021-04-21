@@ -4,6 +4,16 @@
 #
 #
 # This tool works by running `cfn submit` on each resource
+# By default it will build and submit every resource found
+# in this directory.
+# There are some options.
+#
+# BUILD_ONLY=true|false
+# SUBMIT_ONLY=true|false
+# LOG_LEVEL=logrus valid string loglevel
+#
+# Example with DEBUG logging enabled by default for set of resources:
+# LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 set -x
 set -o errexit
@@ -23,6 +33,7 @@ _CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
 
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
+_DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 
 echo "Step 1/2: Building"
 if [[ "${_SUBMIT_ONLY}" == "true" ]]; then
@@ -34,7 +45,11 @@ else
         cwd=$(pwd)
         cd "${resource}"
         echo "resource: ${resource}"
-        make
+        if [[ "${_DEFAULT_LOG_LEVEL}" == "debug" ]]; then
+            make debug
+        else
+            make
+        fi
         cd -
     done
 fi

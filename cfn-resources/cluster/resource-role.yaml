@@ -23,8 +23,12 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                - "iam:UpdateAssumeRolePolicy"
-                - "secretsmanager:*"
+                - "secretsmanager:CreateSecret"
+                - "secretsmanager:CreateSecretInput"
+                - "secretsmanager:DescribeSecret"
+                - "secretsmanager:GetSecretValue"
+                - "secretsmanager:PutSecretValue"
+                - "secretsmanager:UpdateSecretVersionStage"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

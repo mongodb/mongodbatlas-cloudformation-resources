@@ -8,23 +8,23 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#collectionname" title="collectionName">collectionName</a>" : <i>String</i>,
-    "<a href="#databasename" title="databaseName">databaseName</a>" : <i>String</i>,
-    "<a href="#rolename" title="roleName">roleName</a>" : <i>String</i>
+    "<a href="#collectionname" title="CollectionName">CollectionName</a>" : <i>String</i>,
+    "<a href="#databasename" title="DatabaseName">DatabaseName</a>" : <i>String</i>,
+    "<a href="#rolename" title="RoleName">RoleName</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#collectionname" title="collectionName">collectionName</a>: <i>String</i>
-<a href="#databasename" title="databaseName">databaseName</a>: <i>String</i>
-<a href="#rolename" title="roleName">roleName</a>: <i>String</i>
+<a href="#collectionname" title="CollectionName">CollectionName</a>: <i>String</i>
+<a href="#databasename" title="DatabaseName">DatabaseName</a>: <i>String</i>
+<a href="#rolename" title="RoleName">RoleName</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### collectionName
+#### CollectionName
 
 _Required_: No
 
@@ -32,7 +32,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### databaseName
+#### DatabaseName
 
 _Required_: No
 
@@ -40,7 +40,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### roleName
+#### RoleName
 
 _Required_: No
 

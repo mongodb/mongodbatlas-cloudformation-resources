@@ -69,7 +69,8 @@ func GetApiKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
 	sm := secretsmanager.New(req.Session)
 	output, err := sm.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretName})
 	if err != nil {
-		panic(err.Error())
+		log.Printf("Error --- %v", err.Error())
+		return DeploymentSecret{}, err
 	}
 	fmt.Println(*output.SecretString)
 	var key DeploymentSecret

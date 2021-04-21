@@ -2,22 +2,32 @@
     "desiredResourceState" : {
         "resourceType" : "MongoDB::Atlas::Cluster",
         "properties" : {
-            "Name" : "Name",
-            "ProjectId" : "ProjectId",
-            "ApiKeys" : {
-                "PublicKey" : "$ATLAS_PUBLIC_KEY",
-                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+          "ApiKeys": {
+            "PublicKey": "ATYOKSFO",
+            "PrivateKey": "f65014a7-b076-49ba-ab87-633797aa7ac3"
+          },
+          "Name": "Clusters-Thurs-3",
+          "ProjectId": "601c5e63e935a617924fb038",
+          "MongoDBMajorVersion": "4.4",
+          "AutoScaling": {
+            "DiskGBEnabled": "true",
+            "Compute": {}
+          },
+          "NumShards": "1",
+          "BiConnector": {
+            "ReadPreference": "secondary",
+            "Enabled": "false"
+          },
+          "ProviderSettings": {
+            "AutoScaling": {
+              "Compute": {}
             },
-            "NumShards": 1,
-            "ProviderName": "AWS",
-            "ReplicationFactor": 3,
-            "MongoDBVersion": "4.4",
-            "ProviderSettings": {
-                "EncryptEBSVolume": false,
-                "InstanceSizeName": "M10",
-                "RegionName": "Region"
-            }
-
+            "InstanceSizeName": "M10",
+            "RegionName": "us-east-1",
+            "DiskIOPS": "100",
+            "EncryptEBSVolume": "true",
+            "VolumeType": "STANDARD"
+          }
         }
     },
     "providerLogGroupName" : "mongodb-atlas-cluster-logs",

@@ -12,9 +12,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::ProjectIpAccessList",
     "Properties" : {
-        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#accesslist" title="AccessList">AccessList</a>" : <i>[ <a href="accesslistdefinition.md">accessListDefinition</a>, ... ]</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
     }
 }
 </pre>
@@ -24,23 +24,13 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::ProjectIpAccessList
 Properties:
-    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#accesslist" title="AccessList">AccessList</a>: <i>
       - <a href="accesslistdefinition.md">accessListDefinition</a></i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
 </pre>
 
 ## Properties
-
-#### ProjectId
-
-The unique identifier for the project to which you want to add one or more ip access list entries.
-
-_Required_: Yes
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### AccessList
 
@@ -55,6 +45,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: Yes
 
 _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProjectId
+
+The unique identifier for the project to which you want to add one or more ip access list entries.
+
+_Required_: Yes
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

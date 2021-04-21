@@ -1,4 +1,5 @@
 {
+    "artifact_type": "RESOURCE",
     "typeName": "MongoDB::Atlas::EncryptionAtRest",
     "language": "go",
     "runtime": "go1.x",
@@ -7,6 +8,6 @@
     "settings": {
         "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/encryption-at-rest",
         "protocolVersion": "2.0.0",
-        "pluginVersion": "2.0.3"
+        "pluginVersion": "2.0.4"
     }
 }

@@ -5,14 +5,25 @@
         },
         "Name": "CFNTest-123",
         "ProjectId": "600738d8cce4a06c4783b3be",
-        "NumShards": 1,
-        "ProviderName": "AWS",
-        "ReplicationFactor": 3,
-        "MongoDBVersion": "4.4",
+        "MongoDBMajorVersion": "4.4",
+        "AutoScaling": {
+            "DiskGBEnabled": "true",
+            "Compute": {}
+        }, 
+        "NumShards": "1",
+        "BiConnector": {
+            "ReadPreference": "secondary",
+            "Enabled": "false"
+        }, 
         "ProviderSettings": {
-            "EncryptEBSVolume": false,
+            "AutoScaling": {
+                "Compute": {}
+            }, 
             "InstanceSizeName": "M10",
-            "RegionName": "us-east-1"
+            "RegionName": "us-east-1",
+            "DiskIOPS": "100",
+            "EncryptEBSVolume": "true",
+            "VolumeType": "STANDARD"
         }
 
 }

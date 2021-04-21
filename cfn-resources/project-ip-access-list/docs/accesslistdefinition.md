@@ -8,10 +8,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
+    "<a href="#awssecuritygroup" title="AwsSecurityGroup">AwsSecurityGroup</a>" : <i>String</i>,
+    "<a href="#cidrblock" title="CIDRBlock">CIDRBlock</a>" : <i>String</i>,
     "<a href="#comment" title="Comment">Comment</a>" : <i>String</i>,
     "<a href="#ipaddress" title="IPAddress">IPAddress</a>" : <i>String</i>,
-    "<a href="#cidrblock" title="CIDRBlock">CIDRBlock</a>" : <i>String</i>,
-    "<a href="#awssecuritygroup" title="AwsSecurityGroup">AwsSecurityGroup</a>" : <i>String</i>,
     "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>
 }
 </pre>
@@ -19,28 +19,18 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
+<a href="#awssecuritygroup" title="AwsSecurityGroup">AwsSecurityGroup</a>: <i>String</i>
+<a href="#cidrblock" title="CIDRBlock">CIDRBlock</a>: <i>String</i>
 <a href="#comment" title="Comment">Comment</a>: <i>String</i>
 <a href="#ipaddress" title="IPAddress">IPAddress</a>: <i>String</i>
-<a href="#cidrblock" title="CIDRBlock">CIDRBlock</a>: <i>String</i>
-<a href="#awssecuritygroup" title="AwsSecurityGroup">AwsSecurityGroup</a>: <i>String</i>
 <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### Comment
+#### AwsSecurityGroup
 
-Comment associated with the ip access list entry.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### IPAddress
-
-Accessable IP address. Mutually exclusive with CIDRBlock and AwsSecurityGroup.
+ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.
 
 _Required_: No
 
@@ -58,9 +48,19 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### AwsSecurityGroup
+#### Comment
 
-ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.
+Comment associated with the ip access list entry.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### IPAddress
+
+Accessable IP address. Mutually exclusive with CIDRBlock and AwsSecurityGroup.
 
 _Required_: No
 

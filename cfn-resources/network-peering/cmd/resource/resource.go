@@ -4,12 +4,16 @@ import (
 	"context"
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 	"os"
-    "github.com/aws/aws-sdk-go/service/cloudformation"
-    log "github.com/sirupsen/logrus"
 )
+
+func setup() {
+	util.SetupLogger("mongodb-atlas-network-peering")
+}
 
 // Helper to check container id or create one for the AWS region for
 // the given project. This is patterned off the mongocli logic:
@@ -22,12 +26,32 @@ import (
 // AtlasCIDRBlock  - defaults to: "172.31.0.0/21"
 
 var (
-	DefaultAWSCIDR = "172.31.0.0/21"
-    DefaultRouteTableCIDRBlock = "10.0.0.0/24"
+	DefaultAWSCIDR             = "172.31.0.0/21"
+	DefaultRouteTableCIDRBlock = "10.0.0.0/24"
 )
 
-func init() {
-    util.InitLogger()
+func findContainer(projectId string, region string, currentModel *Model) (bool, *mongodbatlas.Container, error) {
+	var container mongodbatlas.Container
+	log.Debugf("findContainer projectId:%+v, region:%+v", projectId, region)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return false, &container, err
+	}
+	opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
+	log.Debugf("Looking for any AWS containers for this project:%s. opt:%+v", projectId, opt)
+	containers, _, err := client.Containers.List(context.TODO(), projectId, opt)
+	if err != nil {
+		return false, &container, err
+	}
+	log.Debugf("found AWS containers for project:%+v", containers)
+	for i := range containers {
+		log.Debugf("RegionName:%s, region:%s", containers[i].RegionName, region)
+		if containers[i].RegionName == region {
+			log.Debugf("Found AWS container for region:%v, %v", region, containers[i])
+			return true, &containers[i], nil
+		}
+	}
+	return false, &container, nil
 }
 func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, currentModel *Model) (*mongodbatlas.Container, error) {
 	log.Debugf("validateOrCreateNetworkContainer prevModel:%+v, currentModel:%+v", prevModel, currentModel)
@@ -37,10 +61,6 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 	}
 	if currentModel.ProjectId == nil {
 		return &container, fmt.Errorf("ProjectId was not set! currentModel:%+v", currentModel)
-	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return &container, err
 	}
 
 	var ar string
@@ -55,31 +75,18 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 	}
 	log.Debugf("converted to atlas region :%v", ar)
 
-    projectId := *currentModel.ProjectId
+	projectId := *currentModel.ProjectId
 	region := &ar
 	// Check if have AWS container for this group,
 	// if so return it -
 	// if passed a ContainerId and it does not match, then
 	// return an ERROR, explain to remove the ContainerId parameter
-	opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
-	log.Debugf("Looking for any AWS containers for this project:%s. opt:%+v", projectId, opt)
-	cr, _, err := client.Containers.List(context.TODO(), projectId, opt)
+	found, c, err := findContainer(projectId, *region, currentModel)
 	if err != nil {
 		return &container, err
 	}
-	log.Debugf("found AWS containers for project:%+v", cr)
-	// cr is a list, need filter on our region?
-	for i := range cr {
-		log.Debugf("RegionName:%s, region:%s", cr[i].RegionName, *region)
-		if cr[i].RegionName == *region {
-			log.Debugf("Found AWS container for region:%v, %v", region, cr[i])
-			if currentModel.ContainerId != nil {
-				if cr[i].ID != *currentModel.ContainerId {
-					log.Debugf("Error: resource has ContainerId set to %v, however there is already an AWS Network Container for this Atlas Project:%+v. Remove the ContainerId property from your template and rety.", *currentModel.ContainerId, cr[i])
-				}
-			}
-			return &cr[i], nil
-		}
+	if found {
+		return c, nil
 	}
 	// Didn't find one for this AWS region, need to create
 	log.Debugf("projectId:%v, region:%v, cidr:%+v", projectId, region, &DefaultAWSCIDR)
@@ -88,8 +95,22 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 	containerRequest.ProviderName = "AWS"
 	containerRequest.AtlasCIDRBlock = DefaultAWSCIDR
 	log.Debugf("containerRequest:%+v", containerRequest)
-	containerResponse, _, err := client.Containers.Create(context.TODO(), *currentModel.ProjectId, containerRequest)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
+		return &container, err
+	}
+	containerResponse, resp, err := client.Containers.Create(context.TODO(), *currentModel.ProjectId, containerRequest)
+	// TODO add logging here
+	if resp != nil && resp.StatusCode == 409 {
+		log.Warnf("Container already exists, looking for it: resp:%+v", resp)
+		found, c, err := findContainer(projectId, *region, currentModel)
+		if err != nil {
+			return c, err
+		}
+		if found {
+			return c, nil
+		}
+	} else if err != nil {
 		return &container, err
 	}
 	log.Debugf("created container response:%v", containerResponse)
@@ -98,26 +119,26 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
+	setup()
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-        log.WithFields(log.Fields{"err":err,}).Error("Create - error")
+		log.Warnf("Create - error err:%+v", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-    log.WithFields(log.Fields{"currentModel":currentModel,}).Debug("Create")
+	log.Debugf("Create - currentModel:%+v", currentModel)
 	projectID := *currentModel.ProjectId
 	container, err := validateOrCreateNetworkContainer(&req, prevModel, currentModel)
 
 	if err != nil {
-		log.Errorf("error network container mgmt: %v", err)
+		log.Warnf("error network container mgmt: %v", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 	log.Debugf("Found valid container:%+v", container)
 
@@ -131,12 +152,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Debugf("Create region=%v ~~~~~~~~~~~~~~~~~~~~~~~~", *region)
 	if region == nil || *region == "" {
 		region = &req.RequestContext.Region
-		log.Debugf("AccepterRegionName was not set, default to req.RequestContext.Region:%v", region)
+		log.Infof("AccepterRegionName was not set, default to req.RequestContext.Region:%v", region)
 	}
 	awsAccountId := currentModel.AwsAccountId
 	if awsAccountId == nil || *awsAccountId == "" {
 		awsAccountId = &req.RequestContext.AccountID
-		log.Debugf("AwsAccountIdwas not set, default to req.RequestContext.AccountID:%v", awsAccountId)
+		log.Infof("AwsAccountIdwas not set, default to req.RequestContext.AccountID:%v", awsAccountId)
 	}
 	rtCIDR := currentModel.RouteTableCIDRBlock
 	if rtCIDR == nil || *rtCIDR == "" {
@@ -150,16 +171,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerResponse, _, err := client.Peers.Create(context.Background(), projectID, &peerRequest)
 
 	if err != nil {
-		log.Errorf("error creating network peering: %s", err)
+		log.Warnf("error creating network peering: %s", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-    log.WithFields(log.Fields{"peerRequest":peerRequest,}).Debug("CREATE ---> peerResponse")
+	log.Debugf("Create peerResponse:%+v", peerResponse)
 	currentModel.Id = &peerResponse.ID
-    log.WithFields(log.Fields{"currentModel":currentModel,}).Debug("CREATE ---> currentModel")
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -170,43 +190,44 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-        log.WithFields(log.Fields{"err":err,}).Error("Read - error")
+		log.Warnf("Delete err:%+v", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-    log.WithFields(log.Fields{"currentModel":currentModel,}).Debug("Read")
+	log.Debugf("Read - currentModel:%+v", currentModel)
 	projectID := *currentModel.ProjectId
-    if currentModel.Id == nil {
-        return handler.ProgressEvent{
-            Message: fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
-            OperationStatus: handler.Failed,
-            HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	if currentModel.Id == nil {
+		return handler.ProgressEvent{
+			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 
-    }
+	}
 	peerID := *currentModel.Id
 
 	peerResponse, resp, err := client.Peers.Get(context.Background(), projectID, peerID)
 	if err != nil {
-        if resp != nil && resp.StatusCode == 404 {
-            log.Warnf("Resource Not Found 404 for READ projectId:%s, peerID:%+v, err:%+v", projectID, peerID, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-        } else {
-            log.Errorf("Error READ projectId:%s, err:%+v", projectID, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-        }
+		if resp != nil && resp.StatusCode == 404 {
+			log.Warnf("Resource Not Found 404 for READ projectId:%s, peerID:%+v, err:%+v", projectID, peerID, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		} else {
+			log.Warnf("Error READ projectId:%s, err:%+v", projectID, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		}
 	}
-    log.WithFields(log.Fields{"peerResponse":peerResponse,}).Debug(" READ--> peerResponse")
+	log.Debugf("Read: peerResponse:%+v", peerResponse)
 
 	currentModel.AwsAccountId = &peerResponse.AWSAccountID
 	currentModel.RouteTableCIDRBlock = &peerResponse.RouteTableCIDRBlock
@@ -214,12 +235,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Id = &peerResponse.ID
 	currentModel.ConnectionId = &peerResponse.ConnectionID
 	currentModel.ErrorStateName = &peerResponse.ErrorStateName
-    if currentModel.ErrorStateName != nil {
-	    currentModel.ErrorStateName = &peerResponse.ErrorStateName
-    }
-    if currentModel.StatusName != nil {
-	    currentModel.StatusName = &peerResponse.StatusName
-    }
+	if currentModel.ErrorStateName != nil {
+		currentModel.ErrorStateName = &peerResponse.ErrorStateName
+	}
+	if currentModel.StatusName != nil {
+		currentModel.StatusName = &peerResponse.StatusName
+	}
 	currentModel.ProviderName = &peerResponse.ProviderName
 
 	return handler.ProgressEvent{
@@ -231,28 +252,28 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-    log.WithFields(log.Fields{"currentModel":currentModel,}).Debug("Update")
+	setup()
+	log.Debugf("Update currentModel:%+v", currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-        log.WithFields(log.Fields{"err":err,}).Error("Update - error")
+		log.Warnf("Update - error err:%+v", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	projectID := *currentModel.ProjectId
-    if currentModel.Id == nil {
-        return handler.ProgressEvent{
-            Message: fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
-            OperationStatus: handler.Failed,
-            HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	if currentModel.Id == nil {
+		return handler.ProgressEvent{
+			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 
-    }
+	}
 
 	peerID := *currentModel.Id
 	peerRequest := mongodbatlas.Peer{}
-    log.WithFields(log.Fields{"projectID":projectID,"peerID":peerID}).Debug("peer1")
 
 	region := currentModel.AccepterRegionName
 	if region != nil {
@@ -271,22 +292,21 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if vpcId != nil {
 		peerRequest.VpcID = *vpcId
 	}
-    log.WithFields(log.Fields{"peerRequest":peerRequest,}).Debug("peer2")
 	peerResponse, resp, err := client.Peers.Update(context.Background(), projectID, peerID, &peerRequest)
 	if err != nil {
-        if resp != nil && resp.StatusCode == 404 {
-            log.Warnf("Resource Not Found 404 for READ projectId:%s, peerID:%+v, err:%+v", projectID, peerID, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-        } else {
-            log.Errorf("Error READ projectId:%s, err:%+v", projectID, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-        }
+		if resp != nil && resp.StatusCode == 404 {
+			log.Warnf("Resource Not Found 404 for READ projectId:%s, peerID:%+v, err:%+v", projectID, peerID, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		} else {
+			log.Warnf("Error READ projectId:%s, err:%+v", projectID, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		}
 		//return handler.ProgressEvent{}, fmt.Errorf("error updating peer with id(project: %s, peer: %s): %s", projectID, peerID, err)
 	}
 
@@ -301,13 +321,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-        log.WithFields(log.Fields{"err":err,}).Error("Delete - error")
+		log.Debugf("Delete - error err:%+v", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
@@ -316,27 +337,27 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectId := *currentModel.ProjectId
 	peerId := *currentModel.Id
-    resp, err := client.Peers.Delete(context.Background(), projectId, peerId)
+	resp, err := client.Peers.Delete(context.Background(), projectId, peerId)
 	if err != nil {
-        if resp != nil && resp.StatusCode == 404 {
-            log.Warnf("Resource Not Found 404 for DELETE projectId:%s, peerID:%+v, err:%+v", projectId, peerId, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-        } else {
-            log.Errorf("Error DELETE projectId:%s, err:%+v", projectId, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-        }
+		if resp != nil && resp.StatusCode == 404 {
+			log.Warnf("Resource Not Found 404 for DELETE projectId:%s, peerID:%+v, err:%+v", projectId, peerId, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		} else {
+			log.Warnf("Error DELETE projectId:%s, err:%+v", projectId, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		}
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              "Delete Inprogess",
-        ResourceModel:        currentModel,
+		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 10,
 		CallbackContext: map[string]interface{}{
 			"stateName": "DELETING",
@@ -346,34 +367,35 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-        log.WithFields(log.Fields{"err":err,}).Error("List - error")
+		log.Warnf("List - error err:%+v", err)
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	projectID := *currentModel.ProjectId
 	peerResponse, resp, err := client.Peers.List(context.Background(), projectID, &mongodbatlas.ContainersListOptions{})
 	if err != nil {
-        if resp != nil && resp.StatusCode == 404 {
-            log.Warnf("Resource Not Found 404 for READ projectId:%s, err:%+v", projectID, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-        } else {
-            log.Errorf("Error READ projectId:%s, err:%+v", projectID, err)
-            return handler.ProgressEvent{
-                Message: err.Error(),
-                OperationStatus: handler.Failed,
-                HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-        }
+		if resp != nil && resp.StatusCode == 404 {
+			log.Warnf("Resource Not Found 404 for READ projectId:%s, err:%+v", projectID, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		} else {
+			log.Warnf("Error READ projectId:%s, err:%+v", projectID, err)
+			return handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		}
 	}
 
-    models := []interface{} {}
+	models := []interface{}{}
 	for _, peer := range peerResponse {
 		var model Model
 		model.AccepterRegionName = &peer.AccepterRegionName
@@ -387,22 +409,21 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.ProviderName = &peer.ProviderName
 
 		models = append(models, model)
-	} 
+	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List Complete",
-		ResourceModels:   models,
+		ResourceModels:  models,
 	}, nil
 }
 
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	isReady, state, err := networkPeeringIsReady(client, *currentModel.ProjectId, *currentModel.Id, targetState)
 	if err != nil {
-        log.WithFields(log.Fields{"err":err,}).Error("validateProgress - error")
 		return handler.ProgressEvent{
-            OperationStatus: handler.Failed,
-            Message: err.Error(),
-            HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		//return handler.ProgressEvent{}, err
 	}
 
@@ -421,12 +442,12 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	p := handler.NewProgressEvent()
 	p.OperationStatus = handler.Success
 	p.Message = "Complete"
-    if state=="DELETED" {
-        log.Debugf("Do not set ResourceModel property for DELETED resources")
-    } else {
-        log.Warningf("validateProgress isReady was true but state not DELETED?")
-	    p.ResourceModel = currentModel
-    }
+	if state == "DELETED" {
+		log.Print("Do not set ResourceModel property for DELETED resources")
+	} else {
+		log.Print("validateProgress isReady was true but state not DELETED?")
+		p.ResourceModel = currentModel
+	}
 	return p, nil
 }
 

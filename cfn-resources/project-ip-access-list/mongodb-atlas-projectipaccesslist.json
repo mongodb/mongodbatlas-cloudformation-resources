@@ -1,11 +1,17 @@
 {
-    "typeName": "MongoDB::Atlas::ProjectIpAccessList",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "additionalProperties": false,
     "definitions": {
         "accessListDefinition": {
-            "type": "object",
+            "additionalProperties": false,
             "properties": {
+                "AwsSecurityGroup": {
+                    "description": "ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.",
+                    "type": "string"
+                },
+                "CIDRBlock": {
+                    "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and AwsSecurityGroup.",
+                    "type": "string"
+                },
                 "Comment": {
                     "description": "Comment associated with the ip access list entry.",
                     "type": "string"
@@ -14,74 +20,34 @@
                     "description": "Accessable IP address. Mutually exclusive with CIDRBlock and AwsSecurityGroup.",
                     "type": "string"
                 },
-                "CIDRBlock": {
-                    "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and AwsSecurityGroup.",
-                    "type": "string"
-                },
-                "AwsSecurityGroup":{
-                    "description": "ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.",
-                    "type": "string"
-                },
                 "ProjectId": {
                     "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
                     "type": "string"
                 }
-            }
+            },
+            "type": "object"
         },
         "apiKeyDefinition": {
-            "type": "object",
+            "additionalProperties": false,
             "properties": {
-                "PublicKey": {
+                "PrivateKey": {
                     "type": "string"
                 },
-                "PrivateKey": {
+                "PublicKey": {
                     "type": "string"
                 }
             },
-            "additionalProperties": false
+            "type": "object"
         }
     },
-    "properties": {
-        "ProjectId": {
-            "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
-            "type": "string"
-        },
-        "Id": {
-            "description": "The unique identifier for the Project API ip access list rules.",
-            "type": "string"
-        },
-        "AccessList": {
-            "type": "array",
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": {
-              "$ref": "#/definitions/accessListDefinition"
-            }
-        },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
-        },
-        "TotalCount": {
-            "description": "The unique identifier for the Project ip access list rules.",
-            "type": "integer"
-        }
-
-    },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId",
-        "AccessList",
-        "ApiKeys"
-    ],
-    "readOnlyProperties": [
-        "/properties/Id",
-        "/properties/TotalCount"
-    ],
-    "primaryIdentifier": [
-        "/properties/Id"
-    ],
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
     "handlers": {
         "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
             "permissions": [
                 ""
             ]
@@ -95,11 +61,45 @@
             "permissions": [
                 ""
             ]
-        },
-        "delete": {
-            "permissions": [
-                ""
-            ]
         }
-    }
+    },
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "properties": {
+        "AccessList": {
+            "items": {
+                "$ref": "#/definitions/accessListDefinition"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Id": {
+            "description": "The unique identifier for the Project API ip access list rules.",
+            "type": "string"
+        },
+        "ProjectId": {
+            "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
+            "type": "string"
+        },
+        "TotalCount": {
+            "description": "The unique identifier for the Project ip access list rules.",
+            "type": "integer"
+        }
+    },
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/TotalCount"
+    ],
+    "required": [
+        "ProjectId",
+        "AccessList",
+        "ApiKeys"
+    ],
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "typeName": "MongoDB::Atlas::ProjectIpAccessList"
 }

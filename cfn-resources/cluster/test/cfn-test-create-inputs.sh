@@ -50,4 +50,4 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProviderSettings.RegionName?|=$region | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_invalid.json" > "inputs/inputs_1_invalid.json"
 
-#mongocli iam projects delete "${projectId}" --force
+echo "mongocli iam projects delete ${projectId} --force"

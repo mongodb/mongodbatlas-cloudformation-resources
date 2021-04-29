@@ -1,5 +1,4 @@
 {
-    "Name" : "CFN-Test-AccessList-1",
     "ProjectId" : "ProjectId",
     "ApiKeys" : {
         "PublicKey" : "$ATLAS_PUBLIC_KEY",

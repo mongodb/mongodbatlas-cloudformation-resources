@@ -17,7 +17,7 @@ jobs:
           repository: ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  tests:
+  submit:
     if: ${{ github.event.label.name == 'make-submit' || github.ref == 'refs/heads/master' }}
     needs: [ authorize ]
     runs-on: ubuntu-18.04
@@ -44,16 +44,16 @@ jobs:
               sudo rm -rf /var/lib/apt/lists/*
       - name: Install AWS CLI
         run: |
-           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-            unzip awscliv2.zip && ./aws/install
+          sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+            sudo unzip awscliv2.zip && sudo ./aws/install
       - name: Install AWS SAM CLI
         run: |
            curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" \
-                -o "aws-sam-cli.zip" && unzip "aws-sam-cli.zip" -d "sam-installation" && ./sam-installation/install
+                -o "aws-sam-cli.zip" && sudo unzip "aws-sam-cli.zip" -d "sam-installation" && sudo ./sam-installation/install
       - name: Install CFN CLI
         run: |
-          python3 -m pip install docker==4.4 six==1.15 setuptools
-           pip3 install cloudformation-cli-go-plugin
+          sudo python3 -m pip install docker==4.4 six==1.15 setuptools
+           sudo pip3 install cloudformation-cli-go-plugin
       - name: Install MONGODB CLI
         run: |
            MCLI_TAG=$(curl -sL --header "Accept: application/json" https://github.com/mongodb/mongocli/releases/latest | jq -r '.["tag_name"]') && \

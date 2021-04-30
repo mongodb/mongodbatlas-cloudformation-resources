@@ -56,12 +56,12 @@ jobs:
            sudo pip3 install cloudformation-cli-go-plugin
       - name: Install MONGODB CLI
         run: |
-           MCLI_TAG=$(curl -sL --header "Accept: application/json" https://github.com/mongodb/mongocli/releases/latest | jq -r '.["tag_name"]') && \
+           MCLI_TAG=$(sudo curl -sL --header "Accept: application/json" https://github.com/mongodb/mongocli/releases/latest | jq -r '.["tag_name"]') && \
                 MCLI_VERSION=$(echo $MCLI_TAG | cut -dv -f2) && \
                 MCLI_DEB="mongocli_${MCLI_VERSION}_linux_x86_64.deb" && \
-                curl -OL https://github.com/mongodb/mongocli/releases/download/${MCLI_TAG}/${MCLI_DEB} && \
+                sudo curl -OL https://github.com/mongodb/mongocli/releases/download/${MCLI_TAG}/${MCLI_DEB} && \
                 echo "About to install mongocli from: ${MCLI_DEB}" && \
-                dpkg -i ${MCLI_DEB}
+                sudo dpkg -i ${MCLI_DEB}
       - name: Submit
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}

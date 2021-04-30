@@ -1,0 +1,73 @@
+name: 'Submit to CloudFormation'
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [ labeled ]
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: octokit/request-action@v2.0.0
+        with:
+          route: GET /repos/:repository/collaborators/${{ github.actor }}
+          repository: ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  tests:
+    if: ${{ github.event.label.name == 'make-submit' || github.ref == 'refs/heads/master' }}
+    needs: [ authorize ]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: "mongodbatlas-cloudformation-resources"
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14
+      - name: Install dependencies
+        run: |
+           apt-get update && apt-get install -y \
+              make \
+              git \
+              wget \
+              curl \
+              zip \
+              jq \
+              vim \
+              golang \
+              python3 python3-pip && \
+              apt-get clean && \
+              rm -rf /var/lib/apt/lists/*
+      - name: Install AWS CLI
+        run: |
+           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+            unzip awscliv2.zip && ./aws/install
+      - name: Install AWS SAM CLI
+        run: |
+           curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" \
+                -o "aws-sam-cli.zip" && unzip "aws-sam-cli.zip" -d "sam-installation" && ./sam-installation/install
+      - name: Install CFN CLI
+        run: |
+          python3 -m pip install docker==4.4 six==1.15 setuptools
+           pip3 install cloudformation-cli-go-plugin
+      - name: Install MONGODB CLI
+        run: |
+           MCLI_TAG=$(curl -sL --header "Accept: application/json" https://github.com/mongodb/mongocli/releases/latest | jq -r '.["tag_name"]') && \
+                MCLI_VERSION=$(echo $MCLI_TAG | cut -dv -f2) && \
+                MCLI_DEB="mongocli_${MCLI_VERSION}_linux_x86_64.deb" && \
+                curl -OL https://github.com/mongodb/mongocli/releases/download/${MCLI_TAG}/${MCLI_DEB} && \
+                echo "About to install mongocli from: ${MCLI_DEB}" && \
+                dpkg -i ${MCLI_DEB}
+      - name: Submit
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: make submit

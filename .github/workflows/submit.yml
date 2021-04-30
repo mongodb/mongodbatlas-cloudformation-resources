@@ -17,8 +17,8 @@ jobs:
           repository: ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  submit:
-    if: ${{ github.event.label.name == 'make-submit' || github.ref == 'refs/heads/master' }}
+  dependencies:
+    if: ${{ github.event.label.name == 'make-submit' || ${{ github.event.label.name == 'make-test' || github.ref == 'refs/heads/master' }}
     needs: [ authorize ]
     runs-on: ubuntu-latest
     steps:
@@ -62,6 +62,11 @@ jobs:
                 sudo curl -OL https://github.com/mongodb/mongocli/releases/download/${MCLI_TAG}/${MCLI_DEB} && \
                 echo "About to install mongocli from: ${MCLI_DEB}" && \
                 sudo dpkg -i ${MCLI_DEB}
+  submit:
+    if: ${{ github.event.label.name == 'make-submit' || github.ref == 'refs/heads/master' }}
+    needs: [ dependencies ]
+    runs-on: ubuntu-latest
+    steps:
       - name: Submit
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}
@@ -71,7 +76,7 @@ jobs:
         run: make submit
   test:
     if: ${{ github.event.label.name == 'make-test' || github.ref == 'refs/heads/master' }}
-    needs: [ submit ]
+    needs: [ dependencies ]
     runs-on: ubuntu-latest
     steps:
       - name: Test

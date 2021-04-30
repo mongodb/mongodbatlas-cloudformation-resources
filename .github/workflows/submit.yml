@@ -40,8 +40,8 @@ jobs:
               vim \
               golang \
               python3 python3-pip && \
-              apt-get clean && \
-              rm -rf /var/lib/apt/lists/*
+              sudo apt-get clean && \
+              sudo rm -rf /var/lib/apt/lists/*
       - name: Install AWS CLI
         run: |
            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \

@@ -20,7 +20,7 @@ jobs:
   submit:
     if: ${{ github.event.label.name == 'make-submit' || github.ref == 'refs/heads/master' }}
     needs: [ authorize ]
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -69,3 +69,15 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: make submit
+  test:
+    if: ${{ github.event.label.name == 'make-test' || github.ref == 'refs/heads/master' }}
+    needs: [ submit ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: make test

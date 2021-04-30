@@ -1,11 +1,12 @@
 name: 'Submit to CloudFormation'
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    types: [ labeled ]
+  workflow_dispatch:
+    inputs:
+      resources:
+        description: "Resources to submit or test, empty will submit or test all of resources available"
+        default: ""
+        required: true
 
 jobs:
   authorize:
@@ -69,7 +70,7 @@ jobs:
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: make submit
+        run: make submit ${{ github.event.inputs.resources }}
   test:
     if: ${{ github.event.label.name == 'make-test' || github.ref == 'refs/heads/master' }}
     needs: [ submit ]
@@ -122,4 +123,4 @@ jobs:
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: make test
+        run: make test ${{ github.event.inputs.resources }}

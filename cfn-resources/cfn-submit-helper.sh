@@ -15,25 +15,24 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-set -x
+#set -x
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# Default, find all the directory names with the json custom resource schema files.
-resources="${@: 1}"
-if [ $# -eq 0 ]
-  then
-    echo "No arguments supplied, will submit all resource"
-    resources=$(ls -F **/mongodb-atlas-*.json | cut -d/ -f1)
-fi
-echo "Submitting the following resources: ${resources}"
-
+_DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
-
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
+
+[[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
+
+# Default, find all the directory names with the json custom resource schema files.
+resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+echo "$(basename "$0") running for the following resources: ${resources}"
+
+
 
 echo "Step 1/2: Building"
 if [[ "${_SUBMIT_ONLY}" == "true" ]]; then
@@ -41,6 +40,7 @@ if [[ "${_SUBMIT_ONLY}" == "true" ]]; then
 else
     for resource in ${resources};
     do
+        [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
         echo "Working on resource:${resource}"
         cwd=$(pwd)
         cd "${resource}"
@@ -61,6 +61,7 @@ echo "Step 2/2: Submit resource type to CloudFormation Private Registry"
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn submit' on:${resource}" && continue
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"

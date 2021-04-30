@@ -24,15 +24,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          path: "mongodbatlas-cloudformation-resources"
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.14
       - name: Install dependencies
         run: |
-           apt-get update && apt-get install -y \
+           sudo apt-get update && sudo apt-get install -y \
               make \
               git \
               wget \

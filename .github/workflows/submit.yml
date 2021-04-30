@@ -18,7 +18,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   dependencies:
-    if: ${{ github.event.label.name == 'make-submit' || ${{ github.event.label.name == 'make-test' || github.ref == 'refs/heads/master' }}
+    if: ${{ github.event.label.name == 'make-submit' || github.event.label.name == 'make-test' || github.ref == 'refs/heads/master' }}
     needs: [ authorize ]
     runs-on: ubuntu-latest
     steps:

@@ -7,10 +7,12 @@ on:
         description: "Resources to test, empty will test all of resources available"
         default: ""
         required: true
+  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    container: jmimick/mdb-cfn-dev:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -18,41 +20,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.14
-      - name: Install dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install -y \
-             make \
-             git \
-             wget \
-             curl \
-             zip \
-             jq \
-             vim \
-             python3 python3-pip && \
-             sudo apt-get clean && \
-             sudo rm -rf /var/lib/apt/lists/*
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Install AWS SAM CLI
-        run: |
-          curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" \
-               -o "aws-sam-cli.zip" && sudo unzip "aws-sam-cli.zip" -d "sam-installation" && sudo ./sam-installation/install
-      - name: Install CFN CLI
-        run: |
-          sudo python3 -m pip install docker==4.4 six==1.15 setuptools
-           sudo pip3 install cloudformation-cli-go-plugin
-      - name: Install MONGODB CLI
-        run: |
-          MCLI_TAG=$(sudo curl -sL --header "Accept: application/json" https://github.com/mongodb/mongocli/releases/latest | jq -r '.["tag_name"]') && \
-               MCLI_VERSION=$(echo $MCLI_TAG | cut -dv -f2) && \
-               MCLI_DEB="mongocli_${MCLI_VERSION}_linux_x86_64.deb" && \
-               sudo curl -OL https://github.com/mongodb/mongocli/releases/download/${MCLI_TAG}/${MCLI_DEB} && \
-               echo "About to install mongocli from: ${MCLI_DEB}" && \
-               sudo dpkg -i ${MCLI_DEB}
       - name: Test
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}

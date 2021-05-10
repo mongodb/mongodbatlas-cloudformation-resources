@@ -1,0 +1,245 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "MongoDB Atlas AWS CloudFormation Quick Start with VPC peering (qs-1rkorhefm)."
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for deploying MongoDB Atlas with VPC peering into an existing VPC."
+    Order: "3"
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Network configuration
+      Parameters:
+      - VPC
+      - RouteTableCIDRBlock
+    - Label:
+        default: MongoDB Atlas API key configuration
+      Parameters:
+      - PublicKey
+      - PrivateKey 
+      - OrgId
+    - Label:
+        default: MongoDB Atlas configuration
+      Parameters:
+      - RegisterMongoDBResources
+      - ProjectName
+      - ClusterName
+      - ClusterRegion
+      - ClusterInstanceSize
+    - Label:
+        default: AWS Quick Start configuration
+      Parameters:
+      - QSS3BucketName
+      - QSS3KeyPrefix
+      - QSS3BucketRegion
+    ParameterLabels:
+      VPC:
+        default: AWS VPC to peer with
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket Region
+      RouteTableCIDRBlock:
+        default: VPC peering CIDR block
+      PublicKey:
+        default: MongoDB Atlas API public key
+      PrivateKey:
+        default: MongoDB Atlas API private key
+      OrgId:
+        default: MongoDB Atlas API organization ID
+      RegisterMongoDBResources:
+        default: Register MongoDB Atlas CloudFormation resources
+      ProjectName:
+        default: Name of new Atlas project
+      ClusterName:
+        default: Name of new cluster
+      ClusterRegion:
+        default: AWS Region for Atlas cluster
+      ClusterInstanceSize:
+        default: MongoDB Atlas instance size
+Parameters:
+  PublicKey:
+    Description: "MongoDB cloud public API key."
+    Type: String
+    Default: "PublicKey"
+  PrivateKey:
+    Description: "MongoDB cloud private API key."
+    Type: String
+    Default: "PrivateKey"
+  OrgId:
+    Description: "MongoDB cloud organization ID."
+    Type: String
+    Default: "OrgId"
+  ProjectName:
+    Description: "Name of the project."
+    Type: String
+    Default: "aws-quickstart-vpc"
+  ClusterName:
+    Description: Name of the cluster as it appears in Atlas. This name cannot be changed after the cluster is created.
+    Type: String
+    Default: "Cluster-1"
+  ClusterInstanceSize:
+    Default: "M10" 
+    Description: "Atlas provides different cluster tiers, each with a default storage capacity and RAM size. The cluster you choose is used for all data-bearing hosts in your cluster tier (see https://docs.atlas.mongodb.com/reference/amazon-aws/#amazon-aws)."
+    Type: String
+    AllowedValues:
+    - "M10"
+    - "M20"
+    - "M30"
+    - "M40"
+    - "R40"
+    - "M40_NVME"
+    - "M50"
+    - "R50"
+    - "M50_NVME"
+    - "M60"
+    - "R60"
+    - "M60_NVME"
+    - "M80"
+    - "R80"
+    - "M80_NVME"
+    - "M100"
+    - "M140"
+    - "M200"
+    - "R200"
+    - "M200_NVME"
+    - "M300"
+    - "R300"
+    - "R400"
+    - "M400_NVME"
+    - "R700"
+  ClusterRegion:
+    Default: us-east-1
+    Description: AWS Region where the Atlas database cluster runs.
+    Type: String
+    AllowedValues:
+    - "us-east-1"
+    - "us-east-2"
+    - "ca-central-1"
+    - "us-west-1"
+    - "us-west-2"
+    - "sa-east-1"
+    - "ap-south-1"
+    - "ap-east-2"
+    - "ap-southeast-1"
+    - "ap-southeast-2"
+    - "ap-northeast-1"
+    - "ap-northeast-2"
+    - "eu-central-1"
+    - "eu-west-1"
+    - "eu-north-1"
+    - "eu-west-1"
+    - "eu-west-2"
+    - "eu-west-3"
+    - "eu-south-1"
+    - "me-south-1"
+    - "af-south-1"
+  ClusterMongoDBMajorVersion:
+    Description: MongoDB version.
+    Type: String
+    Default: "4.4"
+    AllowedValues:
+    - "3.6"
+    - "4.0"
+    - "4.2"
+    - "4.4"
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID of your existing VPC that you want to peer to. This is typically the VPC that your application uses.
+  RegisterMongoDBResources:
+    Description: 'Choose "Yes" to register MongoDB Atlas CloudFormation resource types. If you already registered resources in your AWS Region, enter "No."'
+    Type: String
+    Default: "Yes"
+    AllowedValues:
+      - "No"
+      - "Yes"
+  RouteTableCIDRBlock:
+    Type: String
+    Description: CIDR block to use for VPC peering.
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
+      (-).
+    Default: aws-quickstart
+    Description: S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
+      or end with a hyphen (-).
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/.]*$
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slashes (/).
+    Default: quickstart-mongodb-atlas/
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slashes (/).
+    Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
+      hosted. If you use your own bucket, you must specify this value.
+    Type: String
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  RegisterResources: !Equals [!Ref RegisterMongoDBResources, 'Yes']
+Resources:
+  RegisterAtlasResources:
+    Condition: RegisterResources
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/register-mongodb-atlas-resources.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+  Atlas:
+    Metadata:
+      PseudoDependsOn: !If
+        - RegisterResources
+        - - !Ref RegisterAtlasResources
+        - ''
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/mongodb-atlas-peering.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        ClusterInstanceSize: !Ref ClusterInstanceSize
+        ClusterMongoDBMajorVersion: !Ref ClusterMongoDBMajorVersion
+        ProjectName: !Ref ProjectName
+        ClusterName: !Ref ClusterName
+        ClusterRegion: !Ref ClusterRegion
+        OrgId: !Ref OrgId
+        PrivateKey: !Ref PrivateKey
+        PublicKey: !Ref PublicKey
+        RouteTableCIDRBlock: !Ref RouteTableCIDRBlock
+        VPC: !Ref VPC
+Outputs:
+  AtlasIAMRole:
+    Description: "ARN for AWS IAM role database cluster access."
+    Value: !GetAtt "Atlas.Outputs.AtlasIAMRole"
+  AtlasDatabaseUser:
+    Description: "Atlas database user, configured for AWS IAM role access."
+    Value: !GetAtt "Atlas.Outputs.AtlasDatabaseUser"
+  AtlasProject:
+    Description: "Information about your Atlas deployment."
+    Value: !GetAtt "Atlas.Outputs.AtlasProject"
+  AtlasCluster:
+    Description: "Information about your Atlas cluster."
+    Value: !GetAtt "Atlas.Outputs.AtlasCluster"
+  ClusterState:
+    Description: "State of your MongoDB cluster."
+    Value: !GetAtt "Atlas.Outputs.ClusterState"
+  ClusterSrvAddress:
+    Description: "Hostname for the mongodb+srv:// connection string."
+    Value: !GetAtt "Atlas.Outputs.ClusterSrvAddress"
+  AtlasNetworkPeering:
+    Description: "Information about the network peering connection."
+    Value: !GetAtt "Atlas.Outputs.AtlasNetworkPeering"
+

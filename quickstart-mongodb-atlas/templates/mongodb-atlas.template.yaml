@@ -1,16 +1,11 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart with VPC Peering
+Description: MongoDB Atlas AWS CloudFormation Quickstart. (qs-1rkorhec7)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: Network Configuration
-      Parameters:
-      - VPC
-      - AccessList
-    - Label:
-        default: Security Configuration
+        default: MongoDB Atlas ApiKey Configuration
       Parameters:
       - PublicKey
       - PrivateKey 
@@ -22,15 +17,25 @@ Metadata:
       - ClusterName
       - ClusterRegion
       - ClusterInstanceSize
+      - AccessList
+      - DatabaseUserRoleDatabaseName
     ParameterLabels:
+      PublicKey:
+        default: MongoDB Atlas API PublicKey
+      PrivateKey:
+        default: MongoDB Atlas API PrivateKey
+      OrgId:
+        default: MongoDB Atlas API OrgId
       ProjectName:
-        default: atlas-cfn-quickstart
+        default: Name of new Atlas Project
       ClusterName:
-        default: cluster-1
+        default: Name of new cluster
       ClusterRegion:
-        default: us-east-1
+        default: The AWS Region for Atlas Cluster
       ClusterInstanceSize:
         default: MongoDB Atlas Instance Size
+      DatabaseUserRoleDatabaseName:
+        default: MongoDB Atlas Database User Role Database Name
 Parameters:
   PublicKey:
     Description: "Your MongoDB Cloud Public API Key"
@@ -44,6 +49,10 @@ Parameters:
     Description: "Your MongoDB Cloud Organization Id"
     Type: String
     Default: "OrgId"
+  ProjectName:
+    Description: "The name of the project."
+    Type: String
+    Default: "aws-quickstart"
   ClusterName:
     Description: Name of the cluster as it appears in Atlas. Once the cluster is created,
       its name cannot be changed.
@@ -114,18 +123,16 @@ Parameters:
     - "4.0"
     - "4.2"
     - "4.4"
-  VPC:
-    Type: AWS::EC2::VPC::Id
-    Description: VPC-ID of your existing Virtual Private Cloud (VPC) which you wish to peer to your new MongoDB Atlas cluster. This is the VPC that your application uses usually.
-  RouteTableCIDRBlock:
+  DatabaseUserRoleDatabaseName:
+    Description: Database User Role Database Name
     Type: String
-    Description: CIDR block to use for your VPC Peering.
+    Default: "test"
 Resources:
   AtlasApiKeySecret:
     Type: 'AWS::SecretsManager::Secret'
     Properties:
       Name: !Sub "${AWS::StackName}-ApiKey-Secret"
-      Description: This secret has a hardcoded password in SecretString, how can i make this optional?
+      Description: MongoDB Atlas API Key
       #
       # { "PublicKey" : "xxx", "PrivateKey", "yyy", "OrgId": "zzz" }
       #
@@ -151,7 +158,7 @@ Resources:
       ApiKeys:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      Name: !Sub "${AWS::StackName}"
+      Name: !Ref "ProjectName"
   AtlasProjectIPAccessList:
     Type: MongoDB::Atlas::ProjectIpAccessList
     DependsOn: AtlasProject
@@ -163,18 +170,6 @@ Resources:
       AccessList:
       - IPAddress: "0.0.0.0/1"
         Comment: "Testing open all ips"
-  AtlasNetworkPeering:  
-    Type: MongoDB::Atlas::NetworkPeering
-    DependsOn: AtlasProject
-    Properties:
-      ProjectId: !Ref "AtlasProject"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
-      AccepterRegionName: !Ref "ClusterRegion"
-      AwsAccountId: !Sub "${AWS::AccountId}" 
-      RouteTableCIDRBlock: !Ref "RouteTableCIDRBlock" 
-      VpcId: !Ref "VPC"
   AtlasCluster:
     Type: MongoDB::Atlas::Cluster
     DependsOn: AtlasProject
@@ -183,7 +178,7 @@ Resources:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       ProjectId: !Ref "AtlasProject"
-      Name: !Sub "${AWS::StackName}"
+      Name: !Ref "ClusterName"
       MongoDBMajorVersion: !Ref "ClusterMongoDBMajorVersion"
       ReplicationFactor: 3
       NumShards: 1
@@ -204,7 +199,7 @@ Resources:
       AWSIAMType: "ROLE"
       Roles:
       - RoleName: "readWrite"
-        DatabaseName: !Sub "${AWS::StackName}"
+        DatabaseName: !Ref "DatabaseUserRoleDatabaseName"
       Scopes:
       - Name: !Sub "${AWS::StackName}"
         Type: "CLUSTER"
@@ -244,9 +239,4 @@ Outputs:
     Value: !GetAtt "AtlasCluster.SrvAddress"
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","ClusterSrvAddress" ] ]
-  AtlasNetworkPeering:
-    Description: "Info on the network peering connection"
-    Value: !Ref AtlasNetworkPeering
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasNetworkPeering" ] ]
 

@@ -1,2 +1,2 @@
-Please see the [AWS Region](https://docs.atlas.mongodb.com/reference/amazon-aws) reference in the MongoDB Atlas documentation for a complete and most up to date information.
+MongoDB Atlas is available across most AWS Regions. For more information, see https://docs.atlas.mongodb.com/reference/amazon-aws[Amazon Web Services (AWS)^].
 

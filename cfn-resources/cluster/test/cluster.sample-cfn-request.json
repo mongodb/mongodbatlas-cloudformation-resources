@@ -9,24 +9,10 @@
           "Name": "Clusters-Thurs-3",
           "ProjectId": "601c5e63e935a617924fb038",
           "MongoDBMajorVersion": "4.4",
-          "AutoScaling": {
-            "DiskGBEnabled": "true",
-            "Compute": {}
-          },
           "NumShards": "1",
-          "BiConnector": {
-            "ReadPreference": "secondary",
-            "Enabled": "false"
-          },
           "ProviderSettings": {
-            "AutoScaling": {
-              "Compute": {}
-            },
             "InstanceSizeName": "M10",
-            "RegionName": "us-east-1",
-            "DiskIOPS": "100",
-            "EncryptEBSVolume": "true",
-            "VolumeType": "STANDARD"
+            "RegionName": "us-east-1"
           }
         }
     },

@@ -172,8 +172,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
-	
-    //currentModel.LdapAuthType = &databaseUser.LDAPAuthType
+
+	//currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 	if currentModel.LdapAuthType != nil {
 		currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 	}

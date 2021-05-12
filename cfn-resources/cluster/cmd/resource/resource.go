@@ -150,7 +150,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.ProviderSettings != nil {
 		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
 	}
-	log.Debugf("DEBUG: clusterRequest.ProviderSettings: %+v", clusterRequest.ProviderSettings)
+	log.Debug("DEBUG: clusterRequest.ProviderSettings: %+v", clusterRequest.ProviderSettings)
 
 	if currentModel.ReplicationSpecs != nil {
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
@@ -189,7 +189,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.StateName = &cluster.StateName
-	log.Debugf("Created cluster currentModel: %+v", currentModel)
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
@@ -259,7 +258,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 	log.Debugf("Parsed resource identifier: id:%+v", id)
-	log.Debugf("parent --->%+v", id.Parent)
 
 	projectID := id.Parent.ResourceID
 	clusterName := id.ResourceID
@@ -281,6 +279,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 		}
 	}
+
 	if currentModel.AutoScaling != nil {
 		currentModel.AutoScaling = &AutoScaling{
 			DiskGBEnabled: cluster.AutoScaling.DiskGBEnabled,
@@ -330,12 +329,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.SrvAddress = &cluster.SrvAddress
 	currentModel.StateName = &cluster.StateName
 
-	if currentModel.BiConnector != nil {
-		currentModel.BiConnector = &BiConnector{
-			ReadPreference: &cluster.BiConnector.ReadPreference,
-			Enabled:        cluster.BiConnector.Enabled,
-		}
-	}
+    //NOT TESTED WITH BI-CONNECTOR YET
+	//if currentModel.BiConnector != nil {
+	//	currentModel.BiConnector = &BiConnector{
+	//		ReadPreference: &cluster.BiConnector.ReadPreference,
+	//		Enabled:        cluster.BiConnector.Enabled,
+	//	}
+	//}
 	currentModel.ConnectionStrings = &ConnectionStrings{
 		Standard:    &cluster.ConnectionStrings.Standard,
 		StandardSrv: &cluster.ConnectionStrings.StandardSrv,
@@ -346,52 +346,59 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	log.Debugf("step 2 cluster:+%v", cluster)
 
-	/*
-			if cluster.ProviderSettings != nil {
-		        ps := &ProviderSettings{
-					BackingProviderName: &cluster.ProviderSettings.BackingProviderName,
-					DiskIOPS:            castNO64(cluster.ProviderSettings.DiskIOPS),
-					EncryptEBSVolume:    cluster.ProviderSettings.EncryptEBSVolume,
-					InstanceSizeName:    &cluster.ProviderSettings.InstanceSizeName,
-					VolumeType:          &cluster.ProviderSettings.VolumeType,
-				}
-		        rn := util.EnsureAWSRegion(cluster.ProviderSettings.RegionName)
-		        ps.RegionName = &rn
-		        if currentModel.ProviderSettings.AutoScaling != nil {
-		            ps.AutoScaling = &AutoScaling{
-		                DiskGBEnabled: cluster.ProviderSettings.AutoScaling.DiskGBEnabled,
-		            }
-		            if currentModel.ProviderSettings.AutoScaling.Compute != nil {
-		                compute := &Compute{}
+    if cluster.ProviderSettings != nil {
+        ps := &ProviderSettings{
+            InstanceSizeName:    &cluster.ProviderSettings.InstanceSizeName,
+        }
+        if currentModel.ProviderSettings.BackingProviderName != nil {
+            ps.BackingProviderName = &cluster.ProviderSettings.BackingProviderName
+        }
 
-		                if currentModel.ProviderSettings.AutoScaling.Compute.Enabled != nil {
-		                    compute.Enabled = cluster.ProviderSettings.AutoScaling.Compute.Enabled
-		                }
-		                if currentModel.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
-		                    compute.ScaleDownEnabled = cluster.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled
-		                }
-		                if currentModel.ProviderSettings.AutoScaling.Compute.MinInstanceSize != nil {
-		                    compute.MinInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MinInstanceSize
-		                }
-		                if currentModel.ProviderSettings.AutoScaling.Compute.MaxInstanceSize != nil {
-		                    compute.MaxInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MaxInstanceSize
-		                }
-		                log.Debugf("compute -- what?> +%v",compute)
-		                ps.AutoScaling.Compute = compute
-		            }
-		        }
+        if currentModel.ProviderSettings.DiskIOPS != nil {
+            ps.DiskIOPS = castNO64(cluster.ProviderSettings.DiskIOPS)
+        }
+        if currentModel.ProviderSettings.EncryptEBSVolume != nil {
+            ps.EncryptEBSVolume = cluster.ProviderSettings.EncryptEBSVolume
+        }
+        if currentModel.ProviderSettings.VolumeType != nil {
+            ps.VolumeType = &cluster.ProviderSettings.VolumeType
+        }
+        rn := util.EnsureAWSRegion(cluster.ProviderSettings.RegionName)
+        ps.RegionName = &rn
+        if currentModel.ProviderSettings.AutoScaling != nil {
+            ps.AutoScaling = &AutoScaling{}
+            if currentModel.ProviderSettings.AutoScaling.DiskGBEnabled != nil {
+                ps.AutoScaling.DiskGBEnabled = cluster.ProviderSettings.AutoScaling.DiskGBEnabled
+            }
+            if currentModel.ProviderSettings.AutoScaling.Compute != nil {
+                compute := &Compute{}
 
-		        currentModel.ProviderSettings = ps
-			}
+                if currentModel.ProviderSettings.AutoScaling.Compute.Enabled != nil {
+                    compute.Enabled = cluster.ProviderSettings.AutoScaling.Compute.Enabled
+                }
+                if currentModel.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
+                    compute.ScaleDownEnabled = cluster.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled
+                }
+                if currentModel.ProviderSettings.AutoScaling.Compute.MinInstanceSize != nil {
+                    compute.MinInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MinInstanceSize
+                }
+                if currentModel.ProviderSettings.AutoScaling.Compute.MaxInstanceSize != nil {
+                    compute.MaxInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MaxInstanceSize
+                }
+                ps.AutoScaling.Compute = compute
+            }
+        }
 
-		    if currentModel.ReplicationSpecs != nil {
-			    currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
-		    }
+        currentModel.ProviderSettings = ps
+    }
 
-			if currentModel.ReplicationFactor != nil {
-			    currentModel.ReplicationFactor = castNO64(cluster.ReplicationFactor)
-		    }
-	*/
+    if currentModel.ReplicationSpecs != nil {
+        currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
+    }
+
+    if currentModel.ReplicationFactor != nil {
+        currentModel.ReplicationFactor = castNO64(cluster.ReplicationFactor)
+    }
 	log.Debugf("Read() end currentModel:%+v", currentModel)
 
 	return handler.ProgressEvent{
@@ -593,8 +600,13 @@ func (ps *ProviderSettings) providerName() string {
 	if *ps.InstanceSizeName == atlasM2 || *ps.InstanceSizeName == atlasM5 {
 		return tenant
 	}
+    if ps.ProviderName == nil {
+        aws := "AWS"
+        ps.ProviderName = &aws
+    }
 	return cast.ToString(ps.ProviderName)
 }
+
 func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.ProviderSettings {
 	// convert AWS- regions to MDB regions
 	log.Debugf("DEBUG: clusterRequest.ProviderSettings MODEL --->: %+v", providerSettings)

@@ -17,33 +17,33 @@
 #
 trap "exit" INT TERM ERR
 trap "kill 0" EXIT
-set -x
+#set -x
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# Default, find all the directory names with the json custom resource schema files.
-resources="${@: 1}"
-if [ $# -eq 0 ]
-  then
-    echo "No arguments supplied, will submit all resource"
-    resources=$(ls -F **/mongodb-atlas-*.json | cut -d/ -f1)
-fi
-echo "Submitting the following resources: ${resources}"
-
+_DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
-
 _SKIP_BUILD=${SKIP_BUILD:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
+_SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
+
+[[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
+
+# Default, find all the directory names with the json custom resource schema files.
+resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
 for resource in ${resources};
 do
+    echo "Working on resource:${resource}"
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
     if [[ "${_SKIP_BUILD}" == "true" ]]; then
+        echo "_SKIP_BUILD was true, not building"
         continue
     fi
-    echo "Working on resource:${resource}"
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
@@ -88,8 +88,20 @@ echo "PROJECT_NAME:${PROJECT_NAME}"
 
 for res in ${resources};
 do
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run ./test/cfn-test-create-inputs.sh for:${resource}" && continue
     cd "${res}"
-    ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+    if [[ "${res}" == "network-peering" ]]; then
+        #
+        AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-466197078724}"
+        # grab the first vpc-id found to test with,
+        AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
+        echo "Generating network-peering test inputs AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_VPC_ID=${AWS_VPC_ID}"
+        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" && \
+            echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+
+    else
+        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+    fi
     echo "Generated inputs for: ${res}"
     echo "----------------------------"
     ls -l ./inputs
@@ -116,6 +128,7 @@ SAM_LOG=$(mktemp)
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn test' for:${resource}" && continue
     cwd=$(pwd)
     cd "${resource}"
     sam_log="${SAM_LOG}.${resource}"
@@ -138,11 +151,13 @@ done
 echo "Clean up afterwards"
 for resource in ${resources};
 do
-    echo "res=${res}"
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue
+    echo "Looking up Atlas project id for resource:${res} project name:${PROJECT_NAME}-${res}"
     p_id=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
+    [ -z "$p_id" ] && echo "No project found" && continue
     p_name=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${res}, project:${p_name} id:${p_id}"
-    mongocli iam project delete ${p_id} --force && echo "Clean up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+    mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
 done
 
 

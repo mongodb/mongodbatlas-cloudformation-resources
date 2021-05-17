@@ -137,7 +137,7 @@
             "$ref": "#/definitions/connectionStrings"
         },
         "DiskSizeGB": {
-            "description": "Capacity, in gigabytes, of the host’s root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.",
+            "description": "Capacity, in gigabytes, of the hosts root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.",
             "type": "number"
         },
         "EncryptionAtRestProvider": {
@@ -273,6 +273,7 @@
         "Name"
     ],
     "readOnlyProperties": [
+        "/properties/ProviderSettings/ProviderName",
         "/properties/ConnectionStrings/Standard",
         "/properties/ConnectionStrings/StandardSrv",
         "/properties/ConnectionStrings/Private",

@@ -1,4 +1,4 @@
-.PHONY: submit test tools
+.PHONY: submit test
 tags=logging callback metrics scheduler
 cgo=0 
 goos=linux

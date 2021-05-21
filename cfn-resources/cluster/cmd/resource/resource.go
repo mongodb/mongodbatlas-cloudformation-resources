@@ -344,9 +344,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		//AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
 		//AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
 	}
-	log.Debugf("step 2 cluster:+%v", cluster)
+    log.Debugf("READ cluster:%+v currentModel:%+v", cluster, currentModel)
 
-	if cluster.ProviderSettings != nil {
+	if currentModel.ProviderSettings != nil {
 		ps := &ProviderSettings{
 			InstanceSizeName: &cluster.ProviderSettings.InstanceSizeName,
 		}

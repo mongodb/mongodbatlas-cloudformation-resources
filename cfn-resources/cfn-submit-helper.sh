@@ -15,20 +15,23 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-#set -x
+set -x
 set -o errexit
 set -o nounset
 set -o pipefail
 
+. ./cfn-submit-helper.config
+env | grep CFN_SUBMIT_
+echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
+
 _DRY_RUN=${DRY_RUN:-false}
-_CFN_FLAGS=${CFN_FLAGS:---verbose --set-default}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
-_DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
-# Default, find all the directory names with the json custom resource schema files.
+# By default, submit the entire library of active custom resources, but usually
+# this is run one resource at a time.
 resources="${1:-project database-user project-ip-access-list network-peering cluster}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
@@ -45,7 +48,7 @@ else
         cwd=$(pwd)
         cd "${resource}"
         echo "resource: ${resource}"
-        if [[ "${_DEFAULT_LOG_LEVEL}" == "debug" ]]; then
+        if [[ "${CFN_SUBMIT_LOG_LEVEL}" == "debug" ]]; then
             make debug
         else
             make
@@ -65,8 +68,8 @@ do
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    echo "Submiting to CloudFormation with flags: ${_CFN_FLAGS}"
-    cfn submit ${_CFN_FLAGS}
+    echo "Submiting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
+    cfn submit ${CFN_SUBMIT_CFN_FLAGS}
     cd -
 done
 

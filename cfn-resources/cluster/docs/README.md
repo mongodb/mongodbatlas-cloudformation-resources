@@ -28,8 +28,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#pitenabled" title="PitEnabled">PitEnabled</a>" : <i>Boolean</i>,
         "<a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>" : <i>Boolean</i>,
         "<a href="#providersettings" title="ProviderSettings">ProviderSettings</a>" : <i><a href="providersettings.md">ProviderSettings</a></i>,
-        "<a href="#replicationfactor" title="replicationFactor">replicationFactor</a>" : <i>Integer</i>,
-        "<a href="#replicationspecs" title="replicationSpecs">replicationSpecs</a>" : <i>[ <a href="replicationspec.md">replicationSpec</a>, ... ]</i>,
+        "<a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>" : <i>Integer</i>,
+        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="replicationspec.md">replicationSpec</a>, ... ]</i>,
     }
 }
 </pre>
@@ -57,8 +57,8 @@ Properties:
     <a href="#pitenabled" title="PitEnabled">PitEnabled</a>: <i>Boolean</i>
     <a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>: <i>Boolean</i>
     <a href="#providersettings" title="ProviderSettings">ProviderSettings</a>: <i><a href="providersettings.md">ProviderSettings</a></i>
-    <a href="#replicationfactor" title="replicationFactor">replicationFactor</a>: <i>Integer</i>
-    <a href="#replicationspecs" title="replicationSpecs">replicationSpecs</a>: <i>
+    <a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>: <i>Integer</i>
+    <a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>: <i>
       - <a href="replicationspec.md">replicationSpec</a></i>
 </pre>
 
@@ -216,7 +216,7 @@ _Type_: <a href="providersettings.md">ProviderSettings</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### replicationFactor
+#### ReplicationFactor
 
 ReplicationFactor is deprecated. Use replicationSpecs.
 
@@ -226,7 +226,7 @@ _Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### replicationSpecs
+#### ReplicationSpecs
 
 Configuration for cluster regions.
 

@@ -19,13 +19,14 @@
 #
 trap "exit" INT TERM ERR
 trap "kill 0" EXIT
-#set -x
+set -x
 set -o errexit
 set -o nounset
 set -o pipefail
 
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
+env | grep AWS_DEFAULT_
 echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 
@@ -45,7 +46,13 @@ resources="${1:-project database-user project-ip-access-list network-peering clu
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
-aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+
+if aws s3 ls "s3://$_CFN_TEST_LOG_BUCKET" 2>&1 | grep -q 'An error occurred'
+then
+    aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+else
+    echo "bucket ${_CFN_TEST_LOG_BUCKET} exists"
+fi
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"

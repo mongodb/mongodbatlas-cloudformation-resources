@@ -29,7 +29,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>" : <i>Boolean</i>,
         "<a href="#providersettings" title="ProviderSettings">ProviderSettings</a>" : <i><a href="providersettings.md">ProviderSettings</a></i>,
         "<a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>" : <i>Integer</i>,
-        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="replicationspec.md">ReplicationSpec</a>, ... ]</i>,
+        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="replicationspec.md">replicationSpec</a>, ... ]</i>,
     }
 }
 </pre>
@@ -59,7 +59,7 @@ Properties:
     <a href="#providersettings" title="ProviderSettings">ProviderSettings</a>: <i><a href="providersettings.md">ProviderSettings</a></i>
     <a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>: <i>Integer</i>
     <a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>: <i>
-      - <a href="replicationspec.md">ReplicationSpec</a></i>
+      - <a href="replicationspec.md">replicationSpec</a></i>
 </pre>
 
 ## Properties
@@ -232,7 +232,7 @@ Configuration for cluster regions.
 
 _Required_: No
 
-_Type_: List of <a href="replicationspec.md">ReplicationSpec</a>
+_Type_: List of <a href="replicationspec.md">replicationSpec</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -32,7 +32,7 @@
             },
             "additionalProperties": false
         },
-        "RegionsConfig": {
+        "regionsConfig": {
             "type": "object",
             "properties": {
                 "RegionName": {
@@ -53,7 +53,7 @@
             },
             "additionalProperties": false
         },
-        "ReplicationSpec": {
+        "replicationSpec": {
             "type": "object",
             "properties": {
                 "ID": {
@@ -65,7 +65,7 @@
                 "RegionsConfig": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/RegionsConfig"
+                        "$ref": "#/definitions/regionsConfig"
                     }
                 },
                 "ZoneName": {
@@ -256,7 +256,7 @@
             "description": "Configuration for cluster regions.",
             "type": "array",
             "items": {
-                "$ref": "#/definitions/ReplicationSpec"
+                "$ref": "#/definitions/replicationSpec"
             }
         },
         "SrvAddress": {

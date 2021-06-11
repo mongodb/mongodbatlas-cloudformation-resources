@@ -15,12 +15,12 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-testing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-trap "exit" INT TERM ERR
-trap "kill 0" EXIT
+#trap "exit" INT TERM ERR
+#trap "kill 0" EXIT
 #set -x
-set -o errexit
-set -o nounset
-set -o pipefail
+#set -o errexit
+#set -o nounset
+#set -o pipefail
 
 _DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
@@ -28,6 +28,9 @@ _SKIP_BUILD=${SKIP_BUILD:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
+_AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-$(aws configure get region)}
+
+echo "_AWS_DEFAULT_REGION=${_AWS_DEFAULT_REGION}"
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
@@ -80,11 +83,10 @@ echo "Step 2/3: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-
 . ./cfn-testing-helper.config
 env | grep CFN_TEST_
 
-
 PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
+PROJECT_NAME="${PROJECT_NAME}-${_AWS_DEFAULT_REGION}"
 echo "PROJECT_NAME:${PROJECT_NAME}"
 
-#if false; then
 
 for res in ${resources};
 do
@@ -110,55 +112,4 @@ do
 done
 
 
-#fi
-
-# TODO - network peering
-# find vpc to use using awscli
-#echo "usage:$0 <project_name> <aws_account_id> <vpc_id>"
-# ./test/cfn-test-create-inputs.sh PeeringList-CFNTest-2 466197078724 vpc-fa3d7680
-#res="network-peering"
-#cd "${res}"
-#./${res}/test/cfn-test-create-inputs.sh "${PROJECT_NAME}-2" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
-
-
-
-
-echo "Step 3/3: Running 'cfn test' on resource type"
-SAM_LOG=$(mktemp)
-for resource in ${resources};
-do
-    echo "Working on resource:${resource}"
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn test' for:${resource}" && continue
-    cwd=$(pwd)
-    cd "${resource}"
-    sam_log="${SAM_LOG}.${resource}"
-    echo "starting resource handler lambda in background - capture output to: ${sam_log}"
-    sam local start-lambda &> "${sam_log}" &
-    sam_pid=$!
-    echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
-    ps -ef | grep ${sam_pid}
-    echo "resource: ${resource}, running 'cfn test' with flags: ${_CFN_FLAGS}"
-    cfn test ${_CFN_FLAGS}
-    echo "killing sam_pid:${sam_pid}"
-    kill ${sam_pid}
-    echo "sam_log: ${sam_log}"
-    cat "${sam_log}"
-    cd -
-done
-
-
-
-echo "Clean up afterwards"
-for resource in ${resources};
-do
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue
-    echo "Looking up Atlas project id for resource:${res} project name:${PROJECT_NAME}-${res}"
-    p_id=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
-    [ -z "$p_id" ] && echo "No project found" && continue
-    p_name=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
-    echo "Cleaning up for resource:${res}, project:${p_name} id:${p_id}"
-    mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
-done
-
-
-
+#exit 0

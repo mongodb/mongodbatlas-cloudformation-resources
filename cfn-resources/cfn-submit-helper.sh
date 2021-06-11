@@ -15,13 +15,14 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-set -x
-set -o errexit
-set -o nounset
-set -o pipefail
+#set -x
+#set -o errexit
+#set -o nounset
+#set -o pipefail
 
 . ./cfn-submit-helper.config
 env | grep CFN_SUBMIT_
+env | grep AWS_DEFAULT_
 echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 _DRY_RUN=${DRY_RUN:-false}

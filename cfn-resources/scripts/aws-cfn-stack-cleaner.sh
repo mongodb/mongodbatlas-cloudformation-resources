@@ -21,11 +21,11 @@ then
     echo "dry-run"
     echo "Region: ${REGION}"
     echo "Stacks: ${STACKS}"
-    exit 0
+    exit 
 fi
 if [[ -z "${STACKS}" ]]; then
     echo "Skys look clear, no stacks in sight, proceed."
-    exit 0
+    exit 
 fi
 
 # Start output structured YAML 'log'

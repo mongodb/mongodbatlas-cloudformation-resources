@@ -48,19 +48,19 @@ resources="${1:-project database-user project-ip-access-list network-peering clu
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
-<<<<<<< HEAD
-if [ $(aws s3 ls "s3://$_CFN_TEST_LOG_BUCKET" | grep 'NoSuchBucket' &> /dev/null) == 0 ] 
-then
-    echo "aws s3 mb s3://${_CFN_TEST_LOG_BUCKET}"
-		aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
-=======
+#<<<<<<< HEAD
+#if [ $(aws s3 ls "s3://$_CFN_TEST_LOG_BUCKET" | grep 'NoSuchBucket' &> /dev/null) == 0 ] 
+#then
+#    echo "aws s3 mb s3://${_CFN_TEST_LOG_BUCKET}"
+#		aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+#=======
 
 if aws s3 ls "s3://$_CFN_TEST_LOG_BUCKET" 2>&1 | grep -q 'An error occurred'
 then
     aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
 else
     echo "bucket ${_CFN_TEST_LOG_BUCKET} exists"
->>>>>>> 8e5fbba6f4137e6c2f2cb8d131e3a003def3d222
+#>>>>>>> 8e5fbba6f4137e6c2f2cb8d131e3a003def3d222
 fi
 for resource in ${resources};
 do

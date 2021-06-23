@@ -30,7 +30,8 @@ for region in $(cat regions); do
 		export ATLAS_PUBLIC_KEY=$(cat ~/.config/mongocli.toml | grep 'public_api_key' | cut -d\" -f2)
 		export ATLAS_PRIVATE_KEY=$(cat ~/.config/mongocli.toml | grep 'private_api_key' | cut -d\" -f2)
 		export ATLAS_ORG_ID=$(cat ~/.config/mongocli.toml | grep 'org_id' | cut -d\" -f2)
-		export AWS_DEFAULT_REGION=$region 
+		export AWS_DEFAULT_REGION=$region
+		export AWS_PAGER=""
 		env | grep ATLAS_ 
 		env | grep AWS_DEFAULT
 		echo "+++++++ COMPLEAT PUBLISH RUNTIME FOLDER +++++++"
@@ -41,6 +42,7 @@ for region in $(cat regions); do
 		tar xzvf "mongodbatlas-cloudformation-resources.${tag}.tar.gz"
 		cd cfn-resources
 		rm **/*rpdk.log
+		aws uno register-publisher --accept-terms-and-conditions || echo "Maybe already registered, should be ok" 
 		echo "+++++++ COMPLEAT PUBLISH LIST-TYPES-1 +++++++"
 		. ./scripts/list-mongodb-types.sh
 	HEADER
@@ -53,15 +55,16 @@ for region in $(cat regions); do
 		./scripts/aws-cfn-stack-cleaner.sh killall $region
 	HEADER3
 	cfnmui=$(aws cloudformation describe-stacks --region $region --stack-name "CloudFormationManagedUploadInfrastructure" --query "Stacks[0].Outputs[1].OutputValue")
-	if [ -z "${cfnmui}" ]; do
+  echo "cfnmui=${cfnmui}"
+	if [ ! -z "${cfnmui}" ]; then
 		cat <<- HEADER4 >> "${script}"
-			aws cloudformation update-termination-protection --no-enable-termination-protection--stack-name "CloudFormationManagedUploadInfrastructure"
-			. ./scripts/delete-s3-bucket.py ${cfnmui}
-			aws cloudformation delete-stack--stack-name "CloudFormationManagedUploadInfrastructure"
+			aws cloudformation update-termination-protection --no-enable-termination-protection --stack-name "CloudFormationManagedUploadInfrastructure"
+			./scripts/delete-s3-bucket.py ${cfnmui}
+			aws cloudformation delete-stack --stack-name "CloudFormationManagedUploadInfrastructure"
 		HEADER4
-	done
+	fi
 			
-	for resource in project cluster database-user; do
+	for resource in project project-ip-access-list network-peering database-user cluster; do
 		cat <<- EOF2 >> "${script}"
 			export AWS_DEFAULT_REGION=$region 
 			export SUBMIT_ONLY=true  

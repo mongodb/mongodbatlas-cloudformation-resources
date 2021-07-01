@@ -21,8 +21,8 @@
 #trap "kill 0" EXIT
 #set -x
 #set -o errexit
-#set -o nounset
-#set -o pipefail
+set -o nounset
+set -o pipefail
 
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
@@ -55,6 +55,7 @@ echo "Step 1/2: cfn test in the cloud...."
 #		aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
 #=======
 
+echo "Try make bucket \"s3://${CFN_TEST_LOG_BUCKET}\" -----"
 if aws s3 ls "s3://${CFN_TEST_LOG_BUCKET}" 2>&1 | grep -q 'An error occurred'
 then
     aws s3 mb "s3://${CFN_TEST_LOG_BUCKET}"

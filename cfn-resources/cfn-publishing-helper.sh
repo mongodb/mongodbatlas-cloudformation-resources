@@ -56,8 +56,9 @@ echo "Step 1/2: cfn test in the cloud...."
 #=======
 
 echo "Try make bucket \"s3://${CFN_TEST_LOG_BUCKET}\" -----"
-if aws s3 ls "s3://${CFN_TEST_LOG_BUCKET}" 2>&1 | grep -q 'An error occurred'
-then
+#if aws s3 ls "s3://${CFN_TEST_LOG_BUCKET}" 2>&1 | grep -q 'An error occurred'
+aws s3 ls "s3://${CFN_TEST_LOG_BUCKET}" 
+if [[ $? ]]; then
     aws s3 mb "s3://${CFN_TEST_LOG_BUCKET}"
 else
     echo "bucket ${CFN_TEST_LOG_BUCKET} exists"

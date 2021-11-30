@@ -6,4 +6,5 @@ aws cloudformation create-stack \
   --parameters ParameterKey=PublicKey,ParameterValue=${ATLAS_PUBLIC_KEY} \
                ParameterKey=PrivateKey,ParameterValue=${ATLAS_PRIVATE_KEY} \
                ParameterKey=OrgId,ParameterValue=${ATLAS_ORG_ID} \
+               ParameterKey=ProjectName,ParameterValue=${STACK_NAME} \
   --stack-name "${STACK_NAME}"

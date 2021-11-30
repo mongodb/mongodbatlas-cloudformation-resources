@@ -117,12 +117,13 @@ Parameters:
   ClusterMongoDBMajorVersion:
     Description: The version of MongoDB
     Type: String
-    Default: "4.4"
+    Default: "5.0"
     AllowedValues:
     - "3.6"
     - "4.0"
     - "4.2"
     - "4.4"
+    - "5.0"
   DatabaseUserRoleDatabaseName:
     Description: Database User Role Database Name
     Type: String

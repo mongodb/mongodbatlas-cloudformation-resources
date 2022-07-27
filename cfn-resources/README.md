@@ -56,6 +56,9 @@ ATLAS_PRIVATE_KEY=XXXXXX
 ATLAS_ORG_ID=XXXXXX
 ```
 
+### Deployment.template.yaml
+Note: section for project example line #145 contains an s3 bucket  configuration string please edit value to S3 bucket that you require -->  (SchemaHandlerPackage="s3://replace-placeholder-bucket-name-here/resources/mongodb-atlas-project.zip",)
+
 ### How tests are structured
 
 Each resource has a folder called `test` with 3 items:

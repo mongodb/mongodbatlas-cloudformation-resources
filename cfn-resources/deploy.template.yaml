@@ -142,7 +142,7 @@ Resources:
               response = cfn.register_type(
                   Type='RESOURCE',
                   TypeName='MongoDB::Atlas::Project',
-                  SchemaHandlerPackage="s3://simple-quickstart-mongodb-atlas/resources/mongodb-atlas-project.zip",
+                  SchemaHandlerPackage="s3://replace-placeholder-bucket-name-here/resources/mongodb-atlas-project.zip",
                   LoggingConfig={"LogRoleArn": "${LogDeliveryRole.Arn}", "LogGroupName": "mongodb-atlas-project-logs"},
                   ExecutionRoleArn="${ExecutionRole.Arn}"
               )

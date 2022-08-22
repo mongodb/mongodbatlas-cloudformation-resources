@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -169,15 +170,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			if currentModel.AutoScaling.Compute.ScaleDownEnabled != nil {
 				compute.ScaleDownEnabled = currentModel.AutoScaling.Compute.ScaleDownEnabled
 			}
-			if currentModel.AutoScaling.Compute.MinInstanceSize != nil {
+			/*if currentModel.AutoScaling.Compute.MinInstanceSize != nil {
 				compute.MinInstanceSize = *currentModel.AutoScaling.Compute.MinInstanceSize
 			}
 			if currentModel.AutoScaling.Compute.MaxInstanceSize != nil {
 				compute.MaxInstanceSize = *currentModel.AutoScaling.Compute.MaxInstanceSize
-			}
+			}*/
 			clusterRequest.AutoScaling.Compute = compute
 		}
 	}
+
+	jsonStr, _ := json.Marshal(clusterRequest)
+	fmt.Println(string(jsonStr))
+	log.Printf("clusterRequest --- value:%s ", jsonStr)
 
 	log.Debugf("DEBUG: clusterRequest: %+v", clusterRequest)
 	cluster, _, err := client.Clusters.Create(context.Background(), projectID, clusterRequest)
@@ -368,18 +373,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ps.RegionName = &rn
 		if currentModel.ProviderSettings.AutoScaling != nil {
 			ps.AutoScaling = &AutoScaling{}
-			if currentModel.ProviderSettings.AutoScaling.DiskGBEnabled != nil {
+			/*if currentModel.ProviderSettings.AutoScaling.DiskGBEnabled != nil {
 				ps.AutoScaling.DiskGBEnabled = cluster.ProviderSettings.AutoScaling.DiskGBEnabled
-			}
+			}*/
 			if currentModel.ProviderSettings.AutoScaling.Compute != nil {
 				compute := &Compute{}
 
-				if currentModel.ProviderSettings.AutoScaling.Compute.Enabled != nil {
+				/*if currentModel.ProviderSettings.AutoScaling.Compute.Enabled != nil {
 					compute.Enabled = cluster.ProviderSettings.AutoScaling.Compute.Enabled
 				}
 				if currentModel.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
 					compute.ScaleDownEnabled = cluster.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled
-				}
+				}*/
 				if currentModel.ProviderSettings.AutoScaling.Compute.MinInstanceSize != nil {
 					compute.MinInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MinInstanceSize
 				}
@@ -630,18 +635,23 @@ func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.Pr
 	if providerSettings.DiskIOPS != nil {
 		ps.DiskIOPS = cast64(providerSettings.DiskIOPS)
 	}
+
 	if providerSettings.AutoScaling != nil {
 		ps.AutoScaling = &mongodbatlas.AutoScaling{
 			DiskGBEnabled: providerSettings.AutoScaling.DiskGBEnabled,
 		}
 		if providerSettings.AutoScaling.Compute != nil {
 			compute := &mongodbatlas.Compute{}
-			if providerSettings.AutoScaling.Compute.Enabled != nil {
+
+			/*if providerSettings.AutoScaling.Compute.Enabled != nil {
+
 				compute.Enabled = providerSettings.AutoScaling.Compute.Enabled
 			}
 			if providerSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
 				compute.ScaleDownEnabled = providerSettings.AutoScaling.Compute.ScaleDownEnabled
-			}
+
+			}*/
+
 			if providerSettings.AutoScaling.Compute.MinInstanceSize != nil {
 				compute.MinInstanceSize = *providerSettings.AutoScaling.Compute.MinInstanceSize
 			}

@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -344,7 +345,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		//AwsPrivateLink:         &cluster.ConnectionStrings.AwsPrivateLink,
 		//AwsPrivateLinkSrv:      &cluster.ConnectionStrings.AwsPrivateLinkSrv,
 	}
-    log.Debugf("READ cluster:%+v currentModel:%+v", cluster, currentModel)
+	log.Debugf("READ cluster:%+v currentModel:%+v", cluster, currentModel)
 
 	if currentModel.ProviderSettings != nil {
 		ps := &ProviderSettings{
@@ -628,6 +629,27 @@ func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.Pr
 	}
 	if providerSettings.DiskIOPS != nil {
 		ps.DiskIOPS = cast64(providerSettings.DiskIOPS)
+	}
+	if providerSettings.AutoScaling != nil {
+		ps.AutoScaling = &mongodbatlas.AutoScaling{
+			DiskGBEnabled: providerSettings.AutoScaling.DiskGBEnabled,
+		}
+		if providerSettings.AutoScaling.Compute != nil {
+			compute := &mongodbatlas.Compute{}
+			if providerSettings.AutoScaling.Compute.Enabled != nil {
+				compute.Enabled = providerSettings.AutoScaling.Compute.Enabled
+			}
+			if providerSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
+				compute.ScaleDownEnabled = providerSettings.AutoScaling.Compute.ScaleDownEnabled
+			}
+			if providerSettings.AutoScaling.Compute.MinInstanceSize != nil {
+				compute.MinInstanceSize = *providerSettings.AutoScaling.Compute.MinInstanceSize
+			}
+			if providerSettings.AutoScaling.Compute.MaxInstanceSize != nil {
+				compute.MaxInstanceSize = *providerSettings.AutoScaling.Compute.MaxInstanceSize
+			}
+			ps.AutoScaling.Compute = compute
+		}
 	}
 	log.Debugf("DEBUG: clusterRequest.ProviderSettings Atlas Requst struct --->: %+v", ps)
 	return ps

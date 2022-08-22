@@ -635,21 +635,23 @@ func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.Pr
 	if providerSettings.DiskIOPS != nil {
 		ps.DiskIOPS = cast64(providerSettings.DiskIOPS)
 	}
-	jsonStr, _ := json.Marshal(providerSettings.AutoScaling)
-	fmt.Println(string(jsonStr))
-	log.Printf("providerSettings.AutoScaling --- value:%s ", jsonStr)
+
 	if providerSettings.AutoScaling != nil {
 		ps.AutoScaling = &mongodbatlas.AutoScaling{
 			DiskGBEnabled: providerSettings.AutoScaling.DiskGBEnabled,
 		}
 		if providerSettings.AutoScaling.Compute != nil {
 			compute := &mongodbatlas.Compute{}
+
 			/*if providerSettings.AutoScaling.Compute.Enabled != nil {
+
 				compute.Enabled = providerSettings.AutoScaling.Compute.Enabled
 			}
 			if providerSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
 				compute.ScaleDownEnabled = providerSettings.AutoScaling.Compute.ScaleDownEnabled
+
 			}*/
+
 			if providerSettings.AutoScaling.Compute.MinInstanceSize != nil {
 				compute.MinInstanceSize = *providerSettings.AutoScaling.Compute.MinInstanceSize
 			}

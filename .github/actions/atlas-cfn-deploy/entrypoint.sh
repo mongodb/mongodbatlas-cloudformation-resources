@@ -14,4 +14,4 @@ env
 #exec "$@"
 cd cfn-resources
 BUILD_ONLY=1 CFN_FLAGS="--verbose --set-default --region ${INPUT_AWS_DEFAULT_REGION}" ./cfn-submit-helper.sh
-
+cat project/rpdk.log

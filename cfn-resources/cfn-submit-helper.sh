@@ -70,7 +70,7 @@ do
     cd "${resource}"
     echo "resource: ${resource}"
     echo "Submiting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-    cfn submit ${CFN_SUBMIT_CFN_FLAGS}
+    cfn submit ${CFN_SUBMIT_CFN_FLAGS}||true
     cat rpdk.log
     cd -
 done

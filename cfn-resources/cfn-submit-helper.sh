@@ -53,6 +53,7 @@ else
         else
             make
         fi
+        cat rpdk.log
         cd -
     done
 fi

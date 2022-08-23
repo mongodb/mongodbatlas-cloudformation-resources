@@ -23,6 +23,11 @@ jobs:
         AWS_DEFAULT_REGION: ${{ github.event.inputs.region }}
         AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
     - name: Build the resources 
+      run: |
+            echo "#############################################################"
+            env
+            cd cfn-resources
+            BUILD_ONLY=1 CFN_FLAGS="--verbose --set-default --region ${AWS_DEFAULT_REGION}" ./cfn-submit-helper.sh
       with:
         CAPABLITIES: CAPABILITY_IAM
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -30,8 +35,3 @@ jobs:
         AWS_REGION_INPUT: ${{ github.event.inputs.region }}
         AWS_DEFAULT_REGION: ${{ github.event.inputs.region }}
         AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
-      run: |
-            echo "#############################################################"
-            env
-            cd cfn-resources
-            BUILD_ONLY=1 CFN_FLAGS="--verbose --set-default --region ${AWS_DEFAULT_REGION}" ./cfn-submit-helper.sh

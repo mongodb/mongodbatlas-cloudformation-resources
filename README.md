@@ -80,6 +80,12 @@ cd mongodbatlas-cloudformation-resources\cfn-resources
 ./cfn-submit-helper.sh project cluster database-user project-ip-access-list network-peering
 ```
 
+## Autoclose stale issues and PRs
+
+- After 30 days of no activity (no comments or commits are on an issue or PR) we automatically tag it as “stale” and add a message: "This issue has gone 30 days without any activity and meets the project’s definition of ‘stale’. This will be auto-closed if there is no new activity over the next 60 days. If the issue is still relevant and active, you can simply comment with a “bump” to keep it open, or add the “[Status] Not Stale” label. Thanks for keeping our repository healthy!"
+
+- After 60 more days of no activity we automatically close the issue / PR.
+
 # Testing the Provider
 
 Please see README for each resource for details on unit and integrated AWS testing.

@@ -64,16 +64,16 @@ do
     echo "type_info=${type_info}"
     version=$(echo ${type_info} | jq -r '.DefaultVersionId')
     echo "version=${version}"
-    test_type_resp=$(aws uno test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+    test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
     arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')
     echo "Found arn:${arn}"
     # sit and watch the test----
-    dt=$(aws uno describe-type --arn ${arn})
+    dt=$(aws cloudformation describe-type --arn ${arn})
     echo "dt=${dt}"
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
     while [[ "$status" == "IN_PROGRESS" ]]; do
         sleep 3
-        dt=$(aws uno describe-type --arn ${arn})
+        dt=$(aws cloudformation describe-type --arn ${arn})
         echo "dt=${dt}"
         status=$(echo ${dt} | jq -r '.TypeTestsStatus')
         echo "status=${status}"
@@ -106,10 +106,10 @@ do
     echo "version=${version}"
     public_version_number="${major_version}.${minor_version}.$(echo $version | sed 's/^0*//')"
     echo "publish-command"
-    #echo "aws uno publish-type --type RESOURCE --arn ${type_arn} --public-version-number ${public_version_number}"
-    echo "aws uno publish-type --type RESOURCE --arn ${type_arn}"
+    #echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn} --public-version-number ${public_version_number}"
+    echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn}"
     echo "publish-command-exe"
-    aws uno publish-type --type RESOURCE --arn ${type_arn}
+    aws cloudformation publish-type --type RESOURCE --arn ${type_arn}
     #--public-version-number ${public_version_number}
     cd -
 done

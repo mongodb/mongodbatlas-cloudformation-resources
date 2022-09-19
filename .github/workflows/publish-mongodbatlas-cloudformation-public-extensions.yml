@@ -27,8 +27,6 @@ jobs:
         echo "[profile 711489243244_AdministratorAccess]
         region = ${AWS_DEFAULT_REGION}
         output = json " > ~/.aws/config
-        cat ~/.aws/config
-        cat ~/.aws/credentials
         cd cfn-resources
         aws s3 ls  --profile=711489243244_AdministratorAccess
         ./cfn-publishing-helper.sh

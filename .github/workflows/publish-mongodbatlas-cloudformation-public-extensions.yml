@@ -22,10 +22,10 @@ jobs:
         echo "[711489243244_AdministratorAccess]
         aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region = ${AWS_DEFAULT_REGION}" > ~/.aws/credentials
+        region = ${{ github.event.inputs.region }}" > ~/.aws/credentials
         touch ~/.aws/config
         echo "[profile 711489243244_AdministratorAccess]
-        region = ${AWS_DEFAULT_REGION}
+        region = ${{ github.event.inputs.region }}
         output = json " > ~/.aws/config
         cd cfn-resources
         aws s3 ls  --profile=711489243244_AdministratorAccess

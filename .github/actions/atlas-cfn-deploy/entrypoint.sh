@@ -15,12 +15,12 @@ env
 mkdir -p ~/.aws
 touch ~/.aws/credentials
 echo "[711489243244_AdministratorAccess]
-aws_access_key_id = ${{ AWS_ACCESS_KEY_ID }}
-aws_secret_access_key = ${{ AWS_SECRET_ACCESS_KEY }}
-region = ${{INPUT_AWS_DEFAULT_REGION}}" > ~/.aws/credentials
+aws_access_key_id = ${ AWS_ACCESS_KEY_ID }
+aws_secret_access_key = ${ AWS_SECRET_ACCESS_KEY }
+region = ${AWS_REGION_INPUT}" > ~/.aws/credentials
 touch ~/.aws/config
 echo "[profile 711489243244_AdministratorAccess]
-region = ${{INPUT_AWS_DEFAULT_REGION}}
+region = ${AWS_REGION_INPUT}
 output = json " > ~/.aws/config
 cd cfn-resources
 BUILD_ONLY=1 CFN_FLAGS="--verbose --set-default --region ${INPUT_AWS_DEFAULT_REGION}" ./cfn-submit-helper.sh

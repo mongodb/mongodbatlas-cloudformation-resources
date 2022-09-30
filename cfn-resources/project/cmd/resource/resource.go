@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	log "github.com/sirupsen/logrus"
-	matlasClient "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 func setup() {
@@ -27,10 +27,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
-	project, _, err := client.Projects.Create(context.Background(), &matlasClient.Project{
+	project, _, err := client.Projects.Create(context.Background(), &mongodbatlas.Project{
 		Name:  *currentModel.Name,
 		OrgID: *currentModel.OrgId,
-	})
+	}, &mongodbatlas.CreateProjectOptions{})
 	if err != nil {
 		//return handler.ProgressEvent{}, fmt.Errorf("error creating project: %s", err)
 		log.Debugf("Create - error: %+v", err)
@@ -192,7 +192,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	listOptions := &matlasClient.ListOptions{
+	listOptions := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
 	}

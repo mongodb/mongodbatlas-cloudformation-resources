@@ -1,21 +1,22 @@
 {
-        "ApiKeys": {
-            "PublicKey" : "$ATLAS_PUBLIC_KEY",
-            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-        },
-        "Name": "CFNTest-123",
-        "ProjectId": "<ReplacedBy-cfn-test-create-inputs.sh>",
-        "MongoDBMajorVersion": "4.4",
-        "NumShards": "1",
-        "AutoScaling": {
-            "DiskGBEnabled": "true",
-            "Compute": {}
-        },
-        "ProviderSettings": {
-            "AutoScaling": {
-                "Compute": {}
-            },
-            "InstanceSizeName": "M10",
-            "RegionName": "us-east-1"
-        }
+  "Name" : "Name",
+  "ApiKeys" : {
+    "PublicKey" : "",
+    "PrivateKey" : ""
+  },
+  "ProjectId": "",
+  "MongoDBMajorVersion": "4.4",
+  "NumShards": "1",
+  "AutoScaling": {
+    "DiskGBEnabled": "true",
+    "Compute": {}
+  },
+  "ProviderSettings": {
+    "AutoScaling": {
+      "Compute": {}
+    },
+    "InstanceSizeName": "M10",
+    "RegionName": "us-east-1"
+  },
+  "VersionReleaseSystem": "LTS"
 }

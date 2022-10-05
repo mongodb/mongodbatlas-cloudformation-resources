@@ -21,7 +21,7 @@ mkdir inputs
 name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$ATLAS_ORG_ID" \
+   --arg org "$ATLAS_ORG_IDexport " \
    --arg name "$name" \
    '.OrgId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Name?|=$name' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"

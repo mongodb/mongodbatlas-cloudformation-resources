@@ -9,7 +9,7 @@ MongoDB Atlas Resource Types.
 
 | Resource | Status | Examples |
 | --- | --- | --- |
-| project | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project/test](./project/test) |
+| project | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project/test](project/test) |
 | project-ip-access-list | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project-ip-access-list/test](./project-ip-access-list/test) |
 | cluster | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cluster/test](./cluster/test) |
 | database-user | ![Build](https://img.shields.io/badge/Beta-yellow) | [./database-user/test](./database-user/test) |

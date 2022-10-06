@@ -13,21 +13,56 @@
                 }
             },
             "additionalProperties": false
+        },
+        "projectSettings": {
+            "type": "object",
+            "properties": {
+                "IsCollectDatabaseSpecificsStatisticsEnabled": {
+                    "type": "boolean"
+                },
+                "IsDataExplorerEnabled": {
+                    "type": "boolean"
+                },
+                "IsPerformanceAdvisorEnabled": {
+                    "type": "boolean"
+                },
+                "IsRealtimePerformancePanelEnabled": {
+                    "type": "boolean"
+                },
+                "IsSchemaAdvisorEnabled": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
         "Name": {
             "description": "Name of the project to create.",
-            "type": "string"
+            "type": "string",
+            "default": ""
         },
         "OrgId": {
             "description": "Unique identifier of the organization within which to create the project.",
-            "type": "string"
+            "type": "string",
+            "default": ""
 
+        },
+        "ProjectOwnerId": {
+            "description": "Unique identifier of the organization within which to create the project.",
+            "type": "string",
+            "default": ""
+
+        },
+        "WithDefaultAlertsSettings": {
+            "description": "Unique identifier of the organization within which to create the project.",
+            "type": "boolean",
+            "default": "false"
         },
         "Id": {
             "description": "The unique identifier of the project.",
-            "type": "string"
+            "type": "string",
+            "default": ""
         },
         "Created": {
             "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
@@ -36,6 +71,9 @@
         "ClusterCount": {
             "description": "The number of Atlas clusters deployed in the project.",
             "type": "integer"
+        },
+        "ProjectSettings": {
+            "$ref": "#/definitions/projectSettings"
         },
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"

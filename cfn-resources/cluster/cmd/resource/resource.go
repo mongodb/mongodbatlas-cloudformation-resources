@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -20,6 +21,8 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-cluster")
 
 }
+
+var defaultLabel = mongodbatlas.Label{Key: "Infrastructure Tool", Value: "MongoDB Atlas Terraform Provider"}
 
 func castNO64(i *int64) *int {
 	x := cast.ToInt(&i)
@@ -89,7 +92,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	resourceID := util.NewResourceIdentifier("Cluster", *currentModel.Name, projectResID)
 	log.Debugf("Created resourceID:%s", resourceID)
 	resourceProps := map[string]string{
-		"Clust:erName": *currentModel.Name,
+		"ClusterName": *currentModel.Name,
 	}
 	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
 	if err != nil {
@@ -158,6 +161,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
 	}
 
+	if currentModel.VersionReleaseSystem != nil {
+		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
+	}
 	if currentModel.AutoScaling != nil {
 		clusterRequest.AutoScaling = &mongodbatlas.AutoScaling{
 			DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
@@ -472,6 +478,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DiskSizeGB:               currentModel.DiskSizeGB,
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
+		PitEnabled:               currentModel.PitEnabled,
 	}
 	if currentModel.BiConnector != nil {
 		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
@@ -492,6 +499,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if currentModel.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
+	}
+
+	if len(currentModel.Labels) > 0 {
+		for _, label := range currentModel.Labels {
+			if label.Key != nil && label.Value != nil {
+				clusterRequest.Labels = append(clusterRequest.Labels, mongodbatlas.Label{Key: *label.Key, Value: *label.Value})
+			}
+		}
 	}
 
 	log.Debugf("Cluster update clusterRequest:%+v", clusterRequest)
@@ -547,8 +562,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, req, currentModel, "DELETED", "DELETING")
 	}
 
-	projectID := *currentModel.ProjectId
-	clusterName := *currentModel.Name
+	var projectID string
+	var clusterName string
+	if currentModel.ProjectId != nil {
+		projectID = *currentModel.ProjectId
+	}
+	if currentModel.Name != nil {
+		clusterName = *currentModel.Name
+	}
 
 	resp, err := client.Clusters.Delete(context.Background(), projectID, clusterName)
 	if err != nil {
@@ -774,4 +795,14 @@ func isClusterInTargetState(client *mongodbatlas.Client, projectID, clusterName,
 		return false, "ERROR", nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
 	return cluster.StateName == targetState, cluster.StateName, cluster, nil
+}
+
+func containsLabelOrKey(list []Labels, item mongodbatlas.Label) bool {
+	for _, v := range list {
+		if reflect.DeepEqual(v, item) || (v.Key != nil && *v.Key == item.Key) {
+			return true
+		}
+	}
+
+	return false
 }

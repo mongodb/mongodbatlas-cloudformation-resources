@@ -249,7 +249,7 @@
             "additionalProperties": false
         },
         "ReplicationFactor": {
-            "description": "ReplicationFactor is deprecated. Use replicationSpecs.",
+            "description": "ReplicationFactor is deprecated. Use replicationSpecs. (Deprecated)",
             "type": "integer"
         },
         "ReplicationSpecs": {
@@ -264,7 +264,15 @@
             "type": "string"
         },
         "StateName": {
-            "description": "Current state of the cluster.",
+            "description": "State name.",
+            "type": "string"
+        },
+        "VersionReleaseSystem": {
+            "description": "Method by which the cluster maintains the MongoDB versions.",
+            "type": "string"
+        },
+        "RootCertType":{
+            "description": "Method by which the cluster maintains the MongoDB versions.",
             "type": "string"
         }
     },

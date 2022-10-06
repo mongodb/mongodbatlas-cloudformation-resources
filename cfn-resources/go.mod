@@ -1,6 +1,6 @@
 module github.com/mongodb/mongodbatlas-cloudformation-resources
 
-go 1.18
+go 1.19
 
 require (
 	github.com/Sectorbob/mlab-ns2 v0.0.0-20171030222938-d3aa0c295a8a

@@ -34,5 +34,11 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    '.OrgId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Name?|=$name' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+   --arg org "$ATLAS_ORG_ID" \
+   --arg name "$name" \
+   '.OrgId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Name?|=$name' \
+   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 ls -l inputs

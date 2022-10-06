@@ -30,6 +30,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#providersettings" title="ProviderSettings">ProviderSettings</a>" : <i><a href="providersettings.md">ProviderSettings</a></i>,
         "<a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>" : <i>Integer</i>,
         "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="replicationspec.md">replicationSpec</a>, ... ]</i>,
+        "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
+        "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>
     }
 }
 </pre>
@@ -60,6 +62,8 @@ Properties:
     <a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>: <i>Integer</i>
     <a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>: <i>
       - <a href="replicationspec.md">replicationSpec</a></i>
+    <a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>: <i>String</i>
+    <a href="#rootcerttype" title="RootCertType">RootCertType</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -218,7 +222,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ReplicationFactor
 
-ReplicationFactor is deprecated. Use replicationSpecs.
+ReplicationFactor is deprecated. Use replicationSpecs. (Deprecated)
 
 _Required_: No
 
@@ -233,6 +237,26 @@ Configuration for cluster regions.
 _Required_: No
 
 _Type_: List of <a href="replicationspec.md">replicationSpec</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### VersionReleaseSystem
+
+Method by which the cluster maintains the MongoDB versions.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RootCertType
+
+Method by which the cluster maintains the MongoDB versions.
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -270,7 +294,7 @@ Returns the <code>PrivateSrv</code> value.
 
 #### StateName
 
-Current state of the cluster.
+State name.
 
 #### SrvAddress
 

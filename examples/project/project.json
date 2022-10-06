@@ -5,7 +5,14 @@
     "Name" : {
       "Type" : "String",
       "Description" : "",
-      "ConstraintDescription" : ""
+      "ConstraintDescription" : "",
+      "Default": "gov-cfn-project"
+    },
+    "WithDefaultAlertsSettings" : {
+      "Type" : "String",
+      "Description" : "Setting alerts for project",
+      "ConstraintDescription" : "",
+      "Default": "false"
     }
   },
   "Mappings" : {},

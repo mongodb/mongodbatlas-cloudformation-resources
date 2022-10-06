@@ -27,10 +27,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+	var projectOwnerId string
+	if currentModel.ProjectOwnerId != nil {
+		projectOwnerId = *currentModel.ProjectOwnerId
+	}
 	project, _, err := client.Projects.Create(context.Background(), &mongodbatlas.Project{
-		Name:  *currentModel.Name,
-		OrgID: *currentModel.OrgId,
-	}, &mongodbatlas.CreateProjectOptions{})
+		Name:                      *currentModel.Name,
+		OrgID:                     *currentModel.OrgId,
+		WithDefaultAlertsSettings: currentModel.WithDefaultAlertsSettings,
+	}, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerId})
 	if err != nil {
 		//return handler.ProgressEvent{}, fmt.Errorf("error creating project: %s", err)
 		log.Debugf("Create - error: %+v", err)
@@ -42,6 +47,25 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	}
 
+	//Update project settings
+	projectSettings := mongodbatlas.ProjectSettings{
+		IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
+		IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
+		IsDataExplorerEnabled:                       currentModel.ProjectSettings.IsDataExplorerEnabled,
+		IsPerformanceAdvisorEnabled:                 currentModel.ProjectSettings.IsPerformanceAdvisorEnabled,
+		IsSchemaAdvisorEnabled:                      currentModel.ProjectSettings.IsSchemaAdvisorEnabled,
+	}
+
+	client.Projects.UpdateProjectSettings(context.Background(), project.ID, &projectSettings)
+
+	if err != nil {
+		log.Debugf("Update - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Failed to update Project settings",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	}
 	currentModel.Id = &project.ID
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount

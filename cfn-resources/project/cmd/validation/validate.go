@@ -1,12 +1,12 @@
-package main
+package validation
 
 type ModelValidator struct{}
 
-var CreateRequiredFields = []string{"GroupId", "Region", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ReadRequiredFields = []string{"GroupId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var UpdateRequiredFields []string
-var DeleteRequiredFields []string
-var ListRequiredFields []string
+var CreateRequiredFields = []string{"Region", "ApiKeys.PublicKey", "ApiKeys.PrivateKey", "Name", "OrgId"}
+var ReadRequiredFields = []string{"Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var UpdateRequiredFields = []string{"Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var DeleteRequiredFields = []string{"Region", "ApiKeys.PublicKey", "ApiKeys.PrivateKey", "Id"}
+var ListRequiredFields = []string{"Region", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 
 func (m ModelValidator) GetCreateFields() []string {
 	return CreateRequiredFields

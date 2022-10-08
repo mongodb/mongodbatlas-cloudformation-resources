@@ -23,10 +23,9 @@ mkdir inputs
 org_id="$ATLAS_ORG_ID"
 echo "$org_id"
 mongocli iam org apikey create --orgId "${org_id}" --desc "cfn-test-bot3" --role ORG_MEMBER > orgid_key.json
-cat orgid_key.json
 api_key_id=$(cat orgid_key.json | jq -r '.id')
 echo "$api_key_id"
-
+rm -rf orgid_key.json
 
 name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \

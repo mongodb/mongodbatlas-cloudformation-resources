@@ -34,6 +34,41 @@
                 }
             },
             "additionalProperties": false
+        },
+        "projectTeam": {
+            "type": "object",
+            "properties": {
+                "TeamId": {
+                    "type": "string"
+                },
+                "RoleNames": {
+                    "items": {
+                        "$ref": "#/definitions/Roles"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "projectApiKey": {
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string"
+                },
+                "RoleNames": {
+                    "items": {
+                        "$ref": "#/definitions/Roles"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "Roles": {
+            "type": "string"
         }
     },
     "properties": {
@@ -77,6 +112,20 @@
         },
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ProjectTeams": {
+            "items": {
+                "$ref": "#/definitions/projectTeam"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
+        "ProjectApiKeys": {
+            "items": {
+                "$ref": "#/definitions/projectApiKey"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
     },
     "additionalProperties": false,
@@ -114,3 +163,4 @@
         }
     }
 }
+

@@ -17,7 +17,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectownerid" title="ProjectOwnerId">ProjectOwnerId</a>" : <i>String</i>,
         "<a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>" : <i>Boolean</i>,
         "<a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>" : <i><a href="projectsettings.md">projectSettings</a></i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#projectteams" title="ProjectTeams">ProjectTeams</a>" : <i>[ <a href="projectteam.md">projectTeam</a>, ... ]</i>,
+        "<a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>" : <i>[ <a href="projectapikey.md">projectApiKey</a>, ... ]</i>
     }
 }
 </pre>
@@ -33,6 +35,10 @@ Properties:
     <a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>: <i>Boolean</i>
     <a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>: <i><a href="projectsettings.md">projectSettings</a></i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#projectteams" title="ProjectTeams">ProjectTeams</a>: <i>
+      - <a href="projectteam.md">projectTeam</a></i>
+    <a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>: <i>
+      - <a href="projectapikey.md">projectApiKey</a></i>
 </pre>
 
 ## Properties
@@ -90,6 +96,22 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProjectTeams
+
+_Required_: No
+
+_Type_: List of <a href="projectteam.md">projectTeam</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProjectApiKeys
+
+_Required_: No
+
+_Type_: List of <a href="projectapikey.md">projectApiKey</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

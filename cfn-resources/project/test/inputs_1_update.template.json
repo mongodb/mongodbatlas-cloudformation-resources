@@ -4,5 +4,18 @@
     "ApiKeys" : {
         "PublicKey" : "$ATLAS_PUBLIC_KEY",
         "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    }
+    },
+    "ProjectSettings": {
+        "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+        "IsDataExplorerEnabled": "false",
+        "IsPerformanceAdvisorEnabled": "false",
+        "IsRealtimePerformancePanelEnabled": "false",
+        "IsSchemaAdvisorEnabled": "false"
+    },
+    "ProjectApiKeys": [
+        {
+            "Key": "api_key_goes_here",
+            "RoleNames": ["GROUP_MEMBER"]
+        }
+    ]
 }

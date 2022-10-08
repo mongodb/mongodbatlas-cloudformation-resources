@@ -164,6 +164,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.VersionReleaseSystem != nil {
 		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
 	}
+
+	if currentModel.PitEnabled != nil {
+		clusterRequest.PitEnabled = currentModel.PitEnabled
+	}
 	if currentModel.AutoScaling != nil {
 		clusterRequest.AutoScaling = &mongodbatlas.AutoScaling{
 			DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
@@ -177,11 +181,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				compute.ScaleDownEnabled = currentModel.AutoScaling.Compute.ScaleDownEnabled
 			}
 			/*if currentModel.AutoScaling.Compute.MinInstanceSize != nil {
-				compute.MinInstanceSize = *currentModel.AutoScaling.Compute.MinInstanceSize
-			}
-			if currentModel.AutoScaling.Compute.MaxInstanceSize != nil {
-				compute.MaxInstanceSize = *currentModel.AutoScaling.Compute.MaxInstanceSize
-			}*/
+			  	compute.MinInstanceSize = *currentModel.AutoScaling.Compute.MinInstanceSize
+			  }
+			  if currentModel.AutoScaling.Compute.MaxInstanceSize != nil {
+			  	compute.MaxInstanceSize = *currentModel.AutoScaling.Compute.MaxInstanceSize
+			  }*/
 			clusterRequest.AutoScaling.Compute = compute
 		}
 	}
@@ -340,6 +344,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Paused = cluster.Paused
 	currentModel.SrvAddress = &cluster.SrvAddress
 	currentModel.StateName = &cluster.StateName
+	currentModel.PitEnabled = cluster.PitEnabled
 
 	//NOT TESTED WITH BI-CONNECTOR YET
 	//if currentModel.BiConnector != nil {
@@ -386,11 +391,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				compute := &Compute{}
 
 				/*if currentModel.ProviderSettings.AutoScaling.Compute.Enabled != nil {
-					compute.Enabled = cluster.ProviderSettings.AutoScaling.Compute.Enabled
-				}
-				if currentModel.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
-					compute.ScaleDownEnabled = cluster.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled
-				}*/
+				  	compute.Enabled = cluster.ProviderSettings.AutoScaling.Compute.Enabled
+				  }
+				  if currentModel.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
+				  	compute.ScaleDownEnabled = cluster.ProviderSettings.AutoScaling.Compute.ScaleDownEnabled
+				  }*/
 				if currentModel.ProviderSettings.AutoScaling.Compute.MinInstanceSize != nil {
 					compute.MinInstanceSize = &cluster.ProviderSettings.AutoScaling.Compute.MinInstanceSize
 				}
@@ -499,6 +504,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if currentModel.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
+	}
+
+	if currentModel.VersionReleaseSystem != nil {
+		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
 	}
 
 	if len(currentModel.Labels) > 0 {
@@ -666,12 +675,12 @@ func expandProviderSettings(providerSettings *ProviderSettings) *mongodbatlas.Pr
 
 			/*if providerSettings.AutoScaling.Compute.Enabled != nil {
 
-				compute.Enabled = providerSettings.AutoScaling.Compute.Enabled
-			}
-			if providerSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
-				compute.ScaleDownEnabled = providerSettings.AutoScaling.Compute.ScaleDownEnabled
+			  	compute.Enabled = providerSettings.AutoScaling.Compute.Enabled
+			  }
+			  if providerSettings.AutoScaling.Compute.ScaleDownEnabled != nil {
+			  	compute.ScaleDownEnabled = providerSettings.AutoScaling.Compute.ScaleDownEnabled
 
-			}*/
+			  }*/
 
 			if providerSettings.AutoScaling.Compute.MinInstanceSize != nil {
 				compute.MinInstanceSize = *providerSettings.AutoScaling.Compute.MinInstanceSize

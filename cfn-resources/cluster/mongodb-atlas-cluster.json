@@ -249,7 +249,7 @@
             "additionalProperties": false
         },
         "ReplicationFactor": {
-            "description": "ReplicationFactor is deprecated. Use replicationSpecs. (Deprecated)",
+            "description": "ReplicationFactor is deprecated. Use replicationSpecs.",
             "type": "integer"
         },
         "ReplicationSpecs": {
@@ -264,14 +264,10 @@
             "type": "string"
         },
         "StateName": {
-            "description": "State name.",
+            "description": "Root Certificate Authority that MongoDB Atlas clusters uses.",
             "type": "string"
         },
         "VersionReleaseSystem": {
-            "description": "Method by which the cluster maintains the MongoDB versions.",
-            "type": "string"
-        },
-        "RootCertType":{
             "description": "Method by which the cluster maintains the MongoDB versions.",
             "type": "string"
         }
@@ -341,3 +337,4 @@
         }
     }
 }
+

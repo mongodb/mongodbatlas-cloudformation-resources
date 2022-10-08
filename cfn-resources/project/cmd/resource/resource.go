@@ -10,6 +10,11 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
+type UpdateApiKey struct {
+	Key     string
+	ApiKeys *mongodbatlas.AssignAPIKey
+}
+
 func setup() {
 	util.SetupLogger("mongodb-atlas-project")
 
@@ -140,14 +145,154 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	// no-op
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	}
+	var projectId string
+	if currentModel.Id != nil {
+		projectId = *currentModel.Id
+	}
+
+	//Get teams from project
+	teamsAssigned, _, err := client.Projects.GetProjectTeamsAssigned(context.Background(), projectId)
+	if err != nil {
+		log.Debugf("Error: %s", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error while finding teams in project",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	}
+
+	// Find the change in teams
+	newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, teamsAssigned.Results)
+
+	//Remove Teams
+	for _, team := range removeTeams {
+		_, err := client.Teams.RemoveTeamFromProject(context.Background(), projectId, team.TeamID)
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while deleting team from project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+	}
+
+	// Add Teams
+	if len(newTeams) > 0 {
+		_, _, err = client.Projects.AddTeamsToProject(context.Background(), projectId, newTeams)
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while adding team to project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+	}
+
+	// Update Teams
+	for _, team := range changedTeams {
+		_, _, err = client.Teams.UpdateTeamRoles(context.Background(), projectId, team.TeamID, &mongodbatlas.TeamUpdateRoles{RoleNames: team.RoleNames})
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while updating team roles in project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+	}
+
+	//Get APIKeys from project
+	projectApiKeys, _, err := client.ProjectAPIKeys.List(context.Background(), projectId, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
+	if err != nil {
+		log.Infof("Error: %s", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error while finding teams in project",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	}
+
+	log.Infof("keys: %+v", currentModel.ProjectApiKeys)
+	//Get Change in ApiKeys
+	newApiKeys, changedKeys, removeKeys := getChangeInApiKeys(currentModel.ProjectApiKeys, projectApiKeys)
+
+	//Remove old keys
+	for _, key := range removeKeys {
+		_, err = client.ProjectAPIKeys.Unassign(context.Background(), projectId, key.Key)
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while Un-assigning Key to project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+		log.Infof("Removed: %s", key)
+
+	}
+
+	//Add Keys
+	for _, key := range newApiKeys {
+		_, err = client.ProjectAPIKeys.Assign(context.Background(), projectId, key.Key, key.ApiKeys)
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while Un-assigning Key to project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+		log.Infof("Added: %s", key)
+
+	}
+
+	//Update Key Roles
+	for _, key := range changedKeys {
+		_, err = client.ProjectAPIKeys.Assign(context.Background(), projectId, key.Key, key.ApiKeys)
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while Un-assigning Key to project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+		log.Infof("Updated: %s", key)
+	}
+
+	//Update project settings
+	projectSettings := mongodbatlas.ProjectSettings{
+		IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
+		IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
+		IsDataExplorerEnabled:                       currentModel.ProjectSettings.IsDataExplorerEnabled,
+		IsPerformanceAdvisorEnabled:                 currentModel.ProjectSettings.IsPerformanceAdvisorEnabled,
+		IsSchemaAdvisorEnabled:                      currentModel.ProjectSettings.IsSchemaAdvisorEnabled,
+	}
+
+	_, _, err = client.Projects.UpdateProjectSettings(context.Background(), projectId, &projectSettings)
+
+	if err != nil {
+		log.Infof("Update - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Failed to update Project settings",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	}
 
 	return handler.ProgressEvent{
-		OperationStatus:  handler.Failed,
-		Message:          "Update Not Supported",
-		ResourceModel:    nil,
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotUpdatable,
+		OperationStatus: handler.Success,
+		Message:         "Read Complete",
+		ResourceModel:   currentModel,
 	}, nil
+
+	//return handler.ProgressEvent{
+	//	OperationStatus:  handler.Failed,
+	//	Message:          "Update Not Supported",
+	//	ResourceModel:    nil,
+	//	HandlerErrorCode: cloudformation.HandlerErrorCodeNotUpdatable,
+	//}, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -242,4 +387,74 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  mm,
 	}, nil
+}
+
+func getChangeInTeams(currentTeams []ProjectTeam, oTeams []*mongodbatlas.Result) ([]*mongodbatlas.ProjectTeam, []*mongodbatlas.ProjectTeam, []*mongodbatlas.ProjectTeam) {
+	var newTeams []*mongodbatlas.ProjectTeam
+	var changedTeams []*mongodbatlas.ProjectTeam
+	var removeTeams []*mongodbatlas.ProjectTeam
+
+	for _, nTeam := range currentTeams {
+		matched := false
+		for _, oTeam := range oTeams {
+			if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
+				changedTeams = append(changedTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+				matched = true
+				break
+			}
+		}
+		//Add to newTeams
+		if !matched {
+			newTeams = append(newTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+		}
+	}
+
+	for _, oTeam := range oTeams {
+		matched := false
+		for _, nTeam := range currentTeams {
+			if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
+				matched = true
+				break
+			}
+		}
+		if !matched && len(currentTeams) > 0 {
+			removeTeams = append(removeTeams, &mongodbatlas.ProjectTeam{TeamID: oTeam.TeamID, RoleNames: oTeam.RoleNames})
+		}
+	}
+	return newTeams, changedTeams, removeTeams
+}
+
+func getChangeInApiKeys(currentKeys []ProjectApiKey, oKeys []mongodbatlas.APIKey) ([]UpdateApiKey, []UpdateApiKey, []UpdateApiKey) {
+	var newKeys []UpdateApiKey
+	var changedKeys []UpdateApiKey
+	var removeKeys []UpdateApiKey
+
+	for _, nKey := range currentKeys {
+		matched := false
+		for _, oKey := range oKeys {
+			if nKey.Key != nil && *nKey.Key == oKey.ID {
+				changedKeys = append(changedKeys, UpdateApiKey{Key: *nKey.Key, ApiKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+				matched = true
+				break
+			}
+		}
+		//Add to newKeys
+		if !matched {
+			newKeys = append(newKeys, UpdateApiKey{Key: *nKey.Key, ApiKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+		}
+	}
+
+	for _, oKey := range oKeys {
+		matched := false
+		for _, nKey := range currentKeys {
+			if nKey.Key != nil && *nKey.Key == oKey.ID {
+				matched = true
+				break
+			}
+		}
+		if !matched && len(currentKeys) > 0 {
+			removeKeys = append(removeKeys, UpdateApiKey{Key: oKey.ID})
+		}
+	}
+	return newKeys, changedKeys, removeKeys
 }

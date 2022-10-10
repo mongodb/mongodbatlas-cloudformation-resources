@@ -160,7 +160,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	//Get teams from project
 	teamsAssigned, _, err := client.Projects.GetProjectTeamsAssigned(context.Background(), projectId)
 	if err != nil {
-		log.Debugf("Error: %s", err)
+		log.Infof("ProjectId : %s, Error: %s", projectId, err)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Error while finding teams in project",
@@ -174,7 +174,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	for _, team := range removeTeams {
 		_, err := client.Teams.RemoveTeamFromProject(context.Background(), projectId, team.TeamID)
 		if err != nil {
-			log.Infof("Error: %s", err)
+			log.Debug("Error: %s", projectId, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while deleting team from project",
@@ -186,7 +186,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if len(newTeams) > 0 {
 		_, _, err = client.Projects.AddTeamsToProject(context.Background(), projectId, newTeams)
 		if err != nil {
-			log.Infof("Error: %s", err)
+			log.Debug("Error: %s", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while adding team to project",
@@ -198,7 +198,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	for _, team := range changedTeams {
 		_, _, err = client.Teams.UpdateTeamRoles(context.Background(), projectId, team.TeamID, &mongodbatlas.TeamUpdateRoles{RoleNames: team.RoleNames})
 		if err != nil {
-			log.Infof("Error: %s", err)
+			log.Debug("Error: %s", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while updating team roles in project",
@@ -209,14 +209,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	//Get APIKeys from project
 	projectApiKeys, _, err := client.ProjectAPIKeys.List(context.Background(), projectId, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
 	if err != nil {
-		log.Infof("Error: %s", err)
+		log.Debug("Error: %s", projectId, err)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Error while finding teams in project",
+			Message:          "Error while finding api keys in project",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	log.Infof("keys: %+v", currentModel.ProjectApiKeys)
+	//log.Infof("keys: %+v", currentModel.ProjectApiKeys)
 	//Get Change in ApiKeys
 	newApiKeys, changedKeys, removeKeys := getChangeInApiKeys(currentModel.ProjectApiKeys, projectApiKeys)
 
@@ -224,13 +224,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	for _, key := range removeKeys {
 		_, err = client.ProjectAPIKeys.Unassign(context.Background(), projectId, key.Key)
 		if err != nil {
-			log.Infof("Error: %s", err)
+			log.Debug("Error: %s", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while Un-assigning Key to project",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		log.Infof("Removed: %s", key)
+		//log.Infof("Removed: %s", key)
 
 	}
 
@@ -244,7 +244,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				Message:          "Error while Un-assigning Key to project",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		log.Infof("Added: %s", key)
+		//log.Infof("Added: %s", key)
 
 	}
 
@@ -258,7 +258,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				Message:          "Error while Un-assigning Key to project",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		log.Infof("Updated: %s", key)
+		//log.Infof("Updated: %s", key)
 	}
 
 	//Update project settings

@@ -1,0 +1,37 @@
+{
+    "desiredResourceState" : {
+            "Name": "cfn-test-bot-f219927",
+            "OrgId": "5fe4ea50d1a2b617175ee3d4",
+            "ApiKeys": {
+                "PublicKey": "pzovkttc",
+                "PrivateKey": "6d39c229-6a6f-423d-9b41-dda35547f57e"
+            },
+      "Id": "625454459c4e6108393d650d",
+            "ProjectSettings": {
+                "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+                "IsDataExplorerEnabled": "false",
+                "IsPerformanceAdvisorEnabled": "false",
+                "IsRealtimePerformancePanelEnabled": "false",
+                "IsSchemaAdvisorEnabled": "false"
+            },
+            "ProjectApiKeys": [
+                {
+                    "Key": "6343abcbb4ef1f1c3876be29",
+                    "RoleNames": [
+                        "GROUP_OWNER"
+                    ]
+                }
+            ],
+            "ProjectTeams": [
+                {
+                    "TeamId": "6343acd17c1aa523ca127f38",
+                    "RoleNames": [
+                        "GROUP_OWNER"
+                    ]
+                }
+            ]
+
+    },
+    "providerLogGroupName" : "mongodb-atlas-project-logs",
+    "previousResourceState": { }
+}

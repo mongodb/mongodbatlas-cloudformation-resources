@@ -264,7 +264,7 @@
             "type": "string"
         },
         "StateName": {
-            "description": "Root Certificate Authority that MongoDB Atlas clusters uses.",
+            "description": "State Name.",
             "type": "string"
         },
         "VersionReleaseSystem": {

@@ -286,13 +286,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
-
-	//return handler.ProgressEvent{
-	//	OperationStatus:  handler.Failed,
-	//	Message:          "Update Not Supported",
-	//	ResourceModel:    nil,
-	//	HandlerErrorCode: cloudformation.HandlerErrorCodeNotUpdatable,
-	//}, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.

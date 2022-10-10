@@ -1,0 +1,12 @@
+{
+  "id": "6341aabb3873fd06c0107431",
+  "desc": "cfn-test-bot3",
+  "roles": [
+    {
+      "orgId": "5fe4ea50d1a2b617175ee3d4",
+      "roleName": "ORG_MEMBER"
+    }
+  ],
+  "privateKey": "73a36eef-fa54-4f22-8bde-0f026696fa84",
+  "publicKey": "fyieewos"
+}

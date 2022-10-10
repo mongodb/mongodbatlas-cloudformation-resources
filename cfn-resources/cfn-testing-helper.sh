@@ -32,7 +32,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project cluster}"
+resources="${1:-project database-user project-ip-access-list network-peering cluster}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -80,9 +80,7 @@ echo "Step 2/3: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-
 . ./cfn-testing-helper.config
 env | grep CFN_TEST_
 
-#rand_id=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-z0-9' | fold -w 6 | head -n 1)
-PROJECT_NAME="gopro"
-
+PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
 echo "PROJECT_NAME:${PROJECT_NAME}"
 
 #if false; then

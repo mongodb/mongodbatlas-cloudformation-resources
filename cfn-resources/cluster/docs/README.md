@@ -282,7 +282,7 @@ Returns the <code>PrivateSrv</code> value.
 
 #### StateName
 
-Root Certificate Authority that MongoDB Atlas clusters uses.
+State Name.
 
 #### SrvAddress
 

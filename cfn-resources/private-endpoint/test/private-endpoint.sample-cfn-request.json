@@ -1,0 +1,12 @@
+{
+    "desiredResourceState" : {
+        "GroupId" : "$ATLAS_ORG_ID",
+        "ApiKeys" : {
+            "PublicKey" : "$ATLAS_PUBLIC_KEY",
+            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+        },
+        "Region" : "us-east-1"
+    },
+    "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
+    "previousResourceState": { }
+}

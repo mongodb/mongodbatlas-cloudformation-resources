@@ -22,12 +22,13 @@ mkdir inputs
 #create apikey
 org_id="$ATLAS_ORG_ID"
 echo "$org_id"
-api_key_id=$(mongocli iam org apikey create --orgId "${org_id}" --desc "cfn-test-bot" --role ORG_MEMBER --output json | jq -r '.id')
+api_key_id=$(mongocli iam org apikey create --orgId "${ATLAS_ORG_ID}" --desc "cfn-test-bot" --role ORG_MEMBER --output json | jq -r '.id')
 echo "$api_key_id"
 
 #create team
-team_id=$(mongocli iam team create "$team_name" --username "${project_user_name}" --orgId "${org_id}" --output json | jq -r '.id')
-echo "$team_id"
+user_name="$PROJECT_USER_NAME"
+team_name="$TEAM_NAME"
+team_id=$(mongocli iam team create "${TEAM_NAME}" --username "${PROJECT_USER_NAME}" --orgId "${org_id}" --output json | jq -r '.id')
 
 
 name="${1}"

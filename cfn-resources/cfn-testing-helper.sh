@@ -32,7 +32,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+resources="${1:-project}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -121,7 +121,7 @@ done
 #cd "${res}"
 #./${res}/test/cfn-test-create-inputs.sh "${PROJECT_NAME}-2" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 
-
+exit
 
 
 echo "Step 3/3: Running 'cfn test' on resource type"

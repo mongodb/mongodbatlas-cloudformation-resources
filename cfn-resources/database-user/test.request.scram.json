@@ -1,0 +1,26 @@
+{
+  "desiredResourceState": {
+      "Username": "test",
+      "Password": "pas@12041",
+      "ProjectId": "",
+      "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+      },
+      "DatabaseName": "admin",
+      "Roles": [
+        {
+          "RoleName": "readWrite",
+          "DatabaseName": "testDb"
+        }
+      ],
+      "Scopes": [
+        {
+          "Type": "CLUSTER",
+          "Name": "testDb"
+        }
+      ]
+  },
+  "providerLogGroupName": "mongodb-atlas-databaseuser-logs",
+  "previousResourceState": {}
+}

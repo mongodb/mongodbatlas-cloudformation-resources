@@ -17,6 +17,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#databasename" title="DatabaseName">DatabaseName</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>,
         "<a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>" : <i>String</i>,
+        "<a href="#x509type" title="X509Type">X509Type</a>" : <i>String</i>,
         "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
@@ -37,6 +38,7 @@ Properties:
     <a href="#labels" title="Labels">Labels</a>: <i>
       - <a href="labeldefinition.md">labelDefinition</a></i>
     <a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>: <i>String</i>
+    <a href="#x509type" title="X509Type">X509Type</a>: <i>String</i>
     <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
@@ -97,6 +99,18 @@ _Required_: No
 _Type_: String
 
 _Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>GROUP</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### X509Type
+
+Method that briefs who owns the certificate provided. If no value is given while using X509Type, Atlas uses the default value of MANAGED.
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>NONE</code> | <code>MANAGED</code> | <code>CUSTOMER</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

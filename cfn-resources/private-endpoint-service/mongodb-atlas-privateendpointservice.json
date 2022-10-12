@@ -1,0 +1,78 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndpointService",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "ApiKey": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "ApiKeys": {
+            "$ref": "#/definitions/ApiKey"
+        },
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "EndpointServiceId": {
+            "description": "The unique identifier of the private endpoint.",
+            "type": "string"
+        },
+        "InterfaceEndpointConnectionId": {
+            "description": "The unique identifier of the private endpoint from AWS",
+            "type": "string"
+        },
+        "ConnectionStatus": {
+            "description": "Status of the interface endpoint.",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "Error message pertaining to the interface endpoint. Atlas returns null if there are no errors.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKeys",
+        "GroupId",
+        "EndpointServiceId",
+        "InterfaceEndpointConnectionId"
+    ],
+    "readOnlyProperties": [
+        "/properties/ApiKeys",
+        "/properties/GroupId",
+        "/properties/EndpointServiceId"
+    ],
+    "primaryIdentifier": [
+        "/properties/InterfaceEndpointConnectionId"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+            ]
+        },
+        "read": {
+            "permissions": [
+            ]
+        },
+        "delete": {
+            "permissions": [
+            ]
+        },
+        "list": {
+            "permissions": [
+            ]
+        }
+    }
+}

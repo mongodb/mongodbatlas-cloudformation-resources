@@ -100,7 +100,7 @@ do
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" && \
             echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 
-    #TODO: have to avoid resource specific condition and generalize the code
+    #TODO: avoid resource specific condition and generalize the script for generating the required params
     elif  [ "${res}" == "encryption-at-rest" ]|| [ "${res}" == "cloud-provider-snapshot-restore-jobs" ]|| [ "${res}" == "cloud-provider-snapshots" ]; then
           ./test/cfn-test-create-inputs.sh "${EXISTING_PROJECT_NAME}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     else

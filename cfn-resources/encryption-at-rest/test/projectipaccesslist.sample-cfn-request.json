@@ -1,0 +1,21 @@
+{
+    "desiredResourceState" : {
+        "resourceType" : "MongoDB::Atlas::ProjectIpAccessList",
+        "properties" : {
+            "Name" : "Name",
+            "ProjectId" : "ProjectId",
+            "ApiKeys" : {
+                "PublicKey" : "$ATLAS_PUBLIC_KEY",
+                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+            },
+            "AccessList" : [
+                { "IPAddress": "0.0.0.0/1",
+                  "Comment": "Testing open all ips" },
+                { "CIDRBlock": "203.0.113.0/24",
+                  "Comment": "CIDR block for Application Server B - D" }
+            ]
+        }
+    },
+    "providerLogGroupName" : "mongodb-atlas-projectipaccesslist-logs",
+    "previousResourceState": { }
+}

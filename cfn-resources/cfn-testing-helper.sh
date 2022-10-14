@@ -32,7 +32,9 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project}"
+
+resources="${1:-project database-user project-ip-access-list network-peering cluster encryption-at-rest cloud-provider-snapshot-restore-jobs cloud-provider-snapshots }"
+
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -100,6 +102,9 @@ do
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" && \
             echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 
+    #TODO: avoid resource specific condition and generalize the script for generating the required params
+    elif  [ "${res}" == "encryption-at-rest" ]|| [ "${res}" == "cloud-provider-snapshot-restore-jobs" ]|| [ "${res}" == "cloud-provider-snapshots" ]; then
+          ./test/cfn-test-create-inputs.sh "${EXISTING_PROJECT_NAME}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     else
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     fi

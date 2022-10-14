@@ -1,0 +1,17 @@
+{
+    "desiredResourceState": {
+        "ProjectId": "",
+        "ClusterName": "cfntest",
+        "Id": "cfntest",
+        "Description": "snapshot through cloud formation template",
+
+        "RetentionInDays": 5,
+        "ApiKeys": {
+            "PublicKey": "",
+            "PrivateKey": ""
+        }
+    },
+    "previousResourceState": {
+    }
+}
+

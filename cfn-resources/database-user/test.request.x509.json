@@ -1,0 +1,26 @@
+{
+  "desiredResourceState": {
+    "Username": "testX509",
+      "X509Type": "MANAGED",
+      "ProjectId": "",
+      "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+      },
+      "DatabaseName": "$external",
+      "Roles": [
+        {
+          "RoleName": "readWrite",
+          "DatabaseName": "test"
+        }
+      ],
+      "Scopes": [
+        {
+          "Type": "CLUSTER",
+          "Name": "test"
+        }
+      ]
+  },
+  "providerLogGroupName": "mongodb-atlas-databaseuser-logs",
+  "previousResourceState": {}
+}

@@ -96,13 +96,26 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	name := *currentModel.Name
 
+	event, err2, problem, project := getProject(name, client, currentModel, err)
+	if problem {
+		return event, err2
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Read Complete",
+		ResourceModel:   project,
+	}, nil
+}
+
+func getProject(name string, client *mongodbatlas.Client, currentModel *Model, err error) (handler.ProgressEvent, error, bool, *Model) {
 	if len(name) > 0 {
 		project, _, err := client.Projects.GetOneProjectByName(context.Background(), name)
 		if err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource Not Found",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, true, nil
 		}
 		currentModel.Name = &project.Name
 		currentModel.OrgId = &project.OrgID
@@ -114,7 +127,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				OperationStatus: handler.Success,
 				Message:         "Read Complete",
 				ResourceModel:   currentModel,
-			}, nil
+			}, nil, true, nil
 		}
 	}
 
@@ -127,7 +140,36 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, true, nil
+	}
+
+	//Get teams from project
+	teamsAssigned, _, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
+	if err != nil {
+		log.Infof("ProjectId : %s, Error: %s", id, err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error while finding teams in project",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil, true, nil
+	}
+
+	//Get APIKeys from project
+	projectApiKeys, _, err := client.ProjectAPIKeys.List(context.Background(), id, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
+	if err != nil {
+		log.Debug("Error: %s", id, err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error while finding api keys in project",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil, true, nil
+	}
+
+	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
+	if err != nil {
+		log.Debug("Error: %s", id, err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error while finding project settings",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil, true, nil
 	}
 
 	currentModel.Name = &project.Name
@@ -135,11 +177,34 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Read Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	//Set projectSettings
+	currentModel.ProjectSettings = &ProjectSettings{
+		IsCollectDatabaseSpecificsStatisticsEnabled: projectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
+		IsRealtimePerformancePanelEnabled:           projectSettings.IsRealtimePerformancePanelEnabled,
+		IsDataExplorerEnabled:                       projectSettings.IsDataExplorerEnabled,
+		IsPerformanceAdvisorEnabled:                 projectSettings.IsPerformanceAdvisorEnabled,
+		IsSchemaAdvisorEnabled:                      projectSettings.IsSchemaAdvisorEnabled,
+	}
+
+	//Set teams
+	var teams []ProjectTeam
+	for _, team := range teamsAssigned.Results {
+		teams = append(teams, ProjectTeam{TeamId: &team.TeamID, RoleNames: team.RoleNames})
+	}
+
+	//Set api-keys
+	var apiKeys []ProjectApiKey
+	for _, key := range projectApiKeys {
+		var roles []string
+		for _, role := range key.Roles {
+			roles = append(roles, role.RoleName)
+		}
+		apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
+	}
+	currentModel.ProjectTeams = teams
+	currentModel.ProjectApiKeys = apiKeys
+
+	return handler.ProgressEvent{}, nil, false, currentModel
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -186,7 +251,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if len(newTeams) > 0 {
 		_, _, err = client.Projects.AddTeamsToProject(context.Background(), projectId, newTeams)
 		if err != nil {
-			log.Debug("Error: %s", err)
+			log.Infof("Error: %s", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while adding team to project",
@@ -281,10 +346,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	}
 
+	event, err2, problem, project := getProject("", client, currentModel, err)
+	if problem {
+		return event, err2
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
-		ResourceModel:   currentModel,
+		ResourceModel:   project,
 	}, nil
 }
 

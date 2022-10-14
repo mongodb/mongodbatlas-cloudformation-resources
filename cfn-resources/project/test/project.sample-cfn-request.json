@@ -1,15 +1,18 @@
 {
     "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::Project",
-        "properties" : {
-            "Name" : "Name",
-            "OrgId" : "$ATLAS_ORG_ID",
-            "ApiKeys" : {
-                "PublicKey" : "$ATLAS_PUBLIC_KEY",
-                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-            }
-
-        }
+      "Name" : "Name",
+      "OrgId" : "$ATLAS_ORG_ID",
+      "ApiKeys" : {
+        "PublicKey" : "$ATLAS_PUBLIC_KEY",
+        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+      },
+      "ProjectSettings": {
+        "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+        "IsDataExplorerEnabled": "false",
+        "IsPerformanceAdvisorEnabled": "false",
+        "IsRealtimePerformancePanelEnabled": "false",
+        "IsSchemaAdvisorEnabled": "false"
+      }
     },
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }

@@ -126,7 +126,6 @@ done
 #cd "${res}"
 #./${res}/test/cfn-test-create-inputs.sh "${PROJECT_NAME}-2" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 
-exit
 
 
 echo "Step 3/3: Running 'cfn test' on resource type"

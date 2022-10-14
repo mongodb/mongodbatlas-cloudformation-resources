@@ -21,6 +21,13 @@
                 "ApiKeys": {
                     "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
                     "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+                },
+                "ProjectSettings": {
+                    "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+                    "IsDataExplorerEnabled": "false",
+                    "IsPerformanceAdvisorEnabled": "false",
+                    "IsRealtimePerformancePanelEnabled": "false",
+                    "IsSchemaAdvisorEnabled": "true"
                 }
             }
         },
@@ -42,7 +49,7 @@
                 },
                 "MongoDBVersion": "4.0",
                 "ProviderSettings": {
-                    "EncryptEBSVolume": false,
+                    "EncryptEBSVolume": true,
                     "InstanceSizeName": "M10",
                     "RegionName": "EU_CENTRAL_1"
                 },

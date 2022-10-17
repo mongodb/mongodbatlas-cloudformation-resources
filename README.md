@@ -83,7 +83,7 @@ cd mongodbatlas-cloudformation-resources\cfn-resources
 ## IAM Access Error When Previsioning Resources 
 If you are having difficulty with IAM access, suggest try registering first with the following IAM role [here](https://github.com/aws-quickstart/quickstart-mongodb-atlas/blob/main/templates/register-mongodb-atlas-resources.yaml#L217). This activates the public registry extensions by first using the private registry extensions.
 
-The naming scheme  for a MongoDB Atlas resource is "..." 
+The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE NAME]". 
 
 
 ## Logging 

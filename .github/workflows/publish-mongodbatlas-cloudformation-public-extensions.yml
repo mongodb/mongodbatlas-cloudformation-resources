@@ -20,8 +20,8 @@ jobs:
         mkdir -p ~/.aws
         touch ~/.aws/credentials
         echo "[711489243244_AdministratorAccess]
-        aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID_MARKETPLACE_PUBLISH }}
-        aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY_MARKETPLACE_PUBLISH }}
+        aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISH_ONLY }}
+        aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISH_ONLY }}
         region = ${{ github.event.inputs.region }}" > ~/.aws/credentials
         touch ~/.aws/config
         echo "[profile 711489243244_AdministratorAccess]

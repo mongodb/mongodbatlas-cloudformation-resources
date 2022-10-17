@@ -85,7 +85,6 @@ If you are having difficulty with IAM access, suggest try registering first with
 
 The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE NAME]". 
 
-
 ## Logging 
 Logging for AWS CloudFormation Public extensions is currently disabled. AWS is evaluating if logging is useful for consumers of third party extensions, if this is something you need or would like to request please open a ticket directly with AWS Support. 
 

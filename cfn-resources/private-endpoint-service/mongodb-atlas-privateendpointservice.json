@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpointService",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "description": "Creates a new private endpoint service for a private endpoint",
     "definitions": {
         "ApiKey": {
             "type": "object",
@@ -49,10 +48,8 @@
         "EndpointServiceId",
         "InterfaceEndpointConnectionId"
     ],
-    "readOnlyProperties": [
-        "/properties/ApiKeys",
-        "/properties/GroupId",
-        "/properties/EndpointServiceId"
+    "createOnlyProperties": [
+        "/properties/InterfaceEndpointConnectionId"
     ],
     "primaryIdentifier": [
         "/properties/InterfaceEndpointConnectionId"

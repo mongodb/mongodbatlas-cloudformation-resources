@@ -1,0 +1,125 @@
+{
+    "typeName": "MongoDB::Atlas::CustomDBRole",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "ApiKey": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "InheritedRole": {
+            "type": "object",
+            "properties": {
+                "Db": {
+                    "type": "string"
+                },
+                "Role": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Resource": {
+            "type": "object",
+            "properties": {
+                "Collection": {
+                    "type": "string"
+                },
+                "DB": {
+                    "type": "string"
+                },
+                "Cluster": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Action": {
+            "type": "object",
+            "properties": {
+                "Action": {
+                    "type": "string"
+                },
+                "Resources": {
+                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Resource"
+                    },
+                    "insertionOrder" : false
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Actions": {
+            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Action"
+            },
+            "insertionOrder" : false
+        },
+        "InheritedRoles": {
+            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/InheritedRole"
+            },
+            "insertionOrder" : false
+        },
+        "RoleName": {
+            "description": "Aws Region",
+            "type": "string"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/ApiKey"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "RoleName"
+    ],
+    "readOnlyProperties": [
+        "/properties/RoleName"
+    ],
+    "primaryIdentifier": [
+        "/properties/RoleName"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "initech:CreateReport"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "initech:DescribeReport"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "initech:UpdateReport"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "initech:DeleteReport"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "initech:ListReports"
+            ]
+        }
+    }
+}

@@ -28,6 +28,6 @@ jobs:
         region = ${{ github.event.inputs.region }}
         output = json " > ~/.aws/config
         cd cfn-resources
-        aws s3 ls  --profile=711489243244_AdministratorAccess
+        #aws s3 ls  --profile=711489243244_AdministratorAccess
         ./cfn-publishing-helper.sh
 

@@ -61,5 +61,5 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### ProjectId
 
-Unique identifier of the Atlas project to which the user belongs.
+Unique identifier of the Atlas project.
 

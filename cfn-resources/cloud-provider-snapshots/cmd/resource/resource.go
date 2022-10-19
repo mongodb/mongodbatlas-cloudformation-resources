@@ -5,53 +5,39 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-snapshots/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	matlasClient "go.mongodb.org/atlas/mongodbatlas"
 )
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup() //logger setup
 
+	log.Debugf("Create snapshot for Request() currentModel:%+v", currentModel)
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
-	//logger setup
-	setup()
-
-	var projectId string
-	var clusterName string
-
 	// Validate required fields in the request
-	if currentModel.ProjectId == nil {
-		log.Info("Read - Project Id can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Project Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-
+	modelValidation := validateModel(constants.Create, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
 	}
 
-	if currentModel.ClusterName == nil {
-		log.Info("Read - ClusterName can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "ClusterName Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-	}
-
-	projectId = *currentModel.ProjectId
-	clusterName = *currentModel.ClusterName
 	// progress callback setup
 	if _, ok := req.CallbackContext["status"]; ok {
 		sid := req.CallbackContext["snapshot_id"].(string)
 		currentModel.Id = &sid
-
 		return validateProgress(client, currentModel, "completed")
 	}
+	// Create Atlas API Request Object
+	projectId := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName
 
 	requestParameters := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
@@ -61,16 +47,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		RetentionInDays: int(*currentModel.RetentionInDays),
 		Description:     *currentModel.Description,
 	}
-
+	// API call to create snapshot
 	snapshot, _, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating cloud provider snapshot: %s", err)
 	}
-
 	currentModel.Id = &snapshot.ID
-
 	log.Info("Created Successfully - (%s)", currentModel.Id)
-
+	// track progress
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create cloud provider snapshots : %s", snapshot.Status),
@@ -82,70 +66,46 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		},
 	}
 	log.Infof("Create() return event:%+v", event)
-	log.Infof("Create() return eventResourceModel:%+v", event.ResourceModel)
 	return event, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
-func Read(req handler.Request, prevModel *Model, currentModelRead *Model) (handler.ProgressEvent, error) {
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup() //logger setup
+
+	log.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModelRead.ApiKeys.PublicKey, *currentModelRead.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
-	//logger setup
-	setup()
-
-	var snapshotId string
-	var projectId string
-	var clusterName string
-
 	// Validate required fields in the request
-	if currentModelRead.ProjectId == nil {
-		log.Infof("Read - Project Id can not be null for snapshot with id(%s)", snapshotId)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Project Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-
+	modelValidation := validateModel(constants.Read, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
 	}
 
-	if currentModelRead.Id == nil {
-		log.Infof("Read - SnapshotId can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "SnapshotId Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-	}
-	if currentModelRead.ClusterName == nil {
-		log.Infof("Read - ClusterName can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "ClusterName Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-	}
-	projectId = *currentModelRead.ProjectId
-	snapshotId = *currentModelRead.Id
-	clusterName = *currentModelRead.ClusterName
-
-	isExist := isSnapshotExist(currentModelRead)
-	// Check if snapshot already exist
+	isExist := isSnapshotExist(currentModel)
+	// Check if snapshot already exist due to this issue https://github.com/mongodb/go-client-mongodb-atlas/issues/315
 	if !isExist {
-		log.Infof("Read - errors reading snapshot with id(%s)", snapshotId)
+		log.Infof("Read - errors reading snapshot with id(%s)", currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
+	// Create Atlas API Request Object
+	projectId := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName
+	snapshotId := *currentModel.Id
 
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
 		SnapshotID:  snapshotId,
 		ClusterName: clusterName,
 	}
-	log.Infof("Read - error reading project with : %s", snapshotId)
-	snapshot, res, err := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.TODO(), snapshotRequest)
+	// API call to read snapshot
+	snapshot, res, err := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
 	if err != nil {
 		log.Infof("Read - errors reading snapshot with id(%s): %s", snapshotId, err)
 		return handler.ProgressEvent{
@@ -155,19 +115,19 @@ func Read(req handler.Request, prevModel *Model, currentModelRead *Model) (handl
 	}
 	log.Infof("Read -reading snapshot status (%d)", res.StatusCode)
 
-	currentModelRead.Id = &snapshot.ID
-	currentModelRead.Description = &snapshot.Description
-	currentModelRead.Status = &snapshot.Status
-	currentModelRead.Type = &snapshot.Type
-	currentModelRead.CreatedAt = &snapshot.CreatedAt
-	currentModelRead.MasterKeyUuid = &snapshot.MasterKeyUUID
-	currentModelRead.MongoVersion = &snapshot.MongodVersion
-	currentModelRead.StorageSizeBytes = &snapshot.StorageSizeBytes
+	currentModel.Id = &snapshot.ID
+	currentModel.Description = &snapshot.Description
+	currentModel.Status = &snapshot.Status
+	currentModel.Type = &snapshot.Type
+	currentModel.CreatedAt = &snapshot.CreatedAt
+	currentModel.MasterKeyUuid = &snapshot.MasterKeyUUID
+	currentModel.MongoVersion = &snapshot.MongodVersion
+	currentModel.StorageSizeBytes = &snapshot.StorageSizeBytes
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
-		ResourceModel:   currentModelRead,
+		ResourceModel:   currentModel,
 	}, nil
 }
 
@@ -183,56 +143,34 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup() //logger setup
+
+	log.Debugf("Delete snapshot for Request() currentModel:%+v", currentModel)
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
-	//logger setup
-	setup()
-
-	var snapshotId string
-	var projectId string
-	var clusterName string
-
 	// Validate required fields in the request
-	if currentModel.ProjectId == nil {
-		log.Infof("Delete - Project Id can not be null for snapshot with id(%s)", snapshotId)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Project Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-
+	modelValidation := validateModel(constants.Delete, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
 	}
-
-	if currentModel.Id == nil {
-		log.Infof("Delete -  SnapshotId can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "SnapshotId Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-	}
-	if currentModel.ClusterName == nil {
-		log.Infof("Delete - ClusterName can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "ClusterName Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-	}
-	projectId = *currentModel.ProjectId
-	snapshotId = *currentModel.Id
-	clusterName = *currentModel.ClusterName
 
 	isExist := isSnapshotExist(currentModel)
-	// Check if snapshot already exist
+	// Check if snapshot already exist due to this issue https://github.com/mongodb/go-client-mongodb-atlas/issues/315
 	if !isExist {
-		log.Infof("Read - errors reading snapshot with id(%s)", snapshotId)
+		log.Infof("Delete - errors Delete snapshot with id(%s)", currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
+	// Create Atlas API Request Object
+	projectId := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName
+	snapshotId := *currentModel.Id
+
 	log.Infof("Deleting snapshotId (%s)", snapshotId)
 
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
@@ -240,7 +178,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		SnapshotID:  snapshotId,
 		ClusterName: clusterName,
 	}
-
+	// API call to delete snapshot
 	resp, err := client.CloudProviderSnapshots.Delete(context.Background(), snapshotRequest)
 
 	if err != nil {
@@ -261,11 +199,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
+		Message:         "Delete Complete",
 	}, nil
 
 }
 func isSnapshotExist(currentModel *Model) bool {
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return false
@@ -299,45 +238,32 @@ func isSnapshotExist(currentModel *Model) bool {
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup() //logger setup
+
+	log.Debugf("return all snapshot for Request() currentModel:%+v", currentModel)
+	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
-	var projectId string
-	var clusterName string
-
 	// Validate required fields in the request
-	if currentModel.ProjectId == nil {
-		log.Infof("Read - Project Id can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Project Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-
+	modelValidation := validateModel(constants.List, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
 	}
 
-	if currentModel.ClusterName == nil {
-		log.Infof("Read - ClusterName can not be null ")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "ClusterName Id is Nil in the Request",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeThrottling}, nil
-	}
-
-	projectId = *currentModel.ProjectId
-	clusterName = *currentModel.ClusterName
-
+	// Create Atlas API Request Object
+	projectId := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
 		ClusterName: clusterName,
 	}
-
 	params := &matlasClient.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
 	}
-
+	// API call to read snapshot
 	snapshots, _, err := client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot list with id(project: %s): %s", projectId, err)
@@ -364,6 +290,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
+// function to track snapshot creation status
 func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	isReady, state, err := snapshotIsReady(client, *currentModel.ProjectId, *currentModel.Id, *currentModel.ClusterName, targetState)
 	if err != nil {
@@ -390,6 +317,7 @@ func validateProgress(client *matlasClient.Client, currentModel *Model, targetSt
 	return p, nil
 }
 
+// function to check if snapshot already exist in atlas
 func snapshotIsReady(client *matlasClient.Client, projectId, snapshotId, clusterName, targetState string) (bool, string, error) {
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
@@ -409,7 +337,14 @@ func snapshotIsReady(client *matlasClient.Client, projectId, snapshotId, cluster
 	}
 	return snapshot.Status == targetState, snapshot.Status, nil
 }
+
+// logger setup function
 func setup() {
 	util.SetupLogger("mongodb-atlas-project")
 
+}
+
+// function to validate inputs to all actions
+func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(event, validator_def.ModelValidator{}, model)
 }

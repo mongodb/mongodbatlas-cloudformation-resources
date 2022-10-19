@@ -104,11 +104,7 @@
                 ""
             ]
         },
-        "update": {
-            "permissions": [
-                ""
-            ]
-        },
+       
         "delete": {
             "permissions": [
                 ""

@@ -35,7 +35,8 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg org "$ATLAS_ORG_ID" \
    --arg ClusterName "$ClusterName" \
    --arg group_id "$projectId" \
-   '.ProjectId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ClusterName?|=$ClusterName' \
+   --arg SnapshotId "$SnapshotId" \
+   '.SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ClusterName?|=$ClusterName' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
@@ -44,7 +45,8 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg region "${region}- more B@d chars !@(!(@====*** ;;::" \
    --arg group_id "$projectId" \
    --arg ClusterName "$ClusterName" \
-   '.ProjectId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ClusterName?|=$ClusterName' \
+   --arg SnapshotId "$SnapshotId" \
+   '.SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ClusterName?|=$ClusterName' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
 

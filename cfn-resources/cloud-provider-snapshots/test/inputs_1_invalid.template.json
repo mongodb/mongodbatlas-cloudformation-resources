@@ -1,0 +1,12 @@
+{
+
+    "ProjectId": "",
+    "ClusterName": "cfntest",
+    "Description": "snapshot through cloud formation template",
+    "RetentionInDays": 5,
+
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    }
+}

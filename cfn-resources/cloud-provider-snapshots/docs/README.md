@@ -15,14 +15,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
-        "<a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>" : <i>Integer</i>,
-        "<a href="#createdat" title="CreatedAt">CreatedAt</a>" : <i>String</i>,
-        "<a href="#masterkeyuuid" title="MasterKeyUuid">MasterKeyUuid</a>" : <i>String</i>,
-        "<a href="#mongoversion" title="MongoVersion">MongoVersion</a>" : <i>String</i>,
-        "<a href="#snapshottype" title="SnapshotType">SnapshotType</a>" : <i>String</i>,
-        "<a href="#status" title="Status">Status</a>" : <i>String</i>,
-        "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>Integer</i>,
-        "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
@@ -36,14 +28,6 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#description" title="Description">Description</a>: <i>String</i>
-    <a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>: <i>Integer</i>
-    <a href="#createdat" title="CreatedAt">CreatedAt</a>: <i>String</i>
-    <a href="#masterkeyuuid" title="MasterKeyUuid">MasterKeyUuid</a>: <i>String</i>
-    <a href="#mongoversion" title="MongoVersion">MongoVersion</a>: <i>String</i>
-    <a href="#snapshottype" title="SnapshotType">SnapshotType</a>: <i>String</i>
-    <a href="#status" title="Status">Status</a>: <i>String</i>
-    <a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>Integer</i>
-    <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
@@ -79,86 +63,6 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### RetentionInDays
-
-The number of days that Atlas should retain the on-demand snapshot. 
-
-_Required_: No
-
-_Type_: Integer
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### CreatedAt
-
-UTC ISO 8601, formatted point in time when Atlas took the snapshot.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### MasterKeyUuid
-
-Unique ID of the AWS KMS Customer Master Key used to encrypt the snapshot.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### MongoVersion
-
-Version of the MongoDB server.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### SnapshotType
-
-Specified the type of snapshot.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Status
-
-Current status of the snapshot.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### StorageSizeBytes
-
-Specifies the size of the snapshot in bytes.
-
-_Required_: No
-
-_Type_: Integer
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Type
-
-Specifies the type of cluster.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### ApiKeys
 
 _Required_: Yes
@@ -182,4 +86,36 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
 Unique identifier of the snapshot.
+
+#### CreatedAt
+
+UTC ISO 8601, formatted point in time when Atlas took the snapshot.
+
+#### MasterKeyUuid
+
+Unique ID of the AWS KMS Customer Master Key used to encrypt the snapshot.
+
+#### MongoVersion
+
+Version of the MongoDB server.
+
+#### SnapshotType
+
+Specified the type of snapshot.
+
+#### Status
+
+Current status of the snapshot.
+
+#### Type
+
+Specifies the type of cluster.
+
+#### StorageSizeBytes
+
+Specifies the size of the snapshot in bytes.
+
+#### RetentionInDays
+
+The number of days that Atlas should retain the on-demand snapshot. 
 

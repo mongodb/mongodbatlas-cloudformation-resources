@@ -33,7 +33,8 @@
             "type": "array",
             "items": {
                 "type": "string"
-            }
+            },
+            "insertionOrder" : false
         },
         "Status": {
             "description": "Status of the AWS PrivateLink connection. Atlas returns one of the following",
@@ -55,10 +56,9 @@
     },
     "additionalProperties": false,
     "required": [
-        "/properties/GroupId",
-        "/properties/ProviderName",
-        "/properties/Region",
-        "/properties/ApiKeys"
+        "GroupId",
+        "Region",
+        "ApiKeys"
     ],
     "readOnlyProperties": [
         "/properties/Id"

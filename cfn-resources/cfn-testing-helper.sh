@@ -32,7 +32,9 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project database-user project-ip-access-list network-peering cluster encryption-at-rest}"
+
+resources="${1:-cloud-provider-snapshots }"
+
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -100,9 +102,9 @@ do
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" && \
             echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 
-    #TODO: have to avoid resource specific condition and generalize the code
-    elif  [[ "${res}" == "encryption-at-rest" ]]; then
-                ./test/cfn-test-create-inputs.sh "${EXISTING_PROJECT_NAME}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+    #TODO: avoid resource specific condition and generalize the script for generating the required params
+    elif  [ "${res}" == "encryption-at-rest" ]|| [ "${res}" == "cloud-provider-snapshot-restore-jobs" ]|| [ "${res}" == "cloud-provider-snapshots" ]; then
+          ./test/cfn-test-create-inputs.sh "${EXISTING_PROJECT_NAME}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     else
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     fi
@@ -126,7 +128,6 @@ done
 
 
 
-
 echo "Step 3/3: Running 'cfn test' on resource type"
 SAM_LOG=$(mktemp)
 for resource in ${resources};
@@ -137,7 +138,7 @@ do
     cd "${resource}"
     sam_log="${SAM_LOG}.${resource}"
     echo "starting resource handler lambda in background - capture output to: ${sam_log}"
-    sam local start-lambda &> "${sam_log}" &
+     /c/"Program Files"/Amazon/AWSSAMCLI_NIGHTLY/bin/sam.cmd local start-lambda &> "${sam_log}" &
     sam_pid=$!
     echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
     ps -ef | grep ${sam_pid}
@@ -157,11 +158,11 @@ for resource in ${resources};
 do
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue
     echo "Looking up Atlas project id for resource:${res} project name:${PROJECT_NAME}-${res}"
-    p_id=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
+    p_id=$(/C/"Program Files"/mongocli_1.26.1_windows_x86_64/bin/mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
     [ -z "$p_id" ] && echo "No project found" && continue
-    p_name=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
+    p_name=$(/C/"Program Files"/mongocli_1.26.1_windows_x86_64/bin/mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${res}, project:${p_name} id:${p_id}"
-    mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+    /C/"Program Files"/mongocli_1.26.1_windows_x86_64/bin/mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
 done
 
 

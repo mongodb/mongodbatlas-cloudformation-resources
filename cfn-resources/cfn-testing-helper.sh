@@ -154,15 +154,16 @@ done
 
 
 echo "Clean up afterwards"
+echo "Clean up afterwards"
 for resource in ${resources};
 do
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue
     echo "Looking up Atlas project id for resource:${res} project name:${PROJECT_NAME}-${res}"
-    p_id=$(/C/"Program Files"/mongocli_1.26.1_windows_x86_64/bin/mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
+    p_id=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
     [ -z "$p_id" ] && echo "No project found" && continue
-    p_name=$(/C/"Program Files"/mongocli_1.26.1_windows_x86_64/bin/mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
+    p_name=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${res}, project:${p_name} id:${p_id}"
-    /C/"Program Files"/mongocli_1.26.1_windows_x86_64/bin/mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+    mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
 done
 
 

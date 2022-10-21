@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/davecgh/go-spew/spew"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/validation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -19,20 +21,30 @@ type UpdateApiKey struct {
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-project")
+}
 
+// validateModel inputs based on the method
+func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(event, validation.ModelValidator{}, model)
 }
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("Create log.Debugf-- currentModel: %+v", *currentModel)
-	log.Debug("Create Debug whwoooo hoooo!")
+
+	modelValidation := validateModel(constants.Create, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		log.Debugf("CreateMongoDBClient error: %s", err)
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	var projectOwnerId string
 	if currentModel.ProjectOwnerId != nil {
 		projectOwnerId = *currentModel.ProjectOwnerId
@@ -81,17 +93,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	spew.Dump(currentModel)
+	modelValidation := validateModel(constants.Read, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	name := *currentModel.Name
-
-	event, err2, problem, project := getProject(name, client, currentModel, err)
-	if problem {
-		return event, err2
+	var name string
+	if currentModel.Name != nil {
+		name = *currentModel.Name
+	}
+	event, errr, failed, project := getProject(name, client, currentModel, err)
+	if failed {
+		return event, errr
 	}
 
 	return handler.ProgressEvent{
@@ -101,93 +118,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getProject(name string, client *mongodbatlas.Client, currentModel *Model, err error) (handler.ProgressEvent, error, bool, *Model) {
-	var id string
-	if len(name) > 0 {
-		project, _, err := client.Projects.GetOneProjectByName(context.Background(), name)
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, true, nil
-		}
-		currentModel.Name = &project.Name
-		currentModel.OrgId = &project.OrgID
-		currentModel.Created = &project.Created
-		currentModel.ClusterCount = &project.ClusterCount
-		id = project.ID
-
-	} else {
-		id := *currentModel.Id
-		log.Debugf("Looking for project: %s", id)
-		project, _, err := client.Projects.GetOneProject(context.Background(), id)
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, true, nil
-		}
-		currentModel.Name = &project.Name
-		currentModel.OrgId = &project.OrgID
-		currentModel.Created = &project.Created
-		currentModel.ClusterCount = &project.ClusterCount
-	}
-
-	//Get teams from project
-	teamsAssigned, res, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
-	if err != nil {
-		log.Debug("ProjectId : %s, Error: %s", id, err)
-		return progress_events.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, true, nil
-	}
-
-	//Get APIKeys from project
-	projectApiKeys, res, err := client.ProjectAPIKeys.List(context.Background(), id, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
-	if err != nil {
-		log.Debug("Error: %s", id, err)
-		return progress_events.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, true, nil
-	}
-
-	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
-	if err != nil {
-		log.Debug("Error: %s", id, err)
-		return progress_events.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, true, nil
-	}
-	//Set projectSettings
-	currentModel.ProjectSettings = &ProjectSettings{
-		IsCollectDatabaseSpecificsStatisticsEnabled: projectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
-		IsRealtimePerformancePanelEnabled:           projectSettings.IsRealtimePerformancePanelEnabled,
-		IsDataExplorerEnabled:                       projectSettings.IsDataExplorerEnabled,
-		IsPerformanceAdvisorEnabled:                 projectSettings.IsPerformanceAdvisorEnabled,
-		IsSchemaAdvisorEnabled:                      projectSettings.IsSchemaAdvisorEnabled,
-	}
-
-	//Set teams
-	var teams []ProjectTeam
-	for _, team := range teamsAssigned.Results {
-		teams = append(teams, ProjectTeam{TeamId: &team.TeamID, RoleNames: team.RoleNames})
-	}
-
-	//Set api-keys
-	var apiKeys []ProjectApiKey
-	for _, key := range projectApiKeys {
-		var roles []string
-		for _, role := range key.Roles {
-			roles = append(roles, role.RoleName)
-		}
-		apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
-	}
-	currentModel.ProjectTeams = teams
-	currentModel.ProjectApiKeys = apiKeys
-
-	return handler.ProgressEvent{}, nil, false, currentModel
-}
-
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	modelValidation := validateModel(constants.Update, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -339,12 +276,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
+	modelValidation := validateModel(constants.Delete, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 
 	}
-	log.Debug("Delete Debug whwoooo hoooo!")
 	log.Debugf("Delete Project prevModel:%+v currentModel:%+v", *prevModel, *currentModel)
 
 	var id string
@@ -353,7 +294,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if len(id) == 0 {
-		name := *currentModel.Name
+		var name string
+		if currentModel.Name != nil {
+			name = *currentModel.Name
+		}
 		if len(name) > 0 {
 			log.Debugf("Project id was nil, try lookup name:%s", name)
 			project, res, err := client.Projects.GetOneProjectByName(context.Background(), name)
@@ -392,6 +336,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("List.Project prevModel:%+v currentModel:%+v", prevModel, currentModel)
+
+	modelValidation := validateModel(constants.List, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -425,6 +375,92 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
+// Read project
+func getProject(name string, client *mongodbatlas.Client, currentModel *Model, err error) (handler.ProgressEvent, error, bool, *Model) {
+	var id string
+	if len(name) > 0 {
+		project, _, err := client.Projects.GetOneProjectByName(context.Background(), name)
+		if err != nil {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, true, nil
+		}
+		currentModel.Name = &project.Name
+		currentModel.OrgId = &project.OrgID
+		currentModel.Created = &project.Created
+		currentModel.ClusterCount = &project.ClusterCount
+		id = project.ID
+
+	} else {
+		id := *currentModel.Id
+		log.Debugf("Looking for project: %s", id)
+		project, _, err := client.Projects.GetOneProject(context.Background(), id)
+		if err != nil {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, true, nil
+		}
+		currentModel.Name = &project.Name
+		currentModel.OrgId = &project.OrgID
+		currentModel.Created = &project.Created
+		currentModel.ClusterCount = &project.ClusterCount
+	}
+
+	//Get teams from project
+	teamsAssigned, res, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
+	if err != nil {
+		log.Debug("ProjectId : %s, Error: %s", id, err)
+		return progress_events.GetFailedEventByResponse(err.Error(),
+			res.Response), nil, true, nil
+	}
+
+	//Get APIKeys from project
+	projectApiKeys, res, err := client.ProjectAPIKeys.List(context.Background(), id, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
+	if err != nil {
+		log.Debug("Error: %s", id, err)
+		return progress_events.GetFailedEventByResponse(err.Error(),
+			res.Response), nil, true, nil
+	}
+
+	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
+	if err != nil {
+		log.Debug("Error: %s", id, err)
+		return progress_events.GetFailedEventByResponse(err.Error(),
+			res.Response), nil, true, nil
+	}
+	//Set projectSettings
+	currentModel.ProjectSettings = &ProjectSettings{
+		IsCollectDatabaseSpecificsStatisticsEnabled: projectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
+		IsRealtimePerformancePanelEnabled:           projectSettings.IsRealtimePerformancePanelEnabled,
+		IsDataExplorerEnabled:                       projectSettings.IsDataExplorerEnabled,
+		IsPerformanceAdvisorEnabled:                 projectSettings.IsPerformanceAdvisorEnabled,
+		IsSchemaAdvisorEnabled:                      projectSettings.IsSchemaAdvisorEnabled,
+	}
+
+	//Set teams
+	var teams []ProjectTeam
+	for _, team := range teamsAssigned.Results {
+		teams = append(teams, ProjectTeam{TeamId: &team.TeamID, RoleNames: team.RoleNames})
+	}
+
+	//Set api-keys
+	var apiKeys []ProjectApiKey
+	for _, key := range projectApiKeys {
+		var roles []string
+		for _, role := range key.Roles {
+			roles = append(roles, role.RoleName)
+		}
+		apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
+	}
+	currentModel.ProjectTeams = teams
+	currentModel.ProjectApiKeys = apiKeys
+
+	return handler.ProgressEvent{}, nil, false, currentModel
+}
+
+// Get difference in Teams
 func getChangeInTeams(currentTeams []ProjectTeam, oTeams []*mongodbatlas.Result) ([]*mongodbatlas.ProjectTeam, []*mongodbatlas.ProjectTeam, []*mongodbatlas.ProjectTeam) {
 	var newTeams []*mongodbatlas.ProjectTeam
 	var changedTeams []*mongodbatlas.ProjectTeam
@@ -460,6 +496,7 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []*mongodbatlas.Result)
 	return newTeams, changedTeams, removeTeams
 }
 
+// Get difference in ApiKeys
 func getChangeInApiKeys(currentKeys []ProjectApiKey, oKeys []mongodbatlas.APIKey) ([]UpdateApiKey, []UpdateApiKey, []UpdateApiKey) {
 	var newKeys []UpdateApiKey
 	var changedKeys []UpdateApiKey

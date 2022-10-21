@@ -7,7 +7,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
     echo "usage:$0 <project_name>"
@@ -21,14 +20,21 @@ mkdir inputs
 
 #create apikey
 org_id="$ATLAS_ORG_ID"
-echo "$org_id"
-api_key_id=$(mongocli iam org apikey create --orgId "${ATLAS_ORG_ID}" --desc "cfn-test-bot" --role ORG_MEMBER --output json | jq -r '.id')
-echo "$api_key_id"
+team_name="${CFN_TEST_TAG}"
+
+if [ -z "$API_KEY_ID" ]; then
+  api_key_id=$(mongocli iam org apikey create --orgId "${ATLAS_ORG_ID}" --desc "${CFN_TEST_TAG}" --role ORG_MEMBER --output json | jq -r '.id')
+else
+  api_key_id="$API_KEY_ID"
+fi
 
 #create team
-user_name="$PROJECT_USER_NAME"
-team_name="$TEAM_NAME"
-team_id=$(mongocli iam team create "${TEAM_NAME}" --username "${PROJECT_USER_NAME}" --orgId "${org_id}" --output json | jq -r '.id')
+export user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
+if [ -z "$TEAM_ID" ]; then
+  team_id=$(mongocli iam team create "${team_name}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
+else
+  team_id="$TEAM_ID"
+fi
 
 
 name="${1}"

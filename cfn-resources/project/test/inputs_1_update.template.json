@@ -18,10 +18,5 @@
             "RoleNames": ["GROUP_MEMBER"]
         }
     ],
-    "ProjectTeams": [
-        {
-            "TeamId": "Team_id_goes_here",
-            "RoleNames": ["ORG_MEMBER"]
-        }
-    ]
+    "ProjectTeams": []
 }

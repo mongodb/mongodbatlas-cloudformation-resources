@@ -62,6 +62,33 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			res.Response), nil
 
 	}
+
+	//Add ApiKeys
+	if len(currentModel.ProjectApiKeys) > 0 {
+		for _, key := range currentModel.ProjectApiKeys {
+			_, err = client.ProjectAPIKeys.Assign(context.Background(), project.ID, *key.Key, &mongodbatlas.AssignAPIKey{Roles: key.RoleNames})
+			if err != nil {
+				log.Infof("Error: %s", err)
+				return handler.ProgressEvent{
+					OperationStatus:  handler.Failed,
+					Message:          "Error while Assigning Key to project",
+					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			}
+		}
+	}
+
+	//Add Teams
+	if len(currentModel.ProjectTeams) > 0 {
+		_, _, err = client.Projects.AddTeamsToProject(context.Background(), project.ID, readTeams(currentModel.ProjectTeams))
+		if err != nil {
+			log.Infof("Error: %s", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while adding teams to project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+	}
+
 	if currentModel.ProjectSettings != nil {
 		//Update project settings
 		projectSettings := mongodbatlas.ProjectSettings{
@@ -83,10 +110,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 
+	event, errr, failed, proj := getProject(*currentModel.Name, client, currentModel, err)
+	if failed {
+		return event, errr
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
-		ResourceModel:   currentModel,
+		ResourceModel:   proj,
 	}, nil
 }
 
@@ -106,7 +138,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Name != nil {
 		name = *currentModel.Name
 	}
-	event, errr, failed, project := getProject(name, client, currentModel, err)
+	event, errr, failed, model := getProject(name, client, currentModel, err)
 	if failed {
 		return event, errr
 	}
@@ -114,7 +146,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
-		ResourceModel:   project,
+		ResourceModel:   model,
 	}, nil
 }
 
@@ -197,7 +229,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		//log.Infof("keys: %+v", currentModel.ProjectApiKeys)
 		//Get Change in ApiKeys
-		newApiKeys, changedKeys, removeKeys := getChangeInApiKeys(currentModel.ProjectApiKeys, projectApiKeys)
+		newApiKeys, changedKeys, removeKeys := getChangeInApiKeys(*currentModel.Id, currentModel.ProjectApiKeys, projectApiKeys)
 
 		//Remove old keys
 		for _, key := range removeKeys {
@@ -220,7 +252,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				log.Infof("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Error while Un-assigning Key to project",
+					Message:          "Error while Assigning Key to project",
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
 			//log.Infof("Added: %s", key)
@@ -357,21 +389,29 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Initialize like this in case no results will pass empty array
-	mm := []interface{}{}
+	projectModels := []interface{}{}
 	for _, project := range projects.Results {
 		var m Model
 		m.Name = &project.Name
-		m.OrgId = &project.OrgID
-		m.Created = &project.Created
-		m.ClusterCount = &project.ClusterCount
 		m.Id = &project.ID
-		mm = append(mm, m)
+		m.ApiKeys = currentModel.ApiKeys
+		fmt.Println("proj id:", project.ID)
+		event, err2, model, failed := readProjectSettings(err, client, project.ID, &m)
+		if failed {
+			return event, err2
+		}
+		model.Name = &project.Name
+		model.Id = &project.ID
+		model.Created = &project.Created
+		model.ClusterCount = &project.ClusterCount
+		model.OrgId = &project.OrgID
+		projectModels = append(projectModels, model)
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List Complete",
-		ResourceModels:  mm,
+		ResourceModels:  projectModels,
 	}, nil
 }
 
@@ -391,7 +431,7 @@ func getProject(name string, client *mongodbatlas.Client, currentModel *Model, e
 		currentModel.Created = &project.Created
 		currentModel.ClusterCount = &project.ClusterCount
 		id = project.ID
-
+		currentModel.Id = &project.ID
 	} else {
 		id := *currentModel.Id
 		log.Debugf("Looking for project: %s", id)
@@ -406,14 +446,25 @@ func getProject(name string, client *mongodbatlas.Client, currentModel *Model, e
 		currentModel.OrgId = &project.OrgID
 		currentModel.Created = &project.Created
 		currentModel.ClusterCount = &project.ClusterCount
+		currentModel.Id = &project.ID
 	}
 
+	event, err2, model, failed := readProjectSettings(err, client, id, currentModel)
+
+	if failed {
+		return event, err2, true, model
+	}
+
+	return handler.ProgressEvent{}, nil, false, model
+}
+
+func readProjectSettings(err error, client *mongodbatlas.Client, id string, currentModel *Model) (handler.ProgressEvent, error, *Model, bool) {
 	//Get teams from project
 	teamsAssigned, res, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
 	if err != nil {
 		log.Debug("ProjectId : %s, Error: %s", id, err)
 		return progress_events.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, true, nil
+			res.Response), nil, nil, true
 	}
 
 	//Get APIKeys from project
@@ -421,14 +472,14 @@ func getProject(name string, client *mongodbatlas.Client, currentModel *Model, e
 	if err != nil {
 		log.Debug("Error: %s", id, err)
 		return progress_events.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, true, nil
+			res.Response), nil, nil, true
 	}
 
 	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
 	if err != nil {
 		log.Debug("Error: %s", id, err)
 		return progress_events.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, true, nil
+			res.Response), nil, nil, true
 	}
 	//Set projectSettings
 	currentModel.ProjectSettings = &ProjectSettings{
@@ -440,24 +491,18 @@ func getProject(name string, client *mongodbatlas.Client, currentModel *Model, e
 	}
 
 	//Set teams
-	var teams []ProjectTeam
+	teams := []ProjectTeam{}
 	for _, team := range teamsAssigned.Results {
-		teams = append(teams, ProjectTeam{TeamId: &team.TeamID, RoleNames: team.RoleNames})
+		if len(team.TeamID) > 0 {
+			teams = append(teams, ProjectTeam{TeamId: &team.TeamID, RoleNames: team.RoleNames})
+		}
 	}
 
 	//Set api-keys
-	var apiKeys []ProjectApiKey
-	for _, key := range projectApiKeys {
-		var roles []string
-		for _, role := range key.Roles {
-			roles = append(roles, role.RoleName)
-		}
-		apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
-	}
+	apiKeys := readKeys(*currentModel.Id, *currentModel.ApiKeys.PublicKey, projectApiKeys)
 	currentModel.ProjectTeams = teams
 	currentModel.ProjectApiKeys = apiKeys
-
-	return handler.ProgressEvent{}, nil, false, currentModel
+	return handler.ProgressEvent{}, nil, currentModel, false
 }
 
 // Get difference in Teams
@@ -467,67 +512,121 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []*mongodbatlas.Result)
 	var removeTeams []*mongodbatlas.ProjectTeam
 
 	for _, nTeam := range currentTeams {
-		matched := false
-		for _, oTeam := range oTeams {
-			if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
-				changedTeams = append(changedTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
-				matched = true
-				break
+		if nTeam.TeamId != nil && len(*nTeam.TeamId) > 0 {
+			matched := false
+			for _, oTeam := range oTeams {
+				if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
+					changedTeams = append(changedTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+					matched = true
+					break
+				}
 			}
-		}
-		//Add to newTeams
-		if !matched {
-			newTeams = append(newTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+			//Add to newTeams
+			if !matched {
+				newTeams = append(newTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+			}
 		}
 	}
 
 	for _, oTeam := range oTeams {
-		matched := false
-		for _, nTeam := range currentTeams {
-			if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
-				matched = true
-				break
+		if len(oTeam.TeamID) > 0 {
+			matched := false
+			for _, nTeam := range currentTeams {
+				if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
+					matched = true
+					break
+				}
 			}
-		}
-		if !matched && len(currentTeams) > 0 {
-			removeTeams = append(removeTeams, &mongodbatlas.ProjectTeam{TeamID: oTeam.TeamID, RoleNames: oTeam.RoleNames})
+			if !matched {
+				removeTeams = append(removeTeams, &mongodbatlas.ProjectTeam{TeamID: oTeam.TeamID, RoleNames: oTeam.RoleNames})
+			}
 		}
 	}
 	return newTeams, changedTeams, removeTeams
 }
 
 // Get difference in ApiKeys
-func getChangeInApiKeys(currentKeys []ProjectApiKey, oKeys []mongodbatlas.APIKey) ([]UpdateApiKey, []UpdateApiKey, []UpdateApiKey) {
+func getChangeInApiKeys(groupId string, currentKeys []ProjectApiKey, oKeys []mongodbatlas.APIKey) ([]UpdateApiKey, []UpdateApiKey, []UpdateApiKey) {
 	var newKeys []UpdateApiKey
 	var changedKeys []UpdateApiKey
 	var removeKeys []UpdateApiKey
 
 	for _, nKey := range currentKeys {
-		matched := false
-		for _, oKey := range oKeys {
-			if nKey.Key != nil && *nKey.Key == oKey.ID {
-				changedKeys = append(changedKeys, UpdateApiKey{Key: *nKey.Key, ApiKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
-				matched = true
-				break
+		if nKey.Key != nil && len(*nKey.Key) > 0 {
+			matched := false
+			for _, oKey := range oKeys {
+				if nKey.Key != nil && *nKey.Key == oKey.ID {
+					changedKeys = append(changedKeys, UpdateApiKey{Key: *nKey.Key, ApiKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+					matched = true
+					break
+				}
 			}
-		}
-		//Add to newKeys
-		if !matched {
-			newKeys = append(newKeys, UpdateApiKey{Key: *nKey.Key, ApiKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+			//Add to newKeys
+			if !matched {
+				newKeys = append(newKeys, UpdateApiKey{Key: *nKey.Key, ApiKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+			}
 		}
 	}
 
 	for _, oKey := range oKeys {
-		matched := false
-		for _, nKey := range currentKeys {
-			if nKey.Key != nil && *nKey.Key == oKey.ID {
-				matched = true
-				break
+		if len(oKey.ID) > 0 {
+			matched := false
+			for _, nKey := range currentKeys {
+				if nKey.Key != nil && *nKey.Key == oKey.ID {
+					matched = true
+					break
+				}
 			}
-		}
-		if !matched && len(currentKeys) > 0 {
-			removeKeys = append(removeKeys, UpdateApiKey{Key: oKey.ID})
+			if !matched {
+				for _, role := range oKey.Roles {
+					//Consider only current ProjectRoles
+					if role.GroupID == groupId {
+						removeKeys = append(removeKeys, UpdateApiKey{Key: oKey.ID})
+					}
+				}
+			}
 		}
 	}
 	return newKeys, changedKeys, removeKeys
+}
+
+func readTeams(teams []ProjectTeam) []*mongodbatlas.ProjectTeam {
+	var newTeams []*mongodbatlas.ProjectTeam
+	for _, t := range teams {
+		if t.TeamId != nil && len(*t.TeamId) > 0 {
+			newTeams = append(newTeams, &mongodbatlas.ProjectTeam{TeamID: *t.TeamId, RoleNames: t.RoleNames})
+		}
+	}
+	return newTeams
+}
+
+func readKeys(groupId, publicKey string, keys []mongodbatlas.APIKey) []ProjectApiKey {
+	var apiKeys []ProjectApiKey
+	for _, key := range keys {
+		var roles []string
+		fmt.Println("PublicKeyS: ", key.PublicKey, publicKey)
+		if len(key.ID) > 0 && publicKey != key.PublicKey {
+			for _, role := range key.Roles {
+				fmt.Println("appending roles..", role.RoleName)
+				if role.GroupID == groupId {
+					roles = append(roles, role.RoleName)
+				}
+			}
+			//alreadyExists := false
+			if len(roles) > 0 {
+				apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
+				//for ind, k := range apiKeys {
+				//	if *k.Key == key.ID {
+				//		apiKeys[ind].RoleNames = append(apiKeys[ind].RoleNames, roles...)
+				//		alreadyExists = true
+				//	}
+				//}
+				//if !alreadyExists {
+				//	apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
+				//}
+			}
+		}
+
+	}
+	return apiKeys
 }

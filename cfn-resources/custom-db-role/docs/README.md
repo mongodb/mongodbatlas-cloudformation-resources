@@ -12,6 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::CustomDBRole",
     "Properties" : {
+        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#actions" title="Actions">Actions</a>" : <i>[ <a href="action.md">Action</a>, ... ]</i>,
         "<a href="#inheritedroles" title="InheritedRoles">InheritedRoles</a>" : <i>[ <a href="inheritedrole.md">InheritedRole</a>, ... ]</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikey.md">ApiKey</a></i>
@@ -24,6 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::CustomDBRole
 Properties:
+    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#actions" title="Actions">Actions</a>: <i>
       - <a href="action.md">Action</a></i>
     <a href="#inheritedroles" title="InheritedRoles">InheritedRoles</a>: <i>
@@ -32,6 +34,18 @@ Properties:
 </pre>
 
 ## Properties
+
+#### GroupId
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+_Required_: No
+
+_Type_: String
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Actions
 

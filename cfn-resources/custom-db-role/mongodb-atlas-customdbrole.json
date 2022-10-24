@@ -65,6 +65,11 @@
         }
     },
     "properties": {
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
         "Actions": {
             "description": "List of the individual privilege actions that the role grants.",
             "type": "array",

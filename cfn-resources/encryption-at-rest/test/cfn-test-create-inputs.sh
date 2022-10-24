@@ -17,11 +17,9 @@ function usage {
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.."
 rm -rf inputs
 mkdir inputs
 
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.."
 echo ${1}
 projectName="${1}"
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')

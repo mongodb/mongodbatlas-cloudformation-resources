@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template for the MongoDB::Atlas::CloudProviderSnapshots resource type
+
+Globals:
+  Function:
+    Timeout: 60  # docker start-up times can be long for SAM CLI
+
+Resources:
+  TypeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler
+      Runtime: go1.x
+      CodeUri: bin/
+
+  TestEntrypoint:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler
+      Runtime: go1.x
+      CodeUri: bin/
+

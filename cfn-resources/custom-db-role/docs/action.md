@@ -33,7 +33,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Resources
 
-Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.
+List of resources on which you grant the action.
 
 _Required_: No
 

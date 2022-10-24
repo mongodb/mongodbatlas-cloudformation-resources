@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CustomDBRole
 
-An example resource schema demonstrating some basic constructs and validation rules.
+Returns, adds, edits, and removes custom database user privilege roles.
 
 ## Syntax
 
@@ -35,7 +35,7 @@ Properties:
 
 #### Actions
 
-Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.
+List of the individual privilege actions that the role grants.
 
 _Required_: No
 
@@ -45,7 +45,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### InheritedRoles
 
-Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.
+List of the built-in roles that this custom role inherits.
 
 _Required_: No
 
@@ -75,5 +75,5 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### RoleName
 
-Aws Region
+Human-readable label that identifies the role for the request. This name must be unique for this custom role in this project.
 

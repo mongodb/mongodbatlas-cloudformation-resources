@@ -1,7 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::CustomDBRole",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "description": "Returns, adds, edits, and removes custom database user privilege roles.",
     "definitions": {
         "ApiKey": {
             "type": "object",
@@ -29,15 +28,19 @@
         },
         "Resource": {
             "type": "object",
+            "description": "List of resources on which you grant the action.",
             "properties": {
                 "Collection": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Human-readable label that identifies the collection on which you grant the action to one MongoDB user. If you don't set this parameter, you grant the action to all collections in the database specified in the actions.resources.db parameter. If you set \"actions.resources.cluster\" : true, MongoDB Cloud ignores this parameter."
                 },
                 "DB": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Human-readable label that identifies the database on which you grant the action to one MongoDB user. If you set \"actions.resources.cluster\" : true, MongoDB Cloud ignores this parameter."
                 },
                 "Cluster": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to grant the action on the cluster resource. If true, MongoDB Cloud ignores the actions.resources.collection and actions.resources.db parameters."
                 }
             },
             "additionalProperties": false
@@ -46,10 +49,11 @@
             "type": "object",
             "properties": {
                 "Action": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Human-readable label that identifies the privilege action."
                 },
                 "Resources": {
-                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+                    "description": "List of resources on which you grant the action.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/Resource"
@@ -62,7 +66,7 @@
     },
     "properties": {
         "Actions": {
-            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+            "description": "List of the individual privilege actions that the role grants.",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/Action"
@@ -70,7 +74,7 @@
             "insertionOrder" : false
         },
         "InheritedRoles": {
-            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+            "description": "List of the built-in roles that this custom role inherits.",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/InheritedRole"
@@ -78,7 +82,7 @@
             "insertionOrder" : false
         },
         "RoleName": {
-            "description": "Aws Region",
+            "description": "Human-readable label that identifies the role for the request. This name must be unique for this custom role in this project.",
             "type": "string"
         },
         "ApiKeys": {

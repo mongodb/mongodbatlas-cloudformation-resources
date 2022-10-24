@@ -395,7 +395,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		m.Name = &project.Name
 		m.Id = &project.ID
 		m.ApiKeys = currentModel.ApiKeys
-		fmt.Println("proj id:", project.ID)
 		event, err2, model, failed := readProjectSettings(err, client, project.ID, &m)
 		if failed {
 			return event, err2
@@ -604,26 +603,15 @@ func readKeys(groupId, publicKey string, keys []mongodbatlas.APIKey) []ProjectAp
 	var apiKeys []ProjectApiKey
 	for _, key := range keys {
 		var roles []string
-		fmt.Println("PublicKeyS: ", key.PublicKey, publicKey)
+		//Exempt the Key that is part of Request
 		if len(key.ID) > 0 && publicKey != key.PublicKey {
 			for _, role := range key.Roles {
-				fmt.Println("appending roles..", role.RoleName)
 				if role.GroupID == groupId {
 					roles = append(roles, role.RoleName)
 				}
 			}
-			//alreadyExists := false
 			if len(roles) > 0 {
 				apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
-				//for ind, k := range apiKeys {
-				//	if *k.Key == key.ID {
-				//		apiKeys[ind].RoleNames = append(apiKeys[ind].RoleNames, roles...)
-				//		alreadyExists = true
-				//	}
-				//}
-				//if !alreadyExists {
-				//	apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
-				//}
 			}
 		}
 

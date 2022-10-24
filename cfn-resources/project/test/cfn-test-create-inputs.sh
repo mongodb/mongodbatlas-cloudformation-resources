@@ -22,20 +22,11 @@ mkdir inputs
 org_id="$ATLAS_ORG_ID"
 
 random_str=$(openssl rand -hex 3)
-if [ -z "$API_KEY_ID" ]; then
-  random_str=$(openssl rand -hex 3)
 api_key_id=$(mongocli iam project apikey create --desc "${CFN_TEST_TAG}" --role GROUP_OWNER --output json | jq -r '.id')
-else
-  api_key_id="$API_KEY_ID"
-fi
 
 #create team
 export user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
-if [ -z "$TEAM_ID" ]; then
-  team_id=$(mongocli iam team create "cfn-boto-${random_str}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
-else
-  team_id="$TEAM_ID"
-fi
+team_id=$(mongocli iam team create "cfn-boto-${random_str}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
 
 
 name="${1}"

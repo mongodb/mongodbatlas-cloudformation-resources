@@ -18,5 +18,8 @@
             "RoleNames": ["GROUP_MEMBER"]
         }
     ],
-    "ProjectTeams": []
+    "ProjectTeams": [{
+        "Key": "api_key_goes_here",
+        "RoleNames": ["GROUP_OWNER"]
+    }]
 }

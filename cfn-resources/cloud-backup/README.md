@@ -1,7 +1,7 @@
-# MongoDB::Atlas::CloudProviderSnapshots
+# MongoDB::Atlas::CloudBackUp
 
 ## Description
-This resource allows you to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.
+This resource allows you to take one on-demand snapshot, get one or all cloud backup and delete one cloud provider snapshot.
 
 ## Attributes
 `Id` : Unique identifier of the snapshot.<br>

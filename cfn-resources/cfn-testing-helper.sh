@@ -32,7 +32,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+resources="${1:-cloud-backup}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -133,7 +133,7 @@ do
     cd "${resource}"
     sam_log="${SAM_LOG}.${resource}"
     echo "starting resource handler lambda in background - capture output to: ${sam_log}"
-    sam local start-lambda &> "${sam_log}" &
+     /c/"Program Files"/Amazon/AWSSAMCLI_NIGHTLY/bin/sam.cmd local start-lambda &> "${sam_log}" &
     sam_pid=$!
     echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
     ps -ef | grep ${sam_pid}

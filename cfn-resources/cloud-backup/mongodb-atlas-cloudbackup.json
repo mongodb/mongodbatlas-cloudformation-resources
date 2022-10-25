@@ -1,5 +1,5 @@
 {
-    "typeName": "MongoDB::Atlas::CloudProviderSnapshots",
+    "typeName": "MongoDB::Atlas::CloudBackup",
     "description": "This resource allows to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.",
     "definitions": {
         "apiKeyDefinition": {
@@ -76,8 +76,20 @@
         "ApiKeys"
     ],
     "readOnlyProperties": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/MasterKeyUuid",
+        "/properties/MongoVersion",
+        "/properties/SnapshotType",
+        "/properties/Status",
+        "/properties/Type",
+        "/properties/StorageSizeBytes",
+        "/properties/RetentionInDays"
+
+
     ],
+
+
     "primaryIdentifier": [
         "/properties/Id"
     ],
@@ -92,11 +104,7 @@
                 ""
             ]
         },
-        "update": {
-            "permissions": [
-                ""
-            ]
-        },
+       
         "delete": {
             "permissions": [
                 ""

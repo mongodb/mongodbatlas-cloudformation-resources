@@ -21,8 +21,8 @@
         }
       }
     },
-    "CloudProviderSnapshots": {
-      "Type": "MongoDB::Atlas::CloudProviderSnapshots",
+    "CloudBackUp": {
+      "Type": "MongoDB::Atlas::CloudBackUp",
       "Properties": {
         "ProjectId": { "Ref" : "Project" },
         "ClusterName": { "Ref" : "ClusterName" },
@@ -38,7 +38,7 @@
   "Outputs" : {
     "SnapshotId": {
       "Description": "Id of the cloud provider snapshots",
-      "Value" : { "Ref" : "CloudProviderSnapshots" }
+      "Value" : { "Ref" : "CloudBackUp" }
     }
   }
 }

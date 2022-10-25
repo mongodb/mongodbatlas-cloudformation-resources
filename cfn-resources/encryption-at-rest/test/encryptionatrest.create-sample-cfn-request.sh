@@ -22,5 +22,5 @@ projectID="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg projectID "$projectID" \
-   '.desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.properties.ProjectId?|=$projectID' \
-   "$(dirname "$0")/projectipaccesslist.sample-cfn-request.json"
+   '.desiredResourceState.properties.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .desiredResourceState.properties.AwsKms.RoleID?|=$KMS_ROLE | .desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.properties.ProjectId?|=$projectId | .desiredResourceState.properties.AwsKms.Region?|=$region ' \
+   "$(dirname "$0")/encryptionatrest.sample-cfn-request.json"

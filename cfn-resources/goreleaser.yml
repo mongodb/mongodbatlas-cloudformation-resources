@@ -1,8 +1,8 @@
 builds:
   - 
     id: "cloudprovidersnapshotrestorejobs"
-    main: ./cloud-provider-snapshot-restore-jobs/cmd/main.go
-    binary: ./cloud-provider-snapshot-restore-jobs/bin/handler
+    main: ./cloud-backup-restore-jobs/cmd/main.go
+    binary: ./cloud-backup-restore-jobs/bin/handler
     env:
       - CGO_ENABLED=0
     goos:
@@ -134,12 +134,12 @@ archives:
         linux: Linux
         format: zip
     files:
-        - ./cloud-provider-snapshot-restore-jobs/README.md
-        - ./cloud-provider-snapshot-restore-jobs/mongodb-atlas-cloudprovidersnapshotrestorejobs.json
-        - ./cloud-provider-snapshot-restore-jobs/resource-role.yaml
-        - ./cloud-provider-snapshot-restore-jobs/template.yml
-        - ./cloud-provider-snapshot-restore-jobs/Makefile
-        - ./cloud-provider-snapshot-restore-jobs/.rpdk-config
+        - ./cloud-backup-restore-jobs/README.md
+        - ./cloud-backup-restore-jobs/mongodb-atlas-cloudbackuprestorejobs.json
+        - ./cloud-backup-restore-jobs/resource-role.yaml
+        - ./cloud-backup-restore-jobs/template.yml
+        - ./cloud-backup-restore-jobs/Makefile
+        - ./cloud-backup-restore-jobs/.rpdk-config
         
         - ./cloud-provider-snapshots/README.md
         - ./cloud-provider-snapshots/mongodb-atlas-cloudprovidersnapshots.json

@@ -12,6 +12,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"strings"
 )
 
 type UpdateApiKey struct {
@@ -603,18 +604,12 @@ func readKeys(groupId, publicKey string, keys []mongodbatlas.APIKey) []ProjectAp
 	var apiKeys []ProjectApiKey
 	for _, key := range keys {
 		var roles []string
-		//Exempt the Key that is part of Request
-		if len(key.ID) > 0 && publicKey != key.PublicKey {
-			for _, role := range key.Roles {
-				if role.GroupID == groupId {
-					roles = append(roles, role.RoleName)
-				}
-			}
-			if len(roles) > 0 {
-				apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
+		for _, role := range key.Roles {
+			if role.GroupID == groupId && !strings.HasPrefix(role.RoleName, "ORG_") {
+				roles = append(roles, role.RoleName)
 			}
 		}
-
+		apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
 	}
 	return apiKeys
 }

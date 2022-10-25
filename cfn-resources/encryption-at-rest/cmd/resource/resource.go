@@ -19,15 +19,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup() //logger setup
 
 	log.Debugf("Create - Encryption for Request() currentModel:%+v", currentModel)
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
 	// Validate required fields in the request
 	modelValidation := validateModel(constants.Create, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
+	}
+	// Create MongoDb Atlas Client using keys
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return handler.ProgressEvent{}, err
 	}
 
 	// Create Atlas API Request Object
@@ -63,15 +63,16 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup() //logger setup
 
 	log.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
 	// Validate required fields in the request
 	modelValidation := validateModel(constants.Read, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
+	}
+
+	// Create MongoDb Atlas Client using keys
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return handler.ProgressEvent{}, err
 	}
 
 	// Create Atlas API Request Object
@@ -119,22 +120,22 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup() //logger setup
 
 	log.Debugf("Delete encryption for Request() currentModel:%+v", currentModel)
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
 	// Validate required fields in the request
 	modelValidation := validateModel(constants.Delete, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
+	}
+	// Create MongoDb Atlas Client using keys
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return handler.ProgressEvent{}, err
 	}
 
 	projectID := *currentModel.ProjectId
 	isExist := isExist(currentModel)
 	// Check if  already exist
 	if !isExist {
-		log.Infof("Read - errors encryption at rest with id(%s)", projectID)
+		log.Infof("Delete encryption - errors encryption at rest with id(%s)", projectID)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",

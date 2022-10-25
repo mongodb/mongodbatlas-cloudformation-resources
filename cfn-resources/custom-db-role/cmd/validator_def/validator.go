@@ -6,7 +6,7 @@ var CreateRequiredFields []string
 var ReadRequiredFields []string
 var UpdateRequiredFields []string
 var DeleteRequiredFields []string
-var ListRequiredFields []string
+var ListRequiredFields = []string{"GroupId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 
 func (m ModelValidator) GetCreateFields() []string {
 	return CreateRequiredFields

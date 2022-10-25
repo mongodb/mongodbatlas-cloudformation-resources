@@ -2,13 +2,12 @@ package resource
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/custom-db-role/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 
@@ -57,7 +56,24 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Read")
+	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	atlasCustomDdRole, response, err := mongodbClient.CustomDBRoles.Get(context.Background(), *currentModel.GroupId, *currentModel.RoleName)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response), nil
+	}
+
+	currentModel.completeByAtlasRole(*atlasCustomDdRole)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Get successful",
+		ResourceModel:   currentModel}, nil
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -68,7 +84,27 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	atlasCustomDBRole := currentModel.ToCustomDBRole()
+
+	atlasCustomDdRole, response, err := mongodbClient.CustomDBRoles.Update(context.Background(), *currentModel.GroupId,
+		*currentModel.RoleName, &atlasCustomDBRole)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response), nil
+	}
+
+	currentModel.completeByAtlasRole(*atlasCustomDdRole)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Update successful",
+		ResourceModel:   currentModel}, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -79,7 +115,21 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Delete")
+	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	response, err := mongodbClient.CustomDBRoles.Delete(context.Background(), *currentModel.GroupId, *currentModel.RoleName)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
+			response.Response), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Delete success"}, nil
 }
 
 // List handles the List event from the Cloudformation service.
@@ -90,7 +140,36 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	params := &mongodbatlas.ListOptions{
+		PageNum:      0,
+		ItemsPerPage: 100,
+	}
+	/*todo: continusly check if there are more items to check*/
+	customDBRoleResponse, response, err := mongodbClient.CustomDBRoles.List(context.Background(),
+		*currentModel.GroupId,
+		params)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
+			response.Response), nil
+	}
+
+	mm := make([]interface{}, 0)
+	for _, customDBRole := range *customDBRoleResponse {
+		var m Model
+		m.completeByAtlasRole(customDBRole)
+		mm = append(mm, m)
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List successful",
+		ResourceModels:  mm}, nil
 }
 
 func (m *Model) ToCustomDBRole() mongodbatlas.CustomDBRole {

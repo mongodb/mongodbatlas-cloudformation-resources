@@ -98,7 +98,7 @@
     "required": [
         "RoleName"
     ],
-    "readOnlyProperties": [
+    "createOnlyProperties": [
         "/properties/RoleName"
     ],
     "primaryIdentifier": [

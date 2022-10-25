@@ -1,5 +1,5 @@
 {
-    "typeName": "MongoDB::Atlas::CloudProviderSnapshotRestoreJobs",
+    "typeName": "MongoDB::Atlas::CloudBackUpRestoreJobs",
     "description": "This resource allows you to create, cancel, get one or list all cloud provider snapshot restore jobs.",
     "definitions": {
         "apiKeyDefinition": {

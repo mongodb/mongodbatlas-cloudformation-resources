@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudProviderSnapshotRestoreJobs
+# MongoDB::Atlas::CloudBackUpRestoreJobs
 
 This resource allows you to create, cancel, get one or list all cloud provider snapshot restore jobs.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::CloudProviderSnapshotRestoreJobs",
+    "Type" : "MongoDB::Atlas::CloudBackUpRestoreJobs",
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
@@ -36,7 +36,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::CloudProviderSnapshotRestoreJobs
+Type: MongoDB::Atlas::CloudBackUpRestoreJobs
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>

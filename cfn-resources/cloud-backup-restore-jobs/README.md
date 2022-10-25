@@ -1,7 +1,7 @@
-# MongoDB::Atlas::CloudProviderSnapshotRestoreJobs
+# MongoDB::Atlas::CloudBackUpRestoreJobs
 
 ## Description
-This resource allows you to create, cancel, get one or list all cloud provider snapshot restore jobs.
+This resource allows you to create, cancel, get one or list all cloud backup restore jobs.
 
 ## Attributes
 `Id` :  The unique identifier of the restore job.<br>

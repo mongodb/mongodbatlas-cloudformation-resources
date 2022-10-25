@@ -16,7 +16,7 @@ jobs:
     - name: Deploy the resources
       run: |
         curl -L "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-        unzip awscliv2.zip && ./aws/install
+        unzip awscliv2.zip && sudo ./aws/install --update
         mkdir -p ~/.aws
         touch ~/.aws/credentials
         echo "[711489243244_AdministratorAccess]
@@ -28,6 +28,6 @@ jobs:
         region = ${{ github.event.inputs.region }}
         output = json " > ~/.aws/config
         cd cfn-resources
-        aws s3 ls  --profile=711489243244_AdministratorAccess
+        #aws s3 ls  --profile=711489243244_AdministratorAccess
         ./cfn-publishing-helper.sh
 

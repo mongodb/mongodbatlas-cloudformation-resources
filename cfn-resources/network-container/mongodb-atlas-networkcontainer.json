@@ -28,10 +28,6 @@
             "description": "Flag that indicates if the project has clusters deployed in the Network Peering container.",
             "type": "boolean"
         },
-        "ProviderName": {
-            "description": "The name of the provider",
-            "type": "string"
-        },
         "VpcId": {
             "description": "Unique identifier of the peer VPC.",
             "type": "string"
@@ -55,20 +51,29 @@
         "RegionName",
         "ApiKeys"],
     "readOnlyProperties": [
-        "/properties/Id"],
+        "/properties/Id",
+    "/properties/VpcId",
+        "/properties/Provisioned"],
     "primaryIdentifier": [
         "/properties/Id"
     ],
     "handlers": {
+        "create": {
+            "permissions": [
+            ]
+        },
+        "read": {
+            "permissions": [
+            ]
+        },
         "delete": {
             "permissions": [
-                ""
             ]
         },
         "list": {
             "permissions": [
-                ""
             ]
         }
     }
-}
+    }
+

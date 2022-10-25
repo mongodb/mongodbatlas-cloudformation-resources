@@ -7,7 +7,6 @@ type Model struct {
 	ProjectId      *string           `json:",omitempty"`
 	RegionName     *string           `json:",omitempty"`
 	Provisioned    *bool             `json:",omitempty"`
-	ProviderName   *string           `json:",omitempty"`
 	VpcId          *string           `json:",omitempty"`
 	AtlasCIDRBlock *string           `json:",omitempty"`
 	Id             *string           `json:",omitempty"`

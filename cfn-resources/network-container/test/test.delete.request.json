@@ -1,0 +1,14 @@
+{
+  "desiredResourceState" :  {
+    "ProjectId": "",
+    "RegionName": "",
+    "AtlasCIDRBlock": "",
+    "Id": "",
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    }
+  },
+  "providerLogGroupName" : "mongodb-atlas-network-container-logs",
+  "previousResourceState": { }
+}

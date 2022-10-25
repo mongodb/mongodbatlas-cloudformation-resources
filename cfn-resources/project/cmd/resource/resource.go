@@ -30,7 +30,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	project, _, err := client.Projects.Create(context.Background(), &matlasClient.Project{
 		Name:  *currentModel.Name,
 		OrgID: *currentModel.OrgId,
-	})
+	}, &matlasClient.CreateProjectOptions{})
 	if err != nil {
 		//return handler.ProgressEvent{}, fmt.Errorf("error creating project: %s", err)
 		log.Debugf("Create - error: %+v", err)

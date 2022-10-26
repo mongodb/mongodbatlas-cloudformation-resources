@@ -2,6 +2,21 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters": {
+    "PublicKey": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
+      "ConstraintDescription": "Required, 1 to 64 characters length"
+    },
+    "PrivateKey": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
+      "ConstraintDescription": "Required, 1 to 64 characters length"
+    },
+    "OrgId": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
+      "ConstraintDescription": "Required, 1 to 64 characters length"
+    },
     "Name": {
       "Type": "String",
       "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
@@ -14,12 +29,8 @@
       "AllowedValues": [
         "true",
         "false"
-      ]
-    },
-    "TeamId": {
-      "Type": "String",
-      "Description": "",
-      "ConstraintDescription": "Optional"
+      ],
+      "Default": "false"
     },
     "IsCollectDatabaseSpecificsStatisticsEnabled": {
       "Type": "String",
@@ -28,7 +39,8 @@
       "AllowedValues": [
         "true",
         "false"
-      ]
+      ],
+      "Default": "false"
     },
     "IsDataExplorerEnabled": {
       "Type": "String",
@@ -37,7 +49,8 @@
       "AllowedValues": [
         "true",
         "false"
-      ]
+      ],
+      "Default": "false"
     },
     "IsPerformanceAdvisorEnabled": {
       "Type": "String",
@@ -46,7 +59,8 @@
       "AllowedValues": [
         "true",
         "false"
-      ]
+      ],
+      "Default": "false"
     },
     "IsRealtimePerformancePanelEnabled": {
       "Type": "String",
@@ -55,7 +69,8 @@
       "AllowedValues": [
         "true",
         "false"
-      ]
+      ],
+      "Default": "false"
     },
     "IsSchemaAdvisorEnabled": {
       "Type": "String",
@@ -64,7 +79,8 @@
       "AllowedValues": [
         "true",
         "false"
-      ]
+      ],
+      "Default": "false"
     },
     "KeyId": {
       "Type": "String",
@@ -74,7 +90,8 @@
     "KeyRoles": {
       "Type": "List<String>",
       "Description": "Role names",
-      "ConstraintDescription": "Roles to assigned to the Key. For example, specify \"GROUP_OWNER,GROUP_CLUSTER_MANAGER\""
+      "ConstraintDescription": "Roles to assigned to the Key. For example, specify \"GROUP_OWNER,GROUP_CLUSTER_MANAGER\"",
+      "Default": "GROUP_CLUSTER_MANAGER"
     },
     "TeamId": {
       "Type": "String",
@@ -84,7 +101,8 @@
     "TeamRoles": {
       "Type": "List<String>",
       "Description": "Role names",
-      "ConstraintDescription": "Comma Seperated String with Role names"
+      "ConstraintDescription": "Comma Seperated String with Role names",
+      "Default": "GROUP_CLUSTER_MANAGER"
     }
   },
   "Mappings": {},
@@ -95,10 +113,10 @@
         "Name": {
           "Ref": "Name"
         },
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+        "OrgId": {"Ref": "OrgId"},
         "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          "PublicKey": {"Ref": "PublicKey"},
+          "PrivateKey": {"Ref": "PrivateKey"}
         },
         "ProjectSettings": {
           "IsCollectDatabaseSpecificsStatisticsEnabled": {
@@ -115,7 +133,7 @@
           },
           "IsSchemaAdvisorEnabled": {
             "Ref": "IsSchemaAdvisorEnabled"
-          },
+          }
         },
         "ProjectApiKeys": [
           {

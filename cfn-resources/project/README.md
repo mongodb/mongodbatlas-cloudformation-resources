@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Project
 
 ## Description
-This resource allows you to create a project, get one or a list of projects, and delete a project. Atlas provides a hierarchy based on organizations and projects to facilitate the management of your Atlas clusters. Projects allow you to isolate different environments (for instance, development/qa/prod environments) from each other, associate different users or teams with different environments, maintain separate cluster security configurations, and create different alert settings.
+Returns, adds, and edits collections of clusters and users in MongoDB Cloud.
 
 ## Attributes & Parameters
 
@@ -56,3 +56,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/project/test/project.sample-template.yaml SampleProject1 ParameterKey=OrgId,ParameterValue=${ATLAS_ORG_ID}
 ```
 
+For more information see: MongoDB Atlas API Project [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects) Documentation.

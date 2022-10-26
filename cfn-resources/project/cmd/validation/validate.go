@@ -2,7 +2,7 @@ package validation
 
 type ModelValidator struct{}
 
-var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "OrgId"}
+var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "Name", "OrgId"}
 var ReadRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 var UpdateRequiredFields = []string{"Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}

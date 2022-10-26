@@ -9,6 +9,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/database-user/cmd/validation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -137,11 +138,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	newUser, res, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
-		log.Infof("Error creating new db user: res:%+v, err:%+v", res, err)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			res.Response), nil
 	}
 	log.Debugf("newUser: %s", newUser)
 
@@ -174,20 +172,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	dbName := *currentModel.DatabaseName
 	databaseUser, resp, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
 	if err != nil {
-		log.Infof("error fetching database user:%s, error: %s", groupID, dbName, username, err)
-		if resp != nil && resp.StatusCode == 404 {
-			log.Infof("Resource Not Found 404 for READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Infof("Error READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-		}
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
@@ -304,20 +290,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Update resp:%+v", resp)
 	if err != nil {
-		log.Infof("Error Update database user:%s, error: %s", username, err)
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("Resource Not Found 404 for UPDATE groupId:%s, database user:%s, err:%+v, resp:%+v", groupID, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Warnf("Error UPDATE groupId:%s, database user:%s, err:%+v, resp:%+v", groupID, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-		}
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -351,20 +325,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
-		// Log and handle 404 ok
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("Resource not found for Delete. resp:%+v, error:%+v", resp, err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Warnf("Error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-		}
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -393,13 +355,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	dbUserModels := []interface{}{}
 
-	databaseUsers, _, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
+	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
 	if err != nil {
-		log.Debugf("error fetching database users groupId%s, error: %s", groupID, err)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	for i, _ := range databaseUsers {

@@ -1,0 +1,33 @@
+name: Deploy MongoDB Atlas CloudFormation Resources 
+on:
+  workflow_dispatch:
+    inputs:
+      region: 
+        description: "AWS region"
+        default: "us-east-1"
+        required: true
+jobs:
+  atlas-cfn-deploy-extensions:
+    name: atlas-cfn-deploy-public-extensions
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: pull code
+    - name: Deploy the resources
+      run: |
+        curl -L "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+        unzip awscliv2.zip && sudo ./aws/install --update
+        mkdir -p ~/.aws
+        touch ~/.aws/credentials
+        echo "[711489243244_AdministratorAccess]
+        aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISH_ONLY }}
+        aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISH_ONLY }}
+        region = ${{ github.event.inputs.region }}" > ~/.aws/credentials
+        touch ~/.aws/config
+        echo "[profile 711489243244_AdministratorAccess]
+        region = ${{ github.event.inputs.region }}
+        output = json " > ~/.aws/config
+        cd cfn-resources
+        #aws s3 ls  --profile=711489243244_AdministratorAccess
+        ./cfn-publishing-helper.sh
+

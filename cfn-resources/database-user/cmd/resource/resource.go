@@ -6,7 +6,10 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/database-user/cmd/validation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -15,10 +18,20 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-database-user")
 }
 
+// validateModel inputs based on the method
+func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(event, validation.ModelValidator{}, model)
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf(" currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
+
+	modelValidation := validateModel(constants.Create, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -142,6 +155,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+
+	modelValidation := validateModel(constants.Read, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -225,7 +244,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	modelValidation := validateModel(constants.Update, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -306,6 +331,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("Create req:%+v, prevModel:%s, currentModel:%s", req, spew.Sdump(prevModel), spew.Sdump(currentModel))
+
+	modelValidation := validateModel(constants.Delete, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		//return handler.ProgressEvent{}, err
@@ -346,6 +376,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List NOOP
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+
+	modelValidation := validateModel(constants.List, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {

@@ -16,11 +16,6 @@
         "false"
       ]
     },
-    "TeamId": {
-      "Type": "String",
-      "Description": "",
-      "ConstraintDescription": "Optional"
-    },
     "IsCollectDatabaseSpecificsStatisticsEnabled": {
       "Type": "String",
       "Description": "Flag that indicates whether to collect database-specific metrics for the specified project.",
@@ -115,7 +110,7 @@
           },
           "IsSchemaAdvisorEnabled": {
             "Ref": "IsSchemaAdvisorEnabled"
-          },
+          }
         },
         "ProjectApiKeys": [
           {
@@ -127,7 +122,7 @@
             }
           }
         ],
-        "ProjectApiKeys": [
+        "ProjectTeams": [
           {
             "Key": {
               "Ref": "TeamId"

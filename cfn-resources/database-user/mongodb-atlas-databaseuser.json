@@ -117,6 +117,15 @@
             ],
             "type": "string"
         },
+        "X509Type": {
+            "description": "Method that briefs who owns the certificate provided. If no value is given while using X509Type, Atlas uses the default value of MANAGED.",
+            "enum": [
+                "NONE",
+                "MANAGED",
+                "CUSTOMER"
+            ],
+            "type": "string"
+        },
         "Password": {
             "description": "The user\u2019s password. This field is not included in the entity returned from the server.",
             "type": "string"

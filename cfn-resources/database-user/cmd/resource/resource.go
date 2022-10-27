@@ -96,9 +96,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.AWSIAMType = &none
 	}
 
+	if currentModel.X509Type == nil {
+		currentModel.X509Type = &none
+	}
+
 	if currentModel.Password == nil {
-		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) {
-			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM: %v", currentModel)
+		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
+			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -118,6 +122,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Scopes:       scopes,
 		LDAPAuthType: *currentModel.LdapAuthType,
 		AWSIAMType:   *currentModel.AWSIAMType,
+		X509Type:     *currentModel.X509Type,
 	}
 
 	/*
@@ -185,6 +190,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	if currentModel.AWSIAMType != nil {
 		currentModel.AWSIAMType = &databaseUser.AWSIAMType
+	}
+
+	if currentModel.X509Type != nil {
+		currentModel.X509Type = &databaseUser.X509Type
 	}
 
 	currentModel.Username = &databaseUser.Username
@@ -269,24 +278,61 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		labels = append(labels, label)
 	}
+	log.Debugf("Update labels: %#+v", labels)
 
-	if currentModel.LdapAuthType == nil {
-		currentModel.LdapAuthType = new(string)
+	var scopes []mongodbatlas.Scope
+	for i, _ := range currentModel.Scopes {
+		s := currentModel.Scopes[i]
+		scope := mongodbatlas.Scope{
+			Name: *s.Name,
+			Type: *s.Type,
+		}
+		scopes = append(scopes, scope)
 	}
+	log.Debugf("Update scopes: %#+v", scopes)
+
 	groupID := *currentModel.ProjectId
-	username := *currentModel.Username
-	log.Debugf("groupID:%s, username:%s", groupID, username)
+	log.Debugf("groupID: %#+v", groupID)
+
+	none := "NONE"
+	if currentModel.LdapAuthType == nil {
+		currentModel.LdapAuthType = &none
+	}
+
+	if currentModel.AWSIAMType == nil {
+		currentModel.AWSIAMType = &none
+	}
+
+	if currentModel.X509Type == nil {
+		currentModel.X509Type = &none
+	}
+
+	if currentModel.Password == nil {
+		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
+			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+		s := ""
+		currentModel.Password = &s
+	}
+
 	dbu := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
 		GroupID:      groupID,
-		Username:     username,
+		Username:     *currentModel.Username,
 		Password:     *currentModel.Password,
 		DatabaseName: *currentModel.DatabaseName,
-		LDAPAuthType: *currentModel.LdapAuthType,
 		Labels:       labels,
+		Scopes:       scopes,
+		LDAPAuthType: *currentModel.LdapAuthType,
+		AWSIAMType:   *currentModel.AWSIAMType,
+		X509Type:     *currentModel.X509Type,
 	}
 	log.Debugf("dbu:%+v", dbu)
-	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, username, dbu)
+	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbu)
 
 	log.Debugf("Update resp:%+v", resp)
 	if err != nil {
@@ -366,6 +412,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		databaseUser := databaseUsers[i]
 		model.DatabaseName = &databaseUser.DatabaseName
 		model.LdapAuthType = &databaseUser.LDAPAuthType
+		model.X509Type = &databaseUser.X509Type
 		model.Username = &databaseUser.Username
 		var roles []RoleDefinition
 

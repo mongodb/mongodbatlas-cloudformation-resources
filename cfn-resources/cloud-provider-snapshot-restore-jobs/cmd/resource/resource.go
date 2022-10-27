@@ -20,7 +20,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
+  
 	deliveryType := currentModel.DeliveryType
 	if deliveryType == nil || (*deliveryType != automated && *deliveryType != download) {
 		return handler.ProgressEvent{

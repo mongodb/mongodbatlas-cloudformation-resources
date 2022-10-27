@@ -1,0 +1,87 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndpoint",
+    "description": "Creates a new private endpoint in any given Atlas organization",
+    "definitions": {
+        "ApiKey": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Id": {
+            "description": "The unique identifier of the private endpoint.",
+            "type": "string"
+        },
+        "EndpointServiceName": {
+            "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
+            "type": "string"
+        },
+        "InterfaceEndpoints": {
+            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "insertionOrder" : false
+        },
+        "Status": {
+            "description": "Status of the AWS PrivateLink connection. Atlas returns one of the following",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/ApiKey"
+        },
+        "Region": {
+            "description": "Aws Region",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "GroupId",
+        "Region",
+        "ApiKeys"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+            ]
+        },
+        "read": {
+            "permissions": [
+            ]
+        },
+        "delete": {
+            "permissions": [
+            ]
+        },
+        "list": {
+            "permissions": [
+            ]
+        }
+    }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# encryptionatrest.create-sample-cfn-request.sh
+# projectipaccesslist.create-sample-cfn-request.sh
 #
 # This tool generates text for a `cfn invoke` request json message.
 #

@@ -1,0 +1,12 @@
+{
+  "desiredResourceState": {
+    "GroupId": "",
+    "Region" : "us-east-1",
+    "ApiKeys" : {
+      "PublicKey" : "",
+      "PrivateKey" : ""
+    }
+  },
+  "previousResourceState": {
+  }
+}

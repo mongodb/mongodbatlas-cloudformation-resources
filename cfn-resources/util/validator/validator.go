@@ -9,14 +9,6 @@ import (
 	"strings"
 )
 
-type ValidatorDefinition interface {
-	GetCreateFields() []string
-	GetReadFields() []string
-	GetUpdateFields() []string
-	GetDeleteFields() []string
-	GetListFields() []string
-}
-
 func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
 
 	requiredFields := ""

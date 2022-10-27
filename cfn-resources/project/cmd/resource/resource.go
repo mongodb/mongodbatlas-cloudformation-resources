@@ -12,6 +12,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"strings"
 )
 
 type UpdateApiKey struct {
@@ -35,6 +36,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	modelValidation := validateModel(constants.Create, currentModel)
 	if modelValidation != nil {
+		log.Debugf("Validation Error")
 		return *modelValidation, nil
 	}
 
@@ -68,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, key := range currentModel.ProjectApiKeys {
 			_, err = client.ProjectAPIKeys.Assign(context.Background(), project.ID, *key.Key, &mongodbatlas.AssignAPIKey{Roles: key.RoleNames})
 			if err != nil {
-				log.Infof("Error: %s", err)
+				log.Debugf("Assign Key Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while Assigning Key to project",
@@ -81,7 +83,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if len(currentModel.ProjectTeams) > 0 {
 		_, _, err = client.Projects.AddTeamsToProject(context.Background(), project.ID, readTeams(currentModel.ProjectTeams))
 		if err != nil {
-			log.Infof("Error: %s", err)
+			log.Debugf("AddTeamsToProject Error: %s", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while adding teams to project",
@@ -101,6 +103,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		_, res, err = client.Projects.UpdateProjectSettings(context.Background(), project.ID, &projectSettings)
 		if err != nil {
+			log.Debugf("UpdateProjectSettings Error: %s", err)
 			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
 				res.Response), nil
 		}
@@ -112,6 +115,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	event, errr, failed, proj := getProject(*currentModel.Name, client, currentModel, err)
 	if failed {
+		log.Debugf("getProject Error: %s", err)
 		return event, errr
 	}
 
@@ -155,6 +159,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	modelValidation := validateModel(constants.Update, currentModel)
 	if modelValidation != nil {
+		log.Debugf("Validation Error")
 		return *modelValidation, nil
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -173,7 +178,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		//Get teams from project
 		teamsAssigned, _, err := client.Projects.GetProjectTeamsAssigned(context.Background(), projectId)
 		if err != nil {
-			log.Infof("ProjectId : %s, Error: %s", projectId, err)
+			log.Debugf("ProjectId : %s, Error: %s", projectId, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while finding teams in project",
@@ -196,7 +201,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if len(newTeams) > 0 {
 			_, _, err = client.Projects.AddTeamsToProject(context.Background(), projectId, newTeams)
 			if err != nil {
-				log.Infof("Error: %s", err)
+				log.Debugf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while adding team to project",
@@ -227,7 +232,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 
-		//log.Infof("keys: %+v", currentModel.ProjectApiKeys)
+		//log.Debugf("keys: %+v", currentModel.ProjectApiKeys)
 		//Get Change in ApiKeys
 		newApiKeys, changedKeys, removeKeys := getChangeInApiKeys(*currentModel.Id, currentModel.ProjectApiKeys, projectApiKeys)
 
@@ -241,7 +246,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 					Message:          "Error while Un-assigning Key to project",
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
-			//log.Infof("Removed: %s", key)
+			//log.Debugf("Removed: %s", key)
 
 		}
 
@@ -249,13 +254,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, key := range newApiKeys {
 			_, err = client.ProjectAPIKeys.Assign(context.Background(), projectId, key.Key, key.ApiKeys)
 			if err != nil {
-				log.Infof("Error: %s", err)
+				log.Debugf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while Assigning Key to project",
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
-			//log.Infof("Added: %s", key)
+			//log.Debugf("Added: %s", key)
 
 		}
 
@@ -263,13 +268,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, key := range changedKeys {
 			_, err = client.ProjectAPIKeys.Assign(context.Background(), projectId, key.Key, key.ApiKeys)
 			if err != nil {
-				log.Infof("Error: %s", err)
+				log.Debugf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while Un-assigning Key to project",
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
-			//log.Infof("Updated: %s", key)
+			//log.Debugf("Updated: %s", key)
 		}
 	}
 
@@ -284,7 +289,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		_, _, err = client.Projects.UpdateProjectSettings(context.Background(), projectId, &projectSettings)
 		if err != nil {
-			log.Infof("Update - error: %+v", err)
+			log.Debugf("Update - error: %+v", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Failed to update Project settings",
@@ -603,18 +608,12 @@ func readKeys(groupId, publicKey string, keys []mongodbatlas.APIKey) []ProjectAp
 	var apiKeys []ProjectApiKey
 	for _, key := range keys {
 		var roles []string
-		//Exempt the Key that is part of Request
-		if len(key.ID) > 0 && publicKey != key.PublicKey {
-			for _, role := range key.Roles {
-				if role.GroupID == groupId {
-					roles = append(roles, role.RoleName)
-				}
-			}
-			if len(roles) > 0 {
-				apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
+		for _, role := range key.Roles {
+			if role.GroupID == groupId && !strings.HasPrefix(role.RoleName, "ORG_") {
+				roles = append(roles, role.RoleName)
 			}
 		}
-
+		apiKeys = append(apiKeys, ProjectApiKey{Key: &key.ID, RoleNames: roles})
 	}
 	return apiKeys
 }

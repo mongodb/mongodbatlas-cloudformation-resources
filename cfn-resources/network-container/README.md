@@ -23,11 +23,14 @@ cd ${repo_root}/cfn-resources/network-container
 echo "Sample request:"
 cat test.request.json
 ```
-There is only 1 Network Container resource per Atlas project for AWS. So depending on your project the CREATE test may fail.
+There is only 1 Network Container resource per Atlas project for AWS for a given region. So depending on your project the CREATE test may fail.
 
 ```
-cfn invoke LIST test.request.json 
-cfn invoke DELETE test.request.json 
+cfn invoke resource CREATE test.request.json 
+cfn invoke resource READ test.request.json 
+cfn invoke resource UPDATE test.request.json
+cfn invoke resource LIST test.request.json 
+cfn invoke resource DELETE test.request.json 
 ```
 
 Use the `LIST` method to find the id of any existing
@@ -57,7 +60,7 @@ cfn invoke LIST test.request.json
 
 You can use the `resourceModel.Id` property as the container id when creating a [Network Peering](../network-peering).
 
-LIST, & DELETE tests must pass 
+CREATE, READ, UPDATE, LIST, & DELETE tests must pass 
 
 ## Installation
 

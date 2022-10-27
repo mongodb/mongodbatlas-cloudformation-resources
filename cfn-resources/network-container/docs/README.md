@@ -14,7 +14,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#regionname" title="RegionName">RegionName</a>" : <i>String</i>,
-        "<a href="#atlascidrblock" title="AtlasCIDRBlock">AtlasCIDRBlock</a>" : <i>String</i>,
+        "<a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
@@ -27,7 +27,7 @@ Type: MongoDB::Atlas::NetworkContainer
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#regionname" title="RegionName">RegionName</a>: <i>String</i>
-    <a href="#atlascidrblock" title="AtlasCIDRBlock">AtlasCIDRBlock</a>: <i>String</i>
+    <a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
@@ -53,7 +53,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### AtlasCIDRBlock
+#### AtlasCidrBlock
 
 CIDR block that Atlas uses for your clusters.
 

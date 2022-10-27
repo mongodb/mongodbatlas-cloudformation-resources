@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/network-container/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -19,8 +17,15 @@ const (
 	defaultProviderName = "AWS"
 )
 
-func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(event, validator_def.ModelValidator{}, model)
+var CreateRequiredFields = []string{"ProjectId", "RegionName", "ApiKeys.PublicKey", "ApiKeys.PrivateKey", "AtlasCidrBlock"}
+var ReadRequiredFields = []string{"ProjectId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var UpdateRequiredFields = []string{"ProjectId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var DeleteRequiredFields = []string{"ProjectId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var ListRequiredFields = []string{"ProjectId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+
+// function to validate inputs to all actions
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
 }
 
 // Create handles the Create event from the Cloudformation service.
@@ -31,7 +36,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	//	ResourceModel:   currentModel,
 	//}, nil
 
-	modelValidation := validateModel(constants.Create, currentModel)
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -58,9 +63,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = defaultProviderName
-	CIDR := currentModel.AtlasCIDRBlock
+	CIDR := currentModel.AtlasCidrBlock
 	if CIDR == nil || *CIDR == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCIDRBlock` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCidrBlock` must be set")
 	}
 	containerRequest.AtlasCIDRBlock = *CIDR
 	containerResponse, res, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
@@ -100,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	//	ResourceModel:   currentModel,
 	//}, nil
 
-	modelValidation := validateModel(constants.Read, currentModel)
+	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -123,7 +128,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.RegionName = &containerResponse.RegionName
 	currentModel.Provisioned = containerResponse.Provisioned
 	currentModel.VpcId = &containerResponse.VPCID
-	currentModel.AtlasCIDRBlock = &containerResponse.AtlasCIDRBlock
+	currentModel.AtlasCidrBlock = &containerResponse.AtlasCIDRBlock
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -141,7 +146,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	//	ResourceModel:   currentModel,
 	//}, nil
 
-	modelValidation := validateModel(constants.Update, currentModel)
+	modelValidation := validateModel(UpdateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -156,7 +161,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerId := *currentModel.Id
 	containerRequest := &mongodbatlas.Container{}
 
-	CIDR := currentModel.AtlasCIDRBlock
+	CIDR := currentModel.AtlasCidrBlock
 	if CIDR != nil {
 		containerRequest.AtlasCIDRBlock = *CIDR
 	}
@@ -181,7 +186,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	spew.Dump(currentModel)
 	log.Printf("Delete currentModel:%+v", currentModel)
-	modelValidation := validateModel(constants.Delete, currentModel)
+	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -217,6 +222,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	//	ResourceModel:   currentModel,
 	//}, nil
 	log.Printf("List currentModel:%+v", currentModel)
+
+	modelValidation := validateModel(ListRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -263,5 +274,5 @@ func (m *Model) completeByConnection(c mongodbatlas.Container) {
 	m.Provisioned = c.Provisioned
 	m.Id = &c.ID
 	m.VpcId = &c.VPCID
-	m.AtlasCIDRBlock = &c.AtlasCIDRBlock
+	m.AtlasCidrBlock = &c.AtlasCIDRBlock
 }

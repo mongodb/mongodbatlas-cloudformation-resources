@@ -32,7 +32,7 @@
             "description": "Unique identifier of the peer VPC.",
             "type": "string"
         },
-        "AtlasCIDRBlock": {
+        "AtlasCidrBlock": {
             "description": "CIDR block that Atlas uses for your clusters.",
             "type": "string"
         },
@@ -47,7 +47,7 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "AtlasCIDRBlock",
+        "AtlasCidrBlock",
         "RegionName",
         "ApiKeys"],
     "readOnlyProperties": [

@@ -8,7 +8,7 @@ type Model struct {
 	RegionName     *string           `json:",omitempty"`
 	Provisioned    *bool             `json:",omitempty"`
 	VpcId          *string           `json:",omitempty"`
-	AtlasCIDRBlock *string           `json:",omitempty"`
+	AtlasCidrBlock *string           `json:",omitempty"`
 	Id             *string           `json:",omitempty"`
 	ApiKeys        *ApiKeyDefinition `json:",omitempty"`
 }

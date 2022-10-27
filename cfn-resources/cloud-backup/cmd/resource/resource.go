@@ -5,13 +5,17 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	matlasClient "go.mongodb.org/atlas/mongodbatlas"
 )
+
+var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
+var ReadRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var UpdateRequiredFields []string
+var DeleteRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -19,7 +23,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Create snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.Create, currentModel)
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -85,7 +89,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.Read, currentModel)
+	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -161,7 +165,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Delete snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.Delete, currentModel)
+	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -260,7 +264,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("return all snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.List, currentModel)
+	modelValidation := validateModel(ListRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -368,6 +372,6 @@ func setup() {
 }
 
 // function to validate inputs to all actions
-func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(event, validator_def.ModelValidator{}, model)
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
 }

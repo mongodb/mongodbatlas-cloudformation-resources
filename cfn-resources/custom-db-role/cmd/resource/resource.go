@@ -9,7 +9,9 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 )
@@ -36,6 +38,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	customDBRole, response, err := mongodbClient.CustomDBRoles.Create(context.Background(), *currentModel.GroupId, &atlasCustomDBRole)
 	if err != nil {
+		if response.Response.StatusCode == http.StatusConflict {
+			return progress_events.GetFailedEventByCode("",
+				cloudformation.HandlerErrorCodeAlreadyExists), nil
+		}
+
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
 			response.Response), nil
 	}
@@ -90,10 +97,25 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	atlasCustomDBRole := currentModel.ToCustomDBRole()
+	var actions []mongodbatlas.Action
+	for _, a := range currentModel.Actions {
+		actions = append(actions, a.toAtlasAction())
+	}
+
+	var inheritedRoles []mongodbatlas.InheritedRole
+	for _, ir := range currentModel.InheritedRoles {
+		inheritedRoles = append(inheritedRoles, ir.toAtlasInheritedRole())
+	}
+
+	inputCustomDBRole := mongodbatlas.CustomDBRole{
+		Actions:        actions,
+		InheritedRoles: inheritedRoles,
+	}
+
+	log.Debug(&currentModel.Actions[0].Resources[0].DB)
 
 	atlasCustomDdRole, response, err := mongodbClient.CustomDBRoles.Update(context.Background(), *currentModel.GroupId,
-		*currentModel.RoleName, &atlasCustomDBRole)
+		*currentModel.RoleName, &inputCustomDBRole)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
@@ -186,7 +208,7 @@ func (m *Model) ToCustomDBRole() mongodbatlas.CustomDBRole {
 	return mongodbatlas.CustomDBRole{
 		Actions:        actions,
 		InheritedRoles: inheritedRoles,
-		RoleName:       "",
+		RoleName:       *m.RoleName,
 	}
 }
 

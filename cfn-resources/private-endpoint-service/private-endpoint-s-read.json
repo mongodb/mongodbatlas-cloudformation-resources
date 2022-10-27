@@ -1,0 +1,13 @@
+{
+  "desiredResourceState": {
+    "ApiKeys": {
+      "PublicKey" : "",
+      "PrivateKey" : ""
+    },
+    "GroupId": "",
+    "EndpointServiceId": "",
+    "InterfaceEndpointConnectionId": ""
+  },
+  "previousResourceState": {
+  }
+}

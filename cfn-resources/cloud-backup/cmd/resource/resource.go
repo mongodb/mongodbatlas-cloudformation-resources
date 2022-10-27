@@ -26,7 +26,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+		log.Errorf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
 	}
 
 	// progress callback setup
@@ -50,10 +55,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create snapshot
 	snapshot, _, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating cloud provider snapshot: %s", err)
+		log.Errorf("Create - Cluster BackUp - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+
 	currentModel.Id = &snapshot.ID
-	log.Info("Created Successfully - (%s)", currentModel.Id)
+	log.Debugf("Created Successfully - (%s)", currentModel.Id)
 	// track progress
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -65,7 +75,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"snapshot_id": snapshot.ID,
 		},
 	}
-	log.Infof("Create() return event:%+v", event)
+	log.Debugf("Create() return event:%+v", event)
 	return event, nil
 }
 
@@ -82,13 +92,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
+		log.Infof("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 
+	}
 	isExist := isSnapshotExist(currentModel)
 	// Check if snapshot already exist due to this issue https://github.com/mongodb/go-client-mongodb-atlas/issues/315
 	if !isExist {
-		log.Infof("Read - errors reading snapshot with id(%s)", currentModel.Id)
+		log.Errorf("Read - errors reading snapshot with id(%s)", currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -107,13 +121,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// API call to read snapshot
 	snapshot, res, err := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
 	if err != nil {
-		log.Infof("Read - errors reading snapshot with id(%s): %s", snapshotId, err)
+		log.Errorf("Read - errors reading snapshot with id(%s): %s", snapshotId, err)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	log.Infof("Read -reading snapshot status (%d)", res.StatusCode)
+	log.Debugf("Read -reading snapshot status (%d)", res.StatusCode)
 
 	currentModel.Id = &snapshot.ID
 	currentModel.Description = &snapshot.Description
@@ -154,9 +168,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
+		log.Errorf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 
+	}
 	isExist := isSnapshotExist(currentModel)
 	// Check if snapshot already exist due to this issue https://github.com/mongodb/go-client-mongodb-atlas/issues/315
 	if !isExist {
@@ -171,7 +189,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := *currentModel.ClusterName
 	snapshotId := *currentModel.Id
 
-	log.Infof("Deleting snapshotId (%s)", snapshotId)
+	log.Debugf("Deleting snapshotId (%s)", snapshotId)
 
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
 		GroupID:     projectId,
@@ -183,13 +201,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			log.Infof("Delete 404 err: %+v", err)
+			log.Errorf("Delete 404 err: %+v", err)
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		} else {
-			log.Infof("Delete err: %+v", err)
+			log.Errorf("Delete err: %+v", err)
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
@@ -250,9 +268,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
+		log.Errorf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 
+	}
 	// Create Atlas API Request Object
 	projectId := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
@@ -284,13 +306,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		models = append(models, model)
 	}
 
-	if len(models) == 0 {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "List Complete",
-			ResourceModels:  nil,
-		}, nil
-	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List Complete",

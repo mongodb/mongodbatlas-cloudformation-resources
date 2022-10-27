@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudProviderSnapshotRestoreJobs apiKeyDefinition
+# MongoDB::Atlas::CloudBackUpRestoreJobs apiKeyDefinition
 
 ## Syntax
 

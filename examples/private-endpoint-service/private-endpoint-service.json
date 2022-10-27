@@ -1,0 +1,36 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a PrivateEndpoint on the MongoDB Atlas API",
+  "Parameters": {
+    "PublicKey": {
+      "Type": "String"
+    },
+    "Privatekey": {
+      "Type": "String"
+    },
+    "GroupId": {
+      "Type": "String"
+    },
+    "PrivateEndpointService": {
+      "Type": "String"
+    },
+    "VPCEndpoint": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "PrivateEndpoint": {
+      "Type": "MongoDB::Atlas::PrivateEndpointService",
+      "Properties": {
+        "GroupId": { "Ref" : "GroupId" },
+        "EndpointServiceId": { "Ref" : "PrivateEndpointService" },
+        "InterfaceEndpointConnectionId": { "Ref" : "VPCEndpoint" },
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "PublicKey" },
+          "PrivateKey": { "Ref" : "Privatekey" }
+        }
+      }
+    }
+  },
+  "Outputs": {}
+}

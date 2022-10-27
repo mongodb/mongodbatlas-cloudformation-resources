@@ -6,13 +6,17 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/encryption-at-rest/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
+
+var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "AwsKms.RoleID", "AwsKms.CustomerMasterKeyID", "AwsKms.Region", "ProjectId"}
+var ReadRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
+var UpdateRequiredFields = []string{}
+var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
+var ListRequiredFields = []string{}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -20,14 +24,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Create - Encryption for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.Create, currentModel)
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+		log.Errorf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
 	}
 
 	// Create Atlas API Request Object
@@ -64,7 +73,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.Read, currentModel)
+	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -72,7 +81,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+		log.Errorf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
 	}
 
 	// Create Atlas API Request Object
@@ -121,14 +135,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Delete encryption for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(constants.Delete, currentModel)
+	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+		log.Errorf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
 	}
 
 	projectID := *currentModel.ProjectId
@@ -185,6 +204,6 @@ func setup() {
 }
 
 // function to validate inputs to all actions
-func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(event, validator_def.ModelValidator{}, model)
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
 }

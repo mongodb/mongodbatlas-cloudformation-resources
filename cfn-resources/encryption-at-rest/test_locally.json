@@ -1,0 +1,18 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "633bf97a5684466a4793c55c",
+    "ApiKeys": {
+      "PublicKey": "varwzorf",
+      "PrivateKey": "38df4de7-a96f-4b85-a214-5e0d82df27fa"
+    },
+    "AwsKms": {
+      "CustomerMasterKeyID": "eac4a487-a3d3-469a-9229-d1e60dc1df9f",
+      "Enabled": "true",
+      "Region": "US_EAST_1",
+      "RoleID": "63469821895e0011e8fc98b8"
+    }
+  },
+  "previousResourceState": {
+  }
+}
+

@@ -47,7 +47,7 @@
             "$ref": "#/definitions/apiKeyDefinition"
         },
         "ProjectId": {
-            "description": "Unique identifier of the Atlas project.",
+            "description": "Unique identifier of the Atlas project to which the user belongs.",
             "type": "string"
         }
     },
@@ -73,7 +73,6 @@
                 ""
             ]
         },
-
         "delete": {
             "permissions": [
                 ""

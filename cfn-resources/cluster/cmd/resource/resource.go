@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	log.Infof("cluster Create projectID=%s", projectID)
 	if len(currentModel.ReplicationSpecs) > 0 {
-		if currentModel.ClusterType != nil {
+		if currentModel.ClusterType == nil {
 			err := errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 			log.Infof("Create - error: %+v", err)
 			return handler.ProgressEvent{
@@ -69,7 +69,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 
-		if currentModel.NumShards != nil {
+		if currentModel.NumShards == nil {
 			err := errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
 			log.Infof("Create - error: %+v", err)
 			return handler.ProgressEvent{
@@ -435,7 +435,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := *currentModel.Name
 	log.Debugf("Update - clusterName:%s", clusterName)
 	if len(currentModel.ReplicationSpecs) > 0 {
-		if currentModel.ClusterType != nil {
+		if currentModel.ClusterType == nil {
 			err := errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 			log.Infof("Update - error: %+v", err)
 			return handler.ProgressEvent{
@@ -444,7 +444,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 
-		if currentModel.NumShards != nil {
+		if currentModel.NumShards == nil {
 			err := errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
 			log.Infof("Update - error: %+v", err)
 			return handler.ProgressEvent{

@@ -10,7 +10,7 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cast v1.3.1
-	go.mongodb.org/atlas v0.17.0
+	go.mongodb.org/atlas v0.18.0
 	go.mongodb.org/mongo-driver v1.5.1
 )
 

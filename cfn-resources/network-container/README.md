@@ -1,16 +1,13 @@
 # MongoDB::Atlas::NetworkContainer
 
 ## Description
-This resource allows you to list and delete network containers, ONLY. 
-Network containers are required for network peering. With each Atlas Project having exactly 1 container per AWS region that will be peered with. The containers are provisioned dyanmically through the [Network Peering](../network-peering) resource. Direct use of this Resource Type is not expected, however it is included for completeness and supportability.
+This resource allows you to Create, Read, Update, List and Delete network containers.
 
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
 
 ## Unit Testing Locally
-
-The Network Container resource and it's companion [Network Peering](../network-peering) should be unit tested together.
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 

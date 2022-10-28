@@ -28,15 +28,11 @@
             "description": "Flag that indicates if the project has clusters deployed in the Network Peering container.",
             "type": "boolean"
         },
-        "ProviderName": {
-            "description": "The name of the provider",
-            "type": "string"
-        },
         "VpcId": {
             "description": "Unique identifier of the peer VPC.",
             "type": "string"
         },
-        "AtlasCIDRBlock": {
+        "AtlasCidrBlock": {
             "description": "CIDR block that Atlas uses for your clusters.",
             "type": "string"
         },
@@ -51,24 +47,33 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "AtlasCIDRBlock",
+        "AtlasCidrBlock",
         "RegionName",
         "ApiKeys"],
     "readOnlyProperties": [
-        "/properties/Id"],
+        "/properties/Id",
+    "/properties/VpcId",
+        "/properties/Provisioned"],
     "primaryIdentifier": [
         "/properties/Id"
     ],
     "handlers": {
+        "create": {
+            "permissions": [
+            ]
+        },
+        "read": {
+            "permissions": [
+            ]
+        },
         "delete": {
             "permissions": [
-                ""
             ]
         },
         "list": {
             "permissions": [
-                ""
             ]
         }
     }
-}
+    }
+

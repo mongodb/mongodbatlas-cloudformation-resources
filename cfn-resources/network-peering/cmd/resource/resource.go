@@ -32,6 +32,10 @@ var (
 	DefaultRouteTableCIDRBlock = "10.0.0.0/24"
 )
 
+const (
+	AWS = "AWS"
+)
+
 func findContainer(projectId string, region string, currentModel *Model) (bool, *mongodbatlas.Container, error) {
 	var container mongodbatlas.Container
 	log.Debugf("findContainer projectId:%+v, region:%+v", projectId, region)
@@ -39,7 +43,7 @@ func findContainer(projectId string, region string, currentModel *Model) (bool, 
 	if err != nil {
 		return false, &container, err
 	}
-	opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
+	opt := &mongodbatlas.ContainersListOptions{ProviderName: AWS}
 	log.Debugf("Looking for any AWS containers for this project:%s. opt:%+v", projectId, opt)
 	containers, _, err := client.Containers.List(context.TODO(), projectId, opt)
 	if err != nil {
@@ -94,7 +98,7 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 	log.Debugf("projectId:%v, region:%v, cidr:%+v", projectId, region, &DefaultAWSCIDR)
 	containerRequest := &mongodbatlas.Container{}
 	containerRequest.RegionName = *region
-	containerRequest.ProviderName = "AWS"
+	containerRequest.ProviderName = AWS
 	containerRequest.AtlasCIDRBlock = DefaultAWSCIDR
 	log.Debugf("containerRequest:%+v", containerRequest)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -102,7 +106,8 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 		return &container, err
 	}
 	containerResponse, resp, err := client.Containers.Create(context.TODO(), *currentModel.ProjectId, containerRequest)
-	// TODO add logging here
+	log.Debugf("Create Response:%+v", containerResponse)
+
 	if resp != nil && resp.StatusCode == 409 {
 		log.Warnf("Container already exists, looking for it: resp:%+v", resp)
 		found, c, err := findContainer(projectId, *region, currentModel)
@@ -119,9 +124,11 @@ func validateOrCreateNetworkContainer(req *handler.Request, prevModel *Model, cu
 	return containerResponse, nil
 }
 
-var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "AccepterRegionName", "AwsAccountId", "RouteTableCIDRBlock"}
+var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "AccepterRegionName",
+	"AwsAccountId", "RouteTableCIDRBlock"}
 var ReadRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "Id"}
-var UpdateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "AccepterRegionName", "AwsAccountId", "RouteTableCIDRBlock"}
+var UpdateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "AccepterRegionName",
+	"AwsAccountId", "RouteTableCIDRBlock"}
 var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "Id"}
 var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
 
@@ -298,7 +305,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if accountID != nil {
 		peerRequest.AWSAccountID = *accountID
 	}
-	peerRequest.ProviderName = "AWS"
+
+	peerRequest.ProviderName = AWS
 	rtTableBlock := currentModel.RouteTableCIDRBlock
 	if rtTableBlock != nil {
 		peerRequest.RouteTableCIDRBlock = *rtTableBlock

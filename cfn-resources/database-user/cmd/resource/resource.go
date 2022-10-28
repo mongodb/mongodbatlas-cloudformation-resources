@@ -7,6 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -15,10 +17,26 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-database-user")
 }
 
+// function to validate inputs to all actions
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
+}
+
+var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "DatabaseName", "ProjectId", "Roles", "Username"}
+var ReadRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "DatabaseName", "Username"}
+var UpdateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "DatabaseName", "ProjectId", "Roles", "Username"}
+var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "DatabaseName", "Username"}
+var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf(" currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
+
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -82,9 +100,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.AWSIAMType = &none
 	}
 
+	if currentModel.X509Type == nil {
+		currentModel.X509Type = &none
+	}
+
 	if currentModel.Password == nil {
-		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) {
-			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM: %v", currentModel)
+		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
+			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -104,6 +126,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Scopes:       scopes,
 		LDAPAuthType: *currentModel.LdapAuthType,
 		AWSIAMType:   *currentModel.AWSIAMType,
+		X509Type:     *currentModel.X509Type,
 	}
 
 	/*
@@ -124,11 +147,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	newUser, res, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
-		log.Infof("Error creating new db user: res:%+v, err:%+v", res, err)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			res.Response), nil
 	}
 	log.Debugf("newUser: %s", newUser)
 
@@ -142,6 +162,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+
+	modelValidation := validateModel(ReadRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -155,20 +181,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	dbName := *currentModel.DatabaseName
 	databaseUser, resp, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
 	if err != nil {
-		log.Infof("error fetching database user:%s, error: %s", groupID, dbName, username, err)
-		if resp != nil && resp.StatusCode == 404 {
-			log.Infof("Resource Not Found 404 for READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Infof("Error READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-		}
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
@@ -180,6 +194,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	if currentModel.AWSIAMType != nil {
 		currentModel.AWSIAMType = &databaseUser.AWSIAMType
+	}
+
+	if currentModel.X509Type != nil {
+		currentModel.X509Type = &databaseUser.X509Type
 	}
 
 	currentModel.Username = &databaseUser.Username
@@ -225,7 +243,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	modelValidation := validateModel(UpdateRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -258,41 +282,66 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		labels = append(labels, label)
 	}
+	log.Debugf("Update labels: %#+v", labels)
 
-	if currentModel.LdapAuthType == nil {
-		currentModel.LdapAuthType = new(string)
+	var scopes []mongodbatlas.Scope
+	for i, _ := range currentModel.Scopes {
+		s := currentModel.Scopes[i]
+		scope := mongodbatlas.Scope{
+			Name: *s.Name,
+			Type: *s.Type,
+		}
+		scopes = append(scopes, scope)
 	}
+	log.Debugf("Update scopes: %#+v", scopes)
+
 	groupID := *currentModel.ProjectId
-	username := *currentModel.Username
-	log.Debugf("groupID:%s, username:%s", groupID, username)
+	log.Debugf("groupID: %#+v", groupID)
+
+	none := "NONE"
+	if currentModel.LdapAuthType == nil {
+		currentModel.LdapAuthType = &none
+	}
+
+	if currentModel.AWSIAMType == nil {
+		currentModel.AWSIAMType = &none
+	}
+
+	if currentModel.X509Type == nil {
+		currentModel.X509Type = &none
+	}
+
+	if currentModel.Password == nil {
+		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
+			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+		s := ""
+		currentModel.Password = &s
+	}
+
 	dbu := &mongodbatlas.DatabaseUser{
 		Roles:        roles,
 		GroupID:      groupID,
-		Username:     username,
+		Username:     *currentModel.Username,
 		Password:     *currentModel.Password,
 		DatabaseName: *currentModel.DatabaseName,
-		LDAPAuthType: *currentModel.LdapAuthType,
 		Labels:       labels,
+		Scopes:       scopes,
+		LDAPAuthType: *currentModel.LdapAuthType,
+		AWSIAMType:   *currentModel.AWSIAMType,
+		X509Type:     *currentModel.X509Type,
 	}
 	log.Debugf("dbu:%+v", dbu)
-	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, username, dbu)
+	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbu)
 
 	log.Debugf("Update resp:%+v", resp)
 	if err != nil {
-		log.Infof("Error Update database user:%s, error: %s", username, err)
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("Resource Not Found 404 for UPDATE groupId:%s, database user:%s, err:%+v, resp:%+v", groupID, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Warnf("Error UPDATE groupId:%s, database user:%s, err:%+v, resp:%+v", groupID, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-		}
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -306,6 +355,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("Create req:%+v, prevModel:%s, currentModel:%s", req, spew.Sdump(prevModel), spew.Sdump(currentModel))
+
+	modelValidation := validateModel(DeleteRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		//return handler.ProgressEvent{}, err
@@ -321,20 +375,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
-		// Log and handle 404 ok
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("Resource not found for Delete. resp:%+v, error:%+v", resp, err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Warnf("Error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-		}
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -347,6 +389,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
+	modelValidation := validateModel(ListRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -358,13 +405,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	dbUserModels := []interface{}{}
 
-	databaseUsers, _, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
+	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
 	if err != nil {
-		log.Debugf("error fetching database users groupId%s, error: %s", groupID, err)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	for i, _ := range databaseUsers {
@@ -372,6 +416,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		databaseUser := databaseUsers[i]
 		model.DatabaseName = &databaseUser.DatabaseName
 		model.LdapAuthType = &databaseUser.LDAPAuthType
+		model.X509Type = &databaseUser.X509Type
 		model.Username = &databaseUser.Username
 		var roles []RoleDefinition
 

@@ -6,9 +6,9 @@
             "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
             "type": "object",
             "properties": {
-                "AccessKeyID": {
+                "RoleID": {
                     "type": "string",
-                    "description": "The IAM access key ID with permissions to access the customer master key specified by customerMasterKeyID."
+                    "description": "ID of an AWS IAM role authorized to manage an AWS customer master key."
                 },
                 "CustomerMasterKeyID": {
                     "type": "string",
@@ -21,11 +21,8 @@
                 "Region": {
                     "type": "string",
                     "description": "The AWS region in which the AWS customer master key exists."
-                },
-                "SecretAccessKey": {
-                    "type": "string",
-                    "description": "The IAM secret access key with permissions to access the customer master key specified by customerMasterKeyID."
                 }
+
             },
             "additionalProperties": false
         },
@@ -85,11 +82,7 @@
             "permissions": [
                 ""
             ]
-        },
-        "list": {
-            "permissions": [
-                ""
-            ]
         }
+
     }
 }

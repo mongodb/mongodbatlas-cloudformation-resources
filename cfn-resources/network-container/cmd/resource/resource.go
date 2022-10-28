@@ -30,11 +30,6 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	//return handler.ProgressEvent{
-	//	OperationStatus: handler.Success,
-	//	Message:         "Create Not Supported",
-	//	ResourceModel:   currentModel,
-	//}, nil
 
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -53,10 +48,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `ProjectID` must be set")
 	}
 
-	//if providerName == nil || *providerName == "" {
-	//	aws := defaultProviderName
-	//	providerName = &aws
-	//}
 	regionName := currentModel.RegionName
 	if regionName == nil || *regionName == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: RegionName` must be set")
@@ -99,11 +90,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	//return handler.ProgressEvent{
-	//	OperationStatus: handler.Success,
-	//	Message:         "Read Not Supported",
-	//	ResourceModel:   currentModel,
-	//}, nil
 
 	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -140,11 +126,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	//return handler.ProgressEvent{
-	//	OperationStatus: handler.Success,
-	//	Message:         "Update Not Supported",
-	//	ResourceModel:   currentModel,
-	//}, nil
 
 	modelValidation := validateModel(UpdateRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -216,11 +197,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	//return handler.ProgressEvent{
-	//	OperationStatus: handler.Success,
-	//	Message:         "LIST Not Supported",
-	//	ResourceModel:   currentModel,
-	//}, nil
 	log.Printf("List currentModel:%+v", currentModel)
 
 	modelValidation := validateModel(ListRequiredFields, currentModel)
@@ -234,13 +210,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	projectId := *currentModel.ProjectId
-	//providerName := currentModel.ProviderName
-	//if providerName == nil || *providerName == "" {
-	//	aws := defaultProviderName
-	//	providerName = &aws
-	//}
+
 	log.Printf("projectId:%v", projectId)
-	//log.Printf("providerName:%v", providerName)
 	containerRequest := &mongodbatlas.ContainersListOptions{
 		ProviderName: defaultProviderName,
 		ListOptions:  mongodbatlas.ListOptions{},

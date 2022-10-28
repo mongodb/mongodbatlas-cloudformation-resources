@@ -1,0 +1,19 @@
+{
+    "GroupId": "$ATLAS_ORG_ID",
+    "Actions": [
+        {
+            "Action": "asdfasfgasdgasdg",
+            "Resources": [
+                {
+                    "Collection": "listingsAndReviews",
+                    "DB": "sample_airbnb"
+                }
+            ]
+        }
+    ],
+    "RoleName": "testcreate",
+    "ApiKeys" : {
+        "PublicKey" : "$ATLAS_PUBLIC_KEY",
+        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    }
+}

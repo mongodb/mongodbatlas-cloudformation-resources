@@ -7,12 +7,7 @@
         "Description" : "",
         "ConstraintDescription" : ""
       },
-      "AccessKeyID" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "SecretAccessKey" : {
+      "RoleID" : {
         "Type" : "String",
         "Description" : "",
         "ConstraintDescription" : ""
@@ -46,8 +41,7 @@
         "Properties": {
           "ProjectId": { "Ref" : "Project" },
           "AwsKms": {
-            "AccessKeyID": { "Ref" : "AccessKeyID" },
-            "SecretAccessKey": { "Ref" : "SecretAccessKey" },
+            "RoleID": { "Ref" : "RoleID" },
             "CustomerMasterKeyID": { "Ref" : "CustomerMasterKeyID" },
             "Enabled": true,
             "Region": { "Ref" : "Region" }

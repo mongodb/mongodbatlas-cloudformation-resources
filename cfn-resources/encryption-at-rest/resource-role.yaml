@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   This CloudFormation template creates a role assumed by CloudFormation
   during CRUDL operations to mutate resources on behalf of the customer.
+
 Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
@@ -14,6 +15,13 @@ Resources:
             Principal:
               Service: resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount:
+                  Ref: AWS::AccountId
+              StringLike:
+                aws:SourceArn:
+                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-EncryptionAtRest/*
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
@@ -22,7 +30,7 @@ Resources:
             Statement:
               - Effect: Deny
                 Action:
-                  - "*"
+                - "*"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

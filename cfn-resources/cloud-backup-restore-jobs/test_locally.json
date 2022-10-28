@@ -1,0 +1,16 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "633bf97a5684466a4793c55c",
+    "ClusterName": "cfntest",
+    "DeliveryType": "download",
+    "SnapshotId": "63595972659a102a208a09f1",
+    "Id": "",
+    "ApiKeys": {
+      "PublicKey": "varwzorf",
+      "PrivateKey": "38df4de7-a96f-4b85-a214-5e0d82df27fa"
+    }
+  },
+  "previousResourceState": {
+  }
+}
+

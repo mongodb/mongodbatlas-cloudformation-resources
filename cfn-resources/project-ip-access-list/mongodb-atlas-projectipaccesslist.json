@@ -27,6 +27,24 @@
             },
             "type": "object"
         },
+        "listOptions": {
+            "additionalProperties": false,
+            "properties": {
+                "PageNum": {
+                    "type": "integer",
+                    "description": "For paginated result sets, page of results to retrieve."
+                },
+                "ItemsPerPage": {
+                    "type": "integer",
+                    "description": "For paginated result sets, the number of results to include per page."
+                },
+                "IncludeCount": {
+                    "type": "boolean",
+                    "description": "Flag that indicates whether Atlas returns the totalCount parameter in the response body."
+                }
+            },
+            "type": "object"
+        },
         "apiKeyDefinition": {
             "additionalProperties": false,
             "properties": {
@@ -89,6 +107,9 @@
         "TotalCount": {
             "description": "The unique identifier for the Project ip access list rules.",
             "type": "integer"
+        },
+        "ListOptions": {
+            "$ref": "#/definitions/listOptions"
         }
     },
     "readOnlyProperties": [

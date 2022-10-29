@@ -4,36 +4,12 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"reflect"
 	"strings"
 )
 
-type ValidatorDefinition interface {
-	GetCreateFields() []string
-	GetReadFields() []string
-	GetUpdateFields() []string
-	GetDeleteFields() []string
-	GetListFields() []string
-}
-
-func ValidateModel(event constants.Event, def ValidatorDefinition, model interface{}) *handler.ProgressEvent {
-
-	fields := []string{}
-
-	switch event {
-	case constants.Create:
-		fields = def.GetCreateFields()
-	case constants.Read:
-		fields = def.GetReadFields()
-	case constants.Update:
-		fields = def.GetUpdateFields()
-	case constants.Delete:
-		fields = def.GetDeleteFields()
-	default:
-		fields = def.GetListFields()
-	}
+func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
 
 	requiredFields := ""
 

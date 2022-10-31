@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ProjectIpAccessList
 
-An example resource schema demonstrating some basic constructs and validation rules.
+Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.
 
 ## Syntax
 

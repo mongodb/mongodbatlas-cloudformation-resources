@@ -62,7 +62,7 @@
       "type": "object"
     }
   },
-  "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+  "description": "Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.",
   "handlers": {
     "create": {
       "permissions": [

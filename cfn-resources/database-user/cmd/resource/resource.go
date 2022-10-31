@@ -116,32 +116,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Password = &s
 	}
 
-	user := &mongodbatlas.DatabaseUser{
-		Roles:        roles,
-		GroupID:      groupID,
-		Username:     *currentModel.Username,
-		Password:     *currentModel.Password,
-		DatabaseName: *currentModel.DatabaseName,
-		Labels:       labels,
-		Scopes:       scopes,
-		LDAPAuthType: *currentModel.LdapAuthType,
-		AWSIAMType:   *currentModel.AWSIAMType,
-		X509Type:     *currentModel.X509Type,
+	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
+		s := ""
+		currentModel.DeleteAfterDate = &s
 	}
 
-	/*
-		projectResID := &util.ResourceIdentifier{
-			ResourceType: "Project",
-			ResourceID:   groupID,
-		}
-		resourceID := util.NewResourceIdentifier("DBUser", user.Username, projectResID)
+	log.Printf("Check Delete after date here::???????")
+	spew.Dump(currentModel)
 
-		cfnid := resourceID.String()
-		currentModel.UserCFNIdentifier = &cfnid
-	*/
-	cfnid := fmt.Sprintf("%s-%s", user.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
-	log.Debugf("Created UserCFNIdentifier: %s", cfnid)
+	user := getDbUser(roles, groupID, currentModel, labels, scopes)
 
 	log.Debugf("Arguments: Project ID: %s, Request %#+v", groupID, user)
 
@@ -323,18 +306,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Password = &s
 	}
 
-	dbu := &mongodbatlas.DatabaseUser{
-		Roles:        roles,
-		GroupID:      groupID,
-		Username:     *currentModel.Username,
-		Password:     *currentModel.Password,
-		DatabaseName: *currentModel.DatabaseName,
-		Labels:       labels,
-		Scopes:       scopes,
-		LDAPAuthType: *currentModel.LdapAuthType,
-		AWSIAMType:   *currentModel.AWSIAMType,
-		X509Type:     *currentModel.X509Type,
+	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
+		s := ""
+		currentModel.DeleteAfterDate = &s
 	}
+
+	log.Printf("Check Delete after date here::???????")
+	spew.Dump(currentModel)
+
+	dbu := getDbUser(roles, groupID, currentModel, labels, scopes)
 	log.Debugf("dbu:%+v", dbu)
 	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbu)
 
@@ -349,6 +329,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 	}, nil
+}
+
+func getDbUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
+	return &mongodbatlas.DatabaseUser{
+		Roles:           roles,
+		GroupID:         groupID,
+		Username:        *currentModel.Username,
+		Password:        *currentModel.Password,
+		DatabaseName:    *currentModel.DatabaseName,
+		Labels:          labels,
+		Scopes:          scopes,
+		LDAPAuthType:    *currentModel.LdapAuthType,
+		AWSIAMType:      *currentModel.AWSIAMType,
+		X509Type:        *currentModel.X509Type,
+		DeleteAfterDate: *currentModel.DeleteAfterDate,
+	}
 }
 
 // Delete handles the Delete event from the Cloudformation service.

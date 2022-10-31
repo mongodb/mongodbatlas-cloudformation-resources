@@ -61,7 +61,7 @@
             "type": "object"
         }
     },
-    "description": "The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provide access to the project\u2019s databases. A user\u2019s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.",
+    "description": "Returns, adds, edits, and removes database users.",
     "handlers": {
         "create": {
             "permissions": []
@@ -83,6 +83,10 @@
         "/properties/UserCFNIdentifier"
     ],
     "properties": {
+        "DeleteAfterDate": {
+            "description": "Date and time after which MongoDB Cloud deletes the temporary access list entry. This parameter expresses its value in the ISO 8601 timestamp format in UTC and can include the time zone designation. The date must be later than the current date but no later than one week after you submit this request. The resource returns this parameter if you specified an expiration date when creating this IP access list entry.",
+            "type": "string"
+        },
         "AWSIAMType": {
             "description": "If this value is set, the new database user authenticates with AWS IAM credentials.",
             "enum": [

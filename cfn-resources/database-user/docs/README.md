@@ -1,6 +1,6 @@
 # MongoDB::Atlas::DatabaseUser
 
-The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provide access to the project’s databases. A user’s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.
+Returns, adds, edits, and removes database users.
 
 ## Syntax
 
@@ -12,6 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::DatabaseUser",
     "Properties" : {
+        "<a href="#deleteafterdate" title="DeleteAfterDate">DeleteAfterDate</a>" : <i>String</i>,
         "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#databasename" title="DatabaseName">DatabaseName</a>" : <i>String</i>,
@@ -32,6 +33,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::DatabaseUser
 Properties:
+    <a href="#deleteafterdate" title="DeleteAfterDate">DeleteAfterDate</a>: <i>String</i>
     <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#databasename" title="DatabaseName">DatabaseName</a>: <i>String</i>
@@ -49,6 +51,16 @@ Properties:
 </pre>
 
 ## Properties
+
+#### DeleteAfterDate
+
+Date and time after which MongoDB Cloud deletes the temporary access list entry. This parameter expresses its value in the ISO 8601 timestamp format in UTC and can include the time zone designation. The date must be later than the current date but no later than one week after you submit this request. The resource returns this parameter if you specified an expiration date when creating this IP access list entry.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### AWSIAMType
 

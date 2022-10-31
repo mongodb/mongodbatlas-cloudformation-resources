@@ -1,7 +1,7 @@
 # MongoDB::Atlas::DatabaseUser
 
 ## Description
-The databaseUsers resource lets you retrieve, create and modify the MongoDB users in your cluster. Each user has a set of roles that provides access to the project’s databases. A user’s roles apply to all the clusters in the project: if two clusters have a products database and a user has a role granting read access on the products database, the user has that access on both clusters.
+Returns, adds, edits, and removes database users.
 
 ## Attributes & Parameters
 
@@ -56,4 +56,5 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/database-user/test/databaseuser.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=Username,ParameterValue=<USERNAME> ParameterKey=Password,ParameterValue=<PWD> 
 ```
 
-
+For more information please refer API Documentation,
+https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users

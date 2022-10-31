@@ -7,21 +7,25 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+
 set -x
 
+echo "$ATLAS_PUBLIC_KEY"
+echo "$ATLAS_PRIVATE_KEY"
+echo "$projectId"
+
 function usage {
-    echo "usage:$0 <project_name>"
+    echo "Creates a new customdb role for the test"
 }
 
-if [ "$#" -ne 1 ]; then usage; fi
+if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
 region="us-east-1"
-
-#project_id
 projectName="${1}"
+
 
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -31,19 +35,21 @@ if [ -z "$projectId" ]; then
 else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
+
+echo "Created project \"${projectName}\" with id: ${projectId}"
+
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg group_id "$ATLAS_ORG_ID" \
+   --arg groupId "$projectId" \
    --arg region "$region" \
-   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Region?|=$region' \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region ' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg group_id "$ATLAS_ORG_ID" \
-   --arg region "${region}- more B@d chars !@(!(@====*** ;;::" \
-   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Region?|=$region' \
+   --arg projectId "$projectId" \
+   --arg region "$region" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId | .Region?|=$region ' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
-
-ls -l inputs
+echo "mongocli iam projects delete ${projectId} --force"

@@ -26,7 +26,7 @@ Resources:
         PublicKey: !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       GroupId: !Ref "GroupId"
-      Region: !Ref "      Region"
+      Region: !Ref "Region"
 
 Outputs:
   PrivateEndpoint:

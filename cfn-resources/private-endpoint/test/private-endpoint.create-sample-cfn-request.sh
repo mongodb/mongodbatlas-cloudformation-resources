@@ -20,6 +20,6 @@ region="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg org "$ATLAS_ORG_ID" \
-   --arg region "region" \
-   '.desiredResourceState.properties.GroupId?|=$org | .desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.properties.Region?|=$region' \
-   "$(dirname "$0")/project.sample-cfn-request.json"
+   --arg region "us-east-1" \
+   '.desiredResourceState.GroupId?|=$org | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Region?|=$region' \
+   "$(dirname "$0")/private-endpoint.sample-cfn-request.json"

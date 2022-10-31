@@ -41,7 +41,7 @@ minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+resources="${1:-project database-user project-ip-access-list network-peering cluster private-endpoint}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."

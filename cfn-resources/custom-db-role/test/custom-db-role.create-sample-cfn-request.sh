@@ -9,17 +9,8 @@ set -o nounset
 set -o pipefail
 
 
-function usage {
-    echo "usage:$0 <project_name>"
-}
-
-if [ "$#" -ne 1 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
-
-name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$ATLAS_ORG_ID" \
-   --arg name "$name" \
-   '.desiredResourceState.properties.OrgId?|=$org | .desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.properties.Name?|=$name' \
-   "$(dirname "$0")/project.sample-cfn-request.json"
+   --arg groupID "$projectId" \
+   '.desiredResourceState.GroupId?|=$groupID | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
+   "$(dirname "$0")/custom-db-role.sample-cfn-request.json"

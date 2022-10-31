@@ -36,24 +36,22 @@ fi
 
 echo "Created project \"${projectName}\" with id: ${projectId}"
 
-clusterName="${projectName}"
-
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg groupId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName  | .GroupId?|=$groupId ' \
-   "$(dirname "$0")/inputs_1_create.json" > "inputs/inputs_1_create.json"
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId ' \
+   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .GroupId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_update.json" > "inputs/inputs_1_update.json"
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId ' \
+   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .GroupId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_invalid.json" > "inputs/inputs_1_invalid.json"
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId ' \
+   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

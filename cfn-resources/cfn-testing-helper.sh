@@ -33,7 +33,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 
 # Default, find all the directory names with the json custom resource schema files.
 
-resources="${1:-project database-user project-ip-access-list network-peering cluster encryption-at-rest cloud-provider-snapshot-restore-jobs cloud-provider-snapshots }"
+resources="${1:-project database-user project-ip-access-list network-peering cluster encryption-at-rest cloud-provider-snapshot-restore-jobs cloud-provider-snapshots custom-db-role}"
 
 echo "$(basename "$0") running for the following resources: ${resources}"
 

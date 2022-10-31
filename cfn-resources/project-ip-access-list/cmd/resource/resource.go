@@ -270,6 +270,9 @@ func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccess
 	for i, _ := range model.AccessList {
 		w := model.AccessList[i]
 		wl := &mongodbatlas.ProjectIPAccessList{}
+		if w.DeleteAfterDate != nil {
+			wl.DeleteAfterDate = *w.DeleteAfterDate
+		}
 		if w.Comment != nil {
 			wl.Comment = *w.Comment
 		}

@@ -2,10 +2,7 @@
 
 
 ## Description
-The Access List endpoint manages a Atlas project's IP Access List.
-
-The Access List endpoint supports creating temporary Access List entries that automatically expire within a user-configurable 7-day period.
-
+Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.
 
 ## Attributes
 
@@ -63,3 +60,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/projectipaccesslist/test/projectipaccesslist.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
 ```
 
+For more information: https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List

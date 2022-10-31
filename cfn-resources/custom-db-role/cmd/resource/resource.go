@@ -3,15 +3,15 @@ package resource
 import (
 	"context"
 	"fmt"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	"net/http"
+
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/custom-db-role/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 )
@@ -39,7 +39,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	customDBRole, response, err := mongodbClient.CustomDBRoles.Create(context.Background(), *currentModel.GroupId, &atlasCustomDBRole)
 	if err != nil {
 		if response.Response.StatusCode == http.StatusConflict {
-			return progress_events.GetFailedEventByCode("",
+			return progress_events.GetFailedEventByCode("Resource already exists",
 				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 
@@ -112,8 +112,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		InheritedRoles: inheritedRoles,
 	}
 
-	log.Debug(&currentModel.Actions[0].Resources[0].DB)
-
 	atlasCustomDdRole, response, err := mongodbClient.CustomDBRoles.Update(context.Background(), *currentModel.GroupId,
 		*currentModel.RoleName, &inputCustomDBRole)
 	if err != nil {
@@ -172,7 +170,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		PageNum:      0,
 		ItemsPerPage: 100,
 	}
-	/*todo: continusly check if there are more items to check*/
+
 	customDBRoleResponse, response, err := mongodbClient.CustomDBRoles.List(context.Background(),
 		*currentModel.GroupId,
 		params)

@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkContainer",
-    "description": "This resource allows to create, read, update and delete a network container",
+    "description": "Returns, adds, edits, and removes network peering containers.",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",

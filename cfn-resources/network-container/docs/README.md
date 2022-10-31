@@ -1,6 +1,6 @@
 # MongoDB::Atlas::NetworkContainer
 
-This resource allows to create, read, update and delete a network container
+Returns, adds, edits, and removes network peering containers.
 
 ## Syntax
 

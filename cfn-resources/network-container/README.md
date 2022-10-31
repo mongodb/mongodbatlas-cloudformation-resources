@@ -1,7 +1,7 @@
 # MongoDB::Atlas::NetworkContainer
 
 ## Description
-This resource allows you to Create, Read, Update, List and Delete network containers.
+Returns, adds, edits, and removes network peering containers.
 
 ## Attributes & Parameters
 
@@ -100,4 +100,9 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
  
  
 ```
+
+
+
+For more information please refer API Documentation,
+https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering-Containers
 

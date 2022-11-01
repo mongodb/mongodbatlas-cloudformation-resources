@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CloudBackUp
 
-This resource allows to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.
+Returns, adds, edits, and removes Cloud BackUp.
 
 ## Syntax
 
@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
+        "<a href="#RetentionInDays" title="RetentionInDays">RetentionInDays</a>" : <i>String</i>,    
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     }
 }
@@ -28,6 +29,7 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#description" title="Description">Description</a>: <i>String</i>
+    <a href="#RetentionInDays" title="RetentionInDays">RetentionInDays</a> : <i>String</i>,    
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 </pre>
 
@@ -53,11 +55,20 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### RetentionInDays
+
+The number of days that Atlas should retain the on-demand snapshot. 
+
+_Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 #### Description
 
-Description of the on-demand snapshot.
+Description of the snapshot. Atlas returns this parameter when "status": "onDemand".
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -93,7 +104,7 @@ UTC ISO 8601, formatted point in time when Atlas took the snapshot.
 
 #### MasterKeyUuid
 
-Unique ID of the AWS KMS Customer Master Key used to encrypt the snapshot.
+Unique identifier of the AWS KMS Customer Master Key used to encrypt the snapshot. Atlas returns this value for clusters using Encryption at Rest via Customer KMS.
 
 #### MongoVersion
 
@@ -101,7 +112,7 @@ Version of the MongoDB server.
 
 #### SnapshotType
 
-Specified the type of snapshot.
+Type of snapshot. Atlas can return onDemand or scheduled.
 
 #### Status
 
@@ -109,13 +120,11 @@ Current status of the snapshot.
 
 #### Type
 
-Specifies the type of cluster.
+Type of cluster. Atlas can return replicaSet or shardedCluster.
 
 #### StorageSizeBytes
 
 Specifies the size of the snapshot in bytes.
 
-#### RetentionInDays
 
-The number of days that Atlas should retain the on-demand snapshot. 
 

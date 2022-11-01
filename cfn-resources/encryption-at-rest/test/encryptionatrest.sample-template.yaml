@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::EncryptionAtRest
 Parameters:
   PublicKey:
     Description: "Your MongoDB Cloud Public API Key"
@@ -14,23 +14,39 @@ Parameters:
     Description: "Your MongoDB Cloud Project ID"
     Type: String
     Default: ""
+  CustomerMasterKeyID:
+    Description: "The AWS customer master key used to encrypt and decrypt"
+    Type: String
+    Default: ""
+  Enabled:
+    Description: "Specifies whether Encryption at Rest is enabled for an Atlas project."
+    Type: String
+    Default: ""
+  Region:
+    Description: "The AWS region in which the AWS customer master key exists."
+    Type: String
+    Default: ""
+  RoleID:
+      Description: "ID of an AWS IAM role authorized to manage an AWS customer master key."
+      Type: String
+      Default: ""
 Resources:
-  AtlasProjectIPAccessList:
-    Type: MongoDB::Atlas::ProjectIpAccessList
+  EncryptionAtRest:
+    Type: MongoDB::Atlas::EncryptionAtRest
     Properties:
       ProjectId: !Ref "ProjectId"
       ApiKeys:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      AccessList:
-      - IPAddress: "0.0.0.0/1"
-        Comment: "Testing open all ips"
-      - CIDRBlock: "203.0.113.0/24"
-        Comment: "CIDR block for Application Server B - D"
+      AwsKms:
+      - CustomerMasterKeyID: !Ref "CustomerMasterKeyID"
+        Enabled: !Ref "Enabled"
+      - Region: !Ref "Region"
+        RoleID: !Ref "RoleID"
 Outputs:
-  AtlasProjectIpAccessList:
-    Description: "Info on your Atlas Project IP Access List resource"
-    Value: !Ref AtlasProjectIPAccessList
+  EncryptionAtRest:
+    Description: "Info about encryption at rest in Atlas Project resource"
+    Value: !Ref EncryptionAtRest
     Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
+      Name: !Join [ "-", [ !Ref "AWS::StackName","EncryptionAtRest" ] ]
 

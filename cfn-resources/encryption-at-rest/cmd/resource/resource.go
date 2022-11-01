@@ -12,10 +12,19 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "AwsKms.RoleID", "AwsKms.CustomerMasterKeyID", "AwsKms.Region", "ProjectId"}
-var ReadRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
+const (
+	publicKey       = "ApiKeys.PublicKey"
+	privateKey      = "ApiKeys.PrivateKey"
+	projectId       = "ProjectId"
+	customMasterKey = "AwsKms.CustomerMasterKeyID"
+	roleId          = "AwsKms.RoleID"
+	region          = "AwsKms.Region"
+)
+
+var CreateRequiredFields = []string{publicKey, privateKey, roleId, customMasterKey, region, projectId}
+var ReadRequiredFields = []string{publicKey, privateKey, projectId}
 var UpdateRequiredFields = []string{}
-var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
+var DeleteRequiredFields = []string{publicKey, privateKey, projectId}
 var ListRequiredFields = []string{}
 
 // Create handles the Create event from the Cloudformation service.
@@ -24,8 +33,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Create - Encryption for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
@@ -73,11 +81,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
-
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -135,8 +141,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Delete encryption for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys

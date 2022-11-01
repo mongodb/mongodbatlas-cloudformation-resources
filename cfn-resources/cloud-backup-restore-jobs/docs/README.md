@@ -15,15 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#deliverytype" title="DeliveryType">DeliveryType</a>" : <i>String</i>,
-        "<a href="#deliveryurl" title="DeliveryUrl">DeliveryUrl</a>" : <i>[ String, ... ]</i>,
-        "<a href="#cancelled" title="Cancelled">Cancelled</a>" : <i>Boolean</i>,
-        "<a href="#createdat" title="CreatedAt">CreatedAt</a>" : <i>String</i>,
-        "<a href="#expired" title="Expired">Expired</a>" : <i>Boolean</i>,
-        "<a href="#expiresat" title="ExpiresAt">ExpiresAt</a>" : <i>String</i>,
-        "<a href="#finishedat" title="FinishedAt">FinishedAt</a>" : <i>String</i>,
-        "<a href="#timestamp" title="Timestamp">Timestamp</a>" : <i>String</i>,
         "<a href="#snapshotid" title="SnapshotId">SnapshotId</a>" : <i>String</i>,
-        "<a href="#links" title="Links">Links</a>" : <i>[ [ <a href="links.md">Links</a>, ... ], ... ]</i>,
         "<a href="#oplogts" title="OpLogTs">OpLogTs</a>" : <i>String</i>,
         "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Integer</i>,
         "<a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>" : <i>String</i>,
@@ -41,18 +33,7 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#deliverytype" title="DeliveryType">DeliveryType</a>: <i>String</i>
-    <a href="#deliveryurl" title="DeliveryUrl">DeliveryUrl</a>: <i>
-      - String</i>
-    <a href="#cancelled" title="Cancelled">Cancelled</a>: <i>Boolean</i>
-    <a href="#createdat" title="CreatedAt">CreatedAt</a>: <i>String</i>
-    <a href="#expired" title="Expired">Expired</a>: <i>Boolean</i>
-    <a href="#expiresat" title="ExpiresAt">ExpiresAt</a>: <i>String</i>
-    <a href="#finishedat" title="FinishedAt">FinishedAt</a>: <i>String</i>
-    <a href="#timestamp" title="Timestamp">Timestamp</a>: <i>String</i>
     <a href="#snapshotid" title="SnapshotId">SnapshotId</a>: <i>String</i>
-    <a href="#links" title="Links">Links</a>: <i>
-      - 
-      - <a href="links.md">Links</a></i>
     <a href="#oplogts" title="OpLogTs">OpLogTs</a>: <i>String</i>
     <a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>: <i>Integer</i>
     <a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>: <i>String</i>
@@ -92,76 +73,6 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### DeliveryUrl
-
-One or more URLs for the compressed snapshot files for manual download. Only visible if deliveryType is download.
-
-_Required_: No
-
-_Type_: List of String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Cancelled
-
-Indicates whether the restore job was canceled.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### CreatedAt
-
-UTC ISO 8601 formatted point in time when Atlas created the restore job.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Expired
-
-Indicates whether the restore job expired.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ExpiresAt
-
-UTC ISO 8601 formatted point in time when the restore job expires.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### FinishedAt
-
-UTC ISO 8601 formatted point in time when the restore job completed.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Timestamp
-
-Timestamp in ISO 8601 date and time format in UTC when the snapshot associated to snapshotId was taken.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### SnapshotId
 
 Unique identifier of the source snapshot ID of the restore job.
@@ -169,16 +80,6 @@ Unique identifier of the source snapshot ID of the restore job.
 _Required_: No
 
 _Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Links
-
-One or more links to sub-resources and/or related resources.
-
-_Required_: No
-
-_Type_: List of List of <a href="links.md">Links</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -245,4 +146,36 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
  The unique identifier of the restore job.
+
+#### DeliveryUrl
+
+One or more URLs for the compressed snapshot files for manual download. Only visible if deliveryType is download.
+
+#### Cancelled
+
+Indicates whether the restore job was canceled.
+
+#### CreatedAt
+
+UTC ISO 8601 formatted point in time when Atlas created the restore job.
+
+#### Expired
+
+Indicates whether the restore job expired.
+
+#### ExpiresAt
+
+UTC ISO 8601 formatted point in time when the restore job expires.
+
+#### FinishedAt
+
+UTC ISO 8601 formatted point in time when the restore job completed.
+
+#### Timestamp
+
+Timestamp in ISO 8601 date and time format in UTC when the snapshot associated to snapshotId was taken.
+
+#### Links
+
+One or more links to sub-resources and/or related resources.
 

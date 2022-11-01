@@ -10,23 +10,33 @@ Parameters:
     Description: "Your MongoDB Cloud Private API Key"
     Type: String
     Default: ""
-  OrgId:
-    Description: "Your MongoDB Cloud OrgId"
+  ProjectId:
+    Description: "Your Project Id"
     Type: String
     Default: ""
+  ClusterName:
+      Description: "The name of the Atlas cluster that contains the snapshots you want to retrieve."
+      Type: String
+      Default: ""
+  SnapshotId:
+      Description: "Id of the snapshot."
+      Type: String
+      Default: ""
 Resources:
-  AtlasProject:
+  CloudBackUpRestoreJobs:
     Type: MongoDB::Atlas::CloudBackUpRestoreJobs
     Properties:
       ApiKeys:
         PublicKey: !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      OrgId: !Ref "OrgId"
+      ProjectId: !Ref "ProjectId"
+      ClusterName: !Ref "ClusterName"
+      SnapshotId: !Ref "SnapshotId"
       Name: !Sub "${AWS::StackName}"
 Outputs:
-  AtlasProject:
+  CloudBackUpRestoreJobs:
     Description: "Info on your Atlas Projet"
-    Value: !Ref AtlasProject
+    Value: !Ref CloudBackUpRestoreJobs
     Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProject" ] ]
+      Name: !Join [ "-", [ !Ref "AWS::StackName","CloudBackUpRestoreJobs" ] ]
 

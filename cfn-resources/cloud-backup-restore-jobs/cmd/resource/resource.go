@@ -15,12 +15,20 @@ const (
 	automated = "automated"
 	download  = "download"
 )
+const (
+	publicKey   = "ApiKeys.PublicKey"
+	privateKey  = "ApiKeys.PrivateKey"
+	projectId   = "ProjectId"
+	snapshotId  = "SnapshotId"
+	clusterName = "ClusterName"
+	id          = "Id"
+)
 
-var CreateRequiredFields = []string{"ApiKeys.PublicKey", "SnapshotId", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
-var ReadRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var CreateRequiredFields = []string{publicKey, snapshotId, privateKey, clusterName, projectId}
+var ReadRequiredFields = []string{publicKey, id, privateKey, clusterName, projectId}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
+var DeleteRequiredFields = []string{publicKey, id, privateKey, clusterName, projectId}
+var ListRequiredFields = []string{publicKey, privateKey, clusterName, projectId}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -28,11 +36,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Create snapshot restore for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
-
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -108,10 +114,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("Read snapshot restore starts  Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
+
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -184,8 +190,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Delete snapshot restore starts for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
@@ -243,10 +248,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("return all snapshot restore jobs for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
+
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {

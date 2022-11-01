@@ -32,6 +32,10 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
+## Cloudformation Examples
+
+Please use the [CFN Template](test/databaseuser.sample-template.json)
+
 ## Integration Testing w/ AWS
 
 The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
@@ -56,5 +60,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/database-user/test/databaseuser.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=Username,ParameterValue=<USERNAME> ParameterKey=Password,ParameterValue=<PWD> 
 ```
 
-For more information please refer API Documentation,
-https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users
+For more information see: MongoDB Atlas API DatabaseUser [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users) Documentation.

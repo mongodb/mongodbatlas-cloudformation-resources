@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::BackUp
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::CloudBackUp
 Parameters:
   PublicKey:
     Description: "Your MongoDB Cloud Public API Key"
@@ -10,23 +10,37 @@ Parameters:
     Description: "Your MongoDB Cloud Private API Key"
     Type: String
     Default: ""
-  OrgId:
-    Description: "Your MongoDB Cloud OrgId"
+  ProjectId:
+    Description: "Your Project Id"
+    Type: String
+    Default: ""
+  ClusterName:
+    Description: "The name of the Atlas cluster that contains the snapshots you want to retrieve."
+    Type: String
+    Default: ""
+  Description:
+    Description: "Description of the snapshot."
+    Type: String
+    Default: ""
+  RetentionInDays:
+    Description: "The number of days that Atlas should retain the on-demand snapshot."
     Type: String
     Default: ""
 Resources:
-  AtlasProject:
-    Type: MongoDB::Atlas::BackUp
+  CloudBackUp:
+    Type: MongoDB::Atlas::CloudBackUp
     Properties:
       ApiKeys:
         PublicKey: !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
-      OrgId: !Ref "OrgId"
-      Name: !Sub "${AWS::StackName}"
+      ProjectId: !Ref "ProjectId"
+      ClusterName: !Ref "ClusterName"
+      Description: !Ref "Description"
+      RetentionInDays: !Ref "RetentionInDays"
 Outputs:
-  AtlasProject:
-    Description: "Info on your Atlas Projet"
-    Value: !Ref AtlasProject
+  CloudBackUp:
+    Description: "Info on your CloudBackUp"
+    Value: !Ref CloudBackUp
     Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProject" ] ]
+      Name: !Join [ "-", [ !Ref "AWS::StackName","CloudBackUp" ] ]
 

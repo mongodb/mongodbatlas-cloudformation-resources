@@ -7,15 +7,25 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/openlyinc/pointy"
 	log "github.com/sirupsen/logrus"
 	matlasClient "go.mongodb.org/atlas/mongodbatlas"
+	"strconv"
 )
 
-var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
-var ReadRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+const (
+	publicKey   = "ApiKeys.PublicKey"
+	privateKey  = "ApiKeys.PrivateKey"
+	projectId   = "ProjectId"
+	clusterName = "ClusterName"
+	id          = "Id"
+)
+
+var CreateRequiredFields = []string{publicKey, privateKey, clusterName, projectId}
+var ReadRequiredFields = []string{publicKey, privateKey, clusterName, projectId, id}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
+var DeleteRequiredFields = []string{publicKey, privateKey, clusterName, projectId, id}
+var ListRequiredFields = []string{publicKey, privateKey, clusterName, projectId}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -23,8 +33,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Create snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
@@ -52,8 +61,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		GroupID:     projectId,
 		ClusterName: clusterName,
 	}
+	retentionInDays, err := strconv.Atoi(*currentModel.RetentionInDays)
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	}
 	snapshotRequest := &matlasClient.CloudProviderSnapshot{
-		RetentionInDays: int(*currentModel.RetentionInDays),
+		RetentionInDays: retentionInDays,
 		Description:     *currentModel.Description,
 	}
 	// API call to create snapshot
@@ -66,8 +82,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	currentModel.Id = &snapshot.ID
+	currentModel.Id = pointy.String(snapshot.ID)
+
 	log.Debugf("Created Successfully - (%s)", currentModel.Id)
+
 	// track progress
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -89,8 +107,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
@@ -132,15 +149,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 	log.Debugf("Read -reading snapshot status (%d)", res.StatusCode)
-
 	currentModel.Id = &snapshot.ID
 	currentModel.Description = &snapshot.Description
 	currentModel.Status = &snapshot.Status
 	currentModel.Type = &snapshot.Type
 	currentModel.CreatedAt = &snapshot.CreatedAt
+	currentModel.ExpiredAt = &snapshot.ExpiresAt
+	currentModel.ReplicaSetName = &snapshot.ReplicaSetName
 	currentModel.MasterKeyUuid = &snapshot.MasterKeyUUID
 	currentModel.MongoVersion = &snapshot.MongodVersion
 	currentModel.StorageSizeBytes = &snapshot.StorageSizeBytes
+	currentModel.Links = flattenLinks(snapshot.Links)
+	currentModel.CloudProvider = pointy.String("AWS")
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -165,8 +185,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Delete snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	// Create MongoDb Atlas Client using keys
@@ -264,8 +283,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	log.Debugf("return all snapshot for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -298,15 +316,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var models []interface{}
 	for _, snapshot := range snapshots.Results {
 		var model Model
-		model.Description = &snapshot.Description
 		model.Id = &snapshot.ID
-		model.RetentionInDays = &snapshot.RetentionInDays
+		model.Description = &snapshot.Description
 		model.Status = &snapshot.Status
 		model.Type = &snapshot.Type
 		model.CreatedAt = &snapshot.CreatedAt
+		model.ExpiredAt = &snapshot.ExpiresAt
+		model.ReplicaSetName = &snapshot.ReplicaSetName
 		model.MasterKeyUuid = &snapshot.MasterKeyUUID
 		model.MongoVersion = &snapshot.MongodVersion
 		model.StorageSizeBytes = &snapshot.StorageSizeBytes
+		model.Links = flattenLinks(snapshot.Links)
+		model.CloudProvider = pointy.String("AWS")
 		models = append(models, model)
 	}
 
@@ -319,7 +340,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // function to track snapshot creation status
 func validateProgress(client *matlasClient.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	isReady, state, err := snapshotIsReady(client, *currentModel.ProjectId, *currentModel.Id, *currentModel.ClusterName, targetState)
+	snapshotId := *currentModel.Id
+	projectId := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName
+	isReady, state, err := snapshotIsReady(client, projectId, snapshotId, clusterName, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
@@ -336,7 +360,25 @@ func validateProgress(client *matlasClient.Client, currentModel *Model, targetSt
 		}
 		return p, nil
 	}
+	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
+		GroupID:     projectId,
+		SnapshotID:  snapshotId,
+		ClusterName: clusterName,
+	}
 
+	snapshot, _, _ := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
+	currentModel.Id = &snapshot.ID
+	currentModel.Description = &snapshot.Description
+	currentModel.Status = &snapshot.Status
+	currentModel.Type = &snapshot.Type
+	currentModel.CreatedAt = &snapshot.CreatedAt
+	currentModel.ExpiredAt = &snapshot.ExpiresAt
+	currentModel.ReplicaSetName = &snapshot.ReplicaSetName
+	currentModel.MasterKeyUuid = &snapshot.MasterKeyUUID
+	currentModel.MongoVersion = &snapshot.MongodVersion
+	currentModel.StorageSizeBytes = &snapshot.StorageSizeBytes
+	currentModel.Links = flattenLinks(snapshot.Links)
+	currentModel.CloudProvider = pointy.String("AWS")
 	p := handler.NewProgressEvent()
 	p.ResourceModel = currentModel
 	p.OperationStatus = handler.Success
@@ -369,6 +411,16 @@ func snapshotIsReady(client *matlasClient.Client, projectId, snapshotId, cluster
 func setup() {
 	util.SetupLogger("mongodb-atlas-project")
 
+}
+func flattenLinks(linksResult []*matlasClient.Link) []Links {
+	links := make([]Links, 0)
+	for _, link := range linksResult {
+		var lin Links
+		lin.Href = &link.Href
+		lin.Rel = &link.Rel
+		links = append(links, lin)
+	}
+	return links
 }
 
 // function to validate inputs to all actions

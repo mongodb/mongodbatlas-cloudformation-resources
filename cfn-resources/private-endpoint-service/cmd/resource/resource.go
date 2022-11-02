@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/validator_def"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -11,9 +12,9 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"log"
 	"net/http"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"strings"
 )
 
 const providerName = "AWS"
@@ -23,7 +24,6 @@ func setup() {
 }
 
 func (m *Model) completeByConnection(c mongodbatlas.InterfaceEndpointConnection) {
-	m.InterfaceEndpointConnectionId = &c.InterfaceEndpointID
 	m.ErrorMessage = &c.ErrorMessage
 	m.ConnectionStatus = &c.AWSConnectionStatus
 }
@@ -51,14 +51,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		*currentModel.EndpointServiceId,
 		interfaceEndpointRequest)
 
+	log.Print(response.StatusCode)
+
 	if response.Response.StatusCode == 409 {
 		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "Resource already exists",
-			ResourceModel:   currentModel}, nil
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
+			Message:          "Resource already exists"}, nil
 	}
 
 	if err != nil {
+		if resourceAlreadyExists(err) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
+				Message:          "Resource already exists"}, nil
+		}
+
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
 			response.Response), nil
 	}
@@ -69,6 +78,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
 		ResourceModel:   currentModel}, nil
+}
+
+func resourceAlreadyExists(err error) bool {
+	return strings.Contains(err.Error(), "private endpoints in multiple regions cannot support more than one endpoint in each region")
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -94,7 +107,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			response.Response), nil
 	}
 
-	currentModel.completeByConnection(*privateEndpointResponse)
+	currentModel.ConnectionStatus = &privateEndpointResponse.AWSConnectionStatus
+	currentModel.ErrorMessage = &privateEndpointResponse.ErrorMessage
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

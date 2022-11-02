@@ -1,38 +1,137 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "Name" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : "",
-      "Default": ""
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Name": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
+      "ConstraintDescription": "Required, 1 to 64 characters length"
     },
-    "WithDefaultAlertsSettings" : {
-      "Type" : "String",
-      "Description" : "Setting alerts for project",
-      "ConstraintDescription" : "",
-      "Default": "false"
+    "WithDefaultAlertsSettings": {
+      "Type": "String",
+      "Description": "Setting alerts for project",
+      "ConstraintDescription": "Optional",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "IsCollectDatabaseSpecificsStatisticsEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether to collect database-specific metrics for the specified project.",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "IsDataExplorerEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether to enable the Data Explorer for the specified project.",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "IsPerformanceAdvisorEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether to enable the Performance Advisor and Profiler for the specified project.",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "IsRealtimePerformancePanelEnabled": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": "Flag that indicates whether to enable the Real Time Performance Panel for the specified project.\n\n",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "IsSchemaAdvisorEnabled": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": "Flag that indicates whether to enable the Schema Advisor for the specified project.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "KeyId": {
+      "Type": "String",
+      "Description": "Programmatic Api Key Id",
+      "ConstraintDescription": ""
+    },
+    "KeyRoles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "ConstraintDescription": "Roles to assigned to the Key. For example, specify \"GROUP_OWNER,GROUP_CLUSTER_MANAGER\""
+    },
+    "TeamId": {
+      "Type": "String",
+      "Description": "Team Id",
+      "ConstraintDescription": ""
+    },
+    "TeamRoles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "ConstraintDescription": "Comma Seperated String with Role names"
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "Project": {
       "Type": "MongoDB::Atlas::Project",
       "Properties": {
-        "Name": { "Ref" : "Name" },
+        "Name": {
+          "Ref": "Name"
+        },
         "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
           "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
         },
         "ProjectSettings": {
-          "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
-          "IsDataExplorerEnabled": "false",
-          "IsPerformanceAdvisorEnabled": "false",
-          "IsRealtimePerformancePanelEnabled": "false",
-          "IsSchemaAdvisorEnabled": "true"
-        }
+          "IsCollectDatabaseSpecificsStatisticsEnabled": {
+            "Ref": "IsCollectDatabaseSpecificsStatisticsEnabled"
+          },
+          "IsDataExplorerEnabled": {
+            "Ref": "IsDataExplorerEnabled"
+          },
+          "IsPerformanceAdvisorEnabled": {
+            "Ref": "IsPerformanceAdvisorEnabled"
+          },
+          "IsRealtimePerformancePanelEnabled": {
+            "Ref": "IsRealtimePerformancePanelEnabled"
+          },
+          "IsSchemaAdvisorEnabled": {
+            "Ref": "IsSchemaAdvisorEnabled"
+          }
+        },
+        "ProjectApiKeys": [
+          {
+            "Key": {
+              "Ref": "KeyId"
+            },
+            "RoleNames": {
+              "Ref": "KeyRoles"
+            }
+          }
+        ],
+        "ProjectTeams": [
+          {
+            "Key": {
+              "Ref": "TeamId"
+            },
+            "RoleNames": {
+              "Ref": "TeamRoles"
+            }
+          }
+        ]
       }
     }
   },

@@ -1,19 +1,35 @@
 {
-    "desiredResourceState" : {
-      "Name" : "Name",
-      "OrgId" : "$ATLAS_ORG_ID",
-      "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-      },
-      "ProjectSettings": {
-        "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
-        "IsDataExplorerEnabled": "false",
-        "IsPerformanceAdvisorEnabled": "false",
-        "IsRealtimePerformancePanelEnabled": "false",
-        "IsSchemaAdvisorEnabled": "false"
-      }
+  "desiredResourceState":{
+    "Name": "cfn-test-bot-39f1556-project5",
+    "OrgId": "5fe4ea50d1a2b617175ee3d4",
+    "ApiKeys": {
+      "PublicKey": "pzovkttc",
+      "PrivateKey": "6d39c229-6a6f-423d-9b41-dda35547f57e"
     },
+    "ProjectSettings": {
+      "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+      "IsDataExplorerEnabled": "false",
+      "IsPerformanceAdvisorEnabled": "false",
+      "IsRealtimePerformancePanelEnabled": "false",
+      "IsSchemaAdvisorEnabled": "true"
+    },
+    "ProjectApiKeys": [
+      {
+        "Key": "",
+        "RoleNames": [
+          "GROUP_CLUSTER_MANAGER"
+        ]
+      }
+    ],
+    "ProjectTeams": [
+      {
+        "TeamId": "",
+        "RoleNames": [
+          "GROUP_OWNER"
+        ]
+      }
+    ]
+  },
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }
 }

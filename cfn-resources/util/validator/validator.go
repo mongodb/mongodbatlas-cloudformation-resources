@@ -20,7 +20,7 @@ type ValidatorDefinition interface {
 
 func ValidateModel(event constants.Event, def ValidatorDefinition, model interface{}) *handler.ProgressEvent {
 
-	fields := []string{}
+	var fields []string
 
 	switch event {
 	case constants.Create:

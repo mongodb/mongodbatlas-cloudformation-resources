@@ -29,7 +29,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var roles []mongodbatlas.Role
-	for i, _ := range currentModel.Roles {
+	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
 		role := mongodbatlas.Role{}
 		if r.CollectionName != nil {
@@ -49,7 +49,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Debugf("roles: %#+v", roles)
 
 	var labels []mongodbatlas.Label
-	for i, _ := range currentModel.Labels {
+	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
 		label := mongodbatlas.Label{
 			Key:   *l.Key,
@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Debugf("labels: %#+v", labels)
 
 	var scopes []mongodbatlas.Scope
-	for i, _ := range currentModel.Scopes {
+	for i := range currentModel.Scopes {
 		s := currentModel.Scopes[i]
 		scope := mongodbatlas.Scope{
 			Name: *s.Name,
@@ -155,7 +155,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	dbName := *currentModel.DatabaseName
 	databaseUser, resp, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
 	if err != nil {
-		log.Infof("error fetching database user:%s, error: %s", groupID, dbName, username, err)
+		log.Infof("error fetching database groupID:%s, dbName:%s user:%s, error: %s", groupID, dbName, username, err)
 		if resp != nil && resp.StatusCode == 404 {
 			log.Infof("Resource Not Found 404 for READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
 			return handler.ProgressEvent{
@@ -187,7 +187,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	log.Debugf("databaseUser:%+v", databaseUser)
 	var roles []RoleDefinition
 
-	for i, _ := range databaseUser.Roles {
+	for i := range databaseUser.Roles {
 		r := databaseUser.Roles[i]
 		role := RoleDefinition{
 			CollectionName: &r.CollectionName,
@@ -201,7 +201,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	log.Debugf("currentModel.Roles:%+v", roles)
 	var labels []LabelDefinition
 
-	for i, _ := range databaseUser.Labels {
+	for i := range databaseUser.Labels {
 		l := databaseUser.Labels[i]
 		label := LabelDefinition{
 			Key:   &l.Key,
@@ -235,7 +235,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Update currentModel:%+v", currentModel)
 	roles := []mongodbatlas.Role{}
-	for i, _ := range currentModel.Roles {
+	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
 		role := mongodbatlas.Role{}
 		if r.CollectionName != nil {
@@ -250,7 +250,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Debugf("Update roles:%+v", roles)
 	labels := []mongodbatlas.Label{}
-	for i, _ := range currentModel.Labels {
+	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
 		label := mongodbatlas.Label{
 			Key:   *l.Key,
@@ -367,7 +367,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
-	for i, _ := range databaseUsers {
+	for i := range databaseUsers {
 		var model Model
 		databaseUser := databaseUsers[i]
 		model.DatabaseName = &databaseUser.DatabaseName
@@ -375,7 +375,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.Username = &databaseUser.Username
 		var roles []RoleDefinition
 
-		for i, _ := range databaseUser.Roles {
+		for i := range databaseUser.Roles {
 			r := databaseUser.Roles[i]
 			role := RoleDefinition{
 				CollectionName: &r.CollectionName,
@@ -389,7 +389,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 		var labels []LabelDefinition
 
-		for i, _ := range databaseUser.Labels {
+		for i := range databaseUser.Labels {
 			l := databaseUser.Labels[i]
 			label := LabelDefinition{
 				Key:   &l.Key,

@@ -63,7 +63,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	log.Debugf("Read --- currentModel:%+v", currentModel)
 
 	entries := []string{}
-	for i, _ := range currentModel.AccessList {
+	for i := range currentModel.AccessList {
 		wl := currentModel.AccessList[i]
 		entry := getEntry(wl)
 		entries = append(entries, entry)
@@ -168,7 +168,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPAccessList, handler.ProgressEvent, error) {
 
 	var accesslist []*mongodbatlas.ProjectIPAccessList
-	for i, _ := range entries {
+	for i := range entries {
 		entry := entries[i]
 		result, resp, err := conn.ProjectIPAccessList.Get(context.Background(), projectID, entry)
 		if err != nil {
@@ -195,7 +195,7 @@ func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatl
 
 func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
 	var accesslist []*mongodbatlas.ProjectIPAccessList
-	for i, _ := range model.AccessList {
+	for i := range model.AccessList {
 		w := model.AccessList[i]
 		wl := &mongodbatlas.ProjectIPAccessList{}
 		if w.Comment != nil {
@@ -235,7 +235,7 @@ func getEntry(wl AccessListDefinition) string {
 
 func flattenAccessList(original []AccessListDefinition, accesslist []*mongodbatlas.ProjectIPAccessList) []AccessListDefinition {
 	var results []AccessListDefinition
-	for i, _ := range accesslist {
+	for i := range accesslist {
 		wl := accesslist[i]
 		// only add properties which were in model to begin with
 		r := AccessListDefinition{
@@ -275,7 +275,7 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 func deleteEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
 	projectID := *model.ProjectId
 
-	for i, _ := range model.AccessList {
+	for i := range model.AccessList {
 		wl := model.AccessList[i]
 		entry := getEntry(wl)
 		resp, errDelete := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry)

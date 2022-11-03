@@ -149,7 +149,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	region := currentModel.AccepterRegionName
-	log.Debugf("Create region=%v ~~~~~~~~~~~~~~~~~~~~~~~~", *region)
+
 	if region == nil || *region == "" {
 		region = &req.RequestContext.Region
 		log.Infof("AccepterRegionName was not set, default to req.RequestContext.Region:%v", region)

@@ -64,7 +64,7 @@ func getLogLevel() log.Level {
 	level, err := log.ParseLevel(levelString)
 	if err != nil {
 		log.Errorf("error parsing %s: %v", EnvLogLevel, err)
-		level, err = log.ParseLevel(defaultLogLevel)
+		level, _ = log.ParseLevel(defaultLogLevel)
 		return level
 	}
 	log.Printf("getLogLevel() levelString=%s level=%v", levelString, level)

@@ -190,7 +190,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, team := range removeTeams {
 			_, err := client.Teams.RemoveTeamFromProject(context.Background(), projectId, team.TeamID)
 			if err != nil {
-				log.Debug("Error: %s", projectId, err)
+				log.Debugf("ProjectId : %s, Error: %s", projectId, err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while deleting team from project",
@@ -212,7 +212,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, team := range changedTeams {
 			_, _, err = client.Teams.UpdateTeamRoles(context.Background(), projectId, team.TeamID, &mongodbatlas.TeamUpdateRoles{RoleNames: team.RoleNames})
 			if err != nil {
-				log.Debug("Error: %s", err)
+				log.Debugf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while updating team roles in project",
@@ -225,7 +225,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		//Get APIKeys from project
 		projectApiKeys, _, err := client.ProjectAPIKeys.List(context.Background(), projectId, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
 		if err != nil {
-			log.Debug("Error: %s", projectId, err)
+			log.Debugf("ProjectId : %s, Error: %s", projectId, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while finding api keys in project",
@@ -240,7 +240,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, key := range removeKeys {
 			_, err = client.ProjectAPIKeys.Unassign(context.Background(), projectId, key.Key)
 			if err != nil {
-				log.Debug("Error: %s", err)
+				log.Debugf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          "Error while Un-assigning Key to project",
@@ -400,7 +400,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		m.Name = &project.Name
 		m.Id = &project.ID
 		m.ApiKeys = currentModel.ApiKeys
-		event, err2, model, failed := readProjectSettings(err, client, project.ID, &m)
+		event, err2, model, failed := readProjectSettings(client, project.ID, &m)
 		if failed {
 			return event, err2
 		}
@@ -453,7 +453,7 @@ func getProject(name string, client *mongodbatlas.Client, currentModel *Model, e
 		currentModel.Id = &project.ID
 	}
 
-	event, err2, model, failed := readProjectSettings(err, client, id, currentModel)
+	event, err2, model, failed := readProjectSettings(client, id, currentModel)
 
 	if failed {
 		return event, err2, true, model
@@ -462,11 +462,11 @@ func getProject(name string, client *mongodbatlas.Client, currentModel *Model, e
 	return handler.ProgressEvent{}, nil, false, model
 }
 
-func readProjectSettings(err error, client *mongodbatlas.Client, id string, currentModel *Model) (handler.ProgressEvent, error, *Model, bool) {
+func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *Model) (handler.ProgressEvent, error, *Model, bool) {
 	//Get teams from project
 	teamsAssigned, res, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
 	if err != nil {
-		log.Debug("ProjectId : %s, Error: %s", id, err)
+		log.Debugf("ProjectId : %s, Error: %s", id, err)
 		return progress_events.GetFailedEventByResponse(err.Error(),
 			res.Response), nil, nil, true
 	}
@@ -474,14 +474,14 @@ func readProjectSettings(err error, client *mongodbatlas.Client, id string, curr
 	//Get APIKeys from project
 	projectApiKeys, res, err := client.ProjectAPIKeys.List(context.Background(), id, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
 	if err != nil {
-		log.Debug("Error: %s", id, err)
+		log.Debugf("ProjectId : %s, Error: %s", id, err)
 		return progress_events.GetFailedEventByResponse(err.Error(),
 			res.Response), nil, nil, true
 	}
 
 	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
 	if err != nil {
-		log.Debug("Error: %s", id, err)
+		log.Debugf("ProjectId : %s, Error: %s", id, err)
 		return progress_events.GetFailedEventByResponse(err.Error(),
 			res.Response), nil, nil, true
 	}

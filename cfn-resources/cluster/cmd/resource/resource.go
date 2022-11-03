@@ -29,15 +29,6 @@ func cast64(i *int) *int64 {
 	x := cast.ToInt64(&i)
 	return &x
 }
-func boolPtr(i bool) *bool {
-	return &i
-}
-func intPtr(i int) *int {
-	return &i
-}
-func stringPtr(i string) *string {
-	return &i
-}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -152,7 +143,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.ProviderSettings != nil {
 		clusterRequest.ProviderSettings = expandProviderSettings(currentModel.ProviderSettings)
 	}
-	log.Debug("DEBUG: clusterRequest.ProviderSettings: %+v", clusterRequest.ProviderSettings)
+	log.Debugf("DEBUG: clusterRequest.ProviderSettings: %+v", clusterRequest.ProviderSettings)
 
 	if currentModel.ReplicationSpecs != nil {
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)

@@ -202,14 +202,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func flattenDeliveryUrl(deliveryUrlResult []string) []*string {
-	deliveryUrls := make([]*string, 0)
-	for _, deliveryUrl := range deliveryUrlResult {
-		deliveryUrls = append(deliveryUrls, &deliveryUrl)
-	}
-	return deliveryUrls
-}
-
 func flattenLinks(linksResult []*matlasClient.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {

@@ -25,7 +25,7 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 		Properties: properties,
 	}
 	log.Printf("deploySecret: %v", deploySecret)
-	deploySecretString, err := json.Marshal(deploySecret)
+	deploySecretString, _ := json.Marshal(deploySecret)
 	log.Printf("deploySecretString: %s", deploySecretString)
 
 	log.Println("===============================================")
@@ -79,6 +79,6 @@ func GetApiKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
 		log.Printf("Error --- %v", err.Error())
 		return key, err
 	}
-	fmt.Println("%v", key)
+	fmt.Printf("%v", key)
 	return key, nil
 }

@@ -14,7 +14,6 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 	"log"
 	"net/http"
-	"strings"
 )
 
 const providerName = "AWS"
@@ -45,6 +44,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ID: *currentModel.InterfaceEndpointConnectionId,
 	}
 
+	alreadyExists, he := privateEndpointServiceAlreadyExists(*mongodbClient, currentModel)
+	if he != nil {
+		return *he, err
+	}
+	if alreadyExists {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
+			Message:          "Resource already exists"}, nil
+	}
+
 	responseConnection, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
 		*currentModel.GroupId,
 		providerName,
@@ -61,13 +71,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if err != nil {
-		if resourceAlreadyExists(err) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
-				Message:          "Resource already exists"}, nil
-		}
-
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
 			response.Response), nil
 	}
@@ -80,8 +83,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   currentModel}, nil
 }
 
-func resourceAlreadyExists(err error) bool {
-	return strings.Contains(err.Error(), "private endpoints in multiple regions cannot support more than one endpoint in each region")
+func privateEndpointServiceAlreadyExists(mongodbClient mongodbatlas.Client, currentModel *Model) (bool, *handler.ProgressEvent) {
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
+		*currentModel.GroupId,
+		providerName,
+		*currentModel.EndpointServiceId,
+		*currentModel.InterfaceEndpointConnectionId)
+	if err != nil {
+		if response.StatusCode == 404 {
+			return false, nil
+		}
+		rev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response)
+		return false, &rev
+	}
+
+	return privateEndpointResponse != nil, nil
 }
 
 // Read handles the Read event from the Cloudformation service.

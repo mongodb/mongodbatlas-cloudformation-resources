@@ -3,23 +3,20 @@ package util
 import (
 	"go.mongodb.org/atlas/mongodbatlas"
 
-	"log"
-	"testing"
-	//"fmt"
 	"flag"
+	"log"
 	"os"
+	"testing"
 )
 
 const (
 	publicKeyEnv  = "ATLAS_PUBLIC_KEY"
 	privateKeyEnv = "ATLAS_PRIVATE_KEY"
-	//orgIDEnv      = "ATLAS_ORG_ID"
 )
 
 var (
 	publicKey  = os.Getenv(publicKeyEnv)
 	privateKey = os.Getenv(privateKeyEnv)
-	//orgID      = os.Getenv(orgIDEnv)
 )
 
 func setupAtlasClient() (*mongodbatlas.Client, error) {
@@ -42,5 +39,4 @@ func TestMongo(t *testing.T) {
 			t.Error("atlas client is not expected to be null")
 		}
 	})
-
 }

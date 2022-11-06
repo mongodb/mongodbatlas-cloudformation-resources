@@ -97,7 +97,6 @@ func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
 			t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
 		}
 	}
-
 }
 
 func TestNoneValidateRequiredFieldsEmpty(t *testing.T) {

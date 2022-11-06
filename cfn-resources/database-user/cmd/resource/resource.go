@@ -84,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if currentModel.Password == nil {
 		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) {
-			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM: %v", currentModel)
+			err = fmt.Errorf("password cannot be empty if not LDAP or IAM: %v", currentModel)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -106,16 +106,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		AWSIAMType:   *currentModel.AWSIAMType,
 	}
 
-	/*
-		projectResID := &util.ResourceIdentifier{
-			ResourceType: "Project",
-			ResourceID:   groupID,
-		}
-		resourceID := util.NewResourceIdentifier("DBUser", user.Username, projectResID)
-
-		cfnid := resourceID.String()
-		currentModel.UserCFNIdentifier = &cfnid
-	*/
 	cfnid := fmt.Sprintf("%s-%s", user.Username, groupID)
 	currentModel.UserCFNIdentifier = &cfnid
 	log.Debugf("Created UserCFNIdentifier: %s", cfnid)
@@ -162,18 +152,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Infof("Error READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 		}
+
+		log.Infof("Error READ groupId:%s, dbName:%s, database user:%s, err:%+v, resp:%+v", groupID, dbName, username, err, resp)
+		return handler.ProgressEvent{
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
 
-	//currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 	if currentModel.LdapAuthType != nil {
 		currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 	}
@@ -286,13 +275,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Warnf("Error UPDATE groupId:%s, database user:%s, err:%+v, resp:%+v", groupID, username, err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 		}
+		log.Warnf("Error UPDATE groupId:%s, database user:%s, err:%+v, resp:%+v", groupID, username, err, resp)
+		return handler.ProgressEvent{
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
 	return handler.ProgressEvent{
@@ -308,7 +296,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Debugf("Create req:%+v, prevModel:%s, currentModel:%s", req, spew.Sdump(prevModel), spew.Sdump(currentModel))
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		//return handler.ProgressEvent{}, err
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
@@ -328,13 +315,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		} else {
-			log.Warnf("Error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 		}
+		log.Warnf("Error deleting database user:%s, err:%+v, resp:%+v", username, err, resp)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
 	return handler.ProgressEvent{
@@ -356,7 +342,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	groupID := *currentModel.ProjectId
-	dbUserModels := []interface{}{}
+	var dbUserModels []interface{}
 
 	databaseUsers, _, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
 	if err != nil {

@@ -85,7 +85,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
-
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -116,7 +115,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 	}, nil
-
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -140,7 +138,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
 	}, nil
-
 }
 
 // List handles the List event from the Cloudformation service.
@@ -162,12 +159,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  models,
 	}, nil
-
 }
 
-func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPAccessList, handler.ProgressEvent, error) {
-
-	var accesslist []*mongodbatlas.ProjectIPAccessList
+func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatlas.Client) (accesslist []*mongodbatlas.ProjectIPAccessList,
+	progressEvent handler.ProgressEvent, err error) {
 	for i := range entries {
 		entry := entries[i]
 		result, resp, err := conn.ProjectIPAccessList.Get(context.Background(), projectID, entry)
@@ -178,13 +173,12 @@ func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatl
 					Message:          err.Error(),
 					OperationStatus:  handler.Failed,
 					HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, err
-			} else {
-				log.Debugf("Error READ projectId:%s, err:%+v", projectID, err)
-				return nil, handler.ProgressEvent{
-					Message:          err.Error(),
-					OperationStatus:  handler.Failed,
-					HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, err
 			}
+			log.Debugf("Error READ projectId:%s, err:%+v", projectID, err)
+			return nil, handler.ProgressEvent{
+				Message:          err.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, err
 		}
 		log.Debugf("%+v", strings.Split(result.CIDRBlock, "/"))
 		log.Debugf("getProjectIPAccessList result:%+v", result)
@@ -220,7 +214,6 @@ func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccess
 }
 
 func getEntry(wl AccessListDefinition) string {
-
 	if wl.CIDRBlock != nil {
 		return *wl.CIDRBlock
 	}
@@ -286,15 +279,13 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 					Message:          errDelete.Error(),
 					OperationStatus:  handler.Failed,
 					HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, errDelete
-			} else {
-				log.Debugf("Error READ projectId:%s, err:%+v", projectID, errDelete)
-				return handler.ProgressEvent{
-					Message:          errDelete.Error(),
-					OperationStatus:  handler.Failed,
-					HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, errDelete
 			}
+			log.Debugf("Error READ projectId:%s, err:%+v", projectID, errDelete)
+			return handler.ProgressEvent{
+				Message:          errDelete.Error(),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, errDelete
 		}
 	}
-
 	return handler.ProgressEvent{}, nil
 }

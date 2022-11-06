@@ -17,7 +17,7 @@ type DeploymentSecret struct {
 	Properties *map[string]string  `json:"Properties"`
 }
 
-func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, publicKey string, privateKey string, properties *map[string]string) (*string, error) {
+func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, publicKey, privateKey string, properties *map[string]string) (*string, error) {
 	deploySecret := &DeploymentSecret{
 		PublicKey:  publicKey,
 		PrivateKey: privateKey,
@@ -32,21 +32,21 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 	log.Printf("%+v", os.Environ())
 	log.Println("===============================================")
 
-	//sess := credentials.SessionFromCredentialsProvider(creds)
+	// sess := credentials.SessionFromCredentialsProvider(creds)
 	// create a new secret from this struct with the json string
 
 	// Create service client value configured for credentials
 	// from assumed role.
 	svc := secretsmanager.New(req.Session)
 
-	//config := &aws.Config{
+	// config := &aws.Config{
 	//    Region: aws.String("us-east-1"),
-	//}
-	//svc := secretsmanager.New(session.New(), config)
+	// }
+	// svc := secretsmanager.New(session.New(), config)
 
 	input := &secretsmanager.CreateSecretInput{
 		Description:  aws.String("MongoDB Atlas Quickstart Deployment Secret"),
-		Name:         aws.String(fmt.Sprintf("%v", cfnID)),
+		Name:         aws.String(fmt.Sprintf("%v", cfnID.String())),
 		SecretString: aws.String(string(deploySecretString)),
 	}
 
@@ -56,8 +56,6 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 		// Message from an error.
 		log.Printf("error create secret: %+v", err.Error())
 		return nil, err
-		//fmt.Println(err.Error())
-
 	}
 	log.Printf("Created secret result:%+v", result)
 	return result.Name, nil

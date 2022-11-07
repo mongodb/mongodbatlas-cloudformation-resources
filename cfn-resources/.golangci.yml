@@ -82,7 +82,9 @@ linters:
     - dogsled
     - errcheck
     - funlen
-    - gocritic
+    # cfn handler is generated automaticlly, hence we can't change handler params for the below error.
+    # (hugeParam: req is heavy (160 bytes); consider passing it by pointer (gocritic) )
+    #- gocritic
     - gofmt
     - goimports
     - revive
@@ -106,27 +108,27 @@ linters:
     - unused
     - varcheck
     - whitespace
-    # don't enable:
-    #   - gocyclo # we already have funlen lint
-    #   - dupl  # we have a lot of duplicate test cases
-    #   - gochecknoinits # we need the init function for the provider
-    #   - gochecknoglobals # we need some global variables
-    #   - unparam # Forces to create global variables when one variable is repeated in different functions
-    #   - goerr113 # It does not allow you to return an error, you need to save the error in a variable to do it
-    #   - goconst
-    #   - gocognit
-    # issues:
-    # exclude:
-    # - composite literal uses unkeyed fields
-    # - Using the variable on range scope .* in function literal
-    # - declaration of ".*" shadows declaration at line .*
-    # - only one cuddle assignment allowed before if statement
-    # - func `testAccMongoDBAtlasThirdPartyIntegrationDataSourceConfig` is unused
-    # - func `testAccMongoDBAtlasAlertConfigurationConfigWithThresholdUpdated` is unused
-    # - func `testAccMongoDBAtlasAlertConfigurationConfigWithMatchers` is unused
-    # - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
-    # - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
-    # - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
+  # don't enable:
+  #   - gocyclo # we already have funlen lint
+  #   - dupl  # we have a lot of duplicate test cases
+  #   - gochecknoinits # we need the init function for the provider
+  #   - gochecknoglobals # we need some global variables
+  #   - unparam # Forces to create global variables when one variable is repeated in different functions
+  #   - goerr113 # It does not allow you to return an error, you need to save the error in a variable to do it
+  #   - goconst
+  #   - gocognit
+issues:
+  exclude:
+    - composite literal uses unkeyed fields
+    - Using the variable on range scope .* in function literal
+    - declaration of ".*" shadows declaration at line .*
+    - only one cuddle assignment allowed before if statement
+    - func `testAccMongoDBAtlasThirdPartyIntegrationDataSourceConfig` is unused
+    - func `testAccMongoDBAtlasAlertConfigurationConfigWithThresholdUpdated` is unused
+    - func `testAccMongoDBAtlasAlertConfigurationConfigWithMatchers` is unused
+    - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
+    - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
+    - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
   exclude-rules:
     - path: _test\.go
       linters:

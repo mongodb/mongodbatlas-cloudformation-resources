@@ -2,9 +2,10 @@ package util
 
 import (
 	"fmt"
-	"github.com/rs/xid"
 	"log"
 	"strings"
+
+	"github.com/rs/xid"
 )
 
 // Resource id's are used to generate

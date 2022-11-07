@@ -2,12 +2,13 @@ package validator
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"reflect"
-	"strings"
 )
 
 type Definition interface {

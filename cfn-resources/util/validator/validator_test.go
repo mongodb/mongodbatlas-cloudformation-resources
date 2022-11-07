@@ -1,9 +1,10 @@
 package validator_test
 
 import (
+	"testing"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"testing"
 )
 
 type testModel struct {

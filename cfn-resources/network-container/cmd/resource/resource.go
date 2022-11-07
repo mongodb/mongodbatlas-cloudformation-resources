@@ -3,10 +3,11 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"log"
 )
 
 const (
@@ -47,7 +48,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	log.Printf("Delete currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
@@ -65,8 +66,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.Printf("List currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("List currentModel:%+v", currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -78,19 +78,19 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		aws := defaultProviderName
 		providerName = &aws
 	}
-	log.Printf("projectId:%v", projectID)
-	log.Printf("providerName:%v", providerName)
+	_, _ = logger.Debugf("projectId:%v", projectID)
+	_, _ = logger.Debugf("providerName:%v", providerName)
 	containerRequest := &mongodbatlas.ContainersListOptions{
 		ProviderName: *providerName,
 		ListOptions:  mongodbatlas.ListOptions{},
 	}
-	log.Printf("List projectId:%v, containerRequest:%v", projectID, containerRequest)
+	_, _ = logger.Debugf("List projectId:%v, containerRequest:%v", projectID, containerRequest)
 	containerResponse, _, err := client.Containers.List(context.TODO(), projectID, containerRequest)
 	if err != nil {
-		log.Printf("Error %v", err)
+		_, _ = logger.Warnf("Error %v", err)
 		return handler.ProgressEvent{}, err
 	}
-	log.Printf("containerResponse:%v", containerResponse)
+	_, _ = logger.Debugf("containerResponse:%v", containerResponse)
 
 	var models []Model
 	for ind := range containerResponse {

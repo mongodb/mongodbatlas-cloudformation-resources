@@ -7,14 +7,26 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/validation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
+
+const (
+	ApiKeysPublicKey  = "ApiKeys.PublicKey"
+	ApiKeysPrivateKey = "ApiKeys.PrivateKey"
+	OrgId             = "OrgId"
+	Name              = "Name"
+	Id                = "Id"
+)
+
+var CreateRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey, OrgId, Name}
+var ReadRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey}
+var UpdateRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey, Id}
+var DeleteRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey}
+var ListRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey}
 
 type UpdateAPIKey struct {
 	Key     string
@@ -26,8 +38,8 @@ func setup() {
 }
 
 // validateModel inputs based on the method
-func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(event, validation.ModelValidator{}, model)
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
 }
 
 // Create handles the Create event from the Cloudformation service.
@@ -35,7 +47,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = logger.Debugf("Create _,_ := logger.Debugf-- currentModel: %+v", *currentModel)
 
-	modelValidation := validateModel(constants.Create, currentModel)
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *modelValidation, nil
@@ -127,7 +139,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	modelValidation := validateModel(constants.Read, currentModel)
+	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -155,7 +167,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
-	modelValidation := validateModel(constants.Update, currentModel)
+	modelValidation := validateModel(UpdateRequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *modelValidation, nil
@@ -305,7 +317,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
 
-	modelValidation := validateModel(constants.Delete, currentModel)
+	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -363,7 +375,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	_, _ = logger.Debugf("List.Project prevModel:%+v currentModel:%+v", prevModel, currentModel)
 
-	modelValidation := validateModel(constants.List, currentModel)
+	modelValidation := validateModel(ListRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -383,7 +395,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Initialize like this in case no results will pass empty array
-	projectModels := []interface{}{}
+	var projectModels []interface{}
 	for _, project := range projects.Results {
 		var m Model
 		m.Name = &project.Name

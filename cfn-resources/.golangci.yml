@@ -8,6 +8,9 @@ linters-settings:
       - style
     disabled-checks:
       - octalLiteral
+      # cfn handlers generated automatically, below are exempted for the same
+      - hugeParam
+      - paramTypeCombine
   govet:
     check-shadowing: true
   revive:
@@ -82,9 +85,7 @@ linters:
     - dogsled
     - errcheck
     - funlen
-    # cfn handler is generated automaticlly, hence we can't change handler params for the below error.
-    # (hugeParam: req is heavy (160 bytes); consider passing it by pointer (gocritic) )
-    #- gocritic
+    - gocritic
     - gofmt
     - goimports
     - revive

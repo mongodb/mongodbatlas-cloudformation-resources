@@ -1,9 +1,10 @@
 package validator_test
 
 import (
+	"testing"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"testing"
 )
 
 type testModel struct {
@@ -57,15 +58,16 @@ func TestAllValidateRequiredFieldsEmpty(t *testing.T) {
 	}
 	progressEvent := validator.ValidateModel(constants.Create, modelValidator, &model)
 
-	if progressEvent == nil {
-		t.Errorf("Progress Event should not be nill")
+	if progressEvent != nil {
+		expected := "The next fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
+
+		if progressEvent.Message != expected {
+			t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
+		}
+		return
 	}
 
-	expected := "The next fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
-
-	if progressEvent.Message != expected {
-		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
-	}
+	t.Errorf("Progress Event should not be nill")
 }
 
 func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
@@ -90,8 +92,11 @@ func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
 
 	expected := "The next fields are required FourthRequiredField"
 
-	if progressEvent.Message != expected {
-		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
+	if progressEvent != nil {
+		pe := *progressEvent
+		if pe.Message != expected {
+			t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
+		}
 	}
 }
 

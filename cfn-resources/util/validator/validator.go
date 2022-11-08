@@ -2,15 +2,16 @@ package validator
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
-	"reflect"
-	"strings"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-type ValidatorDefinition interface {
+type Definition interface {
 	GetCreateFields() []string
 	GetReadFields() []string
 	GetUpdateFields() []string
@@ -18,9 +19,8 @@ type ValidatorDefinition interface {
 	GetListFields() []string
 }
 
-func ValidateModel(event constants.Event, def ValidatorDefinition, model interface{}) *handler.ProgressEvent {
-
-	fields := []string{}
+func ValidateModel(event constants.Event, def Definition, model interface{}) *handler.ProgressEvent {
+	var fields []string
 
 	switch event {
 	case constants.Create:
@@ -54,7 +54,6 @@ func ValidateModel(event constants.Event, def ValidatorDefinition, model interfa
 }
 
 func fieldIsEmpty(model interface{}, field string) bool {
-
 	var f reflect.Value
 	if strings.Contains(field, ".") {
 		fields := strings.Split(field, ".")
@@ -71,10 +70,9 @@ func fieldIsEmpty(model interface{}, field string) bool {
 			r = baseProperty
 		}
 		return false
-	} else {
-		r := reflect.ValueOf(model)
-		f = reflect.Indirect(r).FieldByName(field)
 	}
+	r := reflect.ValueOf(model)
+	f = reflect.Indirect(r).FieldByName(field)
 
 	return f.IsNil()
 }

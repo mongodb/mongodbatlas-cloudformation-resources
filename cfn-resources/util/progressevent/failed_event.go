@@ -29,7 +29,7 @@ func GetFailedEventByResponse(message string, response *http.Response) handler.P
 		HandlerErrorCode: getHandlerErrorCode(response)}
 }
 
-func GetFailedEventByCode(message string, handlerErrorCode string) handler.ProgressEvent {
+func GetFailedEventByCode(message, handlerErrorCode string) handler.ProgressEvent {
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          message,

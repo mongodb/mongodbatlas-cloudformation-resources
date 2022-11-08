@@ -38,7 +38,7 @@ func TestAllValidateRequiredFieldsEmpty(t *testing.T) {
 	}
 	progressEvent := validator.ValidateModel(fields, &model)
 
-	expected := "The next fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
+	expected := "The following fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
 	if progressEvent != nil && progressEvent.Message != expected {
 		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
 	}
@@ -60,7 +60,7 @@ func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
 	}
 	progressEvent := validator.ValidateModel(fields, &model)
 
-	expected := "The next fields are required FourthRequiredField"
+	expected := "The following fields are required FourthRequiredField"
 
 	if progressEvent != nil && progressEvent.Message != expected {
 		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)

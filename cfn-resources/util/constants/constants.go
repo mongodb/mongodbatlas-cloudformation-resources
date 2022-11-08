@@ -4,8 +4,8 @@ type Event string
 
 const (
 	Create Event = "Create"
-	Read         = "Read"
-	Update       = "Update"
-	Delete       = "Delete"
-	List         = "List"
+	Read   Event = "Read"
+	Update Event = "Update"
+	Delete Event = "Delete"
+	List   Event = "List"
 )

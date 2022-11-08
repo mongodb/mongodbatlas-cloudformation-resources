@@ -1,0 +1,20 @@
+name: golangci-lint
+on:
+  push:
+    branches: [ "master" , "INT**"]
+  pull_request:
+    branches: [ "master", "INT**" ]
+jobs:
+  # ...
+  lint-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - name: lint
+        uses: golangci/golangci-lint-action@v3.3.0
+        with:
+          version: v1.48.0
+          working-directory: cfn-resources

@@ -15,18 +15,18 @@ import (
 )
 
 const (
-	ApiKeysPublicKey  = "ApiKeys.PublicKey"
-	ApiKeysPrivateKey = "ApiKeys.PrivateKey"
-	OrgId             = "OrgId"
-	Name              = "Name"
-	Id                = "Id"
+	PubKey = "ApiKeys.PublicKey"
+	PvtKey = "ApiKeys.PrivateKey"
+	OrgID  = "OrgId"
+	Name   = "Name"
+	ID     = "Id"
 )
 
-var CreateRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey, OrgId, Name}
-var ReadRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey}
-var UpdateRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey, Id}
-var DeleteRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey}
-var ListRequiredFields = []string{ApiKeysPublicKey, ApiKeysPrivateKey}
+var CreateRequiredFields = []string{PubKey, PvtKey, OrgID, Name}
+var ReadRequiredFields = []string{PubKey, PvtKey}
+var UpdateRequiredFields = []string{PubKey, PvtKey, ID}
+var DeleteRequiredFields = []string{PubKey, PvtKey}
+var ListRequiredFields = []string{PubKey, PvtKey}
 
 type UpdateAPIKey struct {
 	Key     string

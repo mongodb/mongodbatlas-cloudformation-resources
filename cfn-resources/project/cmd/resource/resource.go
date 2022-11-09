@@ -8,25 +8,18 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const (
-	PubKey = "ApiKeys.PublicKey"
-	PvtKey = "ApiKeys.PrivateKey"
-	OrgID  = "OrgId"
-	Name   = "Name"
-	ID     = "Id"
-)
-
-var CreateRequiredFields = []string{PubKey, PvtKey, OrgID, Name}
-var ReadRequiredFields = []string{PubKey, PvtKey}
-var UpdateRequiredFields = []string{PubKey, PvtKey, ID}
-var DeleteRequiredFields = []string{PubKey, PvtKey}
-var ListRequiredFields = []string{PubKey, PvtKey}
+var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.OrgID, constants.Name}
+var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey}
+var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ID}
+var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey}
+var ListRequiredFields = []string{constants.PubKey, constants.PvtKey}
 
 type UpdateAPIKey struct {
 	Key     string
@@ -47,10 +40,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = logger.Debugf("Create currentModel: %+v", *currentModel)
 
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
-		return *modelValidation, nil
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -135,10 +127,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+
+	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *errEvent, nil
 	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
@@ -160,11 +154,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
+
+	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
-		return *modelValidation, nil
+		return *errEvent, nil
 	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -310,9 +305,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
 
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -351,9 +346,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	_, _ = logger.Debugf("List.Project prevModel:%+v currentModel:%+v", prevModel, currentModel)
 
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)

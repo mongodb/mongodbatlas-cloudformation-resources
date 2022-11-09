@@ -21,7 +21,6 @@ mkdir inputs
 #create apikey
 org_id="$ATLAS_ORG_ID"
 
-#random_str=$(openssl rand -hex 3)
 api_key_id=$(mongocli iam project apikey create --desc "cfn-boto-key-${CFN_TEST_TAG}" --role GROUP_OWNER --output json | jq -r '.id')
 
 #create team

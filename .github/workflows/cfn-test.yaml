@@ -29,4 +29,4 @@ jobs:
             echo "#############################################################"
             env
             cd cfn-resources
-            CFN_FLAGS="--verbose --set-default --region ${AWS_DEFAULT_REGION}" ./cfn-test-helper.sh
+            CFN_FLAGS="--verbose --set-default --region ${AWS_DEFAULT_REGION}" ./cfn-testing-helper.sh

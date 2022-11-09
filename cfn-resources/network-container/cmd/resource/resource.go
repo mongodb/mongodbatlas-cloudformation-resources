@@ -3,25 +3,23 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
 	"log"
 	"net/http"
+
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const (
-	defaultProviderName = "AWS"
-)
-
-var CreateRequiredFields = []string{"ProjectId", "RegionName", "ApiKeys.PublicKey", "ApiKeys.PrivateKey", "AtlasCidrBlock"}
-var ReadRequiredFields = []string{"ProjectId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var UpdateRequiredFields = []string{"ProjectId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var DeleteRequiredFields = []string{"ProjectId", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ListRequiredFields = []string{"ProjectId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var CreateRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.PubKey, constants.PvtKey, constants.AtlasCIDRBlock}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.PubKey, constants.PvtKey}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ID, constants.PubKey, constants.PvtKey}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.PubKey, constants.PvtKey}
+var ListRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
 
 // function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -30,11 +28,10 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -53,7 +50,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: RegionName` must be set")
 	}
 	containerRequest.RegionName = *regionName
-	containerRequest.ProviderName = defaultProviderName
+	containerRequest.ProviderName = constants.AWS
 	CIDR := currentModel.AtlasCidrBlock
 	if CIDR == nil || *CIDR == "" {
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCidrBlock` must be set")
@@ -62,25 +59,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerResponse, res, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
 	if err != nil {
 		if res.StatusCode == http.StatusConflict {
-			log.Printf("Container already exists for this group. Try return existing container. err: %v", err)
+			_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
 			containers, _, err2 := client.Containers.ListAll(context.Background(), *projectID, nil)
 			if err2 != nil {
-				log.Printf("Error Containers.ListAll err:%v", err)
+				_, _ = logger.Debugf("Error Containers.ListAll err:%v", err)
 				return handler.ProgressEvent{}, fmt.Errorf("error Containers.ListAll err:%v", err)
 			}
-			log.Printf("containers:%v", containers)
+			_, _ = logger.Debugf("containers:%v", containers)
 			first := containers[0]
-			log.Printf("Will return reference to first container: first:%+v", first)
+			_, _ = logger.Debugf("Will return reference to first container: first:%+v", first)
 			currentModel.Id = &first.ID
 		} else {
 			return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
 		}
-
 	} else {
 		currentModel.Id = &containerResponse.ID
 	}
 
-	log.Printf("Create about to return this --->> currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Create about to return this --->> currentModel:%+v", currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create complete",
@@ -90,11 +86,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 
 	if err != nil {
@@ -107,7 +102,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	containerResponse, response, err := client.Containers.Get(context.Background(), projectID, containerID)
 
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}
 
@@ -121,40 +116,36 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
-
 }
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
-	containerId := *currentModel.Id
+	projectID := *currentModel.ProjectId
+	containerID := *currentModel.Id
 	containerRequest := &mongodbatlas.Container{}
 
 	CIDR := currentModel.AtlasCidrBlock
 	if CIDR != nil {
 		containerRequest.AtlasCIDRBlock = *CIDR
 	}
-	containerRequest.ProviderName = defaultProviderName
+	containerRequest.ProviderName = constants.AWS
 	containerRequest.RegionName = *currentModel.RegionName
-	containerResponse, _, err := client.Containers.Update(context.Background(), projectId, containerId, containerRequest)
+	containerResponse, _, err := client.Containers.Update(context.Background(), projectID, containerID, containerRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error updating container with id(project: %s, container: %s): %s", projectId, containerRequest, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error updating container with id(project: %s, container: %v): %s", projectID, containerRequest, err)
 	}
 
 	currentModel.Id = &containerResponse.ID
-	log.Printf("Create network container - Id:%v", currentModel.Id)
+	_, _ = logger.Debugf("Create network container - Id: %v", currentModel.Id)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -165,43 +156,44 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	spew.Dump(currentModel)
-	log.Printf("Delete currentModel:%+v", currentModel)
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
+
+	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
 
-	log.Printf("Delete currentModel:%+v", currentModel)
-	projectId := *currentModel.ProjectId
-	containerId := *currentModel.Id
+	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
+	projectID := *currentModel.ProjectId
+	containerID := *currentModel.Id
 
-	response, err := client.Containers.Delete(context.Background(), projectId, containerId)
+	response, err := client.Containers.Delete(context.Background(), projectID, containerID)
 
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
+		ResourceModel:   currentModel,
 	}, nil
 }
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	_, _ = logger.Debugf("List currentModel:%+v", currentModel)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	log.Printf("List currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("List currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -209,27 +201,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
-
-	log.Printf("projectId:%v", projectId)
+	projectID := *currentModel.ProjectId
 	containerRequest := &mongodbatlas.ContainersListOptions{
-		ProviderName: defaultProviderName,
+		ProviderName: constants.AWS,
 		ListOptions:  mongodbatlas.ListOptions{},
 	}
-	log.Printf("List projectId:%v, containerRequest:%v", projectId, containerRequest)
-	containerResponse, _, err := client.Containers.List(context.TODO(), projectId, containerRequest)
+	_, _ = logger.Debugf("List projectId:%v, containerRequest:%v", projectID, containerRequest)
+	containerResponse, _, err := client.Containers.List(context.TODO(), projectID, containerRequest)
 	if err != nil {
-		log.Printf("Error %v", err)
+		_, _ = logger.Warnf("Error %v", err)
 		return handler.ProgressEvent{}, err
 	}
 
-	log.Printf("containerResponse:%v", containerResponse)
-	spew.Dump(containerResponse)
+	_, _ = logger.Debugf("containerResponse:%v", containerResponse)
 
 	mm := make([]interface{}, 0)
-	for _, container := range containerResponse {
+	for i := range containerResponse {
 		var m Model
-		m.completeByConnection(container)
+		m.completeByConnection(containerResponse[i])
 		mm = append(mm, m)
 	}
 

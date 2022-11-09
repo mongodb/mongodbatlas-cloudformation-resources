@@ -1,8 +1,9 @@
 package validator_test
 
 import (
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"testing"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
 var CreateRequiredFields = []string{""}
@@ -24,31 +25,6 @@ type RequiredStructProperty struct {
 	PropertyTest *string
 }
 
-type testModelValidator struct{}
-
-func (m testModelValidator) GetCreateFields() []string {
-	return []string{
-		"FirstRequiredField",
-		"SecondRequiredField",
-		"ThirdRequiredField",
-		"FourthRequiredField",
-		"RequiredStruct",
-		"RequiredStruct.PropertyTest",
-	}
-}
-func (m testModelValidator) GetReadFields() []string {
-	return nil
-}
-func (m testModelValidator) GetUpdateFields() []string {
-	return nil
-}
-func (m testModelValidator) GetDeleteFields() []string {
-	return nil
-}
-func (m testModelValidator) GetListFields() []string {
-	return nil
-}
-
 func TestAllValidateRequiredFieldsEmpty(t *testing.T) {
 	requiredStruct := RequiredStructProperty{}
 	fields := []string{"FirstRequiredField", "SecondRequiredField", "ThirdRequiredField", "FourthRequiredField", "RequiredStruct.PropertyTest"}
@@ -62,13 +38,8 @@ func TestAllValidateRequiredFieldsEmpty(t *testing.T) {
 	}
 	progressEvent := validator.ValidateModel(fields, &model)
 
-	if progressEvent == nil {
-		t.Errorf("Progress Event should not be nill")
-	}
-
-	expected := "The next fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
-
-	if progressEvent.Message != expected {
+	expected := "The following fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
+	if progressEvent != nil && progressEvent.Message != expected {
 		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
 	}
 }
@@ -89,13 +60,9 @@ func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
 	}
 	progressEvent := validator.ValidateModel(fields, &model)
 
-	if progressEvent == nil {
-		t.Errorf("Progress Event should not be nill")
-	}
+	expected := "The following fields are required FourthRequiredField"
 
-	expected := "The next fields are required FourthRequiredField"
-
-	if progressEvent.Message != expected {
+	if progressEvent != nil && progressEvent.Message != expected {
 		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
 	}
 }
@@ -105,7 +72,7 @@ func TestNoneValidateRequiredFieldsEmpty(t *testing.T) {
 	secondField := 1
 	thirdField := []string{"a", "b"}
 	fourthField := true
-	fields := []string{}
+	var fields []string
 
 	requiredStruct := RequiredStructProperty{PropertyTest: &firstField}
 	model := testModel{

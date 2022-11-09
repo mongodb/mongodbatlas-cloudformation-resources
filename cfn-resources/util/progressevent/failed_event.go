@@ -1,9 +1,10 @@
-package progress_events
+package progressevents
 
 import (
+	"net/http"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"net/http"
 )
 
 func getHandlerErrorCode(response *http.Response) string {
@@ -28,7 +29,7 @@ func GetFailedEventByResponse(message string, response *http.Response) handler.P
 		HandlerErrorCode: getHandlerErrorCode(response)}
 }
 
-func GetFailedEventByCode(message string, handlerErrorCode string) handler.ProgressEvent {
+func GetFailedEventByCode(message, handlerErrorCode string) handler.ProgressEvent {
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          message,

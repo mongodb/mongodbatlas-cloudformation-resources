@@ -121,7 +121,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -175,7 +175,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
 
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -233,7 +233,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -269,7 +269,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 

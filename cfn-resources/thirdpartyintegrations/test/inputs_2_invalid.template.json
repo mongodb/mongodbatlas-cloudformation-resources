@@ -1,0 +1,13 @@
+{
+  "ProjectId": "$ATLAS_PROJECT_ID",
+  "ApiKeys" : {
+    "PublicKey" : "$ATLAS_PUBLIC_KEY",
+    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+  },
+  "Type": "PROMETHEUSuattsuyd",
+  "Enabled": "true",
+  "Scheme": "https",
+  "ServiceDiscovery": "file",
+  "UserName": "PromUser123455",
+  "Password": "Hello@1234"
+}

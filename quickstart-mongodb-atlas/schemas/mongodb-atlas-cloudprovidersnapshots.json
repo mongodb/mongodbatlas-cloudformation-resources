@@ -1,6 +1,6 @@
 {
-    "typeName": "MongoDB::Atlas::CloudBackUp",
-    "description": "This resource allows to take one on-demand snapshot, get one or all snapshot and delete one cloud provider snapshot.",
+    "typeName": "MongoDB::Atlas::CloudProviderSnapshots",
+    "description": "This resource allows to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",

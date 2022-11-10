@@ -1,0 +1,150 @@
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - octalLiteral
+      # cfn handlers generated automatically, below are exempted for the same
+      - hugeParam
+      - paramTypeCombine
+  govet:
+    check-shadowing: true
+  revive:
+    # see https://github.com/mgechev/revive#available-rules for details.
+    ignore-generated-header: true
+    severity: warning
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: errorf
+      - name: exported
+      - name: indent-error-flow
+      - name: if-return
+      - name: increment-decrement
+      - name: var-naming
+      - name: var-declaration
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: indent-error-flow
+      - name: errorf
+      - name: empty-block
+      - name: superfluous-else
+      - name: struct-tag
+      # Too many unusued parameters, skipping this check for now
+      #- name: unused-parameter
+      - name: unreachable-code
+      - name: redefines-builtin-id
+  maligned:
+    suggest-new: true
+  depguard:
+    list-type: blacklist
+    packages:
+      # logging is allowed only by logutils.Log, logrus
+      # is allowed to use only in logutils package
+      - github.com/sirupsen/logrus
+  misspell:
+    locale: US
+    ignore-words:
+      - cancelled
+  lll:
+    # Default is 120. '\t' is counted as 1 character.
+    # set our project to 200, as things like v3_structs with inline comments end up being a touch long
+    # also, for anyone using vscode, use the following configs:
+    # "rewrap.wrappingColumn": 200 ... requires the rewrap plugin
+    # "editor.rulers": [200]
+    line-length: 200
+  nestif:
+    # minimal complexity of if statements to report, 5 by default
+    min-complexity: 7
+  gomnd:
+    settings:
+      mnd:
+        # don't include the "operation" and "assign"
+        checks: [case,return]
+  funlen:
+    lines: 360
+    statements: 120
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - errcheck
+    - funlen
+    - gocritic
+    - gofmt
+    - goimports
+    - revive
+    - gomnd
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nolintlint
+    - rowserrcheck
+    - exportloopref
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unused
+    - varcheck
+    - whitespace
+  # don't enable:
+  #   - gocyclo # we already have funlen lint
+  #   - dupl  # we have a lot of duplicate test cases
+  #   - gochecknoinits # we need the init function for the provider
+  #   - gochecknoglobals # we need some global variables
+  #   - unparam # Forces to create global variables when one variable is repeated in different functions
+  #   - goerr113 # It does not allow you to return an error, you need to save the error in a variable to do it
+  #   - goconst
+  #   - gocognit
+issues:
+  exclude:
+    - composite literal uses unkeyed fields
+    - Using the variable on range scope .* in function literal
+    - declaration of ".*" shadows declaration at line .*
+    - only one cuddle assignment allowed before if statement
+    - func `testAccMongoDBAtlasThirdPartyIntegrationDataSourceConfig` is unused
+    - func `testAccMongoDBAtlasAlertConfigurationConfigWithThresholdUpdated` is unused
+    - func `testAccMongoDBAtlasAlertConfigurationConfigWithMatchers` is unused
+    - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
+    - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
+    - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - testpackage
+      # part of the golangci govet package is picking up things that go vet doesn't. Seems flaky, shutting that specific error off
+
+    # Exclude some staticcheck messages
+    - linters:
+        - staticcheck
+      text: "SA1019:" # d.GetOkExists is deprecated: usage is discouraged due to undefined behaviors and may be removed in a future version of the SDK
+
+run:
+  tests: true
+  build-tags:
+    - integration
+  skip-dirs:
+    - internal/mocks
+  modules-download-mode: readonly

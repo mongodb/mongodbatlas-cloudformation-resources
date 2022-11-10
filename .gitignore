@@ -27,6 +27,3 @@ update.json
 **/taskcat_outputs/
 **/inputs/**
 pytestdebug.log
-*.htm
-cfn-resources/cloud-backup-snapshot/test.request.json
-cfn-resources/cloud-backup-snapshot/test_locally.json

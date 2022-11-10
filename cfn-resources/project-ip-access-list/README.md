@@ -8,11 +8,6 @@ Returns, adds, edits, and removes network access limits to database deployments 
 
 Please consult the [Resource Docs](docs/README.md)
 
-## Parameters
-`ProjectId` *(required)* : Unique identifier of the project within which to create the project ip access list.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
-
-
 ## Unit Testing Locally
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:

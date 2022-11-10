@@ -42,18 +42,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerRequest := &mongodbatlas.Container{}
 
 	if projectID == nil || *projectID == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `%s` must be set", constants.ProjectID )
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `%s` must be set", constants.ProjectID)
 	}
 
 	regionName := currentModel.RegionName
 	if regionName == nil || *regionName == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: RegionName` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("`error creating network container: `%s` must be set", constants.RegionName)
 	}
 	containerRequest.RegionName = *regionName
 	containerRequest.ProviderName = constants.AWS
 	CIDR := currentModel.AtlasCidrBlock
 	if CIDR == nil || *CIDR == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `AtlasCidrBlock` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `%s` must be set", constants.AtlasCIDRBlock)
 	}
 	containerRequest.AtlasCIDRBlock = *CIDR
 	containerResponse, res, err := client.Containers.Create(context.Background(), *projectID, containerRequest)
@@ -66,9 +66,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				return handler.ProgressEvent{}, fmt.Errorf("error Containers.ListAll err:%v", err)
 			}
 			_, _ = logger.Debugf("containers:%v", containers)
-			first := containers[0]
-			_, _ = logger.Debugf("Will return reference to first container: first:%+v", first)
-			currentModel.Id = &first.ID
+			if containers != nil {
+				first := containers[0]
+				_, _ = logger.Debugf("Will return reference to first container: first:%+v", first)
+				currentModel.Id = &first.ID
+			}
 		} else {
 			return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
 		}

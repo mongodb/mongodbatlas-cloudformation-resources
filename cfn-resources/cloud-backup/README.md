@@ -8,7 +8,7 @@ This resource allows you to take one on-demand snapshot, get one or all cloud ba
 
 Please consult the [Resource Docs](docs/README.md)
 
-## Unit Testing Locally
+## Unit Testing Locally 
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 

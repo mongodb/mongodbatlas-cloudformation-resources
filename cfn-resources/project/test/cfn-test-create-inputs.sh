@@ -21,12 +21,13 @@ mkdir inputs
 #create apikey
 org_id="$ATLAS_ORG_ID"
 
-random_str=$(openssl rand -hex 3)
-api_key_id=$(mongocli iam project apikey create --desc "${CFN_TEST_TAG}" --role GROUP_OWNER --output json | jq -r '.id')
+api_key_id=$(mongocli iam project apikey create --desc "cfn-boto-key-${CFN_TEST_TAG}" --role GROUP_OWNER --output json | jq -r '.id')
 
 #create team
-export user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
-team_id=$(mongocli iam team create "cfn-boto-${random_str}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
+team_name="cfn-boto-team-${CFN_TEST_TAG}"
+user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
+team_id=$(mongocli iam team create "${team_name}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
+
 
 
 name="${1}"

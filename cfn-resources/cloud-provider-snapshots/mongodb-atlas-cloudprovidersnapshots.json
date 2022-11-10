@@ -1,0 +1,111 @@
+{
+    "typeName": "MongoDB::Atlas::CloudProviderSnapshots",
+    "description": "This resource allows to take one on-demand snapshot, get one or all cloud provider snapshot and delete one cloud provider snapshot.",
+    "definitions": {
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "The unique identifier of the project for the Atlas cluster.",
+            "type": "string"
+        },
+        "ClusterName": {
+            "description": "The name of the Atlas cluster that contains the snapshots you want to retrieve.",
+            "type": "string"
+        },
+        "Id": {
+            "description": "Unique identifier of the snapshot.",
+            "type": "string"
+        },
+        "Description": {
+            "description": "Description of the on-demand snapshot.",
+            "type": "string"
+        },
+        "RetentionInDays": {
+            "description": "The number of days that Atlas should retain the on-demand snapshot. ",
+            "type": "integer"
+        },
+        "CreatedAt": {
+            "description": "UTC ISO 8601, formatted point in time when Atlas took the snapshot.",
+            "type": "string",
+            "format": "date-time"
+        },
+        "MasterKeyUuid": {
+            "description": "Unique ID of the AWS KMS Customer Master Key used to encrypt the snapshot.",
+            "type": "string"
+        },
+        "MongoVersion": {
+            "description": "Version of the MongoDB server.",
+            "type": "string"
+        },
+        "SnapshotType": {
+            "description": "Specified the type of snapshot.",
+            "type": "string"
+        },
+        "Status": {
+            "description": "Current status of the snapshot.",
+            "type": "string"
+        },
+        "StorageSizeBytes": {
+            "description": "Specifies the size of the snapshot in bytes.",
+            "type": "integer"
+        },
+        "Type": {
+            "description": "Specifies the type of cluster.",
+            "type": "string"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "ClusterName",
+        "ApiKeys"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                ""
+            ]
+        },
+        "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
+            "permissions": [
+                ""
+            ]
+        },
+        "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
+        }
+    }
+}

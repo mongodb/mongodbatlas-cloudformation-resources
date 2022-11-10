@@ -1,0 +1,184 @@
+# MongoDB::Atlas::CloudBackupSchedule
+
+An example resource schema demonstrating some basic constructs and validation rules.
+
+## Syntax
+
+To declare this entity in your AWS CloudFormation template, use the following syntax:
+
+### JSON
+
+<pre>
+{
+    "Type" : "MongoDB::Atlas::CloudBackupSchedule",
+    "Properties" : {
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+        "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+        "<a href="#idpolicy" title="IdPolicy">IdPolicy</a>" : <i>String</i>,
+        "<a href="#export" title="Export">Export</a>" : <i><a href="export.md">export</a></i>,
+        "<a href="#copysettings" title="CopySettings">CopySettings</a>" : <i>[ <a href="copysettings.md">copySettings</a>, ... ]</i>,
+        "<a href="#deletecopiedbackup" title="DeleteCopiedBackup">DeleteCopiedBackup</a>" : <i>[ <a href="deletecopiedbackup.md">deleteCopiedBackup</a>, ... ]</i>,
+        "<a href="#policies" title="Policies">Policies</a>" : <i>[ <a href="policies.md">policies</a>, ... ]</i>,
+        "<a href="#clusterid" title="ClusterId">ClusterId</a>" : <i>String</i>,
+        "<a href="#nextsnapshot" title="NextSnapshot">NextSnapshot</a>" : <i>String</i>,
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    }
+}
+</pre>
+
+### YAML
+
+<pre>
+Type: MongoDB::Atlas::CloudBackupSchedule
+Properties:
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
+    <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+    <a href="#idpolicy" title="IdPolicy">IdPolicy</a>: <i>String</i>
+    <a href="#export" title="Export">Export</a>: <i><a href="export.md">export</a></i>
+    <a href="#copysettings" title="CopySettings">CopySettings</a>: <i>
+      - <a href="copysettings.md">copySettings</a></i>
+    <a href="#deletecopiedbackup" title="DeleteCopiedBackup">DeleteCopiedBackup</a>: <i>
+      - <a href="deletecopiedbackup.md">deleteCopiedBackup</a></i>
+    <a href="#policies" title="Policies">Policies</a>: <i>
+      - <a href="policies.md">policies</a></i>
+    <a href="#clusterid" title="ClusterId">ClusterId</a>: <i>String</i>
+    <a href="#nextsnapshot" title="NextSnapshot">NextSnapshot</a>: <i>String</i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+</pre>
+
+## Properties
+
+#### ProjectId
+
+The unique identifier of the project for the Atlas cluster.
+
+_Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ClusterName
+
+The name of the Atlas cluster that contains the snapshots you want to retrieve.
+
+_Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### IdPolicy
+
+Unique identifier of the backup policy that you want to update.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Export
+
+_Required_: No
+
+_Type_: <a href="export.md">export</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### CopySettings
+
+_Required_: No
+
+_Type_: List of <a href="copysettings.md">copySettings</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### DeleteCopiedBackup
+
+_Required_: No
+
+_Type_: List of <a href="deletecopiedbackup.md">deleteCopiedBackup</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Policies
+
+_Required_: No
+
+_Type_: List of <a href="policies.md">policies</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ClusterId
+
+Unique identifier of the Atlas cluster.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### NextSnapshot
+
+Timestamp in the number of seconds that have elapsed since the UNIX epoc when Atlas takes the next snapshot.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ApiKeys
+
+_Required_: Yes
+
+_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+## Return Values
+
+### Ref
+
+When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
+
+### Fn::GetAtt
+
+The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
+
+For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
+
+#### Id
+
+Unique identifier of the snapshot.
+
+#### AutoExportEnabled
+
+Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled.
+
+#### ReferenceHourOfDay
+
+UTC Hour of day between 0 and 23 representing which hour of the day that Atlas takes a snapshot
+
+#### ReferenceMinuteOfHour
+
+UTC Minute of day between 0 and 59 representing which minute of the referenceHourOfDay that Atlas takes the snapshot.
+
+#### RestoreWindowDays
+
+Number of days back in time you can restore to with Continuous Cloud Backup accuracy. Must be a positive, non-zero integer.
+
+#### UpdateSnapshots
+
+Flag indicating if updates to retention in the backup policy were applied to snapshots that Atlas took earlier. 
+
+#### UseOrgAndGroupNamesInExportPrefix
+
+Specify true to use organization and project names instead of organization and project UUIDs in the path for the metadata files that Atlas uploads to your S3 bucket after it finishes exporting the snapshots.
+
+#### Links
+
+One or more links to sub-resources and/or related resources.
+

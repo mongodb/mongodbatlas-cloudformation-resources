@@ -3,13 +3,14 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -22,20 +23,19 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-var CreateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "DatabaseName", "ProjectId", "Roles", "Username"}
-var ReadRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "DatabaseName", "Username"}
-var UpdateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "DatabaseName", "ProjectId", "Roles", "Username"}
-var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId", "DatabaseName", "Username"}
-var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ProjectId"}
+var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
+var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.DatabaseName, constants.Username}
+var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
+var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.DatabaseName, constants.Username}
+var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf(" currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
+	_, _ = logger.Debugf(" currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
 
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -47,27 +47,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var roles []mongodbatlas.Role
-	for i, _ := range currentModel.Roles {
+	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
 		role := mongodbatlas.Role{}
 		if r.CollectionName != nil {
 			role.CollectionName = *r.CollectionName
 		}
-
 		if r.DatabaseName != nil {
 			role.DatabaseName = *r.DatabaseName
 		}
-
 		if r.RoleName != nil {
 			role.RoleName = *r.RoleName
 		}
-
 		roles = append(roles, role)
 	}
-	log.Debugf("roles: %#+v", roles)
+	_, _ = logger.Debugf("roles: %#+v", roles)
 
 	var labels []mongodbatlas.Label
-	for i, _ := range currentModel.Labels {
+	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
 		label := mongodbatlas.Label{
 			Key:   *l.Key,
@@ -75,10 +72,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		labels = append(labels, label)
 	}
-	log.Debugf("labels: %#+v", labels)
+	_, _ = logger.Debugf("labels: %#+v", labels)
 
 	var scopes []mongodbatlas.Scope
-	for i, _ := range currentModel.Scopes {
+	for i := range currentModel.Scopes {
 		s := currentModel.Scopes[i]
 		scope := mongodbatlas.Scope{
 			Name: *s.Name,
@@ -86,27 +83,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		scopes = append(scopes, scope)
 	}
-	log.Debugf("scopes: %#+v", scopes)
+	_, _ = logger.Debugf("scopes: %#+v", scopes)
 
 	groupID := *currentModel.ProjectId
-	log.Debugf("groupID: %#+v", groupID)
+	_, _ = logger.Debugf("groupID: %#+v", groupID)
 
 	none := "NONE"
 	if currentModel.LdapAuthType == nil {
 		currentModel.LdapAuthType = &none
 	}
-
 	if currentModel.AWSIAMType == nil {
 		currentModel.AWSIAMType = &none
 	}
-
 	if currentModel.X509Type == nil {
 		currentModel.X509Type = &none
 	}
-
 	if currentModel.Password == nil {
 		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
-			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
+			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -115,25 +109,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		s := ""
 		currentModel.Password = &s
 	}
-
 	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
 		s := ""
 		currentModel.DeleteAfterDate = &s
 	}
-
-	log.Printf("Check Delete after date here::???????")
-	spew.Dump(currentModel)
-
-	user := getDbUser(roles, groupID, currentModel, labels, scopes)
-
-	log.Debugf("Arguments: Project ID: %s, Request %#+v", groupID, user)
-
+	_, _ = logger.Debugf("Check Delete after date here::???????")
+	user := getDBUser(roles, groupID, currentModel, labels, scopes)
+	_, _ = logger.Debugf("Arguments: Project ID: %s, Request %#+v", groupID, user)
 	newUser, res, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			res.Response), nil
 	}
-	log.Debugf("newUser: %s", newUser)
+	_, _ = logger.Debugf("newUser: %s", newUser)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -146,9 +134,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -170,25 +157,20 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
 
-	//currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 	if currentModel.LdapAuthType != nil {
 		currentModel.LdapAuthType = &databaseUser.LDAPAuthType
 	}
-
 	if currentModel.AWSIAMType != nil {
 		currentModel.AWSIAMType = &databaseUser.AWSIAMType
 	}
-
 	if currentModel.X509Type != nil {
 		currentModel.X509Type = &databaseUser.X509Type
 	}
-
 	currentModel.Username = &databaseUser.Username
-
-	log.Debugf("databaseUser:%+v", databaseUser)
+	_, _ = logger.Debugf("databaseUser:%+v", databaseUser)
 	var roles []RoleDefinition
 
-	for i, _ := range databaseUser.Roles {
+	for i := range databaseUser.Roles {
 		r := databaseUser.Roles[i]
 		role := RoleDefinition{
 			CollectionName: &r.CollectionName,
@@ -199,10 +181,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		roles = append(roles, role)
 	}
 	currentModel.Roles = roles
-	log.Debugf("currentModel.Roles:%+v", roles)
+	_, _ = logger.Debugf("currentModel.Roles:%+v", roles)
 	var labels []LabelDefinition
 
-	for i, _ := range databaseUser.Labels {
+	for i := range databaseUser.Labels {
 		l := databaseUser.Labels[i]
 		label := LabelDefinition{
 			Key:   &l.Key,
@@ -215,7 +197,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
 	currentModel.UserCFNIdentifier = &cfnid
-	log.Debugf("READ----> currentModel:%s", spew.Sdump(currentModel))
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
@@ -226,13 +207,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -240,9 +219,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	log.Debugf("Update currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
 	roles := []mongodbatlas.Role{}
-	for i, _ := range currentModel.Roles {
+	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
 		role := mongodbatlas.Role{}
 		if r.CollectionName != nil {
@@ -255,9 +234,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		roles = append(roles, role)
 	}
 
-	log.Debugf("Update roles:%+v", roles)
+	_, _ = logger.Debugf("Update roles:%+v", roles)
 	labels := []mongodbatlas.Label{}
-	for i, _ := range currentModel.Labels {
+	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
 		label := mongodbatlas.Label{
 			Key:   *l.Key,
@@ -265,10 +244,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		labels = append(labels, label)
 	}
-	log.Debugf("Update labels: %#+v", labels)
+	_, _ = logger.Debugf("Update labels: %#+v", labels)
 
 	var scopes []mongodbatlas.Scope
-	for i, _ := range currentModel.Scopes {
+	for i := range currentModel.Scopes {
 		s := currentModel.Scopes[i]
 		scope := mongodbatlas.Scope{
 			Name: *s.Name,
@@ -276,27 +255,24 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		scopes = append(scopes, scope)
 	}
-	log.Debugf("Update scopes: %#+v", scopes)
+	_, _ = logger.Debugf("Update scopes: %#+v", scopes)
 
 	groupID := *currentModel.ProjectId
-	log.Debugf("groupID: %#+v", groupID)
+	_, _ = logger.Debugf("groupID: %#+v", groupID)
 
 	none := "NONE"
 	if currentModel.LdapAuthType == nil {
 		currentModel.LdapAuthType = &none
 	}
-
 	if currentModel.AWSIAMType == nil {
 		currentModel.AWSIAMType = &none
 	}
-
 	if currentModel.X509Type == nil {
 		currentModel.X509Type = &none
 	}
-
 	if currentModel.Password == nil {
 		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
-			err := fmt.Errorf("Password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
+			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -311,14 +287,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.DeleteAfterDate = &s
 	}
 
-	log.Printf("Check Delete after date here::???????")
-	spew.Dump(currentModel)
+	_, _ = logger.Debugf("Check Delete after date here::???????")
 
-	dbu := getDbUser(roles, groupID, currentModel, labels, scopes)
-	log.Debugf("dbu:%+v", dbu)
+	dbu := getDBUser(roles, groupID, currentModel, labels, scopes)
+	_, _ = logger.Debugf("dbu:%+v", dbu)
 	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbu)
 
-	log.Debugf("Update resp:%+v", resp)
+	_, _ = logger.Debugf("Update resp:%+v", resp)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
@@ -331,7 +306,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func getDbUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
+func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
 	return &mongodbatlas.DatabaseUser{
 		Roles:           roles,
 		GroupID:         groupID,
@@ -350,15 +325,12 @@ func getDbUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, l
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf("Create req:%+v, prevModel:%s, currentModel:%s", req, spew.Sdump(prevModel), spew.Sdump(currentModel))
-
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		//return handler.ProgressEvent{}, err
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
@@ -385,9 +357,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
@@ -399,7 +370,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	groupID := *currentModel.ProjectId
-	dbUserModels := []interface{}{}
+	var dbUserModels []interface{}
 
 	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
 	if err != nil {
@@ -407,7 +378,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp.Response), nil
 	}
 
-	for i, _ := range databaseUsers {
+	for i := range databaseUsers {
 		var model Model
 		databaseUser := databaseUsers[i]
 		model.DatabaseName = &databaseUser.DatabaseName
@@ -416,7 +387,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.Username = &databaseUser.Username
 		var roles []RoleDefinition
 
-		for i, _ := range databaseUser.Roles {
+		for i := range databaseUser.Roles {
 			r := databaseUser.Roles[i]
 			role := RoleDefinition{
 				CollectionName: &r.CollectionName,
@@ -430,20 +401,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 		var labels []LabelDefinition
 
-		for i, _ := range databaseUser.Labels {
+		for i := range databaseUser.Labels {
 			l := databaseUser.Labels[i]
 			label := LabelDefinition{
 				Key:   &l.Key,
 				Value: &l.Value,
 			}
-
 			labels = append(labels, label)
 		}
-		model.Labels = labels
 
+		model.Labels = labels
 		cfnid := fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID)
 		model.UserCFNIdentifier = &cfnid
-
 		dbUserModels = append(dbUserModels, model)
 	}
 

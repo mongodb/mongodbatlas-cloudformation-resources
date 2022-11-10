@@ -26,7 +26,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ClusterName: *currentModel.ClusterName,
 	}
 	snapshotRequest := &matlasClient.CloudProviderSnapshot{
-		RetentionInDays: int(*currentModel.RetentionInDays),
+		RetentionInDays: *currentModel.RetentionInDays,
 		Description:     *currentModel.Description,
 	}
 
@@ -56,17 +56,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
-	snapshotId := *currentModel.Id
+	projectID := *currentModel.ProjectId
+	snapshotID := *currentModel.Id
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
-		SnapshotID:  snapshotId,
+		GroupID:     projectID,
+		SnapshotID:  snapshotID,
 		ClusterName: *currentModel.ClusterName,
 	}
 
 	snapshot, _, err := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot with id(project: %s, snapshot: %s): %s", projectId, snapshotId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot with id(project: %s, snapshot: %s): %s", projectID, snapshotID, err)
 	}
 
 	currentModel.Id = &snapshot.ID
@@ -103,17 +103,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
-	snapshotId := *currentModel.Id
+	projectID := *currentModel.ProjectId
+	snapshotID := *currentModel.Id
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
-		SnapshotID:  snapshotId,
+		GroupID:     projectID,
+		SnapshotID:  snapshotID,
 		ClusterName: *currentModel.ClusterName,
 	}
 
 	_, err = client.CloudProviderSnapshots.Delete(context.Background(), snapshotRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot with id(project: %s, snapshot: %s): %s", projectId, snapshotId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot with id(project: %s, snapshot: %s): %s", projectID, snapshotID, err)
 	}
 
 	return handler.ProgressEvent{
@@ -130,9 +130,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
+	projectID := *currentModel.ProjectId
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+		GroupID:     projectID,
 		ClusterName: *currentModel.ClusterName,
 	}
 
@@ -143,7 +143,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	snapshots, _, err := client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot list with id(project: %s): %s", projectId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot list with id(project: %s): %s", projectID, err)
 	}
 
 	var models []Model
@@ -193,10 +193,10 @@ func validateProgress(client *matlasClient.Client, currentModel *Model, targetSt
 	return p, nil
 }
 
-func snapshotIsReady(client *matlasClient.Client, projectId, snapshotId, clusterName, targetState string) (bool, string, error) {
+func snapshotIsReady(client *matlasClient.Client, projectID, snapshotID, clusterName, targetState string) (isReady bool, statusName string, err error) {
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
-		SnapshotID:  snapshotId,
+		GroupID:     projectID,
+		SnapshotID:  snapshotID,
 		ClusterName: clusterName,
 	}
 

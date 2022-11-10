@@ -32,7 +32,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	requestParameters := &matlasClient.SnapshotReqPathParameters{}
 	snapshotRequest := &matlasClient.CloudProviderSnapshotRestoreJob{}
 	targetClusterName := currentModel.TargetClusterName
-	targetProjectId := currentModel.TargetProjectId
+	targetProjectID := currentModel.TargetProjectId
 	if *deliveryType == automated {
 		if targetClusterName == nil || *targetClusterName == "" {
 			return handler.ProgressEvent{
@@ -41,7 +41,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				ResourceModel:   currentModel,
 			}, nil
 		}
-		if targetProjectId == nil || *targetProjectId == "" {
+		if targetProjectID == nil || *targetProjectID == "" {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
 				Message:         "error creating cloud provider snapshot restore job: `target_project_id` must be set if delivery type is `automated`",
@@ -49,7 +49,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}, nil
 		}
 		snapshotRequest.TargetClusterName = *targetClusterName
-		snapshotRequest.TargetGroupID = *targetProjectId
+		snapshotRequest.TargetGroupID = *targetProjectID
 	}
 	requestParameters.GroupID = *currentModel.ProjectId
 	requestParameters.ClusterName = *currentModel.ClusterName
@@ -78,17 +78,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
-	jobId := *currentModel.Id
+	projectID := *currentModel.ProjectId
+	jobID := *currentModel.Id
 	requestParameters := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+		GroupID:     projectID,
 		ClusterName: *currentModel.ClusterName,
-		JobID:       jobId,
+		JobID:       jobID,
 	}
 
 	restoreJob, _, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), requestParameters)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectId, jobId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 	}
 
 	currentModel.TargetClusterName = &restoreJob.TargetClusterName
@@ -114,7 +114,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	//NO-OP
+	// NO-OP
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update complete",
@@ -129,12 +129,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
-	jobId := *currentModel.Id
+	projectID := *currentModel.ProjectId
+	jobID := *currentModel.Id
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+		GroupID:     projectID,
 		ClusterName: *currentModel.ClusterName,
-		JobID:       jobId,
+		JobID:       jobID,
 	}
 	if *currentModel.DeliveryType == "automated" {
 		return handler.ProgressEvent{
@@ -145,7 +145,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	_, err = client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), snapshotRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectId, jobId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 	}
 
 	return handler.ProgressEvent{
@@ -162,9 +162,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, err
 	}
 
-	projectId := *currentModel.ProjectId
+	projectID := *currentModel.ProjectId
 	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+		GroupID:     projectID,
 		ClusterName: *currentModel.ClusterName,
 	}
 	params := &matlasClient.ListOptions{
@@ -173,7 +173,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	restoreJobs, _, err := client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest, params)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectID, err)
 	}
 
 	var models []Model
@@ -200,14 +200,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List complete",
 		ResourceModel:   models,
 	}, nil
-}
-
-func flattenDeliveryUrl(deliveryUrlResult []string) []*string {
-	deliveryUrls := make([]*string, 0)
-	for _, deliveryUrl := range deliveryUrlResult {
-		deliveryUrls = append(deliveryUrls, &deliveryUrl)
-	}
-	return deliveryUrls
 }
 
 func flattenLinks(linksResult []*matlasClient.Link) []Links {

@@ -52,7 +52,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ProjectId
 
-The unique identifier for the project to which you want to add one or more ip access list entries.
+Unique 24-hexadecimal digit string that identifies your project.
 
 _Required_: Yes
 
@@ -86,5 +86,5 @@ The unique identifier for the Project API ip access list rules.
 
 #### TotalCount
 
-The unique identifier for the Project ip access list rules.
+Number of documents returned in this response.
 

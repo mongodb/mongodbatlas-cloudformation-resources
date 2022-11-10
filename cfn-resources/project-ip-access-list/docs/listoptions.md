@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### PageNum
 
-For paginated result sets, page of results to retrieve.
+Number of the page that displays the current set of the total objects that the response returns.
 
 _Required_: No
 
@@ -36,7 +36,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ItemsPerPage
 
-For paginated result sets, the number of results to include per page.
+Number of items that the response returns per page.
 
 _Required_: No
 
@@ -46,7 +46,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### IncludeCount
 
-Flag that indicates whether Atlas returns the totalCount parameter in the response body.
+Flag that indicates whether the response returns the total number of items (totalCount) in the response.
 
 _Required_: No
 

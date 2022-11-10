@@ -7,7 +7,7 @@ Returns, adds, and edits collections of clusters and users in MongoDB Cloud.
 
 Please consult the [Resource Docs](docs/README.md)
 
-## Local Testing
+## Local Testin
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 

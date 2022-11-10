@@ -14,12 +14,15 @@
       "additionalProperties": false
     }
   },
-  "description": "",
+  "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
   "handlers": {
     "create": {
       "permissions": []
     },
     "read": {
+      "permissions": []
+    },
+    "list": {
       "permissions": []
     },
     "update": {
@@ -37,10 +40,7 @@
     },
     "ProjectId": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies your project.",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
+      "description": "Unique 24-hexadecimal digit string that identifies your project."
     },
     "Type": {
       "type": "string",
@@ -165,6 +165,5 @@
       "description": "Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (PEM) key and certificate file on the host."
     }
   },
-  "typeName": "MongoDB::Atlas::ThirdPartyIntegrations",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "typeName": "MongoDB::Atlas::ThirdPartyIntegration"
 }

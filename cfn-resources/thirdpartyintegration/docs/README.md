@@ -1,4 +1,6 @@
-# MongoDB::Atlas::ThirdPartyIntegrations
+# MongoDB::Atlas::ThirdPartyIntegration
+
+Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.
 
 ## Syntax
 
@@ -8,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::ThirdPartyIntegrations",
+    "Type" : "MongoDB::Atlas::ThirdPartyIntegration",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
@@ -43,7 +45,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::ThirdPartyIntegrations
+Type: MongoDB::Atlas::ThirdPartyIntegration
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
@@ -90,12 +92,6 @@ Unique 24-hexadecimal digit string that identifies your project.
 _Required_: No
 
 _Type_: String
-
-_Minimum_: <code>24</code>
-
-_Maximum_: <code>24</code>
-
-_Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

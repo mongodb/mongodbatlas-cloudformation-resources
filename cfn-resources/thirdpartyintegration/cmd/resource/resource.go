@@ -2,23 +2,27 @@ package resource
 
 import (
 	"context"
+	"fmt"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"net/http"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	log "github.com/sirupsen/logrus"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
-	"net/http"
+	logrus "github.com/sirupsen/logrus"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{"Type", "ProjectId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var ReadRequiredFields = []string{"ProjectId", "Type", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var UpdateRequiredFields = []string{"ProjectId", "Type", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var DeleteRequiredFields = []string{"Type", "ProjectId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var ListRequiredFields = []string{"ProjectId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var CreateRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var ReadRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var UpdateRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var DeleteRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 
+// Custom validation only for ThirdPartyIntegrations
 var requiredPerType = map[string][]string{
 	"PAGER_DUTY":      {"ServiceKey"},
 	"DATADOG":         {"ApiKey", "Region"},
@@ -36,24 +40,25 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 }
 
 func setup() {
-	util.SetupLogger("mongodb-atlas-thirdpartyintegrations")
+	util.SetupLogger("mongodb-atlas-thirdpartyintegration")
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Create() currentModel:%+v", currentModel)
+	logrus.Println("LogRus Create() currentModel:", currentModel)
+	fmt.Println("Create() currentModel:", currentModel)
+	_, _ = log.Warnf("Create() currentModel:%+v", currentModel)
 
 	// Validation
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -74,18 +79,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	requestBody := modelToIntegration(currentModel)
 
-	spew.Dump(requestBody, ProjectID)
-
 	integrations, resModel, err := client.Integrations.Create(context.Background(), *ProjectID, *IntegrationType, requestBody)
 
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		fmt.Printf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		if resModel.Response.StatusCode == http.StatusConflict {
-			return progress_events.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
+			return progressevents.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
-		return progress_events.GetFailedEventByResponse(err.Error(), resModel.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), resModel.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -97,18 +101,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Read() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
 	// Validation
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Read - error: %+v", err)
+		_, _ = log.Debugf("Read - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -122,10 +125,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	integration, res, err := client.Integrations.Get(context.Background(), *ProjectID, *IntegrationType)
 
 	if err != nil {
-		log.Debugf("Read - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		_, _ = log.Debugf("Read - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -137,18 +140,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Update() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Update() currentModel:%+v", currentModel)
 
 	// Validation
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
+		_, _ = log.Debugf("Update - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -161,8 +163,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	integration, res, err := client.Integrations.Get(context.Background(), *ProjectID, *IntegrationType)
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		_, _ = log.Debugf("Update - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	// check for changed attributes per type
@@ -172,10 +174,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	integrations, res, err := client.Integrations.Replace(context.Background(), *ProjectID, *IntegrationType, integration)
 
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		_, _ = log.Debugf("Update - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -253,18 +255,17 @@ func updateIntegrationFromSchema(currentModel *Model, integration *mongodbatlas.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Delete() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
 
 	// Validation
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
+		_, _ = log.Debugf("Delete - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -279,10 +280,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	res, err = client.Integrations.Delete(context.Background(), *ProjectID, *IntegrationType)
 
 	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		_, _ = log.Debugf("Delete - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -294,18 +295,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("List() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
 
 	// Validation
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("List - error: %+v", err)
+		_, _ = log.Debugf("List - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -316,16 +316,16 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ProjectID := currentModel.ProjectId
 	integrations, res, err := client.Integrations.List(context.Background(), *ProjectID)
 	if err != nil {
-		log.Debugf("List - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		_, _ = log.Debugf("List - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	_, _ = log.Debugf("Atlas Client %v", client)
 
 	mm := make([]interface{}, 0)
 
 	for _, integration := range integrations.Results {
 		var m Model
-		m = integrationToModel(m, integration)
+		m = integrationToModel(*currentModel, integration)
 		mm = append(mm, m)
 	}
 
@@ -411,38 +411,34 @@ func modelToIntegration(currentModel *Model) (out *mongodbatlas.ThirdPartyIntegr
 }
 
 func integrationToModel(currentModel Model, integration *mongodbatlas.ThirdPartyIntegration) Model {
-
 	enabled := false
-	// if Enabled is not set we dont want to return false value to the response
+	// if "Enabled" is not set in the inputs we dont want to return "Enabled" in outputs
 	if currentModel.Enabled != nil {
 		enabled = true
 	}
 
 	out := Model{
-		Type:        &integration.Type,
-		LicenseKey:  &integration.LicenseKey,
-		AccountId:   &integration.AccountID,
-		WriteToken:  &integration.WriteToken,
-		ReadToken:   &integration.ReadToken,
-		ApiKey:      &integration.APIKey,
-		Region:      &integration.Region,
-		ServiceKey:  &integration.ServiceKey,
-		ApiToken:    &integration.APIToken,
-		TeamName:    &integration.TeamName,
-		ChannelName: &integration.ChannelName,
-		RoutingKey:  &integration.RoutingKey,
-		FlowName:    &integration.FlowName,
-		OrgName:     &integration.OrgName,
-		//Url:                      &integration.URL,
-		//Secret:                   &integration.Secret,
+		Type:                     &integration.Type,
+		LicenseKey:               &integration.LicenseKey,
+		AccountId:                &integration.AccountID,
+		WriteToken:               &integration.WriteToken,
+		ReadToken:                &integration.ReadToken,
+		ApiKey:                   &integration.APIKey,
+		Region:                   &integration.Region,
+		ServiceKey:               &integration.ServiceKey,
+		ApiToken:                 &integration.APIToken,
+		TeamName:                 &integration.TeamName,
+		ChannelName:              &integration.ChannelName,
+		RoutingKey:               &integration.RoutingKey,
+		FlowName:                 &integration.FlowName,
+		OrgName:                  &integration.OrgName,
 		MicrosoftTeamsWebhookUrl: &integration.MicrosoftTeamsWebhookURL,
 		UserName:                 &integration.UserName,
-		//Password:                 &integration.Password,
-		ServiceDiscovery: &integration.ServiceDiscovery,
-		Scheme:           &integration.Scheme,
-		Enabled:          &integration.Enabled,
-		ProjectId:        currentModel.ProjectId,
-		ApiKeys:          currentModel.ApiKeys,
+		ServiceDiscovery:         &integration.ServiceDiscovery,
+		Scheme:                   &integration.Scheme,
+		Enabled:                  &integration.Enabled,
+		ProjectId:                currentModel.ProjectId,
+		ApiKeys:                  currentModel.ApiKeys,
 	}
 
 	if !enabled {

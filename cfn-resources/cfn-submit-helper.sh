@@ -32,7 +32,7 @@ _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 
 # By default, submit the entire library of active custom resources, but usually
 # this is run one resource at a time.
-resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+resources="${1:-thirdpartyintegration}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 

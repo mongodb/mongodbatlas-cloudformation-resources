@@ -10,5 +10,6 @@ aws cloudformation create-stack \
   --template-body "file://${TEMPLATE}" \
   --parameters ParameterKey=PublicKey,ParameterValue=${ATLAS_PUBLIC_KEY} \
                ParameterKey=PrivateKey,ParameterValue=${ATLAS_PRIVATE_KEY} \
+               ParameterKey=OrgId,ParameterValue=${ATLAS_ORG_ID} \
                ${EXTRA_PARAMS} \
   --stack-name "${STACK_NAME}"

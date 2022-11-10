@@ -42,7 +42,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerRequest := &mongodbatlas.Container{}
 
 	if projectID == nil || *projectID == "" {
-		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `ProjectID` must be set")
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: `%s` must be set", constants.ProjectID )
 	}
 
 	regionName := currentModel.RegionName

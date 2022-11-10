@@ -2,9 +2,10 @@ package util
 
 import (
 	"fmt"
-	"github.com/rs/xid"
 	"log"
 	"strings"
+
+	"github.com/rs/xid"
 )
 
 // Resource id's are used to generate
@@ -17,12 +18,12 @@ import (
 type ResourceIdentifier struct {
 	ServiceName  string
 	DeploymentID string
-	ResourceType string // TOOD - make enum for this?
+	ResourceType string // TODO - make enum for this?
 	ResourceID   string
 	Parent       *ResourceIdentifier
 }
 
-//Note string version is "+" delimited string of the fields, in proper heirachry
+// Note string version is "+" delimited string of the fields, in proper heirachry
 func (t ResourceIdentifier) String() string {
 	fields := []string{}
 	if t.DeploymentID != "" {
@@ -35,13 +36,13 @@ func (t ResourceIdentifier) String() string {
 	return strings.Join(fields, "+")
 }
 
-// Given a resource identifier and a kind, "Project", "Cluster", "DBUser", etc...
+// ParseResourceIdentifier : Given a resource identifier and a kind, "Project", "Cluster", "DBUser", etc...
 func ParseResourceIdentifier(resourceID string) (*ResourceIdentifier, error) {
 	var r ResourceIdentifier
 	parts := strings.Split(resourceID, "+")
 
 	if len(parts) < 4 {
-		return &r, fmt.Errorf("Unable to parse input to resource identifier:%s", resourceID)
+		return &r, fmt.Errorf("unable to parse input to resource identifier:%s", resourceID)
 	}
 	r.ServiceName = parts[0]
 	r.DeploymentID = parts[1]
@@ -52,12 +53,12 @@ func ParseResourceIdentifier(resourceID string) (*ResourceIdentifier, error) {
 		return &r, nil
 	}
 	// handle parent id(s)
-	if parts[4] == "mongodb" { // it's a servicename
+	if parts[4] == "mongodb" { // it's a service name
 		// so parse recursive
 		ps := strings.Join(parts[4:], "+")
 		p, err := ParseResourceIdentifier(ps)
 		if err != nil {
-			return &r, fmt.Errorf("Error parsing resource id:%+v", err)
+			return &r, fmt.Errorf("error parsing resource id:%+v", err)
 		}
 		r.Parent = p
 	} else { // simple parent embedded id
@@ -70,8 +71,7 @@ func ParseResourceIdentifier(resourceID string) (*ResourceIdentifier, error) {
 	return &r, nil
 }
 
-func NewResourceIdentifier(resourceType string, resourceID string, parent *ResourceIdentifier) *ResourceIdentifier {
-
+func NewResourceIdentifier(resourceType, resourceID string, parent *ResourceIdentifier) *ResourceIdentifier {
 	deployID := xid.New()
 	log.Printf("NewResourceIdentifier new deployID:%s", deployID.String())
 	r := ResourceIdentifier{

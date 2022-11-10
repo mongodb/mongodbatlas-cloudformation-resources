@@ -1,10 +1,16 @@
 package validator_test
 
 import (
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"testing"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
+
+var CreateRequiredFields = []string{""}
+var ReadRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var UpdateRequiredFields []string
+var DeleteRequiredFields = []string{"ProjectId", "ClusterName", "Id", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "ClusterName", "ProjectId"}
 
 type testModel struct {
 	FirstRequiredField  *string
@@ -19,34 +25,9 @@ type RequiredStructProperty struct {
 	PropertyTest *string
 }
 
-type testModelValidator struct{}
-
-func (m testModelValidator) GetCreateFields() []string {
-	return []string{
-		"FirstRequiredField",
-		"SecondRequiredField",
-		"ThirdRequiredField",
-		"FourthRequiredField",
-		"RequiredStruct",
-		"RequiredStruct.PropertyTest",
-	}
-}
-func (m testModelValidator) GetReadFields() []string {
-	return nil
-}
-func (m testModelValidator) GetUpdateFields() []string {
-	return nil
-}
-func (m testModelValidator) GetDeleteFields() []string {
-	return nil
-}
-func (m testModelValidator) GetListFields() []string {
-	return nil
-}
-
 func TestAllValidateRequiredFieldsEmpty(t *testing.T) {
-	modelValidator := testModelValidator{}
 	requiredStruct := RequiredStructProperty{}
+	fields := []string{"FirstRequiredField", "SecondRequiredField", "ThirdRequiredField", "FourthRequiredField", "RequiredStruct.PropertyTest"}
 	model := testModel{
 		FirstRequiredField:  nil,
 		SecondRequiredField: nil,
@@ -55,15 +36,10 @@ func TestAllValidateRequiredFieldsEmpty(t *testing.T) {
 		NotRequiredField:    nil,
 		RequiredStruct:      &requiredStruct,
 	}
-	progressEvent := validator.ValidateModel(constants.Create, modelValidator, &model)
+	progressEvent := validator.ValidateModel(fields, &model)
 
-	if progressEvent == nil {
-		t.Errorf("Progress Event should not be nill")
-	}
-
-	expected := "The next fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
-
-	if progressEvent.Message != expected {
+	expected := "The following fields are required FirstRequiredField SecondRequiredField ThirdRequiredField FourthRequiredField RequiredStruct.PropertyTest"
+	if progressEvent != nil && progressEvent.Message != expected {
 		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
 	}
 }
@@ -72,7 +48,7 @@ func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
 	firstField := "a"
 	secondField := 1
 	thirdField := []string{"a", "b"}
-	modelValidator := testModelValidator{}
+	fields := []string{"FirstRequiredField", "SecondRequiredField", "FourthRequiredField"}
 	requiredStruct := RequiredStructProperty{PropertyTest: &firstField}
 	model := testModel{
 		FirstRequiredField:  &firstField,
@@ -82,15 +58,11 @@ func TestSomeValidateRequiredFieldsEmpty(t *testing.T) {
 		NotRequiredField:    nil,
 		RequiredStruct:      &requiredStruct,
 	}
-	progressEvent := validator.ValidateModel(constants.Create, modelValidator, &model)
+	progressEvent := validator.ValidateModel(fields, &model)
 
-	if progressEvent == nil {
-		t.Errorf("Progress Event should not be nill")
-	}
+	expected := "The following fields are required FourthRequiredField"
 
-	expected := "The next fields are required FourthRequiredField"
-
-	if progressEvent.Message != expected {
+	if progressEvent != nil && progressEvent.Message != expected {
 		t.Errorf("Expectd = %s; got = %s", expected, progressEvent.Message)
 	}
 }
@@ -99,8 +71,9 @@ func TestNoneValidateRequiredFieldsEmpty(t *testing.T) {
 	firstField := "a"
 	secondField := 1
 	thirdField := []string{"a", "b"}
-	modelValidator := testModelValidator{}
 	fourthField := true
+	var fields []string
+
 	requiredStruct := RequiredStructProperty{PropertyTest: &firstField}
 	model := testModel{
 		FirstRequiredField:  &firstField,
@@ -110,7 +83,7 @@ func TestNoneValidateRequiredFieldsEmpty(t *testing.T) {
 		NotRequiredField:    nil,
 		RequiredStruct:      &requiredStruct,
 	}
-	progressEvent := validator.ValidateModel(constants.Create, modelValidator, &model)
+	progressEvent := validator.ValidateModel(fields, &model)
 
 	if progressEvent != nil {
 		t.Errorf("Progress Event should be nil")

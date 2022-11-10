@@ -35,7 +35,7 @@ Properties:
 
 #### ProjectId
 
-The unique identifier of the project.
+Unique 24-hexadecimal digit string that identifies your project.
 
 _Required_: Yes
 
@@ -45,7 +45,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### RegionName
 
-Name of region
+Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container.
 
 _Required_: Yes
 
@@ -91,7 +91,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### Id
 
-Unique identifier of the Network Peering container.
+Unique 24-hexadecimal digit string that identifies the network peering container.
 
 #### VpcId
 

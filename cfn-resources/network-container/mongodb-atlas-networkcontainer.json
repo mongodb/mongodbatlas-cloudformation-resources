@@ -17,11 +17,11 @@
     },
     "properties": {
         "ProjectId": {
-            "description": "The unique identifier of the project.",
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
             "type": "string"
         },
         "RegionName": {
-            "description": "Name of region",
+            "description": "Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container.",
             "type": "string"
         },
         "Provisioned": {
@@ -37,7 +37,7 @@
             "type": "string"
         },
         "Id": {
-            "description": "Unique identifier of the Network Peering container.",
+            "description": "Unique 24-hexadecimal digit string that identifies the network peering container.",
             "type": "string"
         },
         "ApiKeys": {

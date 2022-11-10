@@ -423,7 +423,7 @@ func validateOrCreateNetworkContainer(prevModel, currentModel *Model) (container
 		return container, err
 	}
 	containerResponse, resp, err := client.Containers.Create(context.TODO(), *currentModel.ProjectId, containerRequest)
-	// TODO add logging here
+
 	if resp != nil && resp.StatusCode == 409 {
 		_, _ = logger.Warnf("Container already exists, looking for it: resp:%+v", resp)
 		found, c, err = findContainer(projectID, *region, currentModel)

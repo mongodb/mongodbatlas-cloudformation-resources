@@ -20,14 +20,8 @@ mkdir inputs
 region="us-east-1"
 
 #project_id
-if [[   -v ATLAS_EXISTING_PROJECT_NAME ]]; then
-      projectName=$ATLAS_EXISTING_PROJECT_NAME
-      echo "Found project \"${projectName}\" from environment:"
-else
-      projectName="${1}"
-      echo "Found  project \"${projectName}\" from argument"
-fi
 
+projectName="${1}"
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
     projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')

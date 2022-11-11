@@ -32,7 +32,7 @@ Resources:
       ProjectId: !Ref "ProjectId"
       ClusterName: !Ref "ClusterName"
       SnapshotId: !Ref "SnapshotId"
-      Name: !Sub "${AWS::StackName}"
+      DeliveryType: "download"
 Outputs:
   CloudBackUpRestoreJobs:
     Description: "Info on your Atlas Projet"

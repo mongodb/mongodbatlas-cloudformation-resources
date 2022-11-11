@@ -1,0 +1,9 @@
+{
+  "ProjectId": "$ATLAS_PROJECT_ID",
+  "ApiKeys" : {
+    "PublicKey" : "$ATLAS_PUBLIC_KEY",
+    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+  },
+  "RegionName": "$ATLAS_REGION_NAME",
+  "AtlasCIDRBlock": "10.8.0.0/21"
+}

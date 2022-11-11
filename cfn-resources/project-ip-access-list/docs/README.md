@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ProjectIpAccessList
 
-An example resource schema demonstrating some basic constructs and validation rules.
+Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.
 
 ## Syntax
 
@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#accesslist" title="AccessList">AccessList</a>" : <i>[ <a href="accesslistdefinition.md">accessListDefinition</a>, ... ]</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+        "<a href="#listoptions" title="ListOptions">ListOptions</a>" : <i><a href="listoptions.md">listOptions</a></i>
     }
 }
 </pre>
@@ -28,6 +29,7 @@ Properties:
       - <a href="accesslistdefinition.md">accessListDefinition</a></i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
+    <a href="#listoptions" title="ListOptions">ListOptions</a>: <i><a href="listoptions.md">listOptions</a></i>
 </pre>
 
 ## Properties
@@ -50,11 +52,19 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ProjectId
 
-The unique identifier for the project to which you want to add one or more ip access list entries.
+Unique 24-hexadecimal digit string that identifies your project.
 
 _Required_: Yes
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ListOptions
+
+_Required_: No
+
+_Type_: <a href="listoptions.md">listOptions</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -76,5 +86,5 @@ The unique identifier for the Project API ip access list rules.
 
 #### TotalCount
 
-The unique identifier for the Project ip access list rules.
+Number of documents returned in this response.
 

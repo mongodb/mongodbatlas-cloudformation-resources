@@ -51,7 +51,7 @@
     },
     "RestoreJobId": {
       "Description": "Id of the cloud provider snapshot restore job",
-      "Value" : { "Ref" : "CloudBackUpRestoreJobs" }
+      "Value" : { "Ref" : "CloudProviderSnapshotRestoreJob" }
     }
   }
 }

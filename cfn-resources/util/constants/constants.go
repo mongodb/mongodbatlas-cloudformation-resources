@@ -15,6 +15,9 @@ const (
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
 
+	RegionName     = "RegionName"
+	AtlasCIDRBlock = "AtlasCidrBlock"
+
 	DatabaseName = "DatabaseName"
 	Username     = "Username"
 	Roles        = "Roles"

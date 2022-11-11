@@ -1,10 +1,10 @@
 {
   "desiredResourceState":{
-    "Name": "cfn-test-bot-39f1556-project5",
-    "OrgId": "5fe4ea50d1a2b617175ee3d4",
+    "Name": "",
+    "OrgId": "",
     "ApiKeys": {
-      "PublicKey": "pzovkttc",
-      "PrivateKey": "6d39c229-6a6f-423d-9b41-dda35547f57e"
+      "PublicKey": "",
+      "PrivateKey": ""
     },
     "ProjectSettings": {
       "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
@@ -29,7 +29,8 @@
         ]
       }
     ]
-  },
+  }
+,
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }
 }

@@ -17,8 +17,8 @@ jobs:
       uses: ./.github/actions/atlas-cfn-deploy
       with:
         CAPABLITIES: CAPABILITY_IAM
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISH_ONLY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISH_ONLY }}
         AWS_REGION_INPUT: ${{ github.event.inputs.region }}
         AWS_DEFAULT_REGION: ${{ github.event.inputs.region }}
         AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}

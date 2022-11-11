@@ -14,20 +14,20 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-func setup() {
-	util.SetupLogger("mongodb-atlas-database-user")
-}
-
-// function to validate inputs to all actions
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
-
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
 var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.DatabaseName, constants.Username}
 var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
 var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.DatabaseName, constants.Username}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
+
+func setup() {
+	util.SetupLogger("mongodb-atlas-database-user")
+}
+
+// validateModel to validate inputs to all actions
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
+}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -46,77 +46,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	var roles []mongodbatlas.Role
-	for i := range currentModel.Roles {
-		r := currentModel.Roles[i]
-		role := mongodbatlas.Role{}
-		if r.CollectionName != nil {
-			role.CollectionName = *r.CollectionName
-		}
-		if r.DatabaseName != nil {
-			role.DatabaseName = *r.DatabaseName
-		}
-		if r.RoleName != nil {
-			role.RoleName = *r.RoleName
-		}
-		roles = append(roles, role)
+	groupID, dbUser, event, err := setModel(currentModel)
+	if err != nil {
+		return event, nil
 	}
-	_, _ = logger.Debugf("roles: %#+v", roles)
-
-	var labels []mongodbatlas.Label
-	for i := range currentModel.Labels {
-		l := currentModel.Labels[i]
-		label := mongodbatlas.Label{
-			Key:   *l.Key,
-			Value: *l.Value,
-		}
-		labels = append(labels, label)
-	}
-	_, _ = logger.Debugf("labels: %#+v", labels)
-
-	var scopes []mongodbatlas.Scope
-	for i := range currentModel.Scopes {
-		s := currentModel.Scopes[i]
-		scope := mongodbatlas.Scope{
-			Name: *s.Name,
-			Type: *s.Type,
-		}
-		scopes = append(scopes, scope)
-	}
-	_, _ = logger.Debugf("scopes: %#+v", scopes)
-
-	groupID := *currentModel.ProjectId
-	_, _ = logger.Debugf("groupID: %#+v", groupID)
-
-	none := "NONE"
-	if currentModel.LdapAuthType == nil {
-		currentModel.LdapAuthType = &none
-	}
-	if currentModel.AWSIAMType == nil {
-		currentModel.AWSIAMType = &none
-	}
-	if currentModel.X509Type == nil {
-		currentModel.X509Type = &none
-	}
-	if currentModel.Password == nil {
-		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
-			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
-		s := ""
-		currentModel.Password = &s
-	}
-	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
-		s := ""
-		currentModel.DeleteAfterDate = &s
-	}
-	_, _ = logger.Debugf("Check Delete after date here::???????")
-	user := getDBUser(roles, groupID, currentModel, labels, scopes)
-	_, _ = logger.Debugf("Arguments: Project ID: %s, Request %#+v", groupID, user)
-	newUser, res, err := client.DatabaseUsers.Create(context.Background(), groupID, user)
+	_, _ = logger.Debugf("Arguments: Project ID: %s, Request %#+v", groupID, dbUser)
+	newUser, res, err := client.DatabaseUsers.Create(context.Background(), groupID, dbUser)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			res.Response), nil
@@ -219,79 +154,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
-	roles := []mongodbatlas.Role{}
-	for i := range currentModel.Roles {
-		r := currentModel.Roles[i]
-		role := mongodbatlas.Role{}
-		if r.CollectionName != nil {
-			role.CollectionName = *r.CollectionName
-		} else {
-			role.CollectionName = ""
-		}
-		role.DatabaseName = *r.DatabaseName
-		role.RoleName = *r.RoleName
-		roles = append(roles, role)
+	groupID, dbUser, event, err := setModel(currentModel)
+	if err != nil {
+		return event, nil
 	}
-
-	_, _ = logger.Debugf("Update roles:%+v", roles)
-	labels := []mongodbatlas.Label{}
-	for i := range currentModel.Labels {
-		l := currentModel.Labels[i]
-		label := mongodbatlas.Label{
-			Key:   *l.Key,
-			Value: *l.Value,
-		}
-		labels = append(labels, label)
-	}
-	_, _ = logger.Debugf("Update labels: %#+v", labels)
-
-	var scopes []mongodbatlas.Scope
-	for i := range currentModel.Scopes {
-		s := currentModel.Scopes[i]
-		scope := mongodbatlas.Scope{
-			Name: *s.Name,
-			Type: *s.Type,
-		}
-		scopes = append(scopes, scope)
-	}
-	_, _ = logger.Debugf("Update scopes: %#+v", scopes)
-
-	groupID := *currentModel.ProjectId
-	_, _ = logger.Debugf("groupID: %#+v", groupID)
-
-	none := "NONE"
-	if currentModel.LdapAuthType == nil {
-		currentModel.LdapAuthType = &none
-	}
-	if currentModel.AWSIAMType == nil {
-		currentModel.AWSIAMType = &none
-	}
-	if currentModel.X509Type == nil {
-		currentModel.X509Type = &none
-	}
-	if currentModel.Password == nil {
-		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
-			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
-		s := ""
-		currentModel.Password = &s
-	}
-
-	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
-		s := ""
-		currentModel.DeleteAfterDate = &s
-	}
-
-	_, _ = logger.Debugf("Check Delete after date here::???????")
-
-	dbu := getDBUser(roles, groupID, currentModel, labels, scopes)
-	_, _ = logger.Debugf("dbu:%+v", dbu)
-	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbu)
+	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbUser)
 
 	_, _ = logger.Debugf("Update resp:%+v", resp)
 	if err != nil {
@@ -304,22 +171,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
 	}, nil
-}
-
-func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
-	return &mongodbatlas.DatabaseUser{
-		Roles:           roles,
-		GroupID:         groupID,
-		Username:        *currentModel.Username,
-		Password:        *currentModel.Password,
-		DatabaseName:    *currentModel.DatabaseName,
-		Labels:          labels,
-		Scopes:          scopes,
-		LDAPAuthType:    *currentModel.LdapAuthType,
-		AWSIAMType:      *currentModel.AWSIAMType,
-		X509Type:        *currentModel.X509Type,
-		DeleteAfterDate: *currentModel.DeleteAfterDate,
-	}
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -353,7 +204,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// List NOOP
+// List handles listing database users
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -421,4 +272,93 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  dbUserModels,
 	}, nil
+}
+
+func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
+	return &mongodbatlas.DatabaseUser{
+		Roles:           roles,
+		GroupID:         groupID,
+		Username:        *currentModel.Username,
+		Password:        *currentModel.Password,
+		DatabaseName:    *currentModel.DatabaseName,
+		Labels:          labels,
+		Scopes:          scopes,
+		LDAPAuthType:    *currentModel.LdapAuthType,
+		AWSIAMType:      *currentModel.AWSIAMType,
+		X509Type:        *currentModel.X509Type,
+		DeleteAfterDate: *currentModel.DeleteAfterDate,
+	}
+}
+
+func setModel(currentModel *Model) (string, *mongodbatlas.DatabaseUser, handler.ProgressEvent, error) {
+	var roles []mongodbatlas.Role
+	for i := range currentModel.Roles {
+		r := currentModel.Roles[i]
+		role := mongodbatlas.Role{}
+		if r.CollectionName != nil {
+			role.CollectionName = *r.CollectionName
+		}
+		if r.DatabaseName != nil {
+			role.DatabaseName = *r.DatabaseName
+		}
+		if r.RoleName != nil {
+			role.RoleName = *r.RoleName
+		}
+		roles = append(roles, role)
+	}
+	_, _ = logger.Debugf("roles: %#+v", roles)
+
+	var labels []mongodbatlas.Label
+	for i := range currentModel.Labels {
+		l := currentModel.Labels[i]
+		label := mongodbatlas.Label{
+			Key:   *l.Key,
+			Value: *l.Value,
+		}
+		labels = append(labels, label)
+	}
+	_, _ = logger.Debugf("labels: %#+v", labels)
+
+	var scopes []mongodbatlas.Scope
+	for i := range currentModel.Scopes {
+		s := currentModel.Scopes[i]
+		scope := mongodbatlas.Scope{
+			Name: *s.Name,
+			Type: *s.Type,
+		}
+		scopes = append(scopes, scope)
+	}
+	_, _ = logger.Debugf("scopes: %#+v", scopes)
+
+	groupID := *currentModel.ProjectId
+	_, _ = logger.Debugf("groupID: %#+v", groupID)
+
+	none := "NONE"
+	if currentModel.LdapAuthType == nil {
+		currentModel.LdapAuthType = &none
+	}
+	if currentModel.AWSIAMType == nil {
+		currentModel.AWSIAMType = &none
+	}
+	if currentModel.X509Type == nil {
+		currentModel.X509Type = &none
+	}
+	if currentModel.Password == nil {
+		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
+			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
+			return "", nil, handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		}
+		s := ""
+		currentModel.Password = &s
+	}
+	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
+		s := ""
+		currentModel.DeleteAfterDate = &s
+	}
+	_, _ = logger.Debugf("Check Delete after date here::???????")
+	user := getDBUser(roles, groupID, currentModel, labels, scopes)
+	return groupID, user, handler.ProgressEvent{}, nil
 }

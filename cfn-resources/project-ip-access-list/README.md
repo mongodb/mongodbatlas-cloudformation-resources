@@ -2,17 +2,11 @@
 
 
 ## Description
-The Access List endpoint manages a Atlas project's IP Access List.
+Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.
 
-The Access List endpoint supports creating temporary Access List entries that automatically expire within a user-configurable 7-day period.
+## Attributes & Parameters
 
-
-## Attributes
-
-## Parameters
-`ProjectId` *(required)* : Unique identifier of the project within which to create the project ip access list.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
-
+Please consult the [Resource Docs](docs/README.md)
 
 ## Unit Testing Locally
 
@@ -45,7 +39,7 @@ The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quicksta
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other neccessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the [project.sample-template.yaml](test/projectipaccesslist.sample-template.yaml) to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 
@@ -56,10 +50,10 @@ aws logs tail mongodb-atlas-project-logs --follow
 
 And then you can create the stack with a helper script it insert the apikeys for you:
 
-
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/projectipaccesslist/test/projectipaccesslist.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/projectipaccesslist/test/projectipaccesslist.sample-template.yaml ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
 ```
 
+For more information see: MongoDB Atlas API Project [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List) Documentation.

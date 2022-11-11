@@ -2,11 +2,12 @@ package validator
 
 import (
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"reflect"
 	"strings"
+
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
@@ -47,10 +48,9 @@ func fieldIsEmpty(model interface{}, field string) bool {
 			r = baseProperty
 		}
 		return false
-	} else {
-		r := reflect.ValueOf(model)
-		f = reflect.Indirect(r).FieldByName(field)
 	}
+	r := reflect.ValueOf(model)
+	f = reflect.Indirect(r).FieldByName(field)
 
 	return f.IsNil()
 }

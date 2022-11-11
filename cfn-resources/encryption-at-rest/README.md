@@ -17,10 +17,10 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-set below environment variables 
-CustomerMasterKeyID as KMS_KEY
-RoleID as KMS_ROLE
-region(where key is available) as region
+set or export below environment variables 
+export KMS_KEY=<<CustomerMasterKeyID>>
+export KMS_ROLE=<<RoleID>>
+export KMS_REGION=<<key region>>
 cd ${repo_root}/cfn-resources/encryption-at-rest
 ./test/encryptionatrest.create-sample-cfn-request.sh YourProjectID > test.request.json 
 echo "Sample request:"
@@ -60,7 +60,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> 
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> ParameterKey=Enabled,ParameterValue=<true or false>
 ```
 
-For more information see: MongoDB Atlas API Cloud BackUp [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.
+For more information see: MongoDB Atlas API Cloud BackUp [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.

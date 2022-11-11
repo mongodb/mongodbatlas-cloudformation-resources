@@ -1,7 +1,6 @@
 {
     "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::ProjectIpAccessList",
-        "properties" : {
+
             "ProjectId" : "ProjectId",
             "ApiKeys" : {
                 "PublicKey" : "$ATLAS_PUBLIC_KEY",
@@ -13,8 +12,8 @@
                 "Region": "$region",
                 "RoleID": "$KMS_ROLE"
             }
-        }
+
     },
-    "providerLogGroupName" : "mongodb-atlas-projectipaccesslist-logs",
+
     "previousResourceState": { }
 }

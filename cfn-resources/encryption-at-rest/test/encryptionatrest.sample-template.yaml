@@ -10,7 +10,7 @@ Parameters:
     Description: "Your MongoDB Cloud Private API Key"
     Type: String
     Default: ""
-  ProjectId:
+  ProjectName:
     Description: "Your MongoDB Cloud Project ID"
     Type: String
     Default: ""
@@ -21,7 +21,6 @@ Parameters:
   Enabled:
     Description: "Specifies whether Encryption at Rest is enabled for an Atlas project."
     Type: String
-    Default: ""
   Region:
     Description: "The AWS region in which the AWS customer master key exists."
     Type: String
@@ -34,19 +33,18 @@ Resources:
   EncryptionAtRest:
     Type: MongoDB::Atlas::EncryptionAtRest
     Properties:
-      ProjectId: !Ref "ProjectId"
+      ProjectId:  !Ref "ProjectName"
       ApiKeys:
         PublicKey:  !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       AwsKms:
-      - CustomerMasterKeyID: !Ref "CustomerMasterKeyID"
+        CustomerMasterKeyID: !Ref "CustomerMasterKeyID"
         Enabled: !Ref "Enabled"
-      - Region: !Ref "Region"
+        Region: !Ref "Region"
         RoleID: !Ref "RoleID"
 Outputs:
-  EncryptionAtRest:
+  Id:
     Description: "Info about encryption at rest in Atlas Project resource"
     Value: !Ref EncryptionAtRest
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","EncryptionAtRest" ] ]
-

@@ -17,6 +17,11 @@
         "Description" : "",
         "ConstraintDescription" : ""
       },
+      "Enabled" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
       "Region" : {
         "Type" : "String",
         "Description" : "",
@@ -43,7 +48,7 @@
           "AwsKms": {
             "RoleID": { "Ref" : "RoleID" },
             "CustomerMasterKeyID": { "Ref" : "CustomerMasterKeyID" },
-            "Enabled": true,
+            "Enabled": { "Ref" : "Enabled" },
             "Region": { "Ref" : "Region" }
           },
           "ApiKeys": {
@@ -58,7 +63,7 @@
         "Description": "Id of the project",
         "Value" : { "Ref" : "Project" }
       },
-      "EncryptionId" : {
+      "Id" : {
         "Description": "Id of the encryption at rest",
         "Value" : { "Ref" : "EncryptionAtRest" }
       }

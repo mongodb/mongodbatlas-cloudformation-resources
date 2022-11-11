@@ -49,6 +49,10 @@
         "ProjectId": {
             "description": "Unique identifier of the Atlas project to which the user belongs.",
             "type": "string"
+        },
+        "Id": {
+            "description": "Unique identifier .",
+            "type": "string"
         }
     },
     "additionalProperties": false,
@@ -57,10 +61,10 @@
         "ProjectId"
     ],
     "readOnlyProperties": [
-        "/properties/ProjectId"
+        "/properties/Id"
     ],
     "primaryIdentifier": [
-        "/properties/ProjectId"
+        "/properties/Id"
     ],
     "handlers": {
         "create": {
@@ -69,6 +73,11 @@
             ]
         },
         "read": {
+            "permissions": [
+                ""
+            ]
+        },
+        "update": {
             "permissions": [
                 ""
             ]

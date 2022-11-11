@@ -14,4 +14,9 @@ const (
 	RouteTableCIDRBlock = "RouteTableCIDRBlock"
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
+
+	DatabaseName = "DatabaseName"
+	Username     = "Username"
+	Roles        = "Roles"
+	AccessList   = "AccessList"
 )

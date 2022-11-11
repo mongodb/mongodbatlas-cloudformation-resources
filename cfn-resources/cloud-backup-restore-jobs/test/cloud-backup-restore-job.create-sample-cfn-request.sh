@@ -23,5 +23,5 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg org "$ATLAS_ORG_ID" \
    --arg name "$name" \
-   '.desiredResourceState.properties.OrgId?|=$org | .desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey |   .desiredResourceState.properties.SnapshotId?|=$snapshotId |   .desiredResourceState.properties.ClusterName?|=$clusterName | .desiredResourceState.properties.ProviderSettings.RegionName?|=$region | .desiredResourceState.properties.ProjectId?|=$projectId ' \
+   '.desiredResourceState.properties.OrgId?|=$org | .desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey |   .desiredResourceState.properties.SnapshotId?|=$snapshotId |   .desiredResourceState.properties.ClusterName?|=$clusterName |  .desiredResourceState.properties.ProjectId?|=$projectId ' \
    "$(dirname "$0")/cloud-backup-restore-job.sample-cfn-request.json"

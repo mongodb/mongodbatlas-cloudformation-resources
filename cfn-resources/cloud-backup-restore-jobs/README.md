@@ -1,7 +1,7 @@
 # MongoDB::Atlas::CloudBackUpRestoreJobs
 
 ## Description
-This resource allows you to create, delete, get one or list all cloud backup restore jobs.
+This resource allows you to create, cancel, get one or list all cloud backup restore jobs.
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)

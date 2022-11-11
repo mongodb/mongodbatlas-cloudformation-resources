@@ -22,10 +22,10 @@ region="us-east-1"
 #project_id
 if [[   -v ATLAS_EXISTING_PROJECT_NAME ]]; then
       projectName=$ATLAS_EXISTING_PROJECT_NAME
-      echo "Created project \"${projectName}\" with id:"
+      echo "Found project \"${projectName}\" from environment:"
 else
       projectName="${1}"
-      echo "Createdddddd project \"${projectName}\" with id:"
+      echo "Found  project \"${projectName}\" from argument"
 fi
 
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -51,9 +51,7 @@ SnapshotId=$(mongocli atlas backup snapshots list cfntest --output json  | jq --
 if [ -z "$SnapshotId" ]; then
     SnapshotId=$(mongocli atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
     sleep 5m
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${
-
-    }\n"
+    echo -e "Created Cluster \"${ClusterName}\""
 else
         echo -e "FOUND Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
     fi

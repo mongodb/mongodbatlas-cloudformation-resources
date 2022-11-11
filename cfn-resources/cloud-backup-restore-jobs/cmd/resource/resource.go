@@ -6,35 +6,36 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	log "github.com/sirupsen/logrus"
-	matlasClient "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
-	automated = "automated"
-	download  = "download"
-)
-const (
-	publicKey   = "ApiKeys.PublicKey"
-	privateKey  = "ApiKeys.PrivateKey"
-	projectId   = "ProjectId"
-	snapshotId  = "SnapshotId"
-	clusterName = "ClusterName"
-	id          = "Id"
+	publicKey                        = "ApiKeys.PublicKey"
+	privateKey                       = "ApiKeys.PrivateKey"
+	projectID                        = "ProjectId"
+	snapshotID                       = "SnapshotId"
+	clusterName                      = "ClusterName"
+	id                               = "Id"
+	errorCreateMongoClient           = "Error - Create MongoDB Client- Details: %+v"
+	errorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
+	errorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+	automated                        = "automated"
+	download                         = "download"
 )
 
-var CreateRequiredFields = []string{publicKey, snapshotId, privateKey, clusterName, projectId}
-var ReadRequiredFields = []string{publicKey, id, privateKey, clusterName, projectId}
-var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{publicKey, id, privateKey, clusterName, projectId}
-var ListRequiredFields = []string{publicKey, privateKey, clusterName, projectId}
+var CreateRequiredFields = []string{publicKey, snapshotID, privateKey, clusterName, projectID}
+var ReadRequiredFields = []string{publicKey, id, privateKey, clusterName, projectID}
+var DeleteRequiredFields = []string{publicKey, id, privateKey, clusterName, projectID}
+var ListRequiredFields = []string{publicKey, privateKey, clusterName, projectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() //logger setup
+	setup() // logger setup
 
-	log.Debugf("Create snapshot restore for Request() currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Create snapshot restore for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
 	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
@@ -42,65 +43,58 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Errorf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-
+		_, _ = logger.Warnf(errorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	deliveryType := currentModel.DeliveryType
 	if deliveryType == nil || (*deliveryType != automated && *deliveryType != download) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
-			Message:         "error creating cloud provider snapshot restore job: you must specify either `automated` or `download` delivery types",
+			Message:         "Error - creating cloud backup  snapshot restore job: you must specify either `automated` or `download` delivery types",
 			ResourceModel:   currentModel,
 		}, nil
 	}
-	requestParameters := &matlasClient.SnapshotReqPathParameters{}
-	snapshotRequest := &matlasClient.CloudProviderSnapshotRestoreJob{}
+	requestParameters := &mongodbatlas.SnapshotReqPathParameters{}
+	snapshotRequest := &mongodbatlas.CloudProviderSnapshotRestoreJob{}
 	targetClusterName := currentModel.TargetClusterName
-	targetProjectId := currentModel.TargetProjectId
+	targetProjectID := currentModel.TargetProjectId
 	if *deliveryType == automated {
 		if targetClusterName == nil || *targetClusterName == "" {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
-				Message:         "error creating cloud provider snapshot restore job: `target_cluster_name` must be set if delivery type is `automated`",
+				Message:         "Error - creating cloud backup  snapshot restore job: `target_cluster_name` must be set if delivery type is `automated`",
 				ResourceModel:   currentModel,
 			}, nil
 		}
-		if targetProjectId == nil || *targetProjectId == "" {
+		if targetProjectID == nil || *targetProjectID == "" {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
-				Message:         "error creating cloud provider snapshot restore job: `target_project_id` must be set if delivery type is `automated`",
+				Message:         "Error - creating cloud backup  snapshot restore job: `target_project_id` must be set if delivery type is `automated`",
 				ResourceModel:   currentModel,
 			}, nil
 		}
 		snapshotRequest.TargetClusterName = *targetClusterName
-		snapshotRequest.TargetGroupID = *targetProjectId
+		snapshotRequest.TargetGroupID = *targetProjectID
 	}
 	// Create Atlas API Request Object
+	snapshotID := *currentModel.SnapshotId
 	requestParameters.GroupID = *currentModel.ProjectId
 	requestParameters.ClusterName = *currentModel.ClusterName
-	snapshotRequest.SnapshotID = *currentModel.SnapshotId
+	snapshotRequest.SnapshotID = snapshotID
 	snapshotRequest.DeliveryType = *deliveryType
 	// API call to create job
 	restoreJob, _, err := client.CloudProviderSnapshotRestoreJobs.Create(context.Background(), requestParameters, snapshotRequest)
-
 	if err != nil {
-		log.Errorf("error creating cloud provider snapshot restore job: %s", err)
+		_, _ = logger.Warnf(errorCreateCloudBackupRestoreJob, snapshotID, err)
 		return handler.ProgressEvent{
-
 			OperationStatus: handler.Failed,
-			Message:         "error creating cloud provider snapshot restore job",
+			Message:         "Error - creating cloud backup  snapshot restore job",
 			ResourceModel:   currentModel,
 		}, nil
 	}
-
 	currentModel.Id = &restoreJob.ID
-	log.Info("Create snapshot restore ends")
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -110,9 +104,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() //logger setup
+	setup() // logger setup
 
-	log.Debugf("Read snapshot restore starts  Request() currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Read snapshot restore starts  Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
 	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
@@ -121,27 +115,23 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Errorf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-
+		_, _ = logger.Warnf(errorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	// Create Atlas API Request Object
 	clusterName := *currentModel.ClusterName
-	projectId := *currentModel.ProjectId
-	jobId := *currentModel.Id
-	requestParameters := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+	projectID := *currentModel.ProjectId
+	jobID := *currentModel.Id
+	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     projectID,
 		ClusterName: clusterName,
-		JobID:       jobId,
+		JobID:       jobID,
 	}
-	isExist := isRestoreJobExist(currentModel)
 	// Check if job already exist
-	if !isExist {
-		log.Infof("Read - errors reading restore with id(%s)", jobId)
+	if !isRestoreJobExist(currentModel) {
+		_, _ = logger.Warnf(errorReadCloudBackUpRestoreJob, jobID)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -150,7 +140,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// API call
 	restoreJob, _, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), requestParameters)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectId, jobId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 	}
 
 	currentModel.TargetClusterName = &restoreJob.TargetClusterName
@@ -166,7 +156,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Expired = &restoreJob.Expired
 	currentModel.DeliveryUrl = restoreJob.DeliveryURL
 	currentModel.Links = flattenLinks(restoreJob.Links)
-	log.Info("Read snapshot restore ends")
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read complete",
@@ -176,7 +165,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	//NO-OP
+	// NO-OP
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update complete",
@@ -186,9 +175,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() //logger setup
+	setup() // logger setup
 
-	log.Debugf("Delete snapshot restore starts for Request() currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Delete snapshot restore starts for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
 	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
@@ -196,33 +185,28 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Errorf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-
+		_, _ = logger.Warnf(errorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	// Create API Request Object
 	clusterName := *currentModel.ClusterName
-	projectId := *currentModel.ProjectId
-	jobId := *currentModel.Id
-	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+	projectID := *currentModel.ProjectId
+	jobID := *currentModel.Id
+	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     projectID,
 		ClusterName: clusterName,
-		JobID:       jobId,
+		JobID:       jobID,
 	}
-	isExist := isRestoreJobExist(currentModel)
 	// Check if snapshot already exist
-	if !isExist {
-		log.Infof("Delete - errors reading restore with id(%s)", jobId)
+	if !isRestoreJobExist(currentModel) {
+		_, _ = logger.Warnf("Delete - errors reading restore with id(%s)", jobID)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
 	if *currentModel.DeliveryType == "automated" {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
@@ -230,12 +214,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:   currentModel,
 		}, nil
 	}
-	//API call to delete
+	// API call to delete
 	_, err = client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), snapshotRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectId, jobId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 	}
-	log.Info("Delete snapshot restore ends")
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete complete",
@@ -244,9 +227,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() //logger setup
+	setup() // logger setup
 
-	log.Debugf("return all snapshot restore jobs for Request() currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("return all snapshot restore jobs for Request() currentModel:%+v", currentModel)
 	// Validate required fields in the request
 	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
@@ -255,30 +238,27 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Errorf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-
+		_, _ = logger.Warnf(errorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	// Create Atlas API Request Object
-	projectId := *currentModel.ProjectId
+	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 
-	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     projectID,
 		ClusterName: clusterName,
 	}
-	params := &matlasClient.ListOptions{
+	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
 	}
 	// API call
 	restoreJobs, _, err := client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest, params)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectId, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectID, err)
 	}
 
 	var models []Model
@@ -299,26 +279,27 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.Links = flattenLinks(restoreJob.Links)
 		models = append(models, model)
 	}
-	log.Debug("List cloud backup restore job ends")
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List complete",
 		ResourceModel:   models,
 	}, nil
 }
-func isRestoreJobExist(currentModel *Model) bool {
+
+// function to check id restore job already exist
+func isRestoreJobExist(currentModel *Model) (isExist bool) {
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return false
 	}
 
-	projectId := *currentModel.ProjectId
-	snapshotRequest := &matlasClient.SnapshotReqPathParameters{
-		GroupID:     projectId,
+	projectID := *currentModel.ProjectId
+	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     projectID,
 		ClusterName: *currentModel.ClusterName,
 	}
 
-	params := &matlasClient.ListOptions{
+	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
 	}
@@ -328,25 +309,16 @@ func isRestoreJobExist(currentModel *Model) bool {
 		return false
 	}
 	for _, restoreJob := range restoreJobs.Results {
-		log.Debugf("Read - Restore Job with id(%s): %s", restoreJob.ID, *currentModel.Id)
+		_, _ = logger.Debugf("Read - Restore Job with id(%s): %s", restoreJob.ID, *currentModel.Id)
 		if restoreJob.ID == *currentModel.Id && !restoreJob.Expired && !restoreJob.Cancelled {
-
 			return true
 		}
-
 	}
-
 	return false
 }
-func flattenDeliveryUrl(deliveryUrlResult []string) []*string {
-	deliveryUrls := make([]*string, 0)
-	for _, deliveryUrl := range deliveryUrlResult {
-		deliveryUrls = append(deliveryUrls, &deliveryUrl)
-	}
-	return deliveryUrls
-}
 
-func flattenLinks(linksResult []*matlasClient.Link) []Links {
+// convert mongodb links to model links
+func flattenLinks(linksResult []*mongodbatlas.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {
 		var lin Links
@@ -356,9 +328,10 @@ func flattenLinks(linksResult []*matlasClient.Link) []Links {
 	}
 	return links
 }
+
+// function to set the logger
 func setup() {
 	util.SetupLogger("mongodb-atlas-project")
-
 }
 
 // function to validate inputs to all actions

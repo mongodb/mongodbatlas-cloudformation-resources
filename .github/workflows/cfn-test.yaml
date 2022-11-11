@@ -1,0 +1,32 @@
+name: Deploy MongoDB Atlas CloudFormation Resources
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: "AWS region"
+        default: "us-east-1"
+        required: true
+jobs:
+  atlas-cfn-deploy:
+    name: atlas-cfn-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: pull code
+      - name: Deploy the resources
+        uses: ./.github/actions/atlas-cfn-deploy
+        with:
+          CAPABLITIES: CAPABILITY_IAM
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISH_ONLY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISH_ONLY }}
+          AWS_REGION_INPUT: ${{ github.event.inputs.region }}
+          AWS_DEFAULT_REGION: ${{ github.event.inputs.region }}
+          AWS_REGION_SECRET: ${{ secrets.AWS_REGION }}
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID }}
+          run: |
+            echo "#############################################################"
+            env
+            cd cfn-resources
+            CFN_FLAGS="--verbose --set-default --region ${AWS_DEFAULT_REGION}" ./cfn-testing-helper.sh

@@ -122,6 +122,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			res.Response), nil
 	}
 	_, _ = logger.Debugf("newUser: %s", newUser)
+	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
+	currentModel.UserCFNIdentifier = &cfnid
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -299,6 +301,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			resp.Response), nil
 	}
 
+	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
+	currentModel.UserCFNIdentifier = &cfnid
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Complete",
@@ -347,6 +352,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			resp.Response), nil
 	}
 
+	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
+	currentModel.UserCFNIdentifier = &cfnid
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
@@ -370,7 +377,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	groupID := *currentModel.ProjectId
-	var dbUserModels []interface{}
+
+	dbUserModels := make([]interface{}, 0)
 
 	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
 	if err != nil {
@@ -378,42 +386,46 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp.Response), nil
 	}
 
-	for i := range databaseUsers {
-		var model Model
-		databaseUser := databaseUsers[i]
-		model.DatabaseName = &databaseUser.DatabaseName
-		model.LdapAuthType = &databaseUser.LDAPAuthType
-		model.X509Type = &databaseUser.X509Type
-		model.Username = &databaseUser.Username
-		var roles []RoleDefinition
+	if len(databaseUsers) > 0 {
+		for i := range databaseUsers {
+			var model Model
 
-		for i := range databaseUser.Roles {
-			r := databaseUser.Roles[i]
-			role := RoleDefinition{
-				CollectionName: &r.CollectionName,
-				DatabaseName:   &r.DatabaseName,
-				RoleName:       &r.RoleName,
+			databaseUser := databaseUsers[i]
+			model.DatabaseName = &databaseUser.DatabaseName
+			model.LdapAuthType = &databaseUser.LDAPAuthType
+			model.X509Type = &databaseUser.X509Type
+			model.Username = &databaseUser.Username
+			var roles []RoleDefinition
+
+			for i := range databaseUser.Roles {
+				r := databaseUser.Roles[i]
+				role := RoleDefinition{
+					CollectionName: &r.CollectionName,
+					DatabaseName:   &r.DatabaseName,
+					RoleName:       &r.RoleName,
+				}
+
+				roles = append(roles, role)
+			}
+			model.Roles = roles
+
+			var labels []LabelDefinition
+
+			for i := range databaseUser.Labels {
+				l := databaseUser.Labels[i]
+				label := LabelDefinition{
+					Key:   &l.Key,
+					Value: &l.Value,
+				}
+				labels = append(labels, label)
 			}
 
-			roles = append(roles, role)
+			model.Labels = labels
+			cfnid := fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID)
+
+			model.UserCFNIdentifier = &cfnid
+			dbUserModels = append(dbUserModels, model)
 		}
-		model.Roles = roles
-
-		var labels []LabelDefinition
-
-		for i := range databaseUser.Labels {
-			l := databaseUser.Labels[i]
-			label := LabelDefinition{
-				Key:   &l.Key,
-				Value: &l.Value,
-			}
-			labels = append(labels, label)
-		}
-
-		model.Labels = labels
-		cfnid := fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID)
-		model.UserCFNIdentifier = &cfnid
-		dbUserModels = append(dbUserModels, model)
 	}
 
 	return handler.ProgressEvent{

@@ -36,7 +36,7 @@ Please see the [CFN Template](test/cloud-backup-restore-job.sample-template.yaml
 
 ## Integration Testing w/ AWS
 
-The [../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh)  script
+The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
@@ -55,7 +55,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-restore-jobs/test/cloud-backup-restore-job.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=SnapshotId,ParameterValue=<SnapshotId>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-restore-jobs/test/cloud-backup-restore-job.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=SnapshotId,ParameterValue=<SnapshotId>
 ```
 
 For more information see: MongoDB Atlas API [Cloud BackUp Restore Jobs Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs) .

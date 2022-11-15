@@ -1,4 +1,4 @@
-# MongoDB::Atlas::BackupSnapshot apiKeyDefinition
+# MongoDB::Atlas::CloudBackupSnapshot apiKeyDefinition
 
 ## Syntax
 

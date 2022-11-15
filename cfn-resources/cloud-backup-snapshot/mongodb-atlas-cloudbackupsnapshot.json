@@ -78,8 +78,7 @@
         },
         "StorageSizeBytes": {
           "type": "integer",
-          "description": "Number of bytes taken to store the backup snapshot.",
-          "pattern": "^([0-9]+)$"
+          "description": "Number of bytes taken to store the backup snapshot."
         },
         "Type": {
           "type": "string",
@@ -197,8 +196,7 @@
         },
         "StorageSizeBytes": {
           "type": "integer",
-          "description": "Number of bytes taken to store the backup snapshot.",
-          "pattern": "^([0-9]+)$"
+          "description": "Number of bytes taken to store the backup snapshot."
         },
         "Type": {
           "type": "string",
@@ -392,8 +390,7 @@
     },
     "StorageSizeBytes": {
       "type": "integer",
-      "description": "Number of bytes taken to store the backup snapshot.",
-      "pattern": "^([0-9]+)$"
+      "description": "Number of bytes taken to store the backup snapshot."
     },
     "TotalCount": {
       "type": "number",
@@ -437,7 +434,7 @@
     "/definitions/ApiAtlasDiskBackupReplicaSetView/StorageSizeBytes", 
     "/definitions/ApiAtlasDiskBackupReplicaSetView/ReplicaSetName", 
     "/definitions/ApiAtlasDiskBackupReplicaSetView/Status", 
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/FrequencyType", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/FrequencyType",
     "/definitions/ApiAtlasDiskBackupReplicaSetView/Links", 
     "/definitions/ApiAtlasDiskBackupReplicaSetView/PolicyItems", 
     "/definitions/ApiAtlasDiskBackupReplicaSetView/SnapshotType", 
@@ -461,6 +458,6 @@
     "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Description", 
     "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Links"
   ],
-  "typeName": "MongoDB::Atlas::BackupSnapshot",
+  "typeName": "MongoDB::Atlas::CloudBackupSnapshot",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

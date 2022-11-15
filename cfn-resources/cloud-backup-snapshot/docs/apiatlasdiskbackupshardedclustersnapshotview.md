@@ -1,4 +1,4 @@
-# MongoDB::Atlas::BackupSnapshot ApiAtlasDiskBackupShardedClusterSnapshotView
+# MongoDB::Atlas::CloudBackupSnapshot ApiAtlasDiskBackupShardedClusterSnapshotView
 
 ## Syntax
 
@@ -213,8 +213,6 @@ Number of bytes taken to store the backup snapshot.
 _Required_: No
 
 _Type_: Integer
-
-_Pattern_: <code>^([0-9]+)$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

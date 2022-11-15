@@ -1,4 +1,4 @@
-# MongoDB::Atlas::BackupSnapshot ApiAtlasDiskBackupShardedClusterSnapshotMemberView
+# MongoDB::Atlas::CloudBackupSnapshot ApiAtlasDiskBackupShardedClusterSnapshotMemberView
 
 ## Syntax
 

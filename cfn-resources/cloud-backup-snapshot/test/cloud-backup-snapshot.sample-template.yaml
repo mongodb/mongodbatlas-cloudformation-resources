@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::BackupSnapshot
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::CloudBackupSnapshot
 Parameters:
   PublicKey:
     Description: "Your MongoDB Cloud Public API Key"
@@ -28,7 +28,7 @@ Parameters:
     Default: ""
 Resources:
   BackupSnapshot:
-    Type: MongoDB::Atlas::BackupSnapshot
+    Type: MongoDB::Atlas::CloudBackupSnapshot
     Properties:
       ApiKeys:
         PublicKey: !Ref "PublicKey"

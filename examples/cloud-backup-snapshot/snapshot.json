@@ -22,7 +22,7 @@
       }
     },
     "BackupSnapshot": {
-      "Type": "MongoDB::Atlas::BackupSnapshot",
+      "Type": "MongoDB::Atlas::CloudBackupSnapshot",
       "Properties": {
         "GroupId": { "Ref" : "Project" },
         "ClusterName": { "Ref" : "ClusterName" },

@@ -1,6 +1,6 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "MongoDB::Atlas::BackupSnapshot",
+    "typeName": "MongoDB::Atlas::CloudBackupSnapshot",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",

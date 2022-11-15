@@ -1,8 +1,7 @@
-# MongoDB::Atlas::BackupSnapshot
+# MongoDB::Atlas::CloudBackupSnapshot
 
 ## Description
-Returns, adds,  and removes cloud backup.
-This resource allows you to take one on-demand snapshot, get one or all cloud backup and delete one cloud provider snapshot.
+Returns, takes, edits, and removes Cloud Backup snapshots.
 
 ## Attributes & Parameters
 
@@ -35,13 +34,13 @@ cfn submit --verbose --set-default
 
 ## Cloudformation Examples
 
-Please use the [CFN Template](test/cloud-backup.sample-template.yaml)
+Please see the [CFN Template](test/cloud-backup-snapshot.sample-template.yaml) for example resource
 
 ## Integration Testing w/ AWS
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](launch-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
-CloudFormation stack template along with the other neccessary parameters.
+CloudFormation stack template along with the other necessary parameters.
 
 You can use the project.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
@@ -58,7 +57,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-snapshot/test/cloud-backup-snapshot.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=RetentionInDays,ParameterValue=<RetentionInDays> ParameterKey=Description,ParameterValue=<Description> 
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-snapshot/test/cloud-backup-snapshot.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=RetentionInDays,ParameterValue=<RetentionInDays> ParameterKey=Description,ParameterValue=<Description> 
 ```
 
-For more information see: MongoDB Atlas API Cloud BackUp [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.
+For more information see: MongoDB Atlas API [Cloud Backups Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.

@@ -1,8 +1,9 @@
 # MongoDB::Atlas::EncryptionAtRest
 
 ## Description
-This resource allows administrators to enable, disable, configure, and retrieve the configuration for Encryption at Rest.
-# Attributes & Parameters
+
+Returns and edits the Encryption at Rest using Customer Key Management configuration.
+## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
 
@@ -37,13 +38,13 @@ cfn submit --verbose --set-default
 
 ## Cloudformation Examples
 
-Please use the [CFN Template](test/encryptionatrest.sample-template.yaml)
+Please see the [CFN Template](test/encryptionatrest.sample-template.yaml) for example resource.
 
 ## Integration Testing w/ AWS
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
-CloudFormation stack template along with the other neccessary parameters.
+CloudFormation stack template along with the other necessary parameters.
 
 You can use the project.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
@@ -63,4 +64,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> ParameterKey=Enabled,ParameterValue=<true or false>
 ```
 
-For more information see: MongoDB Atlas API Cloud BackUp [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.
+For more information see: MongoDB Atlas API [Encryption At Rest Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.

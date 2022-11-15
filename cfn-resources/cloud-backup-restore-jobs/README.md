@@ -1,13 +1,12 @@
 # MongoDB::Atlas::CloudBackUpRestoreJobs
 
 ## Description
-This resource allows you to create, cancel, get one or list all cloud backup restore jobs.
-## Attributes & Parameters
+Returns, starts, and cancels Cloud Backup restore jobs.
 
+## Attributes & Parameters
 Please consult the [Resource Docs](docs/README.md)
 
 ## Unit Testing Locally
-
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
 ```
@@ -33,13 +32,13 @@ cfn submit --verbose --set-default
 
 ## Cloudformation Examples
 
-Please use the [CFN Template](test/cloud-backup-restore-job.sample-template.yaml)
+Please see the [CFN Template](test/cloud-backup-restore-job.sample-template.yaml) for example resource.
 
 ## Integration Testing w/ AWS
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
-CloudFormation stack template along with the other neccessary parameters.
+CloudFormation stack template along with the other necessary parameters.
 
 You can use the project.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
@@ -59,4 +58,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-restore-jobs/test/cloud-backup-restore-job.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=SnapshotId,ParameterValue=<SnapshotId>
 ```
 
-For more information see: MongoDB Atlas API Cloud BackUp Restore Jobs [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs) .
+For more information see: MongoDB Atlas API [Cloud BackUp Restore Jobs Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs) .

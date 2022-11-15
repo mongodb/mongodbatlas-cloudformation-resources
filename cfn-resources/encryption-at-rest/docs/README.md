@@ -1,6 +1,6 @@
 # MongoDB::Atlas::EncryptionAtRest
 
-This resource allows administrators to enable, disable, configure, and retrieve the configuration for Encryption at Rest.
+Returns and edits the Encryption at Rest using Customer Key Management configuration.
 
 ## Syntax
 

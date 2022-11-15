@@ -4,11 +4,14 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"math"
 	"math/big"
 	"strconv"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -20,20 +23,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const (
-	publicKey              = "ApiKeys.PublicKey"
-	privateKey             = "ApiKeys.PrivateKey"
-	projectID              = "ProjectId"
-	customMasterKey        = "AwsKms.CustomerMasterKeyID"
-	roleID                 = "AwsKms.RoleID"
-	region                 = "AwsKms.Region"
-	errorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
-	errorCreateEncryption  = "error - Create Encryption  for Project(%s)- Details: %+v"
-)
-
-var CreateRequiredFields = []string{publicKey, privateKey, roleID, customMasterKey, region, projectID}
-var ReadRequiredFields = []string{publicKey, privateKey, projectID}
-var DeleteRequiredFields = []string{publicKey, privateKey, projectID}
+var CreateAndUpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.RoleID, constants.CustomMasterKey, constants.RoleID, constants.ProjectID}
+var ReadAndDeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -41,14 +32,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = logger.Debugf("Create - Encryption for Request() currentModel:%+v", currentModel)
 
 	// Validate required fields in the request
-	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(CreateAndUpdateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		_, _ = logger.Warnf(errorCreateMongoClient, err)
+		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
@@ -71,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create
 	_, _, err = client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf(errorCreateEncryption, projectID, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error - Create Encryption  for Project(%s)- Details: %+v", projectID, err)
 	}
 	currentModel.Id = pointy.String(strconv.FormatInt(randInt64(), 10))
 
@@ -82,35 +73,48 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	_, _ = logger.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
-
+// ValidateRequest function to validate the request
+func ValidateRequest(requiredFields []string, currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
 	// Validate required fields in the request
-	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	if modelValidation := validateModel(requiredFields, currentModel); modelValidation != nil {
+		return *modelValidation, nil, errors.New("required field not found")
 	}
 
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		_, _ = logger.Warnf(errorCreateMongoClient, err)
+		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+			cloudformation.HandlerErrorCodeInvalidRequest), nil, err
 	}
 
-	// Check if already  exist
-	projectID := *currentModel.ProjectId
+	// Check if  already exist
 	if !isExist(currentModel) {
-		_, _ = logger.Debugf("Read - error in encryption at rest with id(%s)", projectID)
+		_, _ = logger.Warnf("resource not found %s", *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, errors.New(constants.ResourceNotFound)
+	}
+	return handler.ProgressEvent{}, client, nil
+}
+
+// Read handles the Read event from the Cloudformation service.
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup() // logger setup
+	_, _ = logger.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
+
+	// validate the request
+	event, client, err := ValidateRequest(ReadAndDeleteRequiredFields, currentModel)
+	if err != nil {
+		if err.Error() == constants.ResourceNotFound {
+			return event, nil
+		}
+		return event, err
 	}
 
 	// API call
+	projectID := *currentModel.ProjectId
 	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
 	if err != nil {
 		return handler.NewProgressEvent(), fmt.Errorf("error fetching encryption at rest configuration for project (%s): %s", projectID, err)
@@ -135,27 +139,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup() // logger setup
 	_, _ = logger.Debugf("Update - Encryption for Request() currentModel:%+v", currentModel)
 
-	// Validate required fields in the request
-	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	// validate the request
+	event, client, err := ValidateRequest(CreateAndUpdateRequiredFields, currentModel)
 	if err != nil {
-		_, _ = logger.Warnf(errorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+		if err.Error() == constants.ResourceNotFound {
+			return event, nil
+		}
+		return event, err
 	}
-	// delete existing configuration
+	// API call
 	projectID := *currentModel.ProjectId
-	if !isExist(currentModel) {
-		_, _ = logger.Debugf("Delete encryption - errors encryption at rest with id(%s)", projectID)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	// API call to delete
 	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error deleting encryption at rest configuration for project (%s): %s", projectID, err)
@@ -178,7 +171,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create
 	_, _, err = client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf(errorCreateEncryption, projectID, err)
+		return handler.ProgressEvent{}, fmt.Errorf("error - Create Encryption  for Project(%s)- Details: %+v", projectID, err)
 	}
 
 	return handler.ProgressEvent{
@@ -193,30 +186,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup() // logger setup
 	_, _ = logger.Debugf("Delete encryption for Request() currentModel:%+v", currentModel)
 
-	// Validate required fields in the request
-	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	// validate the request
+	event, client, err := ValidateRequest(ReadAndDeleteRequiredFields, currentModel)
 	if err != nil {
-		_, _ = logger.Warnf(errorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+		if err.Error() == constants.ResourceNotFound {
+			return event, nil
+		}
+		return event, err
 	}
 
+	// API call
 	projectID := *currentModel.ProjectId
-
-	// Check if  already exist
-	if !isExist(currentModel) {
-		_, _ = logger.Debugf("Delete encryption - errors encryption at rest with id(%s)", projectID)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	// API call to delete
 	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error deleting encryption at rest configuration for project (%s): %s", projectID, err)

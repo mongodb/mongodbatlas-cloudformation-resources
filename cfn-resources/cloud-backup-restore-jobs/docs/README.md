@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CloudBackUpRestoreJobs
 
-This resource allows you to create, cancel, get one or list all cloud provider snapshot restore jobs.
+Returns, starts, and cancels Cloud Backup restore jobs.
 
 ## Syntax
 

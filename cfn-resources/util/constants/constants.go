@@ -22,4 +22,10 @@ const (
 	Username     = "Username"
 	Roles        = "Roles"
 	AccessList   = "AccessList"
+
+	CustomMasterKey        = "AwsKms.CustomerMasterKeyID"
+	RoleID                 = "AwsKms.RoleID"
+	Region                 = "AwsKms.Region"
+	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
+	ResourceNotFound       = "resource not found"
 )

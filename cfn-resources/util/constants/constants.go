@@ -14,6 +14,16 @@ const (
 	RouteTableCIDRBlock              = "RouteTableCIDRBlock"
 	AWS                              = "AWS"
 	VPCID                            = "VpcId"
+
+	RegionName     = "RegionName"
+	AtlasCIDRBlock = "AtlasCidrBlock"
+
+	DatabaseName = "DatabaseName"
+	Username     = "Username"
+	Roles        = "Roles"
+	AccessList   = "AccessList"
+
+
 	SnapshotID                       = "SnapshotId"
 	Automated                        = "automated"
 	Download                         = "download"

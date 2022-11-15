@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a cloud provider snapshot on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description" : "Returns, takes, and removes Cloud Backup snapshots, this will be billed to your Atlas account.",
   "Parameters" : {
     "ClusterName" : {
       "Type" : "String",

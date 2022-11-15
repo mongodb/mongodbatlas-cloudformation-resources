@@ -1,105 +1,130 @@
 {
-    "additionalProperties": false,
-    "definitions": {
-        "accessListDefinition": {
-            "additionalProperties": false,
-            "properties": {
-                "AwsSecurityGroup": {
-                    "description": "ID of the AWS security group to allow access. Mutually exclusive with CIDRBlock and IPAddress.",
-                    "type": "string"
-                },
-                "CIDRBlock": {
-                    "description": "Accessable entry in Classless Inter-Domain Routing (CIDR) notation. Mutually exclusive with ipAddress and AwsSecurityGroup.",
-                    "type": "string"
-                },
-                "Comment": {
-                    "description": "Comment associated with the ip access list entry.",
-                    "type": "string"
-                },
-                "IPAddress": {
-                    "description": "Accessable IP address. Mutually exclusive with CIDRBlock and AwsSecurityGroup.",
-                    "type": "string"
-                },
-                "ProjectId": {
-                    "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
-                    "type": "string"
-                }
-            },
-            "type": "object"
+  "additionalProperties": false,
+  "definitions": {
+    "accessListDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "DeleteAfterDate": {
+          "description": "Date and time after which MongoDB Cloud deletes the temporary access list entry. This parameter expresses its value in the ISO 8601 timestamp format in UTC and can include the time zone designation. The date must be later than the current date but no later than one week after you submit this request. The resource returns this parameter if you specified an expiration date when creating this IP access list entry.",
+          "type": "string"
         },
-        "apiKeyDefinition": {
-            "additionalProperties": false,
-            "properties": {
-                "PrivateKey": {
-                    "type": "string"
-                },
-                "PublicKey": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        }
-    },
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "handlers": {
-        "create": {
-            "permissions": [
-                ""
-            ]
+        "AwsSecurityGroup": {
+          "description": "Unique string of the Amazon Web Services (AWS) security group that you want to add to the project's IP access list. Your IP access list entry can be one awsSecurityGroup, one cidrBlock, or one ipAddress. You must configure Virtual Private Connection (VPC) peering for your project before you can add an AWS security group to an IP access list. You cannot set AWS security groups as temporary access list entries. Don't set this parameter if you set cidrBlock or ipAddress.",
+          "type": "string"
         },
-        "delete": {
-            "permissions": [
-                ""
-            ]
+        "CIDRBlock": {
+          "description": "Range of IP addresses in Classless Inter-Domain Routing (CIDR) notation that you want to add to the project's IP access list. Your IP access list entry can be one awsSecurityGroup, one cidrBlock, or one ipAddress. Don't set this parameter if you set awsSecurityGroup or ipAddress",
+          "type": "string"
         },
-        "read": {
-            "permissions": [
-                ""
-            ]
+        "Comment": {
+          "description": "Remark that explains the purpose or scope of this IP access list entry.",
+          "type": "string"
         },
-        "update": {
-            "permissions": [
-                ""
-            ]
-        }
-    },
-    "primaryIdentifier": [
-        "/properties/Id"
-    ],
-    "properties": {
-        "AccessList": {
-            "items": {
-                "$ref": "#/definitions/accessListDefinition"
-            },
-            "minItems": 1,
-            "type": "array",
-            "uniqueItems": true
-        },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
-        },
-        "Id": {
-            "description": "The unique identifier for the Project API ip access list rules.",
-            "type": "string"
+        "IPAddress": {
+          "description": "IP address that you want to add to the project's IP access list. Your IP access list entry can be one awsSecurityGroup, one cidrBlock, or one ipAddress. Don't set this parameter if you set awsSecurityGroup or cidrBlock.",
+          "type": "string"
         },
         "ProjectId": {
-            "description": "The unique identifier for the project to which you want to add one or more ip access list entries.",
-            "type": "string"
-        },
-        "TotalCount": {
-            "description": "The unique identifier for the Project ip access list rules.",
-            "type": "integer"
+          "description": "Unique 24-hexadecimal digit string that identifies your project.",
+          "type": "string"
         }
+      },
+      "type": "object"
     },
-    "readOnlyProperties": [
-        "/properties/Id",
-        "/properties/TotalCount"
-    ],
-    "required": [
-        "ProjectId",
-        "AccessList",
-        "ApiKeys"
-    ],
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-    "typeName": "MongoDB::Atlas::ProjectIpAccessList"
+    "listOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "PageNum": {
+          "type": "integer",
+          "description": "Number of the page that displays the current set of the total objects that the response returns."
+        },
+        "ItemsPerPage": {
+          "type": "integer",
+          "description": "Number of items that the response returns per page."
+        },
+        "IncludeCount": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
+        }
+      },
+      "type": "object"
+    },
+    "apiKeyDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "description": "Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.",
+  "handlers": {
+    "create": {
+      "permissions": [
+        ""
+      ]
+    },
+    "delete": {
+      "permissions": [
+        ""
+      ]
+    },
+    "read": {
+      "permissions": [
+        ""
+      ]
+    },
+    "update": {
+      "permissions": [
+        ""
+      ]
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id"
+  ],
+  "properties": {
+    "AccessList": {
+      "items": {
+        "$ref": "#/definitions/accessListDefinition"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "Id": {
+      "description": "The unique identifier for the Project API ip access list rules.",
+      "type": "string"
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string"
+    },
+    "TotalCount": {
+      "description": "Number of documents returned in this response.",
+      "type": "integer"
+    },
+    "ListOptions": {
+      "$ref": "#/definitions/listOptions"
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/TotalCount"
+  ],
+  "required": [
+    "ProjectId",
+    "AccessList",
+    "ApiKeys"
+  ],
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "typeName": "MongoDB::Atlas::ProjectIpAccessList"
 }

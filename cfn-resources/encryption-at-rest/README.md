@@ -42,7 +42,7 @@ Please see the [CFN Template](test/encryptionatrest.sample-template.yaml) for ex
 
 ## Integration Testing w/ AWS
 
-The [../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh)  script
+The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
@@ -61,7 +61,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> ParameterKey=Enabled,ParameterValue=<true or false>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectName,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> ParameterKey=Enabled,ParameterValue=<true or false>
 ```
 
 For more information see: MongoDB Atlas API [Encryption At Rest Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.

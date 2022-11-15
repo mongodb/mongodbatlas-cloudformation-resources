@@ -38,7 +38,7 @@ Please see the [CFN Template](test/cloud-backup-snapshot.sample-template.yaml) f
 
 ## Integration Testing w/ AWS
 
-The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](launch-quickstart.sh) script
+The [../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 

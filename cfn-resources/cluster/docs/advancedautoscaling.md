@@ -1,4 +1,4 @@
-# MongoDB::Atlas::Cluster autoScaling
+# MongoDB::Atlas::Cluster advancedAutoScaling
 
 ## Syntax
 
@@ -8,7 +8,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#diskgbenabled" title="DiskGBEnabled">DiskGBEnabled</a>" : <i>Boolean</i>,
+    "<a href="#diskgb" title="DiskGB">DiskGB</a>" : <i><a href="diskgb.md">diskGB</a></i>,
     "<a href="#compute" title="Compute">Compute</a>" : <i><a href="compute.md">compute</a></i>
 }
 </pre>
@@ -16,17 +16,17 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#diskgbenabled" title="DiskGBEnabled">DiskGBEnabled</a>: <i>Boolean</i>
+<a href="#diskgb" title="DiskGB">DiskGB</a>: <i><a href="diskgb.md">diskGB</a></i>
 <a href="#compute" title="Compute">Compute</a>: <i><a href="compute.md">compute</a></i>
 </pre>
 
 ## Properties
 
-#### DiskGBEnabled
+#### DiskGB
 
 _Required_: No
 
-_Type_: Boolean
+_Type_: <a href="diskgb.md">diskGB</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

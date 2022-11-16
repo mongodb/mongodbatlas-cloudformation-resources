@@ -22,8 +22,8 @@ cd ${repo_root}/cfn-resources/cluster
 ./test/cluster.create-sample-cfn-request.sh YourProjectID YourClusterName > test.request.json 
 echo "Sample request:"
 cat test.request.json
-cfn invoke CREATE test.request.json 
-cfn invoke DELETE test.request.json 
+cfn invoke resource CREATE test.request.json 
+cfn invoke resource DELETE test.request.json 
 cd -
 ```
 

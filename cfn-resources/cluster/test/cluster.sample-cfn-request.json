@@ -1,21 +1,65 @@
 {
     "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::Cluster",
-        "properties" : {
-          "ApiKeys": {
-            "PublicKey": "<ATLAS_PUBLIC_KEY>",
-            "PrivateKey": "<ATLAS_PRIVATE_KEY>"
-          },
-          "Name": "Clusters-Thurs-3",
-          "ProjectId": "<ATLAS_PROJECT_NAME>",
-          "MongoDBMajorVersion": "4.4",
+      "ProjectId": "",
+      "Name": "cfn-test-bot-cluster",
+      "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+      },
+      "AdvancedSettings": {
+        "DefaultReadConcern": "available",
+        "DefaultWriteConcern": "1",
+        "JavascriptEnabled": "true",
+        "MinimumEnabledTLSProtocol": "TLS1_2",
+        "NoTableScan": "false",
+        "OplogSizeMB": "2000",
+        "SampleSizeBIConnector": "110",
+        "SampleRefreshIntervalBIConnector": "310"
+      },
+      "BackupEnabled": "true",
+      "ClusterType": "REPLICASET",
+      "Paused": "true",
+      "PitEnabled": "false",
+      "BiConnector": {
+        "ReadPreference": "secondary",
+        "Enabled": "false"
+      },
+      "ReplicationSpecs": [
+        {
           "NumShards": "1",
-          "ProviderSettings": {
-            "InstanceSizeName": "M10",
-            "RegionName": "us-east-1"
-          }
+          "AdvancedRegionConfigs": [
+            {
+              "AutoScaling": {
+                "DiskGB": {
+                  "Enabled": "true"
+                },
+                "Compute": {
+                  "Enabled": "false",
+                  "ScaleDownEnabled": "false"
+                }
+              },
+              "AnalyticsSpecs": {
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M10",
+                "NodeCount": "3"
+              },
+              "ElectableSpecs": {
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M10",
+                "NodeCount": "3"
+              },
+              "ReadOnlySpecs": {
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M10",
+                "NodeCount": "3"
+              },
+              "Priority": "7",
+              "RegionName": "US_EAST_1"
+            }
+          ]
         }
+      ]
     },
-    "providerLogGroupName" : "mongodb-atlas-cluster-logs",
+  "providerLogGroupName" : "mongodb-atlas-cluster-logs",
     "previousResourceState": { }
 }

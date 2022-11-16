@@ -38,7 +38,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf("Create _,_ := logger.Debugf-- currentModel: %+v", *currentModel)
+	_, _ = logger.Debugf("Create currentModel: %+v", *currentModel)
 
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
@@ -73,10 +73,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			_, err = client.ProjectAPIKeys.Assign(context.Background(), project.ID, *key.Key, &mongodbatlas.AssignAPIKey{Roles: key.RoleNames})
 			if err != nil {
 				_, _ = logger.Warnf("Assign Key Error: %s", err)
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          "Error while Assigning Key to project",
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+				return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error while Assigning Key to project : %s", err.Error()),
+					res.Response), nil
 			}
 		}
 	}
@@ -86,10 +84,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _, err = client.Projects.AddTeamsToProject(context.Background(), project.ID, readTeams(currentModel.ProjectTeams))
 		if err != nil {
 			_, _ = logger.Warnf("AddTeamsToProject Error: %s", err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Error while adding teams to project",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error while adding teams to project : %s", err.Error()),
+				res.Response), nil
 		}
 	}
 
@@ -115,7 +111,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 
-	event, proj, err := getProject(*currentModel.Name, client, currentModel)
+	event, proj, err := getProjectWithSettings(client, currentModel)
 	if err != nil {
 		_, _ = logger.Warnf("getProject Error: %s", err)
 		return event, err
@@ -142,13 +138,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	var name string
-	if currentModel.Name != nil {
-		name = *currentModel.Name
-	}
-	event, model, err := getProject(name, client, currentModel)
+
+	event, model, err := getProjectWithSettings(client, currentModel)
 	if err != nil {
-		return event, err
+		return event, nil
 	}
 
 	return handler.ProgressEvent{
@@ -296,7 +289,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 	}
 
-	event, project, err := getProject("", client, currentModel)
+	event, project, err := getProjectWithSettings(client, currentModel)
 	if err != nil {
 		return event, err
 	}
@@ -328,26 +321,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		id = *currentModel.Id
 	}
 
-	if id == "" {
-		var name string
-		if currentModel.Name != nil {
-			name = *currentModel.Name
-		}
-		if len(name) > 0 {
-			_, _ = logger.Debugf("Project id was nil, try lookup name:%s", name)
-			project, res, errr := client.Projects.GetOneProjectByName(context.Background(), name)
-			if errr != nil {
-				return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", errr.Error()),
-					res.Response), nil
-			}
-			_, _ = logger.Debugf("Looked up project:%+v", project)
-			id = project.ID
-		} else {
-			err = fmt.Errorf("@@@@Error deleting project. No Id or Name found currentModel:%+v)", currentModel)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, err
-		}
+	event, _, err = getProject(client, currentModel)
+	if err != nil {
+		return event, nil
 	}
 	_, _ = logger.Debugf("Deleting project with id(%s)", id)
 
@@ -416,46 +392,71 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // Read project
-func getProject(name string, client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
-	var id string
-	if len(name) > 0 {
-		project, _, errr := client.Projects.GetOneProjectByName(context.Background(), name)
+func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
+	var project *mongodbatlas.Project
+	if len(*currentModel.Name) > 0 {
+		event, project, err = getProjectByName(currentModel.Name, client)
 		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          errr.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
+			return event, nil, err
 		}
-		currentModel.Name = &project.Name
-		currentModel.OrgId = &project.OrgID
-		currentModel.Created = &project.Created
-		currentModel.ClusterCount = &project.ClusterCount
-		id = project.ID
-		currentModel.Id = &project.ID
 	} else {
-		id = *currentModel.Id
-		_, _ = logger.Debugf("Looking for project: %s", id)
-		project, _, errr := client.Projects.GetOneProject(context.Background(), id)
+		event, project, err = getProjectByID(currentModel.Id, client)
 		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          errr.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
+			return event, nil, err
 		}
-		currentModel.Name = &project.Name
-		currentModel.OrgId = &project.OrgID
-		currentModel.Created = &project.Created
-		currentModel.ClusterCount = &project.ClusterCount
-		currentModel.Id = &project.ID
 	}
+	currentModel.Name = &project.Name
+	currentModel.OrgId = &project.OrgID
+	currentModel.Created = &project.Created
+	currentModel.ClusterCount = &project.ClusterCount
+	currentModel.Id = &project.ID
 
-	event, model, err = readProjectSettings(client, id, currentModel)
+	return handler.ProgressEvent{}, currentModel, nil
+}
+
+// Read project
+func getProjectWithSettings(client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
+	event, currentModel, err = getProject(client, currentModel)
+	if err != nil {
+		return event, currentModel, err
+	}
+	event, model, err = readProjectSettings(client, *currentModel.Id, currentModel)
 
 	if err != nil {
 		return event, model, err
 	}
 
 	return handler.ProgressEvent{}, model, nil
+}
+
+func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.ProgressEvent, model *mongodbatlas.Project, err error) {
+	project, res, err := client.Projects.GetOneProjectByName(context.Background(), *name)
+	if err != nil {
+		if res.Response.StatusCode == 401 { // cfn test
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while deleting project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
+		}
+		return progressevents.GetFailedEventByResponse(err.Error(),
+			res.Response), project, err
+	}
+	return handler.ProgressEvent{}, project, err
+}
+
+func getProjectByID(id *string, client *mongodbatlas.Client) (event handler.ProgressEvent, model *mongodbatlas.Project, err error) {
+	project, res, err := client.Projects.GetOneProjectByName(context.Background(), *id)
+	if err != nil {
+		if res.Response.StatusCode == 401 { // cfn test
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Error while deleting project",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
+		}
+		return progressevents.GetFailedEventByResponse(err.Error(),
+			res.Response), project, err
+	}
+	return handler.ProgressEvent{}, project, err
 }
 
 func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
@@ -499,7 +500,7 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 	}
 
 	// Set api-keys
-	apiKeys := readKeys(*currentModel.Id, projectAPIKeys)
+	apiKeys := readKeys(*currentModel.Id, projectAPIKeys, currentModel)
 	currentModel.ProjectTeams = teams
 	currentModel.ProjectApiKeys = apiKeys
 	return handler.ProgressEvent{}, currentModel, err
@@ -593,9 +594,14 @@ func readTeams(teams []ProjectTeam) []*mongodbatlas.ProjectTeam {
 	return newTeams
 }
 
-func readKeys(groupID string, keys []mongodbatlas.APIKey) []ProjectApiKey {
+func readKeys(groupID string, keys []mongodbatlas.APIKey, currentModel *Model) []ProjectApiKey {
 	var apiKeys []ProjectApiKey
 	for i := range keys {
+		// Don't include the org level key used for atlas authentication
+		// cfn test doesn't allow extra keys in the response
+		if keys[i].PublicKey == *currentModel.ApiKeys.PublicKey {
+			continue
+		}
 		var roles []string
 		for j := range keys[i].Roles {
 			if keys[i].Roles[j].GroupID == groupID && !strings.HasPrefix(keys[i].Roles[j].RoleName, "ORG_") {

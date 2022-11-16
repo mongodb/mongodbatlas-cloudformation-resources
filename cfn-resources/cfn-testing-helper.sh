@@ -32,7 +32,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+resources="${1:-project project-ip-access-list}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -122,7 +122,6 @@ done
 
 
 
-
 echo "Step 3/3: Running 'cfn test' on resource type"
 SAM_LOG=$(mktemp)
 for resource in ${resources};
@@ -146,9 +145,15 @@ do
     cd -
 done
 
+echo "Step 4: cleaning up 'cfn test' inputs "
+SAM_LOG=$(mktemp)
+for resource in ${resources};
+do
+    cd "${res}"
+    ./test/cfn-test-delete-inputs.sh && echo "resource:${res} inputs delete OK" || echo "resource:${res} input delete FAILED"
+done
 
-
-echo "Clean up afterwards"
+echo "Clean up project"
 for resource in ${resources};
 do
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue

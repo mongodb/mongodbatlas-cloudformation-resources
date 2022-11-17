@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/aws_vpc_endpoint"
 	"net/http"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint"
@@ -69,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointID, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
+		vpcEndpointID, progressEvent := aws_vpc_endpoint.Create(req, *peConnection, *currentModel.Region,
 			*currentModel.SubnetId, *currentModel.VpcId)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
@@ -83,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
-		currentModel.Id = &ValidationOutput.Id
+		currentModel.Id = &ValidationOutput.ID
 		currentModel.InterfaceEndpoints = ValidationOutput.InterfaceEndpoints
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
@@ -172,7 +173,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return *epr, nil
 		}
 
-		_, epr = awsvpcendpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
+		_, epr = aws_vpc_endpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
@@ -283,7 +284,7 @@ func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model)
 	if progressEvent.OperationStatus == handler.InProgress {
 		progressEvent.ResourceModel = model
 
-		callbackID, _ := progressEvent.CallbackContext["Id"]
+		callbackID, _ := progressEvent.CallbackContext["ID"]
 
 		if callbackID != nil {
 			id := fmt.Sprint(callbackID)

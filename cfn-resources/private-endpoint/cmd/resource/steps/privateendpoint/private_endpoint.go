@@ -1,4 +1,4 @@
-package private_endpoint
+package privateendpoint
 
 import (
 	"context"
@@ -41,13 +41,13 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	return nil
 }
 
-func Create(mongodbClient *mongodbatlas.Client, groupId string, interfaceEndpointID string, endpointServiceID string) handler.ProgressEvent {
+func Create(mongodbClient *mongodbatlas.Client, groupID string, interfaceEndpointID string, endpointServiceID string) handler.ProgressEvent {
 	interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
 		ID: interfaceEndpointID,
 	}
 
 	_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
-		groupId,
+		groupID,
 		ProviderName,
 		endpointServiceID,
 		interfaceEndpointRequest)
@@ -95,19 +95,15 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 
 	switch privateEndpointResponse.AWSConnectionStatus {
 	case StatusPendingAcceptance, StatusPending:
-		{
-			pe := progress_events.GetInProgressProgressEvent("Adding private endpoint in progress",
-				req.CallbackContext, nil, 20)
-			return nil, &pe
-		}
+		pe := progress_events.GetInProgressProgressEvent("Adding private endpoint in progress",
+			req.CallbackContext, nil, 20)
+		return nil, &pe
 	case StatusAvailable:
-		{
-			vr := ValidationResponse{
-				ID:                 callBackContext.ID,
-				InterfaceEndpoints: []string{callBackContext.InterfaceID},
-			}
-			return &vr, nil
+		vr := ValidationResponse{
+			ID:                 callBackContext.ID,
+			InterfaceEndpoints: []string{callBackContext.InterfaceID},
 		}
+		return &vr, nil
 	}
 
 	pe := handler.ProgressEvent{

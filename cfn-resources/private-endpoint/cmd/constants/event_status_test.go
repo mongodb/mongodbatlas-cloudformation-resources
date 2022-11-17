@@ -1,8 +1,9 @@
 package constants_test
 
 import (
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"testing"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 )
 
 func TestParseEventStatusSuccess(t *testing.T) {

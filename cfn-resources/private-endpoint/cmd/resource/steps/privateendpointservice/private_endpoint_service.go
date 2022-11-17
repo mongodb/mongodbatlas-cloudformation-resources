@@ -1,4 +1,4 @@
-package private_endpoint_service
+package privateendpointservice
 
 import (
 	"context"
@@ -37,15 +37,14 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	return nil
 }
 
-func Create(mongodbClient mongodbatlas.Client, region string, groupId string) handler.ProgressEvent {
-
+func Create(mongodbClient mongodbatlas.Client, region string, groupID string) handler.ProgressEvent {
 	privateEndpointRequest := &mongodbatlas.PrivateEndpointConnection{
 		ProviderName: ProviderName,
 		Region:       region,
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Create(context.Background(),
-		groupId,
+		groupID,
 		privateEndpointRequest)
 
 	if response.Response.StatusCode == http.StatusConflict {
@@ -77,8 +76,7 @@ func Create(mongodbClient mongodbatlas.Client, region string, groupId string) ha
 		nil, 20)
 }
 
-func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId string, req handler.Request) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
-
+func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID string, req handler.Request) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 
 	err := PrivateEndpointCallBackContext.FillStruct(req.CallbackContext)
@@ -88,7 +86,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId stri
 		return nil, &ev
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), groupId,
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), groupID,
 		ProviderName, PrivateEndpointCallBackContext.ID)
 	if err != nil {
 		ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),

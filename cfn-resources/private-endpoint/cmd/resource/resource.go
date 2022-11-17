@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/aws_vpc_endpoint"
 	"net/http"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint_service"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpointservice"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -39,7 +40,6 @@ var ListRequiredFields = []string{constants.GroupID, constants.PubKey, constants
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Info("Initiated Create")
 
 	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
@@ -57,30 +57,28 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	log.Infof("Status received %s", status)
-
 	switch status {
 	case resource_constats.CreationInit:
-		pe := private_endpoint_service.Create(*mongodbClient, *currentModel.Region, *currentModel.GroupId)
+		pe := privateendpointservice.Create(*mongodbClient, *currentModel.Region, *currentModel.GroupId)
 		return addModelToProgressEvent(&pe, currentModel), nil
 	case resource_constats.CreatingPrivateEndpointService:
-		peConnection, completionValidation := private_endpoint_service.ValidateCreationCompletion(mongodbClient,
+		peConnection, completionValidation := privateendpointservice.ValidateCreationCompletion(mongodbClient,
 			*currentModel.GroupId, req)
 		if completionValidation != nil {
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointID, progressEvent := aws_vpc_endpoint.Create(req, *peConnection, *currentModel.Region,
+		vpcEndpointID, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
 			*currentModel.SubnetId, *currentModel.VpcId)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
 
-		pe := private_endpoint.Create(mongodbClient, *currentModel.GroupId, *vpcEndpointID, peConnection.ID)
+		pe := privateendpoint.Create(mongodbClient, *currentModel.GroupId, *vpcEndpointID, peConnection.ID)
 
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
-		ValidationOutput, progressEvent := private_endpoint.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
+		ValidationOutput, progressEvent := privateendpoint.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
@@ -167,13 +165,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.completeByConnection(*privateEndpointResponse)
 
 	if currentModel.HasInterfaceEndpoints() {
-		epr := private_endpoint.DeletePrivateEndpoints(mongodbClient, *currentModel.GroupId, *currentModel.Id,
+		epr := privateendpoint.DeletePrivateEndpoints(mongodbClient, *currentModel.GroupId, *currentModel.Id,
 			currentModel.InterfaceEndpoints)
 		if epr != nil {
 			return *epr, nil
 		}
 
-		_, epr = aws_vpc_endpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
+		_, epr = awsvpcendpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
@@ -229,9 +227,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	for _, privateEndpoint := range privateEndpointResponse {
+	for i := range privateEndpointResponse {
 		var m Model
-		m.completeByConnection(privateEndpoint)
+		m.completeByConnection(privateEndpointResponse[i])
 		mm = append(mm, m)
 	}
 
@@ -284,7 +282,7 @@ func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model)
 	if progressEvent.OperationStatus == handler.InProgress {
 		progressEvent.ResourceModel = model
 
-		callbackID, _ := progressEvent.CallbackContext["ID"]
+		callbackID := progressEvent.CallbackContext["ID"]
 
 		if callbackID != nil {
 			id := fmt.Sprint(callbackID)

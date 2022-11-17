@@ -1,4 +1,4 @@
-package aws_vpc_endpoint
+package awsvpcendpoint
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 	return ec2.New(req.Session, aws.NewConfig().WithRegion(region))
 }
 
-func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, vpcID string) (*string, *handler.ProgressEvent) {
+func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, subnetID string, vpcID string) (*string, *handler.ProgressEvent) {
 	svc := newEc2Client(region, req)
 
 	vcpType := "Interface"
@@ -24,7 +24,7 @@ func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, r
 		VpcId:           &vpcID,
 		ServiceName:     &peCon.EndpointServiceName,
 		VpcEndpointType: &vcpType,
-		SubnetIds:       []*string{&subnetId},
+		SubnetIds:       []*string{&subnetID},
 	}
 
 	vpcE, err := svc.CreateVpcEndpoint(&connection)
@@ -42,8 +42,8 @@ func Delete(req handler.Request, interfaceEndpoints []string, region string) (*e
 
 	vpcEndpointIds := make([]*string, 0)
 
-	for _, i := range interfaceEndpoints {
-		vpcEndpointIds = append(vpcEndpointIds, &i)
+	for i := range interfaceEndpoints {
+		vpcEndpointIds = append(vpcEndpointIds, &interfaceEndpoints[i])
 	}
 
 	connection := ec2.DeleteVpcEndpointsInput{

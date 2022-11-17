@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#iamassumedrolearn" title="IamAssumedRoleArn">IamAssumedRoleArn</a>" : <i>String</i>,
+        "<a href="#iamawsregion" title="IamAwsRegion">IamAwsRegion</a>" : <i>String</i>,
     }
 }
 </pre>
@@ -25,6 +26,7 @@ Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#iamassumedrolearn" title="IamAssumedRoleArn">IamAssumedRoleArn</a>: <i>String</i>
+    <a href="#iamawsregion" title="IamAwsRegion">IamAwsRegion</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -45,9 +47,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
@@ -61,9 +63,19 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>20</code>
+_Minimum Length_: <code>20</code>
 
-_Maximum_: <code>2048</code>
+_Maximum Length_: <code>2048</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### IamAwsRegion
+
+Valid AWS Region in which IAM assumed role will be provisioned for cloudprovider access from Atlas
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

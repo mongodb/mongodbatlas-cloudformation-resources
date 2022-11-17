@@ -1,0 +1,12 @@
+{
+  "desiredResourceState": {
+    "IamAwsRegion": "us-east-1",
+    "ApiKeys": {
+      "PublicKey": "htcxduya",
+      "PrivateKey": "e2fba4fd-aeaf-4cb6-9f25-f3a3d876f29f"
+    },
+    "ProjectId": "625454459c4e6108393d650d"
+  },
+  "providerLogGroupName": "mongodb-atlas-cloudprovideraccess-logs",
+  "previousResourceState": {}
+}

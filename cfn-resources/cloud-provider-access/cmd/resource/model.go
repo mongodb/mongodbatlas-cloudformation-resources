@@ -9,6 +9,7 @@ type Model struct {
 	ProjectId                  *string           `json:",omitempty"`
 	RoleId                     *string           `json:",omitempty"`
 	IamAssumedRoleArn          *string           `json:",omitempty"`
+	IamAwsRegion               *string           `json:",omitempty"`
 	AuthorizedDate             *string           `json:",omitempty"`
 	CreatedDate                *string           `json:",omitempty"`
 	AtlasAWSAccountArn         *string           `json:",omitempty"`

@@ -31,8 +31,9 @@
   "description": "",
   "handlers": {
     "create": {
-      "permissions": []
-    },
+      "permissions": [
+        ]
+      },
     "read": {
       "permissions": []
     },
@@ -71,6 +72,10 @@
       "maxLength": 2048,
       "minLength": 20
     },
+    "IamAwsRegion": {
+      "type": "string",
+      "description": "Valid AWS Region in which IAM assumed role will be provisioned for cloudprovider access from Atlas"
+    },
     "AuthorizedDate": {
       "type": "string",
       "description": "Date and time when someone authorized this role for the specified cloud service provider. This parameter expresses its value in the ISO 8601 timestamp format in UTC."
@@ -97,6 +102,7 @@
     "/properties/CreatedDate",
     "/properties/FeatureUsages"
   ],
+
   "typeName": "MongoDB::Atlas::cloudProviderAccess",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

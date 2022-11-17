@@ -66,7 +66,11 @@ func Create(mongodbClient mongodbatlas.Client, region string, groupId string) ha
 
 	var callBackMap map[string]interface{}
 	data, _ := json.Marshal(callBackContext)
-	json.Unmarshal(data, &callBackMap)
+	err = json.Unmarshal(data, &callBackMap)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+			response.Response)
+	}
 
 	return progress_events.GetInProgressProgressEvent("Creating private endpoint service", callBackMap,
 		nil, 20)
@@ -99,8 +103,13 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId stri
 
 		var callBackMap map[string]interface{}
 		data, _ := json.Marshal(callBackContext)
+		err = json.Unmarshal(data, &callBackMap)
+		if err != nil {
+			ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+				response.Response)
+			return nil, &ev
+		}
 
-		json.Unmarshal(data, &callBackMap)
 		ev := progress_events.GetInProgressProgressEvent("Private endpoint service initiating", callBackMap,
 			nil, 20)
 

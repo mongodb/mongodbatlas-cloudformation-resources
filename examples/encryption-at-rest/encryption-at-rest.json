@@ -7,17 +7,17 @@
         "Description" : "",
         "ConstraintDescription" : ""
       },
-      "AccessKeyID" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "SecretAccessKey" : {
+      "RoleID" : {
         "Type" : "String",
         "Description" : "",
         "ConstraintDescription" : ""
       },
       "CustomerMasterKeyID" : {
+        "Type" : "String",
+        "Description" : "",
+        "ConstraintDescription" : ""
+      },
+      "Enabled" : {
         "Type" : "String",
         "Description" : "",
         "ConstraintDescription" : ""
@@ -46,10 +46,9 @@
         "Properties": {
           "ProjectId": { "Ref" : "Project" },
           "AwsKms": {
-            "AccessKeyID": { "Ref" : "AccessKeyID" },
-            "SecretAccessKey": { "Ref" : "SecretAccessKey" },
+            "RoleID": { "Ref" : "RoleID" },
             "CustomerMasterKeyID": { "Ref" : "CustomerMasterKeyID" },
-            "Enabled": true,
+            "Enabled": { "Ref" : "Enabled" },
             "Region": { "Ref" : "Region" }
           },
           "ApiKeys": {
@@ -64,7 +63,7 @@
         "Description": "Id of the project",
         "Value" : { "Ref" : "Project" }
       },
-      "EncryptionId" : {
+      "Id" : {
         "Description": "Id of the encryption at rest",
         "Value" : { "Ref" : "EncryptionAtRest" }
       }

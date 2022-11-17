@@ -22,13 +22,13 @@ const (
 // Todo: im not convinced about this resource, maybe we can find another way
 type privateEndpointCreationCallBackContext struct {
 	StateName   constants.EventStatus
-	Id          string
+	ID          string
 	InterfaceId string
 }
 
 func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {
 	//Todo: we can unify this logic
-	s.Id = fmt.Sprint(m["Id"])
+	s.ID = fmt.Sprint(m["ID"])
 	s.InterfaceId = fmt.Sprint(m["InterfaceId"])
 	eventStatusParam := fmt.Sprint(m["StateName"])
 	eventStatus, err := constants.ParseEventStatus(eventStatusParam)
@@ -58,7 +58,7 @@ func Create(mongodbClient *mongodbatlas.Client, groupId string, interfaceEndpoin
 
 	callBackContext := privateEndpointCreationCallBackContext{
 		StateName:   constants.CreatingPrivateEndpoint,
-		Id:          endpointServiceID,
+		ID:          endpointServiceID,
 		InterfaceId: interfaceEndpointID,
 	}
 
@@ -85,7 +85,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
 		groupID,
 		ProviderName,
-		callBackContext.Id,
+		callBackContext.ID,
 		callBackContext.InterfaceId)
 	if err != nil {
 		pe := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
@@ -103,7 +103,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 	case StatusAvailable:
 		{
 			vr := ValidationResponse{
-				Id:                 callBackContext.Id,
+				Id:                 callBackContext.ID,
 				InterfaceEndpoints: []string{callBackContext.InterfaceId},
 			}
 			return &vr, nil

@@ -21,11 +21,11 @@ const (
 
 type privateEndpointCreationCallBackContext struct {
 	StateName constants.EventStatus
-	Id        string
+	ID        string
 }
 
 func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {
-	s.Id = fmt.Sprint(m["Id"])
+	s.ID = fmt.Sprint(m["ID"])
 	eventStatusParam := fmt.Sprint(m["StateName"])
 	eventStatus, err := constants.ParseEventStatus(eventStatusParam)
 	if err != nil {
@@ -62,7 +62,7 @@ func Create(mongodbClient mongodbatlas.Client, region string, groupId string) ha
 
 	callBackContext := privateEndpointCreationCallBackContext{
 		StateName: constants.CreatingPrivateEndpointService,
-		Id:        privateEndpointResponse.ID,
+		ID:        privateEndpointResponse.ID,
 	}
 
 	var callBackMap map[string]interface{}
@@ -89,7 +89,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId stri
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), groupId,
-		ProviderName, PrivateEndpointCallBackContext.Id)
+		ProviderName, PrivateEndpointCallBackContext.ID)
 	if err != nil {
 		ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response)
@@ -100,7 +100,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId stri
 	case InitiatingStatus:
 		callBackContext := privateEndpointCreationCallBackContext{
 			StateName: constants.CreatingPrivateEndpointService,
-			Id:        privateEndpointResponse.ID,
+			ID:        privateEndpointResponse.ID,
 		}
 
 		var callBackMap map[string]interface{}

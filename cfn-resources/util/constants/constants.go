@@ -28,4 +28,11 @@ const (
 	Region                 = "AwsKms.Region"
 	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
 	ResourceNotFound       = "resource not found"
+
+	SnapshotID                       = "SnapshotId"
+	Automated                        = "automated"
+	Download                         = "download"
+	ClusterName                      = "ClusterName"
+	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
+	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 )

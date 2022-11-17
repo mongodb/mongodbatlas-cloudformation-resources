@@ -8,7 +8,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-provider-snapshot-restore-jobs/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup-restore-jobs/cmd/resource"
 )
 
 // Handler is a container for the CRUDL actions exported by resources
@@ -39,7 +39,7 @@ func (r *Handler) List(req handler.Request) handler.ProgressEvent {
 	return wrap(req, resource.List)
 }
 
-// This module is deprecated .Please use cloud-backup-restore-job instead.main is the entry point of the application.
+// main is the entry point of the application.
 func main() {
 	cfn.Start(&Handler{})
 }

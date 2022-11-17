@@ -22,4 +22,6 @@ const (
 	Username     = "Username"
 	Roles        = "Roles"
 	AccessList   = "AccessList"
+
+	InvitationID = "InvitationId"
 )

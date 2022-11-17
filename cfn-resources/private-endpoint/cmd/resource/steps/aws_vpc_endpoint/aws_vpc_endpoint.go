@@ -15,13 +15,13 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 	return ec2.New(req.Session, aws.NewConfig().WithRegion(region))
 }
 
-func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, VpcID string) (*string, *handler.ProgressEvent) {
+func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, vpcID string) (*string, *handler.ProgressEvent) {
 	svc := newEc2Client(region, req)
 
 	vcpType := "Interface"
 
 	connection := ec2.CreateVpcEndpointInput{
-		VpcId:           &VpcID,
+		VpcId:           &vpcID,
 		ServiceName:     &peCon.EndpointServiceName,
 		VpcEndpointType: &vcpType,
 		SubnetIds:       []*string{&subnetId},

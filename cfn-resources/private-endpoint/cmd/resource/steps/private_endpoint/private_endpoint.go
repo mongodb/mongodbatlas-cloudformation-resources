@@ -64,7 +64,11 @@ func Create(mongodbClient *mongodbatlas.Client, groupId string, interfaceEndpoin
 
 	var callBackMap map[string]interface{}
 	data, _ := json.Marshal(callBackContext)
-	json.Unmarshal(data, &callBackMap)
+	err = json.Unmarshal(data, &callBackMap)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+			response.Response)
+	}
 
 	return progress_events.GetInProgressProgressEvent("Adding private endpoint", callBackMap, nil, 20)
 }

@@ -96,7 +96,8 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId stri
 		return nil, &ev
 	}
 
-	if privateEndpointResponse.Status == InitiatingStatus {
+	switch privateEndpointResponse.Status {
+	case InitiatingStatus:
 		callBackContext := privateEndpointCreationCallBackContext{
 			StateName: constants.CreatingPrivateEndpointService,
 			Id:        privateEndpointResponse.ID,
@@ -113,15 +114,13 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId stri
 
 		ev := progress_events.GetInProgressProgressEvent("Private endpoint service initiating", callBackMap,
 			nil, 20)
-
 		return nil, &ev
-	} else if privateEndpointResponse.Status == AvailableStatus {
+	case AvailableStatus:
 		return privateEndpointResponse, nil
-	} else {
+	default:
 		ev := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s",
 			privateEndpointResponse.Status),
 			cloudformation.HandlerErrorCodeInvalidRequest)
-
 		return nil, &ev
 	}
 }

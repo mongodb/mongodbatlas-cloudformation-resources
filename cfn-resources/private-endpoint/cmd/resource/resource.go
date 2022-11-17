@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/aws_vpc_endpoint"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint_service"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -57,7 +56,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	log.Infof("Status recieved %s", status)
+	log.Infof("Status received %s", status)
 
 	switch status {
 	case resource_constats.CreationInit:
@@ -70,13 +69,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointId, progressEvent := aws_vpc_endpoint.Create(req, *peConnection, *currentModel.Region,
+		vpcEndpointID, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
 			*currentModel.SubnetId, *currentModel.VpcId)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
 
-		pe := private_endpoint.Create(mongodbClient, *currentModel.GroupId, *vpcEndpointId, peConnection.ID)
+		pe := private_endpoint.Create(mongodbClient, *currentModel.GroupId, *vpcEndpointID, peConnection.ID)
 
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
@@ -124,7 +123,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -167,18 +166,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.completeByConnection(*privateEndpointResponse)
 
 	if currentModel.HasInterfaceEndpoints() {
-
 		epr := private_endpoint.DeletePrivateEndpoints(mongodbClient, *currentModel.GroupId, *currentModel.Id,
 			currentModel.InterfaceEndpoints)
 		if epr != nil {
 			return *epr, nil
 		}
 
-		_, epr = aws_vpc_endpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
+		_, epr = awsvpcendpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
-
 	} else {
 		response, err = mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.GroupId,
 			providerName,
@@ -244,14 +241,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func isDeleting(req handler.Request) bool {
-	callback, _ := req.CallbackContext["stateName"]
-
-	if callback != nil {
-		callbackValue := fmt.Sprintf("%v", callback)
-		return callbackValue == "DELETING"
+	callback := req.CallbackContext["stateName"]
+	if callback == nil {
+		return false
 	}
 
-	return false
+	callbackValue := fmt.Sprintf("%v", callback)
+	return callbackValue == "DELETING"
 }
 
 func (m *Model) HasInterfaceEndpoints() bool {
@@ -267,7 +263,7 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {
-	callback, _ := req.CallbackContext["StateName"]
+	callback := req.CallbackContext["StateName"]
 	if callback == nil {
 		return resource_constats.CreationInit, nil
 	}
@@ -287,13 +283,12 @@ func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model)
 	if progressEvent.OperationStatus == handler.InProgress {
 		progressEvent.ResourceModel = model
 
-		callbackId, _ := progressEvent.CallbackContext["Id"]
+		callbackID, _ := progressEvent.CallbackContext["Id"]
 
-		if callbackId != nil {
-			id := fmt.Sprint(callbackId)
+		if callbackID != nil {
+			id := fmt.Sprint(callbackID)
 			model.Id = &id
 		}
-
 	}
 
 	return *progressEvent

@@ -82,7 +82,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### BackupEnabled
 
-Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.
+Flag that indicates whether the cluster can perform backups. If set to true, the cluster can perform backups. You must set this value to true for NVMe clusters. Backup uses Cloud Backups for dedicated clusters and Shared Cluster Backups for tenant clusters. If set to false, the cluster doesn't use backups.
 
 _Required_: No
 
@@ -92,6 +92,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### BiConnector
 
+Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster.
+
 _Required_: No
 
 _Type_: <a href="biconnector.md">BiConnector</a>
@@ -100,7 +102,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ClusterType
 
-Type of the cluster that you want to create.
+Configuration of nodes that comprise the cluster.
 
 _Required_: No
 
@@ -110,6 +112,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ConnectionStrings
 
+Collection of Uniform Resource Locators that point to the MongoDB database.
+
 _Required_: No
 
 _Type_: <a href="connectionstrings.md">connectionStrings</a>
@@ -118,7 +122,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### DiskSizeGB
 
-Capacity, in gigabytes, of the hosts root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.
+Storage capacity that the host's root volume possesses expressed in gigabytes. Increase this number to add capacity. MongoDB Cloud requires this parameter if you set replicationSpecs. If you specify a disk size below the minimum (10 GB), this parameter defaults to the minimum disk size value. Storage charge calculations depend on whether you choose the default value or a custom value. The maximum value for disk storage cannot exceed 50 times the maximum RAM for the selected cluster. If you require more storage space, consider upgrading your cluster to a higher tier.
 
 _Required_: No
 
@@ -128,7 +132,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### EncryptionAtRestProvider
 
-Set the Encryption at Rest parameter.
+Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. To enable customer key management for encryption at rest, the cluster replicationSpecs[n].regionConfigs[m].{type}Specs.instanceSize setting must be M10 or higher and "backupEnabled" : false or omitted entirely.
 
 _Required_: No
 
@@ -150,7 +154,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Labels
 
-Array containing key-value pairs that tag and categorize the cluster.
+Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. The MongoDB Cloud console doesn't display your labels.
 
 _Required_: No
 
@@ -160,7 +164,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### MongoDBMajorVersion
 
-Major version of the cluster to deploy.
+Major MongoDB version of the cluster. MongoDB Cloud deploys the cluster with the latest stable release of the specified version.
 
 _Required_: No
 
@@ -170,7 +174,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Name
 
-Name of the cluster. Once the cluster is created, its name cannot be changed.
+Human-readable label that identifies the advanced cluster.
 
 _Required_: Yes
 
@@ -190,7 +194,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### PitEnabled
 
-Flag that indicates if the cluster uses Point-in-Time backups. If set to true, providerBackupEnabled must also be set to true.
+Flag that indicates whether the cluster uses continuous cloud backups.
 
 _Required_: No
 
@@ -200,7 +204,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ReplicationSpecs
 
-Configuration for cluster regions.
+List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.
 
 _Required_: No
 
@@ -252,7 +256,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### ConnectionStrings
 
-Returns the <code>ConnectionStrings</code> value.
+Collection of Uniform Resource Locators that point to the MongoDB database.
 
 #### ConnectionStrings.Standard
 
@@ -276,11 +280,11 @@ Current state of the cluster.
 
 #### MongoDBVersion
 
-Version of the cluster to deploy.
+Version of MongoDB that the cluster runs.
 
 #### CreatedDate
 
-Cluster created date.
+Date and time when MongoDB Cloud created this cluster. This parameter expresses its value in ISO 8601 format in UTC.
 
 #### Id
 

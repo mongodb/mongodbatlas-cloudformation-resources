@@ -46,7 +46,7 @@ Once the resource is installed, you can do integrated testing from your shell to
 
 The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
-CloudFormation stack template along with the other neccessary parameters.
+CloudFormation stack template along with the other necessary parameters.
 
 You can use the project.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
@@ -66,3 +66,5 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/cluster/test/cluster.sample-template.yaml SampleCluster-123 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
 ```
 
+## For More Information
+See the MongoDB Atlas API [Project Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Multi-Cloud-Clusters ) documentation.

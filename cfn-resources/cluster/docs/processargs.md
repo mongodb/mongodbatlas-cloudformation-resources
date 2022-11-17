@@ -38,6 +38,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### DefaultReadConcern
 
+Default level of acknowledgment requested from MongoDB for read operations set for this cluster.
+
 _Required_: No
 
 _Type_: String
@@ -45,6 +47,8 @@ _Type_: String
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### DefaultWriteConcern
+
+Default level of acknowledgment requested from MongoDB for write operations set for this cluster.
 
 _Required_: No
 
@@ -54,6 +58,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### FailIndexKeyTooLong
 
+Flag that indicates whether you can insert or update documents where all indexed entries don't exceed 1024 bytes. If you set this to false, mongod writes documents that exceed this limit but doesn't index them.
+
 _Required_: No
 
 _Type_: Boolean
@@ -61,6 +67,8 @@ _Type_: Boolean
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### JavascriptEnabled
+
+Flag that indicates whether the cluster allows execution of operations that perform server-side executions of JavaScript.
 
 _Required_: No
 
@@ -70,6 +78,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### MinimumEnabledTLSProtocol
 
+Minimum Transport Layer Security (TLS) version that the cluster accepts for incoming connections. Clusters using TLS 1.0 or 1.1 should consider setting TLS 1.2 as the minimum TLS protocol version.
+
 _Required_: No
 
 _Type_: String
@@ -77,6 +87,8 @@ _Type_: String
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### NoTableScan
+
+Flag that indicates whether the cluster disables executing any query that requires a collection scan to return results.
 
 _Required_: No
 
@@ -86,6 +98,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### OplogSizeMB
 
+Storage limit of cluster's oplog expressed in megabytes. A value of null indicates that the cluster uses the default oplog size that MongoDB Cloud calculates.
+
 _Required_: No
 
 _Type_: Integer
@@ -94,6 +108,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### SampleSizeBIConnector
 
+Interval in seconds at which the mongosqld process re-samples data to create its relational schema.
+
 _Required_: No
 
 _Type_: Integer
@@ -101,6 +117,8 @@ _Type_: Integer
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### SampleRefreshIntervalBIConnector
+
+Number of documents per database to sample when gathering schema information.
 
 _Required_: No
 

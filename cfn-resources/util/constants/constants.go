@@ -14,7 +14,5 @@ const (
 	RouteTableCIDRBlock = "RouteTableCIDRBlock"
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
-
-	// Type Constants that are used by ThirdPartyIntegration
-	Type = "Type"
+	Type                = "Type"
 )

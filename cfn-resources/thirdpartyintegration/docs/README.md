@@ -149,7 +149,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ApiKey
 
-Key that allows MongoDB Cloud to access your Opsgenie account.
+Key that allows MongoDB Cloud to access your Opsgenie/Datadog account.
 
 _Required_: No
 
@@ -164,8 +164,6 @@ Unique 24-hexadecimal digit string that identifies your project.
 _Required_: No
 
 _Type_: String
-
-_Allowed Values_: <code>EU</code> | <code>US</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

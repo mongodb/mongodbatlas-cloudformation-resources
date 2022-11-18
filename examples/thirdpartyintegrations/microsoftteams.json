@@ -11,6 +11,11 @@
       "Description": "Your MongoDB Cloud Private API Key",
       "Type": "String",
       "Default": ""
+    },
+    "ProjectId": {
+      "Description": "Your MongoDB Project Id",
+      "Type": "String",
+      "Default": ""
     }
   },
   "Resources": {
@@ -25,13 +30,11 @@
             "Ref": "PrivateKey"
           }
         },
-        "ProjectId": "636ca5b9ac99222b0ba4de80",
-        "Type": "PROMETHEUS",
-        "Enabled": "true",
-        "Scheme": "https",
-        "ServiceDiscovery": "file",
-        "UserName": "PromUser12345578",
-        "Password": "Hello@1234"
+        "ProjectId": {
+          "Ref": "ProjectID"
+        },
+        "Type": "MICROSOFT_TEAMS",
+        "MicrosoftTeamsWebhookUrl": "https://mongodb0.webhook.office.com/webhookb2/c9c5fafc-d9fe-480b-9773-77d804ea4372@c96563a8-841b-4ef9-af16-33548de0c958/IncomingWebhook/484cccf0a6784243886388b63203110a/42a0070b-5f35-4bb1-be83-ac7e7f55d7d3"
       }
     }
   }

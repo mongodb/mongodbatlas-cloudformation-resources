@@ -1,10 +1,14 @@
 {
-  "ProjectId": "$ATLAS_PROJECT_ID",
-  "ApiKeys" : {
-    "PublicKey" : "$ATLAS_PUBLIC_KEY",
-    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+  "desiredResourceState":{
+    "ProjectId": "$ATLAS_PROJECT_ID",
+    "ApiKeys" : {
+      "PublicKey" : "$ATLAS_PUBLIC_KEY",
+      "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    },
+    "Type": "WEBHOOK",
+    "Url" : "https://www.google.com",
+    "Secret": "Hello@123"
   },
-  "Type": "WEBHOOK",
-  "Url" : "https://www.google.com/happy",
-  "Secret": "Hello@1234"
+  "providerLogGroupName" : "mongodb-atlas-project-logs",
+  "previousResourceState": { }
 }

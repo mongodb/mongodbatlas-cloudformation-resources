@@ -4,7 +4,7 @@
         "PublicKey" : "$ATLAS_PUBLIC_KEY",
         "PrivateKey" : "$ATLAS_PRIVATE_KEY"
     },
-    "Type": "WEBHOOK2314213",
+    "Type": "WEBHOOK_Invalid",
     "Url" : "https://www.google.com/happy",
     "Secret": "Hello@1234"
 }

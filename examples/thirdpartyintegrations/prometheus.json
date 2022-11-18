@@ -11,6 +11,11 @@
       "Description": "Your MongoDB Cloud Private API Key",
       "Type": "String",
       "Default": ""
+    },
+    "ProjectId": {
+      "Description": "Your MongoDB Project Id",
+      "Type": "String",
+      "Default": ""
     }
   },
   "Resources": {
@@ -25,13 +30,15 @@
             "Ref": "PrivateKey"
           }
         },
-        "ProjectId": "636ca5b9ac99222b0ba4de80",
+        "ProjectId": {
+          "Ref": "ProjectID"
+        },
         "Type": "PROMETHEUS",
-        "Enabled": "true",
-        "Scheme": "https",
-        "ServiceDiscovery": "file",
-        "UserName": "PromUser12345578",
-        "Password": "Hello@1234"
+        "Enabled": true,
+        "Scheme": "http",
+        "ServiceDiscovery": "http",
+        "UserName": "647845",
+        "Password": "eyJrIjoiYWZiNzU0YjkyOTI4YjM1ZTQzYWEyMzhkYjk3OTlmYmUxYzU2MzAzNiIsIm4iOiJ0ZXN0IiwiaWQiOjc0MjU3N30="
       }
     }
   }

@@ -118,7 +118,6 @@ done
 #./${res}/test/cfn-test-create-inputs.sh "${PROJECT_NAME}-2" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 
 
-
 echo "Step 3/3: Running 'cfn test' on resource type"
 SAM_LOG=$(mktemp)
 for resource in ${resources};
@@ -160,7 +159,7 @@ do
     fi
 done
 
-exit 0
+
 
 echo "Clean up project"
 for res in ${resources};

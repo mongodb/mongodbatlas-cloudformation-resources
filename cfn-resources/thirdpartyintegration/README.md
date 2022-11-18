@@ -65,4 +65,14 @@ export AWS_DEFAULT_REGION=""
 aws cloudformation deploy --stack-name atlas-thirdpartyintegration-test --template-file ./test/thirdpartyintegration.sample-template.yaml --no-fail-on-empty-changeset --parameter-overrides PublicKey=$MCLI_PUBLIC_API_KEY Privatekey=$MCLI_PRIVATE_API_KEY ProjectId=$MCLI_PROJECT_ID
 ```
 
+| Integrations           | Status                                             | Reference links                                                                                                                                                                                                                                                 |
+|------------------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| NEW_RELIC              | EOL                                                | [From MongoDB](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/?_ga=2.141767858.1639178218.1667927805-1433452924.1667927805), [From NewRelic](https://discuss.newrelic.com/t/new-relic-plugin-eol-wednesday-june-16th-2021/127267) |
+| FLOWDOCK | EOL                                                | [From MongoDB](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/?_ga=2.141767858.1639178218.1667927805-1433452924.1667927805)                                                                                                       |
+| VICTOR_OPS                | ![Build](https://img.shields.io/badge/Beta-yellow) | [Jira Ticket](https://jira.mongodb.org/browse/HELP-39527)                                                                                                                                                                                                       |
+
+
 For more information see: MongoDB Atlas API Project [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects) Documentation.
+
+
+

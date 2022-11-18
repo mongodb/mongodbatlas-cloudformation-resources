@@ -5,6 +5,5 @@
         "PrivateKey" : "$ATLAS_PRIVATE_KEY"
     },
     "Type": "WEBHOOK",
-    "Url" : "https://www.google.com/happy",
-    "Secret": "Hello@1234"
+    "Url" : "http://7e9ea9dc.ngrok.io/github-webhook"
 }

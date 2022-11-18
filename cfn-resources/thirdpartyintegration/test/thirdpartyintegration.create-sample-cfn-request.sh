@@ -9,17 +9,8 @@ set -o nounset
 set -o pipefail
 
 
-function usage {
-    echo "usage:$0 <project_name>"
-}
-
-if [ "$#" -ne 1 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
-
-name="${1}"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$ATLAS_ORG_ID" \
-   --arg name "$name" \
-   '.desiredResourceState.properties.OrgId?|=$org | .desiredResourceState.properties.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.properties.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.properties.Name?|=$name' \
-   "$(dirname "$0")/thirdpartyintegration.sample-cfn-request.json"
+  jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
+     --arg pvtkey "$MCLI_PRIVATE_API_KEY" \
+     --arg ProjectId "$MCLI_PROJECT_ID" \
+     '.desiredResourceState.ProjectId?|=$ProjectId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
+    "$(dirname "$0")/thirdpartyintegration.sample-cfn-request.json"

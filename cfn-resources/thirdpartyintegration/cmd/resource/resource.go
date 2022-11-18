@@ -3,16 +3,15 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	logrus "github.com/sirupsen/logrus"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -46,8 +45,6 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	logrus.Println("LogRus Create() currentModel:", currentModel)
-	fmt.Println("Create() currentModel:", currentModel)
 	_, _ = log.Warnf("Create() currentModel:%+v", currentModel)
 
 	// Validation
@@ -324,8 +321,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	mm := make([]interface{}, 0)
 
 	for _, integration := range integrations.Results {
-		var m Model
-		m = integrationToModel(*currentModel, integration)
+		m := integrationToModel(*currentModel, integration)
 		mm = append(mm, m)
 	}
 
@@ -417,28 +413,13 @@ func integrationToModel(currentModel Model, integration *mongodbatlas.ThirdParty
 		enabled = true
 	}
 
+	/*
+	   The variables from the thirdparty integration are not returned back in reposnse because most of the variables are sensitive variables.
+	*/
 	out := Model{
-		Type:                     &integration.Type,
-		LicenseKey:               &integration.LicenseKey,
-		AccountId:                &integration.AccountID,
-		WriteToken:               &integration.WriteToken,
-		ReadToken:                &integration.ReadToken,
-		ApiKey:                   &integration.APIKey,
-		Region:                   &integration.Region,
-		ServiceKey:               &integration.ServiceKey,
-		ApiToken:                 &integration.APIToken,
-		TeamName:                 &integration.TeamName,
-		ChannelName:              &integration.ChannelName,
-		RoutingKey:               &integration.RoutingKey,
-		FlowName:                 &integration.FlowName,
-		OrgName:                  &integration.OrgName,
-		MicrosoftTeamsWebhookUrl: &integration.MicrosoftTeamsWebhookURL,
-		UserName:                 &integration.UserName,
-		ServiceDiscovery:         &integration.ServiceDiscovery,
-		Scheme:                   &integration.Scheme,
-		Enabled:                  &integration.Enabled,
-		ProjectId:                currentModel.ProjectId,
-		ApiKeys:                  currentModel.ApiKeys,
+		Type:      &integration.Type,
+		ApiKeys:   currentModel.ApiKeys,
+		ProjectId: currentModel.ProjectId,
 	}
 
 	if !enabled {

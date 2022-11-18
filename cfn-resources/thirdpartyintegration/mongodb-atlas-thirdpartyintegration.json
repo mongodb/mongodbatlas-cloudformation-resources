@@ -32,8 +32,32 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": ["/properties/ProjectId"],
-  "writeOnlyProperties": ["/properties/Secret","/properties/Url","/properties/Password"],
+  "primaryIdentifier": [
+    "/properties/ProjectId"
+  ],
+  "writeOnlyProperties": [
+    "/properties/Secret",
+    "/properties/Url",
+    "/properties/Password",
+    "/properties/ServiceKey",
+    "/properties/ApiKey",
+    "/properties/LicenseKey",
+    "/properties/AccountId",
+    "/properties/WriteToken",
+    "/properties/ReadToken",
+    "/properties/Region",
+    "/properties/ApiToken",
+    "/properties/TeamName",
+    "/properties/ChannelName",
+    "/properties/RoutingKey",
+    "/properties/FlowName",
+    "/properties/OrgName",
+    "/properties/MicrosoftTeamsWebhookUrl",
+    "/properties/UserName",
+    "/properties/ServiceDiscovery",
+    "/properties/Scheme",
+    "/properties/Enabled"
+  ],
   "properties": {
     "ApiKeys": {
       "$ref": "#/definitions/apiKeyDefinition"
@@ -76,16 +100,11 @@
     },
     "ApiKey": {
       "type": "string",
-      "description": "Key that allows MongoDB Cloud to access your Opsgenie account."
+      "description": "Key that allows MongoDB Cloud to access your Opsgenie/Datadog account."
     },
     "Region": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies your project.",
-      "enum": [
-        "EU",
-        "US"
-      ],
-      "default": "US"
+      "description": "Unique 24-hexadecimal digit string that identifies your project."
     },
     "ServiceKey": {
       "type": "string",

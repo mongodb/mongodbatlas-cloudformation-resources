@@ -5,9 +5,9 @@
     "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
   "Type": "PROMETHEUS",
-  "Enabled": "true",
-  "Scheme": "https",
-  "ServiceDiscovery": "file",
-  "UserName": "PromUser123455",
-  "Password": "Hello@1234"
+  "Enabled": true,
+  "Scheme": "http",
+  "ServiceDiscovery": "http",
+  "UserName": "647845",
+  "Password": "eyJrIjoiYWZiNzU0YjkyOTI4YjM1ZTQzYWEyMzhkYjk3OTlmYmUxYzU2MzAzNiIsIm4iOiJ0ZXN0IiwiaWQiOjc0MjU3N30="
 }

@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpoint",
-    "description": "Creates a new private endpoint in any given Atlas organization",
+    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order.\n\n1. Atlas Private Endpoint Service\n2. Aws VPC private Endpoint\n3. Atlas Private Endpoint\n\n### CREATION FLOW\n\nThe creation process waits until all the resources gets created the next order\n\n1. Creates the Private Endpoint Service and waits until is completed (Available Status)\n2. Once the Private Endpoint Service gets completed, creates the Aws VPC Private endpoint and the Atlas Private Endpoint\n3. Once the two last resources gets completed (Available Status) the flow returns Success\n\n### SIMPLIFIED CREATION FLOW\n\n![](../docs_files/simplified_creation_flow.png)",
     "definitions": {
         "ApiKey": {
             "type": "object",
@@ -17,7 +17,7 @@
     },
     "properties": {
         "Id": {
-            "description": "The unique identifier of the private endpoint.",
+            "description": "The unique identifier of the private endpoint service.",
             "type": "string"
         },
         "EndpointServiceName": {
@@ -47,11 +47,11 @@
             "pattern": "^([a-f0-9]{24})$"
         },
         "VpcId": {
-            "description": "String Representing de Vcp ID (like: vpc-xxxxxxxxxxxxxxxx )",
+            "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
             "type": "string"
         },
         "SubnetId": {
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
             "type": "string"
         },
         "ApiKeys": {
@@ -66,6 +66,8 @@
     "required": [
         "GroupId",
         "Region",
+        "VpcId",
+        "SubnetId",
         "ApiKeys"
     ],
     "readOnlyProperties": [

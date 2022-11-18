@@ -1,6 +1,22 @@
 # MongoDB::Atlas::PrivateEndpoint
 
-Creates a new private endpoint in any given Atlas organization
+The Private Endpoint creation flow consists of the creation of three related resources in the next order.
+
+1. Atlas Private Endpoint Service
+2. Aws VPC private Endpoint
+3. Atlas Private Endpoint
+
+### CREATION FLOW
+
+The creation process waits until all the resources gets created the next order
+
+1. Creates the Private Endpoint Service and waits until is completed (Available Status)
+2. Once the Private Endpoint Service gets completed, creates the Aws VPC Private endpoint and the Atlas Private Endpoint
+3. Once the two last resources gets completed (Available Status) the flow returns Success
+
+### SIMPLIFIED CREATION FLOW
+
+![](../docs_files/simplified_creation_flow.png)
 
 ## Syntax
 
@@ -100,9 +116,9 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### VpcId
 
-String Representing de Vcp ID (like: vpc-xxxxxxxxxxxxxxxx )
+String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -110,9 +126,9 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### SubnetId
 
-Unique 24-hexadecimal digit string that identifies your project.
+String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -150,5 +166,5 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### Id
 
-The unique identifier of the private endpoint.
+The unique identifier of the private endpoint service.
 

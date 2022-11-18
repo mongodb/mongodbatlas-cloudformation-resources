@@ -15,10 +15,10 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var ReadRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var UpdateRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var DeleteRequiredFields = []string{constants.Type, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var CreateRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var ReadRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var UpdateRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
+var DeleteRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 
 // Custom validation only for ThirdPartyIntegrations

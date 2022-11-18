@@ -1,4 +1,4 @@
-# Mongodb::Atlas::OrgInvitation
+# MongoDB::Atlas::OrgInvitation
 
 Returns, adds, and edits organizational units in MongoDB Cloud.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::OrgInvitation",
+    "Type" : "MongoDB::Atlas::OrgInvitation",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
@@ -30,7 +30,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::OrgInvitation
+Type: MongoDB::Atlas::OrgInvitation
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>
@@ -111,8 +111,6 @@ _Required_: No
 
 _Type_: String
 
-_Pattern_: <code>^[\p{L}\p{N}\-_.(),:&@+']{1,64}$</code>
-
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### PageNum
@@ -162,8 +160,6 @@ Email address of the MongoDB Cloud user invited to join the organization.
 _Required_: No
 
 _Type_: String
-
-_Pattern_: <code>^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 

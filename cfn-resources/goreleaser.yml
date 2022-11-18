@@ -15,8 +15,8 @@ builds:
       - -s -w
   - 
     id: "cloudprovidersnapshots"
-    main: ./cloud-provider-snapshots/cmd/main.go
-    binary: ./cloud-provider-snapshots/bin/handler
+    main: ./cloud-backup-snapshot/cmd/main.go
+    binary: ./cloud-backup-snapshot/bin/handler
     env:
       - CGO_ENABLED=0 
     goos:
@@ -141,12 +141,12 @@ archives:
         - ./cloud-provider-snapshot-restore-jobs/Makefile
         - ./cloud-provider-snapshot-restore-jobs/.rpdk-config
         
-        - ./cloud-provider-snapshots/README.md
-        - ./cloud-provider-snapshots/mongodb-atlas-cloudprovidersnapshots.json
-        - ./cloud-provider-snapshots/resource-role.yaml
-        - ./cloud-provider-snapshots/template.yml
-        - ./cloud-provider-snapshots/Makefile
-        - ./cloud-provider-snapshots/.rpdk-config
+        - ./cloud-backup-snapshot/README.md
+        - ./cloud-backup-snapshot/mongodb-atlas-cloudbackup.json
+        - ./cloud-backup-snapshot/resource-role.yaml
+        - ./cloud-backup-snapshot/template.yml
+        - ./cloud-backup-snapshot/Makefile
+        - ./cloud-backup-snapshot/.rpdk-config
         
         - ./cluster/README.md
         - ./cluster/mongodb-atlas-cluster.json

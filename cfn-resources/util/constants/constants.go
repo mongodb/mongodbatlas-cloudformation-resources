@@ -14,5 +14,26 @@ const (
 	RouteTableCIDRBlock = "RouteTableCIDRBlock"
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
-	Type                = "Type"
+
+	RegionName     = "RegionName"
+	AtlasCIDRBlock = "AtlasCidrBlock"
+
+	DatabaseName = "DatabaseName"
+	Username     = "Username"
+	Roles        = "Roles"
+	AccessList   = "AccessList"
+
+	CustomMasterKey        = "AwsKms.CustomerMasterKeyID"
+	RoleID                 = "AwsKms.RoleID"
+	Region                 = "AwsKms.Region"
+	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
+	ResourceNotFound       = "resource not found"
+
+	SnapshotID                       = "SnapshotId"
+	Automated                        = "automated"
+	Download                         = "download"
+	ClusterName                      = "ClusterName"
+	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
+	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+	Type                             = "Type"
 )

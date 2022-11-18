@@ -15,9 +15,10 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-testing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-#trap "exit" INT TERM ERR
-#trap "kill 0" EXIT
+trap "exit" INT TERM ERR
+trap "kill 0" EXIT
 #set -x
+set -o errexit
 set -o nounset
 set -o pipefail
 
@@ -31,7 +32,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-thirdpartyintegration }"
+resources="${1:-project project-ip-access-list database-user thirdpartyintegration }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -107,6 +108,8 @@ do
     cd -
     echo ""
 done
+
+
 #fi
 
 # TODO - network peering
@@ -116,6 +119,7 @@ done
 #res="network-peering"
 #cd "${res}"
 #./${res}/test/cfn-test-create-inputs.sh "${PROJECT_NAME}-2" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+
 
 
 echo "Step 3/3: Running 'cfn test' on resource type"
@@ -141,30 +145,18 @@ do
     cd -
 done
 
-
-echo "Check how cfn test is running"
-
-
 echo "Step 4: cleaning up 'cfn test' inputs "
 SAM_LOG=$(mktemp)
 for resource in ${resources};
 do
     cd "${res}"
-    deleteFile=./test/cfn-test-delete-inputs.sh
-    if [ -f "$deleteFile" ]; then
-        chmod +x $deleteFile && test -f $deleteFile && $deleteFile && \
-        echo "resource:${res} inputs delete OK" || echo "resource:${res} input delete FAILED"
-    else
-        echo "$deleteFile does not exist."
-    fi
+    ./test/cfn-test-delete-inputs.sh && echo "resource:${res} inputs delete OK" || echo "resource:${res} input delete FAILED"
 done
 
-
-
 echo "Clean up project"
-for res in ${resources};
+for resource in ${resources};
 do
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${res}" && continue
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue
     echo "Looking up Atlas project id for resource:${res} project name:${PROJECT_NAME}-${res}"
     p_id=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
     [ -z "$p_id" ] && echo "No project found" && continue

@@ -12,7 +12,7 @@
       "Description": "",
       "ConstraintDescription": ""
     },
-    "Privatekey": {
+    "PrivateKey": {
       "Type": "String",
       "Description": "",
       "ConstraintDescription": ""

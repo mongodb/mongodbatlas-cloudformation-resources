@@ -3,13 +3,16 @@
 ._*
 
 # our logs
-rpdk.log
+rpdk.log*
 
 #compiled file
 bin/
 
-#vendor
-vendor/
+#vender
+vender/
+
+# contains credentials
+sam-tests/
 
 create.json
 delete.json
@@ -20,6 +23,7 @@ update.json
 **/.*
 !/.github
 !/.gitignore
+!*.rpdk-config
 .taskcat_overrides.yml
 
 **/makebuild
@@ -27,4 +31,4 @@ update.json
 **/taskcat_outputs/
 **/inputs/**
 pytestdebug.log
-!*.rdpk-config
+cfn-resources/go.sum

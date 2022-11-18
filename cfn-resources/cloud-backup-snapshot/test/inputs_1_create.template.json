@@ -1,0 +1,11 @@
+{
+    "GroupId": "",
+    "ClusterName": "",
+    "SnapshotId": "",
+    "Description": "snapshotA through cloud formation template",
+    "RetentionInDays": "5",
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    }
+}

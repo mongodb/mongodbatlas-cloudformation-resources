@@ -1,6 +1,6 @@
 {
-    "typeName": "MongoDB::Atlas::CloudProviderSnapshotRestoreJobs",
-    "description": "This resource allows you to create, cancel, get one or list all cloud provider snapshot restore jobs.",
+    "typeName": "MongoDB::Atlas::CloudBackUpRestoreJobs",
+    "description": "Returns, starts, and cancels Cloud Backup restore jobs.",
     "definitions": {
         "apiKeyDefinition": {
             "type": "object",
@@ -110,7 +110,15 @@
         "ApiKeys"
     ],
     "readOnlyProperties": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/DeliveryUrl",
+        "/properties/Cancelled",
+        "/properties/CreatedAt",
+        "/properties/Expired",
+        "/properties/ExpiresAt",
+        "/properties/FinishedAt",
+        "/properties/Timestamp",
+        "/properties/Links"
     ],
     "primaryIdentifier": [
         "/properties/Id"

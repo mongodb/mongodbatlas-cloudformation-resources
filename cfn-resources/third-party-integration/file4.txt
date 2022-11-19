@@ -1,0 +1,355 @@
+cfn-testing-helper.sh running for the following resources: project project-ip-access-list database-user thirdpartyintegration 
+Step 1/2: Building
+Working on resource:project
+resource: project
+#make -f makebuild  # this runs build steps required by the cfn cli
+cfn generate
+Explicitly specify value for insertionOrder for array: ProjectTeams
+Explicitly specify value for insertionOrder for array: ProjectApiKeys
+Explicitly specify value for insertionOrder for array: RoleNames
+Explicitly specify value for insertionOrder for array: RoleNames
+Explicitly specify value for tagging
+Resource schema is valid.
+Generated files for MongoDB::Atlas::Project
+env GOOS=linux CGO_ENABLED=0  GOARCH=amd64 go build -ldflags="-s -w -X 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info'" -tags="logging callback metrics scheduler" -o bin/handler cmd/main.go
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+Working on resource:project-ip-access-list
+resource: project-ip-access-list
+#make -f makebuild  # this runs build steps required by the cfn cli
+cfn generate
+Explicitly specify value for insertionOrder for array: AccessList
+Explicitly specify value for tagging
+Resource schema is valid.
+Generated files for MongoDB::Atlas::ProjectIpAccessList
+env GOOS=linux CGO_ENABLED=0  GOARCH=amd64 go build -ldflags="-s -w -X 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info'" -tags="logging callback metrics scheduler" -o bin/handler cmd/main.go
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+Working on resource:database-user
+resource: database-user
+#make -f makebuild  # this runs build steps required by the cfn cli
+cfn generate
+Explicitly specify value for insertionOrder for array: Labels
+Explicitly specify value for insertionOrder for array: Roles
+Explicitly specify value for insertionOrder for array: Scopes
+non-ASCII characters found in resource schema: ['’']
+Explicitly specify value for tagging
+Resource schema is valid.
+Generated files for MongoDB::Atlas::DatabaseUser
+env GOOS=linux CGO_ENABLED=0  GOARCH=amd64 go build -ldflags="-s -w -X 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info'" -tags="logging callback metrics scheduler" -o bin/handler cmd/main.go
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+Working on resource:thirdpartyintegration
+resource: thirdpartyintegration
+make -f makebuild  # this runs build steps required by the cfn cli
+cfn generate
+Property 'primaryIdentifier' - /properties/Type must be specified as either readOnly or createOnly
+Explicitly specify value for tagging
+Resource schema is valid.
+Generated files for MongoDB::Atlas::ThirdPartyIntegration
+env GOOS=linux go build -ldflags="-s -w" -tags="" -o bin/handler cmd/main.go
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+Step 2/3: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-create-inputs.sh'
+CFN_TEST_TAG=23cbbaf
+CFN_TEST_NEW_PROJECT_NAME=cfn-test-bot-23cbbaf
+PROJECT_NAME:cfn-test-bot-23cbbaf
+./test/cfn-test-create-inputs.sh: line 22: ATLAS_ORG_ID: unbound variable
+resource:project input create FAILED
+Generated inputs for: project
+----------------------------
+total 0
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+
+usage:./test/cfn-test-create-inputs.sh <project_name>
+Creates a new project and an AccessList for testing
+FOUND project "cfn-test-bot-23cbbaf-project-ip-access-list" with id: 6377f191386d7f5bc25e87e3
+
+=====
+run this command to clean up
+=====
+mongocli iam projects delete 6377f191386d7f5bc25e87e3 --force
+=====
+total 24
+-rw-r--r--  1 home  staff  368 Nov 18 16:09 inputs_1_create.json
+-rw-r--r--  1 home  staff  275 Nov 18 16:09 inputs_1_invalid.json
+-rw-r--r--  1 home  staff  283 Nov 18 16:09 inputs_1_update.json
+resource:project-ip-access-list inputs created OK
+Generated inputs for: project-ip-access-list
+----------------------------
+total 24
+-rw-r--r--  1 home  staff  368 Nov 18 16:09 inputs_1_create.json
+-rw-r--r--  1 home  staff  275 Nov 18 16:09 inputs_1_invalid.json
+-rw-r--r--  1 home  staff  283 Nov 18 16:09 inputs_1_update.json
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+
+usage:./test/cfn-test-create-inputs.sh <project_name>
+Creates a new project and a dbuser for testing
+FOUND project "cfn-test-bot-23cbbaf-database-user" with id: 6377f197e7436033c4b5df02
+
+=====
+run this command to clean up
+=====
+mongocli iam projects delete 6377f197e7436033c4b5df02 --force
+=====
+total 24
+-rw-r--r--  1 home  staff  440 Nov 18 16:09 inputs_1_create.json
+-rw-r--r--  1 home  staff  451 Nov 18 16:09 inputs_1_invalid.json
+-rw-r--r--  1 home  staff  542 Nov 18 16:09 inputs_1_update.json
+resource:database-user inputs created OK
+Generated inputs for: database-user
+----------------------------
+total 24
+-rw-r--r--  1 home  staff  440 Nov 18 16:09 inputs_1_create.json
+-rw-r--r--  1 home  staff  451 Nov 18 16:09 inputs_1_invalid.json
+-rw-r--r--  1 home  staff  542 Nov 18 16:09 inputs_1_update.json
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+
+FOUND project "cfn-test-bot-23cbbaf-thirdpartyintegration" with id: 6377f19af2cf1e209c7c0057
+
+Check if a project is created 6377f19af2cf1e209c7c0057
+total 144
+-rw-r--r--  1 home  staff  225 Nov 18 16:09 inputs_1_create.json
+-rw-r--r--  1 home  staff  248 Nov 18 16:09 inputs_1_invalid.json
+-rw-r--r--  1 home  staff  233 Nov 18 16:09 inputs_1_update.json
+-rw-r--r--  1 home  staff  383 Nov 18 16:09 inputs_2_create.json
+-rw-r--r--  1 home  staff  391 Nov 18 16:09 inputs_2_invalid.json
+-rw-r--r--  1 home  staff  383 Nov 18 16:09 inputs_2_update.json
+-rw-r--r--  1 home  staff  228 Nov 18 16:09 inputs_3_create.json
+-rw-r--r--  1 home  staff  236 Nov 18 16:09 inputs_3_invalid.json
+-rw-r--r--  1 home  staff  228 Nov 18 16:09 inputs_3_update.json
+-rw-r--r--  1 home  staff  239 Nov 18 16:09 inputs_4_create.json
+-rw-r--r--  1 home  staff  247 Nov 18 16:09 inputs_4_invalid.json
+-rw-r--r--  1 home  staff  239 Nov 18 16:09 inputs_4_update.json
+-rw-r--r--  1 home  staff  245 Nov 18 16:09 inputs_5_create.json
+-rw-r--r--  1 home  staff  253 Nov 18 16:09 inputs_5_invalid.json
+-rw-r--r--  1 home  staff  245 Nov 18 16:09 inputs_5_update.json
+-rw-r--r--  1 home  staff  420 Nov 18 16:09 inputs_6_create.json
+-rw-r--r--  1 home  staff  428 Nov 18 16:09 inputs_6_invalid.json
+-rw-r--r--  1 home  staff  420 Nov 18 16:09 inputs_6_update.json
+resource:thirdpartyintegration inputs created OK
+Generated inputs for: thirdpartyintegration
+----------------------------
+total 144
+-rw-r--r--  1 home  staff  225 Nov 18 16:09 inputs_1_create.json
+-rw-r--r--  1 home  staff  248 Nov 18 16:09 inputs_1_invalid.json
+-rw-r--r--  1 home  staff  233 Nov 18 16:09 inputs_1_update.json
+-rw-r--r--  1 home  staff  383 Nov 18 16:09 inputs_2_create.json
+-rw-r--r--  1 home  staff  391 Nov 18 16:09 inputs_2_invalid.json
+-rw-r--r--  1 home  staff  383 Nov 18 16:09 inputs_2_update.json
+-rw-r--r--  1 home  staff  228 Nov 18 16:09 inputs_3_create.json
+-rw-r--r--  1 home  staff  236 Nov 18 16:09 inputs_3_invalid.json
+-rw-r--r--  1 home  staff  228 Nov 18 16:09 inputs_3_update.json
+-rw-r--r--  1 home  staff  239 Nov 18 16:09 inputs_4_create.json
+-rw-r--r--  1 home  staff  247 Nov 18 16:09 inputs_4_invalid.json
+-rw-r--r--  1 home  staff  239 Nov 18 16:09 inputs_4_update.json
+-rw-r--r--  1 home  staff  245 Nov 18 16:09 inputs_5_create.json
+-rw-r--r--  1 home  staff  253 Nov 18 16:09 inputs_5_invalid.json
+-rw-r--r--  1 home  staff  245 Nov 18 16:09 inputs_5_update.json
+-rw-r--r--  1 home  staff  420 Nov 18 16:09 inputs_6_create.json
+-rw-r--r--  1 home  staff  428 Nov 18 16:09 inputs_6_invalid.json
+-rw-r--r--  1 home  staff  420 Nov 18 16:09 inputs_6_update.json
+/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources
+
+Step 3/3: Running 'cfn test' on resource type
+Working on resource:project
+starting resource handler lambda in background - capture output to: /var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/tmp.1EsxRGej.project
+Started 'sam local start-lamda' with PID:48350, wait 3 seconds to startup...
+  501 48350 48158   0  4:09PM ttys001    0:00.36 /opt/homebrew/Cellar/python@3.8/3.8.15/Frameworks/Python.framework/Versions/3.8/Resources/Python.app/Contents/MacOS/Python /opt/homebrew/bin/sam local start-lambda
+  501 48363 48158   0  4:09PM ttys001    0:00.00 grep 48350
+resource: project, running 'cfn test' with flags: --verbose
+Validating your resource specification...
+Explicitly specify value for insertionOrder for array: ProjectTeams
+Explicitly specify value for insertionOrder for array: ProjectApiKeys
+Explicitly specify value for insertionOrder for array: RoleNames
+Explicitly specify value for insertionOrder for array: RoleNames
+Explicitly specify value for tagging
+Resource schema is valid.
+Validating your resource schema...
+============================= test session starts ==============================
+platform darwin -- Python 3.11.0, pytest-7.2.0, pluggy-1.0.0 -- /opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/bin/python3.11
+cachedir: .pytest_cache
+hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase('/Users/home/repos/cloudformation-mongodbatlas/mongodbatlas-cloudformation-resources/cfn-resources/project/.hypothesis/examples')
+Test order randomisation NOT enabled. Enable with --random-order or --random-order-bucket=<bucket_type>
+rootdir: /private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T, configfile: pytest_2h04rzw9.ini
+plugins: hypothesis-6.56.4, random-order-1.0.4, localserver-0.7.0
+collecting ... collected 21 items / 11 deselected / 10 selected
+
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_delete FAILED [ 10%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_create ERROR [ 20%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_read ERROR [ 30%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_list ERROR [ 40%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_taggable SKIPPED [ 50%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_read ERROR [ 60%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_list ERROR [ 70%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_delete ERROR [ 80%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_create ERROR [ 90%]
+../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_misc.py::contract_check_asserts_work PASSED [100%]
+
+==================================== ERRORS ====================================
+___________________ ERROR at setup of contract_create_create ___________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:31: in created_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:38: in created_resource
+    resource_client.call_and_assert(Action.DELETE, OperationStatus.SUCCESS, model)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+____________________ ERROR at setup of contract_create_read ____________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:31: in created_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:38: in created_resource
+    resource_client.call_and_assert(Action.DELETE, OperationStatus.SUCCESS, model)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+____________________ ERROR at setup of contract_create_list ____________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:31: in created_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:38: in created_resource
+    resource_client.call_and_assert(Action.DELETE, OperationStatus.SUCCESS, model)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+____________________ ERROR at setup of contract_delete_read ____________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:29: in deleted_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:47: in deleted_resource
+    assert (
+E   AssertionError: A delete hander MUST return FAILED with a NotFound error code                 if the resource did not exist prior to the delete request
+E   assert <HandlerErrorCode.GeneralServiceException: 'GeneralServiceException'> == <HandlerErrorCode.NotFound: 'NotFound'>
+E    +  where <HandlerErrorCode.NotFound: 'NotFound'> = HandlerErrorCode.NotFound
+____________________ ERROR at setup of contract_delete_list ____________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:29: in deleted_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:47: in deleted_resource
+    assert (
+E   AssertionError: A delete hander MUST return FAILED with a NotFound error code                 if the resource did not exist prior to the delete request
+E   assert <HandlerErrorCode.GeneralServiceException: 'GeneralServiceException'> == <HandlerErrorCode.NotFound: 'NotFound'>
+E    +  where <HandlerErrorCode.NotFound: 'NotFound'> = HandlerErrorCode.NotFound
+___________________ ERROR at setup of contract_delete_delete ___________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:29: in deleted_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:47: in deleted_resource
+    assert (
+E   AssertionError: A delete hander MUST return FAILED with a NotFound error code                 if the resource did not exist prior to the delete request
+E   assert <HandlerErrorCode.GeneralServiceException: 'GeneralServiceException'> == <HandlerErrorCode.NotFound: 'NotFound'>
+E    +  where <HandlerErrorCode.NotFound: 'NotFound'> = HandlerErrorCode.NotFound
+___________________ ERROR at setup of contract_delete_create ___________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:29: in deleted_resource
+    _status, response, _error = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_delete.py:47: in deleted_resource
+    assert (
+E   AssertionError: A delete hander MUST return FAILED with a NotFound error code                 if the resource did not exist prior to the delete request
+E   assert <HandlerErrorCode.GeneralServiceException: 'GeneralServiceException'> == <HandlerErrorCode.NotFound: 'NotFound'>
+E    +  where <HandlerErrorCode.NotFound: 'NotFound'> = HandlerErrorCode.NotFound
+=================================== FAILURES ===================================
+____________________________ contract_create_delete ____________________________
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:48: in contract_create_delete
+    response = test_create_success(resource_client, requested_model)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/contract_asserts_commons.py:50: in function
+    response = func(*args, **kwargs)  # calling target function
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/contract_asserts_commons.py:50: in function
+    response = func(*args, **kwargs)  # calling target function
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_commons.py:23: in test_create_success
+    _status, response, _error_code = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+
+During handling of the above exception, another exception occurred:
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_create.py:53: in contract_create_delete
+    test_delete_success(resource_client, delete_model)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/suite/resource/handler_commons.py:133: in test_delete_success
+    _status, response, _error_code = resource_client.call_and_assert(
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:666: in call_and_assert
+    self.assert_success(status, response)
+/opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:458: in assert_success
+    assert status == OperationStatus.SUCCESS, "status should be SUCCESS"
+E   AssertionError: status should be SUCCESS
+=============================== warnings summary ===============================
+resource/handler_create.py::contract_create_delete
+resource/handler_create.py::contract_create_create
+resource/handler_delete.py::contract_delete_read
+  /opt/homebrew/Cellar/cloudformation-cli/0.2.26/libexec/lib/python3.11/site-packages/rpdk/core/contract/resource_client.py:318: NonInteractiveExampleWarning: The `.example()` method is good for exploring strategies, but should only be used interactively.  We recommend using `@given` for tests - it performs better, saves and replays failures to avoid flakiness, and reports minimal examples. (strategy: fixed_dictionaries({'Name': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)),
+   'OrgId': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)),
+   'ProjectOwnerId': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)),
+   'WithDefaultAlertsSettings': booleans(),
+   'ProjectSettings': fixed_dictionaries({'IsCollectDatabaseSpecificsStatisticsEnabled': booleans(),
+    'IsDataExplorerEnabled': booleans(),
+    'IsPerformanceAdvisorEnabled': booleans(),
+    'IsRealtimePerformancePanelEnabled': booleans(),
+    'IsSchemaAdvisorEnabled': booleans()}),
+   'ApiKeys': fixed_dictionaries({'PublicKey': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)),
+    'PrivateKey': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1))}),
+   'ProjectTeams': lists(fixed_dictionaries({'TeamId': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)),
+    'RoleNames': lists(text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)))})),
+   'ProjectApiKeys': lists(fixed_dictionaries({'Key': text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)),
+    'RoleNames': lists(text(alphabet=characters(blacklist_categories=('Cc', 'Cs'), min_codepoint=1)))}))}))
+    example = self.strategy.example()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_delete
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_create
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_read
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_list
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_read
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_list
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_delete
+ERROR ../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_create
+= 1 failed, 1 passed, 1 skipped, 11 deselected, 3 warnings, 7 errors in 13.44s =
+One or more contract tests failed

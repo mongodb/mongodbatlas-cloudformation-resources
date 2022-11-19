@@ -32,6 +32,19 @@
   "handlers": {
     "create": {
       "permissions": [
+        "iam:CreateRole",
+        "iam:PutRolePolicy",
+        "iam:AttachRolePolicy",
+        "iam:GetRole",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:GetUserPolicy",
+        "iam:GetRolePolicy",
+        "iam:GetGroupPolicy",
+        "iam:PutUserPolicy",
+        "iam:PutRolePolicy",
+        "iam:PutGroupPolicy"
         ]
       },
     "read": {

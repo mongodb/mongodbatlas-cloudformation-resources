@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudcontrolapi"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -79,10 +80,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.completeByConnection(roleResponse)
-	//_, errInRoleCreation := awsRoleCreationUsingCloudControlApi(req.Session, currentModel)
-	_, errInRoleCreation := awsRoleCreationGoSdk(req, currentModel)
+	spew.Dump(currentModel)
+	_, errInRoleCreation := awsRoleCreationUsingCloudControlApi(req.Session, currentModel)
+
+	//_, errInRoleCreation := awsRoleCreationGoSdk(req, currentModel)
 
 	if errInRoleCreation != nil {
+		spew.Dump(errInRoleCreation)
 		log.Debugf("Create - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
@@ -110,6 +114,8 @@ func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel 
 	if err != nil {
 		return currentModel, err
 	}
+
+	spew.Dump()
 
 	getResourceInput := &cloudcontrolapi.GetResourceInput{
 		TypeName:   &typeName,

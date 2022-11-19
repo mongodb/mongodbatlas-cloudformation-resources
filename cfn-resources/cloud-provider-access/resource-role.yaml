@@ -28,9 +28,19 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Deny
+              - Effect: Allow
                 Action:
-                - "*"
+                - "iam:AttachRolePolicy"
+                - "iam:CreateRole"
+                - "iam:GetGroupPolicy"
+                - "iam:GetRole"
+                - "iam:GetRolePolicy"
+                - "iam:GetUserPolicy"
+                - "iam:ListAttachedRolePolicies"
+                - "iam:ListRolePolicies"
+                - "iam:PutGroupPolicy"
+                - "iam:PutRolePolicy"
+                - "iam:PutUserPolicy"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

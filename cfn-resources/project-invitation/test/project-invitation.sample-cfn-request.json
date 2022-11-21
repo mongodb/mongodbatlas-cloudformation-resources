@@ -12,8 +12,7 @@
       "GROUP_DATA_ACCESS_READ_WRITE",
       "GROUP_OWNER",
       "GROUP_READ_ONLY"
-    ],
-    "Id": ""
+    ]
   }
 ,
   "providerLogGroupName" : "mongodb-atlas-project-logs",

@@ -105,60 +105,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.EncryptionAtRestProvider == nil {
 		currentModel.EncryptionAtRestProvider = &none
 	}
-	// Atlas client
-	clusterRequest := &mongodbatlas.AdvancedCluster{
-		Name:                     *currentModel.Name,
-		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider,
-		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
-	}
 
-	if currentModel.EncryptionAtRestProvider != nil {
-		clusterRequest.EncryptionAtRestProvider = *currentModel.EncryptionAtRestProvider
+	// Prepare cluster request
+	clusterRequest, event, err := setClusterRequest(currentModel, err)
+	if err != nil {
+		return event, nil
 	}
-
-	if currentModel.ClusterType != nil {
-		clusterRequest.ClusterType = *currentModel.ClusterType
-	}
-
-	if currentModel.BackupEnabled != nil {
-		clusterRequest.BackupEnabled = currentModel.BackupEnabled
-	}
-
-	if currentModel.BiConnector != nil {
-		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
-	}
-
-	if currentModel.DiskSizeGB != nil {
-		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
-	}
-
-	if len(currentModel.Labels) > 0 {
-		clusterRequest.Labels = expandLabelSlice(currentModel.Labels)
-		if containsLabelOrKey(clusterRequest.Labels, defaultLabel) {
-			_, _ = log.Warnf("Create - error: %+v", err)
-			return progress_events.GetFailedEventByCode(
-				LabelError,
-				cloudformation.HandlerErrorCodeInvalidRequest), nil
-		}
-	}
-
-	if currentModel.MongoDBMajorVersion != nil {
-		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
-	}
-
-	if currentModel.PitEnabled != nil {
-		clusterRequest.PitEnabled = currentModel.PitEnabled
-	}
-
-	if currentModel.VersionReleaseSystem != nil {
-		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
-	}
-
-	if currentModel.RootCertType != nil {
-		clusterRequest.RootCertType = *currentModel.RootCertType
-	}
-
-	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 
 	// Create Cluster
 	cluster, _, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
@@ -172,7 +124,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.StateName = &cluster.StateName
 
-	event := handler.ProgressEvent{
+	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
 		ResourceModel:        currentModel,
@@ -181,9 +133,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			constants.StateName: cluster.StateName,
 			constants.ID:        *currentModel.Id,
 		},
-	}
-	_, _ = log.Debugf("Create() return event:%+v", event)
-	return event, nil
+	}, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -1090,4 +1040,62 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 		p.ResourceModel = currentModel
 	}
 	return p, nil
+}
+
+func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCluster, handler.ProgressEvent, error) {
+	// Atlas client
+	clusterRequest := &mongodbatlas.AdvancedCluster{
+		Name:                     *currentModel.Name,
+		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider,
+		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
+	}
+
+	if currentModel.EncryptionAtRestProvider != nil {
+		clusterRequest.EncryptionAtRestProvider = *currentModel.EncryptionAtRestProvider
+	}
+
+	if currentModel.ClusterType != nil {
+		clusterRequest.ClusterType = *currentModel.ClusterType
+	}
+
+	if currentModel.BackupEnabled != nil {
+		clusterRequest.BackupEnabled = currentModel.BackupEnabled
+	}
+
+	if currentModel.BiConnector != nil {
+		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
+	}
+
+	if currentModel.DiskSizeGB != nil {
+		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
+	}
+
+	if len(currentModel.Labels) > 0 {
+		clusterRequest.Labels = expandLabelSlice(currentModel.Labels)
+		if containsLabelOrKey(clusterRequest.Labels, defaultLabel) {
+			_, _ = log.Warnf("Create - error: %+v", err)
+			return nil, progress_events.GetFailedEventByCode(
+				LabelError,
+				cloudformation.HandlerErrorCodeInvalidRequest), nil
+		}
+	}
+
+	if currentModel.MongoDBMajorVersion != nil {
+		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
+	}
+
+	if currentModel.PitEnabled != nil {
+		clusterRequest.PitEnabled = currentModel.PitEnabled
+	}
+
+	if currentModel.VersionReleaseSystem != nil {
+		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
+	}
+
+	if currentModel.RootCertType != nil {
+		clusterRequest.RootCertType = *currentModel.RootCertType
+	}
+
+	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
+	return clusterRequest, handler.ProgressEvent{}, nil
 }

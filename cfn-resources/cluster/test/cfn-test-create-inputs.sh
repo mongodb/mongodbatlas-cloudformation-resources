@@ -21,7 +21,7 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-projectName="test-project-for-cfn"
+projectName="$1"
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
     projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
@@ -31,8 +31,8 @@ else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 region="us-east-1"
-
-clusterName="${projectName}-cluster"
+n
+clusterName="${projectName}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \

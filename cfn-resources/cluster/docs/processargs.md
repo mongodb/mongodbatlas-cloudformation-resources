@@ -1,5 +1,7 @@
 # MongoDB::Atlas::Cluster processArgs
 
+Advanced configuration details to add for one cluster in the specified project.
+
 ## Syntax
 
 To declare this entity in your AWS CloudFormation template, use the following syntax:

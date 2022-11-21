@@ -33,29 +33,70 @@
                 "Name": {
                     "Ref": "ClusterName"
                 },
-                "NumShards": 1,
-                "ProviderName": "AWS",
-                "ReplicationFactor": 3,
-                "ProviderBackupEnabled": false,
-                "AutoScaling": {
-                    "DiskGBEnabled": false
-                },
-                "MongoDBVersion": "4.0",
-                "ProviderSettings": {
-                    "EncryptEBSVolume": false,
-                    "InstanceSizeName": "M10",
-                    "RegionName": "EU_CENTRAL_1"
-                },
                 "ApiKeys": {
                     "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
                     "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-                }
+                },
+                "AdvancedSettings": {
+                    "DefaultReadConcern": "available",
+                    "DefaultWriteConcern": "1",
+                    "JavascriptEnabled": "true",
+                    "MinimumEnabledTLSProtocol": "TLS1_2",
+                    "NoTableScan": "false",
+                    "OplogSizeMB": "2000",
+                    "SampleSizeBIConnector": "110",
+                    "SampleRefreshIntervalBIConnector": "310"
+                },
+                "BackupEnabled": "true",
+                "ClusterType": "REPLICASET",
+                "Paused": "true",
+                "PitEnabled": "false",
+                "BiConnector": {
+                    "ReadPreference": "secondary",
+                    "Enabled": "false"
+                },
+                "ReplicationSpecs": [
+                    {
+                        "NumShards": "1",
+                        "AdvancedRegionConfigs": [
+                            {
+                                "AutoScaling": {
+                                    "DiskGB": {
+                                        "Enabled": "true"
+                                    },
+                                    "Compute": {
+                                        "Enabled": "false",
+                                        "ScaleDownEnabled": "false"
+                                    }
+                                },
+                                "AnalyticsSpecs": {
+                                    "EbsVolumeType": "STANDARD",
+                                    "InstanceSize": "M10",
+                                    "NodeCount": "3"
+                                },
+                                "ElectableSpecs": {
+                                    "EbsVolumeType": "STANDARD",
+                                    "InstanceSize": "M10",
+                                    "NodeCount": "3"
+                                },
+                                "ReadOnlySpecs": {
+                                    "EbsVolumeType": "STANDARD",
+                                    "InstanceSize": "M10",
+                                    "NodeCount": "3"
+                                },
+                                "Priority": "7",
+                                "RegionName": "US_EAST_1"
+                            }
+                        ]
+                    }
+                ]
+
             }
         }
     },
     "Outputs": {
         "Id": {
-            "Description": "The ID of the cluster",
+            "Description": "The ID of the cluster, it is not the actual cluster ID created by MongoDB Atlas.",
             "Value": {
                 "Ref": "Cluster"
             }

@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "<a href="#id" title="ID">ID</a>" : <i>String</i>,
     "<a href="#numshards" title="NumShards">NumShards</a>" : <i>Integer</i>,
-    "<a href="#advancedregionconfigs" title="AdvancedRegionConfigs">AdvancedRegionConfigs</a>" : <i>[ <a href="advancedregionconfig.md">AdvancedRegionConfig</a>, ... ]</i>,
+    "<a href="#advancedregionconfigs" title="AdvancedRegionConfigs">AdvancedRegionConfigs</a>" : <i>[ <a href="advancedregionconfig.md">advancedRegionConfig</a>, ... ]</i>,
     "<a href="#zonename" title="ZoneName">ZoneName</a>" : <i>String</i>
 }
 </pre>
@@ -23,7 +23,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#id" title="ID">ID</a>: <i>String</i>
 <a href="#numshards" title="NumShards">NumShards</a>: <i>Integer</i>
 <a href="#advancedregionconfigs" title="AdvancedRegionConfigs">AdvancedRegionConfigs</a>: <i>
-      - <a href="advancedregionconfig.md">AdvancedRegionConfig</a></i>
+      - <a href="advancedregionconfig.md">advancedRegionConfig</a></i>
 <a href="#zonename" title="ZoneName">ZoneName</a>: <i>String</i>
 </pre>
 
@@ -59,7 +59,7 @@ If you set "replicationSpecs[n].regionConfigs[m].analyticsSpecs.instanceSize" : 
 
 _Required_: No
 
-_Type_: List of <a href="advancedregionconfig.md">AdvancedRegionConfig</a>
+_Type_: List of <a href="advancedregionconfig.md">advancedRegionConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

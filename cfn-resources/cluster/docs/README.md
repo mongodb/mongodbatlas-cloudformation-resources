@@ -66,6 +66,8 @@ Properties:
 
 #### AdvancedSettings
 
+Advanced configuration details to add for one cluster in the specified project.
+
 _Required_: No
 
 _Type_: <a href="processargs.md">processArgs</a>

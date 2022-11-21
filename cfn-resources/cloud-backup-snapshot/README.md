@@ -1,8 +1,8 @@
-# MongoDB::Atlas::EncryptionAtRest
+# MongoDB::Atlas::CloudBackupSnapshot
 
 ## Description
+Returns, takes, edits, and removes Cloud Backup snapshots.
 
-Returns and edits the Encryption at Rest using Customer Key Management configuration.
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
@@ -18,12 +18,8 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-set or export below environment variables 
-export KMS_KEY=<<CustomerMasterKeyID>>
-export KMS_ROLE=<<RoleID>>
-export KMS_REGION=<<key region>>
-cd ${repo_root}/cfn-resources/encryption-at-rest
-./test/encryptionatrest.create-sample-cfn-request.sh YourProjectID > test.request.json 
+cd ${repo_root}/cfn-resources/cloud-backup-snapshot
+./test/cloud-backup-snapshot.create-sample-cfn-request.sh YourProjectID ClusterName > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 
@@ -38,7 +34,7 @@ cfn submit --verbose --set-default
 
 ## Cloudformation Examples
 
-Please see the [CFN Template](test/encryptionatrest.sample-template.yaml) for example resource.
+Please see the [CFN Template](test/cloud-backup-snapshot.sample-template.yaml) for example resource
 
 ## Integration Testing w/ AWS
 
@@ -61,7 +57,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectName,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> ParameterKey=Enabled,ParameterValue=<true or false>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-snapshot/test/cloud-backup-snapshot.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=RetentionInDays,ParameterValue=<RetentionInDays> ParameterKey=Description,ParameterValue=<Description> 
 ```
 
-For more information see: MongoDB Atlas API [Encryption At Rest Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.
+For more information see: MongoDB Atlas API [Cloud Backups Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.

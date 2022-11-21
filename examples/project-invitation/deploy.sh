@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-name="$1"; shift
 
 username="testing@mongodb.com"
 role="GROUP_CLUSTER_MANAGER"

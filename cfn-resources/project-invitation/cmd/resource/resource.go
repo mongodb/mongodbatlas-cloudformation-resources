@@ -64,14 +64,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		ResourceModel:   invitationToModel(currentModel, invitation),
 	}, nil
-
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-
 	// Validation
 	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -235,13 +232,13 @@ func invitationToModel(currentModel *Model, invitation *mongodbatlas.Invitation)
 	return out
 }
 
-func validateProjectInvitationAlreadyAccepted(ctx context.Context, client *mongodbatlas.Client, username, projectId string) (bool, error) {
+func validateProjectInvitationAlreadyAccepted(ctx context.Context, client *mongodbatlas.Client, username, projectID string) (bool, error) {
 	user, _, err := client.AtlasUsers.GetByName(ctx, username)
 	if err != nil {
 		return false, err
 	}
 	for _, role := range user.Roles {
-		if role.GroupID == projectId {
+		if role.GroupID == projectID {
 			return true, nil
 		}
 	}

@@ -42,8 +42,9 @@ cfn submit --verbose --set-default
 ```
 
 ## Usage
- 
-You can create the stack with a helper script it insert the apikeys for you:
+
+Examples for each integration is present in examples folder.
+Please consult the [Example Template](../../examples/project-invitation/project-invitation.json)
 
 
 ```bash

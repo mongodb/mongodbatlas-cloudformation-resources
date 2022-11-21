@@ -7,10 +7,6 @@ type Model struct {
 	ApiKeys                  *ApiKeyDefinition `json:",omitempty"`
 	ProjectId                *string           `json:",omitempty"`
 	Type                     *string           `json:",omitempty"`
-	LicenseKey               *string           `json:",omitempty"`
-	AccountId                *string           `json:",omitempty"`
-	WriteToken               *string           `json:",omitempty"`
-	ReadToken                *string           `json:",omitempty"`
 	ApiKey                   *string           `json:",omitempty"`
 	Region                   *string           `json:",omitempty"`
 	ServiceKey               *string           `json:",omitempty"`
@@ -18,8 +14,6 @@ type Model struct {
 	TeamName                 *string           `json:",omitempty"`
 	ChannelName              *string           `json:",omitempty"`
 	RoutingKey               *string           `json:",omitempty"`
-	FlowName                 *string           `json:",omitempty"`
-	OrgName                  *string           `json:",omitempty"`
 	Url                      *string           `json:",omitempty"`
 	Secret                   *string           `json:",omitempty"`
 	MicrosoftTeamsWebhookUrl *string           `json:",omitempty"`

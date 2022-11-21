@@ -41,17 +41,11 @@
         "/properties/Password",
         "/properties/ServiceKey",
         "/properties/ApiKey",
-        "/properties/LicenseKey",
-        "/properties/AccountId",
-        "/properties/WriteToken",
-        "/properties/ReadToken",
         "/properties/Region",
         "/properties/ApiToken",
         "/properties/TeamName",
         "/properties/ChannelName",
         "/properties/RoutingKey",
-        "/properties/FlowName",
-        "/properties/OrgName",
         "/properties/MicrosoftTeamsWebhookUrl",
         "/properties/UserName",
         "/properties/ServiceDiscovery",
@@ -74,29 +68,11 @@
                 "MICROSOFT_TEAMS",
                 "SLACK",
                 "DATADOG",
-                "NEW_RELIC",
                 "OPS_GENIE",
                 "VICTOR_OPS",
-                "FLOWDOCK",
                 "WEBHOOK",
                 "PROMETHEUS"
             ]
-        },
-        "LicenseKey": {
-            "type": "string",
-            "description": "Unique 40-hexadecimal digit string that identifies your New Relic license."
-        },
-        "AccountId": {
-            "type": "string",
-            "description": "Unique 40-hexadecimal digit string that identifies your New Relic account."
-        },
-        "WriteToken": {
-            "type": "string",
-            "description": "Insert key associated with your New Relic account."
-        },
-        "ReadToken": {
-            "type": "string",
-            "description": "Query key used to access your New Relic account."
         },
         "ApiKey": {
             "type": "string",
@@ -104,7 +80,7 @@
         },
         "Region": {
             "type": "string",
-            "description": "Unique 24-hexadecimal digit string that identifies your project."
+            "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie/Datadog API."
         },
         "ServiceKey": {
             "type": "string",
@@ -112,11 +88,11 @@
         },
         "ApiToken": {
             "type": "string",
-            "description": "Key that allows MongoDB Cloud to access your Slack/FlowDock account."
+            "description": "Key that allows MongoDB Cloud to access your Slack account."
         },
         "TeamName": {
             "type": "string",
-            "description": "\t\nstring\nHuman-readable label that identifies your Slack team. Set this parameter when you configure a legacy Slack integration."
+            "description": "Human-readable label that identifies your Slack team. Set this parameter when you configure a legacy Slack integration."
         },
         "ChannelName": {
             "type": "string",
@@ -124,15 +100,7 @@
         },
         "RoutingKey": {
             "type": "string",
-            "description": "Unique 24-hexadecimal digit string that identifies your project."
-        },
-        "FlowName": {
-            "type": "string",
-            "description": "Human-readable label that identifies your Flowdock Flow."
-        },
-        "OrgName": {
-            "type": "string",
-            "description": "Human-readable label that identifies your Flowdock organization."
+            "description": "Routing key associated with your Splunk On-Call account."
         },
         "Url": {
             "type": "string",

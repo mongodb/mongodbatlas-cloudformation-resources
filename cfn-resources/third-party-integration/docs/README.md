@@ -15,10 +15,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
-        "<a href="#licensekey" title="LicenseKey">LicenseKey</a>" : <i>String</i>,
-        "<a href="#accountid" title="AccountId">AccountId</a>" : <i>String</i>,
-        "<a href="#writetoken" title="WriteToken">WriteToken</a>" : <i>String</i>,
-        "<a href="#readtoken" title="ReadToken">ReadToken</a>" : <i>String</i>,
         "<a href="#apikey" title="ApiKey">ApiKey</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
         "<a href="#servicekey" title="ServiceKey">ServiceKey</a>" : <i>String</i>,
@@ -26,8 +22,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#teamname" title="TeamName">TeamName</a>" : <i>String</i>,
         "<a href="#channelname" title="ChannelName">ChannelName</a>" : <i>String</i>,
         "<a href="#routingkey" title="RoutingKey">RoutingKey</a>" : <i>String</i>,
-        "<a href="#flowname" title="FlowName">FlowName</a>" : <i>String</i>,
-        "<a href="#orgname" title="OrgName">OrgName</a>" : <i>String</i>,
         "<a href="#url" title="Url">Url</a>" : <i>String</i>,
         "<a href="#secret" title="Secret">Secret</a>" : <i>String</i>,
         "<a href="#microsoftteamswebhookurl" title="MicrosoftTeamsWebhookUrl">MicrosoftTeamsWebhookUrl</a>" : <i>String</i>,
@@ -50,10 +44,6 @@ Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#type" title="Type">Type</a>: <i>String</i>
-    <a href="#licensekey" title="LicenseKey">LicenseKey</a>: <i>String</i>
-    <a href="#accountid" title="AccountId">AccountId</a>: <i>String</i>
-    <a href="#writetoken" title="WriteToken">WriteToken</a>: <i>String</i>
-    <a href="#readtoken" title="ReadToken">ReadToken</a>: <i>String</i>
     <a href="#apikey" title="ApiKey">ApiKey</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
     <a href="#servicekey" title="ServiceKey">ServiceKey</a>: <i>String</i>
@@ -61,8 +51,6 @@ Properties:
     <a href="#teamname" title="TeamName">TeamName</a>: <i>String</i>
     <a href="#channelname" title="ChannelName">ChannelName</a>: <i>String</i>
     <a href="#routingkey" title="RoutingKey">RoutingKey</a>: <i>String</i>
-    <a href="#flowname" title="FlowName">FlowName</a>: <i>String</i>
-    <a href="#orgname" title="OrgName">OrgName</a>: <i>String</i>
     <a href="#url" title="Url">Url</a>: <i>String</i>
     <a href="#secret" title="Secret">Secret</a>: <i>String</i>
     <a href="#microsoftteamswebhookurl" title="MicrosoftTeamsWebhookUrl">MicrosoftTeamsWebhookUrl</a>: <i>String</i>
@@ -103,47 +91,7 @@ _Required_: No
 
 _Type_: String
 
-_Allowed Values_: <code>PAGER_DUTY</code> | <code>MICROSOFT_TEAMS</code> | <code>SLACK</code> | <code>DATADOG</code> | <code>NEW_RELIC</code> | <code>OPS_GENIE</code> | <code>VICTOR_OPS</code> | <code>FLOWDOCK</code> | <code>WEBHOOK</code> | <code>PROMETHEUS</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### LicenseKey
-
-Unique 40-hexadecimal digit string that identifies your New Relic license.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AccountId
-
-Unique 40-hexadecimal digit string that identifies your New Relic account.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### WriteToken
-
-Insert key associated with your New Relic account.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ReadToken
-
-Query key used to access your New Relic account.
-
-_Required_: No
-
-_Type_: String
+_Allowed Values_: <code>PAGER_DUTY</code> | <code>MICROSOFT_TEAMS</code> | <code>SLACK</code> | <code>DATADOG</code> | <code>OPS_GENIE</code> | <code>VICTOR_OPS</code> | <code>WEBHOOK</code> | <code>PROMETHEUS</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -159,7 +107,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Region
 
-Unique 24-hexadecimal digit string that identifies your project.
+Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie/Datadog API.
 
 _Required_: No
 
@@ -179,7 +127,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ApiToken
 
-Key that allows MongoDB Cloud to access your Slack/FlowDock account.
+Key that allows MongoDB Cloud to access your Slack account.
 
 _Required_: No
 
@@ -189,8 +137,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### TeamName
 
-	
-string
 Human-readable label that identifies your Slack team. Set this parameter when you configure a legacy Slack integration.
 
 _Required_: No
@@ -211,27 +157,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### RoutingKey
 
-Unique 24-hexadecimal digit string that identifies your project.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### FlowName
-
-Human-readable label that identifies your Flowdock Flow.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### OrgName
-
-Human-readable label that identifies your Flowdock organization.
+Routing key associated with your Splunk On-Call account.
 
 _Required_: No
 

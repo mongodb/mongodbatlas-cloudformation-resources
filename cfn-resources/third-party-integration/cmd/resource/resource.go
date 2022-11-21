@@ -187,18 +187,6 @@ func updateIntegrationFromSchema(currentModel *Model, integration *mongodbatlas.
 	if currentModel.Url != nil && *currentModel.Url != integration.URL {
 		integration.URL = *currentModel.Url
 	}
-	if currentModel.LicenseKey != nil && *currentModel.LicenseKey != integration.LicenseKey {
-		integration.URL = *currentModel.Url
-	}
-	if currentModel.AccountId != nil && *currentModel.AccountId != integration.AccountID {
-		integration.AccountID = *currentModel.AccountId
-	}
-	if currentModel.WriteToken != nil && *currentModel.WriteToken != integration.WriteToken {
-		integration.WriteToken = *currentModel.WriteToken
-	}
-	if currentModel.ReadToken != nil && *currentModel.ReadToken != integration.ReadToken {
-		integration.ReadToken = *currentModel.ReadToken
-	}
 	if currentModel.ApiKey != nil && *currentModel.ApiKey != integration.APIKey {
 		integration.APIKey = *currentModel.ApiKey
 	}
@@ -219,12 +207,6 @@ func updateIntegrationFromSchema(currentModel *Model, integration *mongodbatlas.
 	}
 	if currentModel.RoutingKey != nil && *currentModel.RoutingKey != integration.RoutingKey {
 		integration.RoutingKey = *currentModel.RoutingKey
-	}
-	if currentModel.FlowName != nil && *currentModel.FlowName != integration.FlowName {
-		integration.FlowName = *currentModel.FlowName
-	}
-	if currentModel.OrgName != nil && *currentModel.OrgName != integration.OrgName {
-		integration.OrgName = *currentModel.OrgName
 	}
 	if currentModel.Secret != nil && *currentModel.Secret != integration.Secret {
 		integration.Secret = *currentModel.Secret
@@ -363,12 +345,6 @@ func modelToIntegration(currentModel *Model) (out *mongodbatlas.ThirdPartyIntegr
 	if currentModel.Url != nil {
 		out.URL = *currentModel.Url
 	}
-	if currentModel.OrgName != nil {
-		out.OrgName = *currentModel.OrgName
-	}
-	if currentModel.FlowName != nil {
-		out.FlowName = *currentModel.FlowName
-	}
 	if currentModel.RoutingKey != nil {
 		out.RoutingKey = *currentModel.RoutingKey
 	}
@@ -389,18 +365,6 @@ func modelToIntegration(currentModel *Model) (out *mongodbatlas.ThirdPartyIntegr
 	}
 	if currentModel.ApiKey != nil {
 		out.APIKey = *currentModel.ApiKey
-	}
-	if currentModel.ReadToken != nil {
-		out.ReadToken = *currentModel.ReadToken
-	}
-	if currentModel.WriteToken != nil {
-		out.WriteToken = *currentModel.WriteToken
-	}
-	if currentModel.AccountId != nil {
-		out.AccountID = *currentModel.AccountId
-	}
-	if currentModel.LicenseKey != nil {
-		out.LicenseKey = *currentModel.LicenseKey
 	}
 
 	return out

@@ -43,8 +43,7 @@ cfn submit --verbose --set-default
 
 ## Usage
 
-Examples for each integration is present in examples folder.
-Please consult the [Example Template](../../examples/project-invitation/project-invitation.json)
+Examples aws cloudformation template is available here [example template.](../../examples/project-invitation/project-invitation.json)
 
 
 ```bash

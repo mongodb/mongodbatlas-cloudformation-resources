@@ -41,7 +41,7 @@ cfn submit --verbose --set-default
 ```
 
 ## Usage
-You can create the stack with a helper script it insert the apikeys for you:
+Examples aws cloudformation template is available here [example template.](../../examples/thirdpartyintegrations)
 
 
 ```bash
@@ -53,9 +53,6 @@ export AWS_DEFAULT_REGION=""
 
 #Command to deploy the sample thirdpartyintegration stack (Before this step "cfn submit" should have been executed successfully)
 ./examples/thirdpartyintegration/deploy.sh
-
-#Command to deploy the sample thirdpartyintegration stack (Before this step "cfn submit" should have been executed successfully)
-aws cloudformation deploy --stack-name atlas-thirdpartyintegration-test --template-file ./test/thirdpartyintegration.sample-template.yaml --no-fail-on-empty-changeset --parameter-overrides PublicKey=$MCLI_PUBLIC_API_KEY Privatekey=$MCLI_PRIVATE_API_KEY ProjectId=$MCLI_PROJECT_ID
 ```
 
 | Integrations           | Status                                             | Reference links                                                                                                                                                                                                                                                 |

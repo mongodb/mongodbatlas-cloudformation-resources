@@ -11,7 +11,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey, constants.Username}
@@ -25,7 +25,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 }
 
 func setup() {
-	util.SetupLogger("mongodb-atlas-projectinvitation")
+	util.SetupLogger("mongodb-atlas-project-invitation")
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -59,7 +59,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	currentModel.Id = &invitation.ID
 
-	return Read(req, prevModel, currentModel)
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   invitationToModel(currentModel, invitation),
+	}, nil
+
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -94,11 +99,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	readAtlasProjectInvitation(invitation, currentModel)
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		ResourceModel:   invitationToModel(currentModel, invitation),
 	}, nil
 }
 
@@ -124,7 +128,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Roles: currentModel.Roles,
 	}
 
-	_, res, err := client.Projects.UpdateInvitationByID(context.Background(), *currentModel.ProjectId, *currentModel.Id, invitationReq)
+	invitation, res, err := client.Projects.UpdateInvitationByID(context.Background(), *currentModel.ProjectId, *currentModel.Id, invitationReq)
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -132,7 +136,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = log.Debugf("%s invitation updated", *currentModel.Id)
 
 	// Response
-	return Read(req, prevModel, currentModel)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   invitationToModel(currentModel, invitation),
+	}, nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -202,8 +209,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var invites []interface{}
 	// iterate invites
 	for i := range invitations {
-		invite := &Model{}
-		readAtlasProjectInvitation(invitations[i], invite)
+		invite := invitationToModel(currentModel, invitations[i])
 		invites = append(invites, invite)
 	}
 
@@ -214,13 +220,19 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func readAtlasProjectInvitation(invitation *mongodbatlas.Invitation, currentModel *Model) {
-	currentModel.Username = &invitation.Username
-	currentModel.Id = &invitation.ID
-	currentModel.Roles = invitation.Roles
-	currentModel.ExpiresAt = &invitation.ExpiresAt
-	currentModel.CreatedAt = &invitation.CreatedAt
-	currentModel.InviterUsername = &invitation.InviterUsername
+func invitationToModel(currentModel *Model, invitation *mongodbatlas.Invitation) Model {
+	out := Model{
+		ApiKeys:         currentModel.ApiKeys,
+		ProjectId:       currentModel.ProjectId,
+		Username:        &invitation.Username,
+		Id:              &invitation.ID,
+		Roles:           invitation.Roles,
+		ExpiresAt:       &invitation.ExpiresAt,
+		CreatedAt:       &invitation.CreatedAt,
+		InviterUsername: &invitation.InviterUsername,
+	}
+
+	return out
 }
 
 func validateProjectInvitationAlreadyAccepted(ctx context.Context, client *mongodbatlas.Client, username, projectId string) (bool, error) {

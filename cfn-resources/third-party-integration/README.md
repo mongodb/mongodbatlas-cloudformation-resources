@@ -41,17 +41,7 @@ cfn submit --verbose --set-default
 ```
 
 ## Usage
-
-You can use the project.sample-template.yaml to create a stack using the resource.
-Similar to the local testing described above you can follow the logs for the deployed
-lambda function which handles the request for the Resource Type.
-
-In one shell session:
-```
-aws logs tail mongodb-atlas-project-logs --follow
-```
-
-And then you can create the stack with a helper script it insert the apikeys for you:
+You can create the stack with a helper script it insert the apikeys for you:
 
 
 ```bash
@@ -60,6 +50,9 @@ export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_REGION=""
 export AWS_DEFAULT_REGION=""
+
+#Command to deploy the sample thirdpartyintegration stack (Before this step "cfn submit" should have been executed successfully)
+./examples/thirdpartyintegration/deploy.sh
 
 #Command to deploy the sample thirdpartyintegration stack (Before this step "cfn submit" should have been executed successfully)
 aws cloudformation deploy --stack-name atlas-thirdpartyintegration-test --template-file ./test/thirdpartyintegration.sample-template.yaml --no-fail-on-empty-changeset --parameter-overrides PublicKey=$MCLI_PUBLIC_API_KEY Privatekey=$MCLI_PRIVATE_API_KEY ProjectId=$MCLI_PROJECT_ID

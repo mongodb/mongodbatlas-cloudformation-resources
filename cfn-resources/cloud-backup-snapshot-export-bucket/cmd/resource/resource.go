@@ -6,6 +6,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
@@ -28,7 +29,6 @@ func setup() {
 func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotExportBucket) {
 	m.Id = &bucket.ID
 	m.BucketName = &bucket.BucketName
-	m.CloudProvider = &bucket.CloudProvider
 	m.IamRoleId = &bucket.IAMRoleID
 }
 
@@ -54,7 +54,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	input := &mongodbatlas.CloudProviderSnapshotExportBucket{
 		BucketName:    *currentModel.BucketName,
-		CloudProvider: *currentModel.CloudProvider,
+		CloudProvider: constants.AWS,
 		IAMRoleID:     *currentModel.IamRoleId,
 	}
 

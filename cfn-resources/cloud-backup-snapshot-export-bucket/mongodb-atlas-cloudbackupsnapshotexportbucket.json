@@ -11,11 +11,6 @@
           "type": "string",
           "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
         },
-        "CloudProvider": {
-          "type": "string",
-          "description": "Human-readable label that identifies the cloud provider that stores this snapshot.",
-          "enum": ["AWS", "AZURE", "GCP"]
-        },
         "IamRoleId": {
           "type": "string",
           "description": "Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.",
@@ -96,11 +91,6 @@
     "BucketName": {
       "type": "string",
       "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
-    },
-    "CloudProvider": {
-      "type": "string",
-      "description": "Human-readable label that identifies the cloud provider that stores this snapshot.",
-      "enum": ["AWS", "AZURE", "GCP"]
     },
     "ExportBucketId": {
       "type": "string",

@@ -10,7 +10,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
     "<a href="#bucketname" title="BucketName">BucketName</a>" : <i>String</i>,
-    "<a href="#cloudprovider" title="CloudProvider">CloudProvider</a>" : <i>String</i>,
     "<a href="#iamroleid" title="IamRoleId">IamRoleId</a>" : <i>String</i>,
     "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>,
     "<a href="#id" title="Id">Id</a>" : <i>String</i>
@@ -22,7 +21,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 <a href="#bucketname" title="BucketName">BucketName</a>: <i>String</i>
-<a href="#cloudprovider" title="CloudProvider">CloudProvider</a>: <i>String</i>
 <a href="#iamroleid" title="IamRoleId">IamRoleId</a>: <i>String</i>
 <a href="#links" title="Links">Links</a>: <i>
       - <a href="link.md">Link</a></i>
@@ -46,18 +44,6 @@ Human-readable label that identifies the AWS bucket that the role is authorized 
 _Required_: No
 
 _Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### CloudProvider
-
-Human-readable label that identifies the cloud provider that stores this snapshot.
-
-_Required_: No
-
-_Type_: String
-
-_Allowed Values_: <code>AWS</code> | <code>AZURE</code> | <code>GCP</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

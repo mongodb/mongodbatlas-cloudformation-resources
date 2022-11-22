@@ -14,7 +14,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#bucketname" title="BucketName">BucketName</a>" : <i>String</i>,
-        "<a href="#cloudprovider" title="CloudProvider">CloudProvider</a>" : <i>String</i>,
         "<a href="#exportbucketid" title="ExportBucketId">ExportBucketId</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#iamroleid" title="IamRoleId">IamRoleId</a>" : <i>String</i>,
@@ -29,7 +28,6 @@ Type: MongoDB::Atlas::CloudBackupSnapshotExportBucket
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#bucketname" title="BucketName">BucketName</a>: <i>String</i>
-    <a href="#cloudprovider" title="CloudProvider">CloudProvider</a>: <i>String</i>
     <a href="#exportbucketid" title="ExportBucketId">ExportBucketId</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#iamroleid" title="IamRoleId">IamRoleId</a>: <i>String</i>
@@ -52,18 +50,6 @@ Human-readable label that identifies the AWS bucket that the role is authorized 
 _Required_: No
 
 _Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### CloudProvider
-
-Human-readable label that identifies the cloud provider that stores this snapshot.
-
-_Required_: No
-
-_Type_: String
-
-_Allowed Values_: <code>AWS</code> | <code>AZURE</code> | <code>GCP</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

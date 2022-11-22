@@ -49,7 +49,7 @@
                 },
                 "BackupEnabled": "true",
                 "ClusterType": "REPLICASET",
-                "Paused": "true",
+                "Paused": "false",
                 "PitEnabled": "false",
                 "BiConnector": {
                     "ReadPreference": "secondary",

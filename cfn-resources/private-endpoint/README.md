@@ -6,7 +6,7 @@ The Private Endpoint creation flow consists of the creation of three related res
 2. Aws VPC private Endpoint
 3. Atlas Private Endpoint
 
->Limitation: On this first Stage only one private endpoint can be attached to a service
+>Limitation: On this first Stage only one private endpoint can be attached to a service (future versions will support multiple Private Endpoints)
 
 ### CREATION FLOW
 

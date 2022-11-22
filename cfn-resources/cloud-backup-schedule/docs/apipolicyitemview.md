@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudBackupSchedule policyItems
+# MongoDB::Atlas::CloudBackupSchedule ApiPolicyItemView
 
 ## Syntax
 
@@ -8,7 +8,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#id" title="Id">Id</a>" : <i>String</i>,
+    "<a href="#id" title="ID">ID</a>" : <i>String</i>,
     "<a href="#frequencytype" title="FrequencyType">FrequencyType</a>" : <i>String</i>,
     "<a href="#frequencyinterval" title="FrequencyInterval">FrequencyInterval</a>" : <i>Integer</i>,
     "<a href="#retentionvalue" title="RetentionValue">RetentionValue</a>" : <i>Integer</i>,
@@ -19,7 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#id" title="Id">Id</a>: <i>String</i>
+<a href="#id" title="ID">ID</a>: <i>String</i>
 <a href="#frequencytype" title="FrequencyType">FrequencyType</a>: <i>String</i>
 <a href="#frequencyinterval" title="FrequencyInterval">FrequencyInterval</a>: <i>Integer</i>
 <a href="#retentionvalue" title="RetentionValue">RetentionValue</a>: <i>Integer</i>
@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 ## Properties
 
-#### Id
+#### ID
 
 Unique identifier of the backup policy item.
 

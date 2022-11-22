@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudBackupSchedule copySettings
+# MongoDB::Atlas::CloudBackupSchedule ApiAtlasDiskBackupCopySettingView
 
 ## Syntax
 

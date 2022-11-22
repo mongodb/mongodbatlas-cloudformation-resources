@@ -1,0 +1,27 @@
+{
+    "ApiKeys": {
+      "PublicKey": "xfqavjxw",
+      "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
+    },
+    "ProjectId": "63596e976a17e50e1ced821d",
+    "ClusterName": "multiCloud3",
+    "AutoExportEnabled": false,
+    "Policies": [
+      {
+        "ID": "636d478417e79707ed6de976",
+        "PolicyItems": [
+          {
+            "FrequencyInterval": 1,
+            "FrequencyType": "daily",
+            "RetentionUnit": "days",
+            "RetentionValue": 9
+          }
+        ]
+      }
+    ],
+    "ReferenceHourOfDay": 0,
+    "ReferenceMinuteOfHour": 0,
+    "RestoreWindowDays": 1,
+    "UpdateSnapshots": true,
+    "UseOrgAndGroupNamesInExportPrefix": true
+  }

@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudBackupSchedule deleteCopiedBackup
+# MongoDB::Atlas::CloudBackupSchedule ApiDeleteCopiedBackupsView
 
 ## Syntax
 

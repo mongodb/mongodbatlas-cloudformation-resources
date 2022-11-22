@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudBackupSchedule export
+# MongoDB::Atlas::CloudBackupSchedule Export
 
 ## Syntax
 

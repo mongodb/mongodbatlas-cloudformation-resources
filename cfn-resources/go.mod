@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.34.28
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1
-	go.mongodb.org/atlas v0.18.0
+	go.mongodb.org/atlas v0.19.0
 )
 
 require (
@@ -16,7 +16,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
-	github.com/openlyinc/pointy v1.1.2 // indirect
+	github.com/openlyinc/pointy v1.2.0 // indirect
 	github.com/segmentio/ksuid v1.0.2 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect

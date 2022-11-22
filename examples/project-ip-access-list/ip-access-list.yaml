@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::ProjectIpAccessList
 Parameters:
   PublicKey:
     Description: "Your MongoDB Cloud Public API Key"
@@ -24,6 +24,8 @@ Resources:
         PrivateKey: !Ref "PrivateKey"
       AccessList:
       - IPAddress: "0.0.0.0/1"
+        Comment: "Testing open all ips"
+      - IPAddress: "128.0.0.0/1"
         Comment: "Testing open all ips"
       - CIDRBlock: "203.0.113.0/24"
         Comment: "CIDR block for Application Server B - D"

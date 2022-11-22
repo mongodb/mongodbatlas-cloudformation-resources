@@ -26,6 +26,19 @@ const (
 	Roles        = "Roles"
 	AccessList   = "AccessList"
 
+	CreatingState = "CREATING"
+	UpdateState   = "UPDATING"
+	DeletingState = "DELETING"
+	DeletedState  = "DELETED"
+	IdleState     = "IDLE"
+
+	Error            = "ERROR"
+	DeleteInProgress = "Delete in progress"
+	StateName        = "StateName"
+	Complete         = "Complete"
+	Pending          = "Pending"
+	ReadComplete     = "Read Complete"
+
 	CustomMasterKey        = "AwsKms.CustomerMasterKeyID"
 	RoleID                 = "AwsKms.RoleID"
 	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"

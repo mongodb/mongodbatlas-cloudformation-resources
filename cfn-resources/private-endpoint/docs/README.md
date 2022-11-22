@@ -1,22 +1,6 @@
 # MongoDB::Atlas::PrivateEndpoint
 
-The Private Endpoint creation flow consists of the creation of three related resources in the next order.
-
-1. Atlas Private Endpoint Service
-2. Aws VPC private Endpoint
-3. Atlas Private Endpoint
-
-### CREATION FLOW
-
-The creation process waits until all the resources gets created the next order
-
-1. Creates the Private Endpoint Service and waits until is completed (Available Status)
-2. Once the Private Endpoint Service gets completed, creates the Aws VPC Private endpoint and the Atlas Private Endpoint
-3. Once the two last resources gets completed (Available Status) the flow returns Success
-
-### SIMPLIFIED CREATION FLOW
-
-![](../docs_files/simplified_creation_flow.png)
+The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint >Limitation: On this first Stage only one private endpoint can be attached to a service
 
 ## Syntax
 

@@ -14,7 +14,6 @@ const (
 	RouteTableCIDRBlock = "RouteTableCIDRBlock"
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
-	ClusterName         = "ClusterName"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"

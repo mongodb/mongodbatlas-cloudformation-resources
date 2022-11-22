@@ -6,6 +6,8 @@
     "ProjectId": "63596e976a17e50e1ced821d",
     "ClusterName": "multiCloud3",
     "AutoExportEnabled": false,
+    "Export": {
+     },
     "Policies": [
       {
         "ID": "636d478417e79707ed6de976",

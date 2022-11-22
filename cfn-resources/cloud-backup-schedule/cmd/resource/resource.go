@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"log"
 	"strings"
@@ -449,6 +448,9 @@ func modelToCLoudBackupSchedule(currentModel *Model) (out *mongodbatlas.CloudPro
 
 	if currentModel.AutoExportEnabled != nil {
 		out.AutoExportEnabled = currentModel.AutoExportEnabled
+		if *currentModel.AutoExportEnabled && currentModel.Export != nil {
+			out.Export = expandExport(*currentModel.Export)
+		}
 	}
 	if currentModel.ReferenceHourOfDay != nil {
 		out.ReferenceHourOfDay = cast64(currentModel.ReferenceHourOfDay)
@@ -464,9 +466,6 @@ func modelToCLoudBackupSchedule(currentModel *Model) (out *mongodbatlas.CloudPro
 	}
 	if currentModel.Policies != nil {
 		out.Policies = expandPolicies(currentModel.Policies)
-	}
-	if *currentModel.AutoExportEnabled && currentModel.Export != nil {
-		out.Export = expandExport(*currentModel.Export)
 	}
 	if currentModel.UpdateSnapshots != nil {
 		out.UpdateSnapshots = currentModel.UpdateSnapshots
@@ -493,7 +492,5 @@ func backupPolicyToModel(currentModel Model, backupPolicy *mongodbatlas.CloudPro
 	if !*currentModel.AutoExportEnabled {
 		out.Export = nil
 	}
-	log.Printf("out---")
-	spew.Dump(out)
 	return out
 }

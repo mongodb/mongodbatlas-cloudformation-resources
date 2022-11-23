@@ -1,0 +1,10 @@
+{
+    "GroupId" : "",
+    "Region" : "",
+    "VpcId" : "",
+    "SubnetId": "",
+    "ApiKeys" : {
+        "PublicKey" : "",
+        "PrivateKey" : ""
+    }
+}

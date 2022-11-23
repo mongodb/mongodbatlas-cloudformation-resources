@@ -14,6 +14,9 @@ const (
 	RouteTableCIDRBlock = "RouteTableCIDRBlock"
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
+	SubnetID            = "SubnetId"
+	GroupID             = "GroupId"
+	Region              = "Region"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -38,7 +41,6 @@ const (
 
 	CustomMasterKey        = "AwsKms.CustomerMasterKeyID"
 	RoleID                 = "AwsKms.RoleID"
-	Region                 = "AwsKms.Region"
 	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
 	ResourceNotFound       = "resource not found"
 

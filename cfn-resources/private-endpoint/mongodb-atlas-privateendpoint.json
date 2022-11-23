@@ -1,0 +1,99 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndpoint",
+    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint >Limitation: On this first Stage only one private endpoint can be attached to a service, Limitation: Only one private endpoint can be attached to a Service, future versions will support multiple private endpoint creation",
+    "definitions": {
+        "ApiKey": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Id": {
+            "description": "The unique identifier of the private endpoint service.",
+            "type": "string"
+        },
+        "EndpointServiceName": {
+            "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
+            "type": "string"
+        },
+        "InterfaceEndpoints": {
+            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "insertionOrder" : false
+        },
+        "Status": {
+            "description": "Status of the AWS PrivateLink connection. Atlas returns one of the following",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "VpcId": {
+            "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+            "type": "string"
+        },
+        "SubnetId": {
+            "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+            "type": "string"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/ApiKey"
+        },
+        "Region": {
+            "description": "Aws Region",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "GroupId",
+        "Region",
+        "VpcId",
+        "SubnetId",
+        "ApiKeys"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "ec2:CreateVpcEndpoint"
+            ]
+        },
+        "read": {
+            "permissions": [
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "ec2:DeleteVpcEndpoints"
+            ]
+        },
+        "list": {
+            "permissions": [
+            ]
+        }
+    }
+}

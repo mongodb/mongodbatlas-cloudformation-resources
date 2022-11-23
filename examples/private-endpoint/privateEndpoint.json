@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "PublicKey": {
+      "Type": "String"
+    },
+    "Privatekey": {
+      "Type": "String"
+    },
+    "GroupId": {
+      "Type": "String"
+    },
+    "Region": {
+      "Type": "String"
+    },
+    "VpcId": {
+      "Type": "String"
+    },
+    "SubnetId": {
+      "Type": "String"
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "PrivateEndpoint": {
+      "Type": "MongoDB::Atlas::PrivateEndpoint",
+      "Properties":  {
+        "GroupId": { "Ref" : "GroupId" },
+        "Region": { "Ref" : "Region" },
+        "VpcId": { "Ref" : "VpcId" },
+        "SubnetId": { "Ref" : "SubnetId" },
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "PublicKey" },
+          "PrivateKey": { "Ref" : "Privatekey" }
+        }
+      }
+    }
+  },
+  "Outputs" : {}
+}

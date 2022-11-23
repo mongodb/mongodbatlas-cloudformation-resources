@@ -27,12 +27,13 @@ echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 _DRY_RUN=${DRY_RUN:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
+_CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # By default, submit the entire library of active custom resources, but usually
 # this is run one resource at a time.
-resources="${1:-project database-user project-ip-access-list network-peering cluster}"
+resources="${1:-project}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 
@@ -48,10 +49,13 @@ else
         cwd=$(pwd)
         cd "${resource}"
         echo "resource: ${resource}"
-        if [[ "${CFN_SUBMIT_LOG_LEVEL}" == "debug" ]]; then
-            make debug
-        else
-            make
+
+        if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
+          if [[ "${CFN_SUBMIT_LOG_LEVEL}" == "debug" ]]; then
+              make debug
+          else
+              make
+          fi
         fi
         cat rpdk.log
         cd -

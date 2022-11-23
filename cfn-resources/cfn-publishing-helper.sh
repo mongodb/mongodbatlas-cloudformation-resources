@@ -18,7 +18,6 @@
 # LOG_LEVEL=debug ./cfn-publishing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 trap "exit" INT TERM ERR
-trap "kill 0" EXIT
 #set -x
 set -o errexit
 set -o nounset
@@ -37,8 +36,9 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
 major_version=${CFN_PUBLISH_MAJOR_VERSION:-0}
 minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
-version="00000001"
+version="${2:-00000001}"
 
+echo " ******************** version : ${version}"
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
@@ -47,7 +47,12 @@ resources="${1:-project}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
-aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
+  echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
+else
+  aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+fi
+
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"

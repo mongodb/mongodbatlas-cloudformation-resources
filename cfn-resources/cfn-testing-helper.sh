@@ -15,12 +15,12 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-testing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-trap "exit" INT TERM ERR
-trap "kill 0" EXIT
+#trap "exit" INT TERM ERR
+#trap "kill 0" EXIT
 #set -x
-set -o errexit
-set -o nounset
-set -o pipefail
+#set -o errexit
+#set -o nounset
+#set -o pipefail
 
 _DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
@@ -28,11 +28,14 @@ _SKIP_BUILD=${SKIP_BUILD:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
+_CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
+
+. ./cfn-testing-helper.config
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project project-ip-access-list database-user }"
+resources="${1:-cluster }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -47,10 +50,12 @@ do
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    if [[ "${_DEFAULT_LOG_LEVEL}" == "debug" ]]; then
-        make debug
-    else
-        make
+    if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
+      if [[ "${_DEFAULT_LOG_LEVEL}" == "debug" ]]; then
+          make debug
+      else
+          make
+      fi
     fi
     cd -
 done
@@ -109,6 +114,10 @@ do
     echo ""
 done
 
+if [[ "${_GENERATE_INPUTS}" == "true" ]]; then
+  echo "generated inputs..."
+   exit 0
+fi
 
 #fi
 

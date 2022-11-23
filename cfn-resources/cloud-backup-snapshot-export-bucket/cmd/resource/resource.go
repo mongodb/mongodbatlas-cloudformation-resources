@@ -7,15 +7,15 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{"GroupId", "BucketName", "CloudProvider", "IamRoleId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var ReadRequiredFields = []string{"GroupId", "ExportBucketId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var CreateRequiredFields = []string{"GroupId", "BucketName", "IamRoleId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var ReadRequiredFields = []string{"GroupId", "Id", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{"GroupId", "ExportBucketId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var DeleteRequiredFields = []string{"GroupId", "Id", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var ListRequiredFields = []string{"GroupId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -28,8 +28,6 @@ func setup() {
 
 func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotExportBucket) {
 	m.Id = &bucket.ID
-	m.BucketName = &bucket.BucketName
-	m.IamRoleId = &bucket.IAMRoleID
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -60,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	output, res, err := client.CloudProviderSnapshotExportBuckets.Create(context.Background(), *currentModel.GroupId, input)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.completeByAtlasModel(output)
@@ -93,9 +91,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	var res *mongodbatlas.Response
 
-	output, res, err := client.CloudProviderSnapshotExportBuckets.Get(context.Background(), *currentModel.GroupId, *currentModel.ExportBucketId)
+	output, res, err := client.CloudProviderSnapshotExportBuckets.Get(context.Background(), *currentModel.GroupId, *currentModel.Id)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.completeByAtlasModel(output)
@@ -132,9 +130,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	var res *mongodbatlas.Response
 
-	res, err = client.CloudProviderSnapshotExportBuckets.Delete(context.Background(), *currentModel.GroupId, *currentModel.ExportBucketId)
+	res, err = client.CloudProviderSnapshotExportBuckets.Delete(context.Background(), *currentModel.GroupId, *currentModel.Id)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	// Response
@@ -169,7 +167,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	output, res, err := client.CloudProviderSnapshotExportBuckets.List(context.Background(), *currentModel.GroupId, params)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	resultList := make([]interface{}, 0)

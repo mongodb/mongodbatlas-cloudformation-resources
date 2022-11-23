@@ -14,7 +14,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#bucketname" title="BucketName">BucketName</a>" : <i>String</i>,
-        "<a href="#exportbucketid" title="ExportBucketId">ExportBucketId</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#iamroleid" title="IamRoleId">IamRoleId</a>" : <i>String</i>,
     }
@@ -28,7 +27,6 @@ Type: MongoDB::Atlas::CloudBackupSnapshotExportBucket
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#bucketname" title="BucketName">BucketName</a>: <i>String</i>
-    <a href="#exportbucketid" title="ExportBucketId">ExportBucketId</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#iamroleid" title="IamRoleId">IamRoleId</a>: <i>String</i>
 </pre>
@@ -50,22 +48,6 @@ Human-readable label that identifies the AWS bucket that the role is authorized 
 _Required_: No
 
 _Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ExportBucketId
-
-Unique string that identifies the AWS S3 bucket to which you export your snapshots.
-
-_Required_: No
-
-_Type_: String
-
-_Minimum_: <code>3</code>
-
-_Maximum_: <code>63</code>
-
-_Pattern_: <code>^((?!xn--)(?!.*-s3alias)[a-z0-9][a-z0-9-]{1,61}[a-z0-9])$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

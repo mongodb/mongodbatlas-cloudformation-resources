@@ -92,13 +92,6 @@
       "type": "string",
       "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
     },
-    "ExportBucketId": {
-      "type": "string",
-      "description": "Unique string that identifies the AWS S3 bucket to which you export your snapshots.",
-      "maxLength": 63,
-      "minLength": 3,
-      "pattern": "^((?!xn--)(?!.*-s3alias)[a-z0-9][a-z0-9-]{1,61}[a-z0-9])$"
-    },
     "GroupId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",

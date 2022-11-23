@@ -1,58 +1,6 @@
 {
   "additionalProperties": false,
   "definitions": {
-    "ApiAtlasDiskBackupSnapshotAWSExportBucketView": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
-        "BucketName": {
-          "type": "string",
-          "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
-        },
-        "IamRoleId": {
-          "type": "string",
-          "description": "Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.",
-          "maxLength": 24,
-          "minLength": 24,
-          "pattern": "^([a-f0-9]{24})$"
-        },
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link",
-            "type": "object"
-          }
-        },
-        "Id": {
-          "type": "string",
-          "description": "Unique 24-hexadecimal character string that identifies the Amazon Web Services (AWS) Simple Storage Service (S3) export bucket.",
-          "maxLength": 24,
-          "minLength": 24,
-          "pattern": "^([a-f0-9]{24})$"
-        }
-      },
-      "additionalProperties": false
-    },
-    "Link": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
-        "Href": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
-        },
-        "Rel": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
-        }
-      },
-      "additionalProperties": false
-    },
     "apiKeyDefinition": {
       "type": "object",
       "properties": {
@@ -106,22 +54,6 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-    "Links": {
-      "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
-    },
-    "Results": {
-      "type": "array",
-      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
-      "items": {
-        "$ref": "#/definitions/ApiAtlasDiskBackupSnapshotAWSExportBucketView",
-        "type": "object"
-      }
-    },
     "TotalCount": {
       "type": "number",
       "description": "Number of documents returned in this response."
@@ -135,9 +67,7 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/Results",
     "/properties/Id",
-    "/properties/Links",
     "/properties/TotalCount",
     "/definitions/ApiAtlasDiskBackupSnapshotAWSExportBucketView/Links",
     "/definitions/ApiAtlasDiskBackupSnapshotAWSExportBucketView/Id"

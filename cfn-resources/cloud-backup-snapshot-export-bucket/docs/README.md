@@ -95,17 +95,9 @@ The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
 
-#### Results
-
-List of returned documents that MongoDB Cloud provides when completing this request.
-
 #### Id
 
 Unique 24-hexadecimal character string that identifies the Amazon Web Services (AWS) Simple Storage Service (S3) export bucket.
-
-#### Links
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
 
 #### TotalCount
 

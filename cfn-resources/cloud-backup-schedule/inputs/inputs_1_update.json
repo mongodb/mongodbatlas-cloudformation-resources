@@ -5,7 +5,7 @@
   },
   "ProjectId": "63596e976a17e50e1ced821d",
   "ClusterName": "multiCloud3",
-  "AutoExportEnabled": false,
+  "AutoExportEnabled": "false",
   "Export": {
   },
   "Policies": [
@@ -13,17 +13,17 @@
       "ID": "636d478417e79707ed6de976",
       "PolicyItems": [
         {
-          "FrequencyInterval": 1,
+          "FrequencyInterval": "1",
           "FrequencyType": "daily",
           "RetentionUnit": "days",
-          "RetentionValue": 4
+          "RetentionValue": "4"
         }
       ]
     }
   ],
-  "ReferenceHourOfDay": 0,
-  "ReferenceMinuteOfHour": 0,
-  "RestoreWindowDays": 1,
-  "UpdateSnapshots": true,
-  "UseOrgAndGroupNamesInExportPrefix": true
+  "ReferenceHourOfDay": "0",
+  "ReferenceMinuteOfHour": "0",
+  "RestoreWindowDays": "1",
+  "UpdateSnapshots": "true",
+  "UseOrgAndGroupNamesInExportPrefix": "true"
 }

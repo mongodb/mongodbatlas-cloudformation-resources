@@ -110,6 +110,7 @@
                 },
                 "PolicyItems": {
                     "type": "array",
+                    "insertionOrder": false,
                     "items": {
                         "$ref": "#/definitions/ApiPolicyItemView"
                     }
@@ -162,6 +163,7 @@
         },
         "Policies": {
             "type": "array",
+            "insertionOrder": false,
             "description": "Rules set for this backup schedule.",
             "items":{
                 "$ref": "#/definitions/ApiPolicyView",
@@ -204,10 +206,9 @@
         "/properties/UpdateSnapshots"
     ],
     "readOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/ClusterName",
         "/properties/ClusterId",
-        "/properties/NextSnapshot"
+        "/properties/NextSnapshot",
+        "/properties/Policies/*/PolicyItems/*/ID"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"log"
 	"strings"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -22,7 +22,6 @@ var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constant
 var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
 var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
 var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
 
 // validateModel inputs based on the method
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -101,10 +100,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("Error - Read policy backup schedule for cluster(%s)", *currentModel.ClusterName)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
+			Message:          "Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -132,31 +130,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
-
-	// TODO: Need to refactor
 	// API call to Get the cloud backup schedule
-	backupPolicy, resp, err := client.CloudProviderSnapshotBackupPolicies.Get(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName)
-	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			_, _ = logger.Warnf("error 404- err:%+v resp:%+v", err, resp)
-			log.Printf("error 404- err:%+v resp:%+v", err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		_, _ = logger.Warnf("error cloud backup policy get- err:%+v resp:%+v", err, resp)
+	events, _ := Read(req, prevModel, currentModel)
+	if events.HandlerErrorCode == cloudformation.HandlerErrorCodeNotFound {
 		return handler.ProgressEvent{
-			Message:          err.Error(),
+			Message:          "Not Found",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-	}
-	// check the policy backup schedule is present for the cluster
-	if &backupPolicy.Policies[0].ID == nil {
-		_, _ = logger.Warnf("Error ---- Read policy backup schedule for cluster(%s)", *currentModel.ClusterName)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 	// API call to Update cloud backup schedule
@@ -167,7 +146,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// logger setup
 	setup()
-
 	_, _ = logger.Debugf("Delete all the snapshot schedules for the cluster with currentModel:%+v", currentModel)
 	// Validate required fields in the request
 	modelValidation := validateModel(DeleteRequiredFields, currentModel)
@@ -187,38 +165,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := currentModel.ProjectId
 	clusterName := currentModel.ClusterName
 
-	// TODO: Need to refactor
 	// API call to Get the cloud backup schedule
-	backupPolicy, resp, err := client.CloudProviderSnapshotBackupPolicies.Get(context.Background(), *projectID, *clusterName)
-	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			_, _ = logger.Warnf("error 404- err:%+v resp:%+v", err, resp)
-			log.Printf("error 404- err:%+v resp:%+v", err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		_, _ = logger.Warnf("error cloud backup policy get- err:%+v resp:%+v", err, resp)
+	events, _ := Read(req, prevModel, currentModel)
+	if events.HandlerErrorCode == cloudformation.HandlerErrorCodeNotFound {
 		return handler.ProgressEvent{
-			Message:          err.Error(),
+			Message:          "Not Found",
 			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-	}
-
-	// check the policy backup schedule is present for the cluster
-	if !isPolicySchedulePresent(backupPolicy) {
-		_, _ = logger.Warnf("Error - Read policy backup schedule for cluster(%s)", *currentModel.ClusterName)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
 	_, _ = logger.Debugf("Deleting all snapshot backup schedules for cluster(%s) from project(%s)", *currentModel.ClusterName, *currentModel.ProjectId)
 
 	// API call to delete cloud backup schedule
-	_, resp, err = client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
+	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			_, _ = logger.Warnf("Delete 404 err: %+v", err)
@@ -233,7 +191,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -251,12 +208,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // handles the Create/Update event from the Cloudformation service.
 func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-
 	projectID := currentModel.ProjectId
 	clusterName := currentModel.ClusterName
 	_, _ = logger.Debugf("Update cloud backup schedule for clusterName:%s", *clusterName)
 
-	//Delete policies items
+	// Delete policies items
 	_, _ = logger.Debugf("First deleting cloud backup schedule for clusterName:%s", *clusterName)
 	_, _, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
 	if err != nil {
@@ -319,9 +275,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 			}
 		}
 	}
-
 	cloudBackupScheduleRequest := modelToCLoudBackupSchedule(currentModel)
-
 	// API call to Create/Update cloud backup schedule
 	clusterBackupScheduled, resp, errUpdate := client.CloudProviderSnapshotBackupPolicies.Update(context.Background(), *projectID, *clusterName, cloudBackupScheduleRequest)
 	if errUpdate != nil {
@@ -345,7 +299,6 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: code}, nil
 	}
-
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -355,7 +308,6 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 }
 
 func isPolicySchedulePresent(backupPolicy *mongodbatlas.CloudProviderSnapshotBackupPolicy) bool {
-
 	return backupPolicy.Policies != nil && len(backupPolicy.Policies[0].PolicyItems) > 0
 }
 
@@ -474,7 +426,6 @@ func modelToCLoudBackupSchedule(currentModel *Model) (out *mongodbatlas.CloudPro
 }
 
 func backupPolicyToModel(currentModel Model, backupPolicy *mongodbatlas.CloudProviderSnapshotBackupPolicy) *Model {
-
 	out := &Model{
 		ApiKeys:                           currentModel.ApiKeys,
 		ProjectId:                         currentModel.ProjectId,

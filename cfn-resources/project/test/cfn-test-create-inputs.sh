@@ -32,9 +32,6 @@ if [ -z "$team_id" ]; then
 fi
 
 
-
-
-
 name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \

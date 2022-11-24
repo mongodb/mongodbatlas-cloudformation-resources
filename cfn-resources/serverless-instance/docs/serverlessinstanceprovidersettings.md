@@ -8,7 +8,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#backingprovidername" title="BackingProviderName">BackingProviderName</a>" : <i>String</i>,
     "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
     "<a href="#regionname" title="RegionName">RegionName</a>" : <i>String</i>
 }
@@ -17,24 +16,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#backingprovidername" title="BackingProviderName">BackingProviderName</a>: <i>String</i>
 <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
 <a href="#regionname" title="RegionName">RegionName</a>: <i>String</i>
 </pre>
 
 ## Properties
-
-#### BackingProviderName
-
-Cloud service provider on which MongoDB Cloud provisioned the serverless instance.
-
-_Required_: No
-
-_Type_: String
-
-_Allowed Values_: <code>AWS</code> | <code>AZURE</code> | <code>GCP</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ProviderName
 

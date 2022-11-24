@@ -1,8 +1,12 @@
 {
-    "Name" : "Name(#()$*$8888888````` ~~~~   +++---  baddd",
-    "OrgId" : "$ATLAS_ORG_ID",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    "Name": "",
+    "ProjectID": "",
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    },
+    "ProviderSettings": {
+        "RegionName": "US_EAST_1",
+        "ProviderName": "SERVERLESS"
     }
 }

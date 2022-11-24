@@ -1,25 +1,13 @@
 {
-    "Name" : "Name",
-    "OrgId" : "$ATLAS_ORG_ID",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    "Name": "",
+    "ProjectID": "",
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
     },
-    "ProjectSettings": {
-        "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
-        "IsDataExplorerEnabled": "false",
-        "IsPerformanceAdvisorEnabled": "false",
-        "IsRealtimePerformancePanelEnabled": "false",
-        "IsSchemaAdvisorEnabled": "false"
+    "ProviderSettings": {
+        "RegionName": "US_EAST_1",
+        "ProviderName": "SERVERLESS"
     },
-    "ProjectApiKeys": [
-        {
-            "Key": "api_key_goes_here",
-            "RoleNames": ["GROUP_MEMBER"]
-        }
-    ],
-    "ProjectTeams": [{
-        "Key": "api_key_goes_here",
-        "RoleNames": ["GROUP_OWNER"]
-    }]
+    "ContinuousBackupEnabled": "false"
 }

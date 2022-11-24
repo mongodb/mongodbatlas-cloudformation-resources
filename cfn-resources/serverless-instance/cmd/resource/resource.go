@@ -2,6 +2,9 @@ package resource
 
 import (
 	"context"
+	"fmt"
+	"strings"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -12,7 +15,11 @@ import (
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjID, constants.PvtKey, constants.PubKey, constants.Name}
+const (
+	CallBackSeconds = 30
+)
+
+var CreateRequiredFields = []string{constants.ProjID, constants.PvtKey, constants.PubKey, constants.Name, constants.Name}
 var ReadRequiredFields = []string{constants.ProjID, constants.Name, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields = []string{constants.PvtKey, constants.PubKey}
 var DeleteRequiredFields = []string{constants.ProjID, constants.Name, constants.PvtKey, constants.PubKey}
@@ -28,7 +35,6 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	_, _ = log.Debugf("Create() currentModel:%+v", currentModel)
 
 	// Validation
@@ -41,11 +47,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	// Callback
+	if stateName, ok := req.CallbackContext[constants.StateName]; ok {
+		_, _ = log.Debugf("Callback state: %s", stateName)
+		return serverlessCallback(client, currentModel, constants.IdleState)
 	}
 
 	serverlessInstanceRequest := &mongodbatlas.ServerlessCreateRequestParams{
@@ -55,14 +64,27 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
 	}
 
-	_, res, err := client.ServerlessInstances.Create(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest)
+	serverless, res, err := client.ServerlessInstances.Create(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest)
 	if err != nil {
-		_, _ = log.Warnf("Create - error: %+v", err)
+		_, _ = log.Warnf("Serverless - Create() - error: %+v", err)
+		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.Duplicate) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+		}
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	// Response
-	return Read(req, prevModel, currentModel)
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: CallBackSeconds,
+		CallbackContext: map[string]interface{}{
+			constants.StateName: serverless.StateName,
+		},
+	}, nil
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -80,11 +102,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	cluster, res, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
@@ -94,6 +113,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	// Read Instance
 	model := readServerlessInstance(cluster)
+	model.ApiKeys = &ApiKeyDefinition{
+		PrivateKey: currentModel.ApiKeys.PrivateKey,
+		PublicKey:  currentModel.ApiKeys.PublicKey,
+	}
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -116,11 +139,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	// Callback
+	if _, ok := req.CallbackContext[constants.StateName]; ok {
+		return serverlessCallback(client, currentModel, constants.IdleState)
+	}
+
+	// CFN TEST : currently Update is throwing 500 Error instead of 404 if resource not exists
+	_, res, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
+	if err != nil {
+		_, _ = log.Warnf("Read in Update - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	serverlessInstanceRequest := &mongodbatlas.ServerlessUpdateRequestParams{
@@ -128,13 +160,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
 	}
 
-	_, res, err := client.ServerlessInstances.Update(context.Background(), *currentModel.ProjectID, *currentModel.Name, serverlessInstanceRequest)
+	serverless, res, err := client.ServerlessInstances.Update(context.Background(), *currentModel.ProjectID, *currentModel.Name, serverlessInstanceRequest)
 	if err != nil {
-		_, _ = log.Warnf("Create - error: %+v", err)
+		_, _ = log.Warnf("Update - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	// Response
-	return Read(req, prevModel, currentModel)
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: CallBackSeconds,
+		CallbackContext: map[string]interface{}{
+			constants.StateName: serverless.StateName,
+			constants.ID:        serverless.ID,
+		},
+	}, nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -152,21 +193,29 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+	// Callback
+	if _, ok := req.CallbackContext[constants.StateName]; ok {
+		return serverlessCallback(client, currentModel, constants.DeletedState)
+	}
+
 	res, err := client.ServerlessInstances.Delete(context.Background(), *currentModel.ProjectID, *currentModel.Name)
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
+
 	// Response
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   nil,
+		OperationStatus:      handler.InProgress,
+		Message:              "Deleting ServerlessInstance",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: CallBackSeconds,
+		CallbackContext: map[string]interface{}{
+			constants.StateName: constants.DeletingState,
+		},
 	}, nil
 }
 
@@ -185,11 +234,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("List - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	listOptions := &mongodbatlas.ListOptions{
 		PageNum:      0,
@@ -201,10 +247,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	instances := []interface{}{}
+	instances := []interface{}{} // cfn test needs empty array instead nil, when items entries found
 	for i := range clustersResp.Results {
-		var cluster = &Model{}
-		cluster = readServerlessInstance(clustersResp.Results[i])
+		cluster := readServerlessInstance(clustersResp.Results[i])
+
 		instances = append(instances, cluster)
 	}
 	// Response
@@ -214,41 +260,44 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func setBackupOptions(currentModel *Model) *mongodbatlas.ServerlessBackupOptions {
-	var serverlessBackupOptions = &mongodbatlas.ServerlessBackupOptions{}
-	if currentModel.ContinuousBackupEnabled != nil {
-		serverlessBackupOptions = &mongodbatlas.ServerlessBackupOptions{
-			ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
-		}
+func setBackupOptions(currentModel *Model) (serverlessBackupOptions *mongodbatlas.ServerlessBackupOptions) {
+	if currentModel.ContinuousBackupEnabled == nil {
+		return nil
+	}
+	serverlessBackupOptions = &mongodbatlas.ServerlessBackupOptions{
+		ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
 	}
 	return serverlessBackupOptions
 }
 
-func setProviderSettings(currentModel *Model) *mongodbatlas.ServerlessProviderSettings {
-	var serverlessProviderSettings = &mongodbatlas.ServerlessProviderSettings{}
-	if currentModel.ProviderSettings != nil {
-		if currentModel.ProviderSettings.BackingProviderName != nil {
-			serverlessProviderSettings.BackingProviderName = *currentModel.ProviderSettings.BackingProviderName
+func setProviderSettings(currentModel *Model) (serverlessProviderSettings *mongodbatlas.ServerlessProviderSettings) {
+	if currentModel.ProviderSettings == nil {
+		return &mongodbatlas.ServerlessProviderSettings{
+			ProviderName:        constants.Serverless,
+			BackingProviderName: constants.AWS,
 		}
-		if currentModel.ProviderSettings.ProviderName != nil {
-			serverlessProviderSettings.ProviderName = *currentModel.ProviderSettings.ProviderName
-		}
-		if currentModel.ProviderSettings.RegionName != nil {
-			serverlessProviderSettings.RegionName = *currentModel.ProviderSettings.RegionName
-		}
+	}
+	serverlessProviderSettings = &mongodbatlas.ServerlessProviderSettings{
+		BackingProviderName: constants.AWS,
+	}
+	if currentModel.ProviderSettings.ProviderName != nil {
+		serverlessProviderSettings.ProviderName = *currentModel.ProviderSettings.ProviderName
+	}
+	if currentModel.ProviderSettings.RegionName != nil {
+		serverlessProviderSettings.RegionName = *currentModel.ProviderSettings.RegionName
 	}
 	return serverlessProviderSettings
 }
 
-func readServerlessInstance(cluster *mongodbatlas.Cluster) (model *Model) {
-	var serverless = &Model{}
+func readServerlessInstance(cluster *mongodbatlas.Cluster) (serverless *Model) {
+	serverless = &Model{}
 	serverless.Name = &cluster.Name
-
+	serverless.Id = &cluster.ID
+	serverless.ProjectID = &cluster.GroupID
 	if cluster.ProviderSettings != nil {
 		serverless.ProviderSettings = &ServerlessInstanceProviderSettings{
-			BackingProviderName: &cluster.ProviderSettings.BackingProviderName,
-			ProviderName:        &cluster.ProviderSettings.ProviderName,
-			RegionName:          &cluster.ProviderSettings.RegionName,
+			ProviderName: &cluster.ProviderSettings.ProviderName,
+			RegionName:   &cluster.ProviderSettings.RegionName,
 		}
 	}
 
@@ -300,4 +349,47 @@ func readLinks(clsLinks []*mongodbatlas.Link) (links []Link) {
 		})
 	}
 	return
+}
+
+func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtStatus string) (progressEvent handler.ProgressEvent, err error) {
+	serverless, resp, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
+	if err != nil {
+		if resp != nil && resp.StatusCode == 404 && targtStatus == constants.DeletedState {
+			_, _ = log.Debugf("404:No instance found")
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Deleted ServerlessInstance",
+				ResourceModel:   nil,
+			}, nil
+		}
+		_, _ = log.Warnf("Read - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), resp.Response), nil
+	}
+
+	_, _ = log.Debugf("stateName : %s", serverless.StateName)
+	currentModel.Id = &serverless.ID
+	if serverless.StateName != constants.IdleState {
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallBackSeconds,
+			CallbackContext: map[string]interface{}{
+				constants.StateName: serverless.StateName,
+			},
+		}, nil
+	}
+	_, _ = log.Debugf("Response : %+v", serverless)
+
+	model := readServerlessInstance(serverless)
+	model.ApiKeys = &ApiKeyDefinition{
+		PrivateKey: currentModel.ApiKeys.PrivateKey,
+		PublicKey:  currentModel.ApiKeys.PublicKey,
+	}
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+		ResourceModel:   model,
+	}, nil
 }

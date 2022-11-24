@@ -15,7 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#bucketname" title="BucketName">BucketName</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
-        "<a href="#iamroleid" title="IamRoleId">IamRoleId</a>" : <i>String</i>,
+        "<a href="#iamroleid" title="IamRoleID">IamRoleID</a>" : <i>String</i>,
     }
 }
 </pre>
@@ -28,7 +28,7 @@ Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#bucketname" title="BucketName">BucketName</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
-    <a href="#iamroleid" title="IamRoleId">IamRoleId</a>: <i>String</i>
+    <a href="#iamroleid" title="IamRoleID">IamRoleID</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -67,7 +67,7 @@ _Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### IamRoleId
+#### IamRoleID
 
 Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.
 

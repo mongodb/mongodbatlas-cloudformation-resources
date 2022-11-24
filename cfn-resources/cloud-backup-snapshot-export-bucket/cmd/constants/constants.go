@@ -2,5 +2,5 @@ package constants
 
 const (
 	BucketName = "BucketName"
-	IamRoleId  = "IamRoleId"
+	IamRoleID  = "IamRoleID"
 )

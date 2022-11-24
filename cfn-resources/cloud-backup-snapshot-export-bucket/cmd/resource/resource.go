@@ -3,17 +3,20 @@ package resource
 import (
 	"context"
 	"errors"
+
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	local_constants "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup-snapshot-export-bucket/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, local_constants.BucketName, local_constants.IamRoleId, constants.PvtKey, constants.PubKey}
+var CreateRequiredFields = []string{constants.GroupID, local_constants.BucketName, local_constants.IamRoleID, constants.PvtKey, constants.PubKey}
 var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.GroupID, constants.ID, constants.PvtKey, constants.PubKey}
@@ -28,6 +31,8 @@ func setup() {
 }
 
 func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotExportBucket) {
+	m.BucketName = &bucket.BucketName
+	m.IamRoleID = &bucket.IAMRoleID
 	m.Id = &bucket.ID
 }
 
@@ -54,7 +59,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	input := &mongodbatlas.CloudProviderSnapshotExportBucket{
 		BucketName:    *currentModel.BucketName,
 		CloudProvider: constants.AWS,
-		IAMRoleID:     *currentModel.IamRoleId,
+		IAMRoleID:     *currentModel.IamRoleID,
 	}
 
 	output, res, err := client.CloudProviderSnapshotExportBuckets.Create(context.Background(), *currentModel.GroupId, input)
@@ -114,6 +119,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
+	_, _ = log.Warnf("Create cluster model : %+v", currentModel)
+
 	// Validation
 	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -169,11 +176,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	resultList := make([]interface{}, 0)
 
-	for i, _ := range output.Results {
+	for i := range output.Results {
 		model := Model{}
 		model.completeByAtlasModel(output.Results[i])
 		model.GroupId = currentModel.GroupId
-		model.ApiKeys = currentModel.ApiKeys
 		resultList = append(resultList, model)
 	}
 

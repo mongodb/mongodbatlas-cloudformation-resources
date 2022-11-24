@@ -7,7 +7,7 @@ type Model struct {
 	ApiKeys    *ApiKeyDefinition `json:",omitempty"`
 	BucketName *string           `json:",omitempty"`
 	GroupId    *string           `json:",omitempty"`
-	IamRoleId  *string           `json:",omitempty"`
+	IamRoleID  *string           `json:",omitempty"`
 	Id         *string           `json:",omitempty"`
 }
 

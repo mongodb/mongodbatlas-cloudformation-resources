@@ -39,18 +39,14 @@
         "iam:ListAttachedRolePolicies",
         "iam:ListRolePolicies",
         "iam:GetRolePolicy",
-        "iam:GetUserPolicy",
-        "iam:GetRolePolicy",
-        "iam:GetGroupPolicy",
-        "iam:PutUserPolicy",
-        "iam:PutRolePolicy",
-        "iam:PutGroupPolicy"
-        ]
+        "cloudformation:CreateResource",
+        "cloudformation:GetResource",
+        "cloudformation:UpdateResource",
+        "cloudformation:ListResources",
+        "cloudformation:GetResourceRequestStatus"
+      ]
       },
     "read": {
-      "permissions": []
-    },
-    "update": {
       "permissions": []
     },
     "delete": {

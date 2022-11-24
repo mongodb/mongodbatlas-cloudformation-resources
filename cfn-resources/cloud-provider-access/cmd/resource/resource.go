@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,15 +12,17 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudcontrolapi"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
-	"math/rand"
+	"math"
+	"math/big"
+	"strconv"
 	"strings"
+	"time"
 )
 
 var CreateRequiredFields = []string{"ProjectId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
@@ -80,20 +83,37 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.completeByConnection(roleResponse)
-	spew.Dump(currentModel)
-	_, errInRoleCreation := awsRoleCreationUsingCloudControlApi(req.Session, currentModel)
-
-	//_, errInRoleCreation := awsRoleCreationGoSdk(req, currentModel)
+	desiredState := processJsonData(currentModel, constants.RolePolicyJson)
+	_, errInRoleCreation := awsRoleCreationUsingCloudControlApi(req.Session, currentModel, desiredState)
 
 	if errInRoleCreation != nil {
-		spew.Dump(errInRoleCreation)
-		log.Debugf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
-			Message:          errInRoleCreation.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		log.Printf("Tring to use local role because of the following error \n %+v", err)
+		localSession := session.Must(session.NewSession())
+		_, errInRoleCreation = awsRoleCreationUsingCloudControlApi(localSession, currentModel, desiredState)
+		if errInRoleCreation != nil {
+			log.Debugf("Create - error: %+v", err)
+			return handler.ProgressEvent{
+				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+				Message:          errInRoleCreation.Error(),
+				OperationStatus:  handler.Failed,
+			}, nil
+		}
 	}
+
+	cloudProviderAuthorizationRequest := &mongodbatlas.CloudProviderAuthorizationRequest{
+		ProviderName:      constants.AwsProviderName,
+		IAMAssumedRoleARN: *currentModel.IamAssumedRoleArn,
+	}
+
+	role, res, err := client.CloudProviderAccess.AuthorizeRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleId, cloudProviderAuthorizationRequest)
+	if err != nil {
+		log.Debugf("Update - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+	log.Debugf("Atlas Client %v", client)
+
+	currentModel.completeByConnection(role)
+
 	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -101,11 +121,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return event, nil
 }
 
-func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel *Model) (*Model, error) {
+func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel *Model, desiredState string) (*Model, error) {
 	clientCloudControl := cloudcontrolapi.New(session)
 	typeName := constants.TypeName
-	desiredState := processJsonData(currentModel, constants.RolePolicyJson)
-
 	createResourceInput := &cloudcontrolapi.CreateResourceInput{
 		DesiredState: &desiredState,
 		TypeName:     &typeName,
@@ -115,7 +133,12 @@ func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel 
 		return currentModel, err
 	}
 
-	spew.Dump()
+	if !pollOutput(*outputCreate.ProgressEvent.RequestToken, clientCloudControl) {
+		log.Warnf("Error while polling")
+		return currentModel, errors.New("error in AWS Role Creation")
+	}
+
+	log.Warnf("Started Reading")
 
 	getResourceInput := &cloudcontrolapi.GetResourceInput{
 		TypeName:   &typeName,
@@ -134,6 +157,39 @@ func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel 
 
 	currentModel.IamAssumedRoleArn = &roleArn
 	return currentModel, nil
+}
+
+func pollOutput(reqToken string, clientCloudControl *cloudcontrolapi.CloudControlApi) bool {
+
+	var i = 0
+	var err error
+	var status *cloudcontrolapi.GetResourceRequestStatusOutput
+	for range time.Tick(time.Second * 5) {
+		status, err = clientCloudControl.GetResourceRequestStatus(&cloudcontrolapi.GetResourceRequestStatusInput{
+			RequestToken: aws.String(reqToken),
+		})
+		if err != nil {
+			break
+		}
+		log.Warnf(*status.ProgressEvent.OperationStatus)
+		if *status.ProgressEvent.OperationStatus == "SUCCESS" {
+			log.Warnf("Role Creation Success")
+			return true
+		}
+		if i == 4 {
+			break
+		}
+		if *status.ProgressEvent.OperationStatus == "FAILED" {
+			log.Warnf("Role Creation Failed")
+			break
+		}
+
+		fmt.Println("Waiting for AWS Role Creation Status, Current Status is")
+		i++
+	}
+
+	log.Warnf("%+v  Check error", err)
+	return false
 }
 
 func awsRoleCreationGoSdk(req handler.Request, currentModel *Model) (*Model, error) {
@@ -204,13 +260,35 @@ type IAMRoleArn struct {
 //}
 
 func generateRandomRoleName() string {
-	var letterRunes = []rune("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, 13)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	roleName := constants.AwsRolePrefix + string(b)
+	randomNumber, _ := generateRandomNumber(10)
+
+	roleName := constants.AwsRolePrefix + strconv.Itoa(randomNumber)
+	log.Printf("the expected rolename is   %+v", roleName)
+
 	return roleName
+}
+
+// generateRandomNumber generates random integer of n digits.
+func generateRandomNumber(numberOfDigits int) (int, error) {
+	maxLimit := int64(int(math.Pow10(numberOfDigits)) - 1)
+	lowLimit := int(math.Pow10(numberOfDigits - 1))
+
+	randomNumber, err := rand.Int(rand.Reader, big.NewInt(maxLimit))
+	if err != nil {
+		return 0, err
+	}
+	randomNumberInt := int(randomNumber.Int64())
+
+	// Handling integers between 0, 10^(n-1) .. for n=4, handling cases between (0, 999)
+	if randomNumberInt <= lowLimit {
+		randomNumberInt += lowLimit
+	}
+
+	// Never likely to occur, kust for safe side.
+	if randomNumberInt > int(maxLimit) {
+		randomNumberInt = int(maxLimit)
+	}
+	return randomNumberInt, nil
 }
 
 func processJsonData(currentModel *Model, RolePolicyJson string) string {
@@ -270,12 +348,24 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
+
+	foundRole := false
 	for i := range roles.AWSIAMRoles {
 		role := &(roles.AWSIAMRoles[i])
 		if role.RoleID == *currentModel.RoleId && role.ProviderName == constants.AwsProviderName {
 			currentModel.completeByConnection(role)
+			foundRole = true
 			break
 		}
+	}
+
+	if !foundRole {
+		log.Printf("The read returned no Matching result")
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			Message:          "NotFound",
+			OperationStatus:  handler.Failed,
+		}, nil
 	}
 
 	// Response
@@ -287,66 +377,71 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return event, nil
 }
 
+// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	log.Debugf("Update() currentModel:%+v", currentModel)
-
-	// Validation
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	userProvided := currentModel.IamAssumedRoleArn
-	readEvent, err := Read(req, prevModel, currentModel)
-	if readEvent.HandlerErrorCode == cloudformation.HandlerErrorCodeNotFound {
-		log.Printf("Didnt find the object while read. So we cant update")
-		return readEvent, nil
-	}
-	existingIamAssumedRoleArn := currentModel.IamAssumedRoleArn
-
-	if userProvided == existingIamAssumedRoleArn {
-		// Response
-		event := handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			ResourceModel:   currentModel,
-			Message:         "No Change Detected, Update complete",
-		}
-		return event, nil
-	}
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		log.Debugf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
-	}
-
-	cloudProviderAuthorizationRequest := &mongodbatlas.CloudProviderAuthorizationRequest{
-		ProviderName:      constants.AwsProviderName,
-		IAMAssumedRoleARN: *currentModel.IamAssumedRoleArn,
-	}
-
-	var res *mongodbatlas.Response
-
-	role, res, err := client.CloudProviderAccess.AuthorizeRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleId, cloudProviderAuthorizationRequest)
-	if err != nil {
-		log.Debugf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	log.Debugf("Atlas Client %v", client)
-
-	currentModel.completeByConnection(role)
-
-	// Response
-	event := handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}
-	return event, nil
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
+
+//func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+//	log.Debugf("Update() currentModel:%+v", currentModel)
+//
+//	// Validation
+//	modelValidation := validateModel(UpdateRequiredFields, currentModel)
+//	if modelValidation != nil {
+//		return *modelValidation, nil
+//	}
+//
+//	userProvided := currentModel.IamAssumedRoleArn
+//	readEvent, err := Read(req, prevModel, currentModel)
+//	if readEvent.HandlerErrorCode == cloudformation.HandlerErrorCodeNotFound {
+//		log.Printf("Didnt find the object while read. So we cant update")
+//		return readEvent, nil
+//	}
+//	existingIamAssumedRoleArn := currentModel.IamAssumedRoleArn
+//
+//	if userProvided == existingIamAssumedRoleArn {
+//		// Response
+//		event := handler.ProgressEvent{
+//			OperationStatus: handler.Success,
+//			ResourceModel:   currentModel,
+//			Message:         "No Change Detected, Update complete",
+//		}
+//		return event, nil
+//	}
+//	// Create atlas client
+//	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+//	if err != nil {
+//		log.Debugf("Update - error: %+v", err)
+//		return handler.ProgressEvent{
+//			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+//			Message:          err.Error(),
+//			OperationStatus:  handler.Failed,
+//		}, nil
+//	}
+//
+//	cloudProviderAuthorizationRequest := &mongodbatlas.CloudProviderAuthorizationRequest{
+//		ProviderName:      constants.AwsProviderName,
+//		IAMAssumedRoleARN: *currentModel.IamAssumedRoleArn,
+//	}
+//
+//	var res *mongodbatlas.Response
+//
+//	role, res, err := client.CloudProviderAccess.AuthorizeRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleId, cloudProviderAuthorizationRequest)
+//	if err != nil {
+//		log.Debugf("Update - error: %+v", err)
+//		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+//	}
+//	log.Debugf("Atlas Client %v", client)
+//
+//	currentModel.completeByConnection(role)
+//
+//	// Response
+//	event := handler.ProgressEvent{
+//		OperationStatus: handler.Success,
+//		ResourceModel:   currentModel,
+//	}
+//	return event, nil
+//}
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	log.Debugf("Delete() currentModel:%+v", currentModel)
@@ -368,6 +463,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 	var res *mongodbatlas.Response
+
+	_, errRead := Read(req, prevModel, currentModel)
+	if errRead != nil {
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	// Yet to  implement deletion of role
 
 	cloudProviderDeAuthorizationRequest := &mongodbatlas.CloudProviderDeauthorizationRequest{
 		ProviderName: constants.AwsProviderName,

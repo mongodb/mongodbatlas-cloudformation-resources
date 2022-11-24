@@ -8,7 +8,6 @@ type Model struct {
 	BucketName *string           `json:",omitempty"`
 	GroupId    *string           `json:",omitempty"`
 	IamRoleId  *string           `json:",omitempty"`
-	TotalCount *float64          `json:",omitempty"`
 	Id         *string           `json:",omitempty"`
 }
 

@@ -35,7 +35,7 @@ Properties:
 
 #### ApiKeys
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
@@ -45,7 +45,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Human-readable label that identifies the AWS bucket that the role is authorized to access.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -55,7 +55,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal digit string that identifies your project.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -71,7 +71,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -98,16 +98,4 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
 Unique 24-hexadecimal character string that identifies the Amazon Web Services (AWS) Simple Storage Service (S3) export bucket.
-
-#### TotalCount
-
-Number of documents returned in this response.
-
-#### Links
-
-Returns the <code>Links</code> value.
-
-#### Id
-
-Returns the <code>Id</code> value.
 

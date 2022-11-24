@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CloudBackupSnapshotExportBucket
 
-Returns, adds, and removes Cloud Backup snapshot export buckets. Also returns and adds Cloud Backup export jobs.
+The exportBuckets resource allows you to grant Atlas access to the specified bucket for exporting backup snapshots.
 
 ## Syntax
 

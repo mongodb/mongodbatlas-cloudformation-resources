@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::CloudBackupSnapshotExportBucket",
-  "description": "Returns, adds, and removes Cloud Backup snapshot export buckets. Also returns and adds Cloud Backup export jobs.",
+  "description": "The exportBuckets resource allows you to grant Atlas access to the specified bucket for exporting backup snapshots.",
   "additionalProperties": false,
   "definitions": {
     "apiKeyDefinition": {

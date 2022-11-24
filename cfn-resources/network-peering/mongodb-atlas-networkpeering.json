@@ -32,6 +32,10 @@
             "description": "Unique twelve-digit string that identifies the Amazon Web Services (AWS) account that owns the VPC that you peered with the MongoDB Cloud VPC.",
             "type": "string"
         },
+        "ProviderName": {
+            "description": "The name of the provider",
+            "type": "string"
+        },
         "RouteTableCIDRBlock": {
             "description": "Internet Protocol (IP) addresses expressed in Classless Inter-Domain Routing (CIDR) notation of the VPC's subnet that you want to peer with the MongoDB Cloud VPC.",
             "type": "string"

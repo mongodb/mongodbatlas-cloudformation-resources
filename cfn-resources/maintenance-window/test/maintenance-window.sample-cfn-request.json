@@ -1,0 +1,13 @@
+{
+  "desiredResourceState":{
+    "DayOfWeek": "4",
+    "HourOfDay": "15",
+    "GroupId" : "$GroupId",
+    "ApiKeys" : {
+      "PublicKey" : "$ATLAS_PUBLIC_KEY",
+      "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    }
+  },
+    "providerLogGroupName" : "mongodb-atlas-project-logs",
+    "previousResourceState": { }
+}

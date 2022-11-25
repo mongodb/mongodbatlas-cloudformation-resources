@@ -19,6 +19,7 @@ MongoDB Atlas Resource Types.
 | cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Unstable-orange) | [./cloud-provider-snapshot-restore-jobs/test](./cloud-provider-snapshot-restore-jobs/test) | 
 | network-container                    | ![Build](https://img.shields.io/badge/Beta-Admin-grey) | [./network-container/test](./network-container/test)                                       |
 | private-endpoint                     | ![Build](https://img.shields.io/badge/Beta-yellow) | [./private-endpoint/test](./private-endpoint/test)                                         |
+| maintenance-window                   | ![Build](https://img.shields.io/badge/Beta-yellow) | [./maintenance-window/test](./maintenance-window/test)                                      |
 
 Legend
 ---

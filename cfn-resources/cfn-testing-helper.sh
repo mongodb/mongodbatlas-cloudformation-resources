@@ -122,7 +122,7 @@ do
     echo ""
 done
 
-if [[ "${_GENERATE_INPUTS}" == "true" ]]; then
+if [[ "${_CLOUD_PUBLISH}" == "true" ]]; then
   echo "generated inputs..."
    exit 0
 fi

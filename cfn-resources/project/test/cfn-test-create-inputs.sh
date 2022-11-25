@@ -4,9 +4,6 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-set -o errexit
-set -o nounset
-set -o pipefail
 
 function usage {
     echo "usage:$0 <project_name>"

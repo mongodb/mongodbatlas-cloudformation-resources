@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"errors"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -72,7 +73,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
 	// Validation
 	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
@@ -124,11 +124,10 @@ func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.Mainten
 }
 
 func isResponseEmpty(maintenanceWindow *mongodbatlas.MaintenanceWindow) bool {
-	return (maintenanceWindow != nil) && (maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0)
+	return maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
 	// Validation
 	if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
@@ -173,7 +172,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
 	// Validation
 	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
@@ -213,5 +211,5 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }

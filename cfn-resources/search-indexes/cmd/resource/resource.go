@@ -23,9 +23,9 @@ func setup() {
 }
 
 var CreateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexId, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexId, constants.PubKey, constants.PvtKey}
-var DeleteRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexId, constants.PubKey, constants.PvtKey}
+var ReadRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID, constants.PubKey, constants.PvtKey}
+var UpdateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID, constants.PubKey, constants.PvtKey}
+var DeleteRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID, constants.PubKey, constants.PvtKey}
 var ListRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Database, constants.CollectionName,
 	constants.PubKey, constants.PvtKey}
 

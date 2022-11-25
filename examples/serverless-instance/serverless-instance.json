@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template returns, adds, edits, and removes serverless instances.",
   "Parameters": {
     "Name": {
       "Type": "String",
@@ -40,7 +40,7 @@
   },
   "Mappings": {},
   "Resources": {
-    "Project": {
+    "ServerlessInstance": {
       "Type": "MongoDB::Atlas::ServerlessInstance",
       "Properties": {
         "Name": {

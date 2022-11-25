@@ -1,6 +1,7 @@
 # MongoDB::Atlas::CloudBackupSnapshotExportBucket
 
 The exportBuckets resource allows you to grant Atlas access to the specified bucket for exporting backup snapshots.
+In order tu create the resource some prerequisites are required, check [Export Cloud Backup Snapshot Docs](https://www.mongodb.com/docs/atlas/backup/cloud-backup/export/) for more information
 
 ## Attributes & Parameters
 

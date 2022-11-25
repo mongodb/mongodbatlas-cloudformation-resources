@@ -35,4 +35,9 @@ const (
 	ClusterName                      = "ClusterName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+
+	//	Consts for online-archive
+	Criteria     = "Criteria"
+	ArchiveId    = "ArchiveId"
+	CriteriaType = "Criteria.Type"
 )

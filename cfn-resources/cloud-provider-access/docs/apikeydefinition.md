@@ -1,4 +1,4 @@
-# Mongodb::Atlas::cloudProviderAccess apiKeyDefinition
+# MongoDB::Atlas::CloudProviderAccess apiKeyDefinition
 
 ## Syntax
 

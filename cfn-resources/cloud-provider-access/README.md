@@ -1,4 +1,4 @@
-# Mongodb::Atlas::cloudProviderAccess
+# Mongodb::Atlas::CloudProviderAccess
 
 Congratulations on starting development!
 

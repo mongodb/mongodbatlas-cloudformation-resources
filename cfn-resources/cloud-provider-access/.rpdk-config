@@ -1,6 +1,6 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "Mongodb::Atlas::cloudProviderAccess",
+    "typeName": "MongoDB::Atlas::CloudProviderAccess",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",
@@ -10,7 +10,7 @@
         "subparser_name": null,
         "verbose": 0,
         "force": false,
-        "type_name": "Mongodb::Atlas::cloudProviderAccess",
+        "type_name": "MongoDB::Atlas::CloudProviderAccess",
         "artifact_type": "r",
         "endpoint_url": null,
         "region": null,

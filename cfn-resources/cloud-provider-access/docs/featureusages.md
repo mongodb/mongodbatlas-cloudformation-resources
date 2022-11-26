@@ -1,4 +1,4 @@
-# Mongodb::Atlas::cloudProviderAccess featureUsages
+# MongoDB::Atlas::CloudProviderAccess featureUsages
 
 ## Syntax
 

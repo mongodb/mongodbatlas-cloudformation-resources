@@ -53,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.IndexId = &id
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
-	searchIndex, err := ToSearchIndex(currentModel, err)
+	searchIndex, err := ToSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -83,7 +83,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func ToSearchIndex(currentModel *Model, err error) (mongodbatlas.SearchIndex, error) {
+func ToSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 	searchIndex := mongodbatlas.SearchIndex{}
 	if currentModel.IndexId != nil {
 		searchIndex.IndexID = *currentModel.IndexId
@@ -108,6 +108,7 @@ func ToSearchIndex(currentModel *Model, err error) (mongodbatlas.SearchIndex, er
 	}
 	if currentModel.Mappings != nil {
 		var sec map[string]interface{}
+		var err error
 		if currentModel.Mappings.Fields != nil {
 			sec, err = cast.ToStringMapE(currentModel.Mappings.Fields)
 			if err != nil {
@@ -218,7 +219,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
-	searchIndex, err := ToSearchIndex(currentModel, err)
+	searchIndex, err := ToSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,

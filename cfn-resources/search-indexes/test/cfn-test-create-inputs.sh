@@ -23,12 +23,6 @@ projectId="$ATLAS_ORG_ID"
 cluster_name="$CLUSTER_NAME"
 index_name="$INDEX_NAME"
 
-#create team
-#team_name="cfn-boto-team-${CFN_TEST_TAG}"
-#user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
-#team_id=$(mongocli iam team create "${team_name}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
-#mongocli atlas cluster create "${cluster_name}" --projectId "${project_id}" --provider AWS --region US_EAST_1 --tier M10
-
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \

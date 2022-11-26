@@ -53,6 +53,37 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.IndexId = &id
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
+	searchIndex, err := ToSearchIndex(currentModel, err)
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			ResourceModel:    currentModel,
+		}, nil
+	}
+	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.GroupId, *currentModel.ClusterName, &searchIndex)
+	if err != nil {
+		return handler.ProgressEvent{
+			Message:          err.Error(),
+			OperationStatus:  cloudformation.OperationStatusFailed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	}
+	currentModel.Status = &newSearchIndex.Status
+	currentModel.IndexId = &newSearchIndex.IndexID
+	return handler.ProgressEvent{
+		OperationStatus: status(currentModel),
+		Message:         "Create Complete",
+		ResourceModel:   currentModel,
+		CallbackContext: map[string]interface{}{
+			"stateName": newSearchIndex.Status,
+			"id":        currentModel.IndexId,
+		},
+		CallbackDelaySeconds: 65,
+	}, nil
+}
+
+func ToSearchIndex(currentModel *Model, err error) (mongodbatlas.SearchIndex, error) {
 	searchIndex := mongodbatlas.SearchIndex{}
 	if currentModel.IndexId != nil {
 		searchIndex.IndexID = *currentModel.IndexId
@@ -80,12 +111,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if currentModel.Mappings.Fields != nil {
 			sec, err = cast.ToStringMapE(currentModel.Mappings.Fields)
 			if err != nil {
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-					ResourceModel:    currentModel,
-				}, nil
+				return mongodbatlas.SearchIndex{}, err
 			}
 		}
 		searchIndex.Mappings = &mongodbatlas.IndexMapping{
@@ -98,39 +124,30 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Fields: &sec,
 		}
 	}
-	synonyms := make([]map[string]interface{}, 0)
+	analyzers := make([]map[string]interface{}, 0, len(currentModel.Analyzers))
+	for _, v := range currentModel.Analyzers {
+		s, err := cast.ToStringMapE(v)
+		if err != nil {
+			return mongodbatlas.SearchIndex{}, err
+		}
+		analyzers = append(analyzers, s)
+	}
+	if len(analyzers) > 0 {
+		searchIndex.Analyzers = analyzers
+	}
+
+	synonyms := make([]map[string]interface{}, 0, len(currentModel.Synonyms))
 	for _, v := range currentModel.Synonyms {
 		s, err := cast.ToStringMapE(v)
 		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+			return mongodbatlas.SearchIndex{}, err
 		}
 		synonyms = append(synonyms, s)
 	}
 	if len(synonyms) > 0 {
 		searchIndex.Synonyms = synonyms
 	}
-	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.GroupId, *currentModel.ClusterName, &searchIndex)
-	if err != nil {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  cloudformation.OperationStatusFailed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-	}
-	currentModel.Status = &newSearchIndex.Status
-	currentModel.IndexId = &newSearchIndex.IndexID
-	return handler.ProgressEvent{
-		OperationStatus: status(currentModel),
-		Message:         "Create Complete",
-		ResourceModel:   currentModel,
-		CallbackContext: map[string]interface{}{
-			"stateName": newSearchIndex.Status,
-			"id":        currentModel.IndexId,
-		},
-		CallbackDelaySeconds: 65,
-	}, nil
+	return searchIndex, nil
 }
 
 func status(currentModel *Model) handler.Status {
@@ -201,78 +218,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
-	searchIndex := mongodbatlas.SearchIndex{}
-	if currentModel.IndexId != nil {
-		searchIndex.IndexID = *currentModel.IndexId
-	}
-	if currentModel.SearchAnalyzer != nil {
-		searchIndex.SearchAnalyzer = *currentModel.SearchAnalyzer
-	}
-	if currentModel.Database != nil {
-		searchIndex.Database = *currentModel.Database
-	}
-	if currentModel.Name != nil {
-		searchIndex.Name = *currentModel.Name
-	}
-	if currentModel.CollectionName != nil {
-		searchIndex.CollectionName = *currentModel.CollectionName
-	}
-	if currentModel.Analyzer != nil {
-		searchIndex.Analyzer = *currentModel.Analyzer
-	}
-	if currentModel.Status != nil {
-		searchIndex.Status = *currentModel.Status
-	}
-	analyzers := make([]map[string]interface{}, 0)
-	for _, v := range currentModel.Analyzers {
-		s, err := cast.ToStringMapE(v)
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
-		analyzers = append(analyzers, s)
-	}
-	if len(analyzers) > 0 {
-		searchIndex.Analyzers = analyzers
-	}
-	if currentModel.Mappings != nil {
-		var sec map[string]interface{}
-		if currentModel.Mappings.Fields != nil {
-			sec, err = cast.ToStringMapE(currentModel.Mappings.Fields)
-			if err != nil {
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-					ResourceModel:    currentModel,
-				}, nil
-			}
-		}
-		searchIndex.Mappings = &mongodbatlas.IndexMapping{
-			Dynamic: func() bool {
-				if currentModel.Mappings.Dynamic != nil {
-					return *currentModel.Mappings.Dynamic
-				}
-				return false
-			}(),
-			Fields: &sec,
-		}
-	}
-	synonyms := make([]map[string]interface{}, 0)
-	for _, v := range currentModel.Synonyms {
-		s, err := cast.ToStringMapE(v)
-		if err != nil {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
-		synonyms = append(synonyms, s)
-	}
-	if len(synonyms) > 0 {
-		searchIndex.Synonyms = synonyms
+	searchIndex, err := ToSearchIndex(currentModel, err)
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			ResourceModel:    currentModel,
+		}, nil
 	}
 	updatedSearchIndex, res, err := client.Search.UpdateIndex(context.Background(), *currentModel.GroupId, *currentModel.ClusterName,
 		*currentModel.IndexId, &searchIndex)

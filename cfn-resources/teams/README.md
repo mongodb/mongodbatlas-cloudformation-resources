@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Teams
 
 ## Description
-Returns, takes, edits, and removes Cloud Backup snapshots.
+Returns, adds, edits, or removes teams.
 
 ## Attributes & Parameters
 

@@ -121,8 +121,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = log.Warnf("Create cluster model : %+v", currentModel)
 
 	// Validation
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 

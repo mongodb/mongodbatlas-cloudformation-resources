@@ -5,9 +5,10 @@ import (
 	"errors"
 
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	local_constants "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup-snapshot-export-bucket/cmd/constants"
+	localconstants "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup-snapshot-export-bucket/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -15,7 +16,7 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, local_constants.BucketName, local_constants.IamRoleID, constants.PvtKey, constants.PubKey}
+var CreateRequiredFields = []string{constants.GroupID, localconstants.BucketName, localconstants.IamRoleID, constants.PvtKey, constants.PubKey}
 var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.GroupID, constants.ID, constants.PvtKey, constants.PubKey}

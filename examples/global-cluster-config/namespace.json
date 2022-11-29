@@ -1,0 +1,56 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "633bf97a5684466a4793c55c",
+      "ConstraintDescription" : ""
+    },
+    "ClusterName" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "cfntest1",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+
+    "GlobalClusterConfig": {
+      "Type": "MongoDB::Atlas::GlobalClusterConfig",
+      "Properties": {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "ManagedNamespaces" : [
+      {
+        "Collection": "test",
+        "CustomShardKey": "shardkey1",
+        "Db": "demo",
+        "IsCustomShardKeyHashed": "false",
+        "IsShardKeyUnique": "false"
+      },
+      {
+        "Collection": "test",
+        "CustomShardKey": "shardkey2",
+        "Db": "demo1",
+        "IsCustomShardKeyHashed": "false",
+        "IsShardKeyUnique": "false"
+      }],
+		"RemoveAllZoneMapping": false,
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {
+  
+    "GlobalClusterConfig": {
+      "Description": "Id of the cloud provider snapshot restore job",
+      "Value" : { "Ref" : "GlobalClusterConfig" }
+    }
+  }
+}

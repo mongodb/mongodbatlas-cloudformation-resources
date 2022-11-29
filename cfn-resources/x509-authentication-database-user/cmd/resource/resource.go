@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/spf13/cast"
 
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"

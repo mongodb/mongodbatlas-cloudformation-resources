@@ -5,16 +5,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/spf13/cast"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -84,6 +81,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func ToSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
+	return newSearchIndex(currentModel)
+}
+
+func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 	searchIndex := mongodbatlas.SearchIndex{}
 	if currentModel.IndexId != nil {
 		searchIndex.IndexID = *currentModel.IndexId

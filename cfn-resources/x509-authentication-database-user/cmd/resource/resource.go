@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.UserId}
+var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.UserID}
 var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 
 // ValidateRequest function to validate the request

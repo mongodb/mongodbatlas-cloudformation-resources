@@ -51,6 +51,6 @@ const (
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
-	UserId  = "UserName"
+	UserID  = "UserName"
 	Success = 200
 )

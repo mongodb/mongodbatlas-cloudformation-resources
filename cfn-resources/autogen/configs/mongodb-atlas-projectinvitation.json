@@ -1,0 +1,249 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiGroupInvitationView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud sent the invitation. This parameter expresses its value in ISO 8601 format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "ExpiresAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud expires the invitation. This parameter expresses its value in ISO 8601 format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the project.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "GroupName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the project to which you invited the MongoDB Cloud user.",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the invitation.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "InviterUsername": {
+          "type": "string",
+          "description": "Email address of the MongoDB Cloud user who sent the invitation.",
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "Roles": {
+          "type": "array",
+          "description": "One or more organization or project level roles to assign to the MongoDB Cloud user.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "GROUP_CLUSTER_MANAGER", 
+              "GROUP_DATA_ACCESS_ADMIN", 
+              "GROUP_DATA_ACCESS_READ_ONLY", 
+              "GROUP_DATA_ACCESS_READ_WRITE", 
+              "GROUP_OWNER", 
+              "GROUP_READ_ONLY"
+            ]
+          }
+        },
+        "Username": {
+          "type": "string",
+          "description": "Email address of the MongoDB Cloud user invited to join the project.",
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, and edits collections of clusters and users in MongoDB Cloud.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id", 
+    "/properties/GroupId", 
+    "/properties/InvitationId", 
+    "/definitions/ApiGroupInvitationView/GroupId", 
+    "/definitions/ApiGroupInvitationView/Id"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "CreatedAt": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud sent the invitation. This parameter expresses its value in ISO 8601 format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "ExpiresAt": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud expires the invitation. This parameter expresses its value in ISO 8601 format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "GroupName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the project to which you invited the MongoDB Cloud user.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the invitation.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "InvitationId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the invitation.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "InviterUsername": {
+      "type": "string",
+      "description": "Email address of the MongoDB Cloud user who sent the invitation.",
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiGroupInvitationView",
+        "type": "object"
+      }
+    },
+    "Roles": {
+      "type": "array",
+      "description": "One or more organization or project level roles to assign to the MongoDB Cloud user.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "GROUP_CLUSTER_MANAGER", 
+          "GROUP_DATA_ACCESS_ADMIN", 
+          "GROUP_DATA_ACCESS_READ_ONLY", 
+          "GROUP_DATA_ACCESS_READ_WRITE", 
+          "GROUP_OWNER", 
+          "GROUP_READ_ONLY"
+        ]
+      }
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "Username": {
+      "type": "string",
+      "description": "Email address of the user account invited to this project.",
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Results", 
+    "/properties/GroupName", 
+    "/properties/Id", 
+    "/properties/Links", 
+    "/properties/ExpiresAt", 
+    "/properties/InviterUsername", 
+    "/properties/TotalCount", 
+    "/properties/CreatedAt", 
+    "/definitions/ApiGroupInvitationView/ExpiresAt", 
+    "/definitions/ApiGroupInvitationView/Username", 
+    "/definitions/ApiGroupInvitationView/CreatedAt", 
+    "/definitions/ApiGroupInvitationView/GroupId", 
+    "/definitions/ApiGroupInvitationView/InviterUsername", 
+    "/definitions/ApiGroupInvitationView/Links", 
+    "/definitions/ApiGroupInvitationView/GroupName", 
+    "/definitions/ApiGroupInvitationView/Id"
+  ],
+  "typeName": "MongoDB::Atlas::ProjectInvitation",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

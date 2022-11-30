@@ -1,0 +1,1023 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiAlertConfigView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Created": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Enabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether someone enabled this alert configuration for the specified project."
+        },
+        "EventTypeName": {
+          "type": "string",
+          "description": "Event type that triggers an alert.",
+          "enum": [
+            "AWS_ENCRYPTION_KEY_NEEDS_ROTATION", 
+            "AZURE_ENCRYPTION_KEY_NEEDS_ROTATION", 
+            "CLUSTER_MONGOS_IS_MISSING", 
+            "CPS_RESTORE_FAILED", 
+            "CPS_RESTORE_SUCCESSFUL", 
+            "CPS_SNAPSHOT_BEHIND", 
+            "CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED", 
+            "CPS_SNAPSHOT_FALLBACK_FAILED", 
+            "CPS_SNAPSHOT_FALLBACK_SUCCESSFUL", 
+            "CPS_SNAPSHOT_SUCCESSFUL", 
+            "CREDIT_CARD_ABOUT_TO_EXPIRE", 
+            "DAILY_BILL_OVER_THRESHOLD", 
+            "GCP_ENCRYPTION_KEY_NEEDS_ROTATION", 
+            "HOST_DOWN", 
+            "JOINED_GROUP", 
+            "NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK", 
+            "NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK", 
+            "NO_PRIMARY", 
+            "OUTSIDE_METRIC_THRESHOLD", 
+            "OUTSIDE_SERVERLESS_METRIC_THRESHOLD", 
+            "OUTSIDE_REALM_METRIC_THRESHOLD", 
+            "PENDING_INVOICE_OVER_THRESHOLD", 
+            "PRIMARY_ELECTED", 
+            "REMOVED_FROM_GROUP", 
+            "REPLICATION_OPLOG_WINDOW_RUNNING_OUT", 
+            "TOO_MANY_ELECTIONS", 
+            "USER_ROLES_CHANGED_AUDIT", 
+            "USERS_WITHOUT_MULTIFACTOR_AUTH"
+          ]
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the project that owns this alert configuration.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies this alert configuration.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "Matchers": {
+          "type": "array",
+          "description": "List of rules that determine whether MongoDB Cloud checks an object for the alert configuration. You can filter using the matchers array if the **eventTypeName** specifies an event for a host, replica set, or sharded cluster.",
+          "items": {
+            "$ref": "#/definitions/ApiMatcherView",
+            "type": "object"
+          }
+        },
+        "MetricThreshold": {
+          "type": "object",
+          "description": "Threshold for the metric that, when exceeded, triggers an alert. The resource returns this parameter when `\"eventTypeName\" : \"OUTSIDE_METRIC_THRESHOLD\"`.",
+          "$ref": "#/definitions/ApiMetricThresholdView"
+        },
+        "Notifications": {
+          "type": "array",
+          "description": "List that contains the targets that MongoDB Cloud sends notifications.",
+          "items": {
+            "$ref": "#/definitions/ApiNotificationView",
+            "type": "object"
+          }
+        },
+        "Threshold": {
+          "type": "object",
+          "description": "Limit that triggers an alert when exceeded. The resource returns this parameter when **eventTypeName** has not been set to `OUTSIDE_METRIC_THRESHOLD`.",
+          "$ref": "#/definitions/ApiIntegerThresholdView"
+        },
+        "TypeName": {
+          "type": "string",
+          "description": "Human-readable label that displays the alert type."
+        },
+        "Updated": {
+          "type": "string",
+          "description": "Date and time when someone last updated this alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAlertView": {
+      "type": "object",
+      "properties": {
+        "AcknowledgedUntil": {
+          "type": "string",
+          "description": "Date and time until which this alert has been acknowledged. This parameter expresses its value in the ISO 8601 timestamp format in UTC. The resource returns this parameter if a MongoDB User previously acknowledged this alert.\n\n- To acknowledge this alert forever, set the parameter value to 100 years in the future.\n\n- To unacknowledge a previously acknowledged alert, set the parameter value to a date in the past.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "AcknowledgementComment": {
+          "type": "string",
+          "description": "Comment that a MongoDB Cloud user submitted when acknowledging the alert.",
+          "maxLength": 200
+        },
+        "AcknowledgingUsername": {
+          "type": "string",
+          "description": "MongoDB Cloud username of the person who acknowledged the alert. The response returns this parameter if a MongoDB Cloud user previously acknowledged this alert.",
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+        },
+        "AlertConfigId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the alert configuration that sets this alert.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "ClusterName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the cluster to which this alert applies. This resource returns this parameter for alerts of events impacting backups, replica sets, or sharded clusters.",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+        },
+        "Created": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud created this alert. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "CurrentValue": {
+          "type": "object",
+          "description": "Value of the metric that triggered the alert. The resource returns this parameter for alerts of events impacting hosts.",
+          "$ref": "#/definitions/CurrentValue"
+        },
+        "EventTypeName": {
+          "type": "string",
+          "description": "Incident that triggered this alert.",
+          "enum": [
+            "AWS_ENCRYPTION_KEY_NEEDS_ROTATION", 
+            "AZURE_ENCRYPTION_KEY_NEEDS_ROTATION", 
+            "CLUSTER_MONGOS_IS_MISSING", 
+            "CPS_RESTORE_FAILED", 
+            "CPS_RESTORE_SUCCESSFUL", 
+            "CPS_SNAPSHOT_BEHIND", 
+            "CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED", 
+            "CPS_SNAPSHOT_FALLBACK_FAILED", 
+            "CPS_SNAPSHOT_FALLBACK_SUCCESSFUL", 
+            "CPS_SNAPSHOT_SUCCESSFUL", 
+            "CREDIT_CARD_ABOUT_TO_EXPIRE", 
+            "DAILY_BILL_OVER_THRESHOLD", 
+            "GCP_ENCRYPTION_KEY_NEEDS_ROTATION", 
+            "HOST_DOWN", 
+            "JOINED_GROUP", 
+            "NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK", 
+            "NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK", 
+            "NO_PRIMARY", 
+            "OUTSIDE_METRIC_THRESHOLD", 
+            "OUTSIDE_SERVERLESS_METRIC_THRESHOLD", 
+            "PENDING_INVOICE_OVER_THRESHOLD", 
+            "PRIMARY_ELECTED", 
+            "REMOVED_FROM_GROUP", 
+            "REPLICATION_OPLOG_WINDOW_RUNNING_OUT", 
+            "TOO_MANY_ELECTIONS", 
+            "USERS_WITHOUT_MULTIFACTOR_AUTH"
+          ]
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the project that owns this alert.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "HostnameAndPort": {
+          "type": "string",
+          "description": "Hostname and port of the host to which this alert applies. The resource returns this parameter for alerts of events impacting hosts or replica sets."
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies this alert.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "LastNotified": {
+          "type": "string",
+          "description": "Date and time that any notifications were last sent for this alert. This parameter expresses its value in the ISO 8601 timestamp format in UTC. The resource returns this parameter if MongoDB Cloud has sent notifications for this alert.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "MetricName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the alert.",
+          "enum": [
+            "ASSERT_MSG", 
+            "ASSERT_REGULAR", 
+            "ASSERT_USER", 
+            "ASSERT_WARNING", 
+            "AVG_COMMAND_EXECUTION_TIME", 
+            "AVG_READ_EXECUTION_TIME", 
+            "AVG_WRITE_EXECUTION_TIME", 
+            "CACHE_BYTES_READ_INTO", 
+            "CACHE_BYTES_WRITTEN_FROM", 
+            "CACHE_DIRTY_BYTES", 
+            "CACHE_USED_BYTES", 
+            "COMPUTED_MEMORY", 
+            "CONNECTIONS", 
+            "CONNECTIONS_PERCENT", 
+            "CURSORS_TOTAL_OPEN", 
+            "CURSORS_TOTAL_TIMED_OUT", 
+            "DB_DATA_SIZE_TOTAL", 
+            "DB_INDEX_SIZE_TOTAL", 
+            "DB_STORAGE_TOTAL", 
+            "DISK_PARTITION_SPACE_USED_DATA", 
+            "DISK_PARTITION_SPACE_USED_INDEX", 
+            "DISK_PARTITION_SPACE_USED_JOURNAL", 
+            "DISK_PARTITION_UTILIZATION_DATA", 
+            "DISK_PARTITION_UTILIZATION_INDEX", 
+            "DISK_PARTITION_UTILIZATION_JOURNAL", 
+            "DOCUMENT_DELETED", 
+            "DOCUMENT_INSERTED", 
+            "DOCUMENT_RETURNED", 
+            "DOCUMENT_UPDATED", 
+            "EXTRA_INFO_PAGE_FAULTS", 
+            "FTS_MEMORY_RESIDENT", 
+            "FTS_MEMORY_SHARED", 
+            "FTS_MEMORY_VIRTUAL", 
+            "FTS_PROCESS_CPU_KERNEL", 
+            "FTS_PROCESS_CPU_USER", 
+            "FTS_PROCESS_DISK", 
+            "GLOBAL_LOCK_CURRENT_QUEUE_READERS", 
+            "GLOBAL_LOCK_CURRENT_QUEUE_TOTAL", 
+            "GLOBAL_LOCK_CURRENT_QUEUE_WRITERS", 
+            "LOGICAL_SIZE", 
+            "MEMORY_RESIDENT", 
+            "MEMORY_VIRTUAL", 
+            "NETWORK_BYTES_IN", 
+            "NETWORK_BYTES_OUT", 
+            "NETWORK_NUM_REQUESTS", 
+            "NORMALIZED_FTS_PROCESS_CPU_KERNEL", 
+            "NORMALIZED_FTS_PROCESS_CPU_USER", 
+            "NORMALIZED_SYSTEM_CPU_STEAL", 
+            "NORMALIZED_SYSTEM_CPU_USER", 
+            "OPCOUNTER_CMD", 
+            "OPCOUNTER_DELETE", 
+            "OPCOUNTER_GETMORE", 
+            "OPCOUNTER_INSERT", 
+            "OPCOUNTER_QUERY", 
+            "OPCOUNTER_REPL_CMD", 
+            "OPCOUNTER_REPL_DELETE", 
+            "OPCOUNTER_REPL_INSERT", 
+            "OPCOUNTER_REPL_UPDATE", 
+            "OPCOUNTER_UPDATE", 
+            "OPERATIONS_SCAN_AND_ORDER", 
+            "OPLOG_MASTER_LAG_TIME_DIFF", 
+            "OPLOG_MASTER_TIME", 
+            "OPLOG_RATE_GB_PER_HOUR", 
+            "OPLOG_SLAVE_LAG_MASTER_TIME", 
+            "QUERY_EXECUTOR_SCANNED", 
+            "QUERY_EXECUTOR_SCANNED_OBJECTS", 
+            "QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED", 
+            "QUERY_TARGETING_SCANNED_PER_RETURNED", 
+            "RESTARTS_IN_LAST_HOUR", 
+            "SERVERLESS_CONNECTIONS", 
+            "SERVERLESS_CONNECTIONS_PERCENT", 
+            "SERVERLESS_DATA_SIZE_TOTAL", 
+            "SERVERLESS_NETWORK_BYTES_IN", 
+            "SERVERLESS_NETWORK_BYTES_OUT", 
+            "SERVERLESS_NETWORK_NUM_REQUESTS", 
+            "SERVERLESS_OPCOUNTER_CMD", 
+            "SERVERLESS_OPCOUNTER_DELETE", 
+            "SERVERLESS_OPCOUNTER_GETMORE", 
+            "SERVERLESS_OPCOUNTER_INSERT", 
+            "SERVERLESS_OPCOUNTER_QUERY", 
+            "SERVERLESS_OPCOUNTER_UPDATE", 
+            "SERVERLESS_TOTAL_READ_UNITS", 
+            "SERVERLESS_TOTAL_WRITE_UNITS", 
+            "TICKETS_AVAILABLE_READS", 
+            "TICKETS_AVAILABLE_WRITES"
+          ]
+        },
+        "ReplicaSetName": {
+          "type": "string",
+          "description": "Name of the replica set to which this alert applies. The response returns this parameter for alerts of events impacting backups, hosts, or replica sets."
+        },
+        "Resolved": {
+          "type": "string",
+          "description": "Date and time that this alert changed to `\"status\" : \"CLOSED\"`. This parameter expresses its value in the ISO 8601 timestamp format in UTC. The resource returns this parameter once `\"status\" : \"CLOSED\"`.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Status": {
+          "type": "string",
+          "description": "State of this alert at the time you requested its details.",
+          "enum": ["CANCELLED", "CLOSED", "OPEN", "TRACKING"]
+        },
+        "TypeName": {
+          "type": "string",
+          "description": "Category in which MongoDB Cloud classifies this alert."
+        },
+        "Updated": {
+          "type": "string",
+          "description": "Date and time when someone last updated this alert. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiIntegerThresholdView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Operator": {
+          "type": "string",
+          "description": "Comparison operator to apply when checking the current metric value.",
+          "enum": ["GREATER_THAN", "LESS_THAN"]
+        },
+        "Threshold": {
+          "type": "integer",
+          "description": "Value of metric that, when exceeded, triggers an alert."
+        },
+        "Units": {
+          "type": "string",
+          "description": "Element used to express the quantity. This can be an element of time, storage capacity, and the like.",
+          "enum": [
+            "BITS", 
+            "BYTES", 
+            "DAYS", 
+            "GIGABITS", 
+            "GIGABYTES", 
+            "HOURS", 
+            "KILOBITS", 
+            "KILOBYTES", 
+            "MEGABITS", 
+            "MEGABYTES", 
+            "MILLISECONDS", 
+            "MINUTES", 
+            "PETABYTES", 
+            "RAW", 
+            "SECONDS", 
+            "TERABYTES"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiMatcherView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "FieldName": {
+          "type": "string",
+          "description": "Name of the parameter in the target object that MongoDB Cloud checks. The parameter must match all rules for MongoDB Cloud to check for alert configurations.",
+          "enum": [
+            "CLUSTER_NAME", 
+            "HOSTNAME", 
+            "HOSTNAME_AND_PORT", 
+            "PORT", 
+            "REPLICA_SET_NAME", 
+            "SHARD_NAME", 
+            "TYPE_NAME"
+          ]
+        },
+        "Operator": {
+          "type": "string",
+          "description": "Comparison operator to apply when checking the current metric value against **matcher[n].value**.",
+          "enum": [
+            "EQUALS", 
+            "CONTAINS", 
+            "STARTS_WITH", 
+            "ENDS_WITH", 
+            "NOT_EQUALS", 
+            "NOT_CONTAINS", 
+            "REGEX"
+          ]
+        },
+        "Value": {
+          "type": "string",
+          "description": "Value to match or exceed using the specified **matchers.operator**."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiMetricThresholdView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "MetricName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the configured **metricThreshold.threshold**.",
+          "enum": [
+            "ASSERT_MSG", 
+            "ASSERT_REGULAR", 
+            "ASSERT_USER", 
+            "ASSERT_WARNING", 
+            "AVG_COMMAND_EXECUTION_TIME", 
+            "AVG_READ_EXECUTION_TIME", 
+            "AVG_WRITE_EXECUTION_TIME", 
+            "BACKGROUND_FLUSH_AVG", 
+            "CACHE_BYTES_READ_INTO", 
+            "CACHE_BYTES_WRITTEN_FROM", 
+            "CACHE_USAGE_DIRTY", 
+            "CACHE_USAGE_USED", 
+            "COMPUTED_MEMORY", 
+            "CONNECTIONS", 
+            "CONNECTIONS_MAX", 
+            "CONNECTIONS_PERCENT", 
+            "CURSORS_TOTAL_CLIENT_CURSORS_SIZE", 
+            "CURSORS_TOTAL_OPEN", 
+            "CURSORS_TOTAL_TIMED_OUT", 
+            "DB_DATA_SIZE_TOTAL", 
+            "DB_INDEX_SIZE_TOTAL", 
+            "DB_STORAGE_TOTAL", 
+            "DISK_PARTITION_SPACE_USED_DATA", 
+            "DISK_PARTITION_SPACE_USED_INDEX", 
+            "DISK_PARTITION_SPACE_USED_JOURNAL", 
+            "DISK_PARTITION_UTILIZATION_DATA", 
+            "DISK_PARTITION_UTILIZATION_INDEX", 
+            "DISK_PARTITION_UTILIZATION_JOURNAL", 
+            "DOCUMENT_DELETED", 
+            "DOCUMENT_INSERTED", 
+            "DOCUMENT_RETURNED", 
+            "DOCUMENT_UPDATED", 
+            "EXTRA_INFO_PAGE_FAULTS", 
+            "FTS_DISK_UTILIZATION", 
+            "FTS_MEMORY_MAPPED", 
+            "FTS_MEMORY_RESIDENT", 
+            "FTS_MEMORY_VIRTUAL", 
+            "FTS_PROCESS_CPU_KERNEL", 
+            "FTS_PROCESS_CPU_USER", 
+            "GLOBAL_ACCESSES_NOT_IN_MEMORY", 
+            "GLOBAL_LOCK_CURRENT_QUEUE_READERS", 
+            "GLOBAL_LOCK_CURRENT_QUEUE_TOTAL", 
+            "GLOBAL_LOCK_CURRENT_QUEUE_WRITERS", 
+            "GLOBAL_LOCK_PERCENTAGE", 
+            "GLOBAL_PAGE_FAULT_EXCEPTIONS_THROWN", 
+            "INDEX_COUNTERS_BTREE_ACCESSES", 
+            "INDEX_COUNTERS_BTREE_HITS", 
+            "INDEX_COUNTERS_BTREE_MISS_RATIO", 
+            "INDEX_COUNTERS_BTREE_MISSES", 
+            "JOURNALING_COMMITS_IN_WRITE_LOCK", 
+            "JOURNALING_MB", 
+            "JOURNALING_WRITE_DATA_FILES_MB", 
+            "LOGICAL_SIZE", 
+            "MEMORY_MAPPED", 
+            "MEMORY_RESIDENT", 
+            "MEMORY_VIRTUAL", 
+            "MUNIN_CPU_IOWAIT", 
+            "MUNIN_CPU_IRQ", 
+            "MUNIN_CPU_NICE", 
+            "MUNIN_CPU_SOFTIRQ", 
+            "MUNIN_CPU_STEAL", 
+            "MUNIN_CPU_SYSTEM", 
+            "MUNIN_CPU_USER", 
+            "NETWORK_BYTES_IN", 
+            "NETWORK_BYTES_OUT", 
+            "NETWORK_NUM_REQUESTS", 
+            "NORMALIZED_FTS_PROCESS_CPU_KERNEL", 
+            "NORMALIZED_FTS_PROCESS_CPU_USER", 
+            "NORMALIZED_SYSTEM_CPU_STEAL", 
+            "NORMALIZED_SYSTEM_CPU_USER", 
+            "OPCOUNTER_CMD", 
+            "OPCOUNTER_DELETE", 
+            "OPCOUNTER_GETMORE", 
+            "OPCOUNTER_INSERT", 
+            "OPCOUNTER_QUERY", 
+            "OPCOUNTER_REPL_CMD", 
+            "OPCOUNTER_REPL_DELETE", 
+            "OPCOUNTER_REPL_INSERT", 
+            "OPCOUNTER_REPL_UPDATE", 
+            "OPCOUNTER_UPDATE", 
+            "OPERATIONS_SCAN_AND_ORDER", 
+            "OPLOG_MASTER_LAG_TIME_DIFF", 
+            "OPLOG_MASTER_TIME", 
+            "OPLOG_MASTER_TIME_ESTIMATED_TTL", 
+            "OPLOG_RATE_GB_PER_HOUR", 
+            "OPLOG_SLAVE_LAG_MASTER_TIME", 
+            "QUERY_EXECUTOR_SCANNED", 
+            "QUERY_EXECUTOR_SCANNED_OBJECTS", 
+            "QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED", 
+            "QUERY_TARGETING_SCANNED_PER_RETURNED", 
+            "RESTARTS_IN_LAST_HOUR", 
+            "SERVERLESS_CONNECTIONS", 
+            "SERVERLESS_CONNECTIONS_PERCENT", 
+            "SERVERLESS_DATA_SIZE_TOTAL", 
+            "SERVERLESS_NETWORK_BYTES_IN", 
+            "SERVERLESS_NETWORK_BYTES_OUT", 
+            "SERVERLESS_NETWORK_NUM_REQUESTS", 
+            "SERVERLESS_OPCOUNTER_CMD", 
+            "SERVERLESS_OPCOUNTER_DELETE", 
+            "SERVERLESS_OPCOUNTER_GETMORE", 
+            "SERVERLESS_OPCOUNTER_INSERT", 
+            "SERVERLESS_OPCOUNTER_QUERY", 
+            "SERVERLESS_OPCOUNTER_UPDATE", 
+            "SERVERLESS_TOTAL_READ_UNITS", 
+            "SERVERLESS_TOTAL_WRITE_UNITS", 
+            "SWAP_USAGE_FREE", 
+            "SWAP_USAGE_USED", 
+            "SYSTEM_MEMORY_AVAILABLE", 
+            "SYSTEM_MEMORY_FREE", 
+            "SYSTEM_MEMORY_USED", 
+            "SYSTEM_NETWORK_IN", 
+            "SYSTEM_NETWORK_OUT", 
+            "TICKETS_AVAILABLE_READS", 
+            "TICKETS_AVAILABLE_WRITES"
+          ]
+        },
+        "Mode": {
+          "type": "string",
+          "description": "MongoDB Cloud computes the current metric value as an average.",
+          "enum": ["AVERAGE"]
+        },
+        "Operator": {
+          "type": "string",
+          "description": "Comparison operator to apply when checking the current metric value.",
+          "enum": ["GREATER_THAN", "LESS_THAN"]
+        },
+        "Threshold": {
+          "type": "number",
+          "description": "Value of metric that, when exceeded, triggers an alert."
+        },
+        "Units": {
+          "type": "string",
+          "description": "Element used to express the quantity. This can be an element of time, storage capacity, and the like.",
+          "enum": [
+            "BITS", 
+            "BYTES", 
+            "DAYS", 
+            "GIGABITS", 
+            "GIGABYTES", 
+            "HOURS", 
+            "KILOBITS", 
+            "KILOBYTES", 
+            "MEGABITS", 
+            "MEGABYTES", 
+            "MILLISECONDS", 
+            "MINUTES", 
+            "PETABYTES", 
+            "RAW", 
+            "SECONDS", 
+            "TERABYTES"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiNotificationView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "ApiToken": {
+          "type": "string",
+          "description": "Slack API token or Bot token that MongoDB Cloud needs to send alert notifications via Slack. The resource requires this parameter when `\"notifications.typeName\" : \"SLACK\"`. If the token later becomes invalid, MongoDB Cloud sends an email to the project owners. If the token remains invalid, MongoDB Cloud removes the token."
+        },
+        "ChannelName": {
+          "type": "string",
+          "description": "Name of the Slack channel to which MongoDB Cloud sends alert notifications. The resource requires this parameter when `\"notifications.typeName\" : \"SLACK\"`."
+        },
+        "DatadogApiKey": {
+          "type": "string",
+          "description": "Datadog API Key that MongoDB Cloud needs to send alert notifications to Datadog. You can find this API key in the Datadog dashboard. The resource requires this parameter when `\"notifications.typeName\" : \"DATADOG\"`.",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "DatadogRegion": {
+          "type": "string",
+          "description": "Datadog region that indicates which API Uniform Resource Locator (URL) to use. The resource requires this parameter when `\"notifications.typeName\" : \"DATADOG\"`.",
+          "maxLength": 2,
+          "minLength": 2,
+          "enum": ["EU", "US"]
+        },
+        "DelayMin": {
+          "type": "number",
+          "description": "Number of minutes that MongoDB Cloud waits after detecting an alert condition before it sends out the first notification."
+        },
+        "EmailAddress": {
+          "type": "string",
+          "description": "Email address to which MongoDB Cloud sends alert notifications. The resource requires this parameter when `\"notifications.typeName\" : \"EMAIL\"`. You don’t need to set this value to send emails to individual or groups of MongoDB Cloud users including:\n\n- specific MongoDB Cloud users (`\"notifications.typeName\" : \"USER\"`)\n- MongoDB Cloud users with specific project roles (`\"notifications.typeName\" : \"GROUP\"`)\n- MongoDB Cloud users with specific organization roles (`\"notifications.typeName\" : \"ORG\"`)\n- MongoDB Cloud teams (`\"notifications.typeName\" : \"TEAM\"`)\n\nTo send emails to one MongoDB Cloud user or grouping of users, set the **notifications.emailEnabled** parameter.",
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+        },
+        "EmailEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether MongoDB Cloud should send email notifications. The resource requires this parameter when one of the following values have been set:\n\n- `\"notifications.typeName\" : \"ORG\"`\n- `\"notifications.typeName\" : \"GROUP\"`\n- `\"notifications.typeName\" : \"USER\"`"
+        },
+        "FlowName": {
+          "type": "string",
+          "description": "Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: `www.flowdock.com/app/\u003corganization-name\u003e/\u003cflow-name\u003e`. The resource requires this parameter when `\"notifications.typeName\" : \"FLOWDOCK\"`.",
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^([a-z\\-]+)$"
+        },
+        "FlowdockApiToken": {
+          "type": "string",
+          "description": "Flowdock API token that MongoDB Cloud needs to send alert notifications to Flowdock. The resource requires this parameter when `\"notifications.typeName\" : \"FLOWDOCK\"`. If the token later becomes invalid, MongoDB Cloud sends an email to the project owners. If the token remains invalid, MongoDB Cloud removes the token."
+        },
+        "IntervalMin": {
+          "type": "number",
+          "description": "Number of minutes to wait between successive notifications. MongoDB Cloud sends notifications until someone acknowledges the unacknowledged alert.\n\nPagerDuty, VictorOps, and OpsGenie notifications don't return this element. Configure and manage the notification interval within each of those services."
+        },
+        "MicrosoftTeamsWebhookUrl": {
+          "type": "string",
+          "description": "Microsoft Teams Webhook Uniform Resource Locator (URL) that MongoDB Cloud needs to send this notification via Microsoft Teams. The resource requires this parameter when `\"notifications.typeName\" : \"MICROSOFT_TEAMS\"`. If the URL later becomes invalid, MongoDB Cloud sends an email to the project owners. If the key remains invalid, MongoDB Cloud removes it."
+        },
+        "MobileNumber": {
+          "type": "string",
+          "description": "Mobile phone number to which MongoDB Cloud sends alert notifications. The resource requires this parameter when `\"notifications.typeName\" : \"SMS\"`.",
+          "pattern": "(?:(?:\\\\+?1\\\\s*(?:[.-]\\\\s*)?)?(?:(\\\\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\\\\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\\\\s*(?:[.-]\\\\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\\\\s*(?:[.-]\\\\s*)?([0-9]{4})$"
+        },
+        "NotificationToken": {
+          "type": "string",
+          "description": "HipChat API token that MongoDB Cloud needs to send alert notifications to HipChat. The resource requires this parameter when `\"notifications.typeName\" : \"HIP_CHAT\"`\". If the token later becomes invalid, MongoDB Cloud sends an email to the project owners. If the token remains invalid, MongoDB Cloud removes it."
+        },
+        "OpsGenieApiKey": {
+          "type": "string",
+          "description": "API Key that MongoDB Cloud needs to send this notification via Opsgenie. The resource requires this parameter when `\"notifications.typeName\" : \"OPS_GENIE\"`. If the key later becomes invalid, MongoDB Cloud sends an email to the project owners. If the key remains invalid, MongoDB Cloud removes it."
+        },
+        "OpsGenieRegion": {
+          "type": "string",
+          "description": "Opsgenie region that indicates which API Uniform Resource Locator (URL) to use.",
+          "maxLength": 2,
+          "minLength": 2,
+          "enum": ["EU", "US"]
+        },
+        "OrgName": {
+          "type": "string",
+          "description": "Flowdock organization name to which MongoDB Cloud sends alert notifications. This name appears after `www.flowdock.com/app/` in the Uniform Resource Locator (URL) path. The resource requires this parameter when `\"notifications.typeName\" : \"FLOWDOCK\"`.",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^([a-z\\-]+)$"
+        },
+        "Roles": {
+          "type": "array",
+          "description": "List that contains the one or more organization or project roles that receive the configured alert. The resource requires this parameter when `\"notifications.typeName\" : \"GROUP\"` or `\"notifications.typeName\" : \"ORG\"`. If you include this parameter, MongoDB Cloud sends alerts only to users assigned the roles you specify in the array. If you omit this parameter, MongoDB Cloud sends alerts to users assigned any role.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "GROUP_CLUSTER_MANAGER", 
+              "GROUP_DATA_ACCESS_ADMIN", 
+              "GROUP_DATA_ACCESS_READ_ONLY", 
+              "GROUP_DATA_ACCESS_READ_WRITE", 
+              "GROUP_OWNER", 
+              "GROUP_READ_WRITE", 
+              "ORG_OWNER", 
+              "ORG_MEMBER", 
+              "ORG_GROUP_CREATOR", 
+              "ORG_BILLING_ADMIN", 
+              "ORG_READ_ONLY"
+            ]
+          }
+        },
+        "RoomName": {
+          "type": "string",
+          "description": "HipChat API room name to which MongoDB Cloud sends alert notifications. The resource requires this parameter when `\"notifications.typeName\" : \"HIP_CHAT\"`\"."
+        },
+        "ServiceKey": {
+          "type": "string",
+          "description": "PagerDuty service key that MongoDB Cloud needs to send notifications via PagerDuty. The resource requires this parameter when `\"notifications.typeName\" : \"PAGER_DUTY\"`. If the key later becomes invalid, MongoDB Cloud sends an email to the project owners. If the key remains invalid, MongoDB Cloud removes it."
+        },
+        "Severity": {
+          "type": "string",
+          "description": "Degree of seriousness given to this notification.",
+          "enum": ["CRITICAL", "ERROR", "WARNING"]
+        },
+        "SmsEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether MongoDB Cloud should send text message notifications. The resource requires this parameter when one of the following values have been set:\n\n- `\"notifications.typeName\" : \"ORG\"`\n- `\"notifications.typeName\" : \"GROUP\"`\n- `\"notifications.typeName\" : \"USER\"`"
+        },
+        "TeamId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies one MongoDB Cloud team. The resource requires this parameter when `\"notifications.typeName\" : \"TEAM\"`.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "TeamName": {
+          "type": "string",
+          "description": "Name of the MongoDB Cloud team that receives this notification. The resource requires this parameter when `\"notifications.typeName\" : \"TEAM\"`."
+        },
+        "TypeName": {
+          "type": "string",
+          "description": "Human-readable label that displays the alert notification type.",
+          "enum": [
+            "DATADOG", 
+            "EMAIL", 
+            "FLOWDOCK", 
+            "GROUP", 
+            "MICROSOFT_TEAMS", 
+            "OPS_GENIE", 
+            "ORG", 
+            "PAGER_DUTY", 
+            "PROMETHEUS", 
+            "SLACK", 
+            "SMS", 
+            "TEAM", 
+            "USER", 
+            "VICTOR_OPS", 
+            "WEBHOOK"
+          ]
+        },
+        "Username": {
+          "type": "string",
+          "description": "MongoDB Cloud username of the person to whom MongoDB Cloud sends notifications. Specify only MongoDB Cloud users who belong to the project that owns the alert configuration. The resource requires this parameter when `\"notifications.typeName\" : \"USER\"`.",
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+        },
+        "VictorOpsApiKey": {
+          "type": "string",
+          "description": "API key that MongoDB Cloud needs to send alert notifications to Splunk On-Call. The resource requires this parameter when `\"notifications.typeName\" : \"VICTOR_OPS\"`. If the key later becomes invalid, MongoDB Cloud sends an email to the project owners. If the key remains invalid, MongoDB Cloud removes it."
+        },
+        "VictorOpsRoutingKey": {
+          "type": "string",
+          "description": "Routing key that MongoDB Cloud needs to send alert notifications to Splunk On-Call. The resource requires this parameter when `\"notifications.typeName\" : \"VICTOR_OPS\"`. If the key later becomes invalid, MongoDB Cloud sends an email to the project owners. If the key remains invalid, MongoDB Cloud removes it."
+        },
+        "WebhookSecret": {
+          "type": "string",
+          "description": "An optional field for your webhook secret."
+        },
+        "WebhookUrl": {
+          "type": "string",
+          "description": "Your webhook URL."
+        }
+      },
+      "additionalProperties": false
+    },
+    "CurrentValue": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Number": {
+          "type": "number",
+          "description": "Amount of the **metricName** recorded at the time of the event. This value triggered the alert."
+        },
+        "Units": {
+          "type": "string",
+          "description": "Element used to express the quantity in **currentValue.number**. This can be an element of time, storage capacity, and the like. This metric triggered the alert.",
+          "enum": [
+            "BITS", 
+            "BYTES", 
+            "DAYS", 
+            "GIGABITS", 
+            "GIGABYTES", 
+            "HOURS", 
+            "KILOBITS", 
+            "KILOBYTES", 
+            "MEGABITS", 
+            "MEGABYTES", 
+            "MILLISECONDS", 
+            "MINUTES", 
+            "PETABYTES", 
+            "RAW", 
+            "SECONDS", 
+            "TERABYTES"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns and edits the conditions that trigger alerts and how MongoDB Cloud notifies users. This collection remains under revision and may change. Refer to the legacy documentation for this collection in the following link.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id", 
+    "/properties/AlertConfigId", 
+    "/properties/GroupId", 
+    "/definitions/ApiAlertConfigView/GroupId", 
+    "/definitions/ApiAlertConfigView/Id", 
+    "/definitions/ApiAlertView/GroupId", 
+    "/definitions/ApiAlertView/Id", 
+    "/definitions/ApiAlertView/AlertConfigId", 
+    "/definitions/ApiNotificationView/TeamId"
+  ],
+  "properties": {
+    "AlertConfigId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the alert configuration.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "Created": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "Enabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether someone enabled this alert configuration for the specified project."
+    },
+    "EventTypeName": {
+      "type": "string",
+      "description": "Event type that triggers an alert.",
+      "enum": [
+        "AWS_ENCRYPTION_KEY_NEEDS_ROTATION", 
+        "AZURE_ENCRYPTION_KEY_NEEDS_ROTATION", 
+        "CLUSTER_MONGOS_IS_MISSING", 
+        "CPS_RESTORE_FAILED", 
+        "CPS_RESTORE_SUCCESSFUL", 
+        "CPS_SNAPSHOT_BEHIND", 
+        "CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED", 
+        "CPS_SNAPSHOT_FALLBACK_FAILED", 
+        "CPS_SNAPSHOT_FALLBACK_SUCCESSFUL", 
+        "CPS_SNAPSHOT_SUCCESSFUL", 
+        "CREDIT_CARD_ABOUT_TO_EXPIRE", 
+        "DAILY_BILL_OVER_THRESHOLD", 
+        "GCP_ENCRYPTION_KEY_NEEDS_ROTATION", 
+        "HOST_DOWN", 
+        "JOINED_GROUP", 
+        "NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK", 
+        "NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK", 
+        "NO_PRIMARY", 
+        "OUTSIDE_METRIC_THRESHOLD", 
+        "OUTSIDE_SERVERLESS_METRIC_THRESHOLD", 
+        "OUTSIDE_REALM_METRIC_THRESHOLD", 
+        "PENDING_INVOICE_OVER_THRESHOLD", 
+        "PRIMARY_ELECTED", 
+        "REMOVED_FROM_GROUP", 
+        "REPLICATION_OPLOG_WINDOW_RUNNING_OUT", 
+        "TOO_MANY_ELECTIONS", 
+        "USER_ROLES_CHANGED_AUDIT", 
+        "USERS_WITHOUT_MULTIFACTOR_AUTH"
+      ]
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies this alert configuration.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "Matchers": {
+      "type": "array",
+      "description": "List of rules that determine whether MongoDB Cloud checks an object for the alert configuration. You can filter using the matchers array if the **eventTypeName** specifies an event for a host, replica set, or sharded cluster.",
+      "items": {
+        "$ref": "#/definitions/ApiMatcherView",
+        "type": "object"
+      }
+    },
+    "MetricThreshold": {
+      "type": "object",
+      "description": "Threshold for the metric that, when exceeded, triggers an alert. The resource returns this parameter when `\"eventTypeName\" : \"OUTSIDE_METRIC_THRESHOLD\"`.",
+      "$ref": "#/definitions/ApiMetricThresholdView"
+    },
+    "Notifications": {
+      "type": "array",
+      "description": "List that contains the targets that MongoDB Cloud sends notifications.",
+      "items": {
+        "$ref": "#/definitions/ApiNotificationView",
+        "type": "object"
+      }
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiAlertView",
+        "type": "object"
+      }
+    },
+    "Threshold": {
+      "type": "object",
+      "description": "Limit that triggers an alert when exceeded. The resource returns this parameter when **eventTypeName** has not been set to `OUTSIDE_METRIC_THRESHOLD`.",
+      "$ref": "#/definitions/ApiIntegerThresholdView"
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "TypeName": {
+      "type": "string",
+      "description": "Human-readable label that displays the alert type."
+    },
+    "Updated": {
+      "type": "string",
+      "description": "Date and time when someone last updated this alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Id", 
+    "/properties/Links", 
+    "/properties/TypeName", 
+    "/properties/Created", 
+    "/properties/TotalCount", 
+    "/properties/Updated", 
+    "/properties/Results", 
+    "/definitions/ApiAlertConfigView/GroupId", 
+    "/definitions/ApiAlertConfigView/Id", 
+    "/definitions/ApiAlertConfigView/Updated", 
+    "/definitions/ApiAlertConfigView/Created", 
+    "/definitions/ApiAlertConfigView/Links", 
+    "/definitions/ApiAlertConfigView/TypeName", 
+    "/definitions/CurrentValue/Number", 
+    "/definitions/CurrentValue/Units", 
+    "/definitions/ApiAlertView/GroupId", 
+    "/definitions/ApiAlertView/Id", 
+    "/definitions/ApiAlertView/ClusterName", 
+    "/definitions/ApiAlertView/Created", 
+    "/definitions/ApiAlertView/EventTypeName", 
+    "/definitions/ApiAlertView/Status", 
+    "/definitions/ApiAlertView/TypeName", 
+    "/definitions/ApiAlertView/Updated", 
+    "/definitions/ApiAlertView/HostnameAndPort", 
+    "/definitions/ApiAlertView/LastNotified", 
+    "/definitions/ApiAlertView/MetricName", 
+    "/definitions/ApiAlertView/AlertConfigId", 
+    "/definitions/ApiAlertView/ReplicaSetName", 
+    "/definitions/ApiAlertView/CurrentValue", 
+    "/definitions/ApiAlertView/Resolved", 
+    "/definitions/ApiAlertView/AcknowledgingUsername", 
+    "/definitions/ApiAlertView/Links"
+  ],
+  "typeName": "MongoDB::Atlas::AlertConfiguration",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

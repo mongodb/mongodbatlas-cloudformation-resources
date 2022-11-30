@@ -1,0 +1,34 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "Links", 
+      "ApiKeys", 
+      "GroupId", 
+      "Id", 
+      "BucketName", 
+      "CloudProvider", 
+      "IamRoleId"
+    ],
+    "RequiredParams": ["GroupId", "Links"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "Links", 
+      "ApiKeys", 
+      "GroupId", 
+      "Results", 
+      "Id", 
+      "BucketName", 
+      "CloudProvider", 
+      "IamRoleId", 
+      "TotalCount", 
+      "ExportBucketId"
+    ],
+    "RequiredParams": ["GroupId", "ExportBucketId"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "ExportBucketId"]
+  },
+  "ListFields": {}
+}

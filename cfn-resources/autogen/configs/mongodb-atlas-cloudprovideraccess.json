@@ -1,0 +1,76 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "AWS": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId", "/properties/RoleId"],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "AwsIamRoles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AWS",
+        "type": "object"
+      }
+    },
+    "CloudProvider": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cloud provider of the role to deauthorize.",
+      "enum": ["AWS"]
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "RoleId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the role.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "required": ["providerName"],
+  "typeName": "MongoDB::Atlas::cloudProviderAccess",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

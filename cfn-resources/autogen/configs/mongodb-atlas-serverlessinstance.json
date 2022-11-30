@@ -1,0 +1,331 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiAtlasServerlessClusterDescriptionViewManual": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "ConnectionStrings": {
+          "type": "object",
+          "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
+          "$ref": "#/definitions/ServerlessInstanceConnectionStrings"
+        },
+        "CreateDate": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud created this serverless instance. MongoDB Cloud represents this timestamp in ISO 8601 format in UTC.",
+          "pattern": "^(?:[1-9]\\\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\\\d|2[0-3]):[0-5]\\\\d:[0-5]\\\\d(?:\\\\.\\\\d{1,9})?(?:Z|[+-][01]\\\\d:[0-5]\\\\d)$"
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the project.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the serverless instance.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "MongoDBVersion": {
+          "type": "string",
+          "description": "Version of MongoDB that the serverless instance runs.",
+          "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+        },
+        "Name": {
+          "type": "string",
+          "description": "Human-readable label that identifies the serverless instance.",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+        },
+        "ProviderSettings": {
+          "type": "object",
+          "description": "Group of settings that configure the provisioned MongoDB serverless instance. The options available relate to the cloud service provider.",
+          "$ref": "#/definitions/ServerlessInstanceProviderSettings"
+        },
+        "StateName": {
+          "type": "string",
+          "description": "Human-readable label that indicates the current operating condition of the serverless instance.",
+          "enum": [
+            "CREATING", 
+            "DELETED", 
+            "DELETING", 
+            "IDLE", 
+            "REPAIRING", 
+            "UPDATING"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServerlessInstanceConnectionStrings": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "PrivateEndpoint": {
+          "type": "array",
+          "description": "List of private endpoint connection strings that you can use to connect to this serverless instance through a private endpoint. This parameter returns only if you created a private endpoint for this serverless instance and it is AVAILABLE.",
+          "items": {
+            "$ref": "#/definitions/ServerlessInstancePrivateEndpoint",
+            "type": "object"
+          }
+        },
+        "StandardSrv": {
+          "type": "string",
+          "description": "Public connection string that you can use to connect to this serverless instance. This connection string uses the `mongodb+srv://` protocol."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServerlessInstancePrivateEndpoint": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Endpoints": {
+          "type": "array",
+          "description": "List that contains the private endpoints through which you connect to MongoDB Cloud when you use **connectionStrings.privateEndpoint[n].srvConnectionString**.",
+          "items": {
+            "$ref": "#/definitions/ServerlessInstancePrivateEndpointEndpoint",
+            "type": "object"
+          }
+        },
+        "SrvConnectionString": {
+          "type": "string",
+          "description": "Private endpoint-aware connection string that uses the `mongodb+srv://` protocol to connect to MongoDB Cloud through a private endpoint. The `mongodb+srv` protocol tells the driver to look up the seed list of hosts in the Domain Name System (DNS)."
+        },
+        "Type": {
+          "type": "string",
+          "description": "MongoDB process type to which your application connects.\n",
+          "enum": ["MONGOS"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServerlessInstancePrivateEndpointEndpoint": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "EndpointId": {
+          "type": "string",
+          "description": "Unique provider identifier of the private endpoint.\n"
+        },
+        "ProviderName": {
+          "type": "string",
+          "description": "Cloud provider where the private endpoint is deployed.\n",
+          "enum": ["AWS"]
+        },
+        "Region": {
+          "type": "string",
+          "description": "Region where the private endpoint is deployed.\n"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServerlessInstanceProviderSettings": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "BackingProviderName": {
+          "type": "string",
+          "description": "Cloud service provider on which MongoDB Cloud provisioned the serverless instance.",
+          "enum": ["AWS", "AZURE", "GCP"]
+        },
+        "ProviderName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the cloud service provider.",
+          "enum": ["SERVERLESS"]
+        },
+        "RegionName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the geographic location of your MongoDB serverless instance. The region you choose can affect network latency for clients accessing your databases. For a complete list of region names, see [AWS](https://docs.atlas.mongodb.com/reference/amazon-aws/#std-label-amazon-aws), [GCP](https://docs.atlas.mongodb.com/reference/google-gcp/), and [Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes serverless instances.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "ConnectionStrings": {
+      "type": "object",
+      "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
+      "$ref": "#/definitions/ServerlessInstanceConnectionStrings"
+    },
+    "CreateDate": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud created this serverless instance. MongoDB Cloud represents this timestamp in ISO 8601 format in UTC.",
+      "pattern": "^(?:[1-9]\\\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\\\d|2[0-3]):[0-5]\\\\d:[0-5]\\\\d(?:\\\\.\\\\d{1,9})?(?:Z|[+-][01]\\\\d:[0-5]\\\\d)$"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the serverless instance.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "MongoDBVersion": {
+      "type": "string",
+      "description": "Version of MongoDB that the serverless instance runs.",
+      "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+    },
+    "Name": {
+      "type": "string",
+      "description": "Human-readable label that identifies the serverless instance.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "ProviderSettings": {
+      "type": "object",
+      "description": "Group of settings that configure the provisioned MongoDB serverless instance. The options available relate to the cloud service provider.",
+      "$ref": "#/definitions/ServerlessInstanceProviderSettings"
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.\n",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasServerlessClusterDescriptionViewManual",
+        "type": "object"
+      }
+    },
+    "StateName": {
+      "type": "string",
+      "description": "Human-readable label that indicates the current operating condition of the serverless instance.",
+      "enum": [
+        "CREATING", 
+        "DELETED", 
+        "DELETING", 
+        "IDLE", 
+        "REPAIRING", 
+        "UPDATING"
+      ]
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Results", 
+    "/properties/CreateDate", 
+    "/properties/Id", 
+    "/properties/TotalCount", 
+    "/properties/ConnectionStrings", 
+    "/properties/Links", 
+    "/properties/StateName", 
+    "/properties/MongoDBVersion", 
+    "/definitions/ServerlessInstancePrivateEndpoint/Endpoints", 
+    "/definitions/ServerlessInstancePrivateEndpoint/SrvConnectionString", 
+    "/definitions/ServerlessInstancePrivateEndpoint/Type", 
+    "/definitions/ServerlessInstanceConnectionStrings/PrivateEndpoint", 
+    "/definitions/ServerlessInstanceConnectionStrings/StandardSrv", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/CreateDate", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/MongoDBVersion", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/StateName", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/ConnectionStrings", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Links", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/GroupId", 
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Id", 
+    "/definitions/ServerlessInstancePrivateEndpointEndpoint/EndpointId", 
+    "/definitions/ServerlessInstancePrivateEndpointEndpoint/ProviderName", 
+    "/definitions/ServerlessInstancePrivateEndpointEndpoint/Region"
+  ],
+  "typeName": "MongoDB::Atlas::ServerlessInstance",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "properties/Id"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies this advanced cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "Collection": {
+      "type": "string",
+      "description": "Human-readable label that identifies the collection associated with the managed namespace."
+    },
+    "Id": {
+      "type": "string",
+      "description": "."
+    },
+    "Db": {
+      "type": "string",
+      "description": "Human-readable label that identifies the database that contains the collection."
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "typeName": "MongoDB::Atlas::GlobalClusterConfig",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

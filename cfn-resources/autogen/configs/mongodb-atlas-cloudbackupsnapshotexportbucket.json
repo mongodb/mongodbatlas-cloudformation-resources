@@ -1,0 +1,164 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiAtlasDiskBackupSnapshotAWSExportBucketView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "BucketName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
+        },
+        "CloudProvider": {
+          "type": "string",
+          "description": "Human-readable label that identifies the cloud provider that stores this snapshot.",
+          "enum": ["AWS", "AZURE", "GCP"]
+        },
+        "IamRoleId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the Amazon Web Services (AWS) Simple Storage Service (S3) export bucket.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, and removes Cloud Backup snapshot export buckets. Also returns and adds Cloud Backup export jobs.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "BucketName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
+    },
+    "CloudProvider": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cloud provider that stores this snapshot.",
+      "enum": ["AWS", "AZURE", "GCP"]
+    },
+    "ExportBucketId": {
+      "type": "string",
+      "description": "Unique string that identifies the AWS S3 bucket to which you export your snapshots.",
+      "maxLength": 63,
+      "minLength": 3,
+      "pattern": "^((?!xn--)(?!.*-s3alias)[a-z0-9][a-z0-9-]{1,61}[a-z0-9])$"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IamRoleId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDiskBackupSnapshotAWSExportBucketView",
+        "type": "object"
+      }
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the Amazon Web Services (AWS) Simple Storage Service (S3) export bucket.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Results",
+    "/properties/Id",
+    "/properties/Links",
+    "/properties/TotalCount",
+    "/definitions/ApiAtlasDiskBackupSnapshotAWSExportBucketView/Links",
+    "/definitions/ApiAtlasDiskBackupSnapshotAWSExportBucketView/Id"
+  ],
+  "typeName": "MongoDB::Atlas::CloudBackupSnapshotExportBucket",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

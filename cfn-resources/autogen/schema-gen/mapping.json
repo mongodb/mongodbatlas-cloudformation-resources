@@ -1,0 +1,11 @@
+{
+  "resources" : [
+    {
+      "typeName" :"ServerlessInstance",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/serverless",
+        "/api/atlas/v1.0/groups/{groupId}/serverless/{name}"
+      ]
+    }
+  ]
+}

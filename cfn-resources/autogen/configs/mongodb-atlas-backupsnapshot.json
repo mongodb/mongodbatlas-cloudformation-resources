@@ -1,0 +1,471 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiAtlasDiskBackupReplicaSetView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "CloudProvider": {
+          "type": "string",
+          "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
+          "enum": ["AWS", "AZURE", "GCP"]
+        },
+        "CreatedAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Description": {
+          "type": "string",
+          "description": "Human-readable phrase or sentence that explains the purpose of the snapshot. The resource returns this parameter when `\"status\": \"onDemand\"`."
+        },
+        "ExpiresAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud deletes the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "FrequencyType": {
+          "type": "string",
+          "description": "Human-readable label that identifies how often this snapshot triggers.",
+          "enum": ["hourly", "daily", "weekly", "monthly"]
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the snapshot.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "MasterKeyUUID": {
+          "type": "string",
+          "description": "Unique string that identifies the Amazon Web Services (AWS) Key Management Service (KMS) Customer Master Key (CMK) used to encrypt the snapshot. The resource returns this value when `\"encryptionEnabled\" : true`."
+        },
+        "MongodVersion": {
+          "type": "string",
+          "description": "Version of the MongoDB host that this snapshot backs up.",
+          "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+        },
+        "PolicyItems": {
+          "type": "array",
+          "description": "List that contains unique identifiers for the policy items.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ReplicaSetName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the replica set from which MongoDB Cloud took this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\"`"
+        },
+        "SnapshotType": {
+          "type": "string",
+          "description": "Human-readable label that identifies when this snapshot triggers.",
+          "enum": ["onDemand", "scheduled"]
+        },
+        "Status": {
+          "type": "string",
+          "description": "Human-readable label that indicates the stage of the backup process for this snapshot.",
+          "enum": ["queued", "inProgress", "completed", "failed"]
+        },
+        "StorageSizeBytes": {
+          "type": "integer",
+          "description": "Number of bytes taken to store the backup snapshot.",
+          "pattern": "^([0-9]+)$"
+        },
+        "Type": {
+          "type": "string",
+          "description": "Human-readable label that categorizes the cluster as a replica set or sharded cluster.",
+          "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasDiskBackupShardedClusterSnapshotMemberView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "CloudProvider": {
+          "type": "string",
+          "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
+          "enum": ["AWS", "AZURE", "GCP"]
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the snapshot.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "ReplicaSetName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the shard or config host from which MongoDB Cloud took this snapshot."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasDiskBackupShardedClusterSnapshotView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Description": {
+          "type": "string",
+          "description": "Human-readable phrase or sentence that explains the purpose of the snapshot. The resource returns this parameter when `\"status\": \"onDemand\"`."
+        },
+        "ExpiresAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud deletes the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "FrequencyType": {
+          "type": "string",
+          "description": "Human-readable label that identifies how often this snapshot triggers.",
+          "enum": ["hourly", "daily", "weekly", "monthly"]
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the snapshot.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "MasterKeyUUID": {
+          "type": "string",
+          "description": "Unique string that identifies the Amazon Web Services (AWS) Key Management Service (KMS) Customer Master Key (CMK) used to encrypt the snapshot. The resource returns this value when `\"encryptionEnabled\" : true`."
+        },
+        "Members": {
+          "type": "array",
+          "description": "List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `\"type\" : \"SHARDED_CLUSTER\"`.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView",
+            "type": "object"
+          }
+        },
+        "MongodVersion": {
+          "type": "string",
+          "description": "Version of the MongoDB host that this snapshot backs up.",
+          "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+        },
+        "PolicyItems": {
+          "type": "array",
+          "description": "List that contains unique identifiers for the policy items.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "SnapshotIds": {
+          "type": "array",
+          "description": "List that contains the unique identifiers of the snapshots created for the shards and config host for a sharded cluster. The resource returns this parameter when `\"type\": \"SHARDED_CLUSTER\"`. These identifiers should match the ones specified in the **members[n].id** parameters. This allows you to map a snapshot to its shard or config host name.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "SnapshotType": {
+          "type": "string",
+          "description": "Human-readable label that identifies when this snapshot triggers.",
+          "enum": ["onDemand", "scheduled"]
+        },
+        "Status": {
+          "type": "string",
+          "description": "Human-readable label that indicates the stage of the backup process for this snapshot.",
+          "enum": ["queued", "inProgress", "completed", "failed"]
+        },
+        "StorageSizeBytes": {
+          "type": "integer",
+          "description": "Number of bytes taken to store the backup snapshot.",
+          "pattern": "^([0-9]+)$"
+        },
+        "Type": {
+          "type": "string",
+          "description": "Human-readable label that categorizes the cluster as a replica set or sharded cluster.",
+          "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, takes, and removes Cloud Backup snapshots.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/MasterKeyUUID", 
+    "/properties/Id", 
+    "/properties/SnapshotId", 
+    "/properties/GroupId", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/Id", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/MasterKeyUUID", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/Id", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Id", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/MasterKeyUUID"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "CloudProvider": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
+      "enum": ["AWS", "AZURE", "GCP"]
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "CreatedAt": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "Description": {
+      "type": "string",
+      "description": "Human-readable phrase or sentence that explains the purpose of the snapshot. The resource returns this parameter when `\"status\": \"onDemand\"`."
+    },
+    "ExpiresAt": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud deletes the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "FrequencyType": {
+      "type": "string",
+      "description": "Human-readable label that identifies how often this snapshot triggers.",
+      "enum": ["hourly", "daily", "weekly", "monthly"]
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the snapshot.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "MasterKeyUUID": {
+      "type": "string",
+      "description": "Unique string that identifies the Amazon Web Services (AWS) Key Management Service (KMS) Customer Master Key (CMK) used to encrypt the snapshot. The resource returns this value when `\"encryptionEnabled\" : true`."
+    },
+    "Members": {
+      "type": "array",
+      "description": "List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `\"type\" : \"SHARDED_CLUSTER\"`.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView",
+        "type": "object"
+      }
+    },
+    "MongodVersion": {
+      "type": "string",
+      "description": "Version of the MongoDB host that this snapshot backs up.",
+      "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "PolicyItems": {
+      "type": "array",
+      "description": "List that contains unique identifiers for the policy items.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ReplicaSetName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the replica set from which MongoDB Cloud took this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\"`"
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView",
+        "type": "object"
+      }
+    },
+    "RetentionInDays": {
+      "type": "number",
+      "description": "Number of days that MongoDB Cloud should retain the on-demand snapshot. Must be at least **1**"
+    },
+    "SnapshotId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the desired snapshot.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "SnapshotIds": {
+      "type": "array",
+      "description": "List that contains the unique identifiers of the snapshots created for the shards and config host for a sharded cluster. The resource returns this parameter when `\"type\": \"SHARDED_CLUSTER\"`. These identifiers should match the ones specified in the **members[n].id** parameters. This allows you to map a snapshot to its shard or config host name.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "SnapshotType": {
+      "type": "string",
+      "description": "Human-readable label that identifies when this snapshot triggers.",
+      "enum": ["onDemand", "scheduled"]
+    },
+    "Status": {
+      "type": "string",
+      "description": "Human-readable label that indicates the stage of the backup process for this snapshot.",
+      "enum": ["queued", "inProgress", "completed", "failed"]
+    },
+    "StorageSizeBytes": {
+      "type": "integer",
+      "description": "Number of bytes taken to store the backup snapshot.",
+      "pattern": "^([0-9]+)$"
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "Type": {
+      "type": "string",
+      "description": "Human-readable label that categorizes the cluster as a replica set or sharded cluster.",
+      "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/SnapshotIds", 
+    "/properties/MasterKeyUUID", 
+    "/properties/Results", 
+    "/properties/Type", 
+    "/properties/SnapshotType", 
+    "/properties/TotalCount", 
+    "/properties/Members", 
+    "/properties/ExpiresAt", 
+    "/properties/Description", 
+    "/properties/StorageSizeBytes", 
+    "/properties/PolicyItems", 
+    "/properties/Id", 
+    "/properties/CreatedAt", 
+    "/properties/Links", 
+    "/properties/CloudProvider", 
+    "/properties/MongodVersion", 
+    "/properties/FrequencyType", 
+    "/properties/ReplicaSetName", 
+    "/properties/Status", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/Type", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/Id", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/CloudProvider", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/Description", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/CreatedAt", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/ExpiresAt", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/MongodVersion", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/StorageSizeBytes", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/ReplicaSetName", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/Status", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/FrequencyType", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/Links", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/PolicyItems", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/SnapshotType", 
+    "/definitions/ApiAtlasDiskBackupReplicaSetView/MasterKeyUUID", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/CloudProvider", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/Id", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/ReplicaSetName", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Status", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/SnapshotType", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Type", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/PolicyItems", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/CreatedAt", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/ExpiresAt", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Id", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Members", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/MongodVersion", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/SnapshotIds", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/FrequencyType", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/StorageSizeBytes", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/MasterKeyUUID", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Description", 
+    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Links"
+  ],
+  "typeName": "MongoDB::Atlas::BackupSnapshot",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

@@ -1,0 +1,375 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiDatadogView": {
+      "type": "object",
+      "properties": {
+        "ApiKey": {
+          "type": "string",
+          "description": "Key that allows MongoDB Cloud to access your Datadog account."
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Region": {
+          "type": "string",
+          "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Datadog API.",
+          "maxLength": 2,
+          "minLength": 2,
+          "enum": ["EU", "US"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiFlowdockView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ApiToken": {
+          "type": "string",
+          "description": "Key that allows MongoDB Cloud to access your Flowdock account."
+        },
+        "FlowName": {
+          "type": "string",
+          "description": "Human-readable label that identifies your Flowdock Flow."
+        },
+        "OrgName": {
+          "type": "string",
+          "description": "Human-readable label that identifies your Flowdock organization."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiIntegrationViewManual": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Type": {
+          "type": "string",
+          "description": "Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the third-party service integration type.",
+          "enum": [
+            "PAGER_DUTY", 
+            "MICROSOFT_TEAMS", 
+            "SLACK", 
+            "DATADOG", 
+            "NEW_RELIC", 
+            "OPS_GENIE", 
+            "VICTOR_OPS", 
+            "FLOWDOCK", 
+            "WEBHOOK", 
+            "PROMETHEUS"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiMicrosoftTeamsView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "MicrosoftTeamsWebhookUrl": {
+          "type": "string",
+          "description": "Endpoint web address of the Microsoft Teams webhook to which MongoDB Cloud sends notifications."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiNewRelicView": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "string",
+          "description": "Unique 40-hexadecimal digit string that identifies your New Relic account.",
+          "maxLength": 40,
+          "minLength": 40,
+          "pattern": "^([0-9a-f]){40}$"
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "LicenseKey": {
+          "type": "string",
+          "description": "Unique 40-hexadecimal digit string that identifies your New Relic license.",
+          "maxLength": 40,
+          "minLength": 40,
+          "pattern": "^([0-9a-f]){40}$"
+        },
+        "ReadToken": {
+          "type": "string",
+          "description": "Query key used to access your New Relic account."
+        },
+        "WriteToken": {
+          "type": "string",
+          "description": "Insert key associated with your New Relic account."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiOpsGenieView": {
+      "type": "object",
+      "properties": {
+        "ApiKey": {
+          "type": "string",
+          "description": "Key that allows MongoDB Cloud to access your Opsgenie account."
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Region": {
+          "type": "string",
+          "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie API.",
+          "maxLength": 2,
+          "minLength": 2,
+          "enum": ["EU", "US"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiPagerDutyView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ServiceKey": {
+          "type": "string",
+          "description": "Service key associated with your PagerDuty account."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiPrometheusView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Enabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether someone has activated the Prometheus integration."
+        },
+        "ListenAddress": {
+          "type": "string",
+          "description": "Combination of IPv4 address and Internet Assigned Numbers Authority (IANA) port or the IANA port alone to which Prometheus binds to ingest MongoDB metrics."
+        },
+        "Password": {
+          "type": "string"
+        },
+        "Scheme": {
+          "type": "string",
+          "description": "Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.",
+          "enum": ["http", "https"]
+        },
+        "ServiceDiscovery": {
+          "type": "string",
+          "description": "Desired method to discover the Prometheus service.",
+          "enum": ["http", "file"]
+        },
+        "TlsPemPath": {
+          "type": "string",
+          "description": "Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (PEM) key and certificate file on the host."
+        },
+        "Username": {
+          "type": "string",
+          "description": "Human-readable label that identifies your Prometheus incoming webhook."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiSlackView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ApiToken": {
+          "type": "string",
+          "description": "Key that allows MongoDB Cloud to access your Slack account."
+        },
+        "ChannelName": {
+          "type": "string",
+          "description": "Name of the Slack channel to which MongoDB Cloud sends alert notifications.",
+          "maxLength": 80,
+          "minLength": 1
+        },
+        "TeamName": {
+          "type": "string",
+          "description": "Human-readable label that identifies your Slack team. Set this parameter when you configure a legacy Slack integration."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiVictorOpsView": {
+      "type": "object",
+      "properties": {
+        "ApiKey": {
+          "type": "string",
+          "description": "Key that allows MongoDB Cloud to access your Splunk On-Call account."
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "RoutingKey": {
+          "type": "string",
+          "description": "Routing key associated with your Splunk On-Call account."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiWebhookView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Secret": {
+          "type": "string",
+          "description": "Parameter returned if someone configure this webhook with a secret."
+        },
+        "Url": {
+          "type": "string",
+          "description": "Endpoint web address to which MongoDB Cloud sends notifications."
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/GroupId", 
+    "/definitions/ApiNewRelicView/AccountId", 
+    "/definitions/ApiNewRelicView/LicenseKey"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "IntegrationType": {
+      "type": "string",
+      "description": "Human-readable label that identifies the service which you want to integrate with MongoDB Cloud.",
+      "enum": [
+        "PAGER_DUTY", 
+        "MICROSOFT_TEAMS", 
+        "SLACK", 
+        "DATADOG", 
+        "NEW_RELIC", 
+        "OPS_GENIE", 
+        "VICTOR_OPS", 
+        "FLOWDOCK", 
+        "WEBHOOK", 
+        "PROMETHEUS"
+      ]
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiIntegrationViewManual",
+        "type": "object"
+      }
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "Type": {
+      "type": "string",
+      "description": "Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the third-party service integration type.",
+      "enum": [
+        "PAGER_DUTY", 
+        "MICROSOFT_TEAMS", 
+        "SLACK", 
+        "DATADOG", 
+        "NEW_RELIC", 
+        "OPS_GENIE", 
+        "VICTOR_OPS", 
+        "FLOWDOCK", 
+        "WEBHOOK", 
+        "PROMETHEUS"
+      ]
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Links", 
+    "/properties/Results", 
+    "/properties/TotalCount"
+  ],
+  "typeName": "MongoDB::Atlas::Integrations",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

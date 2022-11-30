@@ -1,0 +1,58 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "UserConflicts", 
+      "DomainRestrictionEnabled", 
+      "ApiKeys", 
+      "IdentityProviderId", 
+      "OrgId", 
+      "PostAuthRoleGrants", 
+      "RoleMappings", 
+      "DomainAllowList", 
+      "FederationSettingsId"
+    ],
+    "RequiredParams": [
+      "DomainRestrictionEnabled", 
+      "IdentityProviderId", 
+      "OrgId"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "RoleMappings", 
+      "UserConflicts", 
+      "DomainRestrictionEnabled", 
+      "ApiKeys", 
+      "IdentityProviderId", 
+      "OrgId", 
+      "PostAuthRoleGrants", 
+      "DomainAllowList", 
+      "FederationSettingsId"
+    ],
+    "RequiredParams": ["FederationSettingsId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "DomainAllowList", 
+      "FederationSettingsId", 
+      "RoleMappings", 
+      "UserConflicts", 
+      "DomainRestrictionEnabled", 
+      "ApiKeys", 
+      "IdentityProviderId", 
+      "OrgId", 
+      "PostAuthRoleGrants"
+    ],
+    "RequiredParams": [
+      "FederationSettingsId", 
+      "OrgId", 
+      "DomainRestrictionEnabled", 
+      "IdentityProviderId", 
+      "OrgId"
+    ]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["FederationSettingsId", "OrgId"]
+  },
+  "ListFields": {}
+}

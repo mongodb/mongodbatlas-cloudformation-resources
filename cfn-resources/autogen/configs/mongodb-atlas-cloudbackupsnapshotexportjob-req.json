@@ -1,0 +1,55 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "GroupId", 
+      "FinishedAt", 
+      "Components", 
+      "ApiKeys", 
+      "DeliveryUrl", 
+      "Links", 
+      "SnapshotId", 
+      "Id", 
+      "Prefix", 
+      "ClusterName", 
+      "CustomDataSet",
+      "ExportBucketId", 
+      "State", 
+      "ExportStatus", 
+      "CreatedAt"
+    ],
+    "RequiredParams": [
+      "GroupId", 
+      "ClusterName", 
+      "ExportBucketId", 
+      "Links", 
+      "SnapshotId"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "ExportStatus", 
+      "CreatedAt", 
+      "State", 
+      "FinishedAt", 
+      "Components", 
+      "GroupId", 
+      "PageNum", 
+      "ItemsPerPage", 
+      "ExportId", 
+      "Links", 
+      "SnapshotId", 
+      "ApiKeys", 
+      "DeliveryUrl", 
+      "ClusterName", 
+      "IncludeCount", 
+      "CustomDataSet",
+      "ExportBucketId", 
+      "Id", 
+      "Prefix"
+    ],
+    "RequiredParams": ["GroupId", "ClusterName", "ExportId"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {},
+  "ListFields": {}
+}

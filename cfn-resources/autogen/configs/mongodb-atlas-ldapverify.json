@@ -1,0 +1,201 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiAtlasNDSLDAPVerifyConnectivityJobRequestParamsView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "AuthzQueryTemplate": {
+          "type": "string",
+          "description": "Lightweight Directory Access Protocol (LDAP) query template that MongoDB Cloud applies to create an LDAP query to return the LDAP groups associated with the authenticated MongoDB user. MongoDB Cloud uses this parameter only for user authorization.\n\nUse the `{USER}` placeholder in the Uniform Resource Locator (URL) to substitute the authenticated username. The query relates to the host specified with the hostname. Format this query per [RFC 4515](https://tools.ietf.org/search/rfc4515) and [RFC 4516](https://datatracker.ietf.org/doc/html/rfc4516)."
+        },
+        "BindPassword": {
+          "type": "string",
+          "description": "Password that MongoDB Cloud uses to authenticate the **bindUsername**."
+        },
+        "BindUsername": {
+          "type": "string",
+          "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.",
+          "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+        },
+        "CaCertificate": {
+          "type": "string",
+          "description": "Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass an empty string: `\"caCertificate\": \"\"`"
+        },
+        "Hostname": {
+          "type": "string",
+          "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.",
+          "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}|([0-9a-f]{1,4}\\:){7}([0-9a-f]{1,4})|(([a-z0-9]+\\.){1,10}[a-z]+)?$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "Port": {
+          "type": "number",
+          "description": "IANA port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasNDSLDAPVerifyConnectivityJobRequestValidationView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Status": {
+          "type": "string",
+          "description": "Human-readable string that indicates the result of this verification test.",
+          "enum": ["FAIL", "OK"]
+        },
+        "ValidationType": {
+          "type": "string",
+          "description": "Human-readable label that identifies this verification test that MongoDB Cloud runs.",
+          "enum": [
+            "AUTHENTICATE", 
+            "AUTHORIZATION_ENABLED", 
+            "CONNECT", 
+            "PARSE_AUTHZ_QUERY", 
+            "QUERY_SERVER", 
+            "SERVER_SPECIFIED", 
+            "TEMPLATE"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, edits, verifies, and removes LDAP configurations.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/RequestId", "/properties/GroupId"],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "AuthzQueryTemplate": {
+      "type": "string",
+      "description": "Lightweight Directory Access Protocol (LDAP) query template that MongoDB Cloud applies to create an LDAP query to return the LDAP groups associated with the authenticated MongoDB user. MongoDB Cloud uses this parameter only for user authorization.\n\nUse the `{USER}` placeholder in the Uniform Resource Locator (URL) to substitute the authenticated username. The query relates to the host specified with the hostname. Format this query per [RFC 4515](https://tools.ietf.org/search/rfc4515) and [RFC 4516](https://datatracker.ietf.org/doc/html/rfc4516)."
+    },
+    "BindPassword": {
+      "type": "string",
+      "description": "Password that MongoDB Cloud uses to authenticate the **bindUsername**."
+    },
+    "BindUsername": {
+      "type": "string",
+      "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.",
+      "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+    },
+    "CaCertificate": {
+      "type": "string",
+      "description": "Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass an empty string: `\"caCertificate\": \"\"`"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Hostname": {
+      "type": "string",
+      "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.",
+      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}|([0-9a-f]{1,4}\\:){7}([0-9a-f]{1,4})|(([a-z0-9]+\\.){1,10}[a-z]+)?$"
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "Port": {
+      "type": "number",
+      "description": "IANA port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
+    },
+    "Request": {
+      "type": "object",
+      "description": "Request information needed to verify an Lightweight Directory Access Protocol (LDAP) over Transport Layer Security (TLS) configuration. The response does not return the **bindPassword**.",
+      "$ref": "#/definitions/ApiAtlasNDSLDAPVerifyConnectivityJobRequestParamsView"
+    },
+    "RequestId": {
+      "type": "string",
+      "description": "Unique string that identifies the request to verify an \u003cabbr title=\"Lightweight Directory Access Protocol\"\u003eLDAP\u003c/abbr\u003e configuration.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Status": {
+      "type": "string",
+      "description": "Human-readable string that indicates the status of the Lightweight Directory Access Protocol (LDAP) over Transport Layer Security (TLS) configuration.",
+      "enum": ["FAIL", "PENDING", "SUCCESS"]
+    },
+    "Validations": {
+      "type": "array",
+      "description": "List that contains the validation messages related to the verification of the provided Lightweight Directory Access Protocol (LDAP) over Transport Layer Security (TLS) configuration details. The list contains a document for each test that MongoDB Cloud runs. MongoDB Cloud stops running tests after the first failure.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasNDSLDAPVerifyConnectivityJobRequestValidationView",
+        "type": "object"
+      }
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Links", 
+    "/properties/Status", 
+    "/properties/Validations", 
+    "/definitions/ApiAtlasNDSLDAPVerifyConnectivityJobRequestParamsView/Links", 
+    "/definitions/ApiAtlasNDSLDAPVerifyConnectivityJobRequestValidationView/Status", 
+    "/definitions/ApiAtlasNDSLDAPVerifyConnectivityJobRequestValidationView/ValidationType"
+  ],
+  "typeName": "MongoDB::Atlas::LDAPVerify",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

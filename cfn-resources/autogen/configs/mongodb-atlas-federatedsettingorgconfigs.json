@@ -1,0 +1,300 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "FederatedUserView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "EmailAddress": {
+          "type": "string",
+          "description": "Email address of the MongoDB Cloud user linked to the federated organization.",
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+        },
+        "FederationSettingsId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the federation to which this MongoDB Cloud user belongs.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "FirstName": {
+          "type": "string",
+          "description": "First or given name that belongs to the MongoDB Cloud user."
+        },
+        "LastName": {
+          "type": "string",
+          "description": "Last name, family name, or surname that belongs to the MongoDB Cloud user."
+        },
+        "UserId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies this user.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ObjectId": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RoleAssignment": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "GroupId": {
+          "type": "object",
+          "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.\n\nThis parameter returns an empty object if no custom zones exist.",
+          "$ref": "#/definitions/ObjectId"
+        },
+        "OrgId": {
+          "type": "object",
+          "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.\n\nThis parameter returns an empty object if no custom zones exist.",
+          "$ref": "#/definitions/ObjectId"
+        },
+        "Role": {
+          "type": "string",
+          "enum": [
+            "GLOBAL_AUTOMATION_ADMIN", 
+            "GLOBAL_BACKUP_ADMIN", 
+            "GLOBAL_METERING_USER", 
+            "GLOBAL_METRICS_INTERNAL_USER", 
+            "GLOBAL_MONITORING_ADMIN", 
+            "GLOBAL_OWNER", 
+            "GLOBAL_READ_ONLY", 
+            "GLOBAL_USER_ADMIN", 
+            "GLOBAL_USER_READ_ONLY", 
+            "GLOBAL_ACCOUNT_SUSPENSION_ADMIN", 
+            "GLOBAL_BILLING_ADMIN", 
+            "GLOBAL_LEGAL_ADMIN", 
+            "GLOBAL_FEATURE_FLAG_ADMIN", 
+            "GLOBAL_ATLAS_TSE", 
+            "GLOBAL_ATLAS_OPERATOR", 
+            "GLOBAL_ATLAS_ADMIN", 
+            "GLOBAL_STITCH_ADMIN", 
+            "GLOBAL_CHARTS_ADMIN", 
+            "GLOBAL_EXPERIMENT_ASSIGNMENT_USER", 
+            "GLOBAL_STITCH_INTERNAL_ADMIN", 
+            "GLOBAL_SECURITY_ADMIN", 
+            "GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN", 
+            "GLOBAL_PROACTIVE_SUPPORT_ADMIN", 
+            "GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN", 
+            "GLOBAL_SALESFORCE_ADMIN", 
+            "GLOBAL_SALESFORCE_READ_ONLY", 
+            "GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS", 
+            "ORG_MEMBER", 
+            "ORG_READ_ONLY", 
+            "ORG_BILLING_ADMIN", 
+            "ORG_GROUP_CREATOR", 
+            "ORG_OWNER", 
+            "GROUP_AUTOMATION_ADMIN", 
+            "GROUP_BACKUP_ADMIN", 
+            "GROUP_MONITORING_ADMIN", 
+            "GROUP_OWNER", 
+            "GROUP_READ_ONLY", 
+            "GROUP_USER_ADMIN", 
+            "GROUP_BILLING_ADMIN", 
+            "GROUP_DATA_ACCESS_ADMIN", 
+            "GROUP_DATA_ACCESS_READ_ONLY", 
+            "GROUP_DATA_ACCESS_READ_WRITE", 
+            "GROUP_CHARTS_ADMIN", 
+            "GROUP_CLUSTER_MANAGER", 
+            "GROUP_SEARCH_INDEX_EDITOR"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "RoleMappingView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ExternalGroupName": {
+          "type": "string",
+          "description": "Unique human-readable label that identifies the identity provider group to whichthis role mapping applies.",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies this role mapping.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "RoleAssignments": {
+          "type": "array",
+          "description": "Atlas roles and the unique identifiers of the groups and organizations associated with each role.",
+          "items": {
+            "$ref": "#/definitions/RoleAssignment",
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/FederationSettingsId", 
+    "/properties/IdentityProviderId", 
+    "/properties/OrgId", 
+    "/definitions/RoleMappingView/ExternalGroupName", 
+    "/definitions/RoleMappingView/Id", 
+    "/definitions/FederatedUserView/UserId", 
+    "/definitions/FederatedUserView/FederationSettingsId"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+    "DomainAllowList": {
+      "type": "array",
+      "description": "Approved domains that restrict users who can join the organization based on their email address.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "DomainRestrictionEnabled": {
+      "type": "boolean",
+      "description": "Value that indicates whether domain restriction is enabled for this connected org."
+    },
+    "FederationSettingsId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your federation.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IdentityProviderId": {
+      "type": "string",
+      "description": "Unique 20-hexadecimal digit string that identifies the identity provider that this connected org config is associated with.",
+      "maxLength": 20,
+      "minLength": 20,
+      "pattern": "^([a-f0-9]{20})$"
+    },
+    "OrgId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the connected organization configuration to remove.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "PostAuthRoleGrants": {
+      "type": "array",
+      "description": "Atlas roles that are granted to a user in this organization after authenticating.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "GLOBAL_AUTOMATION_ADMIN", 
+          "GLOBAL_BACKUP_ADMIN", 
+          "GLOBAL_METERING_USER", 
+          "GLOBAL_METRICS_INTERNAL_USER", 
+          "GLOBAL_MONITORING_ADMIN", 
+          "GLOBAL_OWNER", 
+          "GLOBAL_READ_ONLY", 
+          "GLOBAL_USER_ADMIN", 
+          "GLOBAL_USER_READ_ONLY", 
+          "GLOBAL_ACCOUNT_SUSPENSION_ADMIN", 
+          "GLOBAL_BILLING_ADMIN", 
+          "GLOBAL_LEGAL_ADMIN", 
+          "GLOBAL_FEATURE_FLAG_ADMIN", 
+          "GLOBAL_ATLAS_TSE", 
+          "GLOBAL_ATLAS_OPERATOR", 
+          "GLOBAL_ATLAS_ADMIN", 
+          "GLOBAL_STITCH_ADMIN", 
+          "GLOBAL_CHARTS_ADMIN", 
+          "GLOBAL_EXPERIMENT_ASSIGNMENT_USER", 
+          "GLOBAL_STITCH_INTERNAL_ADMIN", 
+          "GLOBAL_SECURITY_ADMIN", 
+          "GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN", 
+          "GLOBAL_PROACTIVE_SUPPORT_ADMIN", 
+          "GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN", 
+          "GLOBAL_SALESFORCE_ADMIN", 
+          "GLOBAL_SALESFORCE_READ_ONLY", 
+          "GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS", 
+          "ORG_MEMBER", 
+          "ORG_READ_ONLY", 
+          "ORG_BILLING_ADMIN", 
+          "ORG_GROUP_CREATOR", 
+          "ORG_OWNER", 
+          "GROUP_AUTOMATION_ADMIN", 
+          "GROUP_BACKUP_ADMIN", 
+          "GROUP_MONITORING_ADMIN", 
+          "GROUP_OWNER", 
+          "GROUP_READ_ONLY", 
+          "GROUP_USER_ADMIN", 
+          "GROUP_BILLING_ADMIN", 
+          "GROUP_DATA_ACCESS_ADMIN", 
+          "GROUP_DATA_ACCESS_READ_ONLY", 
+          "GROUP_DATA_ACCESS_READ_WRITE", 
+          "GROUP_CHARTS_ADMIN", 
+          "GROUP_CLUSTER_MANAGER", 
+          "GROUP_SEARCH_INDEX_EDITOR"
+        ]
+      }
+    },
+    "RoleMappings": {
+      "type": "array",
+      "description": "Role mappings that are configured in this organization.",
+      "items": {
+        "$ref": "#/definitions/RoleMappingView",
+        "type": "object"
+      }
+    },
+    "UserConflicts": {
+      "type": "array",
+      "description": "List that contains the users who have an email address that doesn't match any domain on the allowed list.",
+      "items": {
+        "$ref": "#/definitions/FederatedUserView",
+        "type": "object"
+      }
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/RoleAssignment/OrgId", 
+    "/definitions/RoleAssignment/GroupId", 
+    "/definitions/RoleMappingView/Id", 
+    "/definitions/FederatedUserView/UserId"
+  ],
+  "typeName": "MongoDB::Atlas::FederatedSettingOrgConfigs",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

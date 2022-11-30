@@ -4,19 +4,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	. "github.com/dave/jennifer/jen"
 	"os"
 	"unicode"
+
+	"github.com/dave/jennifer/jen"
 )
 
 const (
 	pubKey           = "ApiKeys.PublicKey"
 	pvtKey           = "ApiKeys.PrivateKey"
 	schemaDir        = "configs"
-	validatorPackage = "validations"
 	resourceFilePath = "/cmd/resource/resource.go"
-	dir              = "/cmd/"
-	validatorFile    = "/validator.go"
 	CreateMethod     = "Create"
 	ReadMethod       = "Read"
 	UpdateMethod     = "Update"
@@ -41,27 +39,22 @@ const (
 )
 
 func main() {
-
 	resource := flag.String("res", "search-indexes", "adds generated client to the resource.go")
 	schemaName := flag.String("schemaName", "indexes", "adds generated client to the resource.go")
 	flag.Parse()
 
-	//add validator.go
+	// add validator.go
 	resourceFileFullPath := fmt.Sprintf("%s%s", *resource, resourceFilePath)
 
 	// add resource.go
-	addResource(resourceFileFullPath, *resource, *schemaName)
-
+	addResource(resourceFileFullPath, *schemaName)
 }
 
-func addResource(path, resourceName, schemaName string) {
-	f := NewFile("resource")
+func addResource(path, schemaName string) {
+	f := jen.NewFile("resource")
 	funcNames := []string{CreateMethod, ReadMethod, UpdateMethod, DeleteMethod, ListMethod}
 
-	//constants := "github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	//validations := fmt.Sprintf("github.com/mongodb/mongodbatlas-cloudformation-resources/%s/cmd/validations", resourceName)
-
-	//Imports
+	// Imports
 	f.ImportName(handler, "handler")
 	f.ImportName(cloudformation, "cloudformation")
 	f.ImportName("errors", "errors")
@@ -70,7 +63,7 @@ func addResource(path, resourceName, schemaName string) {
 	f.ImportName(progressEvent, "progress_events")
 	f.ImportAlias(log, "log")
 
-	//Required Fields mapping
+	// Required Fields mapping
 	reqFields, err := readRequiredParameters(schemaName)
 	if err != nil {
 		fmt.Println(err)
@@ -85,14 +78,14 @@ func addResource(path, resourceName, schemaName string) {
 		}
 	}
 
-	//Add setup method
+	// Add setup method
 	f.Func().Id(setupMethod).Params().
 		Block(
-			Qual(util, "SetupLogger").Call(Lit("mongodb-atlas-" + schemaName)),
+			jen.Qual(util, "SetupLogger").Call(jen.Lit("mongodb-atlas-" + schemaName)),
 		)
 	f.Line()
 
-	//Add handlers
+	// Add handlers
 	for _, fn := range funcNames {
 		inputParameters, modelObj := generateInputParams(fn, reqFields)
 		if len(inputParameters) > 0 {
@@ -102,86 +95,86 @@ func addResource(path, resourceName, schemaName string) {
 		atlasFunc := " res , resModel, err := client." + capitalize(schemaName) + "." + fn + "(context.Background(),&mongodbatlas." + capitalize(schemaName) + "{\n" + modelObj + "})"
 
 		f.Func().Id(fn).Params(
-			//Input Parameters
-			Id("req").Qual(handler, "Request"),
-			Id("prevModel").Id("*Model"),
-			Id("currentModel").Id("*Model")).
-			//Return types
+			// Input Parameters
+			jen.Id("req").Qual(handler, "Request"),
+			jen.Id("prevModel").Id("*Model"),
+			jen.Id("currentModel").Id("*Model")).
+			// Return types
 			Id("(").Qual(handler, "ProgressEvent").Id(",").Id("error").Id(")").
 
 			// Function starts
 			Block(
-				//log setup()
-				Id("setup").Params(),
-				Line(),
-				//Debug log
-				Qual(log, "Debugf").Params(Lit(fn+"() currentModel:%+v"), Id("currentModel")),
-				Line(),
+				// log setup()
+				jen.Id("setup").Params(),
+				jen.Line(),
+				// Debug log
+				jen.Qual(log, "Debugf").Params(jen.Lit(fn+"() currentModel:%+v"), jen.Id("currentModel")),
+				jen.Line(),
 
-				//Validator
-				Comment("Validation"),
-				Id("modelValidation").Id(":=").Id(validationMethod).Call(Id(fn+"RequiredFields"), Id("currentModel")),
-				If(Id("modelValidation").Op("!=").Id("nil")).Block(
-					Return(
-						Id("*modelValidation"),
-						Id("nil"),
+				// Validator
+				jen.Comment("Validation"),
+				jen.Id("modelValidation").Id(":=").Id(validationMethod).Call(jen.Id(fn+"RequiredFields"), jen.Id("currentModel")),
+				jen.If(jen.Id("modelValidation").Op("!=").Id("nil")).Block(
+					jen.Return(
+						jen.Id("*modelValidation"),
+						jen.Id("nil"),
 					),
 				),
-				Line(),
+				jen.Line(),
 
-				//Atlas Client
-				Comment("Create atlas client"),
-				List(Id("client"), Err()).Op(":=").Qual(util, "CreateMongoDBClient").
-					Call(Id("*currentModel.ApiKeys.PublicKey"),
-						Id("*currentModel.ApiKeys.PrivateKey")),
+				// Atlas Client
+				jen.Comment("Create atlas client"),
+				jen.List(jen.Id("client"), jen.Err()).Op(":=").Qual(util, "CreateMongoDBClient").
+					Call(jen.Id("*currentModel.ApiKeys.PublicKey"),
+						jen.Id("*currentModel.ApiKeys.PrivateKey")),
 
-				If(Id("err").Op("!=").Id("nil")).Block(
-					Qual(log, "Debugf").
-						Call(Lit(fn+" - error: %+v"), Id("err")),
+				jen.If(jen.Id("err").Op("!=").Id("nil")).Block(
+					jen.Qual(log, "Debugf").
+						Call(jen.Lit(fn+" - error: %+v"), jen.Id("err")),
 
-					Return(
-						Qual(handler, "ProgressEvent").
-							Values(Dict{
-								Id("OperationStatus"):  Qual(handler, "Failed"),
-								Id("Message"):          Id("err.Error()"),
-								Id("HandlerErrorCode"): Qual(cloudformation, "HandlerErrorCodeInvalidRequest"),
+					jen.Return(
+						jen.Qual(handler, "ProgressEvent").
+							Values(jen.Dict{
+								jen.Id("OperationStatus"):  jen.Qual(handler, "Failed"),
+								jen.Id("Message"):          jen.Id("err.Error()"),
+								jen.Id("HandlerErrorCode"): jen.Qual(cloudformation, "HandlerErrorCodeInvalidRequest"),
 							}),
-						Id("nil"),
+						jen.Id("nil"),
 					),
 				),
 
-				Id("var").Id(res).Id("*").Qual(atlas, "Response"),
-				Line(),
+				jen.Id("var").Id(res).Id("*").Qual(atlas, "Response"),
+				jen.Line(),
 
-				//Pseudocode
-				Comment(inputParameters),
-				Comment(" // Pseudocode:\n"+atlasFunc+"\n\n"),
-				Line(),
+				// Pseudocode
+				jen.Comment(inputParameters),
+				jen.Comment(" // Pseudocode:\n"+atlasFunc+"\n\n"),
+				jen.Line(),
 
-				If(Id("err").Op("!=").Id("nil")).Block(
-					Qual(log, "Debugf").
-						Call(Lit(fn+" - error: %+v"), Id("err")),
+				jen.If(jen.Id("err").Op("!=").Id("nil")).Block(
+					jen.Qual(log, "Debugf").
+						Call(jen.Lit(fn+" - error: %+v"), jen.Id("err")),
 
-					Return(
-						Qual(progressEvent, "GetFailedEventByResponse").
-							Params(Id("err.Error()"), Id("res.Response")),
-						Id("nil"),
+					jen.Return(
+						jen.Qual(progressEvent, "GetFailedEventByResponse").
+							Params(jen.Id("err.Error()"), jen.Id("res.Response")),
+						jen.Id("nil"),
 					),
 				),
 
-				//Log
-				Qual(log, "Debugf").
-					Params(Lit("Atlas Client %v"), Id("client")),
+				// Log
+				jen.Qual(log, "Debugf").
+					Params(jen.Lit("Atlas Client %v"), jen.Id("client")),
 
-				Line(),
-				//Progress Event Response
-				Comment("Response"),
-				//Return statement
-				Return(List(Qual(handler, "ProgressEvent").
-					Values(Dict{
-						Id("OperationStatus"): Qual(handler, "Success"),
-						Id("ResourceModel"):   Id("currentModel"),
-					}), Id("nil"))),
+				jen.Line(),
+				// Progress Event Response
+				jen.Comment("Response"),
+				// Return statement
+				jen.Return(jen.List(jen.Qual(handler, "ProgressEvent").
+					Values(jen.Dict{
+						jen.Id("OperationStatus"): jen.Qual(handler, "Success"),
+						jen.Id("ResourceModel"):   jen.Id("currentModel"),
+					}), jen.Id("nil"))),
 			)
 		f.Line()
 	}
@@ -191,7 +184,7 @@ func addResource(path, resourceName, schemaName string) {
 	fmt.Println(err)
 }
 
-func generateInputParams(fn string, params *RequiredParams) (string, string) {
+func generateInputParams(fn string, params *RequiredParams) (prms string, obj string) {
 	switch fn {
 	case CreateMethod:
 		return generateParamString(params.CreateFields.InputParams)
@@ -204,27 +197,24 @@ func generateInputParams(fn string, params *RequiredParams) (string, string) {
 	case ListMethod:
 		return generateParamString(params.ListFields.InputParams)
 	}
-	return "", ""
+	return prms, obj
 }
 
-func generateParamString(fields []string) (string, string) {
-	params := ""
-	obj := ""
-	if len(fields) <= 0 {
+func generateParamString(fields []string) (params string, obj string) {
+	if len(fields) == 0 {
 		return params, obj
 	}
 	for _, param := range fields {
 		params += param + ", "
 	}
-	params = params + "..."
+	params += "..."
 
 	obj = prepareModel(fields)
 	return params, obj
 }
 
-func addValidator(f *File, reqFields RequiredParams) (*File, error) {
-
-	//Required Fields
+func addValidator(f *jen.File, reqFields RequiredParams) (*jen.File, error) {
+	// Required Fields
 	reqFieldVars := []string{createReqFields, readReqFields, updateReqFields, deleteReqFields, listReqFields}
 
 	for _, varName := range reqFieldVars {
@@ -243,34 +233,18 @@ func addValidator(f *File, reqFields RequiredParams) (*File, error) {
 
 		case listReqFields:
 			f.Id("var ").Id(varName).Op("=").Index().String().Values(getLiteralsWithKeys(reqFields.ListFields.RequiredParams)...)
-
 		}
-
 	}
 	f.Line()
-	//Add validation Method
+	// Add validation Method
 	f.Func().Id(validationMethod).Params(
-		//Input params
-		Id("fields").Id("[]string"), Id("model").Id("*Model")).Id("*handler.ProgressEvent").
+		// Input params
+		jen.Id("fields").Id("[]string"), jen.Id("model").Id("*Model")).Id("*handler.ProgressEvent").
 		Block(
-			Return(Qual(validator, "ValidateModel").Call(Id("fields"), Id("model"))),
+			jen.Return(jen.Qual(validator, "ValidateModel").Call(jen.Id("fields"), jen.Id("model"))),
 		)
 	f.Line()
 	return f, nil
-}
-
-func readResourceSchema(f *File, schemaName string) (error, *File) {
-	schemaFilePath := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, schemaName)
-	//Schema mapping
-	fmt.Println("Schema path:", schemaFilePath)
-	file, err := os.ReadFile(schemaFilePath)
-	if err != nil {
-		fmt.Println("SchemaFile read error:", err)
-		return err, f
-	}
-	schema := ResourceSchema{}
-	_ = json.Unmarshal(file, &schema)
-	return err, f
 }
 
 func readRequiredParameters(schemaName string) (*RequiredParams, error) {
@@ -286,17 +260,16 @@ func readRequiredParameters(schemaName string) (*RequiredParams, error) {
 	return &reqFields, err
 }
 
-func getLiterals(arr []string) []Code {
-	var arrayLit []Code
+func getLiterals(arr []string) []jen.Code {
+	var arrayLit []jen.Code
 	for _, it := range arr {
-		arrayLit = append(arrayLit, Lit(it))
+		arrayLit = append(arrayLit, jen.Lit(it))
 	}
 	return arrayLit
 }
-func getLiteralsWithKeys(arr []string) []Code {
+func getLiteralsWithKeys(arr []string) []jen.Code {
 	arrayLit := getLiterals(arr)
-	arrayLit = append(arrayLit, Lit(pvtKey))
-	arrayLit = append(arrayLit, Lit(pubKey))
+	arrayLit = append(arrayLit, jen.Lit(pubKey), jen.Lit(pvtKey))
 	return arrayLit
 }
 
@@ -310,81 +283,6 @@ func prepareModel(arr []string) string {
 func capitalize(key string) string {
 	r := []rune(key)
 	return string(append([]rune{unicode.ToUpper(r[0])}, r[1:]...))
-}
-
-type ResourceSchema struct {
-	AdditionalProperties bool `json:"additionalProperties"`
-	Definitions          struct {
-		ApiKeyDefinition struct {
-			Type       string `json:"type"`
-			Properties struct {
-				PrivateKey struct {
-					Type string `json:"type"`
-				} `json:"PrivateKey"`
-				PublicKey struct {
-					Type string `json:"type"`
-				} `json:"PublicKey"`
-			} `json:"properties"`
-			AdditionalProperties bool `json:"additionalProperties"`
-		} `json:"apiKeyDefinition"`
-	} `json:"definitions"`
-	Description string `json:"description"`
-	Handlers    struct {
-		Create struct {
-			Permissions []string `json:"permissions"`
-		} `json:"create"`
-		Read struct {
-			Permissions []string `json:"permissions"`
-		} `json:"read"`
-		Update struct {
-			Permissions []string `json:"permissions"`
-		} `json:"update"`
-		Delete struct {
-			Permissions []string `json:"permissions"`
-		} `json:"delete"`
-	} `json:"handlers"`
-	PrimaryIdentifier []string `json:"primaryIdentifier"`
-	Properties        struct {
-		App struct {
-			Type        string   `json:"type"`
-			Description string   `json:"description"`
-			Enum        []string `json:"enum"`
-		} `json:"app"`
-		Envelope struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-		} `json:"envelope"`
-		GroupId struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-			MaxLength   int    `json:"maxLength"`
-			MinLength   int    `json:"minLength"`
-			Pattern     string `json:"pattern"`
-		} `json:"groupId"`
-		IncludeCount struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-		} `json:"includeCount"`
-		ItemsPerPage struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-		} `json:"itemsPerPage"`
-		PageNum struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-		} `json:"pageNum"`
-		Pretty struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-		} `json:"pretty"`
-		Username struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-			Pattern     string `json:"pattern"`
-		} `json:"username"`
-	} `json:"properties"`
-	TypeName  string `json:"typeName"`
-	SourceUrl string `json:"sourceUrl"`
 }
 
 type RequiredParams struct {

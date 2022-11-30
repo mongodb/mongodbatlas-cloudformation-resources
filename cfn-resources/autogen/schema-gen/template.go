@@ -10,7 +10,7 @@ type CfnSchema struct {
 	ReadOnlyProperties   []string    `json:"readOnlyProperties,omitempty"`
 	Required             []string    `json:"required,omitempty"`
 	TypeName             string      `json:"typeName"`
-	SourceUrl            string      `json:"sourceUrl"`
+	SourceURL            string      `json:"sourceUrl"`
 	FileName             string      `json:"-"`
 }
 
@@ -86,9 +86,9 @@ var handler = `{
   }
 }`
 
-type OpenApiMapping struct {
+type OpenAPIMapping struct {
 	Resources []struct {
 		TypeName     string   `json:"typeName"`
-		OpenApiPaths []string `json:"openApiPath"`
+		OpenAPIPaths []string `json:"openApiPath"`
 	} `json:"resources"`
 }

@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"net/http"
+
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
 	"github.com/spf13/cast"
 

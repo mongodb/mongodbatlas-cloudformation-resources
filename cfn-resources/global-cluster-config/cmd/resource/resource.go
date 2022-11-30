@@ -309,7 +309,6 @@ func addManagedNamespaces(ctx context.Context, client *mongodbatlas.Client, name
 		return nil
 	}
 	for _, mn := range nameSpaces {
-
 		addManagedNamespace := &mongodbatlas.ManagedNamespace{
 			Collection:     cast.ToString(mn.Collection),
 			Db:             cast.ToString(mn.Db),

@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"net/http"
+
+	"github.com/spf13/cast"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -26,51 +27,60 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, _ = logger.Debugf("Create snapshot for Request() currentModel:%+v", currentModel)
 
-	// validate the request
-	event, client, err := ValidateRequest(currentModel)
+	// Validate required fields in the request
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
+		return *modelValidation, errors.New("required field not found")
+	}
+
+	// Create MongoDb Atlas Client using keys
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return event, err
+		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), err
 	}
 
 	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 
+	// create namespaces
 	nameSpaces := currentModel.ManagedNamespaces
-	if len(nameSpaces) > 0 {
-		err = addManagedNamespaces(context.Background(), client, nameSpaces, projectID, clusterName)
-		if err != nil {
-			_, _ = logger.Debugf("error creating MongoDB Global Cluster Configuration: %s", err)
-			var target *mongodbatlas.ErrorResponse
-			if errors.As(err, &target) && target.ErrorCode != "DUPLICATE_MANAGED_NAMESPACE" {
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
-				}, nil
-			}
-		}
-	}
-	zoneMappings := currentModel.CustomZoneMappings
-	if len(zoneMappings) > 0 {
-		customZoneMappings := modelToCustomZoneMappings(zoneMappings)
-		// API call to create
-		clusterDetail, _, err := client.GlobalClusters.AddCustomZoneMappings(context.Background(), projectID, clusterName, &mongodbatlas.CustomZoneMappingsRequest{
-			CustomZoneMappings: customZoneMappings,
-		})
-		if err != nil {
+	if err = addManagedNamespaces(context.Background(), client, nameSpaces, projectID, clusterName); err != nil {
+		_, _ = logger.Debugf("error creating MongoDB Global Cluster Configuration: %s", err)
+		var target *mongodbatlas.ErrorResponse
+		if errors.As(err, &target) && target.ErrorCode != "DUPLICATE_MANAGED_NAMESPACE" {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			}, nil
 		}
-		responseData, _ := json.Marshal(clusterDetail)
-		_, _ = logger.Debugf("Response Object: %s", responseData)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+		}, nil
 	}
-	_, _ = logger.Debugln("Created Successfully -")
 
-	event = handler.ProgressEvent{
+	// add zone mappings
+	customZoneMappings := modelToCustomZoneMappings(currentModel.CustomZoneMappings)
+
+	// API call to create
+	clusterDetail, _, err := client.GlobalClusters.AddCustomZoneMappings(context.Background(), projectID, clusterName, &mongodbatlas.CustomZoneMappingsRequest{
+		CustomZoneMappings: customZoneMappings,
+	})
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+		}, nil
+	}
+	responseData, _ := json.Marshal(clusterDetail)
+	_, _ = logger.Debugf("Response Object: %s", responseData)
+
+	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
 		ResourceModel:   currentModel,
@@ -81,11 +91,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
-	fmt.Printf("Read snapshot for Request() currentModel:%+v", currentModel)
+	_, _ = logger.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 
-	event, client, err := ValidateRequest(currentModel)
+	// Validate required fields in the request
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
+		return *modelValidation, errors.New("required field not found")
+	}
+
+	// Create MongoDb Atlas Client using keys
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return event, err
+		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), err
 	}
 
 	// Check if  already exist
@@ -137,6 +155,15 @@ func ReadConfig(client mongodbatlas.Client, currentModel *Model) (*Model, handle
 			Message:          "resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
+
+	readModel := newModel(globalCluster, currentModel)
+	_, _ = logger.Debugf("response Object:%+v", readModel)
+
+	return readModel, handler.ProgressEvent{}, nil
+}
+
+func newModel(globalCluster *mongodbatlas.GlobalCluster, currentModel *Model) *Model {
+	setup() // logger setup
 	readModel := new(Model)
 	readModel.ProjectId = currentModel.ProjectId
 	readModel.ClusterName = currentModel.ClusterName
@@ -146,22 +173,22 @@ func ReadConfig(client mongodbatlas.Client, currentModel *Model) (*Model, handle
 	readModel.ManagedNamespaces = maps
 	readModel.ApiKeys = currentModel.ApiKeys
 	readModel.RemoveAllZoneMapping = currentModel.RemoveAllZoneMapping
-	_, _ = logger.Debugf("response Object:%+v", readModel)
-	return readModel, handler.ProgressEvent{}, nil
+	return readModel
 }
 
 func flattenManagedNamespaces(managedNamespaces []mongodbatlas.ManagedNamespace) []ManagedNamespace {
 	var results []ManagedNamespace
+
 	if len(managedNamespaces) > 0 {
-		results = make([]ManagedNamespace, len(managedNamespaces))
-		for k, managedNamespace := range managedNamespaces {
-			results[k] = ManagedNamespace{
-				Db:                     pointy.String(managedNamespace.Db),
-				Collection:             pointy.String(managedNamespace.Collection),
-				CustomShardKey:         pointy.String(managedNamespace.CustomShardKey),
-				IsCustomShardKeyHashed: managedNamespace.IsCustomShardKeyHashed,
-				IsShardKeyUnique:       managedNamespace.IsShardKeyUnique,
+		for ind := range managedNamespaces {
+			namespace := ManagedNamespace{
+				Db:                     &managedNamespaces[ind].Db,
+				Collection:             &managedNamespaces[ind].Collection,
+				CustomShardKey:         &managedNamespaces[ind].CustomShardKey,
+				IsCustomShardKeyHashed: managedNamespaces[ind].IsCustomShardKeyHashed,
+				IsShardKeyUnique:       managedNamespaces[ind].IsShardKeyUnique,
 			}
+			results = append(results, namespace)
 		}
 	}
 	return results
@@ -186,10 +213,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup() // logger setup
 	_, _ = logger.Debugf("Delete snapshot for Request() currentModel:%+v", currentModel)
 
-	// ValidateRequest function to validate the request
-	event, client, err := ValidateRequest(currentModel)
+	// Validate required fields in the request
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
+		return *modelValidation, errors.New("required field not found")
+	}
+
+	// Create MongoDb Atlas Client using keys
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return event, err
+		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), err
 	}
 
 	// Check if  already exist
@@ -221,7 +255,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.RemoveAllZoneMapping != nil && *currentModel.RemoveAllZoneMapping {
 		_, _, err := client.GlobalClusters.DeleteCustomZoneMappings(context.Background(), projectID, clusterName)
 		if err != nil {
-			return progressEvents.GetFailedEventByCode(fmt.Sprintf("Failed to custom zones : %s", err.Error()),
+			return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to custom zones : %s", err.Error()),
 				cloudformation.HandlerErrorCodeInvalidRequest), nil
 		}
 	}
@@ -245,27 +279,6 @@ func isExist(client mongodbatlas.Client, currentModel *Model) bool {
 	return false
 }
 
-// ValidateRequest function to validate the request
-func ValidateRequest(currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
-	setup() // logger setup
-
-	_, _ = logger.Debugf("Request - snapshot restore starts currentModel:%+v", currentModel)
-
-	// Validate required fields in the request
-	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil, errors.New("required field not found")
-	}
-
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil, err
-	}
-	return handler.ProgressEvent{}, client, nil
-}
-
 // function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -274,9 +287,9 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 func removeManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, remove []ManagedNamespace, projectID, clusterName string) error {
 	for _, m := range remove {
 		addManagedNamespace := &mongodbatlas.ManagedNamespace{
-			Collection:     *m.Collection,
-			Db:             *m.Db,
-			CustomShardKey: *m.CustomShardKey,
+			Collection:     cast.ToString(m.Collection),
+			Db:             cast.ToString(m.Db),
+			CustomShardKey: cast.ToString(m.CustomShardKey),
 		}
 		addManagedNamespace.IsCustomShardKeyHashed = pointy.Bool(*m.IsCustomShardKeyHashed)
 		addManagedNamespace.IsShardKeyUnique = pointy.Bool(*m.IsShardKeyUnique)
@@ -290,17 +303,20 @@ func removeManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, rem
 	return nil
 }
 
-func addManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, add []ManagedNamespace, projectID, clusterName string) error {
-	for _, m := range add {
-		mn := m
+func addManagedNamespaces(ctx context.Context, client *mongodbatlas.Client, nameSpaces []ManagedNamespace, projectID, clusterName string) error {
+	if len(nameSpaces) == 0 {
+		return nil
+	}
+	for _, mn := range nameSpaces {
+
 		addManagedNamespace := &mongodbatlas.ManagedNamespace{
-			Collection:     *mn.Collection,
-			Db:             *mn.Db,
-			CustomShardKey: *mn.CustomShardKey,
+			Collection:     cast.ToString(mn.Collection),
+			Db:             cast.ToString(mn.Db),
+			CustomShardKey: cast.ToString(mn.CustomShardKey),
 		}
 		addManagedNamespace.IsCustomShardKeyHashed = mn.IsCustomShardKeyHashed
 		addManagedNamespace.IsShardKeyUnique = mn.IsShardKeyUnique
-		_, _, err := conn.GlobalClusters.AddManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
+		_, _, err := client.GlobalClusters.AddManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
 		if err != nil {
 			_, _ = logger.Warnf("error while adding namespace:%+v", err)
 		}
@@ -311,10 +327,9 @@ func addManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, add []
 
 func modelToCustomZoneMapping(tfMap ZoneMapping) *mongodbatlas.CustomZoneMapping {
 	apiObject := &mongodbatlas.CustomZoneMapping{
-		Location: *tfMap.Location,
-		Zone:     *tfMap.Zone,
+		Location: cast.ToString(tfMap.Location),
+		Zone:     cast.ToString(tfMap.Zone),
 	}
-
 	return apiObject
 }
 
@@ -323,14 +338,12 @@ func modelToCustomZoneMappings(tfList []ZoneMapping) []mongodbatlas.CustomZoneMa
 		return nil
 	}
 	apiObjects := make([]mongodbatlas.CustomZoneMapping, len(tfList))
-	if len(tfList) > 0 {
-		for i, tfMapRaw := range tfList {
-			if tfMapRaw == (ZoneMapping{}) || tfMapRaw.Location == nil || tfMapRaw.Zone == nil {
-				continue
-			}
-			apiObject := modelToCustomZoneMapping(tfMapRaw)
-			apiObjects[i] = *apiObject
+	for i, tfMapRaw := range tfList {
+		if tfMapRaw == (ZoneMapping{}) || tfMapRaw.Location == nil || tfMapRaw.Zone == nil {
+			continue
 		}
+		apiObject := modelToCustomZoneMapping(tfMapRaw)
+		apiObjects[i] = *apiObject
 	}
 	return apiObjects
 }
@@ -350,16 +363,14 @@ func customZoneToModelMappings(tfList map[string]string) []ZoneMapping {
 	}
 	apiObjects := make([]ZoneMapping, len(tfList))
 	var i = 0
-	if len(tfList) > 0 {
-		for k, v := range tfList {
-			fmt.Printf("key[%s] value[%s]\n", k, v)
-			apiObject := customZoneToModelMapping(k, v)
-			if apiObject == nil {
-				continue
-			}
-			apiObjects[i] = *apiObject
-			i++
+	for k, v := range tfList {
+		fmt.Printf("key[%s] value[%s]\n", k, v)
+		apiObject := customZoneToModelMapping(k, v)
+		if apiObject == nil {
+			continue
 		}
+		apiObjects[i] = *apiObject
+		i++
 	}
 	return apiObjects
 }

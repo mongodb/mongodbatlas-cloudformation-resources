@@ -1,16 +1,13 @@
 # MongoDB::Atlas::NetworkContainer
 
 ## Description
-This resource allows you to list and delete network containers, ONLY. 
-Network containers are required for network peering. With each Atlas Project having exactly 1 container per AWS region that will be peered with. The containers are provisioned dyanmically through the [Network Peering](../network-peering) resource. Direct use of this Resource Type is not expected, however it is included for completeness and supportability.
+Returns, adds, edits, and removes network peering containers.
 
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
 
 ## Unit Testing Locally
-
-The Network Container resource and it's companion [Network Peering](../network-peering) should be unit tested together.
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
@@ -26,11 +23,14 @@ cd ${repo_root}/cfn-resources/network-container
 echo "Sample request:"
 cat test.request.json
 ```
-There is only 1 Network Container resource per Atlas project for AWS. So depending on your project the CREATE test may fail.
+There is only 1 Network Container resource per Atlas project for AWS for a given region. So depending on your project the CREATE test may fail.
 
 ```
-cfn invoke LIST test.request.json 
-cfn invoke DELETE test.request.json 
+cfn invoke resource CREATE test.request.json 
+cfn invoke resource READ test.request.json 
+cfn invoke resource UPDATE test.request.json
+cfn invoke resource LIST test.request.json 
+cfn invoke resource DELETE test.request.json 
 ```
 
 Use the `LIST` method to find the id of any existing
@@ -60,7 +60,7 @@ cfn invoke LIST test.request.json
 
 You can use the `resourceModel.Id` property as the container id when creating a [Network Peering](../network-peering).
 
-LIST, & DELETE tests must pass 
+CREATE, READ, UPDATE, LIST, & DELETE tests must pass 
 
 ## Installation
 
@@ -96,8 +96,13 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/network-container/test/networkcontainer.sample-template.yaml SampleNetworkContainer-123 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/network-container/test/networkcontainer.sample-template.json SampleNetworkContainer-123 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID>
  
  
 ```
+
+
+
+For more information please refer API Documentation,
+https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering-Containers
 

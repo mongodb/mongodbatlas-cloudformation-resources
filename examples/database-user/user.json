@@ -1,46 +1,131 @@
 {
-    "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description" : "This template creates a Project and a Database User on the MongoDB Atlas API, this will be billed to your Atlas account.",
-    "Parameters" : {
-      "Username" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "ProjectName" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Returns all database users that belong to the specified project. To use this resource, the requesting API Key must have the Project Read Only role. This resource doesn't require the API Key to have an Access List.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "Mappings" : {},
-    "Resources" : {
-      "Project": {
-        "Type": "MongoDB::Atlas::Project",
-        "Properties": {
-          "Name": { "Ref" : "ProjectName" },
-          "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-          "ApiKeys": {
-            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+    "PublicKey": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
+    },
+    "PrivateKey": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "ScramUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "scramUser",
+        "Password": "changeme123",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "admin",
+        "Roles": [
+          {
+            "RoleName": "atlasAdmin",
+            "DatabaseName": "admin"
+          }
+        ],
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
           }
         }
-      },
-      "DatabaseUser": {
-        "Type": "MongoDB::Atlas::DatabaseUser",
-        "Properties": {
-          "Username": { "Ref" : "Username" },
-          "Password": "changeme123",
-          "ProjectId": { "Ref" : "Project" },
-          "DatabaseName":"admin",
-          "Roles":[{"RoleName":"atlasAdmin", "DatabaseName": "admin"}],
-          "ApiKeys": {
-            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+      }
+    },
+    "x509User": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "x509User",
+        "X509Type": "MANAGED",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
+          }
+        },
+        "DatabaseName": "$external",
+        "Roles": [
+          {
+            "RoleName": "readWrite",
+            "DatabaseName": "test"
+          }
+        ],
+        "Scopes": [
+          {
+            "Type": "CLUSTER",
+            "Name": "test"
+          }
+        ]
+      }
+    },
+    "ldapUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "cn=Administrator,cn=Users,dc=MYDOMAIN,dc=com",
+        "LdapAuthType": "GROUP",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "admin",
+        "Roles": [
+          {
+            "RoleName": "atlasAdmin",
+            "DatabaseName": "admin"
+          }
+        ],
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
           }
         }
       }
     },
-    "Outputs" : {}
-  }
-  
+    "awsIamUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "arn:aws:iam::111111967292:role/cfn-admin",
+        "AWSIAMType": "ROLE",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "$external",
+        "Roles": [
+          {
+            "RoleName": "atlasAdmin",
+            "DatabaseName": "admin"
+          }
+        ],
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {}
+}

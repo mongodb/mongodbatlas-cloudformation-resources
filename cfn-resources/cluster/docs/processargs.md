@@ -1,0 +1,130 @@
+# MongoDB::Atlas::Cluster processArgs
+
+Advanced configuration details to add for one cluster in the specified project.
+
+## Syntax
+
+To declare this entity in your AWS CloudFormation template, use the following syntax:
+
+### JSON
+
+<pre>
+{
+    "<a href="#defaultreadconcern" title="DefaultReadConcern">DefaultReadConcern</a>" : <i>String</i>,
+    "<a href="#defaultwriteconcern" title="DefaultWriteConcern">DefaultWriteConcern</a>" : <i>String</i>,
+    "<a href="#failindexkeytoolong" title="FailIndexKeyTooLong">FailIndexKeyTooLong</a>" : <i>Boolean</i>,
+    "<a href="#javascriptenabled" title="JavascriptEnabled">JavascriptEnabled</a>" : <i>Boolean</i>,
+    "<a href="#minimumenabledtlsprotocol" title="MinimumEnabledTLSProtocol">MinimumEnabledTLSProtocol</a>" : <i>String</i>,
+    "<a href="#notablescan" title="NoTableScan">NoTableScan</a>" : <i>Boolean</i>,
+    "<a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>" : <i>Integer</i>,
+    "<a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>" : <i>Integer</i>,
+    "<a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>" : <i>Integer</i>
+}
+</pre>
+
+### YAML
+
+<pre>
+<a href="#defaultreadconcern" title="DefaultReadConcern">DefaultReadConcern</a>: <i>String</i>
+<a href="#defaultwriteconcern" title="DefaultWriteConcern">DefaultWriteConcern</a>: <i>String</i>
+<a href="#failindexkeytoolong" title="FailIndexKeyTooLong">FailIndexKeyTooLong</a>: <i>Boolean</i>
+<a href="#javascriptenabled" title="JavascriptEnabled">JavascriptEnabled</a>: <i>Boolean</i>
+<a href="#minimumenabledtlsprotocol" title="MinimumEnabledTLSProtocol">MinimumEnabledTLSProtocol</a>: <i>String</i>
+<a href="#notablescan" title="NoTableScan">NoTableScan</a>: <i>Boolean</i>
+<a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>: <i>Integer</i>
+<a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>: <i>Integer</i>
+<a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>: <i>Integer</i>
+</pre>
+
+## Properties
+
+#### DefaultReadConcern
+
+Default level of acknowledgment requested from MongoDB for read operations set for this cluster.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### DefaultWriteConcern
+
+Default level of acknowledgment requested from MongoDB for write operations set for this cluster.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### FailIndexKeyTooLong
+
+Flag that indicates whether you can insert or update documents where all indexed entries don't exceed 1024 bytes. If you set this to false, mongod writes documents that exceed this limit but doesn't index them.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### JavascriptEnabled
+
+Flag that indicates whether the cluster allows execution of operations that perform server-side executions of JavaScript.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### MinimumEnabledTLSProtocol
+
+Minimum Transport Layer Security (TLS) version that the cluster accepts for incoming connections. Clusters using TLS 1.0 or 1.1 should consider setting TLS 1.2 as the minimum TLS protocol version.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### NoTableScan
+
+Flag that indicates whether the cluster disables executing any query that requires a collection scan to return results.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### OplogSizeMB
+
+Storage limit of cluster's oplog expressed in megabytes. A value of null indicates that the cluster uses the default oplog size that MongoDB Cloud calculates.
+
+_Required_: No
+
+_Type_: Integer
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SampleSizeBIConnector
+
+Interval in seconds at which the mongosqld process re-samples data to create its relational schema.
+
+_Required_: No
+
+_Type_: Integer
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SampleRefreshIntervalBIConnector
+
+Number of documents per database to sample when gathering schema information.
+
+_Required_: No
+
+_Type_: Integer
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+

@@ -39,7 +39,7 @@ func (r *Handler) List(req handler.Request) handler.ProgressEvent {
 	return wrap(req, resource.List)
 }
 
-// main is the entry point of the application.
+// This module is deprecated .Please use cloud-backup-restore-job instead.main is the entry point of the application.
 func main() {
 	cfn.Start(&Handler{})
 }

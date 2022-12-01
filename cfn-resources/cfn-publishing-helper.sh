@@ -36,7 +36,6 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
 major_version=${CFN_PUBLISH_MAJOR_VERSION:-0}
 minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
-version="${2:-00000001}"
 
 echo " ******************** version : ${version}"
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
@@ -69,7 +68,7 @@ do
     echo "res_type=${res_type}"
     type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
     echo "type_info=${type_info}"
-    #version=$(echo ${type_info} | jq -r '.DefaultVersionId')
+    version=$(echo ${type_info} | jq -r '.DefaultVersionId')
     echo "version=${version}"
     test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
     arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')

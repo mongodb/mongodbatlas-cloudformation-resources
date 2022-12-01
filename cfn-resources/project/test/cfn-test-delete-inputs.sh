@@ -17,7 +17,7 @@ apikeyId=$(jq -r '.ProjectApiKeys[0] | .Key' ./inputs/inputs_1_create.json)
 teamId=$(jq -r '.ProjectTeams[0] | .TeamId' ./inputs/inputs_1_create.json)
 
 #delete apikey
-if mongocli iam project apikey delete "$apikeyId" --force
+if atlas project apikey delete "$apikeyId" --force
 then
     echo "$apikeyId apikey deletion OK"
 else
@@ -25,7 +25,7 @@ else
 fi
 
 #delete team
-if mongocli iam team delete "$teamId" --force
+if atlas team delete "$teamId" --force
 then
     echo "$teamId team deletion OK"
 else

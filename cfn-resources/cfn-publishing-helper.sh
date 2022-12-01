@@ -25,7 +25,7 @@ set -o pipefail
 
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
-echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
+#echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 
 _DRY_RUN=${DRY_RUN:-false}

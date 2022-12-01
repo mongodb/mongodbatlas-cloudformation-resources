@@ -40,7 +40,7 @@ Resources:
       UserName: !Ref "UserName"
 Outputs:
   X509AuthenticationDatabaseUser:
-    Description: "Info on your Atlas Projet"
+    Description: "Info about X509 certificates for user"
     Value: !Ref X509AuthenticationDatabaseUser
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","X509AuthenticationDatabaseUser" ] ]

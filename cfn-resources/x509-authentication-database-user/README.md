@@ -25,8 +25,10 @@ cat test.request.json
 cfn invoke CREATE test.request.json 
 cfn invoke DELETE test.request.json 
 ```
-
 Both CREATE & DELETE tests must pass.
+## Cloudformation Examples
+
+Please see the [CFN Template](/examples/x509-authentication-db-user/x509-authentication-db-user.json) for example resource
 
 ## Installation
 TAGS=logging make
@@ -56,4 +58,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/
 ```
 
 ## For More Information
-See the MongoDB Atlas API [Project Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
+See the MongoDB Atlas API [X.509 Authentication for Database Users Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)

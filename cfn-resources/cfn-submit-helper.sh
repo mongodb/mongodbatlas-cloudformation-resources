@@ -46,13 +46,13 @@ else
         cd "${resource}"
         echo "resource: ${resource}"
 
-        if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
+#        if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
           if [[ "${CFN_SUBMIT_LOG_LEVEL}" == "debug" ]]; then
               make debug
           else
               make
           fi
-        fi
+#        fi
         cat rpdk.log
         cd -
     done

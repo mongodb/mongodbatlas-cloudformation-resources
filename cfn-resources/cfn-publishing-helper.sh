@@ -37,7 +37,7 @@ _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
 major_version=${CFN_PUBLISH_MAJOR_VERSION:-0}
 minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
 
-echo " ******************** version : ${version}"
+#echo " ******************** version : ${version}"
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.

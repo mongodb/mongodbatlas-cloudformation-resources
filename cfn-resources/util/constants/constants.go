@@ -50,4 +50,13 @@ const (
 	ClusterName                      = "ClusterName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+
+	CloudProviderAccessRoleID = "RoleId"
+	LocalSessionType          = "LOCAL_SESSION"
+	RequestSessionType        = "REQUEST_SESSION"
+	TypeName                  = "AWS::IAM::Role"
+	AwsRolePrefix             = "mongodbatlas-role-"
+	RolePolicyJSON            = "{\"AssumeRolePolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{" +
+		"\"AWS\":\"$ATLAS_AWS_ACCOUNT_ARN\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{\"StringEquals\":{\"sts:ExternalId\":" +
+		"\"$ATLAS_ASSUMEDROLE_EXTERNAL_ID\"}}}]},\"RoleName\":\"$ROLE_NAME\"}"
 )

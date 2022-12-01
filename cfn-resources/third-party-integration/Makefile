@@ -1,6 +1,6 @@
 .PHONY: build test clean
 tags=logging callback metrics scheduler
-cgo=0
+cgo=0 
 goos=linux
 goarch=amd64
 #export TAGS

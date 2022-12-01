@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description" : "This template creates a GlobalClusterConfig resource  on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
     "ProjectId" : {
       "Type" : "String",
@@ -12,6 +12,18 @@
       "Type" : "String",
       "Description" : "",
 	  "Default" : "cfntest1",
+      "ConstraintDescription" : ""
+    },
+    "Db" : {
+      "Type" : "String",
+      "Description" : "",
+      "Default" : "cfntest1",
+      "ConstraintDescription" : ""
+    },
+    "Collection" : {
+      "Type" : "String",
+      "Description" : "",
+      "Default" : "cfntest1",
       "ConstraintDescription" : ""
     }
   },
@@ -25,19 +37,23 @@
         "ClusterName": { "Ref" : "ClusterName" },
         "ManagedNamespaces" : [
       {
-        "Collection": "test",
+        "Collection": { "Ref" : "Collection" },
         "CustomShardKey": "shardkey1",
-        "Db": "demo",
+        "Db": { "Ref" : "Db" },
         "IsCustomShardKeyHashed": "false",
         "IsShardKeyUnique": "false"
-      },
-      {
-        "Collection": "test",
-        "CustomShardKey": "shardkey2",
-        "Db": "demo1",
-        "IsCustomShardKeyHashed": "false",
-        "IsShardKeyUnique": "false"
-      }],
+      }
+        ],
+        "CustomZoneMappings":[
+          {
+            "Location":"IN",
+            "Zone":"Zone 1"
+          },
+          {
+            "Location":"AF",
+            "Zone":"Zone 2"
+          }
+        ],
 		"RemoveAllZoneMapping": false,
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
@@ -49,7 +65,7 @@
   "Outputs" : {
   
     "GlobalClusterConfig": {
-      "Description": "Id of the cloud provider snapshot restore job",
+      "Description": "Id of the GlobalClusterConfig resource",
       "Value" : { "Ref" : "GlobalClusterConfig" }
     }
   }

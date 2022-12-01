@@ -15,7 +15,7 @@ Parameters:
     Type: String
     Default: ""
   ClusterName:
-    Description: "The name of the Atlas cluster that contains the snapshots you want to retrieve."
+    Description: "The name of the Atlas cluster."
     Type: String
     Default: ""
   Db:
@@ -51,7 +51,7 @@ Resources:
       RemoveAllZoneMapping: true
 Outputs:
   GlobalClusterConfig:
-    Description: "Info on your CloudBackUp"
+    Description: "Id of the GlobalClusterConfig resource"
     Value: !Ref GlobalClusterConfig
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","GlobalClusterConfig" ] ]

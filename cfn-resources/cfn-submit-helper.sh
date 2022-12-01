@@ -18,7 +18,7 @@
 
 . ./cfn-submit-helper.config
 env | grep CFN_SUBMIT_
-echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
+#echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 _DRY_RUN=${DRY_RUN:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}

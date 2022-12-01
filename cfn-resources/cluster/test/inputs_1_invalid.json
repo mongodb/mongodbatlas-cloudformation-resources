@@ -1,14 +1,46 @@
 {
-        "ApiKeys": {
-            "PublicKey" : "$ATLAS_PUBLIC_KEY",
-            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-        },
-        "Name": "CFNTest-123",
-        "ProjectId": "<ReplacedBy-cfn-test-create-inputs.sh>",
-        "MongoDBMajorVersion": "4.4",
-        "NumShards": "1",
-        "ProviderSettings": {
-            "InstanceSizeName": "M21",
-            "RegionName": "us-east-1"
+  "ProjectId": "",
+  "Name": "a98a78(*^%$%^$%^*&(8",
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  },
+  "AdvancedSettings": {
+    "DefaultReadConcern": "available",
+    "DefaultWriteConcern": "1",
+    "FailIndexKeyTooLong": "false",
+    "JavascriptEnabled": "true",
+    "MinimumEnabledTLSProtocol": "TLS1_2",
+    "NoTableScan": "false",
+    "OplogSizeMB": "1000",
+    "SampleSizeBIConnector": "110",
+    "SampleRefreshIntervalBIConnector": "310"
+  },
+  "BackupEnabled": "true",
+  "BiConnector": {},
+  "ClusterType": "REPLICASET",
+  "Paused": "false",
+  "ReplicationSpecs": [
+    {
+      "AdvancedRegionConfigs": [
+        {
+          "AutoScaling": {
+            "DiskGB": {},
+            "Compute": {}
+          },
+          "RegionName": "US_EAST_1",
+          "AnalyticsSpecs": {
+            "InstanceSize": "M10",
+            "NodeCount": "1"
+          },
+          "ElectableSpecs": {
+            "InstanceSize": "M10",
+            "NodeCount": "3"
+          },
+          "Priority": "7",
+          "ReadOnlySpecs": {}
         }
+      ]
+    }
+  ]
 }

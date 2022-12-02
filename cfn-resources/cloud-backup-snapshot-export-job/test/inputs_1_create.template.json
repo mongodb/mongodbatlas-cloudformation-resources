@@ -1,0 +1,12 @@
+
+{
+    "GroupId": "",
+    "ClusterName": "",
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    },
+    "SnapshotId": "",
+    "ExportBucketId": "",
+    "ExportId": ""
+}

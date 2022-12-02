@@ -62,7 +62,7 @@ export AWS_DEFAULT_REGION=""
 | VICTOR_OPS                | ![Build](https://img.shields.io/badge/Beta-yellow) | [Jira Ticket](https://jira.mongodb.org/browse/HELP-39527)                                                                                                                                                                                                       |
 
 
-For more information see: MongoDB Atlas API ThirdPartyIntegrations [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations) Documentation.
+For more information see: MongoDB Atlas API [ThirdPartyIntegrations Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations) Documentation.
 
 
 

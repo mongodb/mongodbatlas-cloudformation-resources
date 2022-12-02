@@ -58,7 +58,7 @@ export AWS_DEFAULT_REGION=""
 ```
 
 
-For more information see: MongoDB Atlas API Project Invitation [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects/operation/returnAllProjectInvitations) Documentation.
+For more information see: MongoDB Atlas API [Project Invitation Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects/operation/returnAllProjectInvitations) Documentation.
 
 
 

@@ -1,0 +1,17 @@
+{
+    "typeName": "MongoDB::Atlas::Trigger",
+    "language": "go",
+    "runtime": "go1.x",
+    "entrypoint": "handler",
+    "testEntrypoint": "handler",
+    "settings": {
+        "version": false,
+        "subparser_name": null,
+        "verbose": 0,
+        "force": false,
+        "type_name": null,
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/trigger",
+        "protocolVersion": "2.0.0",
+        "pluginVersion": "2.0.3"
+    }
+}

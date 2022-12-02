@@ -1,0 +1,275 @@
+
+
+
+{
+  "additionalProperties": false,
+  "definitions": {
+    "RealmConfig": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        },
+        "BaseURL":{
+          "type": "string"
+        },
+        "RealmBaseURL":{
+          "type": "string"
+        }
+      }
+    },
+    "Config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "OperationType", "Providers"
+      ],
+      "properties": {
+        "OperationType": {
+          "type": "string",
+          "description": "The type of authentication event that the trigger listens for.",
+          "enum": [
+            "LOGIN",
+            "CREATE",
+            "DELETE"
+          ]
+        },
+        "Providers": {
+          "description": "The type(s) of authentication provider that the trigger listens to.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "anon-user",
+              "api-key",
+              "custom-token",
+              "custom-function",
+              "local-userpass",
+              "oauth2-apple",
+              "oauth2-facebook",
+              "oauth2-google"
+            ]
+          }
+        }
+      }
+    },
+    "Event": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "FUNCTION": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "FuncConfig": {
+              "additionalProperties" : false,
+              "type": "object",
+              "properties": {
+                "FunctionId": {
+                  "type": "string",
+                  "description": "The ID of the function that the trigger calls when it fires.\n\nThis value is the same as the root-level `function_id`.\nYou can either define the value here or in `function_id`.\nThe App Services backend duplicates the value to the configuration location where you did not define it.\n\nFor example, if you define `event_processors.FUNCTION.function_id`, the backend duplicates it to `function_id`."
+                },
+                "FunctionName": {
+                  "type": "string",
+                  "description": "The name of the function that the trigger calls when it\nfires, i.e. the function described by `function_id`.\n\nThis value is the same as the root-level `function_name`.\nYou can either define the value here or in `function_name`.\nThe App Services backend duplicates the value to the configuration location where you did not define it.\n\nFor example, if you define `event_processors.FUNCTION.function_name`, the backend duplicates it to `function_name`."
+                }
+              }
+            }
+          }
+        },
+        "AWSEVENTBRIDGE": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "AWSConfig": {
+              "additionalProperties" : false,
+              "type": "object",
+              "properties": {
+                "AccountId": {
+                  "type": "string",
+                  "description": "An AWS Account ID."
+                },
+                "Region": {
+                  "type": "string",
+                  "description": "An AWS region."
+                },
+                "ExtendedJsonEnabled": {
+                  "type": "boolean",
+                  "description": "If `true`, event objects are serialized using EJSON."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "View and manage your application's [triggers](https://www.mongodb.com/docs/atlas/app-services/triggers/overview/).",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id"
+  ],
+  "properties": {
+        "RealmConfig": {
+          "$ref": "#/definitions/RealmConfig"
+        },
+        "Trigger" : {
+          "type": "object",
+          "additionalProperties": false,
+          "oneOf":[
+            {
+              "additionalProperties": false,
+              "properties": {
+                "ServiceId": {
+                  "type": "string",
+                  "description": "The _id value of a linked MongoDB data source.\n\nSee [Get a Data Source](#operation/adminGetService).\n"
+                },
+                "Database": {
+                  "type": "string",
+                  "description": "The name of a database in the linked data source."
+                },
+                "Collection": {
+                  "type": "string",
+                  "description": "The name of a collection in the specified database. The\ntrigger listens to events from this collection."
+                },
+                "OperationTypes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "INSERT",
+                      "UPDATE",
+                      "REPLACE",
+                      "DELETE"
+                    ]
+                  },
+                  "description": "The type(s) of MongoDB change event that the trigger listens for."
+                },
+                "Match": {
+                  "type": "object",
+                  "description": "A [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match)\nexpression filters change events. The trigger will only\nfire if the expression evaluates to true for a given\nchange event."
+                },
+                "FullDocument": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If `true`, indicates that `UPDATE` change events should\ninclude the most current\n[majority-committed](https://www.mongodb.com/docs/manual/reference/read-concern-majority/)\nversion of the modified document in the `fullDocument`\nfield."
+                },
+                "FullDocumentBeforeChange": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If true, indicates that `UPDATE` change events should\ninclude a snapshot of the modified document from\nimmediately before the update was applied.\n\nYou must enable [document\npreimages](https://www.mongodb.com/docs/atlas/app-services/mongodb/preimages/)\nfor your cluster to include these snapshots."
+                },
+                "SkipCatchupEvents": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If `true`, enabling the Trigger after it was disabled\nwill not invoke events that occurred while the Trigger\nwas disabled."
+                },
+                "TolerateResumeErrors": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "If `true`, when this Trigger's resume token\ncannot be found in the cluster's oplog, the Trigger automatically resumes\nprocessing events at the next relevant change stream event.\nAll change stream events from when the Trigger was suspended until the Trigger\nresumes execution do not have the Trigger fire for them."
+                },
+                "Unordered": {
+                  "type": "boolean",
+                  "description": "If `true`, event ordering is disabled and this Trigger\ncan process events in parallel. If `false`, event\nordering is enabled and the Trigger executes events\nserially."
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "AuthConfig": {
+                  "type": "object",
+                  "additionalProperties" : false,
+                  "$ref": "#/definitions/Config"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "ScheduleConfig": {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "Schedule": {
+                      "type": "string",
+                      "description": "A [cron expression](https://www.mongodb.com/docs/atlas/app-services/triggers/scheduled-triggers/#cron-expressions) that specifies when the trigger executes."
+                    },
+                    "SkipcatchupEvents": {
+                      "type": "boolean",
+                      "description": "If `true`, enabling the trigger after it was disabled\nwill not invoke events that occurred while the trigger\nwas disabled."
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Id": {
+          "type": "string",
+          "description": "The trigger's unique ID."
+        },
+        "Name": {
+          "type": "string",
+          "description": "The trigger's name."
+        },
+        "Type": {
+          "type": "string",
+          "description": "The trigger's type."
+        },
+        "Disabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "If `true`, the trigger is disabled and does not listen for events or execute."
+        },
+        "FunctionId": {
+          "type": "string",
+          "description": "The ID of the function that the trigger calls when it fires.\n\nThis value is the same as `event_processors.FUNCTION.function_id`.\nYou can either define the value here or in `event_processors.FUNCTION.function_id`.\nThe App Services backend duplicates the value to the configuration location where you did not define it.\n\nFor example, if you define `function_id`, the backend duplicates it to `event_processors.FUNCTION.function_id`."
+        },
+        "FunctionName": {
+          "type": "string",
+          "description": "The name of the function that the trigger calls when it\nfires, i.e. the function described by `function_id`.\n\nThis value is the same as `event_processors.FUNCTION.function_name`.\nYou can either define the value here or in `event_processors.FUNCTION.function_name`.\nThe App Services backend duplicates the value to the configuration location where you did not define it.\n\nFor example, if you define `function_name`, the backend duplicates it to `event_processors.FUNCTION.function_name`."
+        },
+        "EventProcessors": {
+          "type": "object",
+          "$ref": "#/definitions/Event",
+          "description": "An object where each field name is an event processor ID and\neach value is an object that configures its corresponding\nevent processor. For an example configuration object, see\n[Send Trigger Events to AWS\nEventBridge](https://www.mongodb.com/docs/realm/triggers/examples/send-events-aws-eventbridge#std-label-event_processor_example)."
+        },
+        "AppId" : {
+          "type": "string",
+          "description": "App Services Application ID"
+        },
+        "ProjectId" : {
+          "type": "string",
+          "description": "Project Id for application services"
+        }
+  },
+  "typeName": "MongoDB::Atlas::Trigger",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "readOnlyProperties": [
+    "/properties/Id"
+  ],
+  "required": [
+    "ProjectId",
+    "AppId"]
+}

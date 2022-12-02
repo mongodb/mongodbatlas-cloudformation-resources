@@ -21,7 +21,7 @@ Resources:
                   Ref: AWS::AccountId
               StringLike:
                 aws:SourceArn:
-                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/Mongodb-Atlas-cloudProviderAccess/*
+                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-CloudProviderAccess/*
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
@@ -30,17 +30,18 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                - "cloudformation:CreateResource"
+                - "cloudformation:GetResource"
+                - "cloudformation:GetResourceRequestStatus"
+                - "cloudformation:ListResources"
+                - "cloudformation:UpdateResource"
                 - "iam:AttachRolePolicy"
                 - "iam:CreateRole"
-                - "iam:GetGroupPolicy"
                 - "iam:GetRole"
                 - "iam:GetRolePolicy"
-                - "iam:GetUserPolicy"
                 - "iam:ListAttachedRolePolicies"
                 - "iam:ListRolePolicies"
-                - "iam:PutGroupPolicy"
                 - "iam:PutRolePolicy"
-                - "iam:PutUserPolicy"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

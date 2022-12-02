@@ -17,7 +17,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudcontrolapi"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -35,7 +34,7 @@ var awsRoleARNRegex = regexp.MustCompile(`arn:[a-z-]+:iam::(\d{12}):role/(.*)`)
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.CloudProviderAccessRoleID}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.DatabaseName, constants.Username}
+var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.CloudProviderAccessRoleID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -44,7 +43,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 func (m *Model) completeByConnection(c *mongodbatlas.AWSIAMRole) {
 	m.RoleId = &c.RoleID
 	m.IamAssumedRoleArn = &c.IAMAssumedRoleARN
-	for ind, _ := range c.FeatureUsages {
+	for ind := range c.FeatureUsages {
 		id := fmt.Sprintf("%v", c.FeatureUsages[ind].FeatureID)
 		m.FeatureUsages = append(m.FeatureUsages, FeatureUsages{
 			FeatureType: &c.FeatureUsages[ind].FeatureType,
@@ -96,22 +95,21 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	currentModel.completeByConnection(roleResponse)
 
-	desiredState := processJsonData(currentModel, constants.RolePolicyJSON)
+	desiredState := processJSONData(currentModel, constants.RolePolicyJSON)
 	// Step 2
-	event, errInRoleCreation := awsRoleCreationUsingCloudControlApi(req.Session, currentModel, desiredState, constants.RequestSessionType)
+	event, errInRoleCreation := awsRoleCreationUsingCloudControlAPI(req.Session, currentModel, desiredState, constants.RequestSessionType)
 
 	if errInRoleCreation != nil {
-		fmt.Printf("Trying to use local role because of the following error \n %+v", errInRoleCreation)
+		_, _ = log.Debugf("Trying to use local role because of the following error \n %+v", errInRoleCreation)
 		localSession := session.Must(session.NewSession())
 
 		// Step 3
-		event, errInRoleCreation = awsRoleCreationUsingCloudControlApi(localSession, currentModel, desiredState, constants.LocalSessionType)
+		event, errInRoleCreation = awsRoleCreationUsingCloudControlAPI(localSession, currentModel, desiredState, constants.LocalSessionType)
 		if errInRoleCreation != nil {
 			_, _ = log.Debugf("Create - error: %+v", errInRoleCreation)
 			return progressevents.GetFailedEventByCode(errInRoleCreation.Error(), cloudformation.HandlerErrorCodeServiceInternalError), errInRoleCreation
 		}
 	}
-
 	return event, nil
 }
 
@@ -191,12 +189,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
 
+	_, _ = log.Warnf("Entering Delete")
 	// Validation
 	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-
+	_, _ = log.Warnf("Model validated Delete")
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -208,6 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
+	_, _ = log.Warnf("Client created Delete")
 	if req.CallbackContext != nil {
 		return processDeleteCallBack(req, currentModel, client)
 	}
@@ -230,11 +230,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	event, errInRoleDeletion := awsRoleDeletionUsingCloudControlApi(req.Session, currentModel, constants.RequestSessionType)
+	event, errInRoleDeletion := awsRoleDeletionUsingCloudControlAPI(req.Session, currentModel, constants.RequestSessionType)
 	if errInRoleDeletion != nil {
 		_, _ = log.Warnf("Trying to use local role because of the following error \n %+v", errInRoleDeletion)
 		localSession := session.Must(session.NewSession())
-		event, errInRoleDeletion = awsRoleDeletionUsingCloudControlApi(localSession, currentModel, constants.LocalSessionType)
+		event, errInRoleDeletion = awsRoleDeletionUsingCloudControlAPI(localSession, currentModel, constants.LocalSessionType)
 		if errInRoleDeletion != nil {
 			return progressevents.GetFailedEventByCode(errInRoleDeletion.Error(), cloudformation.HandlerErrorCodeServiceInternalError), errInRoleDeletion
 		}
@@ -297,10 +297,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return event, nil
 }
 
-func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel *Model, desiredState string, sessionType string) (handler.ProgressEvent, error) {
+func awsRoleCreationUsingCloudControlAPI(currentSession *session.Session, currentModel *Model, desiredState string, sessionType string) (handler.ProgressEvent, error) {
 	_, _ = log.Warnf("Inside AWS Role creation")
 
-	clientCloudControl := cloudcontrolapi.New(session)
+	clientCloudControl := cloudcontrolapi.New(currentSession)
 	typeName := constants.TypeName
 	createResourceInput := &cloudcontrolapi.CreateResourceInput{
 		DesiredState: &desiredState,
@@ -310,9 +310,10 @@ func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel 
 	if err != nil {
 		return progressevents.GetFailedEventByCode("AWS Role Creation error", *outputCreate.ProgressEvent.ErrorCode), err
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Aws Role Creating..."),
+		Message:              constants.RoleCreatingMessage,
 		CallbackDelaySeconds: 2,
 		ResourceModel:        currentModel,
 		CallbackContext: map[string]interface{}{
@@ -324,7 +325,6 @@ func awsRoleCreationUsingCloudControlApi(session *session.Session, currentModel 
 			"AtlasProjectId": currentModel.ProjectId,
 		},
 	}, nil
-
 }
 
 func authorizeRole(currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
@@ -350,26 +350,23 @@ func authorizeRole(currentModel *Model, client *mongodbatlas.Client) (handler.Pr
 }
 
 func processCreateCallBack(req handler.Request, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-	fmt.Println("Check for callback object here")
-	spew.Dump(req.CallbackContext)
-
-	//Variable Processing
+	// Variable Processing
 	reqToken := fmt.Sprintf("%v", req.CallbackContext["Token"])
 	identifier := fmt.Sprintf("%v", req.CallbackContext["Identifier"])
 	roleSession := req.Session
 	sessionType := fmt.Sprintf("%v", req.CallbackContext["SessionType"])
-	projectId := fmt.Sprintf("%v", req.CallbackContext["AtlasProjectId"])
-	roleId := fmt.Sprintf("%v", req.CallbackContext["AtlasRoleId"])
+	projectID := fmt.Sprintf("%v", req.CallbackContext["AtlasProjectId"])
+	roleID := fmt.Sprintf("%v", req.CallbackContext["AtlasRoleId"])
 	desiredState := fmt.Sprintf("%v", req.CallbackContext["DesiredState"])
-	currentModel.ProjectId = &projectId
-	currentModel.RoleId = &roleId
+	currentModel.ProjectId = &projectID
+	currentModel.RoleId = &roleID
 
-	//Decision of Session type
+	// Decision of Session type
 	if sessionType == constants.LocalSessionType {
 		roleSession = session.Must(session.NewSession())
 	}
 
-	//Cloud Control API Client Creation
+	// Cloud Control API Client Creation
 	clientCloudControl := cloudcontrolapi.New(roleSession)
 	status, err := clientCloudControl.GetResourceRequestStatus(&cloudcontrolapi.GetResourceRequestStatusInput{
 		RequestToken: aws.String(reqToken),
@@ -390,7 +387,7 @@ func processCreateCallBack(req handler.Request, currentModel *Model, client *mon
 		_, _ = log.Warnf("Role Creation In-Progress")
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Aws Role Creating..."),
+			Message:              constants.RoleCreatingMessage,
 			CallbackDelaySeconds: 2,
 			ResourceModel:        currentModel,
 			CallbackContext: map[string]interface{}{
@@ -405,7 +402,7 @@ func processCreateCallBack(req handler.Request, currentModel *Model, client *mon
 	case "FAILED":
 		if sessionType == constants.RequestSessionType {
 			localSession := session.Must(session.NewSession())
-			event, errInRoleCreation := awsRoleCreationUsingCloudControlApi(localSession, currentModel, desiredState, constants.LocalSessionType)
+			event, errInRoleCreation := awsRoleCreationUsingCloudControlAPI(localSession, currentModel, desiredState, constants.LocalSessionType)
 			if errInRoleCreation != nil {
 				_, _ = log.Debugf("Create - error: %+v", errInRoleCreation)
 				return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating aws role : %s", errInRoleCreation.Error()),
@@ -420,14 +417,11 @@ func processCreateCallBack(req handler.Request, currentModel *Model, client *mon
 	// If callback context is not null if operation status is not set we return error in creating
 	return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating aws role : %s", err.Error()),
 		*status.ProgressEvent.ErrorCode), err
-
 }
 
 func processDeleteCallBack(req handler.Request, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-	fmt.Println("Check for callback object here")
-	spew.Dump(req.CallbackContext)
 
-	//Variable Processing
+	// Variable Processing
 	reqToken := fmt.Sprintf("%v", req.CallbackContext["Token"])
 	identifier := fmt.Sprintf("%v", req.CallbackContext["Identifier"])
 	roleSession := req.Session
@@ -435,12 +429,12 @@ func processDeleteCallBack(req handler.Request, currentModel *Model, client *mon
 	iamAssumedRoleArn := fmt.Sprintf("%v", req.CallbackContext["IamAssumedRoleArn"])
 	currentModel.IamAssumedRoleArn = &iamAssumedRoleArn
 
-	//Decision of Session type
+	// Decision of Session type
 	if sessionType == constants.LocalSessionType {
 		roleSession = session.Must(session.NewSession())
 	}
 
-	//Cloud Control API Client Creation
+	// Cloud Control API Client Creation
 	clientCloudControl := cloudcontrolapi.New(roleSession)
 	status, err := clientCloudControl.GetResourceRequestStatus(&cloudcontrolapi.GetResourceRequestStatusInput{
 		RequestToken: aws.String(reqToken),
@@ -462,7 +456,7 @@ func processDeleteCallBack(req handler.Request, currentModel *Model, client *mon
 		_, _ = log.Warnf("Role Deletion In-Progress")
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Delete in progress."),
+			Message:              constants.RoleDeletingMessage,
 			CallbackDelaySeconds: 2,
 			ResourceModel:        currentModel,
 			CallbackContext: map[string]interface{}{
@@ -475,7 +469,7 @@ func processDeleteCallBack(req handler.Request, currentModel *Model, client *mon
 	case "FAILED":
 		if sessionType == constants.RequestSessionType {
 			localSession := session.Must(session.NewSession())
-			event, errInRoleCreation := awsRoleDeletionUsingCloudControlApi(localSession, currentModel, constants.LocalSessionType)
+			event, errInRoleCreation := awsRoleDeletionUsingCloudControlAPI(localSession, currentModel, constants.LocalSessionType)
 			if errInRoleCreation != nil {
 				_, _ = log.Debugf("Create - error: %+v", errInRoleCreation)
 				return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating aws role : %s", errInRoleCreation.Error()),
@@ -490,7 +484,6 @@ func processDeleteCallBack(req handler.Request, currentModel *Model, client *mon
 	// If callback context is not null if operation status is not set we return error in creating
 	return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating aws role : %s", err.Error()),
 		*status.ProgressEvent.ErrorCode), err
-
 }
 
 func fetchAWSRole(identifier string, clientCloudControl *cloudcontrolapi.CloudControlApi) string {
@@ -512,10 +505,10 @@ func fetchAWSRole(identifier string, clientCloudControl *cloudcontrolapi.CloudCo
 	return roleArn
 }
 
-func awsRoleDeletionUsingCloudControlApi(session *session.Session, currentModel *Model, sessionType string) (handler.ProgressEvent, error) {
-	clientCloudControl := cloudcontrolapi.New(session)
+func awsRoleDeletionUsingCloudControlAPI(currentSession *session.Session, currentModel *Model, sessionType string) (handler.ProgressEvent, error) {
+	clientCloudControl := cloudcontrolapi.New(currentSession)
 	roleName := roleFromRoleARN(*currentModel.IamAssumedRoleArn)
-	if len(roleName) == 0 {
+	if roleName == "" {
 		return progressevents.GetFailedEventByCode("error in Deleting AWS Role", cloudformation.HandlerErrorCodeServiceInternalError), errors.New("error in Deleting AWS Role")
 	}
 	typeName := constants.TypeName
@@ -532,7 +525,7 @@ func awsRoleDeletionUsingCloudControlApi(session *session.Session, currentModel 
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Aws Role Creating..."),
+		Message:              constants.RoleDeletingMessage,
 		CallbackDelaySeconds: 2,
 		ResourceModel:        currentModel,
 		CallbackContext: map[string]interface{}{
@@ -543,39 +536,6 @@ func awsRoleDeletionUsingCloudControlApi(session *session.Session, currentModel 
 		},
 	}, nil
 }
-
-//func pollDeleteOutput(reqToken string, clientCloudControl *cloudcontrolapi.CloudControlApi) bool {
-//
-//	var i = 0
-//	var err error
-//	var status *cloudcontrolapi.GetResourceRequestStatusOutput
-//	for range time.Tick(time.Second * 5) {
-//		status, err = clientCloudControl.GetResourceRequestStatus(&cloudcontrolapi.GetResourceRequestStatusInput{
-//			RequestToken: aws.String(reqToken),
-//		})
-//		if err != nil {
-//			break
-//		}
-//		_, _ = log.Warnf(*status.ProgressEvent.OperationStatus)
-//		if *status.ProgressEvent.OperationStatus == "SUCCESS" {
-//			_, _ = log.Warnf("Role Creation/Deletion Success")
-//			return true
-//		}
-//		if i == 4 {
-//			break
-//		}
-//		if *status.ProgressEvent.OperationStatus == "FAILED" {
-//			_, _ = log.Warnf("Role Creation/Deletion Failed")
-//			break
-//		}
-//
-//		fmt.Println("Waiting for AWS Role Creation/Deletion Status, Current Status is")
-//		i++
-//	}
-//
-//	_, _ = log.Warnf("%+v  Check error", err)
-//	return false
-//}
 
 // generateRandomNumber generates random integer of n digits.
 func generateRandomNumber(numberOfDigits int) (int, error) {
@@ -600,14 +560,14 @@ func generateRandomNumber(numberOfDigits int) (int, error) {
 	return randomNumberInt, nil
 }
 
-func processJsonData(currentModel *Model, RolePolicyJson string) string {
+func processJSONData(currentModel *Model, rolePolicyJSON string) string {
 	// an arbitrary json string
 
-	RolePolicyJson = strings.Replace(RolePolicyJson, "$ATLAS_AWS_ACCOUNT_ARN", *currentModel.AtlasAWSAccountArn, 1)
-	RolePolicyJson = strings.Replace(RolePolicyJson, "$ATLAS_ASSUMEDROLE_EXTERNAL_ID", *currentModel.AtlasAssumedRoleExternalId, 1)
-	RolePolicyJson = strings.Replace(RolePolicyJson, "$ROLE_NAME", generateRandomRoleName(), 1)
+	rolePolicyJSON = strings.Replace(rolePolicyJSON, "$ATLAS_AWS_ACCOUNT_ARN", *currentModel.AtlasAWSAccountArn, 1)
+	rolePolicyJSON = strings.Replace(rolePolicyJSON, "$ATLAS_ASSUMEDROLE_EXTERNAL_ID", *currentModel.AtlasAssumedRoleExternalId, 1)
+	rolePolicyJSON = strings.Replace(rolePolicyJSON, "$ROLE_NAME", generateRandomRoleName(), 1)
 
-	return RolePolicyJson
+	return rolePolicyJSON
 }
 
 func roleFromRoleARN(roleARN string) string {
@@ -629,7 +589,7 @@ func unmarshalRoleArn(outputGet *cloudcontrolapi.GetResourceOutput) (string, err
 		if outputGet.ResourceDescription != nil {
 			if outputGet.ResourceDescription.Properties != nil {
 				var IAMRoleARN IAMRoleArn
-				json.Unmarshal([]byte(*outputGet.ResourceDescription.Properties), &IAMRoleARN)
+				_ = json.Unmarshal([]byte(*outputGet.ResourceDescription.Properties), &IAMRoleARN)
 				fmt.Printf("%+v", IAMRoleARN.Arn)
 				if IAMRoleARN.Arn != nil {
 					return *IAMRoleARN.Arn, nil
@@ -641,8 +601,7 @@ func unmarshalRoleArn(outputGet *cloudcontrolapi.GetResourceOutput) (string, err
 }
 
 type IAMRoleArn struct {
-	_   struct{} `type:"structure"`
-	Arn *string  `min:"20" type:"string"`
+	Arn *string `min:"20" type:"string"`
 }
 
 func generateRandomRoleName() string {

@@ -27,12 +27,12 @@ _CFN_FLAGS=${CFN_FLAGS:---verbose}
 _SKIP_BUILD=${SKIP_BUILD:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
-_DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
+_DEFAULT_LOG_LEVEL=${LOG_LEVEL:-debug}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project project-ip-access-list database-user private-endpoint }"
+resources="${1:-cloud-provider-access }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -142,7 +142,7 @@ do
     echo "starting resource handler lambda in background - capture output to: ${sam_log}"
     sam local start-lambda &> "${sam_log}" &
     sam_pid=$!
-    echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
+    echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 8
     ps -ef | grep ${sam_pid}
     echo "resource: ${resource}, running 'cfn test' with flags: ${_CFN_FLAGS}"
     cfn test ${_CFN_FLAGS}

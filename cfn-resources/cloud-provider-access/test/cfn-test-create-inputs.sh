@@ -4,41 +4,41 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-set -o errexit
 set -o nounset
 set -o pipefail
-
-set -x
-
+WORDTOREMOVE="template."
 function usage {
-    echo "usage:$0 <project/cluster_name>"
-    echo "Creates a new project and cluster by that name for the test"
+    echo "usage:$0 <project_name>"
 }
 
-if [ "$#" -ne 2 ]; then usage; fi
+if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
 projectName="${1}"
-projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
-echo "Created project \"${projectName}\" with id: ${projectId}"
-projectId=625454459c4e6108393d650d
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_create_template.json" > "inputs/inputs_1_create.json"
+    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_update_template.json" > "inputs/inputs_1_update.json"
+echo "Check if a project is created $projectId"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
-      '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_invalid_template.json" > "inputs/inputs_1_invalid.json"
+cd "$(dirname "$0")" || exit
+for inputFile in inputs_*;
+do
+  outputFile=${inputFile//$WORDTOREMOVE/};
+  jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
+     --arg pvtkey "$MCLI_PRIVATE_API_KEY" \
+     --arg ProjectId "$projectId" \
+     '.ProjectId?|=$ProjectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+     "$inputFile" > "../inputs/$outputFile"
+done
+cd ..
+
+ls -l inputs

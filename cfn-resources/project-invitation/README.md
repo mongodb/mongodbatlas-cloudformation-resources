@@ -41,7 +41,7 @@ TAGS=logging make
 cfn submit --verbose --set-default
 ```
 
-## Usage
+## Example and Usage 
 
 Example AWS CloudFormation template is available here [example template.](../../examples/project-invitation/project-invitation.json)
 

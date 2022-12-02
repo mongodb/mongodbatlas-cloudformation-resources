@@ -17,11 +17,11 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-publishing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-trap "exit" INT TERM ERR
+#trap "exit" INT TERM ERR
 #set -x
-set -o errexit
-set -o nounset
-set -o pipefail
+#set -o errexit
+#set -o nounset
+#set -o pipefail
 
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
@@ -36,6 +36,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
 major_version=${CFN_PUBLISH_MAJOR_VERSION:-0}
 minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
+version="${2:-00000001}"
 
 #echo " ******************** version : ${version}"
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"

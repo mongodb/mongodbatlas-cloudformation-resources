@@ -46,13 +46,15 @@ else
         cd "${resource}"
         echo "resource: ${resource}"
 
-#        if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
+        #if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
           if [[ "${CFN_SUBMIT_LOG_LEVEL}" == "debug" ]]; then
               make debug
           else
               make
           fi
-#        fi
+          #TODO: replace with mongodb bucket
+        curl https://load-gen-builds-peerislands.s3.amazonaws.com/resource-role.yaml  > resource-role.yaml
+        #fi
         cat rpdk.log
         cd -
     done

@@ -35,7 +35,7 @@ _CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project project-ip-access-list database-user private-endpoint }"
+resources="${1:-project }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -50,13 +50,14 @@ do
     cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
-    if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
+    #if [[ "${_CLOUD_PUBLISH}" != "true" ]];then
       if [[ "${_DEFAULT_LOG_LEVEL}" == "debug" ]]; then
           make debug
       else
           make
       fi
-    fi
+      curl https://load-gen-builds-peerislands.s3.amazonaws.com/resource-role.yaml  > resource-role.yaml
+    #fi
     cd -
 done
 if [[ "${_BUILD_ONLY}" == "true" ]]; then

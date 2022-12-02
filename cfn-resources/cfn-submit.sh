@@ -6,7 +6,7 @@
 export CLOUD_PUBLISH=true
 
 resources="${1:-project}"
-regions="${2:-ap-northeast-2 }"
+regions="${2:-us-east-1 }"
 #resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}
 #regions="${1:-ap-northeast-2 us-east-1 us-west-2 ca-central-1 us-east-2 us-west-1 sa-east-1}"
 
@@ -17,7 +17,7 @@ for resource in ${resources};
 do
   for region in ${regions}
   do
-    echo " Started Publishing ${resource} resource in ${region}"
+#    echo " Started Publishing ${resource} resource in ${region}"
 
     AWS_DEFAULT_REGION=$region
 

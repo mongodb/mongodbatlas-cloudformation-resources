@@ -38,10 +38,6 @@
         "IsShardKeyUnique": {
           "type": "boolean",
           "description": "Flag that indicates whether someone [hashed](https://www.mongodb.com/docs/manual/reference/method/sh.shardCollection/#hashed-shard-keys) the custom shard key. If this parameter returns `false`, this cluster uses [ranged sharding](https://www.mongodb.com/docs/manual/core/ranged-sharding/)."
-        },
-        "NumInitialChunks": {
-          "type": "number",
-          "description": "Minimum number of chunks to create initially when sharding an empty collection with a [hashed shard key](https://www.mongodb.com/docs/manual/core/hashed-sharding/)."
         }
       },
       "additionalProperties": false
@@ -93,6 +89,7 @@
     },
     "ManagedNamespaces": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to the human-readable label for the desired custom zone. MongoDB Cloud maps the ISO 3166-1a2 code to the nearest geographical zone by default. Include this parameter to override the default mappings.\n\nThis parameter returns an empty object if no custom zones exist.",
       "items": {
         "$ref": "#/definitions/managedNamespace",
@@ -106,17 +103,15 @@
     },
     "CustomZoneMappings": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to the human-readable label for the desired custom zone. MongoDB Cloud maps the ISO 3166-1a2 code to the nearest geographical zone by default. Include this parameter to override the default mappings.\n\nThis parameter returns an empty object if no custom zones exist.",
       "items": {
         "$ref": "#/definitions/zoneMapping",
         "type": "object"
       }
-    },
-    "Id": {
-      "type": "string"
     }
   },
-  "readOnlyProperties": ["/properties/RemoveAllZoneMapping","/properties/CustomShardKey","/properties/ProjectId","/properties/CustomZoneMappings"],
+  "readOnlyProperties": ["/properties/RemoveAllZoneMapping","/properties/CustomZoneMappings"],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

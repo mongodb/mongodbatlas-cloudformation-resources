@@ -12,8 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#customshardkey" title="CustomShardKey">CustomShardKey</a>" : <i>String</i>,
     "<a href="#db" title="Db">Db</a>" : <i>String</i>,
     "<a href="#iscustomshardkeyhashed" title="IsCustomShardKeyHashed">IsCustomShardKeyHashed</a>" : <i>Boolean</i>,
-    "<a href="#isshardkeyunique" title="IsShardKeyUnique">IsShardKeyUnique</a>" : <i>Boolean</i>,
-    "<a href="#numinitialchunks" title="NumInitialChunks">NumInitialChunks</a>" : <i>Double</i>
+    "<a href="#isshardkeyunique" title="IsShardKeyUnique">IsShardKeyUnique</a>" : <i>Boolean</i>
 }
 </pre>
 
@@ -25,7 +24,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#db" title="Db">Db</a>: <i>String</i>
 <a href="#iscustomshardkeyhashed" title="IsCustomShardKeyHashed">IsCustomShardKeyHashed</a>: <i>Boolean</i>
 <a href="#isshardkeyunique" title="IsShardKeyUnique">IsShardKeyUnique</a>: <i>Boolean</i>
-<a href="#numinitialchunks" title="NumInitialChunks">NumInitialChunks</a>: <i>Double</i>
 </pre>
 
 ## Properties
@@ -77,16 +75,6 @@ Flag that indicates whether someone [hashed](https://www.mongodb.com/docs/manual
 _Required_: No
 
 _Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### NumInitialChunks
-
-Minimum number of chunks to create initially when sharding an empty collection with a [hashed shard key](https://www.mongodb.com/docs/manual/core/hashed-sharding/).
-
-_Required_: No
-
-_Type_: Double
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

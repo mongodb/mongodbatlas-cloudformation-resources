@@ -1,0 +1,71 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndPointRegionalMode",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "ApiKey": {
+            "type": "object",
+            "properties": {
+                "PublicKey": {
+                    "type": "string"
+                },
+                "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Enabled": {
+            "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
+            "type": "boolean"
+        },
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/ApiKey"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "GroupId",
+        "Enabled"
+    ],
+    "createOnlyProperties": [
+        "/properties/GroupId"
+    ],
+    "primaryIdentifier": [
+        "/properties/GroupId"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+
+            ]
+        },
+        "read": {
+            "permissions": [
+
+            ]
+        },
+        "update": {
+            "permissions": [
+
+            ]
+        },
+        "delete": {
+            "permissions": [
+
+            ]
+        },
+        "list": {
+            "permissions": [
+
+            ]
+        }
+    }
+}

@@ -91,7 +91,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// method call to read configuration
 	config, event, err := ReadConfig(*client, currentModel)
 	if err != nil {
-		logger.Warnf("error reading MongoDB Global Cluster Configuration (%s): %v", *currentModel.ClusterName, err)
+		_, _ = logger.Warnf("error reading MongoDB Global Cluster Configuration (%s): %v", *currentModel.ClusterName, err)
 		return event, nil
 	}
 	return handler.ProgressEvent{
@@ -240,7 +240,7 @@ func removeManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, rem
 		addManagedNamespace.IsShardKeyUnique = pointy.Bool(*m.IsShardKeyUnique)
 		_, _, err := conn.GlobalClusters.DeleteManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
 		if err != nil {
-			logger.Warnf("error while removing namespace:%+v", err)
+			_, _ = logger.Warnf("error while removing namespace:%+v", err)
 		}
 	}
 }
@@ -256,10 +256,9 @@ func addManagedNamespaces(ctx context.Context, client *mongodbatlas.Client, name
 		addManagedNamespace.IsShardKeyUnique = mn.IsShardKeyUnique
 		_, _, err := client.GlobalClusters.AddManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
 		if err != nil {
-			logger.Warnf("error while adding namespace:%+v", err)
+			_, _ = logger.Warnf("error while adding namespace:%+v", err)
 		}
 	}
-
 }
 
 func modelToCustomZoneMapping(tfMap ZoneMapping) *mongodbatlas.CustomZoneMapping {

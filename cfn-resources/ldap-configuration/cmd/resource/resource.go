@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"errors"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	localConstants "github.com/mongodb/mongodbatlas-cloudformation-resources/ldap-configuration/cmd/constants"
@@ -46,6 +47,38 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 	m.UserToDNMapping = mapping
 }
 
+func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
+
+	DNMapping := getUserToDNMapping(m.UserToDNMapping)
+
+	ldap := &mongodbatlas.LDAP{
+		AuthenticationEnabled: *m.AuthenticationEnabled,
+		Hostname:              *m.Hostname,
+		Port:                  *m.Port,
+		BindUsername:          *m.BindUsername,
+		UserToDNMapping:       DNMapping,
+		BindPassword:          *m.BindPassword,
+	}
+
+	ldapReq := &mongodbatlas.LDAPConfiguration{
+		LDAP: ldap,
+	}
+
+	if m.AuthzQueryTemplate != nil {
+		ldapReq.LDAP.AuthzQueryTemplate = *m.AuthzQueryTemplate
+	}
+
+	if m.CaCertificate != nil {
+		ldapReq.LDAP.CaCertificate = *m.CaCertificate
+	}
+
+	if m.AuthorizationEnabled != nil {
+		ldapReq.LDAP.AuthorizationEnabled = *m.AuthorizationEnabled
+	}
+
+	return ldapReq
+}
+
 func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []*mongodbatlas.UserToDNMapping {
 	mapping := make([]*mongodbatlas.UserToDNMapping, len(ndsUserMapping))
 
@@ -73,27 +106,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	DNMapping := getUserToDNMapping(currentModel.UserToDNMapping)
-
-	ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: *currentModel.AuthenticationEnabled,
-		Hostname:              *currentModel.Hostname,
-		Port:                  *currentModel.Port,
-		BindUsername:          *currentModel.BindUsername,
-		UserToDNMapping:       DNMapping,
-		BindPassword:          "",
-	}
-
-	ldapReq := &mongodbatlas.LDAPConfiguration{
-		LDAP: ldap,
-	}
+	ldapReq := currentModel.GetAtlasModel()
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
@@ -106,6 +122,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
+		Message:         "Update successfully",
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -128,13 +145,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	var res *mongodbatlas.Response
+	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), *currentModel.GroupId)
 
 	if err != nil {
 		log.Debugf("Read - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+
+	currentModel.CompleteByResponse(*ldapConf)
 
 	// Response
 	return handler.ProgressEvent{
@@ -146,8 +164,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Update() currentModel:%+v", currentModel)
-
 	// Validation
 	modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -158,37 +174,29 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		log.Debugf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	var res *mongodbatlas.Response
 
-	/*
-	   Considerable params from currentModel:
-	   ApiKeys, GroupId, Links, Links, CustomerX509, Links, Ldap, ...
-	*/
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Ldapconfiguration.Update(context.Background(),&mongodbatlas.Ldapconfiguration{
-	   	ApiKeys:currentModel.ApiKeys,
-	   	GroupId:currentModel.GroupId,
-	   	Links:currentModel.Links,
-	   	Links:currentModel.Links,
-	   	CustomerX509:currentModel.CustomerX509,
-	   	Links:currentModel.Links,
-	   	Ldap:currentModel.Ldap,
-	   })
+	ldapReq := currentModel.GetAtlasModel()
 
-	*/
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	currentModel.CompleteByResponse(*LDAPConfigResponse)
+
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
 
 	if err != nil {
 		log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -200,8 +208,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Delete() currentModel:%+v", currentModel)
-
 	// Validation
 	modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -212,72 +218,22 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		log.Debugf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	var res *mongodbatlas.Response
-
-	//
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Ldapconfiguration.Delete(context.Background(),&mongodbatlas.Ldapconfiguration{
-	   })
-
-	*/
+	_, res, err := client.LDAPConfigurations.Delete(context.Background(), *currentModel.GroupId)
 
 	if err != nil {
 		log.Debugf("Delete - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		Message:         "Delete success",
 	}, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	modelValidation := validator.ValidateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		log.Debugf("List - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
-	}
-	var res *mongodbatlas.Response
-
-	//
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Ldapconfiguration.List(context.Background(),&mongodbatlas.Ldapconfiguration{
-	   })
-
-	*/
-
-	if err != nil {
-		log.Debugf("List - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	log.Debugf("Atlas Client %v", client)
-
-	// Response
-	return handler.ProgressEvent{
-		Message:         "Delete success",
-		OperationStatus: handler.Success,
-	}, nil
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }

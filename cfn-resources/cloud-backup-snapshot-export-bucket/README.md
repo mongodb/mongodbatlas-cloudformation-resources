@@ -7,6 +7,11 @@ In order to create the resource some prerequisites are required, check [Export C
 
 Please consult the [Resource Docs](docs/README.md)
 
+## Example
+This file can be used as a CloudFormation template to create a new Maintenance Window resource
+
+[CloudBackupSnapshotExportBucket.json](../../examples/cloud-backup-snapshot-export-bucket/CloudBackupSnapshotExportBucket.json)
+
 ## Local Testing
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:

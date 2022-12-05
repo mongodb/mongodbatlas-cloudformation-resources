@@ -15,11 +15,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#cloudproviderconfig" title="CloudProviderConfig">CloudProviderConfig</a>" : <i><a href="datalakecloudproviderconfigview.md">DataLakeCloudProviderConfigView</a></i>,
         "<a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>" : <i><a href="datalakedataprocessregionview.md">DataLakeDataProcessRegionView</a></i>,
-        "<a href="#enddate" title="EndDate">EndDate</a>" : <i>Double</i>,
-        "<a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>" : <i>Boolean</i>,
-        "<a href="#startdate" title="StartDate">StartDate</a>" : <i>Double</i>,
-        "<a href="#hostnames" title="Hostnames">Hostnames</a>" : <i>[ String, ... ]</i>,
-        "<a href="#state" title="State">State</a>" : <i>String</i>
     }
 }
 </pre>
@@ -32,12 +27,6 @@ Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#cloudproviderconfig" title="CloudProviderConfig">CloudProviderConfig</a>: <i><a href="datalakecloudproviderconfigview.md">DataLakeCloudProviderConfigView</a></i>
     <a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>: <i><a href="datalakedataprocessregionview.md">DataLakeDataProcessRegionView</a></i>
-    <a href="#enddate" title="EndDate">EndDate</a>: <i>Double</i>
-    <a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>: <i>Boolean</i>
-    <a href="#startdate" title="StartDate">StartDate</a>: <i>Double</i>
-    <a href="#hostnames" title="Hostnames">Hostnames</a>: <i>
-      - String</i>
-    <a href="#state" title="State">State</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -63,56 +52,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: <a href="datalakedataprocessregionview.md">DataLakeDataProcessRegionView</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### EndDate
-
-Timestamp that specifies the end point for the range of log messages to download.  MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch.
-
-_Required_: No
-
-_Type_: Double
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### SkipRoleValidation
-
-Flag that indicates whether this request should check if the requesting IAM role can read from the S3 bucket. AWS checks if the role can list the objects in the bucket before writing to it. Some IAM roles only need write permissions. This flag allows you to skip that check.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### StartDate
-
-Timestamp that specifies the starting point for the range of log messages to download. MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch.
-
-_Required_: No
-
-_Type_: Double
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Hostnames
-
-Human-readable label that identifies the Federated Database to update.
-
-_Required_: No
-
-_Type_: List of String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### State
-
-Human-readable label that identifies the Federated Database to update.
-
-_Required_: No
-
-_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -143,6 +82,26 @@ Human-readable label that identifies the Federated Database to remove.
 #### Storage
 
 Returns the <code>Storage</code> value.
+
+#### SkipRoleValidation
+
+Flag that indicates whether this request should check if the requesting IAM role can read from the S3 bucket. AWS checks if the role can list the objects in the bucket before writing to it. Some IAM roles only need write permissions. This flag allows you to skip that check.
+
+#### StartDate
+
+Timestamp that specifies the starting point for the range of log messages to download. MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch.
+
+#### Hostnames
+
+Human-readable label that identifies the Federated Database to update.
+
+#### State
+
+Human-readable label that identifies the Federated Database to update.
+
+#### EndDate
+
+Timestamp that specifies the end point for the range of log messages to download.  MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch.
 
 #### TestS3Bucket
 

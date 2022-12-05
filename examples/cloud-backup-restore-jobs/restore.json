@@ -29,7 +29,7 @@
       }
     },
     "CloudProviderSnapshotRestoreJob": {
-      "Type": "MongoDB::Atlas::CloudProviderSnapshotRestoreJobs",
+      "Type": "MongoDB::Atlas::CloudBackUpRestoreJobs",
       "Properties": {
         "ProjectId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },

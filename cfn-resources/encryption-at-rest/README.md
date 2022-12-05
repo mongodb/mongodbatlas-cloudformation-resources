@@ -1,18 +1,67 @@
 # MongoDB::Atlas::EncryptionAtRest
 
 ## Description
-This resource allows administrators to enable, disable, configure, and retrieve the configuration for Encryption at Rest.
 
-## Parameters
-`ProjectId` *(required)* : The unique identifier of the project.<br>
-`AwsKms.AccessKeyID` *(required)* : The IAM access key ID with permissions to access the customer master key specified by customerMasterKeyID.<br>
-`AwsKms.CustomerMasterKeyID` *(required)* : The AWS customer master key used to encrypt and decrypt the MongoDB master keys.<br>
-`AwsKms.Enabled` *(required)* : The IAM secret access key with permissions to access the customer master key specified by customerMasterKeyID.<br>
-`AwsKms.SecretAccessKey` *(required)* : Specifies whether Encryption at Rest is enabled for an Atlas project. To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details.<br>
-`AwsKms.Region` *(required)* : The AWS region in which the AWS customer master key exists.<br>
-`ApiKeys` *(required)* : The private and public keys of the MongoDB Atlas organization or project.<br>
+Returns and edits the Encryption at Rest using Customer Key Management configuration.
+## Attributes & Parameters
+
+Please consult the [Resource Docs](docs/README.md)
+
+## Unit Testing Locally
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+set or export below environment variables 
+export KMS_KEY=<<CustomerMasterKeyID>>
+export KMS_ROLE=<<RoleID>>
+export KMS_REGION=<<key region>>
+cd ${repo_root}/cfn-resources/encryption-at-rest
+./test/encryptionatrest.create-sample-cfn-request.sh YourProjectID > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
+```
+
+Both CREATE & DELETE tests must pass.
 
 ## Installation
-    $ make
-    $ cfn submit
-    ...
+TAGS=logging make
+cfn submit --verbose --set-default
+
+## Cloudformation Examples
+
+Please see the [CFN Template](test/encryptionatrest.sample-template.yaml) for example resource.
+
+## Integration Testing w/ AWS
+
+The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
+can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
+CloudFormation stack template along with the other necessary parameters.
+
+You can use the project.sample-template.yaml to create a stack using the resource.
+Similar to the local testing described above you can follow the logs for the deployed
+lambda function which handles the request for the Resource Type.
+
+In one shell session:
+```
+aws logs tail mongodb-atlas-project-logs --follow
+```
+
+And then you can create the stack with a helper script it insert the apikeys for you:
+
+
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/encryption-at-rest/test/encryptionatrest.sample-template.yaml SampleAccessList1 ParameterKey=ProjectName,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=CustomerMasterKeyID,ParameterValue=<CustomerMasterKeyID> ParameterKey=RoleID,ParameterValue=<RoleID> ParameterKey=Region,ParameterValue=<Region> ParameterKey=Enabled,ParameterValue=<true or false>
+```
+
+For more information see: MongoDB Atlas API [Encryption At Rest Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.

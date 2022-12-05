@@ -6,6 +6,11 @@ Returns, adds, edits, and removes custom database user privilege roles.
 
 Please consult the [Resource Docs](docs/README.md)
 
+## Example
+This file can be used as a CloudFormation template to create a new Maintenance Window resource
+
+[custom-db-role.json](../../examples/custom-db-role/custom-db-role.json)
+
 ## Local Testing
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
@@ -33,7 +38,7 @@ cfn submit --verbose --set-default
 
 ## Usage
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other neccessary parameters.
 
@@ -56,4 +61,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
 ```
 
 ## For More Information
-See the MongoDB Atlas API [Project Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects) Documentation.
+See the MongoDB Atlas API [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-Database-Roles) Documentation.

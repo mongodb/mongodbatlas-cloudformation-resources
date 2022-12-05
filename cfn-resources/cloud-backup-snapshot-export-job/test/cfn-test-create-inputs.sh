@@ -79,7 +79,7 @@ echo "--------------------------------Mongo CLI Role creation ends -------------
 
 echo "--------------------------------printing mongodb role details ----------------------------"\n
 mongocli atlas cloudProviders accessRoles  list --output json | jq --arg NAME "${projectName}" -r '.awsIamRoles[] |select(.iamAssumedRoleArn |test( "mongodb-test-export-role$")?)'
-echo "--------------------------------AWS Role creation starts ----------------------------"\n
+echo "--------------------------------AWS Role policy creation starts ----------------------------"\n
 
 atlasAWSAccountArn=$(mongocli atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)?) |.atlasAWSAccountArn')
 atlasAssumedRoleExternalId=$(mongocli atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)?) |.atlasAssumedRoleExternalId')
@@ -87,7 +87,7 @@ jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
    --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
   '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
 echo cat add-policy.json
-echo "--------------------------------AWS Role creation ends ----------------------------"\n
+echo "--------------------------------AWS Role policy creation ends ----------------------------"\n
 
 echo "--------------------------------AWS Role  creation starts ----------------------------"\n
 awsRoleID=$(aws iam get-role --role-name mongodb-test-export-role | jq '.Role|select(.RoleName |test( "mongodb-test-export-role$")?) |.RoleId')

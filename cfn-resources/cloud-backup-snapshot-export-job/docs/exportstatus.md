@@ -1,4 +1,6 @@
-# MongoDB::Atlas::CloudBackupSnapshotExportJob ApiExportStatusView
+# MongoDB::Atlas::CloudBackupSnapshotExportJob ExportStatus
+
+State of the export job for the collections on the replica set only.
 
 ## Syntax
 
@@ -8,7 +10,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
     "<a href="#exportedcollections" title="ExportedCollections">ExportedCollections</a>" : <i>Integer</i>,
     "<a href="#totalcollections" title="TotalCollections">TotalCollections</a>" : <i>Integer</i>
 }
@@ -17,20 +18,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 <a href="#exportedcollections" title="ExportedCollections">ExportedCollections</a>: <i>Integer</i>
 <a href="#totalcollections" title="TotalCollections">TotalCollections</a>: <i>Integer</i>
 </pre>
 
 ## Properties
-
-#### ApiKeys
-
-_Required_: No
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ExportedCollections
 

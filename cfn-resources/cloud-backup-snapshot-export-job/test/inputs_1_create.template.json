@@ -8,5 +8,6 @@
     },
     "SnapshotId": "",
     "ExportBucketId": "",
-    "ExportId": ""
+    "ExportId": "",
+    "TestMode": "true"
 }

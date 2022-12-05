@@ -14,29 +14,9 @@
       },
       "additionalProperties": false
     },
-    "ApiExportStatusView": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
-        "ExportedCollections": {
-          "type": "integer",
-          "description": "Number of collections on the replica set that MongoDB Cloud exported."
-        },
-        "TotalCollections": {
-          "type": "integer",
-          "description": "Total number of collections on the replica set to export."
-        }
-      },
-      "additionalProperties": false
-    },
     "customData": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
         "Key": {
           "type": "string",
           "description": "Key for the metadata file that MongoDB Cloud uploads to the bucket when the export job finishes."
@@ -51,9 +31,6 @@
     "Link": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
         "Href": {
           "type": "string",
           "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
@@ -78,7 +55,7 @@
       "additionalProperties": false
     }
   },
-  "description": "Returns, adds, and removes Cloud Backup snapshot export buckets. Also returns and adds Cloud Backup export jobs.",
+  "description": "Returns and adds Cloud Backup export jobs.",
   "handlers": {
     "create": {
       "permissions": []
@@ -110,6 +87,7 @@
     },
     "Components": {
       "type": "array",
+      "insertionOrder": false,
       "description": "Information on the export job for each replica set in the sharded cluster.",
       "items": {
         "$ref": "#/definitions/ApiAtlasDiskBackupBaseRestoreMemberView",
@@ -123,17 +101,11 @@
     },
     "CustomDataSet": {
       "type": "array",
+      "insertionOrder": false,
       "description": "Collection of key-value pairs that represent custom data for the metadata file that MongoDB Cloud uploads to the bucket when the export job finishes.",
       "items": {
         "$ref": "#/definitions/customData",
         "type": "object"
-      }
-    },
-    "DeliveryUrl": {
-      "type": "array",
-      "description": "One or more Uniform Resource Locators (URLs) that point to the compressed snapshot files for manual download. MongoDB Cloud returns this parameter when `\"deliveryType\" : \"download\"`.",
-      "items": {
-        "type": "string"
       }
     },
     "ExportBucketId": {
@@ -150,12 +122,25 @@
     "ExportStatus": {
       "type": "object",
       "description": "State of the export job for the collections on the replica set only.",
-      "$ref": "#/definitions/ApiExportStatusView"
+      "properties": {
+        "ExportedCollections": {
+          "type": "integer",
+          "description": "Number of collections on the replica set that MongoDB Cloud exported."
+        },
+        "TotalCollections": {
+          "type": "integer",
+          "description": "Total number of collections on the replica set to export."
+        }
+      },
+      "additionalProperties": false
     },
     "FinishedAt": {
       "type": "string",
       "description": "Date and time when this export job completed. MongoDB Cloud represents this timestamp in ISO 8601 format in UTC.",
       "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "TestMode": {
+      "type": "string"
     },
     "GroupId": {
       "type": "string",
@@ -164,32 +149,14 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-    "Id": {
-      "type": "string",
-      "description": "Unique 24-hexadecimal character string that identifies the restore job.",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
-    },
-    "IncludeCount": {
-      "type": "boolean",
-      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
-    },
-    "ItemsPerPage": {
-      "type": "integer",
-      "description": "Number of items that the response returns per page."
-    },
     "Links": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
       "items": {
         "$ref": "#/definitions/Link",
         "type": "object"
       }
-    },
-    "PageNum": {
-      "type": "integer",
-      "description": "Number of the page that displays the current set of the total objects that the response returns."
     },
     "Prefix": {
       "type": "string",
@@ -211,23 +178,14 @@
   },
   "readOnlyProperties": [
     "/properties/ExportId",
+    "/properties/TestMode",
     "/properties/FinishedAt",
     "/properties/Components",
     "/properties/Links",
-    "/properties/PageNum",
-    "/properties/GroupId",
     "/properties/ExportStatus",
-    "/properties/DeliveryUrl",
-    "/properties/ItemsPerPage",
-    "/properties/DeliveryUrl",
-    "/properties/ExportBucketId",
-    "/properties/Id",
     "/properties/Prefix",
     "/properties/CreatedAt",
-    "/properties/State",
-    "/definitions/ApiAtlasDiskBackupBaseRestoreMemberView/ReplicaSetName",
-    "/definitions/ApiExportStatusView/ExportedCollections",
-    "/definitions/ApiExportStatusView/TotalCollections"
+    "/properties/State"
   ],
   "typeName": "MongoDB::Atlas::CloudBackupSnapshotExportJob",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

@@ -18,14 +18,15 @@ mkdir inputs
 #create apikey
 org_id="$ATLAS_ORG_ID"
 
-api_key_id=$(mongocli iam project apikey create --desc "cfn-boto-key-${CFN_TEST_TAG}" --role GROUP_OWNER --output json | jq -r '.id')
+api_key_id=$(atlas organizations apikeys create --desc "cfn-boto-key-${CFN_TEST_TAG}" --role ORG_MEMBER --output json | jq -r '.id')
 
 #create team
 team_name="cfn-boto-team-${CFN_TEST_TAG}"
-user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
-team_id=$(mongocli iam teams describe --name $team_name --output json | jq -r ".id")
+user_name=$(atlas organizations users list --output json | jq -r '.results[0].emailAddress')
+echo "${user_name}"
+team_id=$(atlas teams describe --name $team_name --output json | jq -r ".id")
 if [ -z "$team_id" ]; then
-  team_id=$(mongocli iam team create "${team_name}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
+  team_id=$(atlas team create "${team_name}" --username "${user_name}" --orgId "${org_id}" --output json | jq -r '.id')
 fi
 
 

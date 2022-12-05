@@ -13,6 +13,36 @@
                 }
             },
             "additionalProperties": false
+        },
+        "PrivateEndpoint": {
+            "type": "object",
+            "properties": {
+                "VpcId": {
+                    "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "type": "string"
+                },
+                "SubnetId": {
+                    "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "type": "string"
+                },
+                "InterfaceEndpointId": {
+                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "insertionOrder" : false
+                },
+                "AWSPrivateEndpointStatus": {
+                    "description": "Status of the AWS PrivateEndpoint connection.",
+                    "type": "string"
+                },
+                "AtlasPrivateEndpointStatus": {
+                    "description": "Status of the Atlas PrivateEndpoint connection.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
@@ -28,16 +58,8 @@
             "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
             "type": "string"
         },
-        "InterfaceEndpoints": {
-            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "insertionOrder" : false
-        },
         "Status": {
-            "description": "Status of the AWS PrivateLink connection. Atlas returns one of the following",
+            "description": "Status of the Atlas PrivateEndpoint service connection",
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
@@ -46,20 +68,19 @@
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "VpcId": {
-            "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-            "type": "string"
-        },
-        "SubnetId": {
-            "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-            "type": "string"
-        },
         "ApiKeys": {
             "$ref": "#/definitions/ApiKey"
         },
         "Region": {
             "description": "Aws Region",
             "type": "string"
+        },
+        "PrivateEndpoints": {
+            "type": "array",
+            "description": "List of private endpoint associated to the service",
+            "items": {
+                "$ref": "#/definitions/PrivateEndpoint"
+            }
         }
     },
     "additionalProperties": false,

@@ -14,13 +14,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#endpointservicename" title="EndpointServiceName">EndpointServiceName</a>" : <i>String</i>,
         "<a href="#errormessage" title="ErrorMessage">ErrorMessage</a>" : <i>String</i>,
-        "<a href="#interfaceendpoints" title="InterfaceEndpoints">InterfaceEndpoints</a>" : <i>[ String, ... ]</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
-        "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
-        "<a href="#subnetid" title="SubnetId">SubnetId</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikey.md">ApiKey</a></i>,
-        "<a href="#region" title="Region">Region</a>" : <i>String</i>
+        "<a href="#region" title="Region">Region</a>" : <i>String</i>,
+        "<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>" : <i>[ <a href="privateendpoint.md">PrivateEndpoint</a>, ... ]</i>
     }
 }
 </pre>
@@ -32,14 +30,12 @@ Type: MongoDB::Atlas::PrivateEndpoint
 Properties:
     <a href="#endpointservicename" title="EndpointServiceName">EndpointServiceName</a>: <i>String</i>
     <a href="#errormessage" title="ErrorMessage">ErrorMessage</a>: <i>String</i>
-    <a href="#interfaceendpoints" title="InterfaceEndpoints">InterfaceEndpoints</a>: <i>
-      - String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
-    <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
-    <a href="#subnetid" title="SubnetId">SubnetId</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikey.md">ApiKey</a></i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
+    <a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>: <i>
+      - <a href="privateendpoint.md">PrivateEndpoint</a></i>
 </pre>
 
 ## Properties
@@ -64,19 +60,9 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### InterfaceEndpoints
-
-Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.
-
-_Required_: No
-
-_Type_: List of String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### Status
 
-Status of the AWS PrivateLink connection. Atlas returns one of the following
+Status of the Atlas PrivateEndpoint service connection
 
 _Required_: No
 
@@ -98,26 +84,6 @@ _Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### VpcId
-
-String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)
-
-_Required_: Yes
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### SubnetId
-
-String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)
-
-_Required_: Yes
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### ApiKeys
 
 _Required_: Yes
@@ -133,6 +99,16 @@ Aws Region
 _Required_: Yes
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### PrivateEndpoints
+
+List of private endpoint associated to the service
+
+_Required_: No
+
+_Type_: List of <a href="privateendpoint.md">PrivateEndpoint</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -4,10 +4,6 @@
 # This tool deletes the mongodb resources used for `cfn test` as inputs.
 #
 
-set -o errexit
-set -o nounset
-set -o pipefail
-
 function usage {
     echo "usage:$0 "
 }
@@ -17,7 +13,7 @@ apikeyId=$(jq -r '.ProjectApiKeys[0] | .Key' ./inputs/inputs_1_create.json)
 teamId=$(jq -r '.ProjectTeams[0] | .TeamId' ./inputs/inputs_1_create.json)
 
 #delete apikey
-if atlas project apikey delete "$apikeyId" --force
+if atlas organizations apikey delete "$apikeyId" --force
 then
     echo "$apikeyId apikey deletion OK"
 else
@@ -25,7 +21,7 @@ else
 fi
 
 #delete team
-if atlas team delete "$teamId" --force
+if atlas teams delete "$teamId" --force
 then
     echo "$teamId team deletion OK"
 else

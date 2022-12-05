@@ -93,12 +93,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
 
-		//if invitation already accepted
+		// if invitation already accepted
 		if res.StatusCode == 404 {
 			if alreadyAccepted, _ := validateOrgInvitationAlreadyAccepted(context.Background(), client, *currentModel.Username, *currentModel.OrgId); alreadyAccepted {
-				return progressevents.GetFailedEventByResponse(fmt.Sprintf("invitation has been already accepted"), res.Response), nil
+				return progressevents.GetFailedEventByResponse("invitation has been already accepted", res.Response), nil
 			}
 		}
+
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -213,7 +214,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	var invites []interface{}
-	//iterate invites
+	// iterate invites
 	for i := range invitations {
 		invite := &Model{}
 		model := readAtlasOrgInvitation(invitations[i], invite)
@@ -228,7 +229,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func readAtlasOrgInvitation(invitation *mongodbatlas.Invitation, currentModel *Model) (model *Model) {
-
 	currentModel.Username = &invitation.Username
 	currentModel.OrgId = &invitation.OrgID
 	currentModel.Id = &invitation.ID

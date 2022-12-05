@@ -12,7 +12,7 @@ function usage {
     echo "usage:$0 "
 }
 
-teamId=$(jq -r '.TeamIds[0]' ./example_inputs/inputs_1_create.json)
+teamId=$(jq -r '.TeamIds[0]' ./inputs/inputs_1_create.json)
 
 #delete team
 if mongocli iam team delete "$teamId" --force

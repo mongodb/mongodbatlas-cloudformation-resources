@@ -84,6 +84,7 @@
     },
     "Roles": {
       "type": "array",
+      "insertionOrder": false,
       "description": "One or more organization or project level roles to assign to the MongoDB Cloud user.",
       "items": {
         "type": "string",
@@ -104,6 +105,7 @@
     },
     "TeamIds": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List of unique 24-hexadecimal digit strings that identifies each team.",
       "items": {
         "type": "string"

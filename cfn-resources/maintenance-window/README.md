@@ -7,6 +7,11 @@ The MaintenanceWindow resource provides access to retrieve or update the current
 
 Please consult the [Resource Docs](docs/README.md)
 
+## Example
+This file can be used as a CloudFormation template to create a new Maintenance Window resource
+
+[maintenance-window.json](../../examples/maintenance-window/maintenance-window.json)
+
 ## Local Testing
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:

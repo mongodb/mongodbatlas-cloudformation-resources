@@ -128,7 +128,7 @@ func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 	}
 	analyzers := make([]map[string]interface{}, 0, len(currentModel.Analyzers))
 	for _, v := range currentModel.Analyzers {
-		s, err := cast.ToStringMapE(v)
+		s, err := util.ToStringMapE(v)
 		if err != nil {
 			return mongodbatlas.SearchIndex{}, err
 		}
@@ -140,7 +140,7 @@ func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 
 	synonyms := make([]map[string]interface{}, 0, len(currentModel.Synonyms))
 	for _, v := range currentModel.Synonyms {
-		s, err := cast.ToStringMapE(v)
+		s, err := util.ToStringMapE(v)
 		if err != nil {
 			return mongodbatlas.SearchIndex{}, err
 		}

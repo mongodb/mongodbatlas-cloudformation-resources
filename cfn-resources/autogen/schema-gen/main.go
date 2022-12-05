@@ -56,17 +56,17 @@ func main() {
 	go generateSchemas(chn, done)
 	go generateReqFields(reqFieldsChan, reqDone)
 
-	definitions := make(map[string]Definitions, 0)
 	var ids, readOnly, idsDef, readOnlyDef []string
 	var cfn CfnSchema
 	key := "params"
-	var typeName string
-	var description string
-	requiredParams := RequiredParams{}
 	var createReqParams []string
 
 	for _, res := range data.Resources {
-		queryParams := make(map[string]Property, 0)
+		var description string
+		var typeName string
+		definitions := make(map[string]Definitions, 0)
+		requiredParams := RequiredParams{}
+
 		allMethodProps := make(map[string]map[string]Property, 0)
 		bodySchema := make(map[string]map[string]Property, 0)
 		typeName = res.TypeName
@@ -77,120 +77,77 @@ func main() {
 				continue
 			}
 
-			if method := pathItem.Post; method != nil {
-				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, doc)
-				createReqParams = reqParams
-				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, doc)
-				// Read from query params
-				queryParams := readQueryParams(method)
-				for _, reqSchemaKey := range reqSchemaKeys {
-					bodySchema[key] = mergePropertyMaps(bodySchema[key], mergePropertyMaps(reqSchema[reqSchemaKey], resSchema[resSchemaKey]))
-				}
-
-				// Merge all params
-				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(bodySchema[key], queryParams))
-				definitions = mergeDefinitionMaps(definitions, mergeDefinitionMaps(reqDefinitions, resDefinitions))
-
-				definitions = defaultDefinition(definitions)
-				readOnly, ids = readOnlyAndUniqueProperties(bodySchema)
-				readOnlyDef, idsDef = readOnlyAndUniqueDefinitions(definitions)
-				readOnly = append(readOnly, readOnlyDef...)
-				ids = append(ids, idsDef...)
-
-				// Required Props from Body
-				requiredParams.CreateFields.RequiredParams = append(requiredParams.CreateFields.RequiredParams, capitalizeArray(reqParams)...)
-				// All Props from Body
-				requiredParams.CreateFields.InputParams = inputOnlyProperties(bodySchema[key])
-			}
-
-			updateMethods := []*openapi3.Operation{pathItem.Put, pathItem.Patch}
-			for i := range updateMethods {
-				method := updateMethods[i]
+			methods := []*openapi3.Operation{pathItem.Post, pathItem.Put, pathItem.Patch, pathItem.Get}
+			for i := range methods {
+				method := methods[i]
 				if method == nil {
 					continue
 				}
-				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, doc)
-				createReqParams = reqParams
 
-				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, doc)
-
-				// Read from query params
-				queryParams := readQueryParams(method)
-				for _, reqSchemaKey := range reqSchemaKeys {
-					bodySchema[key] = mergePropertyMaps(bodySchema[key], mergePropertyMaps(reqSchema[reqSchemaKey], resSchema[resSchemaKey]))
-				}
-
-				// Merge all params
-				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(bodySchema[key], queryParams))
-				definitions = mergeDefinitionMaps(definitions, mergeDefinitionMaps(reqDefinitions, resDefinitions))
-
-				definitions = defaultDefinition(definitions)
-				readOnly, ids = readOnlyAndUniqueProperties(bodySchema)
-				readOnlyDef, idsDef = readOnlyAndUniqueDefinitions(definitions)
-				readOnly = append(readOnly, readOnlyDef...)
-				ids = append(ids, idsDef...)
-
-				// Required Props from Body
-				requiredParams.UpdateFields.RequiredParams = append(requiredParams.UpdateFields.RequiredParams, capitalizeArray(reqParams)...)
-				// All Props from Body
-				requiredParams.UpdateFields.InputParams = inputOnlyProperties(bodySchema[key])
-			}
-			if method := pathItem.Get; method != nil {
 				if description == "" {
 					description = readDescription(method.Tags[0], doc)
 				}
 
-				// Read from Req params
-				_, _, _, reqParams := readRequestBody(method, doc)
+				// Read from Request body
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, doc)
 				createReqParams = reqParams
-				// Read from Response params
+				// Read from Response body
 				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, doc)
-
 				// Read from query params
 				queryParams := readQueryParams(method)
-				bodySchema[key] = mergePropertyMaps(bodySchema[key], resSchema[resSchemaKey])
+
+				postParams := make(map[string]Property)
+				for _, reqSchemaKey := range reqSchemaKeys {
+					postParams = mergePropertyMaps(postParams, mergePropertyMaps(reqSchema[reqSchemaKey], resSchema[resSchemaKey]))
+				}
 
 				// Merge all params
-				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(bodySchema[key], queryParams))
-
-				definitions = mergeDefinitionMaps(definitions, resDefinitions)
+				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(postParams, queryParams))
+				definitions = mergeDefinitionMaps(definitions, mergeDefinitionMaps(reqDefinitions, resDefinitions))
 
 				definitions = defaultDefinition(definitions)
-				readOnly, ids = readOnlyAndUniqueProperties(bodySchema)
+				readOnly, ids = readOnlyAndUniqueProperties(reqSchema)
 				readOnlyDef, idsDef = readOnlyAndUniqueDefinitions(definitions)
 				readOnly = append(readOnly, readOnlyDef...)
 				ids = append(ids, idsDef...)
 
-				// Required Props Query Params
-				requiredParams.ReadFields.RequiredParams = requiredOnlyProperties(method.Parameters)
-				// Required Props from Body
-				requiredParams.ReadFields.RequiredParams = append(requiredParams.ReadFields.RequiredParams, capitalizeArray(reqParams)...)
-				// All Props from Body
-				requiredParams.ReadFields.InputParams = inputOnlyProperties(bodySchema[key])
+				switch method {
+				case pathItem.Post:
+					// Required Props from Body
+					requiredParams.CreateFields.RequiredParams = append(requiredParams.CreateFields.RequiredParams, capitalizeArray(reqParams)...)
+					// All Props from Body
+					requiredParams.CreateFields.InputParams = inputOnlyProperties(bodySchema[key])
+
+				case pathItem.Put, pathItem.Patch:
+					// Required Props from Body
+					requiredParams.UpdateFields.RequiredParams = append(requiredParams.CreateFields.RequiredParams, capitalizeArray(reqParams)...)
+					// All Props from Body
+					requiredParams.UpdateFields.InputParams = inputOnlyProperties(bodySchema[key])
+
+				case pathItem.Get:
+					// Required Props from Query Params
+					requiredParams.ReadFields.RequiredParams = requiredOnlyProperties(method.Parameters)
+					// Required Props from Body
+					requiredParams.ReadFields.RequiredParams = append(requiredParams.ReadFields.RequiredParams, capitalizeArray(reqParams)...)
+					// All Props from Body
+					requiredParams.ReadFields.InputParams = inputOnlyProperties(bodySchema[key])
+				}
+
 			}
+
 			if method := pathItem.Delete; method != nil {
 				if description == "" {
 					description = readDescription(method.Tags[0], doc)
 				}
 				// Read from query params
-				for i := range method.Parameters {
-					newProps := readProperty(method.Parameters[i].Value)
-					for k := range newProps {
-						if contains(k, optionalInputParams) {
-							continue
-						}
-						queryParams[capitalize(k)] = newProps[k]
-					}
-				}
-				// Merge body params and query params
+				queryParams := readQueryParams(method)
+
+				// Merge params
 				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], queryParams)
 
 				// Required Props Query Params
 				requiredParams.DeleteFields.RequiredParams = requiredOnlyProperties(method.Parameters)
+				requiredParams.DeleteFields.InputParams = requiredParams.DeleteFields.RequiredParams
 			}
 		}
 		if allMethodProps[key] != nil {
@@ -254,37 +211,42 @@ func readConfig() ([]byte, *openapi3.T, error) {
 
 func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []string, reqSchema map[string]map[string]Property, definitions map[string]Definitions, requiredParams []string) {
 	reqBody := method.RequestBody
-	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content["application/json"] != nil &&
-		reqBody.Value.Content["application/json"].Schema != nil {
-		reqSchemaKey := filepath.Base(reqBody.Value.Content["application/json"].Schema.Ref)
-		schemaKeys = append(schemaKeys, capitalize(reqSchemaKey))
-		// Read from Request body
-		if doc.Components.Schemas[filepath.Base(reqSchemaKey)] != nil {
-			value := *doc.Components.Schemas[filepath.Base(reqSchemaKey)]
-			requiredParams = value.Value.Required
-			reqSchema, definitions = processSchema(reqSchemaKey, &value, doc.Components.Schemas)
+	if reqBody == nil || reqBody.Value == nil || reqBody.Value.Content["application/json"] == nil ||
+		reqBody.Value.Content["application/json"].Schema == nil {
+		return
+	}
+	reqSchemaKey := filepath.Base(reqBody.Value.Content["application/json"].Schema.Ref)
+	schemaKeys = append(schemaKeys, capitalize(reqSchemaKey))
+	// Read from Request body
+	if doc.Components.Schemas[filepath.Base(reqSchemaKey)] == nil {
+		return
+	}
+	value := *doc.Components.Schemas[filepath.Base(reqSchemaKey)]
+	requiredParams = value.Value.Required
+	reqSchema, definitions = processSchema(reqSchemaKey, &value, doc.Components.Schemas)
 
-			// Read Discriminator params
-			if value.Value.Discriminator != nil {
-				for key, def := range value.Value.Discriminator.Mapping {
-					fmt.Println(def, key)
-					schemaKey := def[strings.LastIndex(def, "/")+1:]
+	// Read Discriminator params
+	if value.Value.Discriminator == nil {
+		return
+	}
 
-					if doc.Components.Schemas[filepath.Base(schemaKey)].Value != nil && doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf != nil {
-						allOf := doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf
-						for i := range allOf {
-							defs := processDefinitionsSchema(schemaKey, allOf[i], doc.Components.Schemas)
-							definitions[schemaKey] = defs[schemaKey]
-							if contains(schemaKey, schemaKeys) {
-								continue
-							}
-							schemaKeys = append(schemaKeys, capitalize(schemaKey))
-						}
-					}
+	for key, def := range value.Value.Discriminator.Mapping {
+		fmt.Println(def, key)
+		schemaKey := def[strings.LastIndex(def, "/")+1:]
+
+		if doc.Components.Schemas[filepath.Base(schemaKey)].Value != nil && doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf != nil {
+			allOf := doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf
+			for i := range allOf {
+				defs := processDefinitionsSchema(schemaKey, allOf[i], doc.Components.Schemas)
+				definitions[schemaKey] = defs[schemaKey]
+				if contains(schemaKey, schemaKeys) {
+					continue
 				}
+				schemaKeys = append(schemaKeys, capitalize(schemaKey))
 			}
 		}
 	}
+
 	return schemaKeys, reqSchema, definitions, requiredParams
 }
 

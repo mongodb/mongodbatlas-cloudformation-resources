@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
@@ -41,19 +40,22 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	return nil
 }
 
-func Create(mongodbClient *mongodbatlas.Client, groupID string, interfaceEndpointID string, endpointServiceID string) handler.ProgressEvent {
-	interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
-		ID: interfaceEndpointID,
-	}
+func Create(mongodbClient *mongodbatlas.Client, groupID string, endpointIds []string, endpointServiceID string) handler.ProgressEvent {
+	for _, endpointID := range endpointIds {
+		interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
+			ID: endpointID,
+		}
 
-	_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
-		groupID,
-		ProviderName,
-		endpointServiceID,
-		interfaceEndpointRequest)
-	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-			response.Response)
+		_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
+			groupID,
+			ProviderName,
+			endpointServiceID,
+			interfaceEndpointRequest)
+		if err != nil {
+			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
+				response.Response)
+		}
+
 	}
 
 	callBackContext := privateEndpointCreationCallBackContext{

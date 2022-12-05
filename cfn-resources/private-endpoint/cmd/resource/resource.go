@@ -68,13 +68,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointID, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
-			*currentModel.SubnetId, *currentModel.VpcId)
+		vpcEndpointIDs, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
+			currentModel.PrivateEndpoints)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
 
-		pe := privateendpoint.Create(mongodbClient, *currentModel.GroupId, *vpcEndpointID, peConnection.ID)
+		pe := privateendpoint.Create(mongodbClient, *currentModel.GroupId, vpcEndpointIDs, peConnection.ID)
 
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:

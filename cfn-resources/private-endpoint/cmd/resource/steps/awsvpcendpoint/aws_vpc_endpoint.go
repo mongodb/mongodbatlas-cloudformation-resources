@@ -2,6 +2,7 @@ package awsvpcendpoint
 
 import (
 	"fmt"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -15,26 +16,32 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 	return ec2.New(req.Session, aws.NewConfig().WithRegion(region))
 }
 
-func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, subnetID string, vpcID string) (*string, *handler.ProgressEvent) {
+func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, privateEndpoints []resource.PrivateEndpoint) ([]string, *handler.ProgressEvent) {
 	svc := newEc2Client(region, req)
 
 	vcpType := "Interface"
 
-	connection := ec2.CreateVpcEndpointInput{
-		VpcId:           &vpcID,
-		ServiceName:     &peCon.EndpointServiceName,
-		VpcEndpointType: &vcpType,
-		SubnetIds:       []*string{&subnetID},
+	subnetIds := make([]string, len(privateEndpoints))
+
+	for _, pe := range privateEndpoints {
+		connection := ec2.CreateVpcEndpointInput{
+			VpcId:           pe.VpcId,
+			ServiceName:     &peCon.EndpointServiceName,
+			VpcEndpointType: &vcpType,
+			SubnetIds:       []*string{pe.SubnetId},
+		}
+
+		vpcE, err := svc.CreateVpcEndpoint(&connection)
+		if err != nil {
+			fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
+				cloudformation.HandlerErrorCodeGeneralServiceException)
+			return nil, &fpe
+		}
+
+		subnetIds = append(subnetIds, *vpcE.VpcEndpoint.VpcEndpointId)
 	}
 
-	vpcE, err := svc.CreateVpcEndpoint(&connection)
-	if err != nil {
-		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
-			cloudformation.HandlerErrorCodeGeneralServiceException)
-		return nil, &fpe
-	}
-
-	return vpcE.VpcEndpoint.VpcEndpointId, nil
+	return subnetIds, nil
 }
 
 func Delete(req handler.Request, interfaceEndpoints []string, region string) (*ec2.DeleteVpcEndpointsOutput, *handler.ProgressEvent) {

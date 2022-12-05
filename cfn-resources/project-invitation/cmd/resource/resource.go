@@ -154,11 +154,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	res, err := client.Projects.DeleteInvitation(context.Background(), *currentModel.ProjectId, *currentModel.Id)

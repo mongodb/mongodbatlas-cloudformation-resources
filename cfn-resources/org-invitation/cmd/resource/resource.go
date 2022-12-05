@@ -59,7 +59,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	currentModel.Id = &invitation.ID
 
-	return Read(req, prevModel, currentModel)
+	if err != nil {
+		_, _ = log.Warnf("Read - error: %+v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -90,15 +99,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				return progressevents.GetFailedEventByResponse(fmt.Sprintf("invitation has been already accepted"), res.Response), nil
 			}
 		}
-
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	readAtlasOrgInvitation(invitation, currentModel)
+	model := readAtlasOrgInvitation(invitation, currentModel)
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		ResourceModel:   model,
 	}, nil
 }
 
@@ -125,15 +133,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Roles:   currentModel.Roles,
 	}
 
-	_, res, err := client.Organizations.UpdateInvitationByID(context.Background(), *currentModel.OrgId, *currentModel.Id, invitationReq)
+	invitation, res, err := client.Organizations.UpdateInvitationByID(context.Background(), *currentModel.OrgId, *currentModel.Id, invitationReq)
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	_, _ = log.Debugf("%s invitation updated", *currentModel.Id)
 
+	model := readAtlasOrgInvitation(invitation, currentModel)
 	// Response
-	return Read(req, prevModel, currentModel)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   model,
+	}, nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -204,8 +216,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	//iterate invites
 	for i := range invitations {
 		invite := &Model{}
-		readAtlasOrgInvitation(invitations[i], invite)
-		invites = append(invites, invite)
+		model := readAtlasOrgInvitation(invitations[i], invite)
+		invites = append(invites, model)
 	}
 
 	// Response
@@ -215,7 +227,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func readAtlasOrgInvitation(invitation *mongodbatlas.Invitation, currentModel *Model) {
+func readAtlasOrgInvitation(invitation *mongodbatlas.Invitation, currentModel *Model) (model *Model) {
 
 	currentModel.Username = &invitation.Username
 	currentModel.OrgId = &invitation.OrgID
@@ -225,6 +237,7 @@ func readAtlasOrgInvitation(invitation *mongodbatlas.Invitation, currentModel *M
 	currentModel.ExpiresAt = &invitation.ExpiresAt
 	currentModel.CreatedAt = &invitation.CreatedAt
 	currentModel.InviterUsername = &invitation.InviterUsername
+	return currentModel
 }
 
 func validateOrgInvitationAlreadyAccepted(ctx context.Context, client *mongodbatlas.Client, username, orgID string) (bool, error) {

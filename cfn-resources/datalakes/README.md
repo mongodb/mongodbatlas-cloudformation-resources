@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudBackUpRestoreJobs
+# MongoDB::Atlas::DataLakes
 
 ## Description
 Returns, adds, edits, and removes Federated Database Instances.

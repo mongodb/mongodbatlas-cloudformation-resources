@@ -37,7 +37,7 @@ if [ -z "$projectId" ]; then
       echo -e "No project found with \"${name}"
 else
       echo -e "project found with ${name} and id ${projectId}, deleting"
-      atlas projects delete "${projectId}"
+      atlas projects delete "${projectId}" --force
 fi
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \

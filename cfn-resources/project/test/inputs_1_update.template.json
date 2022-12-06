@@ -10,16 +10,19 @@
         "IsDataExplorerEnabled": "false",
         "IsPerformanceAdvisorEnabled": "false",
         "IsRealtimePerformancePanelEnabled": "false",
-        "IsSchemaAdvisorEnabled": "false"
+        "IsSchemaAdvisorEnabled": "true"
     },
     "ProjectApiKeys": [
         {
             "Key": "api_key_goes_here",
-            "RoleNames": ["GROUP_MEMBER"]
+            "RoleNames": ["GROUP_CLUSTER_MANAGER"]
         }
+
     ],
-    "ProjectTeams": [{
-        "Key": "api_key_goes_here",
-        "RoleNames": ["GROUP_OWNER"]
-    }]
+    "ProjectTeams": [
+        {
+            "TeamId": "Team_id_goes_here",
+            "RoleNames": ["GROUP_OWNER"]
+        }
+    ]
 }

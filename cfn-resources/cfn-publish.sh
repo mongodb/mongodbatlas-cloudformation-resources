@@ -3,9 +3,14 @@
 #set -x
 
 
-export CLOUD_PUBLISH=true
+
 
 resource="${1:-project}"
+cloud_publish=${2:-true}
+export CLOUD_PUBLISH="${cloud_publish}"
+
+echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
+
 #regions="${2:-ap-northeast-2 }"
 #resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}
 #resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}

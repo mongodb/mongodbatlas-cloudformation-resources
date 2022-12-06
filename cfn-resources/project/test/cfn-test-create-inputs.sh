@@ -30,7 +30,16 @@ if [ -z "$team_id" ]; then
 fi
 
 
-name="${1}-test"
+name="${1}"
+
+projectId=$(atlas projects list --output json | jq --arg NAME "${name}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+      echo -e "No project found with \"${name}"
+else
+      echo -e "project found with ${name} and id ${projectId}, deleting"
+      atlas projects delete "${projectId}" --force
+fi
+
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg org "$ATLAS_ORG_ID" \

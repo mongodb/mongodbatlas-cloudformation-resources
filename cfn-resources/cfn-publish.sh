@@ -31,6 +31,8 @@ echo "$(basename "$0") running for the following resources:"
     echo "step 2: cfn submit for ${resource}"
     ./cfn-submit-helper.sh "${resource}"
 
+    exit 0
+
     echo " step 3: update default version for ${resource}"
 
     cd "${resource}"

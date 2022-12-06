@@ -1,0 +1,12 @@
+{
+  "desiredResourceState": {
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    },
+    "GroupId": "",
+    "Enabled": "true"
+  },
+  "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
+  "previousResourceState": { }
+}

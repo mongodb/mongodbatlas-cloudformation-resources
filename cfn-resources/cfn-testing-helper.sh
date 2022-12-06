@@ -35,7 +35,7 @@ _CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project }"
+resources="${1:-cluster private-endpoint database-user network-container network-peering project-ip-access-list cloud-backup-snapshots cloud-backup-snapshot-restore-jobs }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"

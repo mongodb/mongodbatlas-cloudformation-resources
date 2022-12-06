@@ -21,10 +21,10 @@ roleExternalID=$(echo ${trustPolicy##*/})
 atlasAssumedRoleExternalID=$(echo "${roleExternalID}" | sed 's/"//g')
 echo $atlasAssumedRoleExternalID
 
-roleId=$(mongocli atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
+roleId=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
 echo $roleId
 
-mongocli atlas cloudProviders accessRoles aws deauthorize ${roleId}
+atlas cloudProviders accessRoles aws deauthorize ${roleId}
 echo "--------------------------------delete role starts ----------------------------"\n
 
 aws iam delete-role-policy --role-name mongodb-test-role --policy-name atlas-kms-role-policy

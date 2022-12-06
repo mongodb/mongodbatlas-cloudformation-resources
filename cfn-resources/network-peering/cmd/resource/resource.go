@@ -161,7 +161,6 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 	if currentModel.StatusName != nil {
 		currentModel.StatusName = &peerResponse.StatusName
 	}
-	currentModel.ProviderName = &peerResponse.ProviderName
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -298,7 +297,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.ConnectionId = &peerResponse[i].ConnectionID
 		model.ErrorStateName = &peerResponse[i].ErrorStateName
 		model.StatusName = &peerResponse[i].StatusName
-		model.ProviderName = &peerResponse[i].ProviderName
 
 		models = append(models, model)
 	}

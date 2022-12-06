@@ -21,7 +21,7 @@
             "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
             "type": "boolean"
         },
-        "GroupId": {
+        "ProjectId": {
             "description": "Unique 24-hexadecimal digit string that identifies your project.",
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
@@ -32,39 +32,26 @@
     },
     "additionalProperties": false,
     "required": [
-        "GroupId",
+        "ProjectId",
         "Enabled"
     ],
     "createOnlyProperties": [
-        "/properties/GroupId"
+        "/properties/ProjectId"
     ],
     "primaryIdentifier": [
-        "/properties/GroupId"
+        "/properties/ProjectId"
     ],
     "handlers": {
         "create": {
             "permissions": [
-
             ]
         },
         "read": {
             "permissions": [
-
-            ]
-        },
-        "update": {
-            "permissions": [
-
             ]
         },
         "delete": {
             "permissions": [
-
-            ]
-        },
-        "list": {
-            "permissions": [
-
             ]
         }
     }

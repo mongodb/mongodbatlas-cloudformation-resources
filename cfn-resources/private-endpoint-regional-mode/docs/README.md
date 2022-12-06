@@ -13,7 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::PrivateEndPointRegionalMode",
     "Properties" : {
         "<a href="#enabled" title="Enabled">Enabled</a>" : <i>Boolean</i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikey.md">ApiKey</a></i>
     }
 }
@@ -25,7 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::PrivateEndPointRegionalMode
 Properties:
     <a href="#enabled" title="Enabled">Enabled</a>: <i>Boolean</i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikey.md">ApiKey</a></i>
 </pre>
 
@@ -41,7 +41,7 @@ _Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
 
@@ -65,4 +65,4 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 ### Ref
 
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the GroupId.
+When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ProjectId.

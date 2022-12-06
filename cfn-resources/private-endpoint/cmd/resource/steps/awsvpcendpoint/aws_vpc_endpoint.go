@@ -2,7 +2,6 @@ package awsvpcendpoint
 
 import (
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,19 +15,30 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 	return ec2.New(req.Session, aws.NewConfig().WithRegion(region))
 }
 
-func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, privateEndpoints []resource.PrivateEndpoint) ([]string, *handler.ProgressEvent) {
+type AwsPrivateEndpointInput struct {
+	VpcId    string
+	SubnetId string
+}
+
+type AwsPrivateEndpointOutput struct {
+	VpcId               string
+	SubnetId            string
+	InterfaceEndpointId string
+}
+
+func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, privateEndpointInputs []AwsPrivateEndpointInput) ([]AwsPrivateEndpointOutput, *handler.ProgressEvent) {
 	svc := newEc2Client(region, req)
 
 	vcpType := "Interface"
 
-	subnetIds := make([]string, len(privateEndpoints))
+	subnetIds := make([]AwsPrivateEndpointOutput, len(privateEndpointInputs))
 
-	for _, pe := range privateEndpoints {
+	for i, pe := range privateEndpointInputs {
 		connection := ec2.CreateVpcEndpointInput{
-			VpcId:           pe.VpcId,
+			VpcId:           &pe.VpcId,
 			ServiceName:     &peCon.EndpointServiceName,
 			VpcEndpointType: &vcpType,
-			SubnetIds:       []*string{pe.SubnetId},
+			SubnetIds:       []*string{&pe.SubnetId},
 		}
 
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
@@ -38,7 +48,11 @@ func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, r
 			return nil, &fpe
 		}
 
-		subnetIds = append(subnetIds, *vpcE.VpcEndpoint.VpcEndpointId)
+		subnetIds[i] = AwsPrivateEndpointOutput{
+			VpcId:               pe.VpcId,
+			SubnetId:            pe.SubnetId,
+			InterfaceEndpointId: *vpcE.VpcEndpoint.VpcEndpointId,
+		}
 	}
 
 	return subnetIds, nil

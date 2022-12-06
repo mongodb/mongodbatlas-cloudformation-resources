@@ -10,8 +10,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
     "<a href="#subnetid" title="SubnetId">SubnetId</a>" : <i>String</i>,
-    "<a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>" : <i>[ String, ... ]</i>,
-    "<a href="#awsstatus" title="AWSStatus">AWSStatus</a>" : <i>String</i>
+    "<a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>" : <i>String</i>,
+    "<a href="#awsprivateendpointstatus" title="AWSPrivateEndpointStatus">AWSPrivateEndpointStatus</a>" : <i>String</i>,
+    "<a href="#atlasprivateendpointstatus" title="AtlasPrivateEndpointStatus">AtlasPrivateEndpointStatus</a>" : <i>String</i>
 }
 </pre>
 
@@ -20,9 +21,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
 <a href="#subnetid" title="SubnetId">SubnetId</a>: <i>String</i>
-<a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>: <i>
-      - String</i>
-<a href="#awsstatus" title="AWSStatus">AWSStatus</a>: <i>String</i>
+<a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>: <i>String</i>
+<a href="#awsprivateendpointstatus" title="AWSPrivateEndpointStatus">AWSPrivateEndpointStatus</a>: <i>String</i>
+<a href="#atlasprivateendpointstatus" title="AtlasPrivateEndpointStatus">AtlasPrivateEndpointStatus</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -53,13 +54,23 @@ Unique identifiers of the interface endpoints in your VPC that you added to the 
 
 _Required_: No
 
-_Type_: List of String
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### AWSStatus
+#### AWSPrivateEndpointStatus
 
-Status of the AWS PrivateEndpoint connection. Atlas returns one of the following
+Status of the AWS PrivateEndpoint connection.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AtlasPrivateEndpointStatus
+
+Status of the Atlas PrivateEndpoint connection.
 
 _Required_: No
 

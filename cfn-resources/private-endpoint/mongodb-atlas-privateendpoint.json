@@ -27,10 +27,7 @@
                 },
                 "InterfaceEndpointId": {
                     "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
+                    "type": "string",
                     "insertionOrder" : false
                 },
                 "AWSPrivateEndpointStatus": {

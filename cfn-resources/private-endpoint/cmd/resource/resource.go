@@ -37,6 +37,19 @@ var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.GroupID, constants.ID, constants.PubKey, constants.PvtKey}
 var ListRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 
+func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpointInput {
+	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
+
+	for i, ep := range m.PrivateEndpoints {
+		awsInput[i] = awsvpcendpoint.AwsPrivateEndpointInput{
+			VpcId:    *ep.VpcId,
+			SubnetId: *ep.SubnetId,
+		}
+	}
+
+	return awsInput
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
@@ -68,13 +81,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointIDs, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
-			currentModel.PrivateEndpoints)
+		awsPrivateEndpointOutput, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
+			currentModel.newAwsPrivateEndpointInput())
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
 
-		pe := privateendpoint.Create(mongodbClient, *currentModel.GroupId, vpcEndpointIDs, peConnection.ID)
+		privateEndpointInput := make([]privateendpoint.AtlasPrivateEndpointInput, len(awsPrivateEndpointOutput))
+
+		for i, awsPe := range awsPrivateEndpointOutput {
+			privateEndpointInput[i] = privateendpoint.AtlasPrivateEndpointInput{
+				VpcId:               awsPe.VpcId,
+				SubnetId:            awsPe.SubnetId,
+				InterfaceEndpointId: awsPe.InterfaceEndpointId,
+			}
+		}
+
+		pe := privateendpoint.Create(mongodbClient, *currentModel.GroupId, privateEndpointInput, peConnection.ID)
 
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
@@ -82,8 +105,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
+
 		currentModel.Id = &ValidationOutput.ID
-		currentModel.InterfaceEndpoints = ValidationOutput.InterfaceEndpoints
+		privateEndpoints := make([]PrivateEndpoint, len(ValidationOutput.Endpoints))
+		for i, v := range ValidationOutput.Endpoints {
+			privateEndpoints[i] = PrivateEndpoint{
+				VpcId:               &v.VpcId,
+				SubnetId:            &v.SubnetId,
+				InterfaceEndpointId: &v.InterfaceEndpointId,
+			}
+		}
+
+		currentModel.PrivateEndpoints = privateEndpoints
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         "Create Completed",
@@ -165,13 +198,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.completeByConnection(*privateEndpointResponse)
 
 	if currentModel.HasInterfaceEndpoints() {
+		interfaceEndpointIds := make([]string, 0, len(currentModel.PrivateEndpoints))
+		for _, i := range currentModel.PrivateEndpoints {
+			interfaceEndpointIds = append(interfaceEndpointIds, *i.InterfaceEndpointId)
+		}
 		epr := privateendpoint.DeletePrivateEndpoints(mongodbClient, *currentModel.GroupId, *currentModel.Id,
-			currentModel.InterfaceEndpoints)
+			interfaceEndpointIds)
 		if epr != nil {
 			return *epr, nil
 		}
 
-		_, epr = awsvpcendpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
+		_, epr = awsvpcendpoint.Delete(req, interfaceEndpointIds, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
@@ -192,8 +229,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 20,
 		CallbackContext: map[string]interface{}{
-			"stateName":         "DELETING",
-			"AwsVpcEndpointIds": currentModel.InterfaceEndpoints,
+			"stateName": "DELETING",
 		}}, nil
 }
 
@@ -226,7 +262,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			response.Response), nil
 	}
 
-	mm := make([]interface{}, 0)
+	mm := make([]interface{}, 0, len(privateEndpointResponse))
 	for i := range privateEndpointResponse {
 		var m Model
 		m.completeByConnection(privateEndpointResponse[i])
@@ -250,14 +286,23 @@ func isDeleting(req handler.Request) bool {
 }
 
 func (m *Model) HasInterfaceEndpoints() bool {
-	return len(m.InterfaceEndpoints) != 0
+	return len(m.PrivateEndpoints) != 0
 }
 
 func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.Id = &c.ID
 	m.EndpointServiceName = &c.EndpointServiceName
 	m.ErrorMessage = &c.ErrorMessage
-	m.InterfaceEndpoints = c.InterfaceEndpoints
+
+	endpoints := make([]PrivateEndpoint, 0, len(c.InterfaceEndpoints))
+
+	for i := range c.InterfaceEndpoints {
+		endpoints = append(endpoints, PrivateEndpoint{
+			InterfaceEndpointId: &c.InterfaceEndpoints[i],
+		})
+	}
+
+	m.PrivateEndpoints = endpoints
 	m.Status = &c.Status
 }
 

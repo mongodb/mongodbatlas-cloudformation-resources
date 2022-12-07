@@ -344,53 +344,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("not implemented: Update")
-	//setup()
-	//_, _ = logger.Debugf("List.Project prevModel:%+v currentModel:%+v", prevModel, currentModel)
-	//
-	//if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
-	//	_, _ = logger.Warnf("Validation Error")
-	//	return *errEvent, nil
-	//}
-	//
-	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	//if err != nil {
-	//	return handler.ProgressEvent{}, err
-	//}
-	//
-	//listOptions := &mongodbatlas.ListOptions{
-	//	PageNum:      0,
-	//	ItemsPerPage: 100,
-	//}
-	//projects, _, err := client.Projects.GetAllProjects(context.Background(), listOptions)
-	//if err != nil {
-	//	return handler.ProgressEvent{}, fmt.Errorf("error retrieving projects: %s", err)
-	//}
-	//
-	//// Initialize like this in case no results will pass empty array
-	//var projectModels []interface{}
-	//for _, project := range projects.Results {
-	//	var m Model
-	//	m.Name = &project.Name
-	//	m.Id = &project.ID
-	//	m.ApiKeys = currentModel.ApiKeys
-	//	event, model, err := readProjectSettings(client, project.ID, &m)
-	//	if err != nil {
-	//		return event, err
-	//	}
-	//	model.Name = &project.Name
-	//	model.Id = &project.ID
-	//	model.Created = &project.Created
-	//	model.ClusterCount = &project.ClusterCount
-	//	model.OrgId = &project.OrgID
-	//	projectModels = append(projectModels, model)
-	//}
-	//
-	//return handler.ProgressEvent{
-	//	OperationStatus: handler.Success,
-	//	Message:         "List Complete",
-	//	ResourceModels:  projectModels,
-	//}, nil
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
 // Read project

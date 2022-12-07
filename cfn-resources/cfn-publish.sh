@@ -15,12 +15,6 @@ export CLOUD_PUBLISH="${cloud_publish}"
 
 echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
 
-#regions="${2:-ap-northeast-2 }"
-#resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}
-#regions="${1:-us-east-1 us-west-2 ca-central-1 us-east-2 us-west-1 sa-east-1 ap-southeast-1 ap-southeast-2 ap-southeast-3 ap-south-1 ap-east-1 ap-northeast-1 ap-northeast-2 ap-northeast-3
-#              eu-west-1 eu-central-1 eu-north-1 eu-west-2 eu-west-3 eu-south-1 me-south-1 af-south-1}"
-
-# Deploy in given regions
 for resource in ${resources};
 do
 
@@ -54,4 +48,3 @@ do
 
     echo "******** Successfully published ${resource} *************"
  done
-#done

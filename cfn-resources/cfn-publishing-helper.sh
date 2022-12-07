@@ -85,6 +85,10 @@ do
         status=$(echo ${dt} | jq -r '.TypeTestsStatus')
         echo "status=${status}"
     done
+    if [[ "${status}" == "FAILED" ]]; then
+                echo "Test_type STATUS is FAILED"
+                exit 1
+    fi
     # Fetch the resource type
     cd -
 done

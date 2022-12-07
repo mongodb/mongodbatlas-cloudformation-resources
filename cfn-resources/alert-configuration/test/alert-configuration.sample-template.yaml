@@ -1,0 +1,48 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::AlertConfiguration
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  ProjectId:
+    Description: "Your Project Id"
+    Type: String
+    Default: ""
+  EmailAddress:
+    Description: "email address to send notification email"
+    Type: String
+    Default: ""
+Resources:
+  AlertConfiguration:
+    Type: MongoDB::Atlas::AlertConfiguration
+    Properties:
+      ApiKeys:
+        PublicKey: !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      Notifications:
+        - TypeName: "Email"
+          DelayMin: "0"
+          EmailAddress: !Ref "EmailAddress"
+          IntervalMin: "15"
+      GroupId: !Ref "ProjectId"
+      Enabled: true
+      EventTypeName: "OUTSIDE_METRIC_THRESHOLD"
+      MetricThreshold:
+       MetricName: "NORMALIZED_SYSTEM_CPU_USER",
+       Operator: "GREATER_THAN",
+       Threshold: 5,
+       Units: "RAW",
+       Mode: "AVERAGE"
+Outputs:
+  AlertConfiguration:
+    Description: "Info on your AlertConfiguration"
+    Value: !Ref AlertConfiguration
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AlertConfiguration" ] ]
+

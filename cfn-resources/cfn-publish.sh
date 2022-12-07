@@ -16,20 +16,18 @@ export CLOUD_PUBLISH="${cloud_publish}"
 echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
 
 #regions="${2:-ap-northeast-2 }"
+resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}
 #resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}
-#resources=${1:project database-user network-peering network-container project-ip-access-list cloud-backup-snapshot cloud-backup-restore-jobs encryption-at-rest cluster private-endoint}
-regions="${1:-us-east-1 us-west-2 ca-central-1 us-east-2 us-west-1 sa-east-1 ap-southeast-1 ap-southeast-2 ap-southeast-3 ap-south-1 ap-east-1 ap-northeast-1 ap-northeast-2 ap-northeast-3
-              eu-west-1 eu-central-1 eu-north-1 eu-west-2 eu-west-3 eu-south-1 me-south-1 af-south-1}"
+#regions="${1:-us-east-1 us-west-2 ca-central-1 us-east-2 us-west-1 sa-east-1 ap-southeast-1 ap-southeast-2 ap-southeast-3 ap-south-1 ap-east-1 ap-northeast-1 ap-northeast-2 ap-northeast-3
+#              eu-west-1 eu-central-1 eu-north-1 eu-west-2 eu-west-3 eu-south-1 me-south-1 af-south-1}"
 
 echo "$(basename "$0") running for the following resources:"
 
 # Deploy in given regions
-#for resource in ${resources};
-#do
-  for region in ${regions}
-  do
+for resource in ${resources};
+do
+
     echo " Started Publishing ${resource} resource"
-    export AWS_DEFAULT_REGION="$region"
     echo "Step 1: cfn test"
     ./cfn-testing-helper.sh "${resource}"
 
@@ -58,7 +56,5 @@ echo "$(basename "$0") running for the following resources:"
     ./cfn-publishing-helper.sh "${resource}" "${latestVersion}"
 
     echo "******** Successfully published ${resource} *************"
-
-  done
-   export AWS_DEFAULT_REGION=ap-northeast-2
+ done
 #done

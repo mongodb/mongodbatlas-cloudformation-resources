@@ -27,8 +27,8 @@ echo $roleId
 atlas cloudProviders accessRoles aws deauthorize ${roleId}
 echo "--------------------------------delete role starts ----------------------------"\n
 
-aws iam delete-role-policy --role-name mongodb-test-role --policy-name atlas-kms-role-policy
-aws iam delete-role --role-name mongodb-test-role
+aws iam delete-role-policy --role-name mongodb-test-enc-role --policy-name atlas-kms-role-policy
+aws iam delete-role --role-name mongodb-test-enc-role
 echo "--------------------------------delete role ends ----------------------------"\n
 
 #mongocli iam projects delete "${projectId}" --force

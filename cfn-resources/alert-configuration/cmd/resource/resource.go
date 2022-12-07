@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"reflect"
 	"strings"
+
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -264,7 +265,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		fmt.Printf("List - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	//populate list
+	// populate list
 	for ind := range alerts {
 		models = append(models, convertToUIModel(&alerts[ind], nil, nil))
 	}

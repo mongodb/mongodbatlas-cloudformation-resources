@@ -156,10 +156,6 @@
         "delete": {
             "permissions": [
             ]
-        },
-        "list": {
-            "permissions": [
-            ]
         }
     }
 }

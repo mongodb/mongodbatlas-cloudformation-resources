@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-#set -x
 
 trap "exit" INT TERM ERR
 set -x
@@ -27,9 +26,19 @@ do
     echo " Started Publishing ${resource} resource"
     echo "Step 1: cfn test"
     ./cfn-testing-helper.sh "${resource}"
+    if [ "$?" -ne 0 ]
+            then
+             	echo "Error in Testing phase" 1>&2
+              exit 1
+    fi
 
     echo "step 2: cfn submit for ${resource}"
     ./cfn-submit-helper.sh "${resource}"
+    if [ "$?" -ne 0 ]
+        then
+         	echo "Error in Submit phase" 1>&2
+          exit 1
+    fi
 
     echo " step 3: update default version for ${resource}"
 
@@ -51,6 +60,11 @@ do
 
     echo " step 4:  Publishing  ${resource}"
     ./cfn-publishing-helper.sh "${resource}" "${latestVersion}"
+    if [ "$?" -ne 0 ]
+    then
+     	echo "Error in Publishing phase" 1>&2
+      exit 1
+    fi
 
     echo "******** Successfully published ${resource} *************"
  done

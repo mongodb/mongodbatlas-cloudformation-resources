@@ -110,12 +110,6 @@
         "list": {
             "permissions": [
             ]
-        },
-        "update": {
-            "permissions": [
-                "ec2:CreateVpcEndpoint",
-                "ec2:DeleteVpcEndpoints"
-            ]
         }
     }
 }

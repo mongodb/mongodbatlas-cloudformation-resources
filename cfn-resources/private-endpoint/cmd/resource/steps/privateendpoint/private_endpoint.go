@@ -9,8 +9,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"log"
-	"net/http"
 	"reflect"
 )
 
@@ -20,9 +18,6 @@ const (
 	StatusPending           = "PENDING"
 	StatusAvailable         = "AVAILABLE"
 	StatusInitiating        = "INITIATING"
-	StatusDeleting          = "DELETING"
-	StatusUpdateCompleted   = "UPDATE_COMPLETED"
-	StatusDeleted           = "DELETED"
 )
 
 // Todo: im not convinced about this resource, maybe we can find another way
@@ -214,142 +209,6 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 	} else {
 		pe := progress_events.GetInProgressProgressEvent("Adding private endpoint in progress",
 			req.CallbackContext, nil, 20)
-		return nil, &pe
-	}
-}
-
-func Update(mongodbClient *mongodbatlas.Client, groupID string, endpointServiceID string, toAdd []AtlasPrivateEndpointInput, toDelete []AtlasPrivateEndpointInput) handler.ProgressEvent {
-	if len(toAdd) == 0 && len(toDelete) == 0 {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "no private endpoints to delete or create to update",
-		}
-	}
-	log.Print("Entered Point 17")
-	if len(toAdd) > 0 {
-		addProgressEvent := Create(mongodbClient, groupID, toAdd, endpointServiceID)
-		if addProgressEvent.OperationStatus == handler.Failed {
-			return addProgressEvent
-		}
-
-		for i := range toAdd {
-			status := StatusInitiating
-			toAdd[i].Status = &status
-		}
-	}
-	log.Printf("Entered Point 18")
-	if len(toDelete) > 0 {
-		deleteInput := make([]string, 0, len(toDelete))
-
-		for i := range toDelete {
-			status := StatusDeleting
-			toDelete[i].Status = &status
-			deleteInput = append(deleteInput, toDelete[i].InterfaceEndpointId)
-		}
-
-		deleteProgressEvent := Delete(mongodbClient, groupID, endpointServiceID, deleteInput)
-		if deleteProgressEvent != nil && deleteProgressEvent.OperationStatus == handler.Failed {
-			return *deleteProgressEvent
-		}
-	}
-
-	privateEndpointInput := append(toDelete, toAdd...)
-	callBackMap, err := GetCallback(privateEndpointInput, endpointServiceID, constants.UpdatingPrivateEndpoint)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest)
-	}
-
-	return progress_events.GetInProgressProgressEvent("Adding private endpoint", callBackMap, nil, 20)
-}
-
-func ValidateUpdateCompletion(mongodbClient *mongodbatlas.Client, groupID string, req handler.Request, endpointServiceID string) (*ValidationResponse, *handler.ProgressEvent) {
-	callBackContext := privateEndpointCreationCallBackContext{}
-	log.Print("Entered Point 21")
-	err := callBackContext.FillStruct(req.CallbackContext)
-	if err != nil {
-		pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error parsing Filling Struct of Callback Context : %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
-		return nil, &pe
-	}
-
-	completed := true
-
-	log.Print("Entered Point 22")
-
-	log.Print("Endpoints ")
-	for i := range callBackContext.PrivateEndpoints {
-		log.Print("Entered Point 23")
-		if callBackContext.PrivateEndpoints[i].Status != StatusUpdateCompleted && callBackContext.PrivateEndpoints[i].Status != StatusDeleted {
-			privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
-				groupID,
-				ProviderName,
-				callBackContext.ID,
-				callBackContext.PrivateEndpoints[i].InterfaceEndpointId)
-			log.Print("Entered Point 24")
-			if callBackContext.PrivateEndpoints[i].Status == StatusDeleting {
-				if err != nil {
-					if response.StatusCode == http.StatusNotFound {
-						callBackContext.PrivateEndpoints[i].Status = StatusDeleted
-						continue
-					}
-					log.Print("Entered Point 25")
-					pe := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
-						response.Response)
-					return nil, &pe
-				}
-				log.Print("Entered Point 26")
-				completed = false
-			}
-
-			log.Print("Entered Point 27")
-
-			switch privateEndpointResponse.AWSConnectionStatus {
-			case StatusPendingAcceptance, StatusPending:
-				completed = false
-			case StatusAvailable:
-				callBackContext.PrivateEndpoints[i].Status = StatusUpdateCompleted
-				continue
-			default:
-				pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Resource is in status : %s", privateEndpointResponse.AWSConnectionStatus),
-					cloudformation.HandlerErrorCodeInternalFailure)
-				return nil, &pe
-			}
-		}
-	}
-	log.Print("Entered Point 28")
-	if completed {
-		log.Print("Entered Point 29")
-		endpoints := make([]AtlasPrivateEndpointCallBack, len(callBackContext.PrivateEndpoints))
-		log.Print("Entered Point 30")
-		for i, v := range callBackContext.PrivateEndpoints {
-			if v.Status == StatusUpdateCompleted {
-				endpoints[i] = AtlasPrivateEndpointCallBack{
-					VpcId:               v.VpcId,
-					SubnetId:            v.SubnetId,
-					InterfaceEndpointId: v.InterfaceEndpointId,
-					Status:              v.Status,
-				}
-			}
-		}
-		log.Print("Entered Point 31")
-		vr := ValidationResponse{
-			ID:        callBackContext.ID,
-			Endpoints: endpoints,
-		}
-		log.Print("Entered Point 32")
-		return &vr, nil
-	} else {
-		log.Print("Entered Point 33")
-		mapCallback, err := getMapFromCallBackContext(callBackContext)
-		log.Print("Entered Point 34")
-		if err != nil {
-			pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error parsing Updating PrivateEndpointCallBackContext : %s", err.Error()),
-				cloudformation.HandlerErrorCodeServiceInternalError)
-			return nil, &pe
-		}
-		log.Print("Entered Point 35")
-		pe := progress_events.GetInProgressProgressEvent("Update in progress",
-			mapCallback, nil, 20)
 		return nil, &pe
 	}
 }

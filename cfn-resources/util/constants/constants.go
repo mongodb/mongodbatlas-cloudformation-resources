@@ -51,4 +51,7 @@ const (
 	ClusterName                      = "ClusterName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+
+	UserID  = "UserName"
+	Success = 200
 )

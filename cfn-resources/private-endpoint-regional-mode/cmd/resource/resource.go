@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -82,7 +83,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// Not implemented, return an empty handler.ProgressEvent
 	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -111,17 +112,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus: handler.Success,
 			Message:         "Delete Complete",
 		}, nil
-	} else {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
-			cloudformation.HandlerErrorCodeNotFound), nil
 	}
+	return progress_events.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
+		cloudformation.HandlerErrorCodeNotFound), nil
 }
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// Not implemented, return an empty handler.ProgressEvent
 	// and an error
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
 func resourcePrivateEndpointRegionalModeUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {

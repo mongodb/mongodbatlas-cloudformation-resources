@@ -31,7 +31,7 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	 log.Debugf("Create() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Create() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(CreateRequiredFields, currentModel)

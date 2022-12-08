@@ -14,18 +14,34 @@ const (
 	RouteTableCIDRBlock = "RouteTableCIDRBlock"
 	AWS                 = "AWS"
 	VPCID               = "VpcId"
+	SubnetID            = "SubnetId"
+	GroupID             = "GroupId"
+	Region              = "Region"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
+	RoleName       = "RoleName"
 
 	DatabaseName = "DatabaseName"
 	Username     = "Username"
 	Roles        = "Roles"
 	AccessList   = "AccessList"
 
+	CreatingState = "CREATING"
+	UpdateState   = "UPDATING"
+	DeletingState = "DELETING"
+	DeletedState  = "DELETED"
+	IdleState     = "IDLE"
+
+	Error            = "ERROR"
+	DeleteInProgress = "Delete in progress"
+	StateName        = "StateName"
+	Complete         = "Complete"
+	Pending          = "Pending"
+	ReadComplete     = "Read Complete"
+
 	CustomMasterKey        = "AwsKms.CustomerMasterKeyID"
 	RoleID                 = "AwsKms.RoleID"
-	Region                 = "AwsKms.Region"
 	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
 	ResourceNotFound       = "resource not found"
 
@@ -35,4 +51,7 @@ const (
 	ClusterName                      = "ClusterName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+
+	UserID  = "UserName"
+	Success = 200
 )

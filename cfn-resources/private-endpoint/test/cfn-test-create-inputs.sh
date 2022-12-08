@@ -22,7 +22,7 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-region="us-east-1"
+region="${AWS_DEFAULT_REGION}"
 projectName="${1}"
 vpcId="${2}"
 subnetId="${3}"

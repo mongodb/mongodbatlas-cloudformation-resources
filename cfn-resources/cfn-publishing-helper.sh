@@ -75,9 +75,10 @@ do
     arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')
     echo "Found arn:${arn}"
     # sit and watch the test----
+    sleep 10
     dt=$(aws cloudformation describe-type --arn ${arn})
     echo "dt=${dt}"
-    sleep 10 # sometime the status is not_tested after triggering the test, so keeping delay
+    # sometime the status is not_tested after triggering the test, so keeping delay
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
     while [[ "$status" == "IN_PROGRESS" ]]; do
         sleep 15

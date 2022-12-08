@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -39,9 +40,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Provider:   *currentModel.Provider,
 		Type:       *currentModel.Type,
 		EndpointID: *currentModel.EndpointId,
-	}
-	if currentModel.Comment != nil {
-		cm.Comment = *currentModel.Comment
+		Comment:    aws.StringValue(currentModel.Comment),
 	}
 	_, resp, err := client.DataLakes.CreatePrivateLinkEndpoint(ctx, *currentModel.GroupId, &cm)
 	if err != nil {

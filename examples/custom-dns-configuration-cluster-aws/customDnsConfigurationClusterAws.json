@@ -5,7 +5,7 @@
     "PublicKey": {
       "Type": "String"
     },
-    "Privatekey": {
+    "PrivateKey": {
       "Type": "String"
     },
     "ProjectId": {

@@ -123,8 +123,7 @@
         },
         "AcknowledgingUsername": {
           "type": "string",
-          "description": "MongoDB Cloud username of the person who acknowledged the alert. The response returns this parameter if a MongoDB Cloud user previously acknowledged this alert.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_'{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_'{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "description": "MongoDB Cloud username of the person who acknowledged the alert. The response returns this parameter if a MongoDB Cloud user previously acknowledged this alert."
         },
         "AlertConfigId": {
           "type": "string",
@@ -612,8 +611,7 @@
         },
         "EmailAddress": {
           "type": "string",
-          "description": "Email address to which MongoDB Cloud sends alert notifications. The resource requires this parameter when '\"notifications.typeName\" : \"EMAIL\"'. You don't need to set this value to send emails to individual or groups of MongoDB Cloud users including:\n\n- specific MongoDB Cloud users ('\"notifications.typeName\" : \"USER\"')\n- MongoDB Cloud users with specific project roles ('\"notifications.typeName\" : \"GROUP\"')\n- MongoDB Cloud users with specific organization roles ('\"notifications.typeName\" : \"ORG\"')\n- MongoDB Cloud teams ('\"notifications.typeName\" : \"TEAM\"')\n\nTo send emails to one MongoDB Cloud user or grouping of users, set the **notifications.emailEnabled** parameter.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_'{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%\u0026'*+/=?^_'{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "description": "Email address to which MongoDB Cloud sends alert notifications. The resource requires this parameter when '\"notifications.typeName\" : \"EMAIL\"'. You don't need to set this value to send emails to individual or groups of MongoDB Cloud users including:\n\n- specific MongoDB Cloud users ('\"notifications.typeName\" : \"USER\"')\n- MongoDB Cloud users with specific project roles ('\"notifications.typeName\" : \"GROUP\"')\n- MongoDB Cloud users with specific organization roles ('\"notifications.typeName\" : \"ORG\"')\n- MongoDB Cloud teams ('\"notifications.typeName\" : \"TEAM\"')\n\nTo send emails to one MongoDB Cloud user or grouping of users, set the **notifications.emailEnabled** parameter."
         },
         "EmailEnabled": {
           "type": "boolean",
@@ -640,8 +638,7 @@
         },
         "MobileNumber": {
           "type": "string",
-          "description": "Mobile phone number to which MongoDB Cloud sends alert notifications. The resource requires this parameter when '\"notifications.typeName\" : \"SMS\"'.",
-          "pattern": "(?:(?:\\\\+?1\\\\s*(?:[.-]\\\\s*)?)?(?:(\\\\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\\\\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\\\\s*(?:[.-]\\\\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\\\\s*(?:[.-]\\\\s*)?([0-9]{4})$"
+          "description": "Mobile phone number to which MongoDB Cloud sends alert notifications. The resource requires this parameter when '\"notifications.typeName\" : \"SMS\"'."
         },
         "NotificationToken": {
           "type": "string",
@@ -737,8 +734,7 @@
         },
         "Username": {
           "type": "string",
-          "description": "MongoDB Cloud username of the person to whom MongoDB Cloud sends notifications. Specify only MongoDB Cloud users who belong to the project that owns the alert configuration. The resource requires this parameter when '\"notifications.typeName\" : \"USER\"'.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_'{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%\u0026'*+/=?^_'{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "description": "MongoDB Cloud username of the person to whom MongoDB Cloud sends notifications. Specify only MongoDB Cloud users who belong to the project that owns the alert configuration. The resource requires this parameter when '\"notifications.typeName\" : \"USER\"'."
         },
         "VictorOpsApiKey": {
           "type": "string",

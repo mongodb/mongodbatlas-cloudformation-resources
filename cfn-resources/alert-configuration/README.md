@@ -1,7 +1,7 @@
 # MongoDB::Atlas::AlertConfiguration
 
 ## Description
-Returns, takes, edits, and removes Cloud Backup snapshots.
+Returns and edits the conditions that trigger alerts.
 
 ## Attributes & Parameters
 

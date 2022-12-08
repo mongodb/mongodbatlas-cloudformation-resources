@@ -17,7 +17,11 @@ Parameters:
   EmailAddress:
     Description: "email address to send notification email"
     Type: String
-    Default: ""
+    Default: "blacky.adamy@gmail.com"
+  Enabled:
+    Description: "Flag to enable alert"
+    Type: String
+    Default: "true"
 Resources:
   AlertConfiguration:
     Type: MongoDB::Atlas::AlertConfiguration
@@ -26,19 +30,19 @@ Resources:
         PublicKey: !Ref "PublicKey"
         PrivateKey: !Ref "PrivateKey"
       Notifications:
-        - TypeName: "Email"
+        - TypeName: "EMAIL"
           DelayMin: "0"
           EmailAddress: !Ref "EmailAddress"
           IntervalMin: "15"
       GroupId: !Ref "ProjectId"
-      Enabled: true
+      Enabled: !Ref "Enabled"
       EventTypeName: "OUTSIDE_METRIC_THRESHOLD"
       MetricThreshold:
-       MetricName: "NORMALIZED_SYSTEM_CPU_USER",
-       Operator: "GREATER_THAN",
-       Threshold: 5,
-       Units: "RAW",
-       Mode: "AVERAGE"
+         MetricName: "NORMALIZED_SYSTEM_CPU_USER"
+         Operator: "GREATER_THAN"
+         Threshold: 5
+         Units: "RAW"
+         Mode: "AVERAGE"
 Outputs:
   AlertConfiguration:
     Description: "Info on your AlertConfiguration"

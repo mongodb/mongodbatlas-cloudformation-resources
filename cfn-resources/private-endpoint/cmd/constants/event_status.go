@@ -7,9 +7,10 @@ import (
 type EventStatus string
 
 const (
-	CreationInit                   EventStatus = "CREATION_INIT"
+	Init                           EventStatus = "INIT"
 	CreatingPrivateEndpointService EventStatus = "CREATING_PRIVATE_ENDPOINT_SERVICE"
 	CreatingPrivateEndpoint        EventStatus = "CREATING_PRIVATE_ENDPOINT"
+	UpdatingPrivateEndpoint        EventStatus = "UPDATING_PRIVATE_ENDPOINT"
 )
 
 func ParseEventStatus(eventStatus string) (EventStatus, error) {
@@ -24,7 +25,7 @@ func ParseEventStatus(eventStatus string) (EventStatus, error) {
 
 func getValues() []EventStatus {
 	return []EventStatus{
-		CreationInit,
+		Init,
 		CreatingPrivateEndpoint,
 		CreatingPrivateEndpointService,
 	}

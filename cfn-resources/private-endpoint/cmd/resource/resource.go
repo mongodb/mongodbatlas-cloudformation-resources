@@ -2,7 +2,6 @@ package resource
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -31,9 +30,9 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint")
 }
 
-var CreateRequiredFields = []string{constants.GroupID, constants.Region, constants.PubKey, constants.PvtKey, constants.SubnetID, constants.VPCID}
+var CreateRequiredFields = []string{constants.GroupID, constants.Region, constants.PubKey, constants.PvtKey}
 var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields []string
+var UpdateRequiredFields = []string{constants.GroupID, constants.ID, constants.PubKey, constants.PvtKey, "EndpointServiceName"}
 var DeleteRequiredFields = []string{constants.GroupID, constants.ID, constants.PubKey, constants.PvtKey}
 var ListRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 
@@ -71,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	switch status {
-	case resource_constats.CreationInit:
+	case resource_constats.Init:
 		pe := privateendpointservice.Create(*mongodbClient, *currentModel.Region, *currentModel.GroupId)
 		return addModelToProgressEvent(&pe, currentModel), nil
 	case resource_constats.CreatingPrivateEndpointService:
@@ -81,7 +80,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		awsPrivateEndpointOutput, progressEvent := awsvpcendpoint.Create(req, *peConnection, *currentModel.Region,
+		awsPrivateEndpointOutput, progressEvent := awsvpcendpoint.Create(req, peConnection.EndpointServiceName, *currentModel.Region,
 			currentModel.newAwsPrivateEndpointInput())
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
@@ -155,7 +154,84 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("not implemented: Update")
+	setup()
+
+	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
+	}
+
+	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	status, progressStatus := getProcessStatus(req)
+	if progressStatus != nil {
+		return *progressStatus, nil
+	}
+
+	switch status {
+	case resource_constats.Init:
+		{
+			awsPrivateEndpointOutput, progressEvent := awsvpcendpoint.Update(req, *currentModel.EndpointServiceName, *currentModel.Region,
+				prevModel.newAwsPrivateEndpointInput(),
+				currentModel.newAwsPrivateEndpointInput())
+			if progressEvent != nil {
+				return *progressEvent, nil
+			}
+
+			toAdd := make([]privateendpoint.AtlasPrivateEndpointInput, 0)
+			toDelete := make([]privateendpoint.AtlasPrivateEndpointInput, 0)
+
+			for _, i := range awsPrivateEndpointOutput.ToAdd {
+				toAdd = append(toAdd, privateendpoint.AtlasPrivateEndpointInput{
+					VpcId:               i.VpcId,
+					SubnetId:            i.SubnetId,
+					InterfaceEndpointId: i.InterfaceEndpointId,
+				})
+			}
+
+			for _, i := range awsPrivateEndpointOutput.ToDelete {
+				toDelete = append(toDelete, privateendpoint.AtlasPrivateEndpointInput{
+					VpcId:               i.VpcId,
+					SubnetId:            i.SubnetId,
+					InterfaceEndpointId: i.InterfaceEndpointId,
+				})
+			}
+
+			pe := privateendpoint.Update(mongodbClient, *currentModel.GroupId, *currentModel.Id, toAdd, toDelete)
+
+			return addModelToProgressEvent(&pe, currentModel), nil
+		}
+	case resource_constats.UpdatingPrivateEndpoint:
+		{
+			validationOutput, progressEvent := privateendpoint.ValidateUpdateCompletion(mongodbClient, *currentModel.GroupId, req, *currentModel.Id)
+			if progressEvent != nil {
+				return addModelToProgressEvent(progressEvent, currentModel), nil
+			}
+			/*reccorer todos los del Output encontrar los en el current model y modificarlos*/
+
+			for _, v := range validationOutput.Endpoints {
+				for i, cm := range currentModel.PrivateEndpoints {
+					if v.VpcId == *cm.VpcId && v.SubnetId == *cm.SubnetId {
+						currentModel.PrivateEndpoints[i].InterfaceEndpointId = &v.InterfaceEndpointId
+					}
+				}
+			}
+
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Update Completed",
+				ResourceModel:   currentModel}, nil
+		}
+	default:
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         "Unexpected Status",
+			ResourceModel:   currentModel}, nil
+	}
+
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -176,7 +252,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(),
 		*currentModel.GroupId, providerName, *currentModel.Id)
 
-	//Todo: we can move this functionality in the private endpoint step
 	if isDeleting(req) {
 		if response.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -202,13 +277,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, i := range currentModel.PrivateEndpoints {
 			interfaceEndpointIds = append(interfaceEndpointIds, *i.InterfaceEndpointId)
 		}
-		epr := privateendpoint.DeletePrivateEndpoints(mongodbClient, *currentModel.GroupId, *currentModel.Id,
+		epr := privateendpoint.Delete(mongodbClient, *currentModel.GroupId, *currentModel.Id,
 			interfaceEndpointIds)
 		if epr != nil {
 			return *epr, nil
 		}
 
-		_, epr = awsvpcendpoint.Delete(req, interfaceEndpointIds, *currentModel.Region)
+		epr = awsvpcendpoint.Delete(req, interfaceEndpointIds, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
@@ -309,7 +384,7 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {
 	callback := req.CallbackContext["StateName"]
 	if callback == nil {
-		return resource_constats.CreationInit, nil
+		return resource_constats.Init, nil
 	}
 
 	eventStatus, err := resource_constats.ParseEventStatus(fmt.Sprintf("%v", callback))

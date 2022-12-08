@@ -31,6 +31,10 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
+## CloudFormation Examples
+
+Please see the [CFN Template](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/examples/org-invitation/org-invitation-sample.json) for example resource.
+
 ## Usage
 
 The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script

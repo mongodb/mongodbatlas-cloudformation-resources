@@ -53,7 +53,7 @@ const (
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
 	EndpointID = "EndpointId"
-	Type       = "Type"
+	TType      = "Type"
 
 	UserID  = "UserName"
 	Success = 200

@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.PvtKey, constants.EndpointID, constants.Type}
+var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.PvtKey, constants.EndpointID, constants.TType}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
 
 // function to validate inputs to all actions

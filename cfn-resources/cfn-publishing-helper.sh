@@ -71,15 +71,22 @@ do
     echo "type_info=${type_info}"
     version=$(echo ${type_info} | jq -r '.DefaultVersionId')
     echo "version=${version}"
+
     test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
     arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')
+
+    echo "********** Initiated test-type command ***********"
+    sleep 10
     echo "Found arn:${arn}"
     # sit and watch the test----
-    sleep 10
     dt=$(aws cloudformation describe-type --arn ${arn})
     echo "dt=${dt}"
     # sometime the status is not_tested after triggering the test, so keeping delay
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
+    if [[ "$status" == "NOT_TESTED" ]]; then
+        sleep 60
+    fi
+
     while [[ "$status" == "IN_PROGRESS" ]]; do
         sleep 15
         dt=$(aws cloudformation describe-type --arn ${arn})
@@ -87,8 +94,8 @@ do
         status=$(echo ${dt} | jq -r '.TypeTestsStatus')
         echo "status=${status}"
     done
-    if [[ "${status}" == "FAILED" ]]; then
-                echo "Test_type STATUS is FAILED"
+    if [[ "${status}" == "FAILED" ||  "${status}" == "NOT_TESTED" ]]; then
+                echo "Test_type STATUS is ${status}"
                 exit 1
     fi
     # Fetch the resource type

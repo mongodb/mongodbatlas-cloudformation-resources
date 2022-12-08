@@ -41,13 +41,13 @@ cfn submit --verbose --set-default
 ```
 ## Cloudformation Examples
 
-Please see the [CFN Template](test/cluster.sample-cfn-request.json) for example resource
+ Please see the [test/inputs_1_create.template.json](test/inputs_1_create.template.json) for example resource for example resource.
 
 ## Integration Testing w/ AWS
 
 Once the resource is installed, you can do integrated testing from your shell to AWS.
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 

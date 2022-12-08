@@ -20,6 +20,7 @@ const (
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
+	RoleName       = "RoleName"
 
 	DatabaseName = "DatabaseName"
 	Username     = "Username"

@@ -7,6 +7,7 @@ type Model struct {
 	ApiKeys          *ApiKeyDefinition                                    `json:",omitempty"`
 	CloudProvider    *string                                              `json:",omitempty"`
 	ClusterName      *string                                              `json:",omitempty"`
+	InstanceName     *string                                              `json:",omitempty"`
 	CreatedAt        *string                                              `json:",omitempty"`
 	Description      *string                                              `json:",omitempty"`
 	ExpiresAt        *string                                              `json:",omitempty"`

@@ -4,9 +4,7 @@
     "ApiAtlasDiskBackupReplicaSetView": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
+
         "CloudProvider": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
@@ -40,6 +38,7 @@
         },
         "Links": {
           "type": "array",
+          "insertionOrder": false,
           "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
           "items": {
             "$ref": "#/definitions/Link",
@@ -57,6 +56,7 @@
         },
         "PolicyItems": {
           "type": "array",
+          "insertionOrder": false,
           "description": "List that contains unique identifiers for the policy items.",
           "items": {
             "type": "string"
@@ -91,9 +91,7 @@
     "ApiAtlasDiskBackupShardedClusterSnapshotMemberView": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
+
         "CloudProvider": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
@@ -116,9 +114,7 @@
     "ApiAtlasDiskBackupShardedClusterSnapshotView": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
+
         "CreatedAt": {
           "type": "string",
           "description": "Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
@@ -147,6 +143,7 @@
         },
         "Links": {
           "type": "array",
+          "insertionOrder": false,
           "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
           "items": {
             "$ref": "#/definitions/Link",
@@ -159,6 +156,7 @@
         },
         "Members": {
           "type": "array",
+          "insertionOrder": false,
           "description": "List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `\"type\" : \"SHARDED_CLUSTER\"`.",
           "items": {
             "$ref": "#/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView",
@@ -172,6 +170,7 @@
         },
         "PolicyItems": {
           "type": "array",
+          "insertionOrder": false,
           "description": "List that contains unique identifiers for the policy items.",
           "items": {
             "type": "string"
@@ -179,6 +178,7 @@
         },
         "SnapshotIds": {
           "type": "array",
+          "insertionOrder": false,
           "description": "List that contains the unique identifiers of the snapshots created for the shards and config host for a sharded cluster. The resource returns this parameter when `\"type\": \"SHARDED_CLUSTER\"`. These identifiers should match the ones specified in the **members[n].id** parameters. This allows you to map a snapshot to its shard or config host name.",
           "items": {
             "type": "string"
@@ -209,9 +209,7 @@
     "Link": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
+
         "Href": {
           "type": "string",
           "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
@@ -271,6 +269,13 @@
       "minLength": 1,
       "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
+    "InstanceName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
     "CreatedAt": {
       "type": "string",
       "description": "Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
@@ -314,6 +319,7 @@
     },
     "Links": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
       "items": {
         "$ref": "#/definitions/Link",
@@ -326,6 +332,7 @@
     },
     "Members": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `\"type\" : \"SHARDED_CLUSTER\"`.",
       "items": {
         "$ref": "#/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView",
@@ -343,6 +350,7 @@
     },
     "PolicyItems": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List that contains unique identifiers for the policy items.",
       "items": {
         "type": "string"
@@ -354,6 +362,7 @@
     },
     "Results": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
       "items": {
         "$ref": "#/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView",
@@ -373,6 +382,7 @@
     },
     "SnapshotIds": {
       "type": "array",
+      "insertionOrder": false,
       "description": "List that contains the unique identifiers of the snapshots created for the shards and config host for a sharded cluster. The resource returns this parameter when `\"type\": \"SHARDED_CLUSTER\"`. These identifiers should match the ones specified in the **members[n].id** parameters. This allows you to map a snapshot to its shard or config host name.",
       "items": {
         "type": "string"
@@ -407,6 +417,9 @@
     "/properties/SnapshotIds",
     "/properties/MasterKeyUUID",
     "/properties/Results",
+    "/properties/ItemsPerPage",
+    "/properties/IncludeCount",
+    "/properties/PageNum",
     "/properties/Type",
     "/properties/SnapshotType",
     "/properties/TotalCount",

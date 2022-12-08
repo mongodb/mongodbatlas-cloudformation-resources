@@ -69,9 +69,9 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 			switch key.String() {
 			case "VpcId":
 				peCallback.VpcId = valStr
-			case "SubnetId":
+			case "SubnetID":
 				peCallback.SubnetId = valStr
-			case "InterfaceEndpointId":
+			case "InterfaceEndpointID":
 				peCallback.InterfaceEndpointId = valStr
 			case "Status":
 				peCallback.Status = valStr

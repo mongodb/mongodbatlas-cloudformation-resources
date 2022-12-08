@@ -17,14 +17,14 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 
 type AwsPrivateEndpointInput struct {
 	VpcId               string
-	SubnetId            string
-	InterfaceEndpointId *string
+	SubnetID            string
+	InterfaceEndpointID *string
 }
 
 type AwsPrivateEndpointOutput struct {
 	VpcId               string
 	SubnetId            string
-	InterfaceEndpointId string
+	InterfaceEndpointID string
 }
 
 func Create(req handler.Request, endpointServiceName string, region string, privateEndpointInputs []AwsPrivateEndpointInput) ([]AwsPrivateEndpointOutput, *handler.ProgressEvent) {
@@ -41,7 +41,7 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 			VpcId:           &pe.VpcId,
 			ServiceName:     &endpointServiceName,
 			VpcEndpointType: &vcpType,
-			SubnetIds:       []*string{&pe.SubnetId},
+			SubnetIds:       []*string{&pe.SubnetID},
 		}
 		log2.Print("Entered Point 8")
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
@@ -54,8 +54,8 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 		log2.Print("Entered Point 9")
 		subnetIds[i] = AwsPrivateEndpointOutput{
 			VpcId:               pe.VpcId,
-			SubnetId:            pe.SubnetId,
-			InterfaceEndpointId: *vpcE.VpcEndpoint.VpcEndpointId,
+			SubnetId:            pe.SubnetID,
+			InterfaceEndpointID: *vpcE.VpcEndpoint.VpcEndpointId,
 		}
 	}
 
@@ -92,5 +92,5 @@ func Delete(req handler.Request, interfaceEndpoints []string, region string) *ha
 }
 
 func (i AwsPrivateEndpointInput) ToString() string {
-	return fmt.Sprintf("%s%s", i.VpcId, i.SubnetId)
+	return fmt.Sprintf("%s%s", i.VpcId, i.SubnetID)
 }

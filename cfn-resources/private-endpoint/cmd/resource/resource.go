@@ -46,8 +46,8 @@ func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpoint
 	for i, ep := range m.PrivateEndpoints {
 		endpoint := awsvpcendpoint.AwsPrivateEndpointInput{
 			VpcId:               *ep.VpcId,
-			SubnetId:            *ep.SubnetId,
-			InterfaceEndpointId: ep.InterfaceEndpointId,
+			SubnetID:            *ep.SubnetId,
+			InterfaceEndpointID: ep.InterfaceEndpointId,
 		}
 
 		awsInput[i] = endpoint
@@ -101,7 +101,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			privateEndpointInput[i] = privateendpoint.AtlasPrivateEndpointInput{
 				VpcId:               awsPe.VpcId,
 				SubnetId:            awsPe.SubnetId,
-				InterfaceEndpointId: awsPe.InterfaceEndpointId,
+				InterfaceEndpointId: awsPe.InterfaceEndpointID,
 			}
 		}
 
@@ -115,16 +115,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 
 		currentModel.Id = &ValidationOutput.ID
-		privateEndpoints := make([]PrivateEndpoint, len(ValidationOutput.Endpoints))
-		for i, v := range ValidationOutput.Endpoints {
-			privateEndpoints[i] = PrivateEndpoint{
-				VpcId:               &v.VpcId,
-				SubnetId:            &v.SubnetId,
-				InterfaceEndpointId: &v.InterfaceEndpointId,
+
+		for _, cmpe := range currentModel.PrivateEndpoints {
+			for i := range ValidationOutput.Endpoints {
+				vpe := ValidationOutput.Endpoints[i]
+				if vpe.VpcId == *cmpe.VpcId && vpe.SubnetId == *cmpe.SubnetId {
+					currentModel.PrivateEndpoints[i].InterfaceEndpointId = &vpe.InterfaceEndpointId
+				}
 			}
 		}
 
-		currentModel.PrivateEndpoints = privateEndpoints
 		privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id)
 		if err != nil {
 			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
@@ -307,16 +307,6 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.Id = &c.ID
 	m.EndpointServiceName = &c.EndpointServiceName
 	m.ErrorMessage = &c.ErrorMessage
-
-	endpoints := make([]PrivateEndpoint, 0, len(c.InterfaceEndpoints))
-
-	for i := range c.InterfaceEndpoints {
-		endpoints = append(endpoints, PrivateEndpoint{
-			InterfaceEndpointId: &c.InterfaceEndpoints[i],
-		})
-	}
-
-	m.PrivateEndpoints = endpoints
 	m.Status = &c.Status
 }
 

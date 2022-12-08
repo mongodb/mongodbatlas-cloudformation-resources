@@ -13,7 +13,7 @@ do
     type_name=$(cat ${jsonschema}| jq -r '.typeName')
     type_info=$(aws cloudformation --region "${region}"  list-types --visibility PUBLIC --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
     if [ -z "${type_info}" ]; then
-      echo "*********** ${resource} type found in region : ${region} *******************"
+      echo "*********** ${resource} type NOT found in region : ${region} *******************"
     else
 #      lastUpdated=$(type_info | jq -r '.LastUpdated')
 #      if [ "${lastUpdated}" -le '2022-12-02' ];then

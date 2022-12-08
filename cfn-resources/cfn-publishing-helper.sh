@@ -84,6 +84,8 @@ do
     # sometime the status is not_tested after triggering the test, so keeping delay
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
     if [[ "$status" == "NOT_TESTED" ]]; then
+        test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+        arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')
         sleep 60
     fi
 

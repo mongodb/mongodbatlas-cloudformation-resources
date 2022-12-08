@@ -98,7 +98,7 @@ do
     cd "${res}"
     if [[ "${res}" == "network-peering" ]]; then
         #
-        AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-466197078724}"
+        AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-711489243244}"
         # grab the first vpc-id found to test with,
         AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
         echo "Generating network-peering test inputs AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_VPC_ID=${AWS_VPC_ID}"

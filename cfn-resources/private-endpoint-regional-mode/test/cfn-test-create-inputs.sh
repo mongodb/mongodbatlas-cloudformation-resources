@@ -36,7 +36,7 @@ do
   jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
      --arg pvtkey "$MCLI_PRIVATE_API_KEY" \
      --arg ProjectId "$projectId" \
-     '.GroupId?|=$ProjectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+     '.ProjectId?|=$ProjectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
      "$inputFile" > "../inputs/$outputFile"
 done
 cd ..

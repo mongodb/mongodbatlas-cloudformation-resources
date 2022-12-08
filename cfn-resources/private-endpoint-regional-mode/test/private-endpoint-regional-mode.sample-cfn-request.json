@@ -4,9 +4,8 @@
       "PublicKey": "",
       "PrivateKey": ""
     },
-    "GroupId": "",
-    "Enabled": "true"
+    "ProjectId": ""
   },
-  "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
+  "providerLogGroupName" : "mongodb-atlas-private-endpoint-regional-mode-logs",
   "previousResourceState": { }
 }

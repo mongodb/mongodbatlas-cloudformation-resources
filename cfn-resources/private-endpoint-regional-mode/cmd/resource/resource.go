@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"log"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
@@ -29,36 +27,22 @@ func setup() {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
-	}
-	enabled := *currentModel.Enabled
-	if !enabled {
-		return handler.ProgressEvent{
-			Message: "Value of 'enabled' can only be true during CREATE. In order to set 'enabled' as false," +
-				"execute DELETE operation",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	// TODO: isRegModeExists()
-	rationalizedPrivateEndpointSetting, response, err := mongodbClient.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
-	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error while reading regionalized mode for private endpoint : %s", err.Error()),
-			response.Response), nil
-	}
-	enabled = rationalizedPrivateEndpointSetting.Enabled
-	if enabled {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Private Endpoint Regionalized Mode already enabled for : %s", *currentModel.ProjectId),
+	if isRegModeSettingExists(currentModel, mongodbClient) {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Regionalized Setting for Private Endpoint already enabled for : %s", *currentModel.ProjectId),
 			cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
-	// API call to
+	enabled := true
+	currentModel.Enabled = &enabled
+	// API call to Add Regional Mode for Private Endpoint
 	return resourcePrivateEndpointRegionalModeUpdate(req, prevModel, currentModel, mongodbClient)
 }
 
@@ -76,35 +60,21 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	// TODO: isRegModeExists()
-	regionalizedPrivateEndpointSetting, response, err := mongodbClient.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
-	enabled := regionalizedPrivateEndpointSetting.Enabled
+	regPrivateEndpointSetting, response, err := mongodbClient.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error reading  : %s", err.Error()),
 			response.Response), nil
 	}
-
-	if err != nil {
-		if response != nil && response.StatusCode == 404 {
-			_, _ = logger.Warnf("error 404- err:%+v resp:%+v", err, response)
-			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-				cloudformation.HandlerErrorCodeNotFound), nil
-		}
-		_, _ = logger.Warnf("error cloud backup policy get- err:%+v resp:%+v", err, response)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-	}
+	enabled := regPrivateEndpointSetting.Enabled
 	if !enabled {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Regionalized mode for private endpoint not found for Project : %s", *currentModel.ProjectId),
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Regionalized Setting for Private Endpoint not found for Project : %s", *currentModel.ProjectId),
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "READ Complete",
-		ResourceModel:   regionalPrivateEndpointToModel(*currentModel, regionalizedPrivateEndpointSetting),
+		ResourceModel:   regionalPrivateEndpointToModel(*currentModel, regPrivateEndpointSetting),
 	}, nil
 }
 
@@ -128,15 +98,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	// TODO: isRegModeExists()
-	regionalizedPrivateEndpointSetting, response, err := mongodbClient.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
-	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error while reading regionalized mode for private endpoint : %s", err.Error()),
-			response.Response), nil
-	}
-	enabled := regionalizedPrivateEndpointSetting.Enabled
-	if enabled {
-		log.Printf("currentModel.Enabled flag is: %v", enabled)
+	if isRegModeSettingExists(currentModel, mongodbClient) {
 		enabled := false
 		currentModel.Enabled = &enabled
 		events, err := resourcePrivateEndpointRegionalModeUpdate(req, prevModel, currentModel, mongodbClient)
@@ -163,17 +125,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func resourcePrivateEndpointRegionalModeUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-
-	if (currentModel.Enabled) == nil {
-		err := errors.New("error updating Private Endpoint Regional Mode: Enabled should be set in request")
-		_, _ = logger.Warnf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-	}
-	spew.Dump(currentModel)
-
 	regionalizedPrivateEndpointSetting, response, err := client.PrivateEndpoints.UpdateRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId, *currentModel.Enabled)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(
@@ -187,6 +138,18 @@ func resourcePrivateEndpointRegionalModeUpdate(req handler.Request, prevModel *M
 		Message:         "Create Complete",
 		ResourceModel:   regionalPrivateEndpointToModel(*currentModel, regionalizedPrivateEndpointSetting),
 	}, nil
+}
+
+func isRegModeSettingExists(currentModel *Model, client *mongodbatlas.Client) bool {
+	var isExists bool
+	regModeSetting, _, err := client.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
+	if err != nil {
+		return isExists
+	}
+	if regModeSetting.Enabled {
+		isExists = true
+	}
+	return isExists
 }
 
 func regionalPrivateEndpointToModel(currentModel Model, regPrivateMode *mongodbatlas.RegionalizedPrivateEndpointSetting) *Model {

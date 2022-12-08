@@ -18,7 +18,7 @@
     },
     "properties": {
         "Enabled": {
-            "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
+            "description": "Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project",
             "type": "boolean"
         },
         "ProjectId": {
@@ -32,11 +32,13 @@
     },
     "additionalProperties": false,
     "required": [
-        "ProjectId",
-        "Enabled"
+        "ProjectId"
     ],
     "createOnlyProperties": [
         "/properties/ProjectId"
+    ],
+    "readOnlyProperties": [
+        "/properties/Enabled"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId"

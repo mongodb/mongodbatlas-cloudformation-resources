@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -85,27 +86,14 @@ func ToSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 }
 
 func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
-	searchIndex := mongodbatlas.SearchIndex{}
-	if currentModel.IndexId != nil {
-		searchIndex.IndexID = *currentModel.IndexId
-	}
-	if currentModel.SearchAnalyzer != nil {
-		searchIndex.SearchAnalyzer = *currentModel.SearchAnalyzer
-	}
-	if currentModel.Database != nil {
-		searchIndex.Database = *currentModel.Database
-	}
-	if currentModel.Name != nil {
-		searchIndex.Name = *currentModel.Name
-	}
-	if currentModel.CollectionName != nil {
-		searchIndex.CollectionName = *currentModel.CollectionName
-	}
-	if currentModel.Analyzer != nil {
-		searchIndex.Analyzer = *currentModel.Analyzer
-	}
-	if currentModel.Status != nil {
-		searchIndex.Status = *currentModel.Status
+	searchIndex := mongodbatlas.SearchIndex{
+		Analyzer:       aws.StringValue(currentModel.Analyzer),
+		CollectionName: aws.StringValue(currentModel.CollectionName),
+		Database:       aws.StringValue(currentModel.Database),
+		IndexID:        aws.StringValue(currentModel.IndexId),
+		Name:           aws.StringValue(currentModel.Name),
+		SearchAnalyzer: aws.StringValue(currentModel.SearchAnalyzer),
+		Status:         aws.StringValue(currentModel.Status),
 	}
 	if currentModel.Mappings != nil {
 		var sec map[string]interface{}

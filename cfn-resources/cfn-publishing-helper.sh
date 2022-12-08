@@ -79,9 +79,9 @@ do
     echo "dt=${dt}"
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
     while [[ "$status" == "IN_PROGRESS" ]]; do
-        sleep 3
+        sleep 15
         dt=$(aws cloudformation describe-type --arn ${arn})
-        echo "dt=${dt}"
+        #echo "dt=${dt}"
         status=$(echo ${dt} | jq -r '.TypeTestsStatus')
         echo "status=${status}"
     done

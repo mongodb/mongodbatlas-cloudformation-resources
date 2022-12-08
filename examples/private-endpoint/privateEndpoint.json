@@ -15,10 +15,7 @@
       "Type": "String"
     },
     "VpcId": {
-      "Type": "String"
-    },
-    "SubnetId": {
-      "Type": "String"
+      "Type": "List<String>"
     }
   },
   "Mappings" : {},
@@ -29,7 +26,6 @@
         "GroupId": { "Ref" : "GroupId" },
         "Region": { "Ref" : "Region" },
         "VpcId": { "Ref" : "VpcId" },
-        "SubnetId": { "Ref" : "SubnetId" },
         "ApiKeys": {
           "PublicKey": { "Ref" : "PublicKey" },
           "PrivateKey": { "Ref" : "Privatekey" }

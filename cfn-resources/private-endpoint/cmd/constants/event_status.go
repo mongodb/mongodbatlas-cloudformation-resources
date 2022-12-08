@@ -28,5 +28,6 @@ func getValues() []EventStatus {
 		Init,
 		CreatingPrivateEndpoint,
 		CreatingPrivateEndpointService,
+		UpdatingPrivateEndpoint,
 	}
 }

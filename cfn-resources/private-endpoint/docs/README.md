@@ -1,6 +1,6 @@
 # MongoDB::Atlas::PrivateEndpoint
 
-The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint >Limitation: On this first Stage only one private endpoint can be attached to a service, Limitation: Only one private endpoint can be attached to a Service, future versions will support multiple private endpoint creation
+The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint
 
 ## Syntax
 

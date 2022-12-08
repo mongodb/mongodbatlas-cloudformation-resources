@@ -77,6 +77,7 @@ do
     # sit and watch the test----
     dt=$(aws cloudformation describe-type --arn ${arn})
     echo "dt=${dt}"
+    sleep 10 # sometime the status is not_tested after triggering the test, so keeping delay
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
     while [[ "$status" == "IN_PROGRESS" ]]; do
         sleep 15

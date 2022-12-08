@@ -20,6 +20,7 @@ const (
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
+	RoleName       = "RoleName"
 
 	DatabaseName = "DatabaseName"
 	Username     = "Username"
@@ -53,4 +54,7 @@ const (
 
 	EndpointID = "EndpointId"
 	Type       = "Type"
+
+	UserID  = "UserName"
+	Success = 200
 )

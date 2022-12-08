@@ -17,3 +17,4 @@ debug:
 
 clean:
 	rm -rf bin
+	

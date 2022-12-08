@@ -2,23 +2,31 @@
     "AWSTemplateFormatVersion" : "2010-09-09",
     "Description" : "This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
     "Parameters" : {
-      "MongoDBAtlasAPIPublicKey": {
-        "Type": "String"
+"MongoDBAtlasAPIPublicKey": {
+        "Type": "String",
+        "Description" : "MongoDB Atlas Public Access Key"
       },
       "MongoDBAtlasAPIPrivateKey": {
-        "Type": "String"
+        "Type": "String",
+        "Description" : "MongoDB Atlas Private Access Key"
       },
       "MongoDBAtlasProjectId": {
-        "Type": "String"
+        "Type": "String",
+        "Description" : "MongoDB project Key"
       },
       "AWSRegion": {
-        "Type": "String"
+        "Type": "String",
+        "Description" : "Cloud provider region for which you want to create the private endpoint service (example: us-east-1)."
       },
       "AWSVpcId": {
-        "Type": "String"
+        "Type": "String",
+        "Default": "vpc-",
+        "Description" : "AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
       },
       "AWSSubnetId": {
-        "Type": "String"
+        "Type": "String",
+        "Default": "subnet-",
+        "Description" : "AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
       }
     },
     "Mappings" : {},

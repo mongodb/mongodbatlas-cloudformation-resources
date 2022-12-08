@@ -171,7 +171,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if err != nil {
-		fmt.Printf("Update - error: %+v", err)
+		_, _ = logger.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	convertToUIModel(alertModel, currentModel, res.Links)
@@ -208,7 +208,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	res, err := client.AlertConfigurations.Delete(context.Background(), *currentModel.GroupId, *currentModel.Id)
 
 	if err != nil {
-		fmt.Printf("Delete - error: %+v", err)
+		_, _ = logger.Warnf("Delete - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -253,7 +253,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		// get all field names that the matchers.fieldName parameter accepts
 		fieldNames, res, err := client.AlertConfigurations.ListMatcherFields(context.Background())
 		if err != nil {
-			fmt.Printf("List - error: %+v", err)
+			_, _ = logger.Warnf("List - error: %+v", err)
 			return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 		}
 		for ind := range fieldNames {
@@ -262,7 +262,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if err != nil {
-		fmt.Printf("List - error: %+v", err)
+		_, _ = logger.Warnf("List - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	// populate list
@@ -473,8 +473,6 @@ func convertToMongoModel(reqModel *mongodbatlas.AlertConfiguration, currentModel
 }
 
 func convertToUIModel(alertConfig *mongodbatlas.AlertConfiguration, currentModel *Model, links []*mongodbatlas.Link) *Model {
-	deploySecretString, _ := json.Marshal(currentModel)
-	fmt.Printf("deploySecretString: %s \n\n\n\n", deploySecretString)
 	currentModel.Id = &alertConfig.ID
 	currentModel.GroupId = &alertConfig.GroupID
 	currentModel.EventTypeName = &alertConfig.EventTypeName
@@ -496,7 +494,5 @@ func convertToUIModel(alertConfig *mongodbatlas.AlertConfiguration, currentModel
 	if len(links) > 0 {
 		currentModel.Links = flattenLinks(links)
 	}
-	deploySecretString, _ = json.Marshal(alertConfig)
-	fmt.Printf("deploySecrffffffffffetString: %s \n\n\n\n\n", deploySecretString)
 	return currentModel
 }

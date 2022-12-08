@@ -20,6 +20,7 @@ const (
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
+	RoleName       = "RoleName"
 
 	DatabaseName = "DatabaseName"
 	Username     = "Username"
@@ -54,4 +55,7 @@ const (
 	IndexID        = "IndexId"
 	CollectionName = "CollectionName"
 	Database       = "Database"
+
+	UserID  = "UserName"
+	Success = 200
 )

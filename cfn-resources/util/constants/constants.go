@@ -57,5 +57,5 @@ const (
 	UserID  = "UserName"
 	Success = 200
 
-	TeamID                           = "TeamId"
+	TeamID = "TeamId"
 )

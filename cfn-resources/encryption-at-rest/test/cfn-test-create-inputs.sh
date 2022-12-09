@@ -10,6 +10,8 @@ function usage {
     echo "Creates a new encryption key for the the project "
 }
 
+
+
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
@@ -37,6 +39,9 @@ fi
 keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
+
+roleName="mongodb-test-enc-role-${keyRegion}"
+policyName="atlas-kms-role-policy-${keyRegion}"
 
 echo "--------------------------------get aws region ends ----------------------------"\n
 
@@ -66,17 +71,11 @@ echo $policyDocument
 echo "--------------------------------policy document finished ----------------------------"\n
 
 echo "--------------------------------Mongo CLI Role creation starts ----------------------------"\n
-roleID=$(atlas cloudProviders accessRoles  list --output json | jq --arg NAME "${projectName}" -r '.awsIamRoles[] |select(.iamAssumedRoleArn |test( "mongodb-test-enc-role$")) |.roleId')
-if [ -z "$roleID" ]; then
-    roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
-    echo -e "Created id: ${roleID}\n"
-else
-    echo -e "FOUND id: ${roleID}\n"
-fi
+roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"\n
 
 echo "--------------------------------printing mongodb role details ----------------------------"\n
-atlas cloudProviders accessRoles  list --output json | jq --arg NAME "${projectName}" -r '.awsIamRoles[] |select(.iamAssumedRoleArn |test( "mongodb-test-enc-role$"))'
+atlas cloudProviders accessRoles  list --output json
 echo "--------------------------------AWS Role creation starts ----------------------------"\n
 
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
@@ -88,22 +87,22 @@ echo cat add-policy.json
 echo "--------------------------------AWS Role creation ends ----------------------------"\n
 
 echo "--------------------------------AWS Role  creation starts ----------------------------"\n
-awsRoleID=$(aws iam get-role --role-name mongodb-test-enc-role | jq '.Role|select(.RoleName |test( "mongodb-test-enc-role$")) |.RoleId')
+awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
-    awsRoleID=$(aws iam create-role --role-name mongodb-test-enc-role --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq '.Role|select(.RoleName |test( "mongodb-test-enc-role$")) |.RoleId')
+    awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
     echo -e "Created id: ${awsRoleID}\n"
 else
-    aws iam delete-role-policy --role-name mongodb-test-enc-role --policy-name atlas-kms-role-policy
-    aws iam delete-role --role-name mongodb-test-enc-role
- awsRoleID=$(aws iam create-role --role-name mongodb-test-enc-role --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq '.Role|select(.RoleName |test( "mongodb-test-enc-role$")) |.RoleId')
+    aws iam delete-role-policy --role-name "${roleName}" --policy-name atlas-kms-role-policy
+    aws iam delete-role --role-name "${roleName}"
+ awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
     echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"\n
 
 echo "--------------------------------attach mongodb  Role to AWS Role starts ----------------------------"\n
-awsArn=$(aws iam get-role --role-name mongodb-test-enc-role | jq '.Role|select(.RoleName |test( "mongodb-test-enc-role$")) |.Arn')
+awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
 atlas cloudProviders accessRoles  list --output json
-aws iam put-role-policy   --role-name mongodb-test-enc-role   --policy-name atlas-kms-role-policy   --policy-document file://$(dirname "$0")/policy.json
+aws iam put-role-policy   --role-name "${roleName}"   --policy-name atlas-kms-role-policy   --policy-document file://$(dirname "$0")/policy.json
 echo "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------"\n
 
 echo "--------------------------------authorize mongodb  Role starts ----------------------------"\n

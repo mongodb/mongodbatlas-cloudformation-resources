@@ -301,7 +301,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot list with id(project: %s): %s", projectID, err)
 	}
-	var models []interface{}
+	models := make([]interface{}, 0)
 	for _, snapshot := range snapshots.Results {
 		var model Model
 		model.SnapshotId = &snapshot.ID

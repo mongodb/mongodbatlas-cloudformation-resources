@@ -255,7 +255,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectID, err)
 	}
 
-	var models []Model
+	models := make([]interface{}, 0)
 	for _, restoreJob := range restoreJobs.Results {
 		var model Model
 		model.TargetClusterName = &restoreJob.TargetClusterName

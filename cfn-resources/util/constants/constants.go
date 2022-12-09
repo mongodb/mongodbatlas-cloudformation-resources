@@ -54,4 +54,8 @@ const (
 
 	UserID  = "UserName"
 	Success = 200
+
+	Criteria     = "Criteria"
+	ArchiveID    = "ArchiveId"
+	CriteriaType = "Criteria.Type"
 )

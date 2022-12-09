@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"reflect"
 )
 
 const (
@@ -28,16 +29,16 @@ type privateEndpointCreationCallBackContext struct {
 }
 
 type AtlasPrivateEndpointCallBack struct {
-	VpcId               string
-	SubnetId            string
-	InterfaceEndpointId string
+	VpcID               string
+	SubnetID            string
+	InterfaceEndpointID string
 	Status              string
 }
 
 type AtlasPrivateEndpointInput struct {
-	VpcId               string
-	SubnetId            string
-	InterfaceEndpointId string
+	VpcID               string
+	SubnetID            string
+	InterfaceEndpointID string
 	Status              *string
 }
 
@@ -67,12 +68,12 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 		for _, key := range v.MapKeys() {
 			valStr := fmt.Sprint(v.MapIndex(key).Interface())
 			switch key.String() {
-			case "VpcId":
-				peCallback.VpcId = valStr
+			case "VpcID":
+				peCallback.VpcID = valStr
 			case "SubnetID":
-				peCallback.SubnetId = valStr
+				peCallback.SubnetID = valStr
 			case "InterfaceEndpointID":
-				peCallback.InterfaceEndpointId = valStr
+				peCallback.InterfaceEndpointID = valStr
 			case "Status":
 				peCallback.Status = valStr
 			}
@@ -90,9 +91,9 @@ func GetCallback(privateEndpointInput []AtlasPrivateEndpointInput, endpointServi
 
 	for i, pe := range privateEndpointInput {
 		callBack := AtlasPrivateEndpointCallBack{
-			VpcId:               pe.VpcId,
-			SubnetId:            pe.SubnetId,
-			InterfaceEndpointId: pe.InterfaceEndpointId,
+			VpcID:               pe.VpcID,
+			SubnetID:            pe.SubnetID,
+			InterfaceEndpointID: pe.InterfaceEndpointID,
 		}
 
 		if pe.Status != nil {
@@ -122,7 +123,7 @@ func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackCo
 func Create(mongodbClient *mongodbatlas.Client, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
 	for _, endpoint := range privateEndpointInput {
 		interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
-			ID: endpoint.InterfaceEndpointId,
+			ID: endpoint.InterfaceEndpointID,
 		}
 
 		_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
@@ -163,13 +164,13 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 	ids := make([]string, len(callBackContext.PrivateEndpoints))
 
 	for i := range callBackContext.PrivateEndpoints {
-		ids[i] = callBackContext.PrivateEndpoints[i].InterfaceEndpointId
+		ids[i] = callBackContext.PrivateEndpoints[i].InterfaceEndpointID
 		if callBackContext.PrivateEndpoints[i].Status != StatusAvailable {
 			privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
 				groupID,
 				ProviderName,
 				callBackContext.ID,
-				callBackContext.PrivateEndpoints[i].InterfaceEndpointId)
+				callBackContext.PrivateEndpoints[i].InterfaceEndpointID)
 			if err != nil {
 				pe := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
 					response.Response)
@@ -195,9 +196,9 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 		endpoints := make([]AtlasPrivateEndpointCallBack, len(callBackContext.PrivateEndpoints))
 		for i, v := range callBackContext.PrivateEndpoints {
 			endpoints[i] = AtlasPrivateEndpointCallBack{
-				VpcId:               v.VpcId,
-				SubnetId:            v.SubnetId,
-				InterfaceEndpointId: v.InterfaceEndpointId,
+				VpcID:               v.VpcID,
+				SubnetID:            v.SubnetID,
+				InterfaceEndpointID: v.InterfaceEndpointID,
 				Status:              v.Status,
 			}
 		}
@@ -206,11 +207,11 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 			Endpoints: endpoints,
 		}
 		return &vr, nil
-	} else {
-		pe := progress_events.GetInProgressProgressEvent("Adding private endpoint in progress",
-			req.CallbackContext, nil, 20)
-		return nil, &pe
 	}
+
+	pe := progress_events.GetInProgressProgressEvent("Adding private endpoint in progress",
+		req.CallbackContext, nil, 20)
+	return nil, &pe
 }
 
 func sliceDifference(current, previous []AtlasPrivateEndpointInput) []AtlasPrivateEndpointInput {
@@ -228,7 +229,7 @@ func sliceDifference(current, previous []AtlasPrivateEndpointInput) []AtlasPriva
 }
 
 func (i AtlasPrivateEndpointInput) ToString() string {
-	return fmt.Sprintf("%s%s", i.VpcId, i.SubnetId)
+	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetID)
 }
 
 func Delete(mongodbClient *mongodbatlas.Client, groupID string, endpointServiceID string, interfaceEndpoints []string) *handler.ProgressEvent {

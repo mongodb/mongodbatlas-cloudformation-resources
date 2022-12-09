@@ -30,11 +30,14 @@ export MCLI_PROJECT_ID=$projectId
 
 echo "--------------------------------get aws region starts ----------------------------"\n
 
-#keyRegion=$(aws configure get region)
 keyRegion=$AWS_DEFAULT_REGION
+if [ -z "$keyRegion" ]; then
+keyRegion=$(aws configure get region)
+fi
 keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
+
 echo "--------------------------------get aws region ends ----------------------------"\n
 
 echo "--------------------------------create key and key policy document starts ----------------------------"\n
@@ -108,6 +111,8 @@ echo "--------------------------------authorize mongodb  Role starts -----------
 echo "--------------------------------Role Id ----------------------------"\n"${roleID}"
 awsArne=$(echo "${awsArn}" | sed 's/"//g')
 # shellcheck disable=SC2086
+#TODO Needs change to while loop using get operation
+sleep 65
 echo "--------------------------------Role Id ----------------------------"\n${awsArne}
 atlas cloudProviders accessRoles aws authorize ${roleID} --iamAssumedRoleArn ${awsArne}
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"\n

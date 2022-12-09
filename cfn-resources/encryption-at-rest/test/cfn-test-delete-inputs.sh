@@ -24,7 +24,7 @@ echo $atlasAssumedRoleExternalID
 roleId=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
 echo $roleId
 
-atlas cloudProviders accessRoles aws deauthorize ${roleId}
+atlas cloudProviders accessRoles aws deauthorize ${roleId} --force
 echo "--------------------------------delete role starts ----------------------------"\n
 
 aws iam delete-role-policy --role-name mongodb-test-enc-role --policy-name atlas-kms-role-policy

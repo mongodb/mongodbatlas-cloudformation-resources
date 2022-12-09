@@ -83,13 +83,17 @@ echo "Step 2/3: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-
 # cluster: "${CFN_TEST_NEW_PROJECT_NAME}-cluster"
 # etc...
 #
+
+if [ -z "${2}" ]; then
 . ./cfn-testing-helper.config
 env | grep CFN_TEST_
-
-
 PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
 echo "PROJECT_NAME:${PROJECT_NAME}"
+else
+  PROJECT_NAME="${2}"
+fi
 
+echo "${PROJECT_NAME}"
 #if false; then
 
 for res in ${resources};

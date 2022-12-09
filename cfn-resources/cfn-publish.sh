@@ -14,12 +14,19 @@ export CLOUD_PUBLISH="${cloud_publish}"
 
 echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
 
+
+
 for resource in ${resources};
 do
+    . ./cfn-testing-helper.config
+    env | grep CFN_TEST_
+
+    PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
+    echo "PROJECT_NAME:${PROJECT_NAME}"
 
     echo " Started Publishing ${resource} resource"
     echo "Step 1: cfn test"
-    ./cfn-testing-helper.sh "${resource}"
+    ./cfn-testing-helper.sh "${resource}" "${PROJECT_NAME}"
     if [ "$?" -ne 0 ]
             then
              	echo "Error in Testing phase" 1>&2
@@ -59,6 +66,17 @@ do
      	echo "Error in Publishing phase" 1>&2
       exit 1
     fi
+
+    cd "${resource}"
+    ./test/cfn-test-delete-inputs.sh && echo "resource:${resource} inputs delete OK" || echo "resource:${resource} input delete FAILED"
+
+#    Deleting the projects
+    echo "Looking up Atlas project id for resource:${resource} project name:${PROJECT_NAME}-${resource}"
+    p_id=$(atlas project list --output=json | jq --arg name "${PROJECT_NAME}-${resource}" -r '.results[] | select(.name==$name) | .id')
+    [ -z "$p_id" ] && echo "No project found" && continue
+    p_name=$(atlas project list --output=json | jq --arg name "${PROJECT_NAME}-${resource}" -r '.results[] | select(.name==$name) | .name')
+    echo "Cleaning up for resource:${resource}, project:${p_name} id:${p_id}"
+    atlas project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
 
     echo "******** Successfully published ${resource} *************"
  done

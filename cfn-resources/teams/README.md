@@ -19,7 +19,7 @@ then in another shell:
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
 cd ${repo_root}/cfn-resources/teams
-./test/teams.create-sample-cfn-request.sh {Your Team Name},{ email id of one user assigned to this organization} > test.request.json 
+./test/teams.create-sample-cfn-request.sh {TEAM_NAME},{ ORGANIZATION_USER_EMAIL} > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 
@@ -32,23 +32,23 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Cloudformation Examples
+## CloudFormation Examples
 
-Please see the [CFN Template](test/teams.sample-template.yaml) for example resource
+Please see the [CFN Template](/examples/teams/teams.json) for example resource
 
 ## Integration Testing w/ AWS
 
-The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
+The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/quickstart-mongodb-atlas/scripts/launch-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the teams.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 
 In one shell session:
 ```
-aws logs tail mongodb-atlas-project-logs --follow
+aws logs tail mongodb-atlas-teams-logs --follow
 ```
 
 And then you can create the stack with a helper script it insert the apikeys for you:

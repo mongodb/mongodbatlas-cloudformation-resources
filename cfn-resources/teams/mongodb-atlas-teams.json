@@ -229,10 +229,7 @@
   },
   "readOnlyProperties": [
     "/properties/TeamId",
-    "/properties/RoleNames",
-    "/properties/Usernames",
-    "/properties/Users",
-    "/properties/OrgId"
+    "/properties/Users"
   ],
   "typeName": "MongoDB::Atlas::Teams"
 

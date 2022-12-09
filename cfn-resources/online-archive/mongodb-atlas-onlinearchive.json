@@ -224,6 +224,6 @@
     "/properties/State",
     "/definitions/PartitionFieldView/FieldType"
   ],
-  "typeName": "MongoDB::Atlas::OnlineArchives",
+  "typeName": "MongoDB::Atlas::OnlineArchive",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

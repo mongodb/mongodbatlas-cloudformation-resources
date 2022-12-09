@@ -1,5 +1,5 @@
 {
-    "typeName": "MongoDB::Atlas::onlinearchives",
+    "typeName": "MongoDB::Atlas::OnlineArchive",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",
@@ -9,7 +9,7 @@
         "subparser_name": null,
         "verbose": 0,
         "force": false,
-        "type_name": "MongoDB::Atlas::onlinearchives",
+        "type_name": "MongoDB::Atlas::OnlineArchive",
         "artifact_type": "r",
         "endpoint_url": null,
         "region": null,

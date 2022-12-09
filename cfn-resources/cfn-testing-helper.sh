@@ -121,7 +121,7 @@ do
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
         cat ./inputs/inputs_1_create.json
         # TODO: Using for publish, bucket-name can be configured
-        aws s3 cp ./inputs/inputs_1_create.json s3://atlascfnpublishing/"${res}"/inputs/inputs_1_create.json
+        #aws s3 cp ./inputs/inputs_1_create.json s3://atlascfnpublishing/"${res}"/inputs/inputs_1_create.json
     fi
     echo "Generated inputs for: ${res}"
     echo "----------------------------"

@@ -35,7 +35,7 @@ ClusterName="${projectName}"
 clusterId=$(atlas clusters list --output json  | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .name')
 if [ -z "$clusterId" ]; then
     clusterId=$(atlas cluster create ${ClusterName} --projectId ${projectId} --provider AWS --region US_EAST_1 --members 3 --backup --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.name')
-    sleep 20m
+    sleep 900
     echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 else
     echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
@@ -44,7 +44,7 @@ fi
 SnapshotId=$(atlas backup snapshots list cfntest --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
 if [ -z "$SnapshotId" ]; then
     SnapshotId=$(atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
-    sleep 5m
+    sleep 300
     echo -e "Created Cluster \"${ClusterName}\""
 else
         echo -e "FOUND Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"

@@ -22,7 +22,12 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-region="${AWS_DEFAULT_REGION}"
+
+region=$AWS_DEFAULT_REGION
+if [ -z "$region" ]; then
+region=$(aws configure get region)
+fi
+
 projectName="${1}"
 vpcId="${2}"
 subnetId="${3}"

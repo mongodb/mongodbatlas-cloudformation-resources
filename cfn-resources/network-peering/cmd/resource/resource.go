@@ -80,7 +80,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerRequest := mongodbatlas.Peer{
 		ContainerID:  container.ID,
 		VpcID:        *currentModel.VpcId,
-		ProviderName: container.ProviderName,
+		ProviderName: constants.AWS,
 	}
 
 	region := currentModel.AccepterRegionName
@@ -161,7 +161,6 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 	if currentModel.StatusName != nil {
 		currentModel.StatusName = &peerResponse.StatusName
 	}
-	currentModel.ProviderName = &peerResponse.ProviderName
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -287,7 +286,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp.Response), nil
 	}
 
-	var models []interface{}
+	models := make([]interface{}, 0)
 	for i := range peerResponse {
 		var model Model
 		model.AccepterRegionName = &peerResponse[i].AccepterRegionName
@@ -298,7 +297,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.ConnectionId = &peerResponse[i].ConnectionID
 		model.ErrorStateName = &peerResponse[i].ErrorStateName
 		model.StatusName = &peerResponse[i].StatusName
-		model.ProviderName = &peerResponse[i].ProviderName
 
 		models = append(models, model)
 	}
@@ -359,7 +357,7 @@ func findContainer(projectID, region string, currentModel *Model) (bool, *mongod
 	if err != nil {
 		return false, &container, err
 	}
-	opt := &mongodbatlas.ContainersListOptions{ProviderName: "AWS"}
+	opt := &mongodbatlas.ContainersListOptions{ProviderName: constants.AWS}
 	_, _ = logger.Debugf("Looking for any AWS containers for this project:%s. opt:%+v", projectID, opt)
 	containers, _, err := client.Containers.List(context.TODO(), projectID, opt)
 	if err != nil {
@@ -415,7 +413,7 @@ func validateOrCreateNetworkContainer(prevModel, currentModel *Model) (container
 	_, _ = logger.Debugf("projectId:%v, region:%v, cidr:%+v", projectID, region, &DefaultAWSCIDR)
 	containerRequest := &mongodbatlas.Container{}
 	containerRequest.RegionName = *region
-	containerRequest.ProviderName = "AWS"
+	containerRequest.ProviderName = constants.AWS
 	containerRequest.AtlasCIDRBlock = DefaultAWSCIDR
 	_, _ = logger.Debugf("containerRequest:%+v", containerRequest)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)

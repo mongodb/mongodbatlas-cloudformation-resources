@@ -9,7 +9,7 @@
       "Action": "sts:AssumeRole",
       "Condition": {
         "StringEquals": {
-          "sts:ExternalId": "402054b2-1b37-4d3f-b511-286602c5699e"
+          "sts:ExternalId": "518ff44f-146e-4b87-8678-626461c80fb0"
         }
       }
     }

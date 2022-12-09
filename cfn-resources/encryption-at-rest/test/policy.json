@@ -1,1 +1,1 @@
-{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "kms:Decrypt", "kms:Encrypt", "kms:DescribeKey" ], "Resource": [ "arn:aws:kms:ap-northeast-2:711489243244:key/6e7ca07d-eb51-4897-bc7d-e122b8d83bc9" ] } ]}
+{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "kms:Decrypt", "kms:Encrypt", "kms:DescribeKey" ], "Resource": [ "arn:aws:kms:us-east-1:711489243244:key/b9a5e56b-7c1c-48b1-ad5f-3d8b959bc60f" ] } ]}

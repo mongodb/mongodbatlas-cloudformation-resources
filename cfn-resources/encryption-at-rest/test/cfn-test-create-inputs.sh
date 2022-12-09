@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+# cfn-test-create-inputs.sh
+#
+# This tool generates json files in the inputs/ for `cfn test`.
+#
+
 set -x
 function usage {
     echo "usage:$0 <project_name>"
@@ -20,10 +26,12 @@ else
 fi
 
 echo "Check if a project is created $projectId"
+export MCLI_PROJECT_ID=$projectId
 
 echo "--------------------------------get aws region starts ----------------------------"\n
 
-keyRegion=$(aws configure get region)
+#keyRegion=$(aws configure get region)
+keyRegion=$AWS_DEFAULT_REGION
 keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegion=$(echo "$keyRegion" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
@@ -88,10 +96,6 @@ else
     echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"\n
-
-echo "--------------------------------printing AWS Role ----------------------------"\n
-aws iam get-role --role-name mongodb-test-enc-role
-echo "--------------------------------printing AWS Role ----------------------------"\n
 
 echo "--------------------------------attach mongodb  Role to AWS Role starts ----------------------------"\n
 awsArn=$(aws iam get-role --role-name mongodb-test-enc-role | jq '.Role|select(.RoleName |test( "mongodb-test-enc-role$")) |.Arn')

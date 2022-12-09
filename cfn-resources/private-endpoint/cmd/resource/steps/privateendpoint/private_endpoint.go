@@ -60,10 +60,8 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	ret := make([]AtlasPrivateEndpointCallBack, a.Len())
 
 	for i := 0; i < a.Len(); i++ {
-		v := reflect.ValueOf(a.Index(i).Interface().(interface{}))
+		v := reflect.ValueOf(a.Index(i).Interface())
 		peCallback := AtlasPrivateEndpointCallBack{}
-
-		//TODO: this can be done with Reflection
 
 		for _, key := range v.MapKeys() {
 			valStr := fmt.Sprint(v.MapIndex(key).Interface())

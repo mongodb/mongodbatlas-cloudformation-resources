@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
@@ -41,8 +40,6 @@ var ListRequiredFields = []string{constants.GroupID, constants.PubKey, constants
 func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpointInput {
 	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
 
-	log.Printf("PrivateEndpoints %v, -- %v", len(m.PrivateEndpoints), m.PrivateEndpoints)
-
 	for i, ep := range m.PrivateEndpoints {
 		endpoint := awsvpcendpoint.AwsPrivateEndpointInput{
 			VpcID:               *ep.VpcId,
@@ -52,8 +49,6 @@ func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpoint
 
 		awsInput[i] = endpoint
 	}
-
-	log.Printf("PrivateEndpoints %v, -- %v", len(awsInput), awsInput)
 
 	return awsInput
 }
@@ -109,7 +104,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
-		log.Print("Entered Point asf")
 		ValidationOutput, progressEvent := privateendpoint.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
@@ -117,20 +111,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		currentModel.Id = &ValidationOutput.ID
 
-		log.Print("Entered Point asdf2")
-
 		for _, cmpe := range currentModel.PrivateEndpoints {
 			for i := range ValidationOutput.Endpoints {
 				vpe := ValidationOutput.Endpoints[i]
-				log.Printf("Entered Point asdfafdgdfsh2 %v", )
 				if vpe.VpcID == *cmpe.VpcId && vpe.SubnetID == *cmpe.SubnetId {
-					log.Print("Entered Point asdgasgadsg4")
 					currentModel.PrivateEndpoints[i].InterfaceEndpointId = &vpe.InterfaceEndpointID
 				}
 			}
 		}
-
-		log.Print("Entered Point dasfa3")
 
 		privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id)
 		if err != nil {
@@ -138,8 +126,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				response.Response), nil
 		}
 		currentModel.EndpointServiceName = &privateEndpointResponse.EndpointServiceName
-
-		log.Print("Entered Point sdfasdfa4")
 
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,

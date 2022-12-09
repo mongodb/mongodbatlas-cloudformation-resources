@@ -212,20 +212,6 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 	return nil, &pe
 }
 
-func sliceDifference(current, previous []AtlasPrivateEndpointInput) []AtlasPrivateEndpointInput {
-	pSlice := make(map[string]string, len(previous))
-	for _, p := range previous {
-		pSlice[p.ToString()] = ""
-	}
-	var diff []AtlasPrivateEndpointInput
-	for _, x := range current {
-		if _, found := pSlice[x.ToString()]; !found {
-			diff = append(diff, x)
-		}
-	}
-	return diff
-}
-
 func (i AtlasPrivateEndpointInput) ToString() string {
 	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetID)
 }

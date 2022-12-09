@@ -4,7 +4,7 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-set -x
+#set -x
 function usage {
     echo "usage:$0 <project_name>"
     echo "Creates a new encryption key for the the project "
@@ -30,8 +30,6 @@ fi
 echo "Check if a project is created $projectId"
 export MCLI_PROJECT_ID=$projectId
 
-echo "--------------------------------get aws region starts ----------------------------"\n
-
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
 keyRegion=$(aws configure get region)
@@ -43,9 +41,10 @@ echo "$keyRegion"
 roleName="mongodb-test-enc-role-${keyRegion}"
 policyName="atlas-kms-role-policy-${keyRegion}"
 
-echo "--------------------------------get aws region ends ----------------------------"\n
+echo "roleName: ${roleName} , policyName: ${policyName}"
 
 echo "--------------------------------create key and key policy document starts ----------------------------"\n
+
 keyARN=$(aws kms create-key | jq '.KeyMetadata|.Arn')
 prefix='{ "Version": "2012-10-17", "Statement": ['
 echo "--------------------------------printing key  starts ----------------------------"\n
@@ -53,6 +52,7 @@ echo "$keyARN"
 cleanedkeyARN=$(echo ${keyARN} | sed 's/"//g')
 echo $cleanedkeyARN
 echo "--------------------------------printing key  ends ----------------------------"\n
+
 policyContent=$(jq --arg cleanedkeyARN $cleanedkeyARN '.Statement[0]|.Resource[0]?|=$cleanedkeyARN' "$(dirname "$0")/key-policy-template.json" )
 suffix=']}'
 policyDocument="${prefix} ${policyContent} ${suffix}"
@@ -66,17 +66,14 @@ echo $cleanedKeyID
 
 echo "--------------------------------create key and key policy document policy document ends ----------------------------"\n
 
-echo "--------------------------------printing policy document policy document ----------------------------"\n
+
 echo $policyDocument
 echo "--------------------------------policy document finished ----------------------------"\n
 
-echo "--------------------------------Mongo CLI Role creation starts ----------------------------"\n
+
 roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"\n
 
-echo "--------------------------------printing mongodb role details ----------------------------"\n
-atlas cloudProviders accessRoles  list --output json
-echo "--------------------------------AWS Role creation starts ----------------------------"\n
 
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
 atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
@@ -86,33 +83,30 @@ jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 echo cat add-policy.json
 echo "--------------------------------AWS Role creation ends ----------------------------"\n
 
-echo "--------------------------------AWS Role  creation starts ----------------------------"\n
+
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
     awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
-    echo -e "Created id: ${awsRoleID}\n"
+    echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
-    aws iam delete-role-policy --role-name "${roleName}" --policy-name atlas-kms-role-policy
+    aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
     aws iam delete-role --role-name "${roleName}"
  awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
     echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"\n
 
-echo "--------------------------------attach mongodb  Role to AWS Role starts ----------------------------"\n
+
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
-atlas cloudProviders accessRoles  list --output json
-aws iam put-role-policy   --role-name "${roleName}"   --policy-name atlas-kms-role-policy   --policy-document file://$(dirname "$0")/policy.json
+
+aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document file://$(dirname "$0")/policy.json
 echo "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------"\n
 
-echo "--------------------------------authorize mongodb  Role starts ----------------------------"\n
-
-echo "--------------------------------Role Id ----------------------------"\n"${roleID}"
 awsArne=$(echo "${awsArn}" | sed 's/"//g')
 # shellcheck disable=SC2086
 #TODO Needs change to while loop using get operation
 sleep 65
-echo "--------------------------------Role Id ----------------------------"\n${awsArne}
+
 atlas cloudProviders accessRoles aws authorize ${roleID} --iamAssumedRoleArn ${awsArne}
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"\n
 

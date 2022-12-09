@@ -6,6 +6,12 @@
 set -x
 echo "--------------------------------delete key and key policy document policy document starts ----------------------------"\n
 
+
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+echo "Check if a project is created $projectId"
+export MCLI_PROJECT_ID=$projectId
+
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
 keyRegion=$(aws configure get region)

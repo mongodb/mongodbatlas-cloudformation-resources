@@ -67,8 +67,9 @@ do
       exit 1
     fi
 
+    #delete the input params
     cd "${resource}"
-    ./test/cfn-test-delete-inputs.sh && echo "resource:${resource} inputs delete OK" || echo "resource:${resource} input delete FAILED"
+    ./test/cfn-test-delete-inputs.sh "${PROJECT_NAME}-${resource}" && echo "resource:${resource} inputs delete OK" || echo "resource:${resource} input delete FAILED"
 
 #    Deleting the projects
     echo "Looking up Atlas project id for resource:${resource} project name:${PROJECT_NAME}-${resource}"

@@ -14,9 +14,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+        "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
         "<a href="#deliverytype" title="DeliveryType">DeliveryType</a>" : <i>String</i>,
         "<a href="#snapshotid" title="SnapshotId">SnapshotId</a>" : <i>String</i>,
         "<a href="#oplogts" title="OpLogTs">OpLogTs</a>" : <i>String</i>,
+        "<a href="#oploginc" title="OpLogInc">OpLogInc</a>" : <i>String</i>,
         "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Integer</i>,
         "<a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>" : <i>String</i>,
         "<a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>" : <i>String</i>,
@@ -32,9 +34,11 @@ Type: MongoDB::Atlas::CloudBackUpRestoreJobs
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+    <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
     <a href="#deliverytype" title="DeliveryType">DeliveryType</a>: <i>String</i>
     <a href="#snapshotid" title="SnapshotId">SnapshotId</a>: <i>String</i>
     <a href="#oplogts" title="OpLogTs">OpLogTs</a>: <i>String</i>
+    <a href="#oploginc" title="OpLogInc">OpLogInc</a>: <i>String</i>
     <a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>: <i>Integer</i>
     <a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>: <i>String</i>
     <a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>: <i>String</i>
@@ -63,13 +67,25 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### DeliveryType
+#### InstanceName
 
-Type of restore job to create. 
+The instance name of the Serverless cluster whose snapshot you want to restore or you want to retrieve restore jobs.
 
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### DeliveryType
+
+Type of restore job to create.The value can be any one of download,automated or point_in_time 
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>download</code> | <code>automated</code> | <code>point_in_time</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -85,7 +101,17 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### OpLogTs
 
-If you performed a Point-in-Time restores at a time specified by a timestamp from the oplog, oplogTs indicates the timestamp used.
+Timestamp in the number of seconds that have elapsed since the UNIX epoch from which to you want to restore this snapshot. This is the first part of an Oplog timestamp.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### OpLogInc
+
+Oplog operation number from which to you want to restore this snapshot. This is the second part of an Oplog timestamp.
 
 _Required_: No
 

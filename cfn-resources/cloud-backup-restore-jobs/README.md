@@ -46,7 +46,7 @@ lambda function which handles the request for the Resource Type.
 
 In one shell session:
 ```
-aws logs tail mongodb-atlas-project-logs --follow
+aws logs tail mongodb-atlas-backup-restore-job-logs --follow
 ```
 
 And then you can create the stack with a helper script it insert the apikeys for you:

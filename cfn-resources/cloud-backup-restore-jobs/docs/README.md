@@ -61,7 +61,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
@@ -85,7 +85,7 @@ _Required_: No
 
 _Type_: String
 
-_Allowed Values_: <code>download</code> | <code>automated</code> | <code>point_in_time</code>
+_Allowed Values_: <code>download</code> | <code>automated</code> | <code>pointInTime</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

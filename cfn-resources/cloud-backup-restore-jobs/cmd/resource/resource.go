@@ -17,8 +17,7 @@ import (
 )
 
 var CreateRequiredFields = []string{constants.PubKey, constants.SnapshotID, constants.PvtKey, constants.DeliveryType, constants.ProjectID}
-var ReadRequiredFields = []string{constants.PubKey, constants.ID, constants.PvtKey, constants.ProjectID}
-var DeleteRequiredFields = []string{constants.PubKey, constants.ID, constants.PvtKey, constants.ClusterName, constants.ProjectID}
+var ReadDeleteRequiredFields = []string{constants.PubKey, constants.ID, constants.PvtKey, constants.ProjectID}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
@@ -113,7 +112,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup() // logger setup
 
 	// Validate required fields in the request
-	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(ReadDeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -188,7 +187,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup() // logger setup
 
 	// Validate required fields in the request
-	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(ReadDeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -209,28 +208,31 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// Create API Request Object
 	projectID := *currentModel.ProjectId
 	jobID := *currentModel.Id
+	clusterName := cast.ToString(currentModel.ClusterName)
+	if clusterName != "" {
+		// Check if delivery type is automated
+		if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Failed,
+				Message:         "Automated restore cannot be cancelled",
+				ResourceModel:   currentModel,
+			}, nil
+		}
 
-	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID:     projectID,
-		ClusterName: cast.ToString(currentModel.ClusterName),
-		JobID:       jobID,
-	}
+		// Create API Request Object
+		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
+			GroupID:     projectID,
+			ClusterName: cast.ToString(currentModel.ClusterName),
+			JobID:       jobID,
+		}
 
-	if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "Automated" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Automated restore cannot be cancelled",
-			ResourceModel:   currentModel,
-		}, nil
-	}
-
-	// API call to delete
-	_, err = client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
-	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
+		// API call to delete
+		_, err = client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
+		if err != nil {
+			return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
+		}
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

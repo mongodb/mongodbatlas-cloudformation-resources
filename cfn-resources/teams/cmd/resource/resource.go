@@ -24,8 +24,6 @@ var ListRequiredFields = []string{constants.PubKey, constants.PvtKey}
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
-	_, _ = logger.Debugf("Create Team - Request:%+v", currentModel)
-
 	// Validate required fields in the request
 	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, errors.New("required field not found")
@@ -39,30 +37,32 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// API call to create team
-	var teamID = currentModel.TeamId
-	if teamID == nil || *teamID == "" {
+	teamID := cast.ToString(currentModel.TeamId)
+	orgID := cast.ToString(currentModel.OrgId)
+	projectID := cast.ToString(currentModel.GroupId)
+	if teamID == "" {
 		// create new team in organization
 		teamRequest := mongodbatlas.Team{
 			Name:      cast.ToString(currentModel.Name),
 			Usernames: currentModel.Usernames,
 		}
-		teamResponse, resp, err := client.Teams.Create(context.Background(), *currentModel.OrgId, &teamRequest)
+		teamResponse, resp, err := client.Teams.Create(context.Background(), orgID, &teamRequest)
 		if err != nil {
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("unable to create team %v", err), resp.Response), nil
 		}
-		teamID = &teamResponse.ID
+		teamID = teamResponse.ID
 		currentModel = convertTeamToModel(teamResponse, currentModel)
 	}
 
 	// add existing team or newly created team to project if project id exist in the request
-	if currentModel.GroupId != nil && len(currentModel.RoleNames) > 0 {
+	if projectID != "" && len(currentModel.RoleNames) > 0 {
 		createRequest := []*mongodbatlas.ProjectTeam{{
-			TeamID:    cast.ToString(teamID),
+			TeamID:    teamID,
 			RoleNames: currentModel.RoleNames,
 		}}
-		_, _, err := client.Projects.AddTeamsToProject(context.Background(), *currentModel.GroupId, createRequest)
+		_, _, err := client.Projects.AddTeamsToProject(context.Background(), projectID, createRequest)
 		if err != nil {
-			_, _ = logger.Warnf("error adding Team(%s) to project(%s): reason : %v", *currentModel.TeamId, *currentModel.GroupId, err)
+			_, _ = logger.Warnf("error adding Team(%s) to project(%s): reason : %v", teamID, projectID, err)
 		}
 	}
 
@@ -76,7 +76,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Validate required fields in the request
 	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, errors.New("required field not found")
+		return *modelValidation, nil
 	}
 
 	// Create mongo DB client
@@ -88,16 +88,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// API call to read snapshot to read using ID field
-	orgID := *currentModel.OrgId
-	teamID := *currentModel.TeamId
+	teamID := cast.ToString(currentModel.TeamId)
+	orgID := cast.ToString(currentModel.OrgId)
+	teamName := cast.ToString(currentModel.Name)
 	var team *mongodbatlas.Team
 	var resp *mongodbatlas.Response
 	// get team by id or name
-	if *currentModel.TeamId != "" {
+	if teamID != "" {
 		team, resp, err = client.Teams.Get(context.Background(), orgID, teamID)
-	} else if *currentModel.Name != "" {
+	} else if teamName != "" {
 		// get team by name
-		team, resp, err = client.Teams.GetOneTeamByName(context.Background(), *currentModel.OrgId, *currentModel.Name)
+		team, resp, err = client.Teams.GetOneTeamByName(context.Background(), orgID, teamName)
 	}
 
 	if err != nil {
@@ -189,21 +190,26 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
+	teamID := cast.ToString(currentModel.TeamId)
+	orgID := cast.ToString(currentModel.OrgId)
+	teamName := cast.ToString(currentModel.Name)
+	projectID := cast.ToString(currentModel.GroupId)
+
 	// add existing team or newly created team to project if project id exist in the request
-	if currentModel.GroupId != nil && len(currentModel.RoleNames) > 0 {
+	if projectID != "" && len(currentModel.RoleNames) > 0 {
 		createRequest := []*mongodbatlas.ProjectTeam{{
-			TeamID:    *currentModel.TeamId,
+			TeamID:    teamID,
 			RoleNames: currentModel.RoleNames,
 		}}
-		_, _, err := client.Projects.AddTeamsToProject(context.Background(), *currentModel.GroupId, createRequest)
+		_, _, err := client.Projects.AddTeamsToProject(context.Background(), projectID, createRequest)
 		if err != nil {
-			_, _ = logger.Warnf("error adding Team(%s) to project(%s): reason : %v", *currentModel.TeamId, *currentModel.GroupId, err)
+			_, _ = logger.Warnf("error adding Team(%s) to project(%s): reason : %v", teamID, projectID, err)
 		}
 	}
 
 	// rename the team
-	if team.Name != *currentModel.Name {
-		_, _, err := client.Teams.Rename(context.Background(), *currentModel.OrgId, *currentModel.TeamId, *currentModel.Name)
+	if team.Name != teamName {
+		_, _, err := client.Teams.Rename(context.Background(), orgID, teamID, teamName)
 		if err != nil {
 			_, _ = logger.Warnf("error updating Team information: %v", err)
 		}
@@ -212,7 +218,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// add/remove user to/from teams
 	if currentModel.Usernames != nil {
 		// get the current  users list for the team
-		users, _, err := client.Teams.GetTeamUsersAssigned(context.Background(), *currentModel.OrgId, *currentModel.TeamId)
+		users, _, err := client.Teams.GetTeamUsersAssigned(context.Background(), orgID, teamID)
 		if err != nil {
 			_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
 		}
@@ -223,9 +229,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 			if isExistingUser {
 				// remove user from team
-				_, err := client.Teams.RemoveUserToTeam(context.Background(), *currentModel.OrgId, *currentModel.TeamId, currentUser.ID)
+				_, err := client.Teams.RemoveUserToTeam(context.Background(), orgID, teamID, currentUser.ID)
 				if err != nil {
-					_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", currentUser.ID, *currentModel.TeamId, err)
+					_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", currentUser.ID, teamID, err)
 				}
 			} else {
 				// add user to team
@@ -240,7 +246,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 		// save all new users
-		_, _, err = client.Teams.AddUsersToTeam(context.Background(), *currentModel.OrgId, *currentModel.TeamId, newUsers)
+		_, _, err = client.Teams.AddUsersToTeam(context.Background(), orgID, teamID, newUsers)
 		if err != nil {
 			_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
 		}
@@ -250,7 +256,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	roleNames := currentModel.RoleNames
 	if len(roleNames) > 0 && currentModel.GroupId != nil {
 		teamRequest := &mongodbatlas.TeamUpdateRoles{RoleNames: roleNames}
-		_, _, err = client.Teams.UpdateTeamRoles(context.Background(), *currentModel.GroupId, *currentModel.TeamId, teamRequest)
+		_, _, err = client.Teams.UpdateTeamRoles(context.Background(), projectID, teamID, teamRequest)
 		if err != nil {
 			_, _ = logger.Warnf("update role to team  error (%+v) \n", err)
 		}
@@ -280,6 +286,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create Atlas API Request Object
+	orgID := cast.ToString(currentModel.OrgId)
+	projectID := cast.ToString(currentModel.GroupId)
 	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
@@ -287,9 +295,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var models []interface{}
 	var resp *mongodbatlas.Response
 	// API call to get teams for project id
-	if currentModel.GroupId != nil {
+	if projectID != "" {
 		var teamsAssigned *mongodbatlas.TeamsAssigned
-		teamsAssigned, resp, err = client.Projects.GetProjectTeamsAssigned(context.Background(), *currentModel.GroupId)
+		teamsAssigned, resp, err = client.Projects.GetProjectTeamsAssigned(context.Background(), projectID)
 
 		if err != nil {
 			return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
@@ -302,7 +310,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	} else {
 		// API call to get teams from organization
 		var teams []mongodbatlas.Team
-		teams, resp, err = client.Teams.List(context.Background(), *currentModel.OrgId, params)
+		teams, resp, err = client.Teams.List(context.Background(), orgID, params)
 
 		if err != nil {
 			return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
@@ -380,29 +388,36 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-teams")
 }
 func removeFromProject(client *mongodbatlas.Client, currentModel *Model) error {
-	projectID, err := getProjectIDByTeamID(context.Background(), client, *currentModel.TeamId)
+	teamID := cast.ToString(currentModel.TeamId)
+	projectID, err := getProjectIDByTeamID(context.Background(), client, teamID)
 	if err != nil {
-		_, _ = logger.Debugf("error to get assigned project details for Team: %s", *currentModel.TeamId)
+		_, _ = logger.Debugf("error to get assigned project details for Team: %s", teamID)
 		return err
 	}
-	_, err = client.Teams.RemoveTeamFromProject(context.Background(), projectID, *currentModel.TeamId)
+	_, err = client.Teams.RemoveTeamFromProject(context.Background(), projectID, teamID)
 	if err != nil {
-		_, _ = logger.Debugf("error deleting Team from project: %s", *currentModel.TeamId)
+		_, _ = logger.Debugf("error deleting Team from project: %s", teamID)
 		return err
 	}
 	return nil
 }
 func removeFromOrganization(client *mongodbatlas.Client, currentModel *Model) error {
-	_, err := client.Teams.RemoveTeamFromOrganization(context.Background(), *currentModel.OrgId, *currentModel.TeamId)
+	teamID := cast.ToString(currentModel.TeamId)
+	orgID := cast.ToString(currentModel.OrgId)
+
+	_, err := client.Teams.RemoveTeamFromOrganization(context.Background(), orgID, teamID)
 	if err != nil {
-		_, _ = logger.Debugf("error deleting team from organization in retry : %s", *currentModel.TeamId)
+		_, _ = logger.Debugf("error deleting team from organization in retry : %s", teamID)
 		return err
 	}
 	return nil
 }
 func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
+	teamID := cast.ToString(currentModel.TeamId)
+	orgID := cast.ToString(currentModel.OrgId)
+	teamName := cast.ToString(currentModel.Name)
 	if *currentModel.TeamId != "" {
-		team, _, err := client.Teams.Get(context.Background(), *currentModel.OrgId, *currentModel.TeamId)
+		team, _, err := client.Teams.Get(context.Background(), orgID, teamID)
 		if err != nil {
 			return false
 		}
@@ -410,7 +425,7 @@ func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
 			return true
 		}
 	} else if *currentModel.Name != "" {
-		team, _, err := client.Teams.GetOneTeamByName(context.Background(), *currentModel.OrgId, *currentModel.Name)
+		team, _, err := client.Teams.GetOneTeamByName(context.Background(), orgID, teamName)
 		if err != nil {
 			return false
 		}
@@ -457,23 +472,6 @@ func getProjectIDByTeamID(ctx context.Context, conn *mongodbatlas.Client, teamID
 // function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
-}
-
-// ValidateRequest function to validate the request
-func ValidateRequest(requiredFields []string, currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
-	// Validate required fields are empty or nil
-	if modelValidation := validateModel(requiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil, errors.New("required field not found")
-	}
-	// Validate API Keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil, err
-	}
-
-	return handler.ProgressEvent{}, client, nil
 }
 
 func convertProjectTeamToModel(team *mongodbatlas.Result) *Model {

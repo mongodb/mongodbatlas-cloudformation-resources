@@ -30,13 +30,13 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Cloudformation Examples
+## CloudFormation Examples
 
-Please see the [CFN Template](test/cloud-backup-restore-job.sample-template.yaml) for example resource.
+Please see the [CFN Template](/examples/cloud-backup-restore-jobs/restore.json) for example resource
 
 ## Integration Testing w/ AWS
 
-The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
+The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/quickstart-mongodb-atlas/scripts/launch-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 

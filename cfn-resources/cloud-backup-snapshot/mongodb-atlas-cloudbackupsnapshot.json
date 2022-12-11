@@ -271,7 +271,7 @@
     },
     "InstanceName": {
       "type": "string",
-      "description": "Human-readable label that identifies the cluster.",
+      "description": "Human-readable label that identifies the serverless instance.",
       "maxLength": 64,
       "minLength": 1,
       "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
@@ -425,7 +425,6 @@
     "/properties/TotalCount",
     "/properties/Members",
     "/properties/ExpiresAt",
-    "/properties/Description",
     "/properties/StorageSizeBytes",
     "/properties/PolicyItems",
     "/properties/Id",
@@ -434,7 +433,6 @@
     "/properties/CloudProvider",
     "/properties/MongodVersion",
     "/properties/FrequencyType",
-    "/properties/RetentionInDays",
     "/properties/ReplicaSetName",
     "/properties/Status",
     "/definitions/ApiAtlasDiskBackupReplicaSetView/Type",

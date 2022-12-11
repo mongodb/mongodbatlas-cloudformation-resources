@@ -40,7 +40,7 @@ if [ -z "$clusterId" ]; then
 else
     echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 fi
-SnapshotId=$(mongocli atlas backup snapshots list cfntest --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
+SnapshotId=$(mongocli atlas backup snapshots list ${ClusterName} --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
 if [ -z "$SnapshotId" ]; then
     SnapshotId=$(mongocli atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
     sleep 5m
@@ -58,7 +58,7 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    '.ClusterName?|=$clusterName |.GroupId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
-name="${name}- more B@d chars !@(!(@====*** ;;::"
+ClusterName="${ClusterName}- more B@d chars !@(!(@====*** ;;::"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg group_id "$projectId" \

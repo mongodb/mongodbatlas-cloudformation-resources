@@ -46,8 +46,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
-	clusterName := *currentModel.ClusterName
+	clusterName := cast.ToString(currentModel.ClusterName)
+	projectID := cast.ToString(currentModel.GroupId)
+
 	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID:     projectID,
 		ClusterName: clusterName,
@@ -62,8 +63,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeServiceInternalError), nil
 	}
-
 	currentModel.SnapshotId = &snapshot.ID
+
 	_, _ = logger.Debugf("cloud backup created successfully %s", *currentModel.SnapshotId)
 
 	return handler.ProgressEvent{
@@ -100,6 +101,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
+	clusterName := cast.ToString(currentModel.ClusterName)
+	instanceName := cast.ToString(currentModel.InstanceName)
+	projectID := cast.ToString(currentModel.GroupId)
+
+	if clusterName == "" && instanceName == "" {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         "Error - reading cloud backup  snapshot restore job: cluster name or instance name must be set ",
+			ResourceModel:   currentModel,
+		}, nil
+	}
 	// Check if  exist
 	if !isSnapshotExist(currentModel) {
 		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
@@ -110,8 +122,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
-	snapshotID := *currentModel.SnapshotId
+	snapshotID := cast.ToString(currentModel.SnapshotId)
 	var snapshot *mongodbatlas.CloudProviderSnapshot
 	var res *mongodbatlas.Response
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
@@ -120,12 +131,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// API call to read snapshot
-	if currentModel.ClusterName != nil {
-		snapshotRequest.ClusterName = *currentModel.ClusterName
+	if clusterName != "" {
+		snapshotRequest.ClusterName = clusterName
 		snapshot, res, err = client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
 	} else {
 		// read serverless instance snapshot
-		snapshotRequest.InstanceName = *currentModel.InstanceName
+		snapshotRequest.InstanceName = instanceName
 		snapshot, res, err = client.CloudProviderSnapshots.GetOneServerlessSnapshot(context.Background(), snapshotRequest)
 	}
 
@@ -153,7 +164,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
-	_, _ = logger.Debugf("Delete snapshot for Request() currentModel:%+v", currentModel)
 
 	// Validate required fields in the request
 	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
@@ -166,6 +176,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	// check if exist
 	if !isSnapshotExist(currentModel) {
 		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
@@ -176,11 +187,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
-	clusterName := *currentModel.ClusterName
-	snapshotID := *currentModel.SnapshotId
-
-	_, _ = logger.Debugf("Deleting snapshotID (%s)", snapshotID)
+	clusterName := cast.ToString(currentModel.ClusterName)
+	projectID := cast.ToString(currentModel.GroupId)
+	snapshotID := cast.ToString(currentModel.SnapshotId)
 
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID:     projectID,
@@ -208,7 +217,9 @@ func isSnapshotExist(currentModel *Model) bool {
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
+	clusterName := cast.ToString(currentModel.ClusterName)
+	instanceName := cast.ToString(currentModel.InstanceName)
+	projectID := cast.ToString(currentModel.GroupId)
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID: projectID,
 	}
@@ -219,12 +230,12 @@ func isSnapshotExist(currentModel *Model) bool {
 	}
 
 	// API call to list snapshot
-	if currentModel.ClusterName != nil {
-		snapshotRequest.ClusterName = *currentModel.ClusterName
+	if clusterName != "" {
+		snapshotRequest.ClusterName = clusterName
 		snapshots, _, err = client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
 	} else {
 		// read serverless instance snapshot
-		snapshotRequest.InstanceName = *currentModel.InstanceName
+		snapshotRequest.InstanceName = instanceName
 		snapshots, _, err = client.CloudProviderSnapshots.GetAllServerlessSnapshots(context.Background(), snapshotRequest, params)
 	}
 	if err != nil {
@@ -261,6 +272,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Create Atlas API Request Object
 	projectID := *currentModel.GroupId
+	clusterName := cast.ToString(currentModel.ClusterName)
+	instanceName := cast.ToString(currentModel.InstanceName)
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID: projectID,
 	}
@@ -273,12 +286,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// API call to list snapshot
-	if currentModel.ClusterName != nil {
-		snapshotRequest.ClusterName = *currentModel.ClusterName
+	if clusterName != "" {
+		snapshotRequest.ClusterName = clusterName
 		snapshots, res, err = client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
 	} else {
 		// read serverless instance snapshot
-		snapshotRequest.InstanceName = *currentModel.InstanceName
+		snapshotRequest.InstanceName = instanceName
 		snapshots, res, err = client.CloudProviderSnapshots.GetAllServerlessSnapshots(context.Background(), snapshotRequest, params)
 	}
 
@@ -361,7 +374,7 @@ func snapshotIsReady(client *mongodbatlas.Client, projectID, snapshotID, cluster
 
 // logger setup function
 func setup() {
-	util.SetupLogger("mongodb-atlas-BackupSnapshot")
+	util.SetupLogger("mongodb-atlas-backup-snapshot")
 }
 
 // converts mongodb link class to model link class

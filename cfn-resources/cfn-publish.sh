@@ -1,19 +1,32 @@
 #!/usr/bin/env bash
 
 
-trap "exit" INT TERM ERR
-set -x
-set -o errexit
+#trap "exit" INT TERM ERR
+#set -x
+#set -o errexit
 set -o nounset
-set -o pipefail
+#set -o pipefail
 
 
 resources="${1:-project}"
-cloud_publish=${2:-true}
+
+
+# Handling other parameters if there are any.
+IFS=","
+if [ -n "${2}" ]; then
+for param in ${2};
+do
+echo "$param"
+export "$param"
+echo
+done
+fi
+
+cloud_publish=${3:-true}
+
 export CLOUD_PUBLISH="${cloud_publish}"
 
 echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
-
 
 
 for resource in ${resources};
@@ -26,20 +39,21 @@ do
 
     echo " Started Publishing ${resource} resource"
     echo "Step 1: cfn test"
-    ./cfn-testing-helper.sh "${resource}" "${PROJECT_NAME}"
-    if [ "$?" -ne 0 ]
-            then
-             	echo "Error in Testing phase" 1>&2
-              exit 1
+
+    if ! ./cfn-testing-helper.sh "${resource}" "${PROJECT_NAME}";
+      then
+       	echo "Error in Testing phase"
+        exit 1
     fi
+    exit 0
 
     echo "step 2: cfn submit for ${resource}"
-    ./cfn-submit-helper.sh "${resource}"
-    if [ "$?" -ne 0 ]
-        then
-         	echo "Error in Submit phase" 1>&2
-          exit 1
-    fi
+
+     if ! ./cfn-submit-helper.sh "${resource}";
+      then
+        echo "Error in Submit phase"
+        exit 1
+     fi
 
     echo " step 3: update default version for ${resource}"
 
@@ -60,11 +74,11 @@ do
     aws cloudformation set-type-default-version --type RESOURCE --type-name "${res_type}" --version-id "${latestVersion}"
 
     echo " step 4:  Publishing  ${resource}"
-    ./cfn-publishing-helper.sh "${resource}" "${latestVersion}"
-    if [ "$?" -ne 0 ]
-    then
-     	echo "Error in Publishing phase" 1>&2
-      exit 1
+
+    if ! ./cfn-publishing-helper.sh "${resource}" "${latestVersion}";
+                       then
+                        	echo "Error in Publishing phase"
+                         exit 1
     fi
 
     #delete the input params
@@ -77,7 +91,7 @@ do
     [ -z "$p_id" ] && echo "No project found" && continue
     p_name=$(atlas project list --output=json | jq --arg name "${PROJECT_NAME}-${resource}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${resource}, project:${p_name} id:${p_id}"
-    atlas project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+    atlas project delete "${p_id}" --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
 
     echo "******** Successfully published ${resource} *************"
  done

@@ -15,12 +15,14 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-testing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-#trap "exit" INT TERM ERR
+trap "exit" INT TERM ERR
 #trap "kill 0" EXIT
 #set -x
-#set -o errexit
+set -o errexit
 #set -o nounset
-#set -o pipefail
+set -o pipefail
+
+
 
 _DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
@@ -117,8 +119,18 @@ do
         echo "Generating private-endpoint test inputs AWS_VPC_ID=${AWS_VPC_ID}, AWS_SUBNET_ID=${AWS_SUBNET_ID}"
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_VPC_ID}" "${AWS_SUBNET_ID}" && \
             echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+#    elif [[ "${res}" == "cloud-provider-snapshots" ]] || [[ "${res}" == "cloud-backup-snapshots" ]] || [[ "${res}" == "cloud-provider-snapshot-restore-jobs" ]] || [[ "${res}" == "cloud-provider-snapshot-restore-jobs" ]]; then
+#        #
+#        # Check if the required env variables are available,
+#        echo "Cloud provider snapshot"
+#        if [ -z "${ClusterName}" ] || [ -z "${SnapshotId}" ]; then
+#          echo "Test" "$ClusterName" "$SnapshotId"
+#          echo "Error is testing cloud-provider-snapshots, we need ClusterName and SnapshotId provided in OtherParams during Automation. Kindly provide these values.
+#          Example: 'ClusterName'='cluster-123','SnapshotId'='snapshot-123'"
+#          exit 1
+#        fi
     else
-        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED" || exit 1
         cat ./inputs/inputs_1_create.json
         # TODO: Using for publish, bucket-name can be configured
         #aws s3 cp ./inputs/inputs_1_create.json s3://atlascfnpublishing/"${res}"/inputs/inputs_1_create.json

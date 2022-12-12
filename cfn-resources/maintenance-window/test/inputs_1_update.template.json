@@ -1,0 +1,9 @@
+{
+    "DayOfWeek": "1",
+    "HourOfDay": "10",
+    "GroupId" : "$GroupId",
+    "ApiKeys" : {
+        "PublicKey" : "$ATLAS_PUBLIC_KEY",
+        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    }
+}

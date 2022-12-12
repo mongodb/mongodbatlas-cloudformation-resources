@@ -9,18 +9,20 @@ set -o nounset
 
 
 resources="${1:-project}"
+otherParams="${2:-}"
 
 
 # Handling other parameters if there are any.
 IFS=","
-if [ -n "${2}" ]; then
-for param in ${2};
+if [ -n "${otherParams}" ]; then
+for param in ${otherParams};
 do
 echo "$param"
 export "$param"
 echo
 done
 fi
+
 
 cloud_publish=${3:-true}
 

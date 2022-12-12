@@ -55,6 +55,10 @@ const (
 	EndpointID = "EndpointId"
 	TType      = "Type"
 
+	IntegrationType = "Type"
+
 	UserID  = "UserName"
 	Success = 200
+
+	TeamID = "TeamId"
 )

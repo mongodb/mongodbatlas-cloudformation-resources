@@ -75,7 +75,6 @@ func wrap(req handler.Request, f handlerFunc) (response handler.ProgressEvent) {
 		return handler.NewFailedEvent(err)
 	}
 
-
 	response, err := f(req, prevModel, currentModel)
 	if err != nil {
 		log.Printf("Error returned from handler function: %v", err)

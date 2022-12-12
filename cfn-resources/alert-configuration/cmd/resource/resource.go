@@ -267,7 +267,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	// populate list
 	for ind := range alerts {
-		models = append(models, convertToUIModel(&alerts[ind], nil, nil))
+		var model Model
+		models = append(models, convertToUIModel(&alerts[ind], &model, nil))
 	}
 
 	return handler.ProgressEvent{

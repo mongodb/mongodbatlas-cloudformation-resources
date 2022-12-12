@@ -16,17 +16,23 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.PvtKey, constants.EndpointID, constants.TType}
+var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.PvtKey, constants.EndpointID}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
 
 // function to validate inputs to all actions
-func validateRequest(fields []string, model *Model) *handler.ProgressEvent {
+func validateAndDefaultRequest(fields []string, model *Model) *handler.ProgressEvent {
+	if model.Type == nil {
+		model.Type = aws.String(constants.DataLake)
+	}
+	if model.Provider == nil {
+		model.Provider = aws.String(constants.AWS)
+	}
 	return validator.ValidateModel(fields, model)
 }
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	validationError := validateRequest(RequiredFields, currentModel)
+	validationError := validateAndDefaultRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
@@ -61,7 +67,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			StatusCode: http.StatusNotFound,
 		}), nil
 	}
-	validationError := validateRequest(RequiredFields, currentModel)
+	validationError := validateAndDefaultRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
@@ -94,7 +100,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	validationError := validateRequest(RequiredFields, currentModel)
+	validationError := validateAndDefaultRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
@@ -117,7 +123,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	validationError := validateRequest(ListRequiredFields, currentModel)
+	validationError := validateAndDefaultRequest(ListRequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}

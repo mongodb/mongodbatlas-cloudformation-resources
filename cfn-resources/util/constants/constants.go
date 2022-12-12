@@ -53,7 +53,7 @@ const (
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
 	EndpointID = "EndpointId"
-	TType      = "Type"
+	DataLake   = "DATA_LAKE"
 
 	IntegrationType = "Type"
 

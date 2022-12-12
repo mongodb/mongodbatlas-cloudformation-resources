@@ -48,14 +48,11 @@ projectId=$(atlas projects list --output json | jq --arg NAME "${ProjectName}" -
 
 export MCLI_PROJECT_ID=$projectId
 
-clusterId=$(atlas clusters describe "${ClusterName}"  --output json | jq -r '.id')
-if [ -z "$clusterId" ]; then
+
     clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
     sleep 900
     echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-else
-    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-fi
+
 
 
 

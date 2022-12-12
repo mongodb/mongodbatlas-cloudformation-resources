@@ -32,7 +32,7 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project project-ip-access-list database-user private-endpoint }"
+resources="${1:-private-endpoint}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: Building"
@@ -102,10 +102,11 @@ do
         #
         # grab the first vpc-id found to test with,
         AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
-        AWS_SUBNET_ID=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${AWS_VPC_ID}"  --output=json | jq -r '.Subnets[0].SubnetId')
-
-        echo "Generating private-endpoint test inputs AWS_VPC_ID=${AWS_VPC_ID}, AWS_SUBNET_ID=${AWS_SUBNET_ID}"
-        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_VPC_ID}" "${AWS_SUBNET_ID}" && \
+        AWS_SUBNET_ID=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${AWS_VPC_ID}"  --output=json | jq -r '.Subnets')
+        AWS_SUBNET_1=$(echo ${AWS_SUBNET_ID} | jq -r ".[0].SubnetId")
+        AWS_SUBNET_2=$(echo ${AWS_SUBNET_ID} | jq -r ".[1].SubnetId")
+        echo "Generating private-endpoint test inputs AWS_VPC_ID=${AWS_VPC_ID}, AWS_SUBNET_ID_1=${AWS_SUBNET_1}, AWS_SUBNET_2=${AWS_SUBNET_2}"
+        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_VPC_ID}" "${AWS_SUBNET_1}" "${AWS_SUBNET_2}" && \
             echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     else
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"

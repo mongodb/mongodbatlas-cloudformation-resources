@@ -1,13 +1,18 @@
-# MongoDB::Atlas::DatabaseUser
+# Mongodb::Atlas::MaintenanceWindow
 
 ## Description
-Returns, adds, edits, and removes database users.
+The MaintenanceWindow resource provides access to retrieve or update the current Atlas project maintenance window.
 
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)
 
-## Unit Testing Locally
+## Example
+This file can be used as a CloudFormation template to create a new Maintenance Window resource
+
+[maintenance-window.json](../../examples/maintenance-window/maintenance-window.json)
+
+## Local Testing
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
@@ -18,8 +23,8 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/database-user
-./test/databaseuser.create-sample-cfn-request.sh YourProjectID SomeIAMRole > test.request.json 
+cd ${repo_root}/cfn-resources/project
+./test/project.create-sample-cfn-request.sh YourProjectName > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 
@@ -32,11 +37,7 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Cloudformation Examples
-
-Please use the [CFN Template](test/databaseuser.sample-template.json)
-
-## Integration Testing w/ AWS
+## Usage
 
 The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
@@ -57,7 +58,8 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/database-user/test/databaseuser.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=Username,ParameterValue=<USERNAME> ParameterKey=Password,ParameterValue=<PWD> 
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/project/test/project.sample-template.yaml SampleProject1 ParameterKey=OrgId,ParameterValue=${ATLAS_ORG_ID}
 ```
 
-For more information see: MongoDB Atlas API DatabaseUser [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users) Documentation.
+## For More Information
+See the MongoDB Atlas API [Maintenance Windows Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Maintenance-Windows) Documentation.

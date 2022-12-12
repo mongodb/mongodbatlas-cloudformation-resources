@@ -20,6 +20,7 @@ const (
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
+	RoleName       = "RoleName"
 
 	DatabaseName = "DatabaseName"
 	Username     = "Username"
@@ -50,6 +51,17 @@ const (
 	ClusterName                      = "ClusterName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
+
+	IntegrationType = "Type"
+
+	IndexID        = "IndexId"
+	CollectionName = "CollectionName"
+	Database       = "Database"
+
+	UserID  = "UserName"
+	Success = 200
+
+	TeamID = "TeamId"
 
 	CloudProviderAccessRoleID = "RoleId"
 	LocalSessionType          = "LOCAL_SESSION"

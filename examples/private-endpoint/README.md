@@ -1,6 +1,6 @@
 # How to create a MongoDB::Atlas::PrivateEndpoint 
 
-##Step 1: Activate the private-endpoint resource in cloudformation
+## Step 1: Activate the MongoDB::Atlas::PrivateEndpoint Third Party Public resource in AWS CloudFormation
    Step a: Create Role using [execution-role.json](execution-role.json) in this folder
 
    Step b: Search for Mongodb::Atlas::PrivateEndpoint resource.
@@ -13,9 +13,9 @@
 
 ## Step 2: Create template using [privateEndpoint.json](privateEndpoint.json)
     Note: Make sure you are providing appropriate vales for 
-    1. OrgId
-    2. PublicKey
-    3. PrivateKey
-    4. Region
-    5. VpcId 
-    6. SubnetId
+    1. MongoDBAtlasProjectId
+    2. MongoDBAtlasAPIPublicKey
+    3. MongoDBAtlasAPIPrivateKey
+    4. AWSRegion
+    5. AWSVpcId 
+    6. AWSSubnetId

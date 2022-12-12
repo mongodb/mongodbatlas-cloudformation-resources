@@ -23,48 +23,31 @@ mkdir inputs
 
 ClusterName=$CFN_TEST_NEW_PROJECT_NAME
 echo "Came inside create inputs to test"
- if [ -z "${ClusterName}" ] || [ -z "${ProjectName}" ]; then
+ if [ -z "${ProjectName}" ]; then
           echo "Test" "$ClusterName" "$ProjectName"
           echo "Error is testing cloud-provider-snapshots, we need ClusterName and SnapshotId provided in OtherParams during Automation. Kindly provide these values.
           Example: 'ClusterName'='cluster-123','ProjectName'='Project-123'"
           exit 1
  fi
 
-
-
-#if [ -z "$ProjectName" ]; then
-#   projectName="${1}"
-#  else
-#   projectName="$ProjectName"
-#fi
-
 echo "Project Name  $ProjectName"
 projectId=$(atlas projects list --output json | jq --arg NAME "${ProjectName}" -r '.results[] | select(.name==$NAME) | .id')
-#if [ -z "$projectId" ]; then
-#    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-#    echo -e "Cant find project \"${projectName}\"\n"
-#fi
-#echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
-
+if [ -z "$projectId" ]; then
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+    echo -e "Cant find project \"${projectName}\"\n"
+fi
 export MCLI_PROJECT_ID=$projectId
 
 
-    clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-    sleep 900
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-
-
-
+clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+sleep 900
+echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 
 if [ -z "$clusterId" ]; then
     echo -e "Error Can't find Cluster \"${ClusterName}\""
     exit 1
 fi
-#SnapshotId=$(atlas backup snapshots list "${ClusterName}" --output json  | jq --arg ID "$SnapshotId" -r '.results[] | select(.id==$ID) | .id')
-#if [ -z "$SnapshotId" ]; then
-#    echo -e "Error Can't find SnapshotId \"${SnapshotId}\""
-#    exit 1
-#fi
+
 rm -rf inputs
 mkdir inputs
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \

@@ -21,7 +21,7 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-
+ClusterName=$CFN_TEST_NEW_PROJECT_NAME
 echo "Came inside create inputs to test"
  if [ -z "${ClusterName}" ] || [ -z "${ProjectName}" ]; then
           echo "Test" "$ClusterName" "$ProjectName"
@@ -29,6 +29,8 @@ echo "Came inside create inputs to test"
           Example: 'ClusterName'='cluster-123','ProjectName'='Project-123'"
           exit 1
  fi
+
+
 
 #if [ -z "$ProjectName" ]; then
 #   projectName="${1}"
@@ -47,6 +49,15 @@ projectId=$(atlas projects list --output json | jq --arg NAME "${ProjectName}" -
 export MCLI_PROJECT_ID=$projectId
 
 clusterId=$(atlas clusters describe "${ClusterName}"  --output json | jq -r '.id')
+if [ -z "$clusterId" ]; then
+    clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+    sleep 900
+    echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+else
+    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+fi
+
+
 
 if [ -z "$clusterId" ]; then
     echo -e "Error Can't find Cluster \"${ClusterName}\""

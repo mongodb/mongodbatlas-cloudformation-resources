@@ -48,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Create  Private Link ADL",
+		Message:         "Created Private Link ADL",
 		ResourceModel:   currentModel,
 	}
 	return event, nil

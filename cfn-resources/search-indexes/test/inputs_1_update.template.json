@@ -1,5 +1,5 @@
 {
-  "Analyzer": "lucene.standard",
+  "Analyzer": "lucene.simple",
   "ClusterName": "MongoDB12345",
   "CollectionName": "coll1",
   "ApiKeys" : {

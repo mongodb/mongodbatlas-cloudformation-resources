@@ -155,6 +155,13 @@ func status(currentModel *Model) handler.Status {
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	if currentModel.IndexId == nil {
+		err := errors.New("no Id found in currentModel")
+		return handler.ProgressEvent{
+			OperationStatus:  cloudformation.OperationStatusFailed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
 	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -174,12 +181,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
 	}
-	currentModel.IndexId = &searchIndex.IndexID
 	currentModel.Name = &searchIndex.Name
+	currentModel.Analyzer = &searchIndex.Analyzer
 	currentModel.Database = &searchIndex.Database
-	currentModel.Status = &searchIndex.Status
-	currentModel.SearchAnalyzer = &searchIndex.SearchAnalyzer
-
+	currentModel.CollectionName = &searchIndex.CollectionName
+	currentModel.Mappings = &ApiAtlasFTSMappingsViewManual{}
+	if searchIndex.Mappings != nil {
+		currentModel.Mappings.Dynamic = &searchIndex.Mappings.Dynamic
+	}
 	return handler.ProgressEvent{
 		OperationStatus: cloudformation.OperationStatusSuccess,
 		Message:         "Read Complete",
@@ -208,6 +217,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+	ctx := context.Background()
+	indexID, iOK := req.CallbackContext["id"]
+	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
+		id := cast.ToString(indexID)
+		currentModel.IndexId = &id
+		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
+	}
 	searchIndex, err := ToSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -234,11 +250,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	currentModel.Status = &updatedSearchIndex.Status
 	currentModel.IndexId = &updatedSearchIndex.IndexID
-
+	currentModel.Name = &updatedSearchIndex.Name
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
+		OperationStatus: status(currentModel),
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
+		CallbackContext: map[string]interface{}{
+			"stateName": updatedSearchIndex.Status,
+			"id":        currentModel.IndexId,
+		},
+		CallbackDelaySeconds: 65,
 	}, nil
 }
 
@@ -358,6 +379,13 @@ func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentM
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
+	if index.Status == cloudformation.OperationStatusFailed {
+		p.OperationStatus = cloudformation.OperationStatusFailed
+		p.Message = "Failed"
+		p.HandlerErrorCode = cloudformation.HandlerErrorCodeInvalidRequest
+		p.ResourceModel = currentModel
+		return p, nil
+	}
 	p.OperationStatus = cloudformation.OperationStatusSuccess
 	p.Message = "Complete"
 	if index.Status != "DELETED" {
@@ -373,5 +401,5 @@ func SearchIndexExists(ctx context.Context, client *mongodbatlas.Client, current
 			return &mongodbatlas.SearchIndex{Status: "DELETED"}, nil
 		}
 	}
-	return index, nil
+	return index, err
 }

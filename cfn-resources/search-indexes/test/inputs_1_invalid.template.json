@@ -1,12 +1,15 @@
 {
-  "Analyzer" : "lucene.standard",
-  "ClusterName" : "MongoDB12345",
-  "CollectionName" : "coll1",
+  "Analyzer": "lucene.standard%invalid",
+  "ClusterName": "MongoDB12345",
+  "CollectionName": "testcoll",
   "ApiKeys" : {
     "PublicKey" : "$ATLAS_PUBLIC_KEY",
     "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
-  "DatabaseName": "testdb",
-  "Name" : "abc-123",
-  "OrgId":  "PROJECT_ID"
+  "Database": "testdb",
+  "Name": "abc-123",
+  "GroupId": "$PROJECT_ID",
+  "Mappings": {
+    "Dynamic": "true"
+  }
 }

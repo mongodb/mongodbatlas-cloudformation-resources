@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -30,14 +31,20 @@ func validateAndDefaultRequest(fields []string, model *Model) *handler.ProgressE
 	return validator.ValidateModel(fields, model)
 }
 
+func setup() {
+	util.SetupLogger("mongodb-atlas-private-endpoint-adl")
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	validationError := validateAndDefaultRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
+		log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
@@ -50,6 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	_, resp, err := client.DataLakes.CreatePrivateLinkEndpoint(ctx, *currentModel.GroupId, &cm)
 	if err != nil {
+		log.Warnf("error in creating data-lake private link %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	event := handler.ProgressEvent{
@@ -73,12 +81,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
+		log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	ctx := context.Background()
 	dlEndpoint, resp, err := client.DataLakes.GetPrivateLinkEndpoint(ctx, *currentModel.GroupId, *currentModel.EndpointId)
 	if err != nil {
+		log.Warnf("error in getting data-lake private link details %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
@@ -106,12 +116,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
+		log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	ctx := context.Background()
 	resp, err := client.DataLakes.DeletePrivateLinkEndpoint(ctx, *currentModel.GroupId, *currentModel.EndpointId)
 	if err != nil {
+		log.Warnf("error in deleting private endpoint adl %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	event := handler.ProgressEvent{
@@ -129,12 +141,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
+		log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	ctx := context.Background()
 	list, resp, err := client.DataLakes.ListPrivateLinkEndpoint(ctx, *currentModel.GroupId)
 	if err != nil {
+		log.Warnf("error in listing private endpoint adl %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	models := make([]any, 0, len(list.Results))

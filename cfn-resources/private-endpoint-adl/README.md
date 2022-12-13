@@ -39,9 +39,9 @@ default AWS region.
 TAGS=logging make
 cfn submit --verbose --set-default
 ```
-## Cloudformation Examples
+## CloudFormation Examples
 
-Please see the [test/inputs_1_create.template.json](test/inputs_1_create.template.json) for example resource for example resource.
+Please see the [../../examples/private-endpoint-adl/endpoint-adl.json](../../examples/private-endpoint-adl/endpoint-adl.json) for example resource for example resource.
 
 ## Integration Testing w/ AWS
 

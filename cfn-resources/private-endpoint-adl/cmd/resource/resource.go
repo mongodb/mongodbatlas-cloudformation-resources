@@ -70,6 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if currentModel.EndpointId == nil {
 		return progressevents.GetFailedEventByResponse("required field missing. Resource not found", &http.Response{
 			StatusCode: http.StatusNotFound,
@@ -110,6 +111,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	validationError := validateAndDefaultRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
@@ -135,6 +137,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	validationError := validateAndDefaultRequest(ListRequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil

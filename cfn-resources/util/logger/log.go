@@ -124,6 +124,7 @@ func Default() *Logger {
 	return std
 }
 
+//nolint:errcheck
 func Debug(a ...any) (int, error) {
 	return std.Debug(a...)
 }
@@ -132,6 +133,7 @@ func Debugln(a ...any) (int, error) {
 	return std.Debugln(a...)
 }
 
+//nolint:errcheck
 func Debugf(format string, a ...any) (int, error) {
 	return std.Debugf(format, a...)
 }
@@ -144,6 +146,7 @@ func Warnln(a ...any) (int, error) {
 	return std.Warningln(a...)
 }
 
+//nolint:errcheck
 func Warnf(format string, a ...any) (int, error) {
 	return std.Warningf(format, a...)
 }

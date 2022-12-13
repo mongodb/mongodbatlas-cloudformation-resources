@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
@@ -244,32 +245,31 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 	if model.FunctionId != nil {
 		et.FunctionID = *model.FunctionId
 	}
-	conf := realm.EventTriggerConfig{
-		OperationTypes:           model.Trigger.OperationTypes,
-		Match:                    model.Trigger.Match,
-		FullDocument:             model.Trigger.FullDocument,
-		FullDocumentBeforeChange: model.Trigger.FullDocumentBeforeChange,
-		Unordered:                model.Trigger.Unordered,
+	conf := realm.EventTriggerConfig{}
+	if model.DatabaseTrigger != nil {
+		conf.Database = *model.DatabaseTrigger.Database
 	}
-	if model.Trigger.Database != nil {
-		conf.Database = *model.Trigger.Database
+	dTrigger := model.DatabaseTrigger
+	if dTrigger != nil {
+		conf.Collection = aws.StringValue(dTrigger.Collection)
+		conf.ServiceID = aws.StringValue(dTrigger.ServiceId)
+		conf.OperationTypes = dTrigger.OperationTypes
+		conf.Match = dTrigger.Match
+		conf.FullDocument = dTrigger.FullDocument
+		conf.FullDocumentBeforeChange = dTrigger.FullDocumentBeforeChange
+		conf.Unordered = dTrigger.Unordered
 	}
-	if model.Trigger.Collection != nil {
-		conf.Collection = *model.Trigger.Collection
+
+	if model.ScheduleTrigger != nil &&
+		model.ScheduleTrigger.Schedule != nil {
+		conf.Schedule = *model.ScheduleTrigger.Schedule
 	}
-	if model.Trigger.ServiceId != nil {
-		conf.ServiceID = *model.Trigger.ServiceId
-	}
-	if model.Trigger.ScheduleConfig != nil &&
-		model.Trigger.ScheduleConfig.Schedule != nil {
-		conf.Schedule = *model.Trigger.ScheduleConfig.Schedule
-	}
-	if model.Trigger.AuthConfig != nil {
-		if model.Trigger.AuthConfig.Providers != nil {
-			conf.Providers = model.Trigger.AuthConfig.Providers
+	if model.AuthTrigger != nil {
+		if model.AuthTrigger.Providers != nil {
+			conf.Providers = model.AuthTrigger.Providers
 		}
-		if model.Trigger.AuthConfig.OperationType != nil {
-			conf.OperationType = *model.Trigger.AuthConfig.OperationType
+		if model.AuthTrigger.OperationType != nil {
+			conf.OperationType = *model.AuthTrigger.OperationType
 		}
 	}
 	et.Config = &conf

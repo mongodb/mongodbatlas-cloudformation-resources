@@ -12,6 +12,6 @@
         "type_name": null,
         "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/trigger",
         "protocolVersion": "2.0.0",
-        "pluginVersion": "2.0.3"
+        "pluginVersion": "2.0.4"
     }
 }

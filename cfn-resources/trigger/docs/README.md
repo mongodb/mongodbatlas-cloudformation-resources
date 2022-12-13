@@ -13,7 +13,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::Trigger",
     "Properties" : {
         "<a href="#realmconfig" title="RealmConfig">RealmConfig</a>" : <i><a href="realmconfig.md">RealmConfig</a></i>,
-        "<a href="#trigger" title="Trigger">Trigger</a>" : <i><a href="trigger.md">Trigger</a></i>,
+        "<a href="#databasetrigger" title="DatabaseTrigger">DatabaseTrigger</a>" : <i><a href="databaseconfig.md">DatabaseConfig</a></i>,
+        "<a href="#authtrigger" title="AuthTrigger">AuthTrigger</a>" : <i><a href="authconfig.md">AuthConfig</a></i>,
+        "<a href="#scheduletrigger" title="ScheduleTrigger">ScheduleTrigger</a>" : <i><a href="scheduleconfig.md">ScheduleConfig</a></i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#disabled" title="Disabled">Disabled</a>" : <i>Boolean</i>,
@@ -32,7 +34,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::Trigger
 Properties:
     <a href="#realmconfig" title="RealmConfig">RealmConfig</a>: <i><a href="realmconfig.md">RealmConfig</a></i>
-    <a href="#trigger" title="Trigger">Trigger</a>: <i><a href="trigger.md">Trigger</a></i>
+    <a href="#databasetrigger" title="DatabaseTrigger">DatabaseTrigger</a>: <i><a href="databaseconfig.md">DatabaseConfig</a></i>
+    <a href="#authtrigger" title="AuthTrigger">AuthTrigger</a>: <i><a href="authconfig.md">AuthConfig</a></i>
+    <a href="#scheduletrigger" title="ScheduleTrigger">ScheduleTrigger</a>: <i><a href="scheduleconfig.md">ScheduleConfig</a></i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#disabled" title="Disabled">Disabled</a>: <i>Boolean</i>
@@ -53,11 +57,27 @@ _Type_: <a href="realmconfig.md">RealmConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Trigger
+#### DatabaseTrigger
 
 _Required_: No
 
-_Type_: <a href="trigger.md">Trigger</a>
+_Type_: <a href="databaseconfig.md">DatabaseConfig</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AuthTrigger
+
+_Required_: No
+
+_Type_: <a href="authconfig.md">AuthConfig</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ScheduleTrigger
+
+_Required_: No
+
+_Type_: <a href="scheduleconfig.md">ScheduleConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

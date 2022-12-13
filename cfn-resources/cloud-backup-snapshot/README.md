@@ -60,4 +60,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-snapshot/test/cloud-backup-snapshot.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=RetentionInDays,ParameterValue=<RetentionInDays> ParameterKey=Description,ParameterValue=<Description> 
 ```
 
-For more information see: MongoDB Atlas API [Cloud Backups Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.
+For more information see: MongoDB Atlas API [Cloud Backups](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.

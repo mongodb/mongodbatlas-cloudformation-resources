@@ -148,6 +148,11 @@
             "permissions": [
                 ""
             ]
+        },
+        "list": {
+            "permissions": [
+                ""
+            ]
         }
     }
 }

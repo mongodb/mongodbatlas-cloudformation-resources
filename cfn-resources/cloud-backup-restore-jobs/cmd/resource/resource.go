@@ -293,16 +293,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
-	var models []Model
+	models := make([]interface{}, 0)
 	restoreJobsList := restoreJobs.Results
 	for ind := range restoreJobsList {
 		var model Model
-		models = append(models, *convertToUIModel(restoreJobsList[ind], &model))
+		if !restoreJobsList[ind].Cancelled && !restoreJobsList[ind].Expired {
+			models = append(models, *convertToUIModel(restoreJobsList[ind], &model))
+		}
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List complete",
-		ResourceModel:   models,
+		ResourceModels:  models,
 	}, nil
 }
 

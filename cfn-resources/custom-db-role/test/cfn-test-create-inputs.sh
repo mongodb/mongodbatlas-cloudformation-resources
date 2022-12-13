@@ -10,9 +10,6 @@ set -o pipefail
 
 set -x
 
-echo "$ATLAS_PUBLIC_KEY"
-echo "$ATLAS_PRIVATE_KEY"
-
 function usage {
     echo "Creates a new customdb role for the test"
 }

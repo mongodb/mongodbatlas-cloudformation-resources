@@ -8,7 +8,6 @@ type Model struct {
 	ContainerId         *string           `json:",omitempty"`
 	AccepterRegionName  *string           `json:",omitempty"`
 	AwsAccountId        *string           `json:",omitempty"`
-	ProviderName        *string           `json:",omitempty"`
 	RouteTableCIDRBlock *string           `json:",omitempty"`
 	VpcId               *string           `json:",omitempty"`
 	ConnectionId        *string           `json:",omitempty"`

@@ -1,0 +1,13 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "MongoDB::Atlas::OrgInvitation",
+    "language": "go",
+    "runtime": "go1.x",
+    "entrypoint": "handler",
+    "testEntrypoint": "handler",
+    "settings": {
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/org-invitation",
+        "protocolVersion": "2.0.0",
+        "pluginVersion": "2.0.4"
+    }
+}

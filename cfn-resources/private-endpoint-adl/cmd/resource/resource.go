@@ -44,7 +44,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Warnf("error in creating mongodb client %v", err)
+		_, _ = log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	_, resp, err := client.DataLakes.CreatePrivateLinkEndpoint(ctx, *currentModel.GroupId, &cm)
 	if err != nil {
-		log.Warnf("error in creating data-lake private link %v", err)
+		_, _ = log.Warnf("error in creating data-lake private link %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	event := handler.ProgressEvent{
@@ -82,14 +82,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Warnf("error in creating mongodb client %v", err)
+		_, _ = log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	ctx := context.Background()
 	dlEndpoint, resp, err := client.DataLakes.GetPrivateLinkEndpoint(ctx, *currentModel.GroupId, *currentModel.EndpointId)
 	if err != nil {
-		log.Warnf("error in getting data-lake private link details %v", err)
+		_, _ = log.Warnf("error in getting data-lake private link details %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
@@ -118,14 +118,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Warnf("error in creating mongodb client %v", err)
+		_, _ = log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	ctx := context.Background()
 	resp, err := client.DataLakes.DeletePrivateLinkEndpoint(ctx, *currentModel.GroupId, *currentModel.EndpointId)
 	if err != nil {
-		log.Warnf("error in deleting private endpoint adl %v", err)
+		_, _ = log.Warnf("error in deleting private endpoint adl %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	event := handler.ProgressEvent{
@@ -144,14 +144,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Warnf("error in creating mongodb client %v", err)
+		_, _ = log.Warnf("error in creating mongodb client %v", err)
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	ctx := context.Background()
 	list, resp, err := client.DataLakes.ListPrivateLinkEndpoint(ctx, *currentModel.GroupId)
 	if err != nil {
-		log.Warnf("error in listing private endpoint adl %v", err)
+		_, _ = log.Warnf("error in listing private endpoint adl %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	models := make([]any, 0, len(list.Results))

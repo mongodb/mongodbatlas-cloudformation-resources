@@ -50,6 +50,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 	eventTrigger, err := newEventTrigger(currentModel)
+	if err != nil {
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
 	et, _, err := client.EventTriggers.Create(ctx, *currentModel.ProjectId, *currentModel.AppId, eventTrigger)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -128,6 +135,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 	eventTrigger, err := newEventTrigger(currentModel)
+	if err != nil {
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
 	_, res, err := client.EventTriggers.Update(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id, eventTrigger)
 	if err != nil {
 		if res != nil && res.StatusCode == http.StatusNotFound {
@@ -235,7 +249,6 @@ func GetRealmClient(ctx context.Context, c *RealmConfig) (*realm.Client, error) 
 
 func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 	et := realm.EventTriggerRequest{Disabled: model.Disabled}
-
 	if model.Name != nil {
 		et.Name = *model.Name
 	}
@@ -259,7 +272,6 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 		conf.FullDocumentBeforeChange = dTrigger.FullDocumentBeforeChange
 		conf.Unordered = dTrigger.Unordered
 	}
-
 	if model.ScheduleTrigger != nil &&
 		model.ScheduleTrigger.Schedule != nil {
 		conf.Schedule = *model.ScheduleTrigger.Schedule

@@ -1,0 +1,30 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Search Index on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "SearchIndex": {
+      "Type": "MongoDB::Atlas::SearchIndex",
+      "Properties": {
+      }
+    },
+    "SearchIndex": {
+      "Type": "MongoDB::Atlas::SearchIndex",
+      "Properties": {
+        "Analyzer": "lucene.standard",
+        "ClusterName": "Cluster_name",
+        "CollectionName": "testcoll",
+        "ApiKeys": {
+          "PublicKey": "htcxduya",
+          "PrivateKey": "$PRIVATE_KEY"
+        },
+        "Database": "testdb",
+        "Name": "search-322531",
+        "GroupId": "$Group_Id",
+        "Mappings": {
+          "Dynamic": "true"
+        }
+      }
+    }
+  }
+}

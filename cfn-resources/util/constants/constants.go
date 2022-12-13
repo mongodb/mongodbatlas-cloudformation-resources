@@ -62,4 +62,6 @@ const (
 	Success = 200
 
 	TeamID = "TeamId"
+
+	ErrorCreateCloudBackup = "Error - Create Cloud Backup snapshot for Project(%s) and Cluster(%s)- Details: %+v"
 )

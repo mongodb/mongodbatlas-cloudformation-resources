@@ -61,6 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create snapshot
 	snapshot, _, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
 	if err != nil {
+		_, _ = logger.Warnf(constants.ErrorCreateCloudBackup, projectID, clusterName, err)
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeServiceInternalError), nil
 	}
 	currentModel.SnapshotId = &snapshot.ID
@@ -233,7 +234,7 @@ func isSnapshotExist(currentModel *Model) bool {
 	if clusterName != "" {
 		snapshotRequest.ClusterName = clusterName
 		snapshots, _, err = client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
-	} else {
+	} else if instanceName != "" {
 		// read serverless instance snapshot
 		snapshotRequest.InstanceName = instanceName
 		snapshots, _, err = client.CloudProviderSnapshots.GetAllServerlessSnapshots(context.Background(), snapshotRequest, params)
@@ -277,7 +278,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID: projectID,
 	}
-	var models []interface{}
+	models := make([]interface{}, 0)
 	var snapshots *mongodbatlas.CloudProviderSnapshots
 	var res *mongodbatlas.Response
 	params := &mongodbatlas.ListOptions{

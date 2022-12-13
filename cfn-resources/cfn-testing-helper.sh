@@ -99,6 +99,8 @@ fi
 echo "${PROJECT_NAME}"
 #if false; then
 
+chmod +x ./test/cfn-test-create-inputs.sh
+
 for res in ${resources};
 do
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run ./test/cfn-test-create-inputs.sh for:${resource}" && continue

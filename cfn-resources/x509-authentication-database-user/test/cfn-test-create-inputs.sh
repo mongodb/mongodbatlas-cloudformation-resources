@@ -14,13 +14,10 @@ function usage {
 }
 projectName="${1}"
 
-
-
-if [ "$#" -ne 1 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
-projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+
     echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"

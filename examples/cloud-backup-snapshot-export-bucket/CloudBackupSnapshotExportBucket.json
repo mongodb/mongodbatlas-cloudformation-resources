@@ -1,0 +1,42 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "MongoDBAtlasAPIPublicKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Public Access Key"
+    },
+    "MongoDBAtlasAPIPrivateKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Private Access Key"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description" : "MongoDB project Key"
+    },
+    "IamRoleID": {
+      "Type": "String",
+      "Description" : "Unique identifier of the role that Atlas uses to access the bucket, check https://www.mongodb.com/docs/atlas/backup/cloud-backup/export/ for mor information"
+    },
+    "BucketName": {
+      "Type": "String",
+      "Description" : "Unique 24-hexadecimal digit string identifying the project."
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "CloudBackupSnapshotExportBucket": {
+      "Type": "MongoDB::Atlas::CloudBackupSnapshotExportBucket",
+      "Properties":  {
+        "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
+        "IamRoleID": { "Ref" : "IamRoleID" },
+        "BucketName": { "Ref" : "BucketName" },
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
+          "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
+        }
+      }
+    }
+  },
+  "Outputs" : {}
+}

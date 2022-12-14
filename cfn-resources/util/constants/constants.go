@@ -64,4 +64,6 @@ const (
 	TeamID = "TeamId"
 
 	DeliveryType = "DeliveryType"
+
+	TenantName = "TenantName"
 )

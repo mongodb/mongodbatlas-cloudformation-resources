@@ -1,0 +1,44 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "MongoDBAtlasAPIPublicKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Public Access Key"
+    },
+    "MongoDBAtlasAPIPrivateKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Private Access Key"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description" : "MongoDB project Key"
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "Project": {
+      "Type": "MongoDB::Atlas::CustomDBRole",
+      "Properties":  {
+        "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
+        "Actions": [
+          {
+            "Action": "FIND",
+            "Resources": [
+              {
+                "Collection": "listingsAndReviews",
+                "DB": "sample_airbnb"
+              }
+            ]
+          }
+        ],
+        "RoleName": "testcreate",
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
+          "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
+        }
+      }
+    }
+  },
+  "Outputs" : {}
+}

@@ -1,0 +1,53 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Teams , this will be billed to your Atlas account.",
+  "Parameters": {
+    "Name": {
+      "Type": "String",
+      "Description": "",
+      "Default": ""
+    },
+    "OrgId": {
+      "Type": "String",
+      "Description": "OrgId Id",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "Usernames": {
+      "Type": "CommaDelimitedList",
+      "Default": "",
+      "Description": "Team Id",
+      "ConstraintDescription": ""
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "Teams": {
+      "Type": "MongoDB::Atlas::Teams",
+      "Properties": {
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Name": {
+          "Ref": "Name"
+        },
+        "Usernames": {
+          "Ref": "Usernames"
+        },
+        "RoleNames": [
+          "GROUP_CLUSTER_MANAGER"
+        ],
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "Teams" : {
+      "Description": " teams",
+      "Value" : { "Ref" : "Teams" }
+    }
+  }
+}

@@ -62,4 +62,6 @@ const (
 	Success = 200
 
 	TeamID = "TeamId"
+
+	DeliveryType = "DeliveryType"
 )

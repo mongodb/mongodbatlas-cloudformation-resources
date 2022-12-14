@@ -20,7 +20,7 @@ The creation process waits until all the resources gets created the next order
 
 ### SIMPLIFIED CREATION FLOW
 
-![](../docs_files/simplified_creation_flow.png)
+![](docs_files/simplified_creation_flow.png)
 
 ## Attributes & Parameters
 

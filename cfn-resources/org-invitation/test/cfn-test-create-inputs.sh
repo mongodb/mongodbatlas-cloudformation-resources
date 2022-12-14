@@ -23,8 +23,8 @@ mkdir inputs
 
 
 team_name="cfn-boto-team-${CFN_TEST_TAG}"
-user_name=$(mongocli iam project users list --output json | jq -r '.[0].emailAddress')
-team_id=$(mongocli iam team create "${team_name}" --username "${user_name}" --orgId "$ATLAS_ORG_ID" --output json | jq -r '.id')
+user_name=$(atlas projects users list --output json | jq -r '.[0].emailAddress')
+team_id=$(atlas teams create "${team_name}" --username "${user_name}" --orgId "$ATLAS_ORG_ID" --output json | jq -r '.id')
 
 username="cfntest@mongodb.com"
 

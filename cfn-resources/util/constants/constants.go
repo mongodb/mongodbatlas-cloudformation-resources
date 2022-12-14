@@ -54,8 +54,16 @@ const (
 
 	IntegrationType = "Type"
 
+	IndexID        = "IndexId"
+	CollectionName = "CollectionName"
+	Database       = "Database"
+
 	UserID  = "UserName"
 	Success = 200
+
+	TeamID = "TeamId"
+
+	DeliveryType = "DeliveryType"
 
 	TenantName = "TenantName"
 )

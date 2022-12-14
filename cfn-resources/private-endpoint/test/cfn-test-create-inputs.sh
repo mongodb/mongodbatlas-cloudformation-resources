@@ -22,11 +22,10 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-region="us-east-1"
+region=$AWS_DEFAULT_REGION
 projectName="${1}"
 vpcId="${2}"
 subnetId="${3}"
-subnetId2="${4}"
 
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -45,8 +44,7 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg region "$region" \
    --arg vpcId "$vpcId" \
    --arg subnetId "$subnetId" \
-   --arg subnetId2 "$subnetId2" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetId?|=$subnetId | .PrivateEndpoints[1].VpcId?|=$vpcId | .PrivateEndpoints[1].SubnetId?|=$subnetId2' \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetId?|=$subnetId' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
@@ -55,8 +53,7 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg region "$region" \
    --arg vpcId "$vpcId" \
    --arg subnetId "$subnetId" \
-   --arg subnetId2 "$subnetId2" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetId?|=$subnetId | .PrivateEndpoints[1].SubnetId?|=$subnetId2' \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetId?|=$subnetId' \
       "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

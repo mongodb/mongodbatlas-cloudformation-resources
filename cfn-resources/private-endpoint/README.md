@@ -6,8 +6,6 @@ The Private Endpoint creation flow consists of the creation of three related res
 2. Aws VPC private Endpoint
 3. Atlas Private Endpoint
 
->Limitation: On this first Stage only one private endpoint can be attached to a service (future versions will support multiple Private Endpoints)
-
 AWS PrivateLink supports 50 addressable targets, Atlas can use port 1024 through port 65535, but typically starts with port 1024. The ports can change under specific circumstances, including (but not limited to) cluster changes.
 
 ### CREATION FLOW

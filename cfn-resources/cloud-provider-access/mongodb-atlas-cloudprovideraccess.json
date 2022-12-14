@@ -32,25 +32,42 @@
   "handlers": {
     "create": {
       "permissions": [
-        "iam:CreateRole",
-        "iam:PutRolePolicy",
-        "iam:AttachRolePolicy",
-        "iam:GetRole",
-        "iam:ListAttachedRolePolicies",
-        "iam:ListRolePolicies",
-        "iam:GetRolePolicy",
         "cloudformation:CreateResource",
         "cloudformation:GetResource",
-        "cloudformation:UpdateResource",
+        "cloudformation:GetResourceRequestStatus",
         "cloudformation:ListResources",
-        "cloudformation:GetResourceRequestStatus"
+        "cloudformation:UpdateResource",
+        "cloudformation:DeleteResource",
+        "iam:AttachRolePolicy",
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:PutRolePolicy",
+        "iam:DeleteRole"
       ]
       },
     "read": {
       "permissions": []
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "cloudformation:CreateResource",
+        "cloudformation:GetResource",
+        "cloudformation:GetResourceRequestStatus",
+        "cloudformation:ListResources",
+        "cloudformation:UpdateResource",
+        "cloudformation:DeleteResource",
+        "iam:AttachRolePolicy",
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:PutRolePolicy",
+        "iam:DeleteRole"
+      ]
     }
   },
   "primaryIdentifier": ["/properties/RoleId"],

@@ -41,7 +41,7 @@ else
     echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 fi
 
-SnapshotId=$(mongocli atlas backup snapshots list cfntest --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
+SnapshotId=$(mongocli atlas backup snapshots list ${ClusterName} --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
 if [ -z "$SnapshotId" ]; then
     SnapshotId=$(mongocli atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
     sleep 5m

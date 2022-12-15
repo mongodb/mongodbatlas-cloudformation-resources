@@ -63,6 +63,10 @@ const (
 
 	TeamID = "TeamId"
 
+	DeliveryType = "DeliveryType"
+
+	TenantName = "TenantName"
+
 	AppID       = "AppId"
 	RealmPubKey = "RealmConfig.PublicKey"
 	RealmPvtKey = "RealmConfig.PrivateKey"

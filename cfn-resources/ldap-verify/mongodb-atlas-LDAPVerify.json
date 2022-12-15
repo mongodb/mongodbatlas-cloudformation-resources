@@ -1,45 +1,9 @@
 {
-  "typeName": "MongoDB::Atlas::LdapConfiguration",
+  "typeName": "MongoDB::Atlas::LDAPVerify",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "description": "Returns, edits, verifies, and removes LDAP configurations.",
   "additionalProperties": false,
   "definitions": {
-    "ApiAtlasCustomerX509View": {
-      "type": "object",
-      "properties": {
-        "Cas": {
-          "type": "string",
-          "description": "Concatenated list of customer certificate authority (CA) certificates needed to authenticate database users. MongoDB Cloud expects this as a PEM-formatted certificate."
-        },
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link",
-            "type": "object"
-          }
-        }
-      },
-      "additionalProperties": false
-    },
-    "ApiAtlasNDSUserToDNMappingView": {
-      "type": "object",
-      "properties": {
-        "LdapQuery": {
-          "type": "string",
-          "description": "Lightweight Directory Access Protocol (LDAP) query template that inserts the LDAP name that the regular expression matches into an LDAP query Uniform Resource Identifier (URI). The formatting for the query must conform to [RFC 4515](https://datatracker.ietf.org/doc/html/rfc4515) and [RFC 4516](https://datatracker.ietf.org/doc/html/rfc4516)."
-        },
-        "Match": {
-          "type": "string",
-          "description": "Regular expression that MongoDB Cloud uses to match against the provided Lightweight Directory Access Protocol (LDAP) username. Each parenthesis-enclosed section represents a regular expression capture group that the substitution or `ldapQuery` template uses."
-        },
-        "Substitution": {
-          "type": "string",
-          "description": "Lightweight Directory Access Protocol (LDAP) Distinguished Name (DN) template that converts the LDAP username that matches regular expression in the *match* parameter into an LDAP Distinguished Name (DN)."
-        }
-      },
-      "additionalProperties": false
-    },
     "ApiKeyDefinition": {
       "type": "object",
       "properties": {
@@ -52,27 +16,25 @@
       },
       "additionalProperties": false
     },
-    "Link": {
+    "Validation": {
       "type": "object",
       "properties": {
-        "Href": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        "Status": {
+          "type": "string"
         },
-        "Rel": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        "ValidationType": {
+          "type": "string"
         }
       },
       "additionalProperties": false
     }
   },
   "properties": {
-    "Links": {
+    "Validations": {
       "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "description": "List of validation messages related to the verification of the provided LDAP over TLS configuration details. The array contains a document for each test that Atlas runs. Atlas stops running tests after the first failure.",
       "items": {
-        "$ref": "#/definitions/Link",
+        "$ref": "#/definitions/Validation",
         "type": "object"
       }
     },
@@ -85,6 +47,10 @@
       "type": "string",
       "description": "The current status of the LDAP over TLS/SSL configuration."
     },
+    "RequestId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that represents the request to verify the LDAP over TLS configuration."
+    },
     "Hostname": {
       "type": "string",
       "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.",
@@ -92,14 +58,6 @@
     },
     "ApiKeys": {
       "$ref": "#/definitions/ApiKeyDefinition"
-    },
-    "AuthenticationEnabled": {
-      "type": "boolean",
-      "description": "Flag that indicates whether users can authenticate using an Lightweight Directory Access Protocol (LDAP) host."
-    },
-    "AuthorizationEnabled": {
-      "type": "boolean",
-      "description": "Flag that indicates whether users can authorize access to MongoDB Cloud resources using an Lightweight Directory Access Protocol (LDAP) host."
     },
     "CaCertificate": {
       "type": "string",
@@ -113,11 +71,6 @@
       "type": "string",
       "description": "Password that MongoDB Cloud uses to authenticate the **bindUsername**."
     },
-    "CustomerX509": {
-      "type": "object",
-      "description": "Settings to configure TLS Certificates for database users.",
-      "$ref": "#/definitions/ApiAtlasCustomerX509View"
-    },
     "GroupId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
@@ -128,37 +81,15 @@
     "Port": {
       "type": "integer",
       "description": "Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
-    },
-    "UserToDNMapping": {
-      "type": "array",
-      "description": "User-to-Distinguished Name (DN) map that MongoDB Cloud uses to transform a Lightweight Directory Access Protocol (LDAP) username into an LDAP DN.",
-      "items": {
-        "$ref": "#/definitions/ApiAtlasNDSUserToDNMappingView",
-        "type": "object"
-      }
-    },
-    "Links": {
-      "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
     }
   },
-  "primaryIdentifier": ["/properties/GroupId"],
-  "readOnlyProperties": [
-    "/properties/Links",
-    "/definitions/ApiAtlasCustomerX509View/Links"
-  ],
+  "primaryIdentifier": ["/properties/RequestId"],
+  "readOnlyProperties": ["/properties/RequestId"],
   "handlers": {
     "create": {
       "permissions": []
     },
     "read": {
-      "permissions": []
-    },
-    "update": {
       "permissions": []
     },
     "delete": {

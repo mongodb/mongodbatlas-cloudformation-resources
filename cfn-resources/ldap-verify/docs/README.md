@@ -12,19 +12,16 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::LDAPVerify",
     "Properties" : {
+        "<a href="#validations" title="Validations">Validations</a>" : <i>[ <a href="validation.md">Validation</a>, ... ]</i>,
         "<a href="#bindusername" title="BindUsername">BindUsername</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#hostname" title="Hostname">Hostname</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
-        "<a href="#authenticationenabled" title="AuthenticationEnabled">AuthenticationEnabled</a>" : <i>Boolean</i>,
-        "<a href="#authorizationenabled" title="AuthorizationEnabled">AuthorizationEnabled</a>" : <i>Boolean</i>,
         "<a href="#cacertificate" title="CaCertificate">CaCertificate</a>" : <i>String</i>,
         "<a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>" : <i>String</i>,
         "<a href="#bindpassword" title="BindPassword">BindPassword</a>" : <i>String</i>,
-        "<a href="#customerx509" title="CustomerX509">CustomerX509</a>" : <i><a href="apiatlascustomerx509view.md">ApiAtlasCustomerX509View</a></i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
-        "<a href="#port" title="Port">Port</a>" : <i>Integer</i>,
-        "<a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>" : <i>[ <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a>, ... ]</i>
+        "<a href="#port" title="Port">Port</a>" : <i>Integer</i>
     }
 }
 </pre>
@@ -34,23 +31,30 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::LDAPVerify
 Properties:
+    <a href="#validations" title="Validations">Validations</a>: <i>
+      - <a href="validation.md">Validation</a></i>
     <a href="#bindusername" title="BindUsername">BindUsername</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#hostname" title="Hostname">Hostname</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
-    <a href="#authenticationenabled" title="AuthenticationEnabled">AuthenticationEnabled</a>: <i>Boolean</i>
-    <a href="#authorizationenabled" title="AuthorizationEnabled">AuthorizationEnabled</a>: <i>Boolean</i>
     <a href="#cacertificate" title="CaCertificate">CaCertificate</a>: <i>String</i>
     <a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>: <i>String</i>
     <a href="#bindpassword" title="BindPassword">BindPassword</a>: <i>String</i>
-    <a href="#customerx509" title="CustomerX509">CustomerX509</a>: <i><a href="apiatlascustomerx509view.md">ApiAtlasCustomerX509View</a></i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#port" title="Port">Port</a>: <i>Integer</i>
-    <a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>: <i>
-      - <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a></i>
 </pre>
 
 ## Properties
+
+#### Validations
+
+List of validation messages related to the verification of the provided LDAP over TLS configuration details. The array contains a document for each test that Atlas runs. Atlas stops running tests after the first failure.
+
+_Required_: No
+
+_Type_: List of <a href="validation.md">Validation</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### BindUsername
 
@@ -94,26 +98,6 @@ _Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### AuthenticationEnabled
-
-Flag that indicates whether users can authenticate using an Lightweight Directory Access Protocol (LDAP) host.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AuthorizationEnabled
-
-Flag that indicates whether users can authorize access to MongoDB Cloud resources using an Lightweight Directory Access Protocol (LDAP) host.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### CaCertificate
 
 Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass an empty string: `"caCertificate": ""`
@@ -144,14 +128,6 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### CustomerX509
-
-_Required_: No
-
-_Type_: <a href="apiatlascustomerx509view.md">ApiAtlasCustomerX509View</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### GroupId
 
 Unique 24-hexadecimal digit string that identifies your project.
@@ -178,21 +154,11 @@ _Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### UserToDNMapping
-
-User-to-Distinguished Name (DN) map that MongoDB Cloud uses to transform a Lightweight Directory Access Protocol (LDAP) username into an LDAP DN.
-
-_Required_: No
-
-_Type_: List of <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 ## Return Values
 
 ### Ref
 
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the GroupId.
+When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the RequestId.
 
 ### Fn::GetAtt
 
@@ -200,11 +166,7 @@ The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
 
-#### Links
+#### RequestId
 
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
-#### Links
-
-Returns the <code>Links</code> value.
+Unique 24-hexadecimal digit string that represents the request to verify the LDAP over TLS configuration.
 

@@ -6,6 +6,7 @@ package resource
 type Model struct {
 	ProjectId             *string           `json:",omitempty"`
 	ClusterName           *string           `json:",omitempty"`
+	InstanceName          *string           `json:",omitempty"`
 	Id                    *string           `json:",omitempty"`
 	DeliveryType          *string           `json:",omitempty"`
 	DeliveryUrl           []string          `json:",omitempty"`
@@ -18,6 +19,7 @@ type Model struct {
 	SnapshotId            *string           `json:",omitempty"`
 	Links                 []Links           `json:",omitempty"`
 	OpLogTs               *string           `json:",omitempty"`
+	OpLogInc              *string           `json:",omitempty"`
 	PointInTimeUtcSeconds *int              `json:",omitempty"`
 	TargetProjectId       *string           `json:",omitempty"`
 	TargetClusterName     *string           `json:",omitempty"`

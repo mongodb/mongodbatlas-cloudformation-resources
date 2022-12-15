@@ -24,16 +24,22 @@
             "description": "The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
             "type": "string"
         },
+        "InstanceName": {
+            "description": "The instance name of the Serverless cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
+            "type": "string"
+        },
         "Id": {
             "description": " The unique identifier of the restore job.",
             "type": "string"
         },
         "DeliveryType": {
-            "description": "Type of restore job to create. ",
-            "type": "string"
+            "description": "Type of restore job to create.The value can be any one of download,automated or point_in_time ",
+            "type": "string",
+            "enum": ["download", "automated", "pointInTime"]
         },
         "DeliveryUrl": {
             "description": "One or more URLs for the compressed snapshot files for manual download. Only visible if deliveryType is download.",
+            "insertionOrder": false,
             "items": {
                 "type" : "string"
             },
@@ -70,6 +76,7 @@
         "Links": {
             "description": "One or more links to sub-resources and/or related resources.",
             "type": "array",
+            "insertionOrder": false,
             "items": {
                 "type" : "object",
                 "properties": {
@@ -84,7 +91,11 @@
             }
         },
         "OpLogTs": {
-            "description": "If you performed a Point-in-Time restores at a time specified by a timestamp from the oplog, oplogTs indicates the timestamp used.",
+            "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoch from which to you want to restore this snapshot. This is the first part of an Oplog timestamp.",
+            "type": "string"
+        },
+        "OpLogInc": {
+            "description": "Oplog operation number from which to you want to restore this snapshot. This is the second part of an Oplog timestamp.",
             "type": "string"
         },
         "PointInTimeUtcSeconds": {
@@ -106,7 +117,6 @@
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "ClusterName",
         "ApiKeys"
     ],
     "readOnlyProperties": [
@@ -135,6 +145,11 @@
             ]
         },
         "delete": {
+            "permissions": [
+                ""
+            ]
+        },
+        "list": {
             "permissions": [
                 ""
             ]

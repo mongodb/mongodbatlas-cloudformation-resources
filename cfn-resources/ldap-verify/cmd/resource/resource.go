@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -51,7 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -81,8 +82,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Read() currentModel:%+v", currentModel)
-
 	// Validation
 	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -98,7 +97,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.GroupId, *currentModel.RequestId)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -145,7 +144,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -196,41 +195,35 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 }
 
 func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Request) handler.ProgressEvent {
-	requestId := req.CallbackContext["RequestId"].(string)
+	requestID := req.CallbackContext["RequestId"].(string)
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.GroupId, requestId)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.GroupId, requestID)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response)
 	}
 
 	switch LDAPConfigResponse.Status {
 	case "PENDING":
-		{
-			return handler.ProgressEvent{
-				OperationStatus: handler.InProgress,
-				Message:         "Create in progress",
-				ResourceModel:   model,
-				CallbackContext: map[string]interface{}{
-					"RequestId": requestId,
-				},
-			}
+		return handler.ProgressEvent{
+			OperationStatus: handler.InProgress,
+			Message:         "Create in progress",
+			ResourceModel:   model,
+			CallbackContext: map[string]interface{}{
+				"RequestId": requestID,
+			},
 		}
 	case "SUCCESS":
-		{
-			model.CompleteByResponse(*LDAPConfigResponse)
-			return handler.ProgressEvent{
-				OperationStatus: handler.Success,
-				Message:         "Create successfully",
-				ResourceModel:   model,
-			}
+		model.CompleteByResponse(*LDAPConfigResponse)
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create successfully",
+			ResourceModel:   model,
 		}
 	default:
-		{
-			return handler.ProgressEvent{
-				OperationStatus: handler.Failed,
-				Message:         getFailedMessage(*LDAPConfigResponse),
-			}
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         getFailedMessage(*LDAPConfigResponse),
 		}
 	}
 }

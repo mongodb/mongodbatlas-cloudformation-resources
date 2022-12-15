@@ -1,7 +1,7 @@
-# MongoDB::Atlas::CloudBackUpRestoreJobs
+# MongoDB::Atlas::DataLakes
 
 ## Description
-Returns, starts, and cancels Cloud Backup restore jobs.
+Returns, adds, edits, and removes Federated Database Instances.
 
 ## Attributes & Parameters
 Please consult the [Resource Docs](docs/README.md)
@@ -16,8 +16,8 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/cloud-backup-restore-jobs
-./test/cloud-backup-restore-job.create-sample-cfn-request.sh YourProjectID ClusterName SnapshotId > test.request.json 
+cd ${repo_root}/cfn-resources/datalakes
+./test/datalakes.create-sample-cfn-request.sh YourProjectID ExternalId IamAssumedRoleARN IamUserARN RoleId TestS3BucketId > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 
@@ -32,7 +32,7 @@ cfn submit --verbose --set-default
 
 ## CloudFormation Examples
 
-Please see the [CFN Template](/examples/cloud-backup-restore-jobs/restore.json) for example resource
+Please see the [CFN Template](/examples/data-lakes/datalake.json) for example resource.
 
 ## Integration Testing w/ AWS
 
@@ -40,13 +40,13 @@ The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](https://github.com/
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the datalakes.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 
 In one shell session:
 ```
-aws logs tail mongodb-atlas-backup-restore-job-logs --follow
+aws logs tail mongodb-atlas-data-lakes --follow
 ```
 
 And then you can create the stack with a helper script it insert the apikeys for you:
@@ -55,7 +55,8 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-restore-jobs/test/cloud-backup-restore-job.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=SnapshotId,ParameterValue=<SnapshotId>
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/datalakes/test/datalakes.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=TenantName,ParameterValue=<TenantName> ParameterKey=ExternalId,ParameterValue=<ExternalId> ParameterKey=IamAssumedRoleARN,ParameterValue=<IamAssumedRoleARN> ParameterKey=IamUserARN,ParameterValue=<IamUserARN> ParameterKey=RoleID,ParameterValue=<RoleId> ParameterKey=TestS3Bucket,ParameterValue=<TestS3Bucket> 
+
 ```
 
-For more information see: MongoDB Atlas API [Cloud BackUp Restore Jobs Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs) .
+For more information see: MongoDB Atlas API [DataLakes Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation) .

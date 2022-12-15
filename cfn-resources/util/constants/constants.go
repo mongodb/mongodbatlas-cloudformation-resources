@@ -61,6 +61,11 @@ const (
 	UserID  = "UserName"
 	Success = 200
 
+	EventTypeName = "EventTypeName"
+	PagerDuty     = "PAGER_DUTY"
+	OpsGenie      = "OPS_GENIE"
+	VictorOps     = "VICTOR_OPS"
+
 	TeamID = "TeamId"
 
 	DeliveryType = "DeliveryType"

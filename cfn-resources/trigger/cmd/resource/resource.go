@@ -291,7 +291,7 @@ func newEventProcessor(model *Model, et realm.EventTriggerRequest) (realm.EventT
 	}
 	err = json.Unmarshal(inrec, &inInterface)
 	if err != nil {
-		logger.Warnf("error %v", err)
+		_, _ = logger.Warnf("error %v", err)
 		return et, err
 	}
 	et.EventProcessors = inInterface

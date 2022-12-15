@@ -279,7 +279,7 @@ func newEventProcessor(model *Model, et realm.EventTriggerRequest) (realm.EventT
 		if awsEventBridge.AWSConfig != nil {
 			ep.AWSEVENTBRIDGE.AWSConfig = new(AWSConf)
 			ep.AWSEVENTBRIDGE.AWSConfig.AccountID = awsEventBridge.AWSConfig.AccountId
-			ep.AWSEVENTBRIDGE.AWSConfig.ExtendedJsonEnabled = awsEventBridge.AWSConfig.ExtendedJsonEnabled
+			ep.AWSEVENTBRIDGE.AWSConfig.ExtendedJSONEnabled = awsEventBridge.AWSConfig.ExtendedJsonEnabled
 			ep.AWSEVENTBRIDGE.AWSConfig.Region = awsEventBridge.AWSConfig.Region
 		}
 	}
@@ -321,5 +321,5 @@ type AWSEVENTB struct {
 type AWSConf struct {
 	AccountID           *string `json:"account_id,omitempty"`
 	Region              *string `json:",omitempty"`
-	ExtendedJsonEnabled *bool   `json:"extended_json_enabled,omitempty"`
+	ExtendedJSONEnabled *bool   `json:"extended_json_enabled,omitempty"`
 }

@@ -13,7 +13,7 @@ AWS PrivateLink supports 50 addressable targets, Atlas can use port 1024 through
 The creation process waits until all the resources gets created the next order
 
 1. Creates the Private Endpoint Service and waits until is completed (Available Status)
-2. Once the Private Endpoint Service gets completed, creates the Aws VPC Private endpoint and the Atlas Private Endpoint
+2. Once the Private Endpoint Service gets completed, creates the AWS VPC Private endpoint and the Atlas Private Endpoint
 3. Once the two last resources gets completed (Available Status) the flow returns Success
 
 ### SIMPLIFIED CREATION FLOW

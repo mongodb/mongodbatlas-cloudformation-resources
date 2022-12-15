@@ -6,12 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -36,34 +38,30 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
+func setup() {
+	util.SetupLogger("trigger")
+}
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 	ctx := context.Background()
 	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	eventTrigger, err := newEventTrigger(currentModel)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating event trigger request : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	et, _, err := client.EventTriggers.Create(ctx, *currentModel.ProjectId, *currentModel.AppId, eventTrigger)
+	et, resp, err := client.EventTriggers.Create(ctx, *currentModel.ProjectId, *currentModel.AppId, eventTrigger)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		_, _ = logger.Warnf("error in creating event trigger %v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	currentModel.Id = &et.ID
 	return handler.ProgressEvent{
@@ -86,26 +84,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ctx := context.Background()
 	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	trigger, res, err := client.EventTriggers.Get(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
+	trigger, resp, err := client.EventTriggers.Get(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
 	if err != nil {
-		if res != nil && res.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		_, _ = logger.Warnf("error in getting event trigger %v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	currentModel.Id = &trigger.ID
 	return handler.ProgressEvent{
@@ -128,33 +113,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 	eventTrigger, err := newEventTrigger(currentModel)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating trigger request : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	_, res, err := client.EventTriggers.Update(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id, eventTrigger)
+	_, resp, err := client.EventTriggers.Update(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id, eventTrigger)
 	if err != nil {
-		if res != nil && res.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		_, _ = logger.Warnf("error in updating event trigger %v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -177,25 +147,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	res, err := client.EventTriggers.Delete(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
+	resp, err := client.EventTriggers.Delete(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
 	if err != nil {
-		if res != nil && res.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		_, _ = logger.Warnf("error in deleting event trigger %v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -209,19 +167,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ctx := context.Background()
 	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	triggers, _, err := client.EventTriggers.List(ctx, *currentModel.ProjectId, *currentModel.AppId)
+	triggers, resp, err := client.EventTriggers.List(ctx, *currentModel.ProjectId, *currentModel.AppId)
 	if err != nil {
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		_, _ = logger.Warnf("error in listing event trigger %v", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -318,7 +270,17 @@ func newEventProcessor(model *Model, et realm.EventTriggerRequest) (realm.EventT
 			ep.FUNCTION.FuncConf.FunctionName = model.EventProcessors.FUNCTION.FuncConfig.FunctionName
 		}
 		if model.EventProcessors.FUNCTION.FuncConfig.FunctionId != nil {
-			ep.FUNCTION.FuncConf.FunctionId = model.EventProcessors.FUNCTION.FuncConfig.FunctionId
+			ep.FUNCTION.FuncConf.FunctionID = model.EventProcessors.FUNCTION.FuncConfig.FunctionId
+		}
+	}
+	awsEventBridge := model.EventProcessors.AWSEVENTBRIDGE
+	if awsEventBridge != nil && awsEventBridge.AWSConfig.AccountId != nil {
+		ep.AWSEVENTBRIDGE = new(AWSEVENTB)
+		if awsEventBridge.AWSConfig != nil {
+			ep.AWSEVENTBRIDGE.AWSConfig = new(AWSConf)
+			ep.AWSEVENTBRIDGE.AWSConfig.AccountID = awsEventBridge.AWSConfig.AccountId
+			ep.AWSEVENTBRIDGE.AWSConfig.ExtendedJsonEnabled = awsEventBridge.AWSConfig.ExtendedJsonEnabled
+			ep.AWSEVENTBRIDGE.AWSConfig.Region = awsEventBridge.AWSConfig.Region
 		}
 	}
 	var inInterface map[string]interface{}
@@ -329,7 +291,7 @@ func newEventProcessor(model *Model, et realm.EventTriggerRequest) (realm.EventT
 	}
 	err = json.Unmarshal(inrec, &inInterface)
 	if err != nil {
-		log.Printf("error in unmarshal %v", err)
+		logger.Warnf("error %v", err)
 		return et, err
 	}
 	et.EventProcessors = inInterface
@@ -340,7 +302,7 @@ func newEventProcessor(model *Model, et realm.EventTriggerRequest) (realm.EventT
 // and cfn generate doesn't support tags
 type EventProcess struct {
 	FUNCTION       *FUNC      `json:",omitempty"`
-	AWSEVENTBRIDGE *AWSEVENTB `json:",omitempty"`
+	AWSEVENTBRIDGE *AWSEVENTB `json:"AWS_EVENTBRIDGE,omitempty"`
 }
 
 type FUNC struct {
@@ -348,7 +310,7 @@ type FUNC struct {
 }
 
 type FuncConf struct {
-	FunctionId   *string `json:"function_id,omitempty"`
+	FunctionID   *string `json:"function_id,omitempty"`
 	FunctionName *string `json:"function_name,omitempty"`
 }
 
@@ -357,7 +319,7 @@ type AWSEVENTB struct {
 }
 
 type AWSConf struct {
-	AccountId           *string `json:"account_id,omitempty"`
+	AccountID           *string `json:"account_id,omitempty"`
 	Region              *string `json:",omitempty"`
 	ExtendedJsonEnabled *bool   `json:"extended_json_enabled,omitempty"`
 }

@@ -54,6 +54,10 @@ const (
 
 	IntegrationType = "Type"
 
+	IndexID        = "IndexId"
+	CollectionName = "CollectionName"
+	Database       = "Database"
+
 	UserID  = "UserName"
 	Success = 200
 
@@ -61,5 +65,10 @@ const (
 	PagerDuty     = "PAGER_DUTY"
 	OpsGenie      = "OPS_GENIE"
 	VictorOps     = "VICTOR_OPS"
-	TenantName    = "TenantName"
+
+	TeamID = "TeamId"
+
+	DeliveryType = "DeliveryType"
+
+	TenantName = "TenantName"
 )

@@ -20,6 +20,8 @@ MongoDB Atlas Resource Types.
 | network-container                    | ![Build](https://img.shields.io/badge/Beta-Admin-grey) | [./network-container/test](./network-container/test)                                       |
 | private-endpoint                     | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint/test](./private-endpoint/test)                                         |
 | custom-db-role                       | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./custom-db-role/test](./custom-db-role/test)                                             |
+| maintenance-window                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./maintenance-window/test](./maintenance-window/test)                                     |
+
 Legend
 ---
 | Badge | Meaning |

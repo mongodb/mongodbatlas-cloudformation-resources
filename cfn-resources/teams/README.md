@@ -1,7 +1,7 @@
-# MongoDB::Atlas::DatabaseUser
+# MongoDB::Atlas::Teams
 
 ## Description
-Returns, adds, edits, and removes database users.
+Returns, adds, edits, or removes teams.
 
 ## Attributes & Parameters
 
@@ -18,8 +18,8 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/database-user
-./test/databaseuser.create-sample-cfn-request.sh YourProjectID SomeIAMRole > test.request.json 
+cd ${repo_root}/cfn-resources/teams
+./test/teams.create-sample-cfn-request.sh {TEAM_NAME},{ ORGANIZATION_USER_EMAIL} > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 
@@ -32,23 +32,23 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Cloudformation Examples
+## CloudFormation Examples
 
-Please use the [CFN Template](test/databaseuser.sample-template.json)
+Please see the [CFN Template](/examples/teams/teams.json) for example resource
 
 ## Integration Testing w/ AWS
 
-The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
+The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/quickstart-mongodb-atlas/scripts/launch-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
-CloudFormation stack template along with the other neccessary parameters.
+CloudFormation stack template along with the other necessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the teams.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 
 In one shell session:
 ```
-aws logs tail mongodb-atlas-project-logs --follow
+aws logs tail mongodb-atlas-teams-logs --follow
 ```
 
 And then you can create the stack with a helper script it insert the apikeys for you:
@@ -57,7 +57,7 @@ And then you can create the stack with a helper script it insert the apikeys for
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/database-user/test/databaseuser.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=Username,ParameterValue=<USERNAME> ParameterKey=Password,ParameterValue=<PWD> 
+${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root}/cfn-resources/teams/test/teams.sample-template.yaml SampleAccessList1 ParameterKey=Name,ParameterValue=<YOUR_TEAM_NAME>  ParameterKey=Usernames,ParameterValue=<email id of one user assigned to your organization>
 ```
 
-For more information see: MongoDB Atlas API DatabaseUser [Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users) Documentation.
+For more information see: MongoDB Atlas API [Teams Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams) Documentation.

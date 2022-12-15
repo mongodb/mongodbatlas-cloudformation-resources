@@ -1,0 +1,49 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "Hostname",
+      "ApiKeys",
+      "BindUsername",
+      "Hostname",
+      "Links",
+      "Port",
+      "Request",
+      "BindPassword",
+      "RequestId",
+      "Status",
+      "BindUsername",
+      "CaCertificate",
+      "Links",
+      "Port",
+      "AuthzQueryTemplate",
+      "Validations",
+      "GroupId"
+    ],
+    "RequiredParams": ["BindUsername", "Hostname", "Links", "Port"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "Hostname",
+      "ApiKeys",
+      "BindUsername",
+      "Hostname",
+      "Links",
+      "Port",
+      "Request",
+      "Status",
+      "BindUsername",
+      "CaCertificate",
+      "Links",
+      "Port",
+      "AuthzQueryTemplate",
+      "BindPassword",
+      "RequestId",
+      "Validations",
+      "GroupId"
+    ],
+    "RequiredParams": ["GroupId", "RequestId"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {},
+  "ListFields": {}
+}

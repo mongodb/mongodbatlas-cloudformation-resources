@@ -1,9 +1,6 @@
 {
   "additionalProperties": false,
   "definitions": {
-    "": {
-      "additionalProperties": false
-    },
     "ApiAtlasServerlessClusterDescriptionViewManual": {
       "type": "object",
       "properties": {
@@ -164,13 +161,12 @@
     }
   },
   "primaryIdentifier": [
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/GroupId",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Id",
+    "/properties/Id",
     "/properties/GroupId",
-    "/properties/Id"
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/GroupId",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Id"
   ],
   "properties": {
-    "": {},
     "ApiKeys": {
       "$ref": "#/definitions/ApiKeyDefinition"
     },
@@ -261,23 +257,23 @@
     }
   },
   "readOnlyProperties": [
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/ConnectionStrings",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/CreateDate",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/GroupId",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Id",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Links",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/MongoDBVersion",
-    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/StateName",
-    "/definitions/ServerlessInstanceConnectionStrings/PrivateEndpoint",
-    "/definitions/ServerlessInstanceConnectionStrings/StandardSrv",
-    "/properties/ConnectionStrings",
-    "/properties/CreateDate",
+    "/properties/Results",
+    "/properties/MongoDBVersion",
+    "/properties/StateName",
     "/properties/Id",
     "/properties/Links",
-    "/properties/MongoDBVersion",
-    "/properties/Results",
-    "/properties/StateName",
-    "/properties/TotalCount"
+    "/properties/TotalCount",
+    "/properties/CreateDate",
+    "/properties/ConnectionStrings",
+    "/definitions/ServerlessInstanceConnectionStrings/StandardSrv",
+    "/definitions/ServerlessInstanceConnectionStrings/PrivateEndpoint",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/MongoDBVersion",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Links",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/CreateDate",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/StateName",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/ConnectionStrings",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/GroupId",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Id"
   ],
   "typeName": "MongoDB::Atlas::ServerlessInstance",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

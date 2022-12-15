@@ -1,18 +1,20 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-	"unicode"
-
 	"github.com/davecgh/go-spew/spew"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/tidwall/pretty"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+	"unicode"
 )
 
 //https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
@@ -21,13 +23,20 @@ const (
 	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
+	OpenAPISpecPath    = "https://www.mongodb.com/8c07de79-53d6-41d8-8fc8-bacdf7f271fa"
+	Dir                = "/autogen/schema-gen" // For debugging use 	"/autogen/schema-gen"
+	SchemasDir         = "schemas"
+	LatestSchemasDir   = "schemas-latest"
+	CurrentDir         = "schema-gen"
 )
 
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
-	file, doc, err := readConfig()
+	compare := true
+
+	file, doc, err := readConfig(compare)
 	if err != nil {
 		fmt.Printf("%v", err)
 		os.Exit(1)
@@ -52,24 +61,26 @@ func main() {
 
 	done := make(chan bool)
 	reqDone := make(chan bool)
+	go generateSchemas(chn, done, compare)
+	go generateReqFields(reqFieldsChan, reqDone, compare)
 
-	go generateSchemas(chn, done)
-	go generateReqFields(reqFieldsChan, reqDone)
-
-	definitions := make(map[string]Definitions, 0)
-	var ids, readOnly, idsDef, readOnlyDef []string
-	var cfn CfnSchema
-	key := "params"
-	var typeName string
-	var description string
-	requiredParams := RequiredParams{}
-	var createReqParams []string
+	// definitions := make(map[string]Definitions, 0)
+	// var ids, readOnly, idsDef, readOnlyDef []string
 
 	for _, res := range data.Resources {
+		definitions := make(map[string]Definitions, 0)
+		var ids, readOnly, idsDef, readOnlyDef []string
+		var cfn CfnSchema
+		key := "params"
+		var typeName string
+		var description string
+		requiredParams := RequiredParams{}
+		var createReqParams []string
+
 		queryParams := make(map[string]Property, 0)
 		allMethodProps := make(map[string]map[string]Property, 0)
 		bodySchema := make(map[string]map[string]Property, 0)
-		typeName = res.TypeName
+		typeName = capitalize(res.TypeName)
 
 		for _, path := range res.OpenAPIPaths {
 			pathItem := doc.Paths.Find(path)
@@ -196,21 +207,26 @@ func main() {
 		if allMethodProps[key] != nil {
 			allMethodProps[key] = defaultProperty(allMethodProps[key])
 
-			requiredParams.FileName = res.TypeName
+			sort.Strings(createReqParams)
+			sort.Strings(readOnly)
+			sort.Strings(ids)
+
 			cfn = CfnSchema{
 				AdditionalProperties: false,
-				Definitions:          definitions,
+				Definitions:          sortDefinitions(definitions),
 				Description:          description,
 				Handlers:             h,
 				PrimaryIdentifier:    ids,
-				Properties:           allMethodProps[key],
+				Properties:           sortProperties(allMethodProps[key]),
 				ReadOnlyProperties:   readOnly,
 				Required:             createReqParams,
 				TypeName:             MongoDBAtlasPrefix + typeName,
 				SourceURL:            url,
-				FileName:             typeName,
+				FileName:             res.TypeName,
 			}
 			chn <- cfn
+
+			requiredParams.FileName = res.TypeName
 			reqFieldsChan <- requiredParams
 		}
 	}
@@ -219,23 +235,92 @@ func main() {
 
 	close(reqFieldsChan)
 	<-reqDone
+
 }
 
-func readConfig() ([]byte, *openapi3.T, error) {
-	dir := "/schema-gen" // For debugging use 	"/autogen/schema-gen"
+func sortProperties(properties map[string]Property) (props map[string]Property) {
+	keys := make([]string, len(properties))
+	for key := range properties {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	props = make(map[string]Property, len(properties))
+	for _, key := range keys {
+		props[key] = properties[key]
+	}
+	return props
+}
 
-	path, err := os.Getwd()
+func sortDefinitions(properties map[string]Definitions) (props map[string]Definitions) {
+	keys := make([]string, len(properties))
+	for key := range properties {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	props = make(map[string]Definitions, len(properties))
+	for _, key := range keys {
+		props[key] = properties[key]
+	}
+	return props
+}
+
+func downloadOpenAPISpec(url, fileName string) (err error) {
+
+	// Create blank file
+	file, err := os.Create(fileName)
+	if err != nil {
+		fmt.Errorf("os.Create(fileName), error while creating latest swagger file %+v", err)
+		log.Fatal(err)
+	}
+	client := http.Client{
+		CheckRedirect: func(r *http.Request, via []*http.Request) error {
+			r.URL.Opaque = r.URL.Path
+			return nil
+		},
+	}
+	// Put content on file
+	resp, err := client.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	size, err := io.Copy(file, resp.Body)
+
+	fmt.Printf("Downloaded a file %s with size %d", fileName, size)
+	return err
+}
+
+func getCurrentDir() (path string, err error) {
+	path, err = os.Getwd()
+	if err != nil {
+		fmt.Printf("Error while fetching current directory: %+v", err)
+		return path, err
+	}
+	dir := path + Dir
+	return dir, err
+}
+func readConfig(compare bool) ([]byte, *openapi3.T, error) {
+
+	dir, err := getCurrentDir()
 	if err != nil {
 		return nil, nil, err
 	}
-	fmt.Println(path)
-	dir = path + dir
 	file, err := os.ReadFile(fmt.Sprintf("%s/mapping.json", dir))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	doc, err := openapi3.NewLoader().LoadFromFile(fmt.Sprintf("%s/swagger.json", dir))
+	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
+	// For comparison download the latest openAPIspec file
+	if compare {
+		swaggerDownloadedFile := "swagger.latest.json"
+		openAPISpecFile = fmt.Sprintf("%s/%s", dir, swaggerDownloadedFile)
+		//if err := downloadOpenAPISpec(OpenAPISpecPath, swaggerDownloadedFile); err != nil {
+		//	return []byte{}, nil, err
+		//}
+	}
+	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -245,10 +330,10 @@ func readConfig() ([]byte, *openapi3.T, error) {
 		os.Exit(1)
 	}
 	// validate the swagger.yaml matches Openapi spec
-	err = doc.Validate(context.Background())
-	if err != nil {
-		return nil, nil, err
-	}
+	//err = doc.Validate(context.Background())
+	//if err != nil {
+	//	return nil, nil, err
+	//}
 	return file, doc, err
 }
 
@@ -376,6 +461,7 @@ func requiredOnlyProperties(properties openapi3.Parameters) []string {
 	}
 	return requiredParams
 }
+
 func inputOnlyProperties(bodyParams map[string]Property) []string {
 	var inputParams []string
 
@@ -389,7 +475,7 @@ func inputOnlyProperties(bodyParams map[string]Property) []string {
 	return inputParams
 }
 
-func generateSchemas(chn chan CfnSchema, done chan bool) {
+func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 	for cfn := range chn {
 		rankingsJSON, err := json.Marshal(cfn)
 		if err != nil {
@@ -398,25 +484,51 @@ func generateSchemas(chn chan CfnSchema, done chan bool) {
 		}
 		result := pretty.Pretty(rankingsJSON)
 
-		dir := "configs"
-		if _, err := os.Stat(dir); errors.Is(err, os.ErrNotExist) {
-			err := os.Mkdir(dir, os.ModePerm)
+		dir, err := getCurrentDir()
+		if err != nil {
+			return
+		}
+
+		schemaDir := strings.Replace(dir, CurrentDir, SchemasDir, 1)
+
+		if _, err := os.Stat(schemaDir); errors.Is(err, os.ErrNotExist) {
+			err := os.Mkdir(schemaDir, os.ModePerm)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 
-		fileName := fmt.Sprintf("%s/mongodb-atlas-%s.json", dir, strings.ToLower(cfn.FileName))
+		fileName := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, strings.ToLower(cfn.FileName))
+		resourceFile := fileName
+		// create required schema file
+		if compare {
+			latestSchemaDir := strings.Replace(dir, CurrentDir, LatestSchemasDir, 1)
+			if _, err := os.Stat(latestSchemaDir); errors.Is(err, os.ErrNotExist) {
+				err := os.Mkdir(latestSchemaDir, os.ModePerm)
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+			resourceFile = fmt.Sprintf("%s/mongodb-atlas-%s-latest.json", latestSchemaDir, strings.ToLower(cfn.FileName))
+		}
 
-		err = os.WriteFile(fileName, result, 0600)
+		//Write schema into file
+		err = os.WriteFile(resourceFile, result, 0600)
 		if err != nil {
 			print(err)
+			done <- true
+			return
+		}
+
+		if compare {
+			CompareJsonFiles(cfn.FileName, fileName, resourceFile)
 		}
 	}
 	done <- true
+
 }
 
-func generateReqFields(reqChan chan RequiredParams, reqDone chan bool) {
+func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare bool) {
 	for reqFlds := range reqChan {
 		spew.Dump(reqFlds)
 		fieldsJSON, err := json.Marshal(reqFlds)
@@ -426,16 +538,17 @@ func generateReqFields(reqChan chan RequiredParams, reqDone chan bool) {
 		}
 		result := pretty.Pretty(fieldsJSON)
 
-		dir := "configs"
-		if _, err := os.Stat(dir); errors.Is(err, os.ErrNotExist) {
-			err := os.Mkdir(dir, os.ModePerm)
+		if _, err := os.Stat(SchemasDir); errors.Is(err, os.ErrNotExist) {
+			err := os.Mkdir(SchemasDir, os.ModePerm)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 
-		fileName := fmt.Sprintf("%s/mongodb-atlas-%s-req.json", dir, strings.ToLower(reqFlds.FileName))
-
+		fileName := fmt.Sprintf("%s/mongodb-atlas-%s-req.json", SchemasDir, strings.ToLower(reqFlds.FileName))
+		if compare {
+			fileName = fmt.Sprintf("%s/mongodb-atlas-%s-req-latest.json", SchemasDir, strings.ToLower(reqFlds.FileName))
+		}
 		err = os.WriteFile(fileName, result, 0600)
 		if err != nil {
 			print(err)
@@ -593,6 +706,7 @@ func capitalizeArray(keys []string) []string {
 	}
 	return ks
 }
+
 func contains(key string, values []string) bool {
 	for _, elem := range values {
 		if strings.EqualFold(key, elem) {

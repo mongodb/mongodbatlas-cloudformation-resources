@@ -1,0 +1,45 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "ProviderName",
+      "ProviderSettings",
+      "StateName",
+      "StandardSrv",
+      "ConnectionStrings",
+      "Links",
+      "GroupId",
+      "Id",
+      "Name",
+      "CreateDate",
+      "MongoDBVersion"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "CreateDate",
+      "MongoDBVersion",
+      "TotalCount",
+      "PageNum",
+      "ProviderName",
+      "ProviderSettings",
+      "Id",
+      "ApiKeys",
+      "ItemsPerPage",
+      "Name",
+      "Results",
+      "IncludeCount",
+      "StateName",
+      "StandardSrv",
+      "ConnectionStrings",
+      "Links",
+      "GroupId"
+    ],
+    "RequiredParams": ["GroupId", "Name"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "Name"]
+  },
+  "ListFields": {}
+}

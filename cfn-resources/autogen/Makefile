@@ -17,7 +17,7 @@ ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultL
 create:
 	echo "Enter the go import path as: github.com/mongodb/mongodbatlas-cloudformation-resources/$(dirName) "
 	cd .. && \
-	mkdir $(dirName) && cp autogen/configs/mongodb-atlas-$(resourceName).json $(dirName)/mongodb-atlas-$(resourceName).json && \
+	mkdir $(dirName) && cp autogen/schemas/mongodb-atlas-$(resourceName).json $(dirName)/mongodb-atlas-$(resourceName).json && \
 	cd $(dirName) && \
 	cfn init -t MongoDB::Atlas::$(resourceName) -a r && cfn generate
 	cd ../autogen && \

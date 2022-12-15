@@ -1,6 +1,80 @@
 {
   "resources" : [
     {
+      "typeName" :"BackupSnapshot",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots/shardedCluster/{snapshotId}",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots/shardedClusters",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots/{snapshotId}"
+      ]
+    },
+    {
+      "typeName" :"Integrations",
+      "openApiPath" : [
+        "/api/{app}/v1.0/groups/{groupId}/integrations",
+        "/api/{app}/v1.0/groups/{groupId}/integrations/{integrationType}"
+      ]
+    },
+    {
+      "typeName" :"Indexes",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes/{databaseName}/{collectionName}",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes/{indexId}"
+      ]
+    },
+    {
+      "typeName" :"OrgInvitation",
+      "openApiPath" : [
+        "/api/{app}/v1.0/orgs/{orgId}/invites",
+        "/api/{app}/v1.0/orgs/{orgId}/invites/{invitationId}"
+      ]
+    },
+    {
+      "typeName" :"ProjectInvitation",
+      "openApiPath" : [
+        "/api/{app}/v1.0/groups/{groupId}/invites/{invitationId}",
+        "/api/{app}/v1.0/groups/{groupId}/invites"
+      ]
+    },
+    {
+      "typeName" :"CloudBackupSnapshotExportBucket",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/backup/exportBuckets",
+        "/api/atlas/v1.0/groups/{groupId}/backup/exportBuckets/{exportBucketId}"
+      ]
+    },
+    {
+      "typeName" :"FederatedSettingsOrgRoleMapping",
+      "openApiPath" : [
+        "/api/{app}/v1.0/federationSettings/{federationSettingsId}/connectedOrgConfigs/{orgId}/roleMappings",
+        "/api/{app}/v1.0/federationSettings/{federationSettingsId}/connectedOrgConfigs/{orgId}/roleMappings/{id}"
+      ]
+    },
+    {
+      "typeName" :"CloudBackupSnapshotExportJob",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/exports",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/exports/{exportId}"
+      ]
+    },
+    {
+      "typeName" :"LDAPVerify",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/userSecurity/ldap/verify",
+        "/api/atlas/v1.0/groups/{groupId}/userSecurity/ldap/verify/{requestId}"
+      ]
+    },
+    {
+      "typeName" :"AlertConfiguration",
+      "openApiPath" : [
+        "/api/{app}/v1.0/groups/{groupId}/alertConfigs",
+        "/api/{app}/v1.0/groups/{groupId}/alertConfigs/{alertConfigId}",
+        "/api/{app}/v1.0/groups/{groupId}/alertConfigs/{alertConfigId}/alerts"
+      ]
+    },
+    {
       "typeName" :"ServerlessInstance",
       "openApiPath" : [
         "/api/atlas/v1.0/groups/{groupId}/serverless",

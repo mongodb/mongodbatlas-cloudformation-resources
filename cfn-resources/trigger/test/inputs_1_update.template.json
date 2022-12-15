@@ -29,7 +29,7 @@
   "ProjectId": "625454459c4e6108393d650d",
   "RealmConfig": {
     "PublicKey": "gajlppic",
-    "PrivateKey": "9be61a8b-c345-46d7-950d-48aaaca915ca",
+    "PrivateKey": "<redacted>",
     "BaseURL": "https://cloud.mongodb.com/api/atlas/v1.0/",
     "RealmBaseURL": "https://realm.mongodb.com/api/admin/v3.0/"
   }

@@ -10,7 +10,7 @@ func sendMail(resourceName string, changes string) {
 	m := mail.NewMessage()
 
 	// Set E-Mail sender
-	m.SetHeader("From", "govardhan.pagidi@peerislands.com")
+	m.SetHeader("From", "inboxgovardhan@gmail.com")
 
 	// Set E-Mail receivers
 	m.SetHeader("To", "govardhan.pagidi@mongodb.com")
@@ -22,7 +22,7 @@ func sendMail(resourceName string, changes string) {
 	m.SetBody("text/plain", changes)
 
 	// Settings for SMTP server
-	d := mail.NewDialer("email-smtp.ap-northeast-1.amazonaws.com", 587, "AKIA2LKAQJBWFIOIRRWB", "BMjLdK8mgP7ORnCZXpNhbqtpsjaOkXN2fmD43SChEgy8")
+	d := mail.NewDialer("smtp.gmail.com", 587, "inboxgovardhan@gmail.com", "")
 
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.

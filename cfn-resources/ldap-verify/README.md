@@ -9,6 +9,11 @@ If the cloud formation stack gets deleted, the current resource, executes a vali
 
 Please consult the [Resource Docs](docs/README.md)
 
+## Example
+This file can be used as a CloudFormation template to create a new Maintenance Window resource
+
+[LDAPVerify.json](../../examples/LDAPVerify/LDAPVerify.json)
+
 ## Local Testing
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:

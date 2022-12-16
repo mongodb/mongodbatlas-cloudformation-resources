@@ -18,11 +18,11 @@ import (
 const (
 	BindUsername = "BindUsername"
 	BindPassword = "BindPassword"
-	RequestId    = "RequestId"
+	RequestID    = "RequestId"
 )
 
 var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port, constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.GroupID, RequestId, constants.PvtKey, constants.PubKey}
+var ReadRequiredFields = []string{constants.GroupID, RequestID, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
 var ListRequiredFields []string

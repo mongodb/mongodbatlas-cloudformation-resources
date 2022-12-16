@@ -1,21 +1,11 @@
 {
-  "additionalProperties": false,
+  "typeName": "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
+  "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "definitions": {
-    "ObjectId": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        }
-      },
-      "additionalProperties": false
-    },
     "RoleAssignment": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
         "GroupId": {
           "type": "string",
           "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.\n\nThis parameter returns an empty object if no custom zones exist."
@@ -77,24 +67,6 @@
       },
       "additionalProperties": false
     },
-    "ListOptions": {
-      "type": "object",
-      "properties": {
-        "PageNum": {
-          "description": "Unique identifier of the AWS bucket to export the cloud backup snapshot to",
-          "type": "integer"
-        },
-        "IncludeCount": {
-          "description": "Frequency associated with the export policy. Value can be daily, weekly, or monthly.",
-          "type": "boolean"
-        },
-        "ItemsPerPage": {
-          "description": "Frequency associated with the export policy. Value can be daily, weekly, or monthly.",
-          "type": "integer"
-        }
-      },
-      "additionalProperties": false
-    },
     "apiKeyDefinition": {
       "type": "object",
       "properties": {
@@ -108,29 +80,6 @@
       "additionalProperties": false
     }
   },
-  "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
-  "handlers": {
-    "create": {
-      "permissions": []
-    },
-    "read": {
-      "permissions": []
-    },
-    "update": {
-      "permissions": []
-    },
-    "delete": {
-      "permissions": []
-    }
-  },
-  "createOnlyProperties": [
-    "/properties/FederationSettingsId", 
-    "/properties/OrgId"
-  ],
-  "primaryIdentifier": [
-    "/properties/FederationSettingsId", 
-    "/properties/OrgId"
-  ],
   "properties": {
     "ApiKeys": {
       "$ref": "#/definitions/apiKeyDefinition"
@@ -150,7 +99,7 @@
     },
     "Id": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies the role mapping that you wantto remove.",
+      "description": "Unique 24-hexadecimal digit string that identifies the role mapping.",
       "maxLength": 24,
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
@@ -170,17 +119,34 @@
         "$ref": "#/definitions/RoleAssignment",
         "type": "object"
       }
-    },
-    "ListOptions": {
-      "description": "List Options.",
-      "$ref": "#/definitions/ListOptions",
-      "type": "object"
     }
   },
+  "additionalProperties": false,
   "readOnlyProperties": [
-    "/definitions/RoleAssignment/GroupId", 
-    "/definitions/RoleAssignment/OrgId"
+    "/definitions/RoleAssignment/GroupId",
+    "/definitions/RoleAssignment/OrgId",
+    "/properties/Id"
   ],
-  "typeName": "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "required": [
+    "FederationSettingsId",
+    "OrgId",
+    "ApiKeys"
+  ],
+  "primaryIdentifier": [
+    "/properties/Id"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  }
 }

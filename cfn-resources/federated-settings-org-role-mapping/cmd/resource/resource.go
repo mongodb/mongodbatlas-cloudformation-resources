@@ -4,20 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{"FederationSettingsId", "OrgId", "ExternalGroupName", "RoleAssignments", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var ReadRequiredFields = []string{"FederationSettingsId", "Id", "OrgId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var UpdateRequiredFields = []string{"FederationSettingsId", "Id", "OrgId", "ExternalGroupName", "RoleAssignments", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var DeleteRequiredFields = []string{"FederationSettingsId", "Id", "OrgId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var UpdateRequiredFields = []string{"FederationSettingsId", "OrgId", "Id", "ExternalGroupName", "RoleAssignments", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var DeleteRequiredFields = []string{"FederationSettingsId", "OrgId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var ListRequiredFields = []string{"ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -42,7 +44,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -50,8 +52,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	federationSettingsId := currentModel.FederationSettingsId
-	orgId := currentModel.OrgId
+	federationSettingsID := currentModel.FederationSettingsId
+	orgID := currentModel.OrgId
 
 	if (currentModel.ExternalGroupName) == nil {
 		err := errors.New("error creating federated settings org role mapping: ExternalGroupName should be set when `Export` is set")
@@ -71,29 +73,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.CreateRoleMapping(context.Background(), *federationSettingsId, *orgId, requestBody)
-
+	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody)
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			_, _ = log.Warnf("Create 404 err: %+v", err)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		_, _ = log.Warnf("error creating federated settings: %s", err)
+		if resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
+			return progressevents.GetFailedEventByCode("Resource already exists",
+				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
-		_, _ = log.Warnf("create err: %+v", err)
-		code := cloudformation.HandlerErrorCodeServiceInternalError
-		if strings.Contains(err.Error(), "not exist") { // cfn test needs 404
-			code = cloudformation.HandlerErrorCodeNotFound
-		}
-		if strings.Contains(err.Error(), "being deleted") {
-			code = cloudformation.HandlerErrorCodeNotFound // cfn test needs 404
-		}
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: code}, nil
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
+	currentModel.Id = &federatedSettingsOrganizationRoleMapping.ID
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -104,7 +94,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Read() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(ReadRequiredFields, currentModel)
@@ -115,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Read - error: %+v", err)
+		_, _ = log.Debugf("Read - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
@@ -123,27 +113,16 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}, nil
 	}
 
-	federationSettingsId := currentModel.FederationSettingsId
-	orgId := currentModel.OrgId
+	federationSettingsID := currentModel.FederationSettingsId
+	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
 
-	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.GetRoleMapping(context.Background(), *federationSettingsId, *orgId, *roleMappingID)
-
+	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.GetRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID)
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("error 404- err:%+v resp:%+v", err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		log.Warnf("error cloud backup policy get- err:%+v resp:%+v", err, resp)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -155,7 +134,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Update() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Update() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(UpdateRequiredFields, currentModel)
@@ -165,24 +144,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
+		_, _ = log.Debugf("Update - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
-	federationSettingsId := currentModel.FederationSettingsId
-	orgId := currentModel.OrgId
-	roleMappingId := currentModel.Id
+	federationSettingsID := currentModel.FederationSettingsId
+	orgID := currentModel.OrgId
+	roleMappingID := currentModel.Id
 
-	if (currentModel.ExternalGroupName) == nil {
-		err := errors.New("error creating federated settings org role mapping: ExternalGroupName should be set when `Export` is set")
-		_, _ = log.Warnf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	// Check if  already exist
+	if !isRoleMappingExists(currentModel, client) {
+		return progressevents.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	if (currentModel.RoleAssignments) == nil || len(currentModel.RoleAssignments) == 0 {
 		err := errors.New("error creating federated settings org role mapping: RoleAssignments should be set when `Export` is set")
@@ -194,33 +169,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-
-	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.UpdateRoleMapping(context.Background(), *federationSettingsId, *orgId, *roleMappingId, requestBody)
-
+	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.UpdateRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID, requestBody)
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			_, _ = log.Warnf("Update 404 err: %+v", err)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		_, _ = log.Warnf("update err: %+v", err)
-		code := cloudformation.HandlerErrorCodeServiceInternalError
-		if strings.Contains(err.Error(), "not exist") { // cfn test needs 404
-			code = cloudformation.HandlerErrorCodeNotFound
-		}
-		if strings.Contains(err.Error(), "being deleted") {
-			code = cloudformation.HandlerErrorCodeNotFound // cfn test needs 404
-		}
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: code}, nil
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error updating federated settings : %s", err.Error()),
+			resp.Response), nil
 	}
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
+		Message:         "Update Complete",
 		ResourceModel:   roleMappingToModel(*currentModel, federatedSettingsOrganizationRoleMapping),
 	}, nil
 }
@@ -228,7 +185,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Delete() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(DeleteRequiredFields, currentModel)
@@ -239,34 +196,25 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
+		_, _ = log.Debugf("Delete - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
-	federationSettingsId := currentModel.FederationSettingsId
-	orgId := currentModel.OrgId
-	roleMappingID := currentModel.Id
-
-	resp, err := client.FederatedSettings.DeleteRoleMapping(context.Background(), *federationSettingsId, *orgId, *roleMappingID)
-
-	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("error 404- err:%+v resp:%+v", err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		log.Warnf("error cloud backup policy get- err:%+v resp:%+v", err, resp)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+	// Check if  already exist
+	if !isRoleMappingExists(currentModel, client) {
+		return progressevents.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	log.Debugf("Atlas Client %v", client)
+	federationSettingsID := currentModel.FederationSettingsId
+	orgID := currentModel.OrgId
+	roleMappingID := currentModel.Id
+	resp, err := client.FederatedSettings.DeleteRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID)
+	if err != nil {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting federated settings : %s", err.Error()),
+			resp.Response), nil
+	}
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -277,7 +225,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("List() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(ListRequiredFields, currentModel)
@@ -288,39 +236,22 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("List - error: %+v", err)
+		_, _ = log.Debugf("List - error: %+v", err)
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
-	federationSettingsId := currentModel.FederationSettingsId
-	orgId := currentModel.OrgId
+	federationSettingsID := currentModel.FederationSettingsId
+	orgID := currentModel.OrgId
 
 	listOptions := &mongodbatlas.ListOptions{ItemsPerPage: 100, PageNum: 1}
-	//listOptions := &mongodbatlas.ListOptions{
-	//	PageNum:      *currentModel.ListOptions.PageNum,
-	//	IncludeCount: *currentModel.ListOptions.IncludeCount,
-	//	ItemsPerPage: *currentModel.ListOptions.ItemsPerPage,
-	//}
-	federatedSettingsOrganizationRoleMappings, resp, err := client.FederatedSettings.ListRoleMappings(context.Background(), *federationSettingsId, *orgId, listOptions)
-
+	federatedSettingsOrganizationRoleMappings, resp, err := client.FederatedSettings.ListRoleMappings(context.Background(), *federationSettingsID, *orgID, listOptions)
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			log.Warnf("error 404- err:%+v resp:%+v", err, resp)
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		log.Warnf("error cloud backup policy get- err:%+v resp:%+v", err, resp)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting federated settings : %s", err.Error()),
+			resp.Response), nil
 	}
-	log.Debugf("Atlas Client %v", client)
 
 	models := make([]*Model, federatedSettingsOrganizationRoleMappings.TotalCount)
 	for i := range federatedSettingsOrganizationRoleMappings.Results {
@@ -338,9 +269,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func modelToRoleMappingRequest(currentModel *Model) (*mongodbatlas.FederatedSettingsOrganizationRoleMapping, handler.ProgressEvent, error) {
 	// Atlas client
 	roleMappingRequest := &mongodbatlas.FederatedSettingsOrganizationRoleMapping{}
-	//if currentModel.Id != nil {
-	//	roleMappingRequest.ID = *currentModel.Id
-	//}
+	if currentModel.Id != nil {
+		roleMappingRequest.ID = *currentModel.Id
+	}
 	if currentModel.ExternalGroupName != nil {
 		roleMappingRequest.ExternalGroupName = *currentModel.ExternalGroupName
 	}
@@ -357,18 +288,18 @@ func expandRoleAssignments(assignments []RoleAssignment) []*mongodbatlas.RoleAss
 		if assignments[i].Role != nil {
 			role = *assignments[i].Role
 		}
-		var groupId string
+		var groupID string
 		if assignments[i].GroupId != nil {
-			groupId = *assignments[i].GroupId
+			groupID = *assignments[i].GroupId
 		}
-		var orgId string
+		var orgID string
 		if assignments[i].OrgId != nil {
-			orgId = *assignments[i].OrgId
+			orgID = *assignments[i].OrgId
 		}
 		roles[i] = &mongodbatlas.RoleAssignments{
 			Role:    role,
-			GroupID: groupId,
-			OrgID:   orgId,
+			GroupID: groupID,
+			OrgID:   orgID,
 		}
 	}
 	fmt.Printf("roles: len %d %+v", len(roles), roles)
@@ -379,6 +310,7 @@ func roleMappingToModel(currentModel Model, roleMapping *mongodbatlas.FederatedS
 	out := &Model{
 		ApiKeys:              currentModel.ApiKeys,
 		FederationSettingsId: currentModel.FederationSettingsId,
+		OrgId:                currentModel.OrgId,
 		Id:                   &roleMapping.ID,
 		ExternalGroupName:    &roleMapping.ExternalGroupName,
 		RoleAssignments:      flattenRoleAssignments(roleMapping.RoleAssignments),
@@ -396,4 +328,16 @@ func flattenRoleAssignments(assignments []*mongodbatlas.RoleAssignments) []RoleA
 		})
 	}
 	return roleAssignments
+}
+
+func isRoleMappingExists(currentModel *Model, client *mongodbatlas.Client) bool {
+	var isExists bool
+	fedSettingsConnectedOrg, _, err := client.FederatedSettings.GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.OrgId, *currentModel.Id)
+	if err != nil {
+		return isExists
+	}
+	if fedSettingsConnectedOrg != nil {
+		isExists = true
+	}
+	return isExists
 }

@@ -15,7 +15,7 @@
         "endpoint_url": null,
         "region": null,
         "target_schemas": [],
-        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/cfn-resources/federated-settings-org-role-mapping",
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/federated-settings-org-role-mapping",
         "protocolVersion": "2.0.0",
         "pluginVersion": "2.0.4"
     }

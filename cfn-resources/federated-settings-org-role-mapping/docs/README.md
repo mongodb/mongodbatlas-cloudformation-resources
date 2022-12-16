@@ -15,10 +15,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#externalgroupname" title="ExternalGroupName">ExternalGroupName</a>" : <i>String</i>,
         "<a href="#federationsettingsid" title="FederationSettingsId">FederationSettingsId</a>" : <i>String</i>,
-        "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
-        "<a href="#roleassignments" title="RoleAssignments">RoleAssignments</a>" : <i>[ <a href="roleassignment.md">RoleAssignment</a>, ... ]</i>,
-        "<a href="#listoptions" title="ListOptions">ListOptions</a>" : <i><a href="listoptions.md">ListOptions</a></i>
+        "<a href="#roleassignments" title="RoleAssignments">RoleAssignments</a>" : <i>[ <a href="roleassignment.md">RoleAssignment</a>, ... ]</i>
     }
 }
 </pre>
@@ -31,18 +29,16 @@ Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#externalgroupname" title="ExternalGroupName">ExternalGroupName</a>: <i>String</i>
     <a href="#federationsettingsid" title="FederationSettingsId">FederationSettingsId</a>: <i>String</i>
-    <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#roleassignments" title="RoleAssignments">RoleAssignments</a>: <i>
       - <a href="roleassignment.md">RoleAssignment</a></i>
-    <a href="#listoptions" title="ListOptions">ListOptions</a>: <i><a href="listoptions.md">ListOptions</a></i>
 </pre>
 
 ## Properties
 
 #### ApiKeys
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
@@ -66,23 +62,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal digit string that identifies your federation.
 
-_Required_: No
-
-_Type_: String
-
-_Minimum_: <code>24</code>
-
-_Maximum_: <code>24</code>
-
-_Pattern_: <code>^([a-f0-9]{24})$</code>
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### Id
-
-Unique 24-hexadecimal digit string that identifies the role mapping that you wantto remove.
-
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -98,7 +78,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal digit string that identifies the organization that contains your projects.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -108,7 +88,7 @@ _Maximum_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### RoleAssignments
 
@@ -120,15 +100,11 @@ _Type_: List of <a href="roleassignment.md">RoleAssignment</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ListOptions
-
-_Required_: No
-
-_Type_: <a href="listoptions.md">ListOptions</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 ## Return Values
+
+### Ref
+
+When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
 
 ### Fn::GetAtt
 
@@ -143,4 +119,8 @@ Returns the <code>GroupId</code> value.
 #### OrgId
 
 Returns the <code>OrgId</code> value.
+
+#### Id
+
+Unique 24-hexadecimal digit string that identifies the role mapping.
 

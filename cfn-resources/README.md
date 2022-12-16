@@ -7,18 +7,20 @@ MongoDB Atlas Resource Types.
 
 ### Resource Status Table
 
-| Resource                             | Status | Examples                                                                                   |
-|--------------------------------------| --- |--------------------------------------------------------------------------------------------|
-| project                              | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project/test](./project/test)                                                           |
-| project-ip-access-list               | ![Build](https://img.shields.io/badge/Beta-yellow) | [./project-ip-access-list/test](./project-ip-access-list/test)                             |
-| cluster                              | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cluster/test](./cluster/test)                                                           |
-| database-user                        | ![Build](https://img.shields.io/badge/Beta-yellow) | [./database-user/test](./database-user/test)                                               |
-| network-peering                      | ![Build](https://img.shields.io/badge/Beta-yellow) | [./network-peering/test](./network-peering/test)                                           |
+| Resource                             | Status                                                 | Examples                                                                                   |
+|--------------------------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| project                              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project/test](./project/test)                                                           |
+| project-ip-access-list               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project-ip-access-list/test](./project-ip-access-list/test)                             |
+| cluster                              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cluster/test](./cluster/test)                                                           |
+| database-user                        | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./database-user/test](./database-user/test)                                               |
+| network-peering                      | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./network-peering/test](./network-peering/test)                                           |
 | encryption-at-rest                   | ![Build](https://img.shields.io/badge/Unstable-orange) | [./encryption-at-rest/test](./encryption-at-rest/test)                                     |
 | cloud-provider-snapshots             | ![Build](https://img.shields.io/badge/Unstable-orange) | [../cloud-provider-snapshots/test](./cloud-provider-snapshots/test)                        |
 | cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Unstable-orange) | [./cloud-provider-snapshot-restore-jobs/test](./cloud-provider-snapshot-restore-jobs/test) | 
 | network-container                    | ![Build](https://img.shields.io/badge/Beta-Admin-grey) | [./network-container/test](./network-container/test)                                       |
-| private-endpoint                     | ![Build](https://img.shields.io/badge/Beta-yellow) | [./private-endpoint/test](./private-endpoint/test)                                         |
+| private-endpoint                     | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint/test](./private-endpoint/test)                                         |
+| custom-db-role                       | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./custom-db-role/test](./custom-db-role/test)                                             |
+| maintenance-window                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./maintenance-window/test](./maintenance-window/test)                                     |
 
 Legend
 ---

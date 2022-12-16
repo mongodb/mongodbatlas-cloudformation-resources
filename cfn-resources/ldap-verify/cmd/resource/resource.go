@@ -58,24 +58,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
-	/*
-		Uncomment this once we have a way to test with an LDAP server
-
-		return handler.ProgressEvent{
-
-			OperationStatus: handler.InProgress,
-			Message:         "Create in progress",
-			ResourceModel:   currentModel,
-			CallbackContext: map[string]interface{}{
-				"RequestId": currentModel.RequestId,
-			},
-		}, nil
-	*/
-	// Response
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Create successfully",
-		ResourceModel:   currentModel,
+
+		OperationStatus:      handler.InProgress,
+		Message:              "Create in progress",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 10,
+		CallbackContext: map[string]interface{}{
+			"RequestId": currentModel.RequestId,
+		},
 	}, nil
 }
 

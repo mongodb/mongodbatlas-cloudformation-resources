@@ -15,7 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#validations" title="Validations">Validations</a>" : <i>[ <a href="validation.md">Validation</a>, ... ]</i>,
         "<a href="#bindusername" title="BindUsername">BindUsername</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
-        "<a href="#hostname" title="Hostname">Hostname</a>" : <i>String</i>,
+        "<a href="#hostname" title="HostName">HostName</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#cacertificate" title="CaCertificate">CaCertificate</a>" : <i>String</i>,
         "<a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>" : <i>String</i>,
@@ -35,7 +35,7 @@ Properties:
       - <a href="validation.md">Validation</a></i>
     <a href="#bindusername" title="BindUsername">BindUsername</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
-    <a href="#hostname" title="Hostname">Hostname</a>: <i>String</i>
+    <a href="#hostname" title="HostName">HostName</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#cacertificate" title="CaCertificate">CaCertificate</a>: <i>String</i>
     <a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>: <i>String</i>
@@ -60,7 +60,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -76,11 +76,11 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Hostname
+#### HostName
 
 Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -90,7 +90,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ApiKeys
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
 
@@ -120,7 +120,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Password that MongoDB Cloud uses to authenticate the **bindUsername**.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -146,7 +146,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: Integer
 

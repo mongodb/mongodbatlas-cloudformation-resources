@@ -8,7 +8,7 @@ type Model struct {
 	BindUsername       *string           `json:",omitempty"`
 	Status             *string           `json:",omitempty"`
 	RequestId          *string           `json:",omitempty"`
-	Hostname           *string           `json:",omitempty"`
+	HostName           *string           `json:",omitempty"`
 	ApiKeys            *ApiKeyDefinition `json:",omitempty"`
 	CaCertificate      *string           `json:",omitempty"`
 	AuthzQueryTemplate *string           `json:",omitempty"`

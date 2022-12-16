@@ -15,8 +15,14 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, "BindUsername", "BindPassword", "Hostname", "Port", constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.GroupID, "RequestId", constants.PvtKey, constants.PubKey}
+const (
+	BindUsername = "BindUsername"
+	BindPassword = "BindPassword"
+	RequestId    = "RequestId"
+)
+
+var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port, constants.PvtKey, constants.PubKey}
+var ReadRequiredFields = []string{constants.GroupID, RequestId, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
 var ListRequiredFields []string
@@ -152,7 +158,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func (m *Model) GetAtlasModel() *mongodbatlas.LDAP {
 	ldap := &mongodbatlas.LDAP{
-		Hostname:     *m.Hostname,
+		Hostname:     *m.HostName,
 		Port:         *m.Port,
 		BindPassword: *m.BindPassword,
 		BindUsername: *m.BindUsername,

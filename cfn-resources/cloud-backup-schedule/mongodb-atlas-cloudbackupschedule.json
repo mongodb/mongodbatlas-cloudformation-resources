@@ -79,7 +79,8 @@
                     "items": {
                         "type" : "string"
                     },
-                    "type": "array"
+                    "type": "array",
+                    "insertionOrder": false
                 }
             },
             "additionalProperties": false
@@ -117,6 +118,23 @@
                 }
             },
             "additionalProperties": false
+        },
+        "Link": {
+            "type": "object",
+            "properties": {
+                "ApiKeys": {
+                    "$ref": "#/definitions/apiKeyDefinition"
+                },
+                "Href": {
+                    "type": "string",
+                    "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+                },
+                "Rel": {
+                    "type": "string",
+                    "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+                }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
@@ -147,14 +165,16 @@
         },
         "CopySettings": {
             "type": "array",
+            "insertionOrder": false,
             "description": "List that contains a document for each copy setting item in the desired backup policy.",
             "items":{
                 "$ref": "#/definitions/ApiAtlasDiskBackupCopySettingView",
                 "type": "object"
             }
         },
-        "DeleteCopiedBackup": {
+        "DeleteCopiedBackups": {
             "type": "array",
+            "insertionOrder": false,
             "description": "List that contains a document for each deleted copy setting whose backup copies you want to delete.",
             "items":{
                 "$ref": "#/definitions/ApiDeleteCopiedBackupsView",
@@ -196,6 +216,15 @@
         },
         "ApiKeys": {
             "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Links": {
+            "type": "array",
+            "insertionOrder": false,
+            "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+            "items": {
+                "$ref": "#/definitions/Link",
+                "type": "object"
+            }
         }
     },
     "additionalProperties": false,
@@ -203,12 +232,16 @@
         "ApiKeys"
     ],
     "writeOnlyProperties": [
-        "/properties/UpdateSnapshots"
+        "/properties/UpdateSnapshots",
+        "/properties/DeleteCopiedBackups"
     ],
     "readOnlyProperties": [
         "/properties/ClusterId",
         "/properties/NextSnapshot",
-        "/properties/Policies/*/PolicyItems/*/ID"
+        "/properties/Policies/*/PolicyItems/*/ID",
+        "/properties/ProjectId",
+        "/properties/ClusterName",
+        "/definitions/Links"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",

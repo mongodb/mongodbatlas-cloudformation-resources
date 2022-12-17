@@ -12,20 +12,19 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::CloudBackupSchedule",
     "Properties" : {
-        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#autoexportenabled" title="AutoExportEnabled">AutoExportEnabled</a>" : <i>Boolean</i>,
         "<a href="#useorgandgroupnamesinexportprefix" title="UseOrgAndGroupNamesInExportPrefix">UseOrgAndGroupNamesInExportPrefix</a>" : <i>Boolean</i>,
         "<a href="#export" title="Export">Export</a>" : <i><a href="export.md">Export</a></i>,
         "<a href="#copysettings" title="CopySettings">CopySettings</a>" : <i>[ <a href="apiatlasdiskbackupcopysettingview.md">ApiAtlasDiskBackupCopySettingView</a>, ... ]</i>,
-        "<a href="#deletecopiedbackup" title="DeleteCopiedBackup">DeleteCopiedBackup</a>" : <i>[ <a href="apideletecopiedbackupsview.md">ApiDeleteCopiedBackupsView</a>, ... ]</i>,
+        "<a href="#deletecopiedbackups" title="DeleteCopiedBackups">DeleteCopiedBackups</a>" : <i>[ <a href="apideletecopiedbackupsview.md">ApiDeleteCopiedBackupsView</a>, ... ]</i>,
         "<a href="#policies" title="Policies">Policies</a>" : <i>[ <a href="apipolicyview.md">ApiPolicyView</a>, ... ]</i>,
         "<a href="#referencehourofday" title="ReferenceHourOfDay">ReferenceHourOfDay</a>" : <i>Integer</i>,
         "<a href="#referenceminuteofhour" title="ReferenceMinuteOfHour">ReferenceMinuteOfHour</a>" : <i>Integer</i>,
         "<a href="#restorewindowdays" title="RestoreWindowDays">RestoreWindowDays</a>" : <i>Integer</i>,
         "<a href="#updatesnapshots" title="UpdateSnapshots">UpdateSnapshots</a>" : <i>Boolean</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>
     }
 }
 </pre>
@@ -35,15 +34,13 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::CloudBackupSchedule
 Properties:
-    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#autoexportenabled" title="AutoExportEnabled">AutoExportEnabled</a>: <i>Boolean</i>
     <a href="#useorgandgroupnamesinexportprefix" title="UseOrgAndGroupNamesInExportPrefix">UseOrgAndGroupNamesInExportPrefix</a>: <i>Boolean</i>
     <a href="#export" title="Export">Export</a>: <i><a href="export.md">Export</a></i>
     <a href="#copysettings" title="CopySettings">CopySettings</a>: <i>
       - <a href="apiatlasdiskbackupcopysettingview.md">ApiAtlasDiskBackupCopySettingView</a></i>
-    <a href="#deletecopiedbackup" title="DeleteCopiedBackup">DeleteCopiedBackup</a>: <i>
+    <a href="#deletecopiedbackups" title="DeleteCopiedBackups">DeleteCopiedBackups</a>: <i>
       - <a href="apideletecopiedbackupsview.md">ApiDeleteCopiedBackupsView</a></i>
     <a href="#policies" title="Policies">Policies</a>: <i>
       - <a href="apipolicyview.md">ApiPolicyView</a></i>
@@ -52,29 +49,11 @@ Properties:
     <a href="#restorewindowdays" title="RestoreWindowDays">RestoreWindowDays</a>: <i>Integer</i>
     <a href="#updatesnapshots" title="UpdateSnapshots">UpdateSnapshots</a>: <i>Boolean</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#links" title="Links">Links</a>: <i>
+      - <a href="link.md">Link</a></i>
 </pre>
 
 ## Properties
-
-#### ProjectId
-
-The unique identifier of the project for the Atlas cluster.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ClusterName
-
-The name of the Atlas cluster that contains the snapshots you want to retrieve.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Id
 
@@ -124,7 +103,7 @@ _Type_: List of <a href="apiatlasdiskbackupcopysettingview.md">ApiAtlasDiskBacku
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### DeleteCopiedBackup
+#### DeleteCopiedBackups
 
 List that contains a document for each deleted copy setting whose backup copies you want to delete.
 
@@ -192,6 +171,16 @@ _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Links
+
+List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
+
+_Required_: No
+
+_Type_: List of <a href="link.md">Link</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 ## Return Values
 
 ### Fn::GetAtt
@@ -211,4 +200,16 @@ Timestamp in the number of seconds that have elapsed since the UNIX epoc when At
 #### ID
 
 Returns the <code>ID</code> value.
+
+#### ProjectId
+
+The unique identifier of the project for the Atlas cluster.
+
+#### ClusterName
+
+The name of the Atlas cluster that contains the snapshots you want to retrieve.
+
+#### Links
+
+Returns the <code>Links</code> value.
 

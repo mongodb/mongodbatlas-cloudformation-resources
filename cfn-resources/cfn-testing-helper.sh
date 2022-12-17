@@ -32,10 +32,11 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
-resources="${1:-project project-ip-access-list database-user }"
+resources="${1:-project project-ip-access-list database-user private-endpoint third-party-integration }"
+
 echo "$(basename "$0") running for the following resources: ${resources}"
 
-echo "Step 1/2: Building"
+echo "Step 1/4: Building"
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
@@ -61,7 +62,7 @@ fi
 
 
 
-echo "Step 2/3: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-create-inputs.sh'"
+echo "Step 2/4: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-create-inputs.sh'"
 #if [ ! -d "./inputs" ]; then
 #fi
 
@@ -98,7 +99,15 @@ do
         echo "Generating network-peering test inputs AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_VPC_ID=${AWS_VPC_ID}"
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" && \
             echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
+    elif [[ "${res}" == "private-endpoint" ]]; then
+        #
+        # grab the first vpc-id found to test with,
+        AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
+        AWS_SUBNET_ID=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${AWS_VPC_ID}"  --output=json | jq -r '.Subnets[0].SubnetId')
 
+        echo "Generating private-endpoint test inputs AWS_VPC_ID=${AWS_VPC_ID}, AWS_SUBNET_ID=${AWS_SUBNET_ID}"
+        ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_VPC_ID}" "${AWS_SUBNET_ID}" && \
+            echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     else
         ./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
     fi
@@ -122,7 +131,7 @@ done
 
 
 
-echo "Step 3/3: Running 'cfn test' on resource type"
+echo "Step 3/4: Running 'cfn test' on resource type"
 SAM_LOG=$(mktemp)
 for resource in ${resources};
 do
@@ -145,7 +154,7 @@ do
     cd -
 done
 
-echo "Step 4: cleaning up 'cfn test' inputs "
+echo "Step 4/4: cleaning up 'cfn test' inputs "
 SAM_LOG=$(mktemp)
 for resource in ${resources};
 do
@@ -156,13 +165,13 @@ done
 echo "Clean up project"
 for resource in ${resources};
 do
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have mongocli to clean up project for:${resource}" && continue
+    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have atlascli to clean up project for:${resource}" && continue
     echo "Looking up Atlas project id for resource:${res} project name:${PROJECT_NAME}-${res}"
-    p_id=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
+    p_id=$(atlas projects list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .id')
     [ -z "$p_id" ] && echo "No project found" && continue
-    p_name=$(mongocli iam project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
+    p_name=$(atlas projects list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${res}, project:${p_name} id:${p_id}"
-    mongocli iam project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+    atlas projects delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
 done
 
 

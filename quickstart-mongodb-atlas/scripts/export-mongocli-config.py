@@ -18,3 +18,6 @@ d=t[profile]
 print(f"export ATLAS_PUBLIC_KEY={d['public_api_key']}")
 print(f"export ATLAS_PRIVATE_KEY={d['private_api_key']}")
 print(f"export ATLAS_ORG_ID={d['org_id']}")
+print(f"export MCLI_PUBLIC_API_KEY={d['public_api_key']}")
+print(f"export MCLI_PRIVATE_API_KEY={d['private_api_key']}")
+print(f"export MCLI_ORG_ID={d['org_id']}")

@@ -12,8 +12,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::Cluster",
     "Properties" : {
+        "<a href="#advancedsettings" title="AdvancedSettings">AdvancedSettings</a>" : <i><a href="processargs.md">processArgs</a></i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
-        "<a href="#autoscaling" title="AutoScaling">AutoScaling</a>" : <i><a href="autoscaling.md">autoScaling</a></i>,
         "<a href="#backupenabled" title="BackupEnabled">BackupEnabled</a>" : <i>Boolean</i>,
         "<a href="#biconnector" title="BiConnector">BiConnector</a>" : <i><a href="biconnector.md">BiConnector</a></i>,
         "<a href="#clustertype" title="ClusterType">ClusterType</a>" : <i>String</i>,
@@ -24,12 +24,12 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ [ <a href="labels.md">Labels</a>, ... ], ... ]</i>,
         "<a href="#mongodbmajorversion" title="MongoDBMajorVersion">MongoDBMajorVersion</a>" : <i>String</i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
-        "<a href="#numshards" title="NumShards">NumShards</a>" : <i>Integer</i>,
+        "<a href="#paused" title="Paused">Paused</a>" : <i>Boolean</i>,
         "<a href="#pitenabled" title="PitEnabled">PitEnabled</a>" : <i>Boolean</i>,
-        "<a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>" : <i>Boolean</i>,
-        "<a href="#providersettings" title="ProviderSettings">ProviderSettings</a>" : <i><a href="providersettings.md">ProviderSettings</a></i>,
-        "<a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>" : <i>Integer</i>,
-        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="replicationspec.md">replicationSpec</a>, ... ]</i>,
+        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="advancedreplicationspec.md">advancedReplicationSpec</a>, ... ]</i>,
+        "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>,
+        "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
+        "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>
     }
 }
 </pre>
@@ -39,8 +39,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::Cluster
 Properties:
+    <a href="#advancedsettings" title="AdvancedSettings">AdvancedSettings</a>: <i><a href="processargs.md">processArgs</a></i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
-    <a href="#autoscaling" title="AutoScaling">AutoScaling</a>: <i><a href="autoscaling.md">autoScaling</a></i>
     <a href="#backupenabled" title="BackupEnabled">BackupEnabled</a>: <i>Boolean</i>
     <a href="#biconnector" title="BiConnector">BiConnector</a>: <i><a href="biconnector.md">BiConnector</a></i>
     <a href="#clustertype" title="ClusterType">ClusterType</a>: <i>String</i>
@@ -53,16 +53,26 @@ Properties:
       - <a href="labels.md">Labels</a></i>
     <a href="#mongodbmajorversion" title="MongoDBMajorVersion">MongoDBMajorVersion</a>: <i>String</i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
-    <a href="#numshards" title="NumShards">NumShards</a>: <i>Integer</i>
+    <a href="#paused" title="Paused">Paused</a>: <i>Boolean</i>
     <a href="#pitenabled" title="PitEnabled">PitEnabled</a>: <i>Boolean</i>
-    <a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>: <i>Boolean</i>
-    <a href="#providersettings" title="ProviderSettings">ProviderSettings</a>: <i><a href="providersettings.md">ProviderSettings</a></i>
-    <a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>: <i>Integer</i>
     <a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>: <i>
-      - <a href="replicationspec.md">replicationSpec</a></i>
+      - <a href="advancedreplicationspec.md">advancedReplicationSpec</a></i>
+    <a href="#rootcerttype" title="RootCertType">RootCertType</a>: <i>String</i>
+    <a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>: <i>String</i>
+    <a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
+
+#### AdvancedSettings
+
+Advanced configuration details to add for one cluster in the specified project.
+
+_Required_: No
+
+_Type_: <a href="processargs.md">processArgs</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ApiKeys
 
@@ -72,17 +82,9 @@ _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### AutoScaling
-
-_Required_: No
-
-_Type_: <a href="autoscaling.md">autoScaling</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### BackupEnabled
 
-Applicable only for M10+ clusters. Set to true to enable Atlas continuous backups for the cluster. Set to false to disable continuous backups for the cluster. Atlas deletes any stored snapshots. See the continuous backup Snapshot Schedule for more information. You cannot enable continuous backups if you have an existing cluster in the project with Cloud Provider Snapshots enabled. The default value is false.
+Flag that indicates whether the cluster can perform backups. If set to true, the cluster can perform backups. You must set this value to true for NVMe clusters. Backup uses Cloud Backups for dedicated clusters and Shared Cluster Backups for tenant clusters. If set to false, the cluster doesn't use backups.
 
 _Required_: No
 
@@ -92,6 +94,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### BiConnector
 
+Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster.
+
 _Required_: No
 
 _Type_: <a href="biconnector.md">BiConnector</a>
@@ -100,7 +104,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ClusterType
 
-Type of the cluster that you want to create.
+Configuration of nodes that comprise the cluster.
 
 _Required_: No
 
@@ -110,6 +114,8 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ConnectionStrings
 
+Collection of Uniform Resource Locators that point to the MongoDB database.
+
 _Required_: No
 
 _Type_: <a href="connectionstrings.md">connectionStrings</a>
@@ -118,7 +124,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### DiskSizeGB
 
-Capacity, in gigabytes, of the hosts root volume. Increase this number to add capacity, up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.
+Storage capacity that the host's root volume possesses expressed in gigabytes. Increase this number to add capacity. MongoDB Cloud requires this parameter if you set replicationSpecs. If you specify a disk size below the minimum (10 GB), this parameter defaults to the minimum disk size value. Storage charge calculations depend on whether you choose the default value or a custom value. The maximum value for disk storage cannot exceed 50 times the maximum RAM for the selected cluster. If you require more storage space, consider upgrading your cluster to a higher tier.
 
 _Required_: No
 
@@ -128,7 +134,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### EncryptionAtRestProvider
 
-Set the Encryption at Rest parameter.
+Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. To enable customer key management for encryption at rest, the cluster replicationSpecs[n].regionConfigs[m].{type}Specs.instanceSize setting must be M10 or higher and "backupEnabled" : false or omitted entirely.
 
 _Required_: No
 
@@ -142,7 +148,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique identifier of the project the cluster belongs to.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -150,7 +156,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Labels
 
-Array containing key-value pairs that tag and categorize the cluster.
+Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. The MongoDB Cloud console doesn't display your labels.
 
 _Required_: No
 
@@ -160,7 +166,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### MongoDBMajorVersion
 
-Major version of the cluster to deploy.
+Major MongoDB version of the cluster. MongoDB Cloud deploys the cluster with the latest stable release of the specified version.
 
 _Required_: No
 
@@ -170,7 +176,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Name
 
-Name of the cluster. Once the cluster is created, its name cannot be changed.
+Human-readable label that identifies the advanced cluster.
 
 _Required_: Yes
 
@@ -178,61 +184,63 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### NumShards
+#### Paused
 
-Positive integer that specifies the number of shards to deploy for a sharded cluster.
+Flag that indicates whether the cluster is paused or not.
 
 _Required_: No
 
-_Type_: Integer
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### PitEnabled
 
-Flag that indicates if the cluster uses Point-in-Time backups. If set to true, providerBackupEnabled must also be set to true.
+Flag that indicates whether the cluster uses continuous cloud backups.
 
 _Required_: No
 
 _Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ProviderBackupEnabled
-
-Applicable only for M10+ clusters. Set to true to enable Atlas Cloud Provider Snapshots backups for the cluster. Set to false to disable Cloud Provider Snapshots backups for the cluster. You cannot enable Cloud Provider Snapshots if you have an existing cluster in the project with continuous backups enabled. Note that you must set this value to true for NVMe clusters. The default value is false.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ProviderSettings
-
-_Required_: No
-
-_Type_: <a href="providersettings.md">ProviderSettings</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ReplicationFactor
-
-ReplicationFactor is deprecated. Use replicationSpecs.
-
-_Required_: No
-
-_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ReplicationSpecs
 
-Configuration for cluster regions.
+List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.
 
 _Required_: No
 
-_Type_: List of <a href="replicationspec.md">replicationSpec</a>
+_Type_: List of <a href="advancedreplicationspec.md">advancedReplicationSpec</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RootCertType
+
+Root Certificate Authority that MongoDB Cloud cluster uses. MongoDB Cloud supports Internet Security Research Group.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### VersionReleaseSystem
+
+Method by which the cluster maintains the MongoDB versions. If value is CONTINUOUS, you must not specify mongoDBMajorVersion
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TerminationProtectionEnabled
+
+Flag that indicates whether termination protection is enabled on the cluster. If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB Cloud will delete the cluster.
+
+_Required_: No
+
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -248,53 +256,37 @@ The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
 
-#### ProviderName
+#### ConnectionStrings
 
-Returns the <code>ProviderName</code> value.
+Collection of Uniform Resource Locators that point to the MongoDB database.
 
-#### Standard
+#### ConnectionStrings.Standard
 
-Returns the <code>Standard</code> value.
+Returns the <code>ConnectionStrings.Standard</code> value.
 
-#### StandardSrv
+#### ConnectionStrings.StandardSrv
 
-Returns the <code>StandardSrv</code> value.
+Returns the <code>ConnectionStrings.StandardSrv</code> value.
 
-#### Private
+#### ConnectionStrings.Private
 
-Returns the <code>Private</code> value.
+Returns the <code>ConnectionStrings.Private</code> value.
 
-#### PrivateSrv
+#### ConnectionStrings.PrivateSrv
 
-Returns the <code>PrivateSrv</code> value.
+Returns the <code>ConnectionStrings.PrivateSrv</code> value.
 
 #### StateName
 
 Current state of the cluster.
 
-#### SrvAddress
-
-Connection string for connecting to the Atlas cluster. The +srv modifier forces the connection to use TLS. The mongoURI parameter lists additional options.
-
-#### Paused
-
-Flag that indicates whether the cluster is paused or not.
-
 #### MongoDBVersion
 
-Version of MongoDB the cluster runs, in <major version>.<minor version> format.
+Version of MongoDB that the cluster runs.
 
-#### MongoURI
+#### CreatedDate
 
-Base connection string for the cluster.
-
-#### MongoURIUpdated
-
-Timestamp in ISO 8601 date and time format in UTC when the connection string was last updated. The connection string changes if you update any of the other values.
-
-#### MongoURIWithOptions
-
-connection string for connecting to the Atlas cluster. Includes the replicaSet, ssl, and authSource query parameters in the connection string with values appropriate for the cluster.
+Date and time when MongoDB Cloud created this cluster. This parameter expresses its value in ISO 8601 format in UTC.
 
 #### Id
 

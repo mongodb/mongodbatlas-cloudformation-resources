@@ -29,7 +29,7 @@ type Model struct {
 	SnapshotIds      []string                                             `json:",omitempty"`
 	SnapshotType     *string                                              `json:",omitempty"`
 	Status           *string                                              `json:",omitempty"`
-	StorageSizeBytes *int                                                 `json:",omitempty"`
+	StorageSizeBytes *string                                              `json:",omitempty"`
 	TotalCount       *float64                                             `json:",omitempty"`
 	Type             *string                                              `json:",omitempty"`
 }
@@ -68,6 +68,6 @@ type ApiAtlasDiskBackupShardedClusterSnapshotView struct {
 	SnapshotIds      []string                                             `json:",omitempty"`
 	SnapshotType     *string                                              `json:",omitempty"`
 	Status           *string                                              `json:",omitempty"`
-	StorageSizeBytes *int                                                 `json:",omitempty"`
+	StorageSizeBytes *string                                              `json:",omitempty"`
 	Type             *string                                              `json:",omitempty"`
 }

@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
@@ -424,7 +425,8 @@ func convertToUIModel(snapShot *mongodbatlas.CloudProviderSnapshot, currentModel
 	currentModel.ReplicaSetName = &snapShot.ReplicaSetName
 	currentModel.MasterKeyUUID = &snapShot.MasterKeyUUID
 	currentModel.MongodVersion = &snapShot.MongodVersion
-	currentModel.StorageSizeBytes = &snapShot.StorageSizeBytes
+	storageInBytesString := strconv.Itoa(snapShot.StorageSizeBytes)
+	currentModel.StorageSizeBytes = &storageInBytesString
 	currentModel.Links = flattenLinks(snapShot.Links)
 	currentModel.CloudProvider = pointy.String(constants.AWS)
 	currentModel.SnapshotIds = snapShot.SnapshotsIds

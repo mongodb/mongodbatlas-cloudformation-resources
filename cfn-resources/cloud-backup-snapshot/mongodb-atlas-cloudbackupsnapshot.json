@@ -77,7 +77,7 @@
           "enum": ["queued", "inProgress", "completed", "failed"]
         },
         "StorageSizeBytes": {
-          "type": "integer",
+          "type": "string",
           "description": "Number of bytes taken to store the backup snapshot."
         },
         "Type": {
@@ -195,7 +195,7 @@
           "enum": ["queued", "inProgress", "completed", "failed"]
         },
         "StorageSizeBytes": {
-          "type": "integer",
+          "type": "string",
           "description": "Number of bytes taken to store the backup snapshot."
         },
         "Type": {
@@ -399,7 +399,7 @@
       "enum": ["queued", "inProgress", "completed", "failed"]
     },
     "StorageSizeBytes": {
-      "type": "integer",
+      "type": "string",
       "description": "Number of bytes taken to store the backup snapshot."
     },
     "TotalCount": {

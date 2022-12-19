@@ -21,25 +21,44 @@ mkdir inputs
 
 #project_id
 projectName="${1}"
+bindPassword="$LDAP_BIND_PASSWORD"
+bindUsername="$LDAP_BIND_USER_NAME"
+hostname="$LDAP_HOST_NAME"
 
-projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
     echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
+
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg group_id "$projectId" \
-   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+   --arg bindPassword "$bindPassword" \
+   --arg bindUsername "$bindUsername" \
+   --arg hostname "$hostname" \
+   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .Hostname?|=$hostname' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg group_id "$projectId" \
-   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+   --arg bindPassword "$bindPassword" \
+   --arg bindUsername "$bindUsername" \
+   --arg hostname "$hostname" \
+   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .Hostname?|=$hostname' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
+
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+   --arg group_id "$projectId" \
+   --arg bindPassword "$bindPassword" \
+   --arg bindUsername "$bindUsername" \
+   --arg hostname "$hostname" \
+   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .Hostname?|=$hostname' \
+   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 ls -l inputs

@@ -1,8 +1,10 @@
 package resource
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	localConstants "github.com/mongodb/mongodbatlas-cloudformation-resources/ldap-configuration/cmd/constants"
@@ -11,7 +13,9 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	dac "github.com/xinsnake/go-http-digest-auth-client"
 	"go.mongodb.org/atlas/mongodbatlas"
+	log2 "log"
 )
 
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID,
@@ -26,13 +30,8 @@ func setup() {
 }
 
 func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
-	m.BindUsername = &resp.LDAP.BindUsername
-	m.Hostname = &resp.LDAP.Hostname
 	m.AuthenticationEnabled = &resp.LDAP.AuthenticationEnabled
 	m.AuthorizationEnabled = &resp.LDAP.AuthorizationEnabled
-	m.CaCertificate = &resp.LDAP.CaCertificate
-	m.AuthzQueryTemplate = &resp.LDAP.AuthzQueryTemplate
-	m.BindPassword = &resp.LDAP.BindPassword
 
 	mapping := make([]ApiAtlasNDSUserToDNMappingView, len(resp.LDAP.UserToDNMapping))
 
@@ -52,7 +51,7 @@ func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
 
 	ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: *m.AuthenticationEnabled,
+		AuthenticationEnabled: true,
 		Hostname:              *m.Hostname,
 		Port:                  *m.Port,
 		BindUsername:          *m.BindUsername,
@@ -199,11 +198,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
+	log2.Printf("Enter point 1")
+
 	//Validate if resource exists
 	_, errPe := Get(client, *currentModel.GroupId)
 	if errPe != nil {
 		return *errPe, nil
 	}
+
+	log2.Printf("Enter point 1")
 
 	ldapReq := currentModel.GetAtlasModel()
 
@@ -212,6 +215,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		log.Debugf("Create - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
+
+	log2.Printf("Enter point 1")
 
 	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
@@ -255,7 +260,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errPe, nil
 	}
 
-	ldap := &mongodbatlas.LDAP{
+	/*ldap := &mongodbatlas.LDAP{
 		AuthenticationEnabled: false,
 	}
 
@@ -267,7 +272,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		log.Debugf("Delete - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
+	}*/
+
+	manualSave(currentModel)
 
 	// Response
 	return handler.ProgressEvent{
@@ -278,4 +285,26 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
+func manualSave(currentModel *Model) error {
+
+	log2.Printf("Executing manual save")
+	URL := fmt.Sprintf("https://cloud.mongodb.com/api/atlas/v1.0/groups/%s/userSecurity", *currentModel.GroupId)
+
+	// create a new digest authentication request
+	dr := dac.NewRequest(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, "PATCH", URL, `{"ldap": {"authenticationEnabled": false,"authorizationEnabled" : false }}`)
+	dr.Header.Set("Content-Type", "application/json")
+	r, err := dr.Execute()
+	if err != nil {
+		log2.Printf(fmt.Sprintf("Error creating request %s", err.Error()))
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	s := buf.String() // Does a complete copy of the bytes in the buffer.
+
+	log2.Printf(fmt.Sprintf("Status Code %v, Message %s", r.StatusCode, s))
+
+	return nil
 }

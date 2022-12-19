@@ -9,6 +9,7 @@ require (
 	github.com/openlyinc/pointy v1.2.0
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1
+	github.com/xinsnake/go-http-digest-auth-client v0.6.0
 	go.mongodb.org/atlas v0.19.0
 )
 

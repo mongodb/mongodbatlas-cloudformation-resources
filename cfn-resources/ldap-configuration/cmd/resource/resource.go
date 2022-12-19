@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	log2 "log"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	localConstants "github.com/mongodb/mongodbatlas-cloudformation-resources/ldap-configuration/cmd/constants"
@@ -15,11 +17,10 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	dac "github.com/xinsnake/go-http-digest-auth-client"
 	"go.mongodb.org/atlas/mongodbatlas"
-	log2 "log"
 )
 
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID,
-	localConstants.BindUsername, localConstants.Hostname, localConstants.Port}
+	localConstants.BindUsername, localConstants.BindPassword, localConstants.Hostname, localConstants.Port}
 var ReadRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 var UpdateRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 var DeleteRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
@@ -47,7 +48,6 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 }
 
 func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
-
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
 
 	ldap := &mongodbatlas.LDAP{
@@ -116,7 +116,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -133,7 +133,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Read() currentModel:%+v", currentModel)
+	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
@@ -144,7 +144,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Read - error: %+v", err)
+		_, _ = log.Debugf("Read - error: %+v", err)
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
@@ -167,7 +167,6 @@ func isResourceEnabled(ldapConf mongodbatlas.LDAPConfiguration) bool {
 }
 
 func Get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfiguration, *handler.ProgressEvent) {
-
 	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), groupID)
 	if err != nil {
 		errPe := progressEvents.GetFailedEventByResponse(err.Error(), res.Response)
@@ -194,40 +193,28 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
+		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	log2.Printf("Enter point 1")
-
-	//Validate if resource exists
+	// Validate if resource exists
 	_, errPe := Get(client, *currentModel.GroupId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
-	log2.Printf("Enter point 1")
-
 	ldapReq := currentModel.GetAtlasModel()
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Create - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	log2.Printf("Enter point 1")
-
 	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
-	// Response
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}, nil
-
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
+		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -250,11 +237,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Create atlas client
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
+		_, _ = log.Debugf("Delete - error: %+v", err)
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	//Validate if resource exists
+	// Validate if resource exists
 	_, errPe := Get(client, *currentModel.GroupId)
 	if errPe != nil {
 		return *errPe, nil
@@ -274,7 +261,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}*/
 
-	manualSave(currentModel)
+	err = manualSave(currentModel)
+	if err != nil {
+		_, _ = log.Debugf("Delete - error: %+v", err)
+		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
 
 	// Response
 	return handler.ProgressEvent{
@@ -288,7 +279,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func manualSave(currentModel *Model) error {
-
 	log2.Printf("Executing manual save")
 	URL := fmt.Sprintf("https://cloud.mongodb.com/api/atlas/v1.0/groups/%s/userSecurity", *currentModel.GroupId)
 
@@ -297,14 +287,18 @@ func manualSave(currentModel *Model) error {
 	dr.Header.Set("Content-Type", "application/json")
 	r, err := dr.Execute()
 	if err != nil {
-		log2.Printf(fmt.Sprintf("Error creating request %s", err.Error()))
+		_, _ = log.Debugf(fmt.Sprintf("Error creating request %s", err.Error()))
+		return err
 	}
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(r.Body)
+	_, err = buf.ReadFrom(r.Body)
+	if err != nil {
+		return err
+	}
 	s := buf.String() // Does a complete copy of the bytes in the buffer.
 
-	log2.Printf(fmt.Sprintf("Status Code %v, Message %s", r.StatusCode, s))
+	_, _ = log.Debugf(fmt.Sprintf("Status Code %d, Message %s", r.StatusCode, s))
 
 	return nil
 }

@@ -1,0 +1,81 @@
+{
+    "typeName":"MongoDB::Atlas::Auditing",
+    "description":"Returns and edits database auditing settings for MongoDB Cloud projects.",
+    "sourceUrl":"https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions":{
+        "apiKeyDefinition":{
+            "type":"object",
+            "properties":{
+                "PrivateKey":{
+                    "type":"string"
+                },
+                "PublicKey":{
+                    "type":"string"
+                }
+            },
+            "additionalProperties":false
+        }
+    },
+    "properties":{
+        "ApiKeys":{
+            "$ref":"#/definitions/apiKeyDefinition"
+        },
+        "AuditAuthorizationSuccess":{
+            "type":"boolean",
+            "description":"Flag that indicates whether someone set auditing to track successful authentications. This only applies to the `\"atype\" : \"authCheck\"` audit filter. Setting this parameter to `true` degrades cluster performance."
+        },
+        "AuditFilter":{
+            "type":"string",
+            "description":"JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/."
+        },
+        "ConfigurationType":{
+            "type":"string",
+            "description":"Human-readable label that displays how to configure the audit filter.",
+            "enum":[
+                "FILTER_BUILDER",
+                "FILTER_JSON",
+                "NONE"
+            ]
+        },
+        "GroupId":{
+            "type":"string",
+            "description":"Unique 24-hexadecimal digit string that identifies your project.",
+            "maxLength":24,
+            "minLength":24,
+            "pattern":"^([a-f0-9]{24})$"
+        }
+    },
+    "additionalProperties":false,
+    "required":[
+        "ApiKeys",
+        "GroupId"
+    ],
+    "primaryIdentifier":[
+        "/properties/GroupId"
+    ],
+    "createOnlyProperties":[
+        "/properties/GroupId"
+    ],
+    "handlers":{
+        "create":{
+            "permissions":[
+
+            ]
+        },
+        "read":{
+            "permissions":[
+
+            ]
+        },
+        "update":{
+            "permissions":[
+
+            ]
+        },
+        "delete":{
+            "permissions":[
+
+            ]
+        }
+    }
+}

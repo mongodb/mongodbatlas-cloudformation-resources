@@ -20,12 +20,12 @@ echo $projectId
 echo $clusterName
 
 #delete Cluster
-#if atlas clusters delete "$clusterName" --projectId "${projectId}" --force
-#then
-#    echo "$clusterName cluster deletion OK"
-#else
-#    (echo "Failed cleaning cluster:$clusterName" && exit 1)
-#fi
+if atlas clusters delete "$clusterName" --projectId "${projectId}" --force
+then
+    echo "$clusterName cluster deletion OK"
+else
+    (echo "Failed cleaning cluster:$clusterName" && exit 1)
+fi
 
 echo "Waiting for cluster to get deleted"
 sleep 1200

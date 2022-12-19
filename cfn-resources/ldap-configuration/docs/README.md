@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::ldapconfiguration",
     "Properties" : {
         "<a href="#bindusername" title="BindUsername">BindUsername</a>" : <i>String</i>,
+        "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#hostname" title="Hostname">Hostname</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#authenticationenabled" title="AuthenticationEnabled">AuthenticationEnabled</a>" : <i>Boolean</i>,
@@ -34,6 +35,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::ldapconfiguration
 Properties:
     <a href="#bindusername" title="BindUsername">BindUsername</a>: <i>String</i>
+    <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#hostname" title="Hostname">Hostname</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#authenticationenabled" title="AuthenticationEnabled">AuthenticationEnabled</a>: <i>Boolean</i>
@@ -54,11 +56,21 @@ Properties:
 
 Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
 _Pattern_: <code>^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Status
+
+The current status of the LDAP over TLS/SSL configuration.
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -76,7 +88,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ApiKeys
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
 
@@ -126,7 +138,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Password that MongoDB Cloud uses to authenticate the **bindUsername**.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -160,7 +172,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: Integer
 

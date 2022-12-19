@@ -14,8 +14,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, localConstants.AuthenticationEnabled,
-	localConstants.BindUsername, localConstants.Hostname, localConstants.Port, localConstants.UserToDNMapping}
+var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID,
+	localConstants.BindUsername, localConstants.Hostname, localConstants.Port}
 var ReadRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 var UpdateRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 var DeleteRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
@@ -257,7 +257,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ldap := &mongodbatlas.LDAP{
 		AuthenticationEnabled: false,
-		AuthorizationEnabled:  false,
 	}
 
 	ldapReq := &mongodbatlas.LDAPConfiguration{

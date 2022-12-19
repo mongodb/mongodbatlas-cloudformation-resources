@@ -83,7 +83,7 @@
     },
     "Status": {
       "type": "string",
-      "description": "The current status of the LDAP over TLS/SSL configuration.",
+      "description": "The current status of the LDAP over TLS/SSL configuration."
     },
     "Hostname": {
       "type": "string",
@@ -147,6 +147,14 @@
     }
   },
   "primaryIdentifier": ["/properties/GroupId"],
+  "required": [
+    "GroupID",
+    "BindUsername",
+    "BindPassword",
+    "HostName",
+    "Port",
+    "ApiKeys"
+  ],
   "readOnlyProperties": [
     "/properties/Links",
     "/definitions/ApiAtlasCustomerX509View/Links"

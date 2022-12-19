@@ -6,6 +6,7 @@ package resource
 type Model struct {
 	Links                 []Link                           `json:",omitempty"`
 	BindUsername          *string                          `json:",omitempty"`
+	Status                *string                          `json:",omitempty"`
 	Hostname              *string                          `json:",omitempty"`
 	ApiKeys               *ApiKeyDefinition                `json:",omitempty"`
 	AuthenticationEnabled *bool                            `json:",omitempty"`

@@ -1,10 +1,10 @@
 {
   "desiredResourceState":{
-    "Name": "go-cfn-test-bot-7466239-serverless-instance-1",
-    "ProjectID": "63596e976a17e50e1ced821d",
+    "Name": "cfn-test-bot-7466239-serverless-instance-1",
+    "ProjectID": "",
     "ApiKeys": {
-      "PublicKey": "xfqavjxw",
-      "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
+      "PublicKey": "",
+      "PrivateKey": ""
     },
     "ProviderSettings": {
       "RegionName": "US_EAST_1",

@@ -19,7 +19,7 @@ const (
 	CallBackSeconds = 30
 )
 
-var CreateRequiredFields = []string{constants.ProjID, constants.PvtKey, constants.PubKey, constants.Name, constants.Name}
+var CreateRequiredFields = []string{constants.ProjID, constants.PvtKey, constants.PubKey, constants.Name}
 var ReadRequiredFields = []string{constants.ProjID, constants.Name, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields = []string{constants.PvtKey, constants.PubKey}
 var DeleteRequiredFields = []string{constants.ProjID, constants.Name, constants.PvtKey, constants.PubKey}

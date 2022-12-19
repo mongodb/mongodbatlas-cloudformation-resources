@@ -4,6 +4,6 @@
     "PublicKey" : "$ATLAS_PUBLIC_KEY",
     "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
-  "RegionName": "$ATLAS_REGION_NAME",
-  "AtlasCIDRBlock": "192.168.BAD.CIDR/21"
+  "RegionName": "US_EAST_1",
+  "AtlasCidrBlock": "192.168.BAD.CIDR/21"
 }

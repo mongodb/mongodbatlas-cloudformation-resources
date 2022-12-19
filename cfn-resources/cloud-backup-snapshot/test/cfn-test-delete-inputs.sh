@@ -32,3 +32,4 @@ then
 else
     (echo "Failed cleaning project:$projectId" && exit 1)
 fi
+

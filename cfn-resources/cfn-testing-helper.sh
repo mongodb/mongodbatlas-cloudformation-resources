@@ -179,6 +179,7 @@ SAM_LOG=$(mktemp)
 for resource in ${resources};
 do
     cd "${res}"
+    chmod +x ./test/cfn-test-delete-inputs.sh
     ./test/cfn-test-delete-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs delete OK" || echo "resource:${res} input delete FAILED"
 done
 

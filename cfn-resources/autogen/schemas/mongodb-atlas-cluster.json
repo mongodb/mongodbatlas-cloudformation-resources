@@ -1,0 +1,461 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiAtlasBiConnectorView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Enabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether MongoDB Connector for Business Intelligence is enabled on the specified cluster."
+        },
+        "ReadPreference": {
+          "type": "string",
+          "description": "Data source node designated for the MongoDB Connector for Business Intelligence on MongoDB Cloud. The MongoDB Connector for Business Intelligence on MongoDB Cloud reads data from the primary, secondary, or analytics node based on your read preferences. Defaults to `ANALYTICS` node, or `SECONDARY` if there are no `ANALYTICS` nodes.",
+          "enum": ["PRIMARY", "SECONDARY", "ANALYTICS"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasClusterDescriptionConnectionStringsView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "AwsPrivateLink": {
+          "type": "object",
+          "description": "Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related `mongodb://` connection string that you use to connect to MongoDB Cloud through the interface endpoint that the key names."
+        },
+        "AwsPrivateLinkSrv": {
+          "type": "object",
+          "description": "Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related `mongodb://` connection string that you use to connect to Atlas through the interface endpoint that the key names."
+        },
+        "Private": {
+          "type": "string",
+          "description": "Network peering connection strings for each interface Virtual Private Cloud (VPC) endpoint that you configured to connect to this cluster. This connection string uses the `mongodb+srv://` protocol. The resource returns this parameter once someone creates a network peering connection to this cluster. This protocol tells the application to look up the host seed list in the Domain Name System (DNS). This list synchronizes with the nodes in a cluster. If the connection string uses this Uniform Resource Identifier (URI) format, you don't need to append the seed list or change the URI if the nodes change. Use this URI format if your driver supports it. If it doesn't, use connectionStrings.private. For Amazon Web Services (AWS) clusters, this resource returns this parameter only if you enable custom DNS."
+        },
+        "PrivateEndpoint": {
+          "type": "array",
+          "description": "List of private endpoint connection strings that you can use to connect to this cluster through a private endpoint. This parameter returns only if you deployed a private endpoint to all regions to which you deployed this clusters' nodes.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasClusterDescriptionConnectionStringsPrivateEndpointView",
+            "type": "object"
+          }
+        },
+        "PrivateSrv": {
+          "type": "string",
+          "description": "Network peering connection strings for each interface Virtual Private Cloud (VPC) endpoint that you configured to connect to this cluster. This connection string uses the `mongodb+srv://` protocol. The resource returns this parameter when someone creates a network peering connection to this cluster. This protocol tells the application to look up the host seed list in the Domain Name System (DNS). This list synchronizes with the nodes in a cluster. If the connection string uses this Uniform Resource Identifier (URI) format, you don't need to append the seed list or change the Uniform Resource Identifier (URI) if the nodes change. Use this Uniform Resource Identifier (URI) format if your driver supports it. If it doesn't, use `connectionStrings.private`. For Amazon Web Services (AWS) clusters, this parameter returns only if you [enable custom DNS](https://docs.atlas.mongodb.com/reference/api/aws-custom-dns-update/)."
+        },
+        "Standard": {
+          "type": "string",
+          "description": "Public connection string that you can use to connect to this cluster. This connection string uses the `mongodb://` protocol."
+        },
+        "StandardSrv": {
+          "type": "string",
+          "description": "Public connection string that you can use to connect to this cluster. This connection string uses the `mongodb+srv://` protocol."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasClusterDescriptionV15View": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "BackupEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the cluster can perform backups. If set to `true`, the cluster can perform backups. You must set this value to `true` for NVMe clusters. Backup uses [Cloud Backups](https://docs.atlas.mongodb.com/backup/cloud-backup/overview/) for dedicated clusters and [Shared Cluster Backups](https://docs.atlas.mongodb.com/backup/shared-tier/overview/) for tenant clusters. If set to `false`, the cluster doesn't use backups."
+        },
+        "BiConnector": {
+          "type": "object",
+          "description": "Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster.",
+          "$ref": "#/definitions/ApiAtlasBiConnectorView"
+        },
+        "ClusterType": {
+          "type": "string",
+          "description": "Configuration of nodes that comprise the cluster.",
+          "enum": ["REPLICASET", "SHARDED", "GEOSHARDED"]
+        },
+        "ConnectionStrings": {
+          "type": "object",
+          "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
+          "$ref": "#/definitions/ApiAtlasClusterDescriptionConnectionStringsView"
+        },
+        "CreateDate": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud created this cluster. This parameter expresses its value in ISO 8601 format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "DiskSizeGB": {
+          "type": "number",
+          "description": "Storage capacity that the host's root volume possesses expressed in gigabytes. Increase this number to add capacity. MongoDB Cloud requires this parameter if you set **replicationSpecs**. If you specify a disk size below the minimum (10 GB), this parameter defaults to the minimum disk size value. Storage charge calculations depend on whether you choose the default value or a custom value.  The maximum value for disk storage cannot exceed 50 times the maximum RAM for the selected cluster. If you require more storage space, consider upgrading your cluster to a higher tier."
+        },
+        "EncryptionAtRestProvider": {
+          "type": "string",
+          "description": "Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. To enable customer key management for encryption at rest, the cluster **replicationSpecs[n].regionConfigs[m].{type}Specs.instanceSize** setting must be `M10` or higher and `\"backupEnabled\" : false` or omitted entirely.",
+          "enum": ["AWS", "AZURE", "GCP", "NONE"]
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the project.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the replication object for a zone in a Global Cluster. If you include existing zones in the request, you must specify this parameter. If you add a new zone to an existing Global Cluster, you may specify this parameter. The request deletes any existing zones in a Global Cluster that you exclude from the request.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Labels": {
+          "type": "array",
+          "description": "Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. The MongoDB Cloud console doesn't display your labels.",
+          "maxLength": 255,
+          "minLength": 1,
+          "items": {
+            "$ref": "#/definitions/ApiAtlasNDSLabelView",
+            "type": "object"
+          }
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "MongoDBMajorVersion": {
+          "type": "string",
+          "description": "Major MongoDB version of the cluster. MongoDB Cloud deploys the cluster with the latest stable release of the specified version.",
+          "enum": ["4.0", "4.2", "4.4", "5.0"]
+        },
+        "MongoDBVersion": {
+          "type": "string",
+          "description": "Version of MongoDB that the cluster runs.",
+          "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+        },
+        "Name": {
+          "type": "string",
+          "description": "Human-readable label that identifies the advanced cluster.",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+        },
+        "Paused": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the cluster is paused."
+        },
+        "PitEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the cluster uses continuous cloud backups."
+        },
+        "ReplicationSpecs": {
+          "type": "array",
+          "description": "List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.",
+          "$ref": "#/definitions/ApiAtlasReplicationSpecsV15Manual",
+          "items": {
+            "type": "object"
+          }
+        },
+        "RootCertType": {
+          "type": "string",
+          "description": "Root Certificate Authority that MongoDB Cloud cluster uses. MongoDB Cloud supports Internet Security Research Group.",
+          "enum": ["ISRGROOTX1"]
+        },
+        "StateName": {
+          "type": "string",
+          "description": "Human-readable label that indicates the current operating condition of this cluster.",
+          "enum": [
+            "CREATING",
+            "DELETED",
+            "DELETING",
+            "IDLE",
+            "REPAIRING",
+            "UPDATING"
+          ]
+        },
+        "VersionReleaseSystem": {
+          "type": "string",
+          "description": "Method by which the cluster maintains the MongoDB versions. If value is `CONTINUOUS`, you must not specify **mongoDBMajorVersion**.",
+          "enum": ["CONTINUOUS", "LTS"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasNDSLabelView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Key": {
+          "type": "string",
+          "description": "Key applied to tag and categorize this component.",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "Value": {
+          "type": "string",
+          "description": "Value set to the Key applied to tag and categorize this component.",
+          "maxLength": 255,
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasReplicationSpecsV15Manual": {
+      "type": "array",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, or removes multi-cloud clusters.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/definitions/ApiAtlasClusterDescriptionV15View/GroupId",
+    "/definitions/ApiAtlasClusterDescriptionV15View/Id",
+    "/properties/GroupId",
+    "/properties/Id"
+  ],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "BackupEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the cluster can perform backups. If set to `true`, the cluster can perform backups. You must set this value to `true` for NVMe clusters. Backup uses [Cloud Backups](https://docs.atlas.mongodb.com/backup/cloud-backup/overview/) for dedicated clusters and [Shared Cluster Backups](https://docs.atlas.mongodb.com/backup/shared-tier/overview/) for tenant clusters. If set to `false`, the cluster doesn't use backups."
+    },
+    "BiConnector": {
+      "type": "object",
+      "description": "Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster.",
+      "$ref": "#/definitions/ApiAtlasBiConnectorView"
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "ClusterType": {
+      "type": "string",
+      "description": "Configuration of nodes that comprise the cluster.",
+      "enum": ["REPLICASET", "SHARDED", "GEOSHARDED"]
+    },
+    "ConnectionStrings": {
+      "type": "object",
+      "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
+      "$ref": "#/definitions/ApiAtlasClusterDescriptionConnectionStringsView"
+    },
+    "CreateDate": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud created this cluster. This parameter expresses its value in ISO 8601 format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "DiskSizeGB": {
+      "type": "number",
+      "description": "Storage capacity that the host's root volume possesses expressed in gigabytes. Increase this number to add capacity. MongoDB Cloud requires this parameter if you set **replicationSpecs**. If you specify a disk size below the minimum (10 GB), this parameter defaults to the minimum disk size value. Storage charge calculations depend on whether you choose the default value or a custom value.  The maximum value for disk storage cannot exceed 50 times the maximum RAM for the selected cluster. If you require more storage space, consider upgrading your cluster to a higher tier."
+    },
+    "EncryptionAtRestProvider": {
+      "type": "string",
+      "description": "Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. To enable customer key management for encryption at rest, the cluster **replicationSpecs[n].regionConfigs[m].{type}Specs.instanceSize** setting must be `M10` or higher and `\"backupEnabled\" : false` or omitted entirely.",
+      "enum": ["AWS", "AZURE", "GCP", "NONE"]
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the replication object for a zone in a Global Cluster. If you include existing zones in the request, you must specify this parameter. If you add a new zone to an existing Global Cluster, you may specify this parameter. The request deletes any existing zones in a Global Cluster that you exclude from the request.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Labels": {
+      "type": "array",
+      "description": "Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. The MongoDB Cloud console doesn't display your labels.",
+      "maxLength": 255,
+      "minLength": 1,
+      "items": {
+        "$ref": "#/definitions/ApiAtlasNDSLabelView",
+        "type": "object"
+      }
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "MongoDBMajorVersion": {
+      "type": "string",
+      "description": "Major MongoDB version of the cluster. MongoDB Cloud deploys the cluster with the latest stable release of the specified version.",
+      "enum": ["4.0", "4.2", "4.4", "5.0"]
+    },
+    "MongoDBVersion": {
+      "type": "string",
+      "description": "Version of MongoDB that the cluster runs.",
+      "pattern": "([\\d]+\\.[\\d]+\\.[\\d]+)"
+    },
+    "Name": {
+      "type": "string",
+      "description": "Human-readable label that identifies the advanced cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "Paused": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the cluster is paused."
+    },
+    "PitEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the cluster uses continuous cloud backups."
+    },
+    "ReplicationSpecs": {
+      "type": "array",
+      "description": "List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.",
+      "$ref": "#/definitions/ApiAtlasReplicationSpecsV15Manual",
+      "items": {
+        "type": "object"
+      }
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasClusterDescriptionV15View",
+        "type": "object"
+      }
+    },
+    "RootCertType": {
+      "type": "string",
+      "description": "Root Certificate Authority that MongoDB Cloud cluster uses. MongoDB Cloud supports Internet Security Research Group.",
+      "enum": ["ISRGROOTX1"]
+    },
+    "StateName": {
+      "type": "string",
+      "description": "Human-readable label that indicates the current operating condition of this cluster.",
+      "enum": [
+        "CREATING",
+        "DELETED",
+        "DELETING",
+        "IDLE",
+        "REPAIRING",
+        "UPDATING"
+      ]
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "VersionReleaseSystem": {
+      "type": "string",
+      "description": "Method by which the cluster maintains the MongoDB versions. If value is `CONTINUOUS`, you must not specify **mongoDBMajorVersion**.",
+      "enum": ["CONTINUOUS", "LTS"]
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/AwsPrivateLink",
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/AwsPrivateLinkSrv",
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/Private",
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/PrivateEndpoint",
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/PrivateSrv",
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/Standard",
+    "/definitions/ApiAtlasClusterDescriptionConnectionStringsView/StandardSrv",
+    "/definitions/ApiAtlasClusterDescriptionV15View/ConnectionStrings",
+    "/definitions/ApiAtlasClusterDescriptionV15View/CreateDate",
+    "/definitions/ApiAtlasClusterDescriptionV15View/GroupId",
+    "/definitions/ApiAtlasClusterDescriptionV15View/Id",
+    "/definitions/ApiAtlasClusterDescriptionV15View/Links",
+    "/definitions/ApiAtlasClusterDescriptionV15View/MongoDBVersion",
+    "/definitions/ApiAtlasClusterDescriptionV15View/Paused",
+    "/definitions/ApiAtlasClusterDescriptionV15View/StateName",
+    "/properties/ConnectionStrings",
+    "/properties/CreateDate",
+    "/properties/Id",
+    "/properties/Links",
+    "/properties/MongoDBVersion",
+    "/properties/Paused",
+    "/properties/Results",
+    "/properties/StateName",
+    "/properties/TotalCount"
+  ],
+  "typeName": "MongoDB::Atlas::Cluster",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

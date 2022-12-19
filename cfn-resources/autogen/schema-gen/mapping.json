@@ -1,6 +1,64 @@
 {
   "resources" : [
     {
+      "typeName" :"Project",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups",
+        "/api/atlas/v1.0/groups/byName/{groupName}",
+        "/api/atlas/v1.0/groups/{groupId}"
+      ]
+    },
+    {
+      "typeName" :"Cluster",
+      "openApiPath" : [
+        "/api/atlas/v1.5/groups/{groupId}/clusters",
+        "/api/atlas/v1.5/groups/{groupId}/clusters/{clusterName}"
+      ]
+    },
+    {
+      "typeName" :"NetworkContainer",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/containers",
+        "/api/atlas/v1.0/groups/{groupId}/containers/all",
+        "/api/atlas/v1.0/groups/{groupId}/containers/{containerId}"
+      ]
+    },
+    {
+      "typeName" :"NetworkPeering",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/peers",
+        "/api/atlas/v1.0/groups/{groupId}/peers/{peerId}"
+      ]
+    },
+    {
+      "typeName" :"DatabaseUser",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/databaseUsers",
+        "/api/atlas/v1.0/groups/{groupId}/databaseUsers/{databaseName}/{username}",
+        "/api/atlas/v1.0/groups/{groupId}/databaseUsers/{username}/certs"
+      ]
+    },
+    {
+      "typeName" :"ProjectIPAccessList",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/accessList",
+        "/api/atlas/v1.0/groups/{groupId}/accessList/{entryValue}",
+        "/api/atlas/v1.0/groups/{groupId}/accessList/{entryValue}/status"
+      ]
+    },
+    {
+      "typeName" :"EncryptionAtRest",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/encryptionAtRest"
+      ]
+    },
+    {
+      "typeName" :"PrivateEndpoint",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/encryptionAtRest"
+      ]
+    },
+    {
       "typeName" :"BackupSnapshot",
       "openApiPath" : [
         "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots",

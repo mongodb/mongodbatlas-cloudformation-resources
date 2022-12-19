@@ -26334,6 +26334,12 @@
             "pattern": "^([a-f0-9]{24})$",
             "readOnly": true
           },
+          "newProperty": {
+            "type": "string",
+            "description": "Human-readable comment associated with the private endpoint.",
+            "maxLength": 80,
+            "readOnly": true
+          },
           "id": {
             "type": "string",
             "description": "Unique 24-hexadecimal digit string that identifies the serverless instance.",

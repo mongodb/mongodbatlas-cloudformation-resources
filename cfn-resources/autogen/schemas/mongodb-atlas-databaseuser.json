@@ -1,0 +1,264 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiAtlasDatabaseUserViewBase": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "DatabaseName": {
+          "type": "string",
+          "description": "MongoDB database against which the MongoDB database user authenticates. MongoDB database users must provide both a username and authentication database to log into MongoDB.",
+          "enum": ["admin", "$external"]
+        },
+        "DeleteAfterDate": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud deletes the user. This parameter expresses its value in the ISO 8601 timestamp format in UTC and can include the time zone designation. You must specify a future date that falls within one week of making the Application Programming Interface (API) request.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:[0-5]\\d)$"
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the project.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Labels": {
+          "type": "array",
+          "description": "List that contains the key-value pairs for tagging and categorizing the MongoDB database user. The labels that you define do not appear in the console.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasNDSLabelView",
+            "type": "object"
+          }
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "Roles": {
+          "type": "array",
+          "description": "List that provides the pairings of one role with one applicable database.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasRoleView",
+            "type": "object"
+          }
+        },
+        "Scopes": {
+          "type": "array",
+          "description": "List that contains clusters and MongoDB Atlas Data Lakes that this database user can access. If omitted, MongoDB Cloud grants the database user access to all the clusters and MongoDB Atlas Data Lakes in the project.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasUserScopeView",
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasUserCertView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud created this certificate. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "GroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the project.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "MonthsUntilExpiration": {
+          "type": "integer",
+          "description": "Number of months that the certificate remains valid until it expires."
+        },
+        "NotAfter": {
+          "type": "string",
+          "description": "Date and time when this certificate expires. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Subject": {
+          "type": "string",
+          "description": "Subject Alternative Name associated with this certificate. This parameter expresses its value as a distinguished name as defined in [RFC 2253](https://tools.ietf.org/html/2253).",
+          "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+        },
+        "_id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies this certificate.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes database users.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/definitions/ApiAtlasDatabaseUserViewBase/GroupId",
+    "/definitions/ApiAtlasUserCertView/GroupId",
+    "/definitions/ApiAtlasUserCertView/_id",
+    "/properties/GroupId",
+    "/properties/_id"
+  ],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "CreatedAt": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud created this certificate. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "DatabaseName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the database against which the database user authenticates. Database users must provide both a username and authentication database to log into MongoDB. If the user authenticates with AWS IAM, x.509, or LDAP, this value should be `$external`. If the user authenticates with SCRAM-SHA, this value should be `admin`."
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "MonthsUntilExpiration": {
+      "type": "integer",
+      "description": "Number of months that the certificate remains valid until it expires."
+    },
+    "NotAfter": {
+      "type": "string",
+      "description": "Date and time when this certificate expires. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasUserCertView",
+        "type": "object"
+      }
+    },
+    "Subject": {
+      "type": "string",
+      "description": "Subject Alternative Name associated with this certificate. This parameter expresses its value as a distinguished name as defined in [RFC 2253](https://tools.ietf.org/html/2253).",
+      "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    },
+    "Username": {
+      "type": "string",
+      "description": "Human-readable label that represents the MongoDB database user account whose certificates you want to return."
+    },
+    "_id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies this certificate.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/ApiAtlasDatabaseUserViewBase/Links",
+    "/definitions/ApiAtlasUserCertView/CreatedAt",
+    "/definitions/ApiAtlasUserCertView/GroupId",
+    "/definitions/ApiAtlasUserCertView/Links",
+    "/definitions/ApiAtlasUserCertView/NotAfter",
+    "/definitions/ApiAtlasUserCertView/Subject",
+    "/definitions/ApiAtlasUserCertView/_id",
+    "/properties/CreatedAt",
+    "/properties/Links",
+    "/properties/NotAfter",
+    "/properties/Results",
+    "/properties/Subject",
+    "/properties/TotalCount",
+    "/properties/_id"
+  ],
+  "typeName": "MongoDB::Atlas::DatabaseUser",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

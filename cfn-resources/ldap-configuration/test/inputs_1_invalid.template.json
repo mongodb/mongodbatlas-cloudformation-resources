@@ -1,0 +1,11 @@
+{
+    "GroupId": "",
+    "BindPassword": "pass",
+    "BindUsername": "cn=MDBRECRUIT\\ldap-bind-user,dc=mdbrecruit,dc=net",
+    "Hostname": "tradecraftldap.mdbrecruit.net",
+    "Port": "636",
+    "ApiKeys" : {
+        "PublicKey" : "$ATLAS_PUBLIC_KEY",
+        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+    }
+}

@@ -109,6 +109,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
+	enabled := true
+
+	currentModel.AuthenticationEnabled = &enabled
+
 	ldapReq := currentModel.GetAtlasModel()
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
@@ -145,11 +149,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), *currentModel.GroupId)
-
-	if err != nil {
-		log.Debugf("Read - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	ldapConf, errPe := Get(client, *currentModel.GroupId)
+	if errPe != nil {
+		return *errPe, nil
 	}
 
 	currentModel.CompleteByResponse(*ldapConf)
@@ -159,6 +161,26 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
 	}, nil
+}
+
+func isResourceEnabled(ldapConf mongodbatlas.LDAPConfiguration) bool {
+	return ldapConf.LDAP.AuthenticationEnabled
+}
+
+func Get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfiguration, *handler.ProgressEvent) {
+
+	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), groupID)
+	if err != nil {
+		errPe := progressEvents.GetFailedEventByResponse(err.Error(), res.Response)
+		return nil, &errPe
+	}
+
+	if !isResourceEnabled(*ldapConf) {
+		errPe := progressEvents.GetFailedEventByCode("Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
+		return nil, &errPe
+	}
+
+	return ldapConf, nil
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -175,6 +197,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
+	//Validate if resource exists
+	_, errPe := Get(client, *currentModel.GroupId)
+	if errPe != nil {
+		return *errPe, nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
@@ -220,8 +248,23 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		log.Debugf("Delete - error: %+v", err)
 		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
-	_, res, err := client.LDAPConfigurations.Delete(context.Background(), *currentModel.GroupId)
 
+	//Validate if resource exists
+	_, errPe := Get(client, *currentModel.GroupId)
+	if errPe != nil {
+		return *errPe, nil
+	}
+
+	ldap := &mongodbatlas.LDAP{
+		AuthenticationEnabled: false,
+		AuthorizationEnabled:  false,
+	}
+
+	ldapReq := &mongodbatlas.LDAPConfiguration{
+		LDAP: ldap,
+	}
+
+	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
 		log.Debugf("Delete - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil

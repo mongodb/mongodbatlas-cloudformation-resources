@@ -1,0 +1,38 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Search Index on the MongoDB Cluster, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "OnlineArchive": {
+      "Type": "MongoDB::Atlas::OnlineArchive",
+      "Properties": {
+        "ApiKeys": {
+          "PublicKey": "htcxduya",
+          "PrivateKey": "<redact>"
+        },
+        "ClusterName": "CFNTest-Cluster-001",
+        "CollName": "rombo-bongo",
+        "Criteria": {
+          "Type": "DATE",
+          "DateField": "created",
+          "DateFormat": "ISODATE",
+          "ExpireAfterDays": "5"
+        },
+        "DbName": "testdb",
+        "ProjectId": "625454459c4e6108393d650d",
+        "PartitionFields": [
+          {
+            "FieldName": "firstName",
+            "Order": "0",
+            "FieldType": "string"
+          },
+          {
+            "FieldName": "lastName",
+            "Order": "1",
+            "FieldType": "string"
+          }
+        ]
+      }
+    }
+  }
+}

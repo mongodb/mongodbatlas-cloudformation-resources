@@ -28,10 +28,6 @@ var requiredCriteriaType = map[string][]string{
 	"CUSTOM": {"Query"},
 }
 
-func (m *Model) new(ol *mongodbatlas.OnlineArchive) {
-	m.State = &ol.State
-
-}
 func setup() {
 	util.SetupLogger("mongodb-atlas-online-archive")
 }

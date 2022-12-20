@@ -1,7 +1,7 @@
 # MongoDB::Atlas::LDAPVerify
 
 Requests a verification of an LDAP configuration over TLS for an Atlas project.
-Pass the requestId in the response object to the Verify |ldap| Configuration endpoint to get the status of a verification request. Atlas retains only the most recent request for each project.
+Pass the requestId in the response object to the Verify LDAP Configuration endpoint to get the status of a verification request. Atlas retains only the most recent request for each project.
 
 If the cloud formation stack gets deleted, the current resource executes a validation again, in other to replace the original validation
 

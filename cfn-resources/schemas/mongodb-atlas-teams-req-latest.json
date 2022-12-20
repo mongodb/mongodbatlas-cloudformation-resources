@@ -1,0 +1,48 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "GroupId",
+      "RoleNames",
+      "TeamId",
+      "Links",
+      "ApiKeys",
+      "Results",
+      "TotalCount"
+    ],
+    "RequiredParams": ["Links"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "IncludeCount",
+      "PageNum",
+      "RoleNames",
+      "TeamId",
+      "ApiKeys",
+      "Results",
+      "GroupId",
+      "Links",
+      "TotalCount",
+      "ItemsPerPage"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "Links",
+      "TotalCount",
+      "ItemsPerPage",
+      "IncludeCount",
+      "PageNum",
+      "RoleNames",
+      "TeamId",
+      "ApiKeys",
+      "Results",
+      "GroupId"
+    ],
+    "RequiredParams": ["Links"]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "TeamId"]
+  },
+  "ListFields": {}
+}

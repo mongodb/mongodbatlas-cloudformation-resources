@@ -1,0 +1,70 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "SnapshotId",
+      "ExpiresAt",
+      "DeliveryType",
+      "TargetGroupId",
+      "Id",
+      "DeliveryUrl",
+      "OplogTs",
+      "Components",
+      "OplogInc",
+      "ApiKeys",
+      "PointInTimeUTCSeconds",
+      "Cancelled",
+      "Expired",
+      "Timestamp",
+      "Links",
+      "TargetClusterName",
+      "FinishedAt",
+      "DesiredTimestamp",
+      "Failed",
+      "ClusterName",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "DeliveryType",
+      "Links",
+      "TargetClusterName",
+      "TargetGroupId"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "SnapshotId",
+      "ExpiresAt",
+      "PageNum",
+      "Cancelled",
+      "Timestamp",
+      "DesiredTimestamp",
+      "TotalCount",
+      "ItemsPerPage",
+      "Id",
+      "DeliveryType",
+      "TargetGroupId",
+      "IncludeCount",
+      "RestoreJobId",
+      "OplogTs",
+      "DeliveryUrl",
+      "PointInTimeUTCSeconds",
+      "Components",
+      "OplogInc",
+      "ApiKeys",
+      "Results",
+      "Failed",
+      "Expired",
+      "Links",
+      "TargetClusterName",
+      "FinishedAt",
+      "GroupId",
+      "ClusterName"
+    ],
+    "RequiredParams": ["GroupId", "ClusterName", "RestoreJobId"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "ClusterName", "RestoreJobId"]
+  },
+  "ListFields": {}
+}

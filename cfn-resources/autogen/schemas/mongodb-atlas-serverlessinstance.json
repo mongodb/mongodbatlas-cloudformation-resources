@@ -54,6 +54,11 @@
           "minLength": 1,
           "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
         },
+        "NewProperty": {
+          "type": "string",
+          "description": "Human-readable comment associated with the private endpoint.",
+          "maxLength": 80
+        },
         "ProviderSettings": {
           "type": "object",
           "description": "Group of settings that configure the provisioned MongoDB serverless instance. The options available relate to the cloud service provider.",
@@ -226,6 +231,11 @@
       "minLength": 1,
       "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
+    "NewProperty": {
+      "type": "string",
+      "description": "Human-readable comment associated with the private endpoint.",
+      "maxLength": 80
+    },
     "PageNum": {
       "type": "integer",
       "description": "Number of the page that displays the current set of the total objects that the response returns."
@@ -267,6 +277,7 @@
     "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Id",
     "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/Links",
     "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/MongoDBVersion",
+    "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/NewProperty",
     "/definitions/ApiAtlasServerlessClusterDescriptionViewManual/StateName",
     "/definitions/ServerlessInstanceConnectionStrings/PrivateEndpoint",
     "/definitions/ServerlessInstanceConnectionStrings/StandardSrv",
@@ -275,6 +286,7 @@
     "/properties/Id",
     "/properties/Links",
     "/properties/MongoDBVersion",
+    "/properties/NewProperty",
     "/properties/Results",
     "/properties/StateName",
     "/properties/TotalCount"

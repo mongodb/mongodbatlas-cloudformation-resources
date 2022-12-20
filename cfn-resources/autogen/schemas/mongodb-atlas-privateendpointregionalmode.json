@@ -1,0 +1,55 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes private endpoint services.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId"],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "Enabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project.\n\n- Set this value to `true` to enable regionalized private endpoints. This allows you to create more than one private endpoint in a cloud provider region. You need to enable this setting to connect to multi-region and global MongoDB Cloud sharded clusters. Enabling regionalized private endpoints introduces the following limitations:\n  - Your applications must use the new connection strings for existing multi-region and global sharded clusters. This might cause downtime.\n  - Your MongoDB Cloud project can't contain replica sets nor can you create new replica sets in this project.\n\n  - You can't disable this setting if you have:\n    - more than one private endpoint in more than one region\n    - more than one private endpoint in one region and one private endpoint in one or more regions.\n\n- Set this value to `false` to disable regionalized private endpoints."
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "typeName": "MongoDB::Atlas::PrivateEndpointRegionalMode",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

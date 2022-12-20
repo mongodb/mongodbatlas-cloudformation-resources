@@ -1,0 +1,80 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "AWS": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, authorizes, and removes AWS IAM roles in Atlas.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId", "/properties/RoleId"],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "AwsIamRoles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AWS",
+        "type": "object"
+      }
+    },
+    "CloudProvider": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cloud provider of the role to deauthorize.",
+      "enum": ["AWS"]
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "RoleId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the role.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "required": ["providerName"],
+  "typeName": "MongoDB::Atlas::CloudProviderAccess",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

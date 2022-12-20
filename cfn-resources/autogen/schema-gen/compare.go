@@ -21,8 +21,8 @@ func CompareJsonFiles(resourceName, existingFilePath, latestFilePath string) (di
 
 	differences, diffJson := jsondiff.Compare(existingAPIContent, latestAPIContent, &jsondiff.Options{SkipMatches: true})
 	if differences > 0 {
-		fmt.Printf("diff %+v, val : %s", differences, diffJson)
-		sendMail(resourceName, diffJson)
+		fmt.Printf("Resource :%+v, diff %+v, val : %s", resourceName, differences, diffJson)
+		//sendMail(resourceName, diffJson)
 	}
 	return
 }

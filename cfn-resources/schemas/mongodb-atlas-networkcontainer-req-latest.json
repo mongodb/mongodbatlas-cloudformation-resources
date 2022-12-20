@@ -1,0 +1,42 @@
+{
+  "CreateFields": {
+    "InputParams": ["Id", "ProviderName", "ApiKeys", "GroupId", "Provisioned"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "ProviderName",
+      "GroupId",
+      "Results",
+      "Links",
+      "Provisioned",
+      "Id",
+      "IncludeCount",
+      "ItemsPerPage",
+      "PageNum",
+      "ContainerId",
+      "ApiKeys",
+      "TotalCount"
+    ],
+    "RequiredParams": ["GroupId", "ContainerId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "ItemsPerPage",
+      "PageNum",
+      "ContainerId",
+      "ApiKeys",
+      "TotalCount",
+      "IncludeCount",
+      "GroupId",
+      "Results",
+      "Links",
+      "Provisioned",
+      "Id",
+      "ProviderName"
+    ]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "ContainerId"]
+  },
+  "ListFields": {}
+}

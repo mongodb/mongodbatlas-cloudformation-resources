@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, edits, and removes maintenance windows.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId"],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "AutoDeferOnceEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them."
+    },
+    "DayOfWeek": {
+      "type": "number",
+      "description": "One-based integer that represents the day of the week that the maintenance window starts.\n\n| Value | Day of Week |\n|---|---|\n| `1` | Sunday |\n| `2` | Monday |\n| `3` | Tuesday |\n| `4` | Wednesday |\n| `5` | Thursday |\n| `6` | Friday |\n| `7` | Saturday |\n"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "HourOfDay": {
+      "type": "number",
+      "description": "Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use `0` for midnight and `12` for noon."
+    },
+    "StartASAP": {
+      "type": "boolean",
+      "description": "Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. To start the maintenance window immediately for your project, MongoDB Cloud must have maintenance scheduled and you must set a maintenance window. This flag resets to `false` after MongoDB Cloud completes maintenance."
+    }
+  },
+  "typeName": "MongoDB::Atlas::MaintenanceWindow",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

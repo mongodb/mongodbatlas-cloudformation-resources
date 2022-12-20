@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/tidwall/pretty"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -34,7 +32,7 @@ var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
-	compare := false
+	compare := true
 
 	file, doc, err := readConfig(compare)
 	if err != nil {
@@ -270,7 +268,7 @@ func downloadOpenAPISpec(url, fileName string) (err error) {
 	file, err := os.Create(fileName)
 	if err != nil {
 		fmt.Errorf("os.Create(fileName), error while creating latest swagger file %+v", err)
-		log.Fatal(err)
+		return err
 	}
 	client := http.Client{
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
@@ -281,7 +279,7 @@ func downloadOpenAPISpec(url, fileName string) (err error) {
 	// Put content on file
 	resp, err := client.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -351,8 +349,8 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 
 			// Read Discriminator params
 			if value.Value.Discriminator != nil {
-				for key, def := range value.Value.Discriminator.Mapping {
-					fmt.Println(def, key)
+				for _, def := range value.Value.Discriminator.Mapping {
+					//fmt.Println(def, key)
 					schemaKey := def[strings.LastIndex(def, "/")+1:]
 
 					if doc.Components.Schemas[filepath.Base(schemaKey)].Value != nil && doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf != nil {
@@ -498,31 +496,47 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 			}
 		}
 
-		fileName := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, strings.ToLower(cfn.FileName))
-		resourceFile := fileName
+		schemaFilePath := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, strings.ToLower(cfn.FileName))
+		latestSchemaFilePath := ""
+
 		// create required schema file
 		if compare {
-			latestSchemaDir := strings.Replace(dir, CurrentDir, LatestSchemasDir, 1)
+			latestSchemaDir := strings.Replace(dir, CurrentDir, SchemasDir, 1)
 			if _, err := os.Stat(latestSchemaDir); errors.Is(err, os.ErrNotExist) {
 				err := os.Mkdir(latestSchemaDir, os.ModePerm)
 				if err != nil {
-					fmt.Println(err)
+					print(err)
+					done <- true
 				}
 			}
-			resourceFile = fmt.Sprintf("%s/mongodb-atlas-%s-latest.json", latestSchemaDir, strings.ToLower(cfn.FileName))
+			latestSchemaFilePath = fmt.Sprintf("%s/mongodb-atlas-%s-latest.json", latestSchemaDir, strings.ToLower(cfn.FileName))
+
+			//Write schema into the latest file
+			err = os.WriteFile(latestSchemaFilePath, result, 0600)
+			if err != nil {
+				print(err)
+				done <- true
+				return
+			}
 		}
 
-		//Write schema into file
-		err = os.WriteFile(resourceFile, result, 0600)
+		if compare && latestSchemaFilePath != "" {
+			CompareJsonFiles(cfn.FileName, schemaFilePath, latestSchemaFilePath)
+			//Delete the latest file created for comparison
+			err = os.RemoveAll(latestSchemaFilePath)
+			if err != nil {
+				print(err)
+			}
+		}
+
+		// Update with the schema file with the latest schema
+		err = os.WriteFile(schemaFilePath, result, 0600)
 		if err != nil {
 			print(err)
 			done <- true
 			return
 		}
 
-		if compare {
-			CompareJsonFiles(cfn.FileName, fileName, resourceFile)
-		}
 	}
 	done <- true
 
@@ -530,7 +544,6 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 
 func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare bool) {
 	for reqFlds := range reqChan {
-		spew.Dump(reqFlds)
 		fieldsJSON, err := json.Marshal(reqFlds)
 		if err != nil {
 			fmt.Println(err)

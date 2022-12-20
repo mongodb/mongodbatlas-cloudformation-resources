@@ -3,6 +3,12 @@
     "InputParams": [
       "CaCertificate",
       "ApiKeys",
+      "Validations",
+      "Links",
+      "AuthzQueryTemplate",
+      "BindUsername",
+      "Hostname",
+      "GroupId",
       "BindUsername",
       "Hostname",
       "Links",
@@ -10,23 +16,20 @@
       "Request",
       "RequestId",
       "Status",
-      "Validations",
-      "AuthzQueryTemplate",
-      "BindUsername",
-      "GroupId",
-      "Links",
       "Port",
-      "BindPassword",
-      "Hostname"
+      "BindPassword"
     ],
     "RequiredParams": ["BindUsername", "Hostname", "Links", "Port"]
   },
   "ReadFields": {
     "InputParams": [
-      "AuthzQueryTemplate",
-      "BindUsername",
-      "CaCertificate",
       "ApiKeys",
+      "Validations",
+      "Links",
+      "AuthzQueryTemplate",
+      "CaCertificate",
+      "Hostname",
+      "GroupId",
       "BindUsername",
       "Hostname",
       "Links",
@@ -34,12 +37,9 @@
       "Request",
       "RequestId",
       "Status",
-      "Validations",
-      "GroupId",
+      "Port",
       "BindPassword",
-      "Hostname",
-      "Links",
-      "Port"
+      "BindUsername"
     ],
     "RequiredParams": ["GroupId", "RequestId"]
   },

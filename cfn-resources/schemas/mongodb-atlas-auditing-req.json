@@ -1,0 +1,27 @@
+{
+  "CreateFields": {},
+  "ReadFields": {
+    "InputParams": [
+      "AuditAuthorizationSuccess",
+      "AuditFilter",
+      "ConfigurationType",
+      "Enabled",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "AuditAuthorizationSuccess",
+      "AuditFilter",
+      "ConfigurationType",
+      "Enabled"
+    ],
+    "RequiredParams": ["AuditAuthorizationSuccess", "AuditFilter", "Enabled"]
+  },
+  "DeleteFields": {},
+  "ListFields": {}
+}

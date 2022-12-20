@@ -1,28 +1,28 @@
 {
   "CreateFields": {
     "InputParams": [
-      "Links",
-      "_id",
       "BucketName",
       "CloudProvider",
       "IamRoleId",
+      "Links",
       "ApiKeys",
-      "GroupId"
+      "GroupId",
+      "_id"
     ],
     "RequiredParams": ["Links"]
   },
   "ReadFields": {
     "InputParams": [
-      "_id",
-      "CloudProvider",
-      "IamRoleId",
       "TotalCount",
       "Results",
-      "ExportBucketId",
+      "IamRoleId",
       "Links",
-      "BucketName",
       "ApiKeys",
-      "GroupId"
+      "GroupId",
+      "ExportBucketId",
+      "_id",
+      "BucketName",
+      "CloudProvider"
     ],
     "RequiredParams": ["GroupId", "ExportBucketId"]
   },

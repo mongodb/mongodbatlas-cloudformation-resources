@@ -1,33 +1,33 @@
 {
   "CreateFields": {
     "InputParams": [
-      "Links",
-      "ApiKeys",
       "GroupId",
+      "Links",
+      "Results",
+      "TotalCount",
+      "ApiKeys",
       "IncludeCount",
       "ItemsPerPage",
-      "PageNum",
-      "Results",
-      "TotalCount"
+      "PageNum"
     ]
   },
   "ReadFields": {
     "InputParams": [
-      "AwsSecurityGroup",
-      "DeleteAfterDate",
-      "IncludeCount",
+      "GroupId",
+      "IpAddress",
       "ItemsPerPage",
       "PageNum",
-      "IpAddress",
+      "AwsSecurityGroup",
+      "CidrBlock",
+      "DeleteAfterDate",
+      "EntryValue",
       "STATUS",
       "TotalCount",
-      "CidrBlock",
       "Comment",
-      "GroupId",
-      "EntryValue",
+      "ApiKeys",
       "Results",
-      "Links",
-      "ApiKeys"
+      "IncludeCount",
+      "Links"
     ],
     "RequiredParams": ["GroupId", "EntryValue"]
   },

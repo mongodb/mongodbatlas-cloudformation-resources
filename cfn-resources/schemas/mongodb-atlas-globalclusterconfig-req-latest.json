@@ -1,0 +1,28 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "ClusterName",
+      "CustomZoneMappings",
+      "CustomZoneMapping",
+      "ManagedNamespaces",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": ["CustomZoneMappings"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "ClusterName",
+      "CustomZoneMapping",
+      "ManagedNamespaces"
+    ],
+    "RequiredParams": ["GroupId", "ClusterName"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "ClusterName"]
+  },
+  "ListFields": {}
+}

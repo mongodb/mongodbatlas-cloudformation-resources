@@ -1,9 +1,0 @@
-{
-  "CreateFields": {},
-  "ReadFields": {},
-  "UpdateFields": {},
-  "DeleteFields": {
-    "RequiredParams": ["ClusterName", "GroupId"]
-  },
-  "ListFields": {}
-}

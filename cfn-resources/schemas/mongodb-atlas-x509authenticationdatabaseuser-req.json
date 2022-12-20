@@ -1,0 +1,66 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "MonthsUntilExpiration",
+      "NotAfter",
+      "_id",
+      "ApiKeys",
+      "Username",
+      "CreatedAt",
+      "GroupId",
+      "Links",
+      "Subject"
+    ],
+    "RequiredParams": ["Links"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "Username",
+      "ItemsPerPage",
+      "PageNum",
+      "IncludeCount",
+      "Links",
+      "CustomerX509",
+      "Links",
+      "Ldap",
+      "_id",
+      "ApiKeys",
+      "GroupId",
+      "TotalCount",
+      "MonthsUntilExpiration",
+      "NotAfter",
+      "Subject",
+      "Results",
+      "CreatedAt",
+      "Links"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "MonthsUntilExpiration",
+      "NotAfter",
+      "CreatedAt",
+      "Links",
+      "Subject",
+      "Results",
+      "PageNum",
+      "IncludeCount",
+      "Links",
+      "CustomerX509",
+      "Links",
+      "Ldap",
+      "_id",
+      "ApiKeys",
+      "Username",
+      "ItemsPerPage",
+      "GroupId",
+      "TotalCount"
+    ],
+    "RequiredParams": ["Links"]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId"]
+  },
+  "ListFields": {}
+}

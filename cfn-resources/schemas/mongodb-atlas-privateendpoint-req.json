@@ -1,0 +1,24 @@
+{
+  "CreateFields": {},
+  "ReadFields": {
+    "InputParams": [
+      "AzureKeyVault",
+      "GoogleCloudKms",
+      "AwsKms",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "GroupId",
+      "AzureKeyVault",
+      "GoogleCloudKms",
+      "AwsKms",
+      "ApiKeys"
+    ]
+  },
+  "DeleteFields": {},
+  "ListFields": {}
+}

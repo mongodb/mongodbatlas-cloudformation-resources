@@ -1,0 +1,373 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiAtlasDiskBackupBaseRestoreMemberView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "ReplicaSetName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the replica set on the sharded cluster."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasDiskBackupRestoreJobView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Cancelled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether someone canceled this restore job."
+        },
+        "Components": {
+          "type": "array",
+          "description": "Information on the export job for each replica set in the sharded cluster.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasDiskBackupBaseRestoreMemberView",
+            "type": "object"
+          }
+        },
+        "DeliveryType": {
+          "type": "string",
+          "description": "Human-readable label that categorizes the restore job to create.",
+          "enum": ["automated", "download", "pointInTime"]
+        },
+        "DeliveryUrl": {
+          "type": "array",
+          "description": "One or more Uniform Resource Locators (URLs) that point to the compressed snapshot files for manual download. MongoDB Cloud returns this parameter when `\"deliveryType\" : \"download\"`.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "DesiredTimestamp": {
+          "type": "object",
+          "description": "Date and time from which someone requested to restore data using this snapshot. This parameter expresses its value as a timestamp in Binary JavaScript Object Notation (BSON).",
+          "$ref": "#/definitions/BSONTimestamp"
+        },
+        "Expired": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the restore job expired."
+        },
+        "ExpiresAt": {
+          "type": "string",
+          "description": "Date and time when the restore job expires. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Failed": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the restore job failed."
+        },
+        "FinishedAt": {
+          "type": "string",
+          "description": "Date and time when the restore job completed. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the restore job.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "OplogInc": {
+          "type": "integer",
+          "description": "Oplog operation number from which you want to restore this snapshot. This number represents the second part of an Oplog timestamp. The resource returns this parameter when `\"deliveryType\" : \"pointInTime\"` and **oplogTs** exceeds `0`."
+        },
+        "OplogTs": {
+          "type": "integer",
+          "description": "Date and time from which you want to restore this snapshot. This parameter expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch. This number represents the first part of an Oplog timestamp. The resource returns this parameter when `\"deliveryType\" : \"pointInTime\"` and **oplogTs** exceeds `0`."
+        },
+        "PointInTimeUTCSeconds": {
+          "type": "number",
+          "description": "Date and time from which MongoDB Cloud restored this snapshot. This parameter expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch. The resource returns this parameter when `\"deliveryType\" : \"pointInTime\"` and **pointInTimeUTCSeconds** exceeds `0`."
+        },
+        "SnapshotId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the snapshot.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "TargetClusterName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the target cluster to which the restore job restores the snapshot. The resource returns this parameter when `\"deliveryType\":` `\"automated\"`.",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+        },
+        "TargetGroupId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the target project for the specified **targetClusterName**.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "Timestamp": {
+          "type": "string",
+          "description": "Date and time when MongoDB Cloud took the snapshot associated with **snapshotId**. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+          "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "BSONTimestamp": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, starts, and cancels Cloud Backup restore jobs.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Id",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/SnapshotId",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/TargetGroupId",
+    "/properties/GroupId",
+    "/properties/Id",
+    "/properties/RestoreJobId",
+    "/properties/SnapshotId",
+    "/properties/TargetGroupId"
+  ],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "Cancelled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether someone canceled this restore job."
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "Components": {
+      "type": "array",
+      "description": "Information on the export job for each replica set in the sharded cluster.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDiskBackupBaseRestoreMemberView",
+        "type": "object"
+      }
+    },
+    "DeliveryType": {
+      "type": "string",
+      "description": "Human-readable label that categorizes the restore job to create.",
+      "enum": ["automated", "download", "pointInTime"]
+    },
+    "DeliveryUrl": {
+      "type": "array",
+      "description": "One or more Uniform Resource Locators (URLs) that point to the compressed snapshot files for manual download. MongoDB Cloud returns this parameter when `\"deliveryType\" : \"download\"`.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "DesiredTimestamp": {
+      "type": "object",
+      "description": "Date and time from which someone requested to restore data using this snapshot. This parameter expresses its value as a timestamp in Binary JavaScript Object Notation (BSON).",
+      "$ref": "#/definitions/BSONTimestamp"
+    },
+    "Expired": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the restore job expired."
+    },
+    "ExpiresAt": {
+      "type": "string",
+      "description": "Date and time when the restore job expires. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "Failed": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the restore job failed."
+    },
+    "FinishedAt": {
+      "type": "string",
+      "description": "Date and time when the restore job completed. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the restore job.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "OplogInc": {
+      "type": "integer",
+      "description": "Oplog operation number from which you want to restore this snapshot. This number represents the second part of an Oplog timestamp. The resource returns this parameter when `\"deliveryType\" : \"pointInTime\"` and **oplogTs** exceeds `0`."
+    },
+    "OplogTs": {
+      "type": "integer",
+      "description": "Date and time from which you want to restore this snapshot. This parameter expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch. This number represents the first part of an Oplog timestamp. The resource returns this parameter when `\"deliveryType\" : \"pointInTime\"` and **oplogTs** exceeds `0`."
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "PointInTimeUTCSeconds": {
+      "type": "number",
+      "description": "Date and time from which MongoDB Cloud restored this snapshot. This parameter expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch. The resource returns this parameter when `\"deliveryType\" : \"pointInTime\"` and **pointInTimeUTCSeconds** exceeds `0`."
+    },
+    "RestoreJobId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the restore job to remove.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDiskBackupRestoreJobView",
+        "type": "object"
+      }
+    },
+    "SnapshotId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the snapshot.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "TargetClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the target cluster to which the restore job restores the snapshot. The resource returns this parameter when `\"deliveryType\":` `\"automated\"`.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "TargetGroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the target project for the specified **targetClusterName**.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "description": "Date and time when MongoDB Cloud took the snapshot associated with **snapshotId**. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
+      "pattern": "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z)$"
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/ApiAtlasDiskBackupBaseRestoreMemberView/ReplicaSetName",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Cancelled",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Components",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/DeliveryUrl",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/DesiredTimestamp",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Expired",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/ExpiresAt",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Failed",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/FinishedAt",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Id",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Links",
+    "/definitions/ApiAtlasDiskBackupRestoreJobView/Timestamp",
+    "/properties/Cancelled",
+    "/properties/Components",
+    "/properties/DeliveryUrl",
+    "/properties/DesiredTimestamp",
+    "/properties/Expired",
+    "/properties/ExpiresAt",
+    "/properties/Failed",
+    "/properties/FinishedAt",
+    "/properties/Id",
+    "/properties/Links",
+    "/properties/Results",
+    "/properties/Timestamp",
+    "/properties/TotalCount"
+  ],
+  "typeName": "MongoDB::Atlas::CloudBackupRestoreJobs",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

@@ -1,15 +1,15 @@
 {
   "desiredResourceState":{
     "GroupId": "",
-    "BindPassword": "pass",
-    "BindUsername": "cn=MDBRECRUIT\\ldap-bind-user,dc=mdbrecruit,dc=net",
-    "Hostname": "tradecraftldap.mdbrecruit.net",
+    "BindPassword": "",
+    "BindUsername": "",
+    "Hostname": "",
     "Port": "636",
     "ApiKeys" : {
       "PublicKey" : "$ATLAS_PUBLIC_KEY",
       "PrivateKey" : "$ATLAS_PRIVATE_KEY"
     }
   },
-    "providerLogGroupName" : "mongodb-atlas-project-logs",
-    "previousResourceState": { }
+  "providerLogGroupName" : "mongodb-atlas-Ldap-Verify-logs",
+  "previousResourceState": { }
 }

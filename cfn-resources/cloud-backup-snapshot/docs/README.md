@@ -14,10 +14,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+        "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
+        "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
-        "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
-        "<a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>" : <i>Integer</i>,
-        "<a href="#pagenum" title="PageNum">PageNum</a>" : <i>Integer</i>,
+        "<a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>" : <i>Integer</i>,
     }
 }
 </pre>
@@ -29,10 +29,10 @@ Type: MongoDB::Atlas::CloudBackupSnapshot
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+    <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
+    <a href="#description" title="Description">Description</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
-    <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>
-    <a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>: <i>Integer</i>
-    <a href="#pagenum" title="PageNum">PageNum</a>: <i>Integer</i>
+    <a href="#retentionindays" title="RetentionInDays">RetentionInDays</a>: <i>Integer</i>
 </pre>
 
 ## Properties
@@ -61,6 +61,32 @@ _Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### InstanceName
+
+Human-readable label that identifies the serverless instance.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum_: <code>1</code>
+
+_Maximum_: <code>64</code>
+
+_Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Description
+
+Human-readable phrase or sentence that explains the purpose of the snapshot. The resource returns this parameter when `"status": "onDemand"`.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### GroupId
 
 Unique 24-hexadecimal digit string that identifies your project.
@@ -77,29 +103,9 @@ _Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### IncludeCount
+#### RetentionInDays
 
-Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ItemsPerPage
-
-Number of items that the response returns per page.
-
-_Required_: No
-
-_Type_: Integer
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### PageNum
-
-Number of the page that displays the current set of the total objects that the response returns.
+Number of days that MongoDB Cloud should retain the on-demand snapshot. Must be at least **1**
 
 _Required_: No
 
@@ -135,6 +141,18 @@ Unique string that identifies the Amazon Web Services (AWS) Key Management Servi
 
 List of returned documents that MongoDB Cloud provides when completing this request.
 
+#### ItemsPerPage
+
+Number of items that the response returns per page.
+
+#### IncludeCount
+
+Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
+
+#### PageNum
+
+Number of the page that displays the current set of the total objects that the response returns.
+
 #### Type
 
 Human-readable label that categorizes the cluster as a replica set or sharded cluster.
@@ -154,10 +172,6 @@ List that includes the snapshots and the cloud provider that stores the snapshot
 #### ExpiresAt
 
 Date and time when MongoDB Cloud deletes the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
-
-#### Description
-
-Human-readable phrase or sentence that explains the purpose of the snapshot. The resource returns this parameter when `"status": "onDemand"`.
 
 #### StorageSizeBytes
 
@@ -190,10 +204,6 @@ Version of the MongoDB host that this snapshot backs up.
 #### FrequencyType
 
 Human-readable label that identifies how often this snapshot triggers.
-
-#### RetentionInDays
-
-Number of days that MongoDB Cloud should retain the on-demand snapshot. Must be at least **1**
 
 #### ReplicaSetName
 

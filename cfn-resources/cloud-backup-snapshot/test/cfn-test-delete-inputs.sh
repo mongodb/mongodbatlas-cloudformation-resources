@@ -13,16 +13,22 @@ function usage {
 }
 
 
-projectId=$(jq -r '.GroupId' ./inputs/inputs_1_create.json)
+projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 clusterName=$(jq -r '.ClusterName' ./inputs/inputs_1_create.json)
 
+echo $projectId
+echo $clusterName
+
 #delete Cluster
-if atlas clusters delete "$clusterName" --force
+if atlas clusters delete "$clusterName" --projectId "${projectId}" --force
 then
     echo "$clusterName cluster deletion OK"
 else
     (echo "Failed cleaning cluster:$clusterName" && exit 1)
 fi
+
+echo "Waiting for cluster to get deleted"
+sleep 1200
 
 
 #delete project
@@ -32,4 +38,3 @@ then
 else
     (echo "Failed cleaning project:$projectId" && exit 1)
 fi
-

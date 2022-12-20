@@ -3,7 +3,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -15,7 +14,7 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType, constants.PubKey, constants.PvtKey}
@@ -33,12 +32,16 @@ func (m *Model) new(ol *mongodbatlas.OnlineArchive) {
 	m.State = &ol.State
 
 }
+func setup() {
+	util.SetupLogger("mongodb-atlas-online-archive")
+}
 
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+func validateModel(fields []string, model interface{}) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
@@ -64,6 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	outputRequest, res, err := client.OnlineArchives.Create(context.Background(), *currentModel.ProjectId,
 		*currentModel.ClusterName, &inputRequest)
 	if err != nil {
+		_, _ = logger.Debugf("Error creating archive: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.ArchiveId = &outputRequest.ID
@@ -102,13 +106,13 @@ func mapCriteria(currentModel *Model) (*mongodbatlas.OnlineArchiveCriteria, *han
 		ExpireAfterDays: aws.Float64(float64(aws.IntValue(criteriaModel.ExpireAfterDays))),
 		DateFormat:      aws.StringValue(criteriaModel.DateFormat),
 	}
-	//if criteriaInput.Type == "DATE" {
-	//	requiredInputs := requiredCriteriaType[criteriaInput.Type]
-	//	criteriaInputDate := validateModel(requiredInputs, currentModel)
-	//	if criteriaInputDate != nil {
-	//		return nil, criteriaInputDate
-	//	}
-	//}
+	if criteriaInput.Type == "DATE" {
+		requiredInputs := requiredCriteriaType[criteriaInput.Type]
+		criteriaInputDate := validateModel(requiredInputs, criteriaModel)
+		if criteriaInputDate != nil {
+			return nil, criteriaInputDate
+		}
+	}
 	if criteriaInput.Type == "CUSTOM" {
 		criteriaInput.Query = aws.StringValue(criteriaModel.Query)
 	}
@@ -116,6 +120,7 @@ func mapCriteria(currentModel *Model) (*mongodbatlas.OnlineArchiveCriteria, *han
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if currentModel.ArchiveId == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -135,6 +140,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	olArchive, res, err := client.OnlineArchives.Get(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
 		*currentModel.ArchiveId)
 	if err != nil {
+		_, _ = logger.Debugf("Error fetching archive: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.ArchiveId = &olArchive.ID
@@ -146,14 +152,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if currentModel.ArchiveId == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "no Id found in currentModel",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
-	log.Printf("double %+v", currentModel)
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
@@ -174,6 +179,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	outputRequest, res, err := client.OnlineArchives.Update(context.Background(), *currentModel.ProjectId,
 		*currentModel.ClusterName, *currentModel.ArchiveId, &inputRequest)
 	if err != nil {
+		_, _ = logger.Debugf("Error updating archive: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -186,6 +192,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
@@ -211,6 +218,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	res, err := client.OnlineArchives.Delete(ctx, *currentModel.ProjectId,
 		*currentModel.ClusterName, *currentModel.ArchiveId)
 	if err != nil {
+		_, _ = logger.Debugf("Error deleting archive: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	return handler.ProgressEvent{
@@ -226,6 +234,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	modelValidation := validateModel(ListRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
@@ -242,6 +251,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			IncludeCount: aws.BoolValue(currentModel.IncludeCount),
 		})
 	if err != nil {
+		_, _ = logger.Debugf("Error listing archive: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	resources := make([]any, 0, len(archives.Results))
@@ -266,7 +276,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
 	archive, err := ArchiveExists(ctx, client, currentModel)
 	if err != nil {
-		_, _ = logger.Debugf("Error archive validate progress() err: %+v", err)
+		_, _ = logger.Debugf("Error archive archive exists err: %+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,

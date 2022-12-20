@@ -1,4 +1,4 @@
-# MongoDB::Atlas::onlinearchives
+# MongoDB::Atlas::OnlineArchive
 
 Returns, adds, edits, or removes an online archive.
 

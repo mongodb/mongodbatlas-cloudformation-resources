@@ -1,0 +1,20 @@
+{
+  "desiredResourceState":{
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    },
+    "ProjectId": "",
+    "Username": "",
+    "Roles": [
+      "GROUP_DATA_ACCESS_ADMIN",
+      "GROUP_DATA_ACCESS_READ_ONLY",
+      "GROUP_DATA_ACCESS_READ_WRITE",
+      "GROUP_OWNER",
+      "GROUP_READ_ONLY"
+    ]
+  }
+,
+  "providerLogGroupName" : "mongodb-atlas-project-logs",
+  "previousResourceState": { }
+}

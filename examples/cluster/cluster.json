@@ -17,10 +17,10 @@
                 "Name": {
                     "Ref": "ProjectName"
                 },
-                "OrgId": "63350255419cf25e3d511c95",
+                "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
                 "ApiKeys": {
-                    "PublicKey": "xfqavjxw",
-                    "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
+                    "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+                    "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
                 }
             }
         },
@@ -34,8 +34,8 @@
                     "Ref": "ClusterName"
                 },
                 "ApiKeys": {
-                    "PublicKey": "xfqavjxw",
-                    "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
+                    "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+                    "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
                 },
                 "AdvancedSettings": {
                     "DefaultReadConcern": "available",

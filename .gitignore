@@ -28,4 +28,4 @@ update.json
 **/taskcat_outputs/
 **/inputs/**
 pytestdebug.log
-!*.rdpk-config
+!*.rpdk-config

@@ -1,0 +1,70 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndpointADL",
+    "description": "Adds one private endpoint for Federated Database Instances and Online Archives to the specified projects. To use this resource, the requesting API Key must have the Project Atlas Admin or Project Charts Admin roles. This resource doesn't require the API Key to have an Access List.",
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        }
+    },
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "apiKeyDefinition": {
+            "additionalProperties": false,
+            "properties": {
+                "PrivateKey": {
+                    "type": "string"
+                },
+                "PublicKey": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Comment": {
+            "description": "Human-readable string to associate with this private endpoint.",
+            "type": "string"
+        },
+        "EndpointId": {
+            "description": "Unique 22-character alphanumeric string that identifies the private endpoint.",
+            "type": "string"
+        },
+        "Provider": {
+            "description": "Human-readable label that identifies the cloud service provider. Atlas Data Lake supports Amazon Web Services only.",
+            "type": "string"
+        },
+        "Type": {
+            "description": "Human-readable label that identifies the resource type associated with this private endpoint.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "Provider",
+        "GroupId"
+    ],
+    "readOnlyProperties": [
+        "/properties/EndpointId"
+    ],
+    "primaryIdentifier": [
+        "/properties/EndpointId"
+    ]
+}

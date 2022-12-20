@@ -420,7 +420,6 @@ func processCreateCallBack(req handler.Request, currentModel *Model, client *mon
 }
 
 func processDeleteCallBack(req handler.Request, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-
 	// Variable Processing
 	reqToken := fmt.Sprintf("%v", req.CallbackContext["Token"])
 	identifier := fmt.Sprintf("%v", req.CallbackContext["Identifier"])

@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -145,6 +146,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	_, _ = logger.Debugf("Read -reading snapshot status (%d)", res.StatusCode)
 
+	storageInBytesString := strconv.Itoa(snapshot.StorageSizeBytes)
 	currentModel.SnapshotId = &snapshot.ID
 	currentModel.Description = &snapshot.Description
 	currentModel.RetentionInDays = &snapshot.RetentionInDays
@@ -155,7 +157,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.ReplicaSetName = &snapshot.ReplicaSetName
 	currentModel.MasterKeyUUID = &snapshot.MasterKeyUUID
 	currentModel.MongodVersion = &snapshot.MongodVersion
-	currentModel.StorageSizeBytes = &snapshot.StorageSizeBytes
+	currentModel.StorageSizeBytes = &storageInBytesString
 	currentModel.Links = flattenLinks(snapshot.Links)
 	currentModel.CloudProvider = pointy.String(cloudProvider)
 	currentModel.SnapshotIds = snapshot.SnapshotsIds
@@ -301,9 +303,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error reading cloud provider snapshot list with id(project: %s): %s", projectID, err)
 	}
-	var models []interface{}
+	models := make([]interface{}, 0)
 	for _, snapshot := range snapshots.Results {
 		var model Model
+		storageInBytesString := strconv.Itoa(snapshot.StorageSizeBytes)
 		model.SnapshotId = &snapshot.ID
 		model.Description = &snapshot.Description
 		model.Status = &snapshot.Status
@@ -313,7 +316,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.ReplicaSetName = &snapshot.ReplicaSetName
 		model.MasterKeyUUID = &snapshot.MasterKeyUUID
 		model.MongodVersion = &snapshot.MongodVersion
-		model.StorageSizeBytes = &snapshot.StorageSizeBytes
+		model.StorageSizeBytes = &storageInBytesString
 		model.Links = flattenLinks(snapshot.Links)
 		model.CloudProvider = pointy.String(cloudProvider)
 		model.SnapshotIds = snapshot.SnapshotsIds
@@ -357,6 +360,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	}
 
 	snapshot, _, _ := client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
+	storageInBytesString := strconv.Itoa(snapshot.StorageSizeBytes)
 	currentModel.SnapshotId = &snapshot.ID
 	currentModel.Description = &snapshot.Description
 	currentModel.Status = &snapshot.Status
@@ -366,7 +370,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	currentModel.ReplicaSetName = &snapshot.ReplicaSetName
 	currentModel.MasterKeyUUID = &snapshot.MasterKeyUUID
 	currentModel.MongodVersion = &snapshot.MongodVersion
-	currentModel.StorageSizeBytes = &snapshot.StorageSizeBytes
+	currentModel.StorageSizeBytes = &storageInBytesString
 	currentModel.Links = flattenLinks(snapshot.Links)
 	currentModel.CloudProvider = pointy.String(cloudProvider)
 	currentModel.SnapshotIds = snapshot.SnapshotsIds

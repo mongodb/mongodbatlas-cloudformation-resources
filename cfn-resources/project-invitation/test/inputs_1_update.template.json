@@ -1,0 +1,12 @@
+{
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  },
+  "ProjectId": "",
+  "Username": "",
+  "Roles": [
+    "GROUP_DATA_ACCESS_ADMIN",
+    "GROUP_DATA_ACCESS_READ_ONLY"
+  ]
+}

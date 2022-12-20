@@ -2,15 +2,13 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "MongoDB Atlas AWS CloudFormation Example for MongoDB::Atlas::ThirdPartyIntegration",
   "Parameters": {
-    "PublicKey": {
-      "Description": "Your MongoDB Cloud Public API Key",
+    "MongoDBAtlasAPIPublicKey": {
       "Type": "String",
-      "Default": ""
+      "Description" : "MongoDB Atlas Public Access Key"
     },
-    "PrivateKey": {
-      "Description": "Your MongoDB Cloud Private API Key",
+    "MongoDBAtlasAPIPrivateKey": {
       "Type": "String",
-      "Default": ""
+      "Description" : "MongoDB Atlas Private Access Key"
     },
     "ProjectId": {
       "Description": "Your MongoDB Project Id",
@@ -24,10 +22,10 @@
       "Properties": {
         "ApiKeys": {
           "PublicKey": {
-            "Ref": "PublicKey"
+            "Ref": "MongoDBAtlasAPIPublicKey"
           },
           "PrivateKey": {
-            "Ref": "PrivateKey"
+            "Ref": "MongoDBAtlasAPIPrivateKey"
           }
         },
         "ProjectId": {

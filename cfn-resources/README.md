@@ -21,7 +21,7 @@ MongoDB Atlas Resource Types.
 | private-endpoint                     | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint/test](./private-endpoint/test)                                         |
 | custom-db-role                       | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./custom-db-role/test](./custom-db-role/test)                                             |
 | maintenance-window                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./maintenance-window/test](./maintenance-window/test)                                     |
-
+| auditing                             | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./auditing/test](./auditing/test)                                                         |
 Legend
 ---
 | Badge | Meaning |

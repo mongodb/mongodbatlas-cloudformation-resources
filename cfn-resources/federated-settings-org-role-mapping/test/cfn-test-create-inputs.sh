@@ -4,6 +4,9 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
+# NOTE: You need to set Federation Settings Id and Orgnization Id, in order to execute this resource.
+#       You can get the Federation Settings Id on Atlas UI under the 'Manage Federation Settings' cosole
+
 set -o nounset
 set -o pipefail
 WORDTOREMOVE="template."

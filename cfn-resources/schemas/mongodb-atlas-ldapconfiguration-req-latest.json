@@ -14,13 +14,13 @@
   },
   "UpdateFields": {
     "InputParams": [
-      "GroupId",
       "Links",
       "CustomerX509",
       "Links",
       "Ldap",
       "Links",
-      "ApiKeys"
+      "ApiKeys",
+      "GroupId"
     ],
     "RequiredParams": ["Links"]
   },

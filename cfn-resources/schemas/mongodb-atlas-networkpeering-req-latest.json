@@ -16,13 +16,13 @@
   },
   "UpdateFields": {
     "InputParams": [
+      "ApiKeys",
       "GroupId",
       "IncludeCount",
       "ItemsPerPage",
       "PageNum",
       "ProviderName",
-      "PeerId",
-      "ApiKeys"
+      "PeerId"
     ]
   },
   "DeleteFields": {

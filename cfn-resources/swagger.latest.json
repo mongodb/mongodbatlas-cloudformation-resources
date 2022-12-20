@@ -97,7 +97,7 @@
       <script>
         window.BUGSNAG = {
           apiKey: '85488288cc4942da2965a8b7e07bbf38',
-          appVersion: 'commit: 873f48d',
+          appVersion: 'commit: e9e5db6',
           releaseStage: 'production'
         }
       </script>

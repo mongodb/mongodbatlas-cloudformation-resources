@@ -4,18 +4,18 @@
     "InputParams": [
       "AwsKms",
       "AzureKeyVault",
-      "GoogleCloudKms",
       "ApiKeys",
-      "GroupId"
+      "GroupId",
+      "GoogleCloudKms"
     ],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
       "AzureKeyVault",
-      "GoogleCloudKms",
       "ApiKeys",
       "GroupId",
+      "GoogleCloudKms",
       "AwsKms"
     ]
   },

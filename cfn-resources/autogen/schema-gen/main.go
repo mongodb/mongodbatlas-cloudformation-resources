@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/tidwall/pretty"
-	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -264,28 +266,39 @@ func sortDefinitions(properties map[string]Definitions) (props map[string]Defini
 
 func downloadOpenAPISpec(url, fileName string) (err error) {
 
-	// Create blank file
-	file, err := os.Create(fileName)
-	if err != nil {
-		fmt.Errorf("os.Create(fileName), error while creating latest swagger file %+v", err)
-		return err
-	}
-	client := http.Client{
-		CheckRedirect: func(r *http.Request, via []*http.Request) error {
-			r.URL.Opaque = r.URL.Path
-			return nil
-		},
-	}
-	// Put content on file
-	resp, err := client.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	//// Create blank file
+	//file, err := os.Create(fileName)
+	//if err != nil {
+	//	fmt.Errorf("os.Create(fileName), error while creating latest swagger file %+v", err)
+	//	return err
+	//}
 
-	size, err := io.Copy(file, resp.Body)
+	spaceClient := http.Client{
+		Timeout: time.Second * 35, // Timeout after 2 seconds
+	}
 
-	fmt.Printf("Downloaded a file %s with size %d", fileName, size)
+	req, err := http.NewRequest(http.MethodGet, OpenAPISpecPath, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.Header.Set("User-Agent", "spacecount-tutorial")
+
+	res, getErr := spaceClient.Do(req)
+	if getErr != nil {
+		log.Fatal(getErr)
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	err = os.WriteFile(fileName, body, 0600)
 	return err
 }
 
@@ -314,9 +327,9 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	if compare {
 		swaggerDownloadedFile := "swagger.latest.json"
 		openAPISpecFile = fmt.Sprintf("%s/%s", dir, swaggerDownloadedFile)
-		//if err := downloadOpenAPISpec(OpenAPISpecPath, swaggerDownloadedFile); err != nil {
-		//	return []byte{}, nil, err
-		//}
+		if err := downloadOpenAPISpec(OpenAPISpecPath, swaggerDownloadedFile); err != nil {
+			return []byte{}, nil, err
+		}
 	}
 	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
 	if err != nil {

@@ -1,14 +1,14 @@
 {
   "CreateFields": {
     "InputParams": [
-      "NotAfter",
       "CreatedAt",
       "GroupId",
-      "Links",
       "MonthsUntilExpiration",
-      "ApiKeys",
+      "NotAfter",
       "Subject",
       "_id",
+      "Links",
+      "ApiKeys",
       "Username"
     ],
     "RequiredParams": ["Links"]
@@ -16,46 +16,46 @@
   "ReadFields": {
     "InputParams": [
       "Subject",
-      "CreatedAt",
-      "ApiKeys",
-      "Results",
-      "PageNum",
       "Links",
-      "CustomerX509",
-      "NotAfter",
+      "ApiKeys",
       "Username",
       "TotalCount",
       "Links",
       "Ldap",
-      "_id",
-      "Links",
-      "MonthsUntilExpiration",
-      "IncludeCount",
+      "Results",
       "ItemsPerPage",
-      "GroupId"
+      "PageNum",
+      "_id",
+      "IncludeCount",
+      "CreatedAt",
+      "GroupId",
+      "MonthsUntilExpiration",
+      "NotAfter",
+      "Links",
+      "CustomerX509"
     ],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
-      "GroupId",
-      "Links",
-      "MonthsUntilExpiration",
+      "_id",
       "IncludeCount",
-      "ItemsPerPage",
-      "Subject",
+      "MonthsUntilExpiration",
       "NotAfter",
-      "CreatedAt",
-      "ApiKeys",
-      "Results",
-      "PageNum",
       "Links",
       "CustomerX509",
-      "_id",
+      "CreatedAt",
+      "GroupId",
+      "ApiKeys",
       "Username",
       "TotalCount",
       "Links",
-      "Ldap"
+      "Ldap",
+      "Subject",
+      "Links",
+      "PageNum",
+      "Results",
+      "ItemsPerPage"
     ],
     "RequiredParams": ["Links"]
   },

@@ -11,23 +11,23 @@
   },
   "ReadFields": {
     "InputParams": [
+      "DayOfWeek",
+      "HourOfDay",
+      "StartASAP",
+      "ApiKeys",
+      "GroupId",
+      "AutoDeferOnceEnabled"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
       "GroupId",
       "AutoDeferOnceEnabled",
       "DayOfWeek",
       "HourOfDay",
       "StartASAP",
       "ApiKeys"
-    ],
-    "RequiredParams": ["GroupId"]
-  },
-  "UpdateFields": {
-    "InputParams": [
-      "AutoDeferOnceEnabled",
-      "DayOfWeek",
-      "HourOfDay",
-      "StartASAP",
-      "ApiKeys",
-      "GroupId"
     ],
     "RequiredParams": ["DayOfWeek", "HourOfDay"]
   },

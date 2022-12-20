@@ -1,6 +1,8 @@
 {
   "CreateFields": {
     "InputParams": [
+      "Links",
+      "IncludeCount",
       "ItemsPerPage",
       "PageNum",
       "Type",
@@ -8,38 +10,36 @@
       "Results",
       "TotalCount",
       "ApiKeys",
-      "IncludeCount",
-      "Links",
       "GroupId"
     ]
   },
   "ReadFields": {
     "InputParams": [
-      "IntegrationType",
-      "Results",
-      "TotalCount",
-      "ApiKeys",
-      "IncludeCount",
       "ItemsPerPage",
       "PageNum",
       "Type",
+      "IntegrationType",
       "Links",
-      "GroupId"
+      "IncludeCount",
+      "ApiKeys",
+      "GroupId",
+      "Results",
+      "TotalCount"
     ],
     "RequiredParams": ["GroupId", "IntegrationType"]
   },
   "UpdateFields": {
     "InputParams": [
       "Links",
-      "GroupId",
+      "IncludeCount",
+      "ItemsPerPage",
+      "PageNum",
+      "Type",
       "IntegrationType",
       "Results",
       "TotalCount",
       "ApiKeys",
-      "IncludeCount",
-      "ItemsPerPage",
-      "PageNum",
-      "Type"
+      "GroupId"
     ]
   },
   "DeleteFields": {

@@ -1,7 +1,7 @@
 {
   "CreateFields": {},
   "ReadFields": {
-    "InputParams": ["GroupId", "Enabled", "ApiKeys"],
+    "InputParams": ["Enabled", "ApiKeys", "GroupId"],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {

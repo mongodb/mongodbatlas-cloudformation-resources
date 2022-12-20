@@ -61,4 +61,4 @@ export AWS_DEFAULT_REGION=""
 | READ      | true/false | [From MongoDB](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-DNS-for-Atlas-Clusters-Deployed-to-AWS)                                    |
 
 
-For more information see: MongoDB Atlas API [CustomeDNSConfigurationClusterAWS Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-DNS-for-Atlas-Clusters-Deployed-to-AWS) Documentation.
+For more information see: MongoDB Atlas API Endpoint [Custom DNS for Atlas Clusters Deployed to AWS](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-DNS-for-Atlas-Clusters-Deployed-to-AWS) Documentation.

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::CustomDnsConfigurationClusterAws
 
 ## Description
-Returns, adds and removes custom dns configuration for AWS cluster.
+Returns, adds and removes custom DNS configurations for MongoDB Atlas database deployments on AWS.
 
 ## Attributes & Parameters
 

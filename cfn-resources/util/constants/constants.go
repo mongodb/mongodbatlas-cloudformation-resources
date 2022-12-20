@@ -76,7 +76,7 @@ const (
 	DeliveryType = "DeliveryType"
 
 	TenantName = "TenantName"
-	ProjID                           = "ProjectID"
-	Serverless                       = "SERVERLESS"
-	Duplicate                        = "DUPLICATE"
+	ProjID     = "ProjectID"
+	Serverless = "SERVERLESS"
+	Duplicate  = "DUPLICATE"
 )

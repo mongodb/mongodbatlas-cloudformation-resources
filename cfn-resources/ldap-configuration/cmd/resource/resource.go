@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	log2 "log"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -125,7 +126,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Update successfully",
+		Message:         "Create successfully",
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -247,38 +248,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errPe, nil
 	}
 
-	/*ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: false,
-	}
-
-	ldapReq := &mongodbatlas.LDAPConfiguration{
-		LDAP: ldap,
-	}
-
-	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
-	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}*/
-
-	err = manualSave(currentModel)
-	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
-	}
-
-	// Response
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Delete success",
-	}, nil
+	return executeManualDelete(currentModel), nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func manualSave(currentModel *Model) error {
+func executeManualDelete(currentModel *Model) handler.ProgressEvent {
 	log2.Printf("Executing manual save")
 	URL := fmt.Sprintf("https://cloud.mongodb.com/api/atlas/v1.0/groups/%s/userSecurity", *currentModel.GroupId)
 
@@ -288,17 +265,25 @@ func manualSave(currentModel *Model) error {
 	r, err := dr.Execute()
 	if err != nil {
 		_, _ = log.Debugf(fmt.Sprintf("Error creating request %s", err.Error()))
-		return err
+		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Error creating request %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
 	}
+
+	defer r.Body.Close()
 
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(r.Body)
 	if err != nil {
-		return err
+		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Error reading request body %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
 	}
 	s := buf.String() // Does a complete copy of the bytes in the buffer.
 
+	if r.StatusCode != http.StatusAccepted {
+		return progressEvents.GetFailedEventByResponse(fmt.Sprintf("Error calling API %s", err.Error()), r)
+	}
 	_, _ = log.Debugf(fmt.Sprintf("Status Code %d, Message %s", r.StatusCode, s))
 
-	return nil
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Delete success",
+	}
 }

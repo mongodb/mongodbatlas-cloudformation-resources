@@ -1,4 +1,5 @@
 {
+    "artifact_type": "RESOURCE",
     "typeName": "MongoDB::Atlas::SearchIndex",
     "language": "go",
     "runtime": "go1.x",

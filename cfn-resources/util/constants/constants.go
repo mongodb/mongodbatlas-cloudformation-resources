@@ -52,7 +52,14 @@ const (
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
+	EndpointID = "EndpointId"
+	DataLake   = "DATA_LAKE"
+
 	IntegrationType = "Type"
+
+	IndexID        = "IndexId"
+	CollectionName = "CollectionName"
+	Database       = "Database"
 
 	UserID  = "UserName"
 	Success = 200
@@ -60,4 +67,15 @@ const (
 	Criteria     = "Criteria"
 	ArchiveID    = "ArchiveId"
 	CriteriaType = "Criteria.Type"
+
+	EventTypeName = "EventTypeName"
+	PagerDuty     = "PAGER_DUTY"
+	OpsGenie      = "OPS_GENIE"
+	VictorOps     = "VICTOR_OPS"
+
+	TeamID = "TeamId"
+
+	DeliveryType = "DeliveryType"
+
+	TenantName = "TenantName"
 )

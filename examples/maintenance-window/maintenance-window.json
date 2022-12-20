@@ -1,0 +1,52 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "MongoDBAtlasAPIPublicKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Public Access Key"
+    },
+    "MongoDBAtlasAPIPrivateKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Private Access Key"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description" : "MongoDB project Id"
+    },
+    "DayOfWeek": {
+      "Type": "String",
+      "Description" : "Day of the week that the maintenance window starts."
+    },
+    "HourOfDay": {
+      "Type": "String",
+      "Description" : "Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use 0 for midnight and 12 for noon."
+    },
+    "AutoDeferOnceEnabled": {
+      "AllowedValues": [
+          "true",
+          "false"
+      ],
+      "Default": "false",
+      "Type": "String",
+      "Description" : "Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them."
+  }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "Project": {
+      "Type": "MongoDB::Atlas::MaintenanceWindow",
+      "Properties":  {
+        "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
+          "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
+        },
+        "DayOfWeek": { "Ref" : "DayOfWeek" },
+        "HourOfDay": { "Ref" : "HourOfDay" },
+        "AutoDeferOnceEnabled": { "Ref" : "AutoDeferOnceEnabled" }
+      }
+    }
+  },
+  "Outputs" : {}
+}

@@ -22,7 +22,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#snapshotids" title="SnapshotIds">SnapshotIds</a>" : <i>[ String, ... ]</i>,
     "<a href="#snapshottype" title="SnapshotType">SnapshotType</a>" : <i>String</i>,
     "<a href="#status" title="Status">Status</a>" : <i>String</i>,
-    "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>Integer</i>,
+    "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>String</i>,
     "<a href="#type" title="Type">Type</a>" : <i>String</i>
 }
 </pre>
@@ -48,7 +48,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
       - String</i>
 <a href="#snapshottype" title="SnapshotType">SnapshotType</a>: <i>String</i>
 <a href="#status" title="Status">Status</a>: <i>String</i>
-<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>Integer</i>
+<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>String</i>
 <a href="#type" title="Type">Type</a>: <i>String</i>
 </pre>
 
@@ -212,7 +212,7 @@ Number of bytes taken to store the backup snapshot.
 
 _Required_: No
 
-_Type_: Integer
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

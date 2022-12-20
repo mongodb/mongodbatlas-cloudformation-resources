@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template will deploy the MongoDB::Atlas::Project resources into the CloudFormation registry"
+Resources:
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      MaxSessionDuration: 8400
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "resources.cloudformation.amazonaws.com"
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ResourceTypePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ec2:DeleteSecurityGroup"
+                  - "ec2:DescribeAccountAttributes"
+                  - "ec2:DescribeImages"
+                  - "ec2:DescribeInstances"
+                  - "ec2:DescribeInternetGateways"
+                  - "ec2:DescribeRouteTables"
+                  - "ec2:DescribeSecurityGroups"
+                  - "ec2:DescribeSubnets"
+                  - "ec2:DescribeTags"
+                  - "ec2:DescribeVolumes"
+                  - "ec2:DescribeVpcAttribute"
+                  - "ec2:DescribeVpcClassicLink"
+                  - "ec2:DescribeVpcClassicLinkDnsSupport"
+                  - "ec2:DescribeVpcEndpoints"
+                  - "ec2:DescribeVpcs"
+                  - "ec2:RevokeSecurityGroupIngress"
+                  - "ec2:TerminateInstances"
+                  - "elasticloadbalancing:*"
+                  - "iam:GetRole"
+                  - "iam:GetRolePolicy"
+                  - "iam:GetUser"
+                  - "iam:ListAccessKeys"
+                  - "route53:ChangeResourceRecordSets"
+                  - "route53:GetChange"
+                  - "route53:GetHostedZone"
+                  - "route53:ListHostedZones"
+                  - "route53:ListHostedZonesByName"
+                  - "route53:ListQueryLoggingConfigs"
+                  - "route53:ListResourceRecordSets"
+                  - "s3:*"
+                  - "secretsmanager:CreateSecret"
+                  - "secretsmanager:DeleteSecret"
+                  - "secretsmanager:DescribeSecret"
+                  - "secretsmanager:GetSecretValue"
+                  - "secretsmanager:ListSecrets"
+                  - "secretsmanager:PutSecretValue"
+                  - "secretsmanager:TagResource"
+                  - "ssm:*"
+                  - "tag:GetResources"
+                Resource: "*"

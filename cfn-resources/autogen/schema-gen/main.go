@@ -24,10 +24,11 @@ const (
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
 	OpenAPISpecPath    = "https://www.mongodb.com/8c07de79-53d6-41d8-8fc8-bacdf7f271fa"
-	Dir                = "/autogen/schema-gen" // For debugging use 	"/autogen/schema-gen"
+	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
 	LatestSchemasDir   = "schemas-latest"
 	CurrentDir         = "schema-gen"
+	LatestSwaggerFile  = "swagger.latest.json"
 )
 
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
@@ -265,24 +266,14 @@ func sortDefinitions(properties map[string]Definitions) (props map[string]Defini
 }
 
 func downloadOpenAPISpec(url, fileName string) (err error) {
-
-	//// Create blank file
-	//file, err := os.Create(fileName)
-	//if err != nil {
-	//	fmt.Errorf("os.Create(fileName), error while creating latest swagger file %+v", err)
-	//	return err
-	//}
-
 	spaceClient := http.Client{
-		Timeout: time.Second * 35, // Timeout after 2 seconds
+		Timeout: time.Second * 5,
 	}
 
 	req, err := http.NewRequest(http.MethodGet, OpenAPISpecPath, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	req.Header.Set("User-Agent", "spacecount-tutorial")
 
 	res, getErr := spaceClient.Do(req)
 	if getErr != nil {
@@ -311,6 +302,7 @@ func getCurrentDir() (path string, err error) {
 	dir := path + Dir
 	return dir, err
 }
+
 func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 
 	dir, err := getCurrentDir()
@@ -325,9 +317,8 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
 	// For comparison download the latest openAPIspec file
 	if compare {
-		swaggerDownloadedFile := "swagger.latest.json"
-		openAPISpecFile = fmt.Sprintf("%s/%s", dir, swaggerDownloadedFile)
-		if err := downloadOpenAPISpec(OpenAPISpecPath, swaggerDownloadedFile); err != nil {
+		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
+		if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
 			return []byte{}, nil, err
 		}
 	}
@@ -340,11 +331,7 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 		fmt.Println("empty document found")
 		os.Exit(1)
 	}
-	// validate the swagger.yaml matches Openapi spec
-	//err = doc.Validate(context.Background())
-	//if err != nil {
-	//	return nil, nil, err
-	//}
+
 	return file, doc, err
 }
 

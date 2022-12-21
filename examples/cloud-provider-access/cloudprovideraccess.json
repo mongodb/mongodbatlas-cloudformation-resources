@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "MongoDB Atlas AWS CloudFormation Example for MongoDB::Atlas::ThirdPartyIntegration",
+  "Description": "MongoDB Atlas AWS CloudFormation Example for MongoDB::Atlas::CloudProviderAccess",
   "Parameters": {
     "MongoDBAtlasAPIPublicKey": {
       "Type": "String",

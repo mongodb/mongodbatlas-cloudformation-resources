@@ -1,6 +1,7 @@
 package util
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"strings"
@@ -79,4 +80,17 @@ func SetupLogger(loggerPrefix string) {
 	logr := logging.New(loggerPrefix)
 	logger.SetOutput(logr.Writer())
 	logger.SetLevel(getLogLevel())
+}
+
+func ToStringMapE(ep any) (map[string]any, error) {
+	var eMap map[string]any
+	inrec, err := json.Marshal(ep)
+	if err != nil {
+		return eMap, err
+	}
+	err = json.Unmarshal(inrec, &eMap)
+	if err != nil {
+		return eMap, err
+	}
+	return eMap, nil
 }

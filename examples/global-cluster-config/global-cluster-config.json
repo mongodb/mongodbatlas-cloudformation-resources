@@ -1,0 +1,72 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a GlobalClusterConfig resource  on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "633bf97a5684466a4793c55c",
+      "ConstraintDescription" : ""
+    },
+    "ClusterName" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "cfntest1",
+      "ConstraintDescription" : ""
+    },
+    "Db" : {
+      "Type" : "String",
+      "Description" : "",
+      "Default" : "cfntest1",
+      "ConstraintDescription" : ""
+    },
+    "Collection" : {
+      "Type" : "String",
+      "Description" : "",
+      "Default" : "cfntest1",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+
+    "GlobalClusterConfig": {
+      "Type": "MongoDB::Atlas::GlobalClusterConfig",
+      "Properties": {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "ManagedNamespaces" : [
+      {
+        "Collection": { "Ref" : "Collection" },
+        "CustomShardKey": "shardkey1",
+        "Db": { "Ref" : "Db" },
+        "IsCustomShardKeyHashed": "false",
+        "IsShardKeyUnique": "false"
+      }
+        ],
+        "CustomZoneMappings":[
+          {
+            "Location":"IN",
+            "Zone":"Zone 1"
+          },
+          {
+            "Location":"AF",
+            "Zone":"Zone 2"
+          }
+        ],
+		"RemoveAllZoneMapping": false,
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {
+  
+    "GlobalClusterConfig": {
+      "Description": "Id of the GlobalClusterConfig resource",
+      "Value" : { "Ref" : "GlobalClusterConfig" }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # MongoDB::Atlas::NetworkPeering
 
-This resource allows to create, read, update and delete a network peering
+Returns, adds, edits, and removes network peering containers and peering connections.
 
 ## Syntax
 
@@ -16,7 +16,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#containerid" title="ContainerId">ContainerId</a>" : <i>String</i>,
         "<a href="#accepterregionname" title="AccepterRegionName">AccepterRegionName</a>" : <i>String</i>,
         "<a href="#awsaccountid" title="AwsAccountId">AwsAccountId</a>" : <i>String</i>,
-        "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
         "<a href="#routetablecidrblock" title="RouteTableCIDRBlock">RouteTableCIDRBlock</a>" : <i>String</i>,
         "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
         "<a href="#connectionid" title="ConnectionId">ConnectionId</a>" : <i>String</i>,
@@ -34,7 +33,6 @@ Properties:
     <a href="#containerid" title="ContainerId">ContainerId</a>: <i>String</i>
     <a href="#accepterregionname" title="AccepterRegionName">AccepterRegionName</a>: <i>String</i>
     <a href="#awsaccountid" title="AwsAccountId">AwsAccountId</a>: <i>String</i>
-    <a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
     <a href="#routetablecidrblock" title="RouteTableCIDRBlock">RouteTableCIDRBlock</a>: <i>String</i>
     <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
     <a href="#connectionid" title="ConnectionId">ConnectionId</a>: <i>String</i>
@@ -45,7 +43,7 @@ Properties:
 
 #### ProjectId
 
-The unique identifier of the project.
+Unique 24-hexadecimal digit string that identifies your project.
 
 _Required_: Yes
 
@@ -55,7 +53,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ContainerId
 
-Unique identifier of the Atlas VPC container for the AWS region.
+Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
 
 _Required_: No
 
@@ -65,7 +63,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### AccepterRegionName
 
-AWS region where the peer VPC resides. Returns null if the region is the same region in which the Atlas VPC resides.
+Amazon Web Services (AWS) region where the Virtual Peering Connection (VPC) that you peered with the MongoDB Cloud VPC resides. The resource returns null if your VPC and the MongoDB Cloud VPC reside in the same region.
 
 _Required_: No
 
@@ -75,7 +73,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### AwsAccountId
 
-AWS account ID of the owner of the peer VPC.
+Unique twelve-digit string that identifies the Amazon Web Services (AWS) account that owns the VPC that you peered with the MongoDB Cloud VPC.
 
 _Required_: No
 
@@ -83,19 +81,9 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### ProviderName
-
-The name of the provider
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### RouteTableCIDRBlock
 
-Peer VPC CIDR block or subnet.
+Internet Protocol (IP) addresses expressed in Classless Inter-Domain Routing (CIDR) notation of the VPC's subnet that you want to peer with the MongoDB Cloud VPC.
 
 _Required_: No
 
@@ -105,7 +93,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### VpcId
 
-Unique identifier of the peer VPC.
+Unique string that identifies the VPC on Amazon Web Services (AWS) that you want to peer with the MongoDB Cloud VPC.
 
 _Required_: Yes
 
@@ -115,7 +103,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### ConnectionId
 
-Unique identifier for the peering connection.
+Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
 
 _Required_: No
 
@@ -145,13 +133,13 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### Id
 
-Unique identifier of the Network Peer.
+Unique 24-hexadecimal digit string that identifies the network peering connection that you want to retrieve.
 
 #### StatusName
 
-The VPC peering connection status
+State of the network peering connection at the time you made the request.
 
 #### ErrorStateName
 
-Error state, if any.
+Type of error that can be returned when requesting an Amazon Web Services (AWS) peering connection. The resource returns null if the request succeeded.
 

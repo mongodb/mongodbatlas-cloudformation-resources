@@ -33,6 +33,10 @@ cfn invoke DELETE test.request.json
 
 Both CREATE & DELETE tests must pass.
 
+## CloudFormation Examples
+
+Please see the [CFN Template](test/private-endpoint-regional-mode.sample-cfn-request.json) for example resource
+
 ## Installation
 ```
 TAGS=logging make
@@ -58,4 +62,4 @@ export AWS_DEFAULT_REGION=""
 | PATCH     | true/false | [From MongoDB](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services/operation/toggleRegionalizedPrivateEndpointStatus) |
 | READ      | true/false | [From MongoDB](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services/operation/returnRegionalizedPrivateEndpointStatus) |                                   
 
-For more information see: MongoDB Atlas API [PrivateEndpointRegionalizedMode Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) Documentation.
+For more information see: MongoDB Atlas API Endpoint [Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) Documentation.

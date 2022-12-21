@@ -7,13 +7,15 @@ require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.0.3
 	github.com/aws/aws-sdk-go v1.34.28
 	github.com/dave/jennifer v1.6.0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/getkin/kin-openapi v0.110.0
+	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/openlyinc/pointy v1.2.0
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas v0.19.0
+	go.mongodb.org/realm v0.1.0
+	gopkg.in/mail.v2 v2.3.1
 )
 
 require (
@@ -25,13 +27,8 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mailru/easyjson v0.0.0-20190626092158-b2ccc519800e // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
-	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249 // indirect
 	github.com/segmentio/ksuid v1.0.2 // indirect
-	github.com/tidwall/gjson v1.14.3 // indirect
-	github.com/tidwall/match v1.1.1 // indirect
-	github.com/wI2L/jsondiff v0.3.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/mail.v2 v2.3.1 // indirect
 	gopkg.in/validator.v2 v2.0.0-20191107172027-c3144fdedc21 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

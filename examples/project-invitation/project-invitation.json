@@ -1,0 +1,55 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a invitation at Atlas Organization level",
+  "Parameters" : {
+    "Username" : {
+      "Type" : "String",
+      "Description" : "Email address of the MongoDB Cloud user invited to join the organization."
+    },
+    "ProjectId" : {
+      "Type" : "String"
+    },
+    "PublicKey" : {
+      "Type" : "String"
+    },
+    "PrivateKey" : {
+      "Type" : "String"
+    },
+    "Role" : {
+      "Type" : "String",
+      "Description": "Organization or project level roles to assign to the MongoDB Cloud user.",
+      "Default": "GROUP_READ_ONLY",
+      "AllowedValues": [
+        "GROUP_CLUSTER_MANAGER",
+        "GROUP_DATA_ACCESS_ADMIN",
+        "GROUP_DATA_ACCESS_READ_ONLY",
+        "GROUP_DATA_ACCESS_READ_WRITE",
+        "GROUP_OWNER",
+        "GROUP_READ_ONLY"
+      ]
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "ProjectInvitation": {
+      "Type": "MongoDB::Atlas::ProjectInvitation",
+      "Properties": {
+        "ProjectId": {"Ref":"ProjectId"},
+        "ApiKeys": {
+          "PublicKey": {"Ref": "PublicKey"},
+          "PrivateKey": {"Ref": "PrivateKey"}
+        },
+        "Username": {"Ref": "Username"},
+        "Roles": [
+          {"Ref": "Role"}
+        ]
+      }
+    }
+  },
+  "Outputs" : {
+    "InvitationId": {
+      "Description": "Id of the Invitation",
+      "Value" : { "Ref" : "ProjectInvitation" }
+    }
+  }
+}

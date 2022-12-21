@@ -17,7 +17,7 @@ projectId=$(jq -r '.GroupId' ./inputs/inputs_1_create.json)
 
 
 #delete project
-if mongocli iam projects delete "$projectId" --force
+if atlas projects delete "$projectId" --force
 then
     echo "$projectId project deletion OK"
 else

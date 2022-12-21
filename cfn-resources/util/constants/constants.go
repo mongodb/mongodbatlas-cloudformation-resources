@@ -71,10 +71,11 @@ const (
 
 	TeamID = "TeamId"
 
+	ErrorCreateCloudBackup = "Error - Create Cloud Backup snapshot for Project(%s) and Cluster(%s)- Details: %+v"
+
 	DeliveryType = "DeliveryType"
 
 	TenantName = "TenantName"
-
 	CloudProviderAccessRoleID = "RoleId"
 	LocalSessionType          = "LOCAL_SESSION"
 	RequestSessionType        = "REQUEST_SESSION"
@@ -85,4 +86,11 @@ const (
 		"\"$ATLAS_ASSUMEDROLE_EXTERNAL_ID\"}}}]},\"RoleName\":\"$ROLE_NAME\"}"
 	RoleCreatingMessage = "Aws Role Creating..."
 	RoleDeletingMessage = "Aws Role Deleting..."
+	ProjID     = "ProjectID"
+	Serverless = "SERVERLESS"
+	Duplicate  = "DUPLICATE"
+
+	AppID       = "AppId"
+	RealmPubKey = "RealmConfig.PublicKey"
+	RealmPvtKey = "RealmConfig.PrivateKey"
 )

@@ -16,7 +16,7 @@
       ],
       "RegionName": "AP_NORTHEAST_2",
       "ReplicationSpecId": "639db3eb42882a4bb573db75",
-      "ShouldCopyOplogs": false
+      "ShouldCopyOplogs": "false"
     },
     {
       "CloudProvider": "AWS",
@@ -25,7 +25,7 @@
       ],
       "RegionName": "US_EAST_2",
       "ReplicationSpecId": "639db3eb42882a4bb573db75",
-      "ShouldCopyOplogs": false
+      "ShouldCopyOplogs": "false"
     }
   ],
   "Policies": [

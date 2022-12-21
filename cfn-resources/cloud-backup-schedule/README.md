@@ -38,7 +38,7 @@ cfn submit --verbose --set-default
 
 ## CloudFormation Example
 
-Please see the [CFN Template](test/cloud-backup-schedule.sample-template.yaml) for example resource
+Please see the [CFN Template](test/cloud-backup-schedule.sample-cfn-request.json) for example resource
 
 ## Integration Testing w/ AWS
 

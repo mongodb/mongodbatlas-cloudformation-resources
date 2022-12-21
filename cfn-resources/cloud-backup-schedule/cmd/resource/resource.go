@@ -197,32 +197,9 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 		for _, policy := range currentModel.Policies {
 			if policy.PolicyItems != nil {
 				for _, policyItem := range policy.PolicyItems {
-					if policyItem.FrequencyInterval == nil {
-						err := errors.New("error updating cloud backup schedule: PolicyItem FrequencyInterval should be set when `PolicyItems` is set")
-						_, _ = logger.Warnf("Update - error: %+v", err)
-						return handler.ProgressEvent{
-							OperationStatus:  handler.Failed,
-							Message:          err.Error(),
-							HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-					}
-					if policyItem.FrequencyType == nil {
-						err := errors.New("error updating cloud backup schedule: PolicyItem FrequencyType should be set when `PolicyItems` is set")
-						_, _ = logger.Warnf("Update - error: %+v", err)
-						return handler.ProgressEvent{
-							OperationStatus:  handler.Failed,
-							Message:          err.Error(),
-							HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-					}
-					if policyItem.RetentionUnit == nil {
-						err := errors.New("error updating cloud backup schedule: PolicyItem RetentionUnit should be set when `PolicyItems` is set")
-						_, _ = logger.Warnf("Update - error: %+v", err)
-						return handler.ProgressEvent{
-							OperationStatus:  handler.Failed,
-							Message:          err.Error(),
-							HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-					}
-					if policyItem.RetentionValue == nil {
-						err := errors.New("error updating cloud backup schedule: PolicyItem RetentionValue should be set when `PolicyItems` is set")
+					if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
+						policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
+						err := errors.New("error updating cloud backup schedule: All values from PolicyItem should be set when `PolicyItems` is set")
 						_, _ = logger.Warnf("Update - error: %+v", err)
 						return handler.ProgressEvent{
 							OperationStatus:  handler.Failed,

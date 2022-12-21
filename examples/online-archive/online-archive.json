@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Search Index on the MongoDB Cluster, this will be billed to your Atlas account.",
+  "Description": "Returns, adds, edits, or removes an online archive, this will be billed to your Atlas account.",
   "Mappings": {},
   "Resources": {
     "OnlineArchive": {

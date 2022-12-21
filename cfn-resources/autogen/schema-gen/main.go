@@ -4,10 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/tidwall/pretty"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -15,9 +12,12 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/tidwall/pretty"
 )
 
-//https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
+// https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
 
 const (
 	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
@@ -26,7 +26,6 @@ const (
 	OpenAPISpecPath    = "https://www.mongodb.com/8c07de79-53d6-41d8-8fc8-bacdf7f271fa"
 	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
-	LatestSchemasDir   = "schemas-latest"
 	CurrentDir         = "schema-gen"
 	LatestSwaggerFile  = "swagger.latest.json"
 )
@@ -64,9 +63,6 @@ func main() {
 	reqDone := make(chan bool)
 	go generateSchemas(chn, done, compare)
 	go generateReqFields(reqFieldsChan, reqDone, compare)
-
-	// definitions := make(map[string]Definitions, 0)
-	// var ids, readOnly, idsDef, readOnlyDef []string
 
 	for _, res := range data.Resources {
 		definitions := make(map[string]Definitions, 0)
@@ -236,7 +232,6 @@ func main() {
 
 	close(reqFieldsChan)
 	<-reqDone
-
 }
 
 func sortProperties(properties map[string]Property) (props map[string]Property) {
@@ -270,23 +265,23 @@ func downloadOpenAPISpec(url, fileName string) (err error) {
 		Timeout: time.Second * 5,
 	}
 
-	req, err := http.NewRequest(http.MethodGet, OpenAPISpecPath, nil)
+	req, err := http.NewRequest(http.MethodGet, OpenAPISpecPath, http.NoBody)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	res, getErr := spaceClient.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		return getErr
 	}
 
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
+	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		return readErr
 	}
 
 	err = os.WriteFile(fileName, body, 0600)
@@ -304,7 +299,6 @@ func getCurrentDir() (path string, err error) {
 }
 
 func readConfig(compare bool) ([]byte, *openapi3.T, error) {
-
 	dir, err := getCurrentDir()
 	if err != nil {
 		return nil, nil, err
@@ -350,7 +344,6 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 			// Read Discriminator params
 			if value.Value.Discriminator != nil {
 				for _, def := range value.Value.Discriminator.Mapping {
-					//fmt.Println(def, key)
 					schemaKey := def[strings.LastIndex(def, "/")+1:]
 
 					if doc.Components.Schemas[filepath.Base(schemaKey)].Value != nil && doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf != nil {
@@ -511,7 +504,7 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 			}
 			latestSchemaFilePath = fmt.Sprintf("%s/mongodb-atlas-%s-latest.json", latestSchemaDir, strings.ToLower(cfn.FileName))
 
-			//Write schema into the latest file
+			// Write schema into the latest file
 			err = os.WriteFile(latestSchemaFilePath, result, 0600)
 			if err != nil {
 				print(err)
@@ -521,8 +514,11 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 		}
 
 		if compare && latestSchemaFilePath != "" {
-			CompareJsonFiles(cfn.FileName, schemaFilePath, latestSchemaFilePath)
-			//Delete the latest file created for comparison
+			_, err = CompareJSONFiles(cfn.FileName, schemaFilePath, latestSchemaFilePath)
+			if err != nil {
+				print(err)
+			}
+			// Delete the latest file created for comparison
 			err = os.RemoveAll(latestSchemaFilePath)
 			if err != nil {
 				print(err)
@@ -536,10 +532,8 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 			done <- true
 			return
 		}
-
 	}
 	done <- true
-
 }
 
 func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare bool) {

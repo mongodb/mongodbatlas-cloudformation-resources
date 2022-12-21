@@ -76,4 +76,11 @@ const (
 	DeliveryType = "DeliveryType"
 
 	TenantName = "TenantName"
+	ProjID     = "ProjectID"
+	Serverless = "SERVERLESS"
+	Duplicate  = "DUPLICATE"
+
+	AppID       = "AppId"
+	RealmPubKey = "RealmConfig.PublicKey"
+	RealmPvtKey = "RealmConfig.PrivateKey"
 )

@@ -15,11 +15,7 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
+var RequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-custom-dns-configuration-cluster-aws")
@@ -29,7 +25,7 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
@@ -52,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
@@ -90,7 +86,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}

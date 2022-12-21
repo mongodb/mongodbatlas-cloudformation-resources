@@ -34,6 +34,10 @@ cfn invoke DELETE test.request.json
 
 Both CREATE & DELETE tests must pass.
 
+## CloudFormation Examples
+
+Please see the [CFN Template](test/custom-dns-config-cluster-aws.sample-cfn-request.json) for example resource
+
 ## Installation
 ```
 TAGS=logging make

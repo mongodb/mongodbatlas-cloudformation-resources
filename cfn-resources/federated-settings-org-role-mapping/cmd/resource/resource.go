@@ -22,6 +22,10 @@ var UpdateRequiredFields = []string{"FederationSettingsId", "OrgId", "Id", "Exte
 var DeleteRequiredFields = []string{"FederationSettingsId", "OrgId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var ListRequiredFields = []string{"ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 
+const (
+	RoleAssignementShouldBeSet = "error creating federated settings org role mapping: RoleAssignments should be set when `Export` is set"
+)
+
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
@@ -144,7 +148,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	if (currentModel.RoleAssignments) == nil || len(currentModel.RoleAssignments) == 0 {
-		err := errors.New("error creating federated settings org role mapping: RoleAssignments should be set when `Export` is set")
+		err := errors.New(RoleAssignementShouldBeSet)
 		_, _ = log.Warnf("Create - error: %+v", err)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,

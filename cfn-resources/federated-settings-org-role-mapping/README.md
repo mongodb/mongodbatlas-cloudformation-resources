@@ -33,7 +33,7 @@ Both UPDATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## CloudFormation Examples
+## CloudFormation Example
 
 Please see the [CFN Template](test/federated-settings-org-role-mapping.sample-cfn-request.json) for example resource
 

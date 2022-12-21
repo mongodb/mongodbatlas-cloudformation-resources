@@ -7,7 +7,7 @@ goarch=amd64
 #export CGO_ENABLED
 #export GOARCH
 # Set next value at compile time for fallback log-level
-ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
+ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=warning
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 build:
 	#make -f makebuild  # this runs build steps required by the cfn cli

@@ -36,7 +36,7 @@ TAGS=logging make
 cfn submit --verbose --set-default
 
 
-## Cloudformation Examples
+## CloudFormation Example
 
 Please see the [CFN Template](test/cloud-backup-schedule.sample-template.yaml) for example resource
 

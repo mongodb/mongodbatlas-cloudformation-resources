@@ -1,27 +1,9 @@
 {
-  "typeName": "MongoDB::Atlas::LdapConfiguration",
+  "typeName": "MongoDB::Atlas::LDAPConfiguration",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "description": "Returns, edits, verifies, and removes LDAP configurations.",
   "additionalProperties": false,
   "definitions": {
-    "ApiAtlasCustomerX509View": {
-      "type": "object",
-      "properties": {
-        "Cas": {
-          "type": "string",
-          "description": "Concatenated list of customer certificate authority (CA) certificates needed to authenticate database users. MongoDB Cloud expects this as a PEM-formatted certificate."
-        },
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link",
-            "type": "object"
-          }
-        }
-      },
-      "additionalProperties": false
-    },
     "ApiAtlasNDSUserToDNMappingView": {
       "type": "object",
       "properties": {
@@ -68,18 +50,9 @@
     }
   },
   "properties": {
-    "Links": {
-      "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
-    },
     "BindUsername": {
       "type": "string",
-      "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.",
-      "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+      "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253."
     },
     "Status": {
       "type": "string",
@@ -87,8 +60,7 @@
     },
     "Hostname": {
       "type": "string",
-      "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.",
-      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}|([0-9a-f]{1,4}\\:){7}([0-9a-f]{1,4})|(([a-z0-9]+\\.){1,10}[a-z]+)?$"
+      "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster."
     },
     "ApiKeys": {
       "$ref": "#/definitions/ApiKeyDefinition"
@@ -113,17 +85,9 @@
       "type": "string",
       "description": "Password that MongoDB Cloud uses to authenticate the **bindUsername**."
     },
-    "CustomerX509": {
-      "type": "object",
-      "description": "Settings to configure TLS Certificates for database users.",
-      "$ref": "#/definitions/ApiAtlasCustomerX509View"
-    },
     "GroupId": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies your project.",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
+      "description": "Unique 24-hexadecimal digit string that identifies your project."
     },
     "Port": {
       "type": "integer",
@@ -136,28 +100,19 @@
         "$ref": "#/definitions/ApiAtlasNDSUserToDNMappingView",
         "type": "object"
       }
-    },
-    "Links": {
-      "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
     }
   },
   "primaryIdentifier": ["/properties/GroupId"],
   "required": [
-    "GroupID",
+    "GroupId",
     "BindUsername",
     "BindPassword",
-    "HostName",
+    "Hostname",
     "Port",
     "ApiKeys"
   ],
   "readOnlyProperties": [
-    "/properties/Links",
-    "/definitions/ApiAtlasCustomerX509View/Links"
+    "/properties/GroupId"
   ],
   "handlers": {
     "create": {

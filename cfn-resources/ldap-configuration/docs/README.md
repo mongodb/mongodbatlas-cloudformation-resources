@@ -1,4 +1,4 @@
-# MongoDB::Atlas::ldapconfiguration
+# MongoDB::Atlas::LDAPConfiguration
 
 Returns, edits, verifies, and removes LDAP configurations.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::ldapconfiguration",
+    "Type" : "MongoDB::Atlas::LDAPConfiguration",
     "Properties" : {
         "<a href="#bindusername" title="BindUsername">BindUsername</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
@@ -21,8 +21,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#cacertificate" title="CaCertificate">CaCertificate</a>" : <i>String</i>,
         "<a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>" : <i>String</i>,
         "<a href="#bindpassword" title="BindPassword">BindPassword</a>" : <i>String</i>,
-        "<a href="#customerx509" title="CustomerX509">CustomerX509</a>" : <i><a href="apiatlascustomerx509view.md">ApiAtlasCustomerX509View</a></i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#port" title="Port">Port</a>" : <i>Integer</i>,
         "<a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>" : <i>[ <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a>, ... ]</i>
     }
@@ -32,7 +30,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::ldapconfiguration
+Type: MongoDB::Atlas::LDAPConfiguration
 Properties:
     <a href="#bindusername" title="BindUsername">BindUsername</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
@@ -43,8 +41,6 @@ Properties:
     <a href="#cacertificate" title="CaCertificate">CaCertificate</a>: <i>String</i>
     <a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>: <i>String</i>
     <a href="#bindpassword" title="BindPassword">BindPassword</a>: <i>String</i>
-    <a href="#customerx509" title="CustomerX509">CustomerX509</a>: <i><a href="apiatlascustomerx509view.md">ApiAtlasCustomerX509View</a></i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#port" title="Port">Port</a>: <i>Integer</i>
     <a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>: <i>
       - <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a></i>
@@ -59,8 +55,6 @@ Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP)
 _Required_: Yes
 
 _Type_: String
-
-_Pattern_: <code>^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -78,11 +72,9 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
-
-_Pattern_: <code>^([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-f]{1,4}\:){7}([0-9a-f]{1,4})|(([a-z0-9]+\.){1,10}[a-z]+)?$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -144,30 +136,6 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### CustomerX509
-
-_Required_: No
-
-_Type_: <a href="apiatlascustomerx509view.md">ApiAtlasCustomerX509View</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### GroupId
-
-Unique 24-hexadecimal digit string that identifies your project.
-
-_Required_: No
-
-_Type_: String
-
-_Minimum Length_: <code>24</code>
-
-_Maximum Length_: <code>24</code>
-
-_Pattern_: <code>^([a-f0-9]{24})$</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### Port
 
 Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections.
@@ -200,11 +168,7 @@ The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
 
-#### Links
+#### GroupId
 
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
-#### Links
-
-Returns the <code>Links</code> value.
+Unique 24-hexadecimal digit string that identifies your project.
 

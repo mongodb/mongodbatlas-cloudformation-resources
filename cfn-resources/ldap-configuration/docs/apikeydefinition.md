@@ -1,4 +1,4 @@
-# MongoDB::Atlas::ldapconfiguration ApiKeyDefinition
+# MongoDB::Atlas::LDAPConfiguration ApiKeyDefinition
 
 ## Syntax
 

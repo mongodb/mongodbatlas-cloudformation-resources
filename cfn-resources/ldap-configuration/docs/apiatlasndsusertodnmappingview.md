@@ -1,4 +1,4 @@
-# MongoDB::Atlas::ldapconfiguration ApiAtlasNDSUserToDNMappingView
+# MongoDB::Atlas::LDAPConfiguration ApiAtlasNDSUserToDNMappingView
 
 ## Syntax
 

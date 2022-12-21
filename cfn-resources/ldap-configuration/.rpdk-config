@@ -1,6 +1,6 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "MongoDB::Atlas::ldapconfiguration",
+    "typeName": "MongoDB::Atlas::LDAPConfiguration",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",
@@ -10,7 +10,7 @@
         "subparser_name": null,
         "verbose": 0,
         "force": false,
-        "type_name": "MongoDB::Atlas::ldapconfiguration",
+        "type_name": "MongoDB::Atlas::LDAPConfiguration",
         "artifact_type": "r",
         "endpoint_url": null,
         "region": null,

@@ -32,23 +32,23 @@ Both CREATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Cloudformation Examples
+## CloudFormation Examples
 
-Please see the [CFN Template](test/cloud-backup-snapshot.sample-template.yaml) for example resource
+Please see the [CFN Template](/examples/cloud-backup-snapshot/snapshot.json) for example resource
 
 ## Integration Testing w/ AWS
 
-The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
+The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/quickstart-mongodb-atlas/scripts/launch-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the cloud-backup-snapshot.sample-template.yaml to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 
 In one shell session:
 ```
-aws logs tail mongodb-atlas-project-logs --follow
+aws logs tail mongodb-atlas-backup-snapshot-logs --follow
 ```
 
 And then you can create the stack with a helper script it insert the apikeys for you:
@@ -60,4 +60,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/cloud-backup-snapshot/test/cloud-backup-snapshot.sample-template.yaml SampleAccessList1 ParameterKey=ProjectId,ParameterValue=<YOUR_PROJECT_ID> ParameterKey=ClusterName,ParameterValue=<ClusterName> ParameterKey=RetentionInDays,ParameterValue=<RetentionInDays> ParameterKey=Description,ParameterValue=<Description> 
 ```
 
-For more information see: MongoDB Atlas API [Cloud Backups Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.
+For more information see: MongoDB Atlas API [Cloud Backups](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups) Documentation.

@@ -10,7 +10,6 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	localConstants "github.com/mongodb/mongodbatlas-cloudformation-resources/ldap-configuration/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -20,8 +19,15 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
+const (
+	BindPassword = "BindPassword"
+	BindUsername = "BindUsername"
+	Hostname     = "Hostname"
+	Port         = "Port"
+)
+
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID,
-	localConstants.BindUsername, localConstants.BindPassword, localConstants.Hostname, localConstants.Port}
+	BindUsername, BindPassword, Hostname, Port}
 var ReadRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 var UpdateRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
 var DeleteRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}

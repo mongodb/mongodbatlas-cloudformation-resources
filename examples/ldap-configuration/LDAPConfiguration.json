@@ -1,0 +1,65 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "MongoDBAtlasAPIPublicKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Public Access Key"
+    },
+    "MongoDBAtlasAPIPrivateKey": {
+      "Type": "String",
+      "Description" : "MongoDB Atlas Private Access Key"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description" : "MongoDB project Key"
+    },
+    "BindPassword": {
+      "Type": "String",
+      "Description" : "Password used to authenticate the bindUsername."
+    },
+    "BindUsername": {
+      "Type": "String",
+      "Description" : "User DN that Atlas uses to connect to the LDAP server. Write in the format of a full DN"
+    },
+    "Hostname": {
+      "Type": "String",
+      "Description" : "FQDN or IP address of the host that serves the LDAP directory. This host must be visible to the internet or connected to your Atlas cluster with VPC Peering."
+    },
+    "Port": {
+      "Type" : "Number",
+      "Description" : "Port to which the LDAP server listens for client connections. This parameter use a default value of 636.",
+      "Default" : 636
+    },
+    "AuthorizationEnabled": {
+      "AllowedValues": [
+          "true",
+          "false"
+      ],
+      "Default": "false",
+      "Type": "String",
+      "Description" : "(OPTIONAL) LDAP authorization allows database users to be managed at LDAP group level."
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "LDAPConfiguration": {
+      "Type": "MongoDB::Atlas::LDAPConfiguration",
+      "Properties":
+        {
+          "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
+          "BindPassword": { "Ref" : "BindPassword" },
+          "BindUsername": { "Ref" : "BindUsername" },
+          "Hostname": { "Ref" : "Hostname" },
+          "Port": { "Ref" : "Port" },
+          "ApiKeys": {
+            "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
+            "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
+          },
+          "AuthorizationEnabled": { "Ref" : "AuthorizationEnabled" }
+        }
+    }
+  },
+  "Outputs" : {
+  }
+}

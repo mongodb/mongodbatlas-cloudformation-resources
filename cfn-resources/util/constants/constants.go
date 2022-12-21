@@ -71,7 +71,16 @@ const (
 
 	TeamID = "TeamId"
 
+	ErrorCreateCloudBackup = "Error - Create Cloud Backup snapshot for Project(%s) and Cluster(%s)- Details: %+v"
+
 	DeliveryType = "DeliveryType"
 
 	TenantName = "TenantName"
+	ProjID     = "ProjectID"
+	Serverless = "SERVERLESS"
+	Duplicate  = "DUPLICATE"
+
+	AppID       = "AppId"
+	RealmPubKey = "RealmConfig.PublicKey"
+	RealmPvtKey = "RealmConfig.PrivateKey"
 )

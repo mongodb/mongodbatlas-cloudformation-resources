@@ -39,7 +39,6 @@ _CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-project project-ip-access-list database-user private-endpoint third-party-integration }"
 
-resources="${1:-cluster private-endpoint database-user network-container network-peering project-ip-access-list cloud-backup-snapshots cloud-backup-snapshot-restore-jobs }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/4: Building"
@@ -148,7 +147,7 @@ fi
 
 
 
-echo "Step 3/4: Running 'cfn test' on resource type"
+echo "Step 3/3: Running 'cfn test' on resource type"
 SAM_LOG=$(mktemp)
 for resource in ${resources};
 do

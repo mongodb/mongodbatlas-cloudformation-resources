@@ -1,0 +1,16 @@
+{
+  "desiredResourceState":{
+    "Name": "cfn-test-bot-7466239-serverless-instance-1",
+    "ProjectID": "",
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    },
+    "ProviderSettings": {
+      "RegionName": "US_EAST_1",
+      "ProviderName": "SERVERLESS"
+    }
+    },
+    "providerLogGroupName" : "mongodb-atlas-serverless-instance-logs",
+    "previousResourceState": { }
+}

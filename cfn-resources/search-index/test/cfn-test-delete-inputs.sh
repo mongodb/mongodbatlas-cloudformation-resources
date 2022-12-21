@@ -28,7 +28,7 @@ else
 fi
 
 echo "Waiting for cluster to get deleted"
-sleep 1200
+sleep 900
 
 projectId=$(jq -r '.GroupId' ./inputs/inputs_1_create.json)
 

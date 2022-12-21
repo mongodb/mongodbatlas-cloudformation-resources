@@ -19,7 +19,7 @@
           "ExpireAfterDays": "5"
         },
         "DbName": "testdb",
-        "ProjectId": "625454459c4e6108393d650d",
+        "ProjectId": "<redact>",
         "PartitionFields": [
           {
             "FieldName": "firstName",

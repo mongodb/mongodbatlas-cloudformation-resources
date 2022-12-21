@@ -55,22 +55,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 
-	if (currentModel.ExternalGroupName) == nil {
-		err := errors.New("error creating federated settings org role mapping: ExternalGroupName should be set when `Export` is set")
-		_, _ = log.Warnf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-	}
-	if (currentModel.RoleAssignments) == nil || len(currentModel.RoleAssignments) == 0 {
-		err := errors.New("error creating federated settings org role mapping: RoleAssignments should be set when `Export` is set")
-		_, _ = log.Warnf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
 	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody)

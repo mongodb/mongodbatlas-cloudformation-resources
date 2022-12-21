@@ -33,9 +33,9 @@ Both UPDATE & DELETE tests must pass.
 TAGS=logging make
 cfn submit --verbose --set-default
 
-## Cloudformation Examples
+## CloudFormation Examples
 
-Please see the [CFN Template](test/federated-setting-org-role-mapping.sample-template.json) for example resource
+Please see the [CFN Template](test/federated-settings-org-role-mapping.sample-cfn-request.json) for example resource
 
 ## Integration Testing w/ AWS
 
@@ -61,4 +61,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/federated-setting-org-role-mapping/test/federated-setting-org-role-mapping.sample-template.json SampleAccessList1 ParameterKey=FederationSettingsId,ParameterValue=<Federation-Settings-Id> ParameterKey=OrgId,ParameterValue=<Connected-Organization-Id>
 ```
 
-For more information see: MongoDB Atlas API [Federated Setting Org Role Mapping Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication) Documentation.
+For more information see: MongoDB Atlas API Endpoint [Federated Setting Org Role Mapping](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication) Documentation.

@@ -77,7 +77,6 @@ const (
 
 	TenantName = "TenantName"
 
-	Enabled = "Enabled"
 	ProjID     = "ProjectID"
 	Serverless = "SERVERLESS"
 	Duplicate  = "DUPLICATE"

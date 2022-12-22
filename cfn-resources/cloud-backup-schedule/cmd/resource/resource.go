@@ -208,20 +208,22 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 }
 
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
-	if currentModel.Policies != nil {
-		for _, policy := range currentModel.Policies {
-			if policy.PolicyItems != nil {
-				for _, policyItem := range policy.PolicyItems {
-					if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
-						policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
-						err := errors.New("error updating cloud backup schedule: All values from PolicyItem should be set when `PolicyItems` is set")
-						_, _ = logger.Warnf("Update - error: %+v", err)
-						return handler.ProgressEvent{
-							OperationStatus:  handler.Failed,
-							Message:          err.Error(),
-							HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
-					}
-				}
+	if currentModel.Policies == nil {
+		return pe, nil
+	}
+	for _, policy := range currentModel.Policies {
+		if policy.PolicyItems == nil {
+			continue
+		}
+		for _, policyItem := range policy.PolicyItems {
+			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
+				policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
+				err := errors.New("error updating cloud backup schedule: All values from PolicyItem should be set when `PolicyItems` is set")
+				_, _ = logger.Warnf("Update - error: %+v", err)
+				return handler.ProgressEvent{
+					OperationStatus:  handler.Failed,
+					Message:          err.Error(),
+					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
 			}
 		}
 	}

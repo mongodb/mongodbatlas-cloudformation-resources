@@ -10,7 +10,7 @@ require (
 	github.com/openlyinc/pointy v1.2.0
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1
-	go.mongodb.org/atlas v0.19.0
+	go.mongodb.org/atlas v0.20.0
 	go.mongodb.org/realm v0.1.0
 )
 

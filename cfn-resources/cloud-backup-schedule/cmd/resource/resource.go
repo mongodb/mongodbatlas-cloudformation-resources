@@ -183,33 +183,15 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
 			resp.Response), nil
 	}
-	if *currentModel.AutoExportEnabled && currentModel.Export != nil {
-		if (currentModel.Export.FrequencyType) == nil {
-			err := errors.New("error updating cloud backup schedule: FrequencyType should be set when `Export` is set")
-			_, _ = logger.Warnf("Update - error: %+v", err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
+
+	if event, err := validateExportDetails(currentModel); err != nil {
+		return event, nil
 	}
-	if currentModel.Policies != nil {
-		for _, policy := range currentModel.Policies {
-			if policy.PolicyItems != nil {
-				for _, policyItem := range policy.PolicyItems {
-					if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
-						policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
-						err := errors.New("error updating cloud backup schedule: All values from PolicyItem should be set when `PolicyItems` is set")
-						_, _ = logger.Warnf("Update - error: %+v", err)
-						return handler.ProgressEvent{
-							OperationStatus:  handler.Failed,
-							Message:          err.Error(),
-							HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-					}
-				}
-			}
-		}
+
+	if event, err := validatePolicies(currentModel); err != nil {
+		return event, nil
 	}
+
 	cloudBackupScheduleRequest := modelToCLoudBackupSchedule(currentModel)
 	// API call to Create/Update cloud backup schedule
 	clusterBackupScheduled, resp, err := client.CloudProviderSnapshotBackupPolicies.Update(context.Background(), *projectID, *clusterName, cloudBackupScheduleRequest)
@@ -223,6 +205,41 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 		Message:         "PATCH Complete",
 		ResourceModel:   backupPolicyToModel(*currentModel, clusterBackupScheduled),
 	}, nil
+}
+
+func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
+	if currentModel.Policies != nil {
+		for _, policy := range currentModel.Policies {
+			if policy.PolicyItems != nil {
+				for _, policyItem := range policy.PolicyItems {
+					if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
+						policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
+						err := errors.New("error updating cloud backup schedule: All values from PolicyItem should be set when `PolicyItems` is set")
+						_, _ = logger.Warnf("Update - error: %+v", err)
+						return handler.ProgressEvent{
+							OperationStatus:  handler.Failed,
+							Message:          err.Error(),
+							HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+					}
+				}
+			}
+		}
+	}
+	return handler.ProgressEvent{}, nil
+}
+
+func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err error) {
+	if *currentModel.AutoExportEnabled && currentModel.Export != nil {
+		if (currentModel.Export.FrequencyType) == nil {
+			err := errors.New("error updating cloud backup schedule: FrequencyType should be set when `Export` is set")
+			_, _ = logger.Warnf("Update - error: %+v", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
+		}
+	}
+	return handler.ProgressEvent{}, nil
 }
 
 func castNO64(i *int64) *int {

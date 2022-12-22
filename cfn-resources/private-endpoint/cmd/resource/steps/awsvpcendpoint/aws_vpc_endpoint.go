@@ -2,8 +2,6 @@ package awsvpcendpoint
 
 import (
 	"fmt"
-	log2 "log"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -34,16 +32,14 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 
 	subnetIds := make([]AwsPrivateEndpointOutput, len(privateEndpointInputs))
 
-	log2.Print("Entered Point 6")
 	for i, pe := range privateEndpointInputs {
-		log2.Print("Entered Point 7")
 		connection := ec2.CreateVpcEndpointInput{
 			VpcId:           &pe.VpcID,
 			ServiceName:     &endpointServiceName,
 			VpcEndpointType: &vcpType,
 			SubnetIds:       []*string{&pe.SubnetID},
 		}
-		log2.Print("Entered Point 8")
+
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
 		if err != nil {
 			fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
@@ -51,7 +47,6 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 			return nil, &fpe
 		}
 
-		log2.Print("Entered Point 9")
 		subnetIds[i] = AwsPrivateEndpointOutput{
 			VpcID:               pe.VpcID,
 			SubnetID:            pe.SubnetID,
@@ -59,12 +54,10 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 		}
 	}
 
-	log2.Print("Entered Point 10")
 	return subnetIds, nil
 }
 
 func Delete(req handler.Request, interfaceEndpoints []string, region string) *handler.ProgressEvent {
-	log2.Print("Entered Point 13.1")
 	svc := newEc2Client(region, req)
 
 	vpcEndpointIds := make([]*string, 0)
@@ -72,21 +65,19 @@ func Delete(req handler.Request, interfaceEndpoints []string, region string) *ha
 	for i := range interfaceEndpoints {
 		vpcEndpointIds = append(vpcEndpointIds, &interfaceEndpoints[i])
 	}
-	log2.Print("Entered Point 13.2")
+
 	connection := ec2.DeleteVpcEndpointsInput{
 		DryRun:         nil,
 		VpcEndpointIds: vpcEndpointIds,
 	}
-	log2.Print("Entered Point 13.3")
+
 	_, err := svc.DeleteVpcEndpoints(&connection)
-	log2.Print("Entered Point 13.4")
+
 	if err != nil {
 		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
 			cloudformation.HandlerErrorCodeGeneralServiceException)
 		return &fpe
 	}
-
-	log2.Print("Entered Point 13.5")
 
 	return nil
 }

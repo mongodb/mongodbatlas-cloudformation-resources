@@ -1,6 +1,6 @@
 # How to create a MongoDB::Atlas::Cluster 
 
-##Step 1: Activate the cluster resource in cloudformation
+## Step 1: Activate the cluster resource in cloudformation
    Step a: Create Role using [execution-role.json](execution-role.json) in this folder
 
    Step b: Search for Mongodb::Atlas::cluster resource.

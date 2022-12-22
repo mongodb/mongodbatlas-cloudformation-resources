@@ -75,7 +75,7 @@ const (
 
 	DeliveryType = "DeliveryType"
 
-	TenantName = "TenantName"
+	TenantName                = "TenantName"
 	CloudProviderAccessRoleID = "RoleId"
 	LocalSessionType          = "LOCAL_SESSION"
 	RequestSessionType        = "REQUEST_SESSION"
@@ -86,9 +86,9 @@ const (
 		"\"$ATLAS_ASSUMEDROLE_EXTERNAL_ID\"}}}]},\"RoleName\":\"$ROLE_NAME\"}"
 	RoleCreatingMessage = "Aws Role Creating..."
 	RoleDeletingMessage = "Aws Role Deleting..."
-	ProjID     = "ProjectID"
-	Serverless = "SERVERLESS"
-	Duplicate  = "DUPLICATE"
+	ProjID              = "ProjectID"
+	Serverless          = "SERVERLESS"
+	Duplicate           = "DUPLICATE"
 
 	AppID       = "AppId"
 	RealmPubKey = "RealmConfig.PublicKey"

@@ -51,7 +51,7 @@ echo "$keyRegion"
 echo "--------------------------------get aws region ends ----------------------------"\n
 
 echo "--------------------------------create aws bucket document starts ----------------------------"\n
-bucketName="cfntest-demo-test"
+bucketName="cfntest-demo-test-123"
 aws s3 rb s3://${bucketName} --force
 aws s3 mb s3://${bucketName} --output json
 

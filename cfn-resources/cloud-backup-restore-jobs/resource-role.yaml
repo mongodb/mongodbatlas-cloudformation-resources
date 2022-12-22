@@ -21,9 +21,16 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Deny
+              - Effect: Allow
                 Action:
-                - "*"
+                - "secretsmanager:CreateSecret"
+                - "secretsmanager:CreateSecretInput"
+                - "secretsmanager:DescribeSecret"
+                - "secretsmanager:GetSecretValue"
+                - "secretsmanager:PutSecretValue"
+                - "secretsmanager:UpdateSecretVersionStage"
+                - "ec2:CreateVpcEndpoint"
+                - "ec2:DeleteVpcEndpoints"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

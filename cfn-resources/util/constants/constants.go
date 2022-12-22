@@ -17,6 +17,8 @@ const (
 	SubnetID            = "SubnetId"
 	GroupID             = "GroupId"
 	Region              = "Region"
+	HostName            = "HostName"
+	Port                = "Port"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -52,6 +54,9 @@ const (
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
+	EndpointID = "EndpointId"
+	DataLake   = "DATA_LAKE"
+
 	IntegrationType = "Type"
 
 	IndexID        = "IndexId"
@@ -61,9 +66,28 @@ const (
 	UserID  = "UserName"
 	Success = 200
 
+	Criteria     = "Criteria"
+	ArchiveID    = "ArchiveId"
+	CriteriaType = "Criteria.Type"
+
+	EventTypeName = "EventTypeName"
+	PagerDuty     = "PAGER_DUTY"
+	OpsGenie      = "OPS_GENIE"
+	VictorOps     = "VICTOR_OPS"
+
 	TeamID = "TeamId"
+
+	ErrorCreateCloudBackup = "Error - Create Cloud Backup snapshot for Project(%s) and Cluster(%s)- Details: %+v"
 
 	DeliveryType = "DeliveryType"
 
 	TenantName = "TenantName"
+
+	ProjID     = "ProjectID"
+	Serverless = "SERVERLESS"
+	Duplicate  = "DUPLICATE"
+
+	AppID       = "AppId"
+	RealmPubKey = "RealmConfig.PublicKey"
+	RealmPvtKey = "RealmConfig.PrivateKey"
 )

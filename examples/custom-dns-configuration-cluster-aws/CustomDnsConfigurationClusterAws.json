@@ -1,0 +1,30 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a custom DNS Configuration Cluster AWS on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "PublicKey": {
+      "Type": "String"
+    },
+    "PrivateKey": {
+      "Type": "String"
+    },
+    "ProjectId": {
+      "Type": "String",
+	  "Default":""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "CustomDnsConfigurationClusterAws": {
+      "Type": "MongoDB::Atlas::CustomDnsConfigurationClusterAws",
+      "Properties":  {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "PublicKey" },
+          "PrivateKey": { "Ref" : "PrivateKey" }
+        }
+      }
+    }
+  },
+  "Outputs" : {}
+}

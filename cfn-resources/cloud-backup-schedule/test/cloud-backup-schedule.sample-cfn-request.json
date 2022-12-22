@@ -1,0 +1,53 @@
+{
+  "desiredResourceState": {
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    },
+    "ProjectId": "",
+    "ClusterName": "",
+    "AutoExportEnabled": "false",
+    "Export": {
+    },
+    "CopySettings": [
+      {
+        "CloudProvider": "",
+        "Frequencies": [
+          ""
+        ],
+        "RegionName": "",
+        "ReplicationSpecId": "",
+        "ShouldCopyOplogs": "false"
+      },
+      {
+        "CloudProvider": "",
+        "Frequencies": [
+          ""
+        ],
+        "RegionName": "",
+        "ReplicationSpecId": "",
+        "ShouldCopyOplogs": "false"
+      }
+    ],
+    "Policies": [
+      {
+        "ID": "",
+        "PolicyItems": [
+          {
+            "FrequencyInterval": "1",
+            "FrequencyType": "daily",
+            "RetentionUnit": "days",
+            "RetentionValue": "1"
+          }
+        ]
+      }
+    ],
+    "ReferenceHourOfDay": "0",
+    "ReferenceMinuteOfHour": "0",
+    "RestoreWindowDays": "1",
+    "UpdateSnapshots": "true",
+    "UseOrgAndGroupNamesInExportPrefix": "true"
+  },
+  "providerLogGroupName" : "mongodb-atlas-cloud-backup-schedule-logs",
+  "previousResourceState": { }
+}

@@ -66,6 +66,10 @@ const (
 	UserID  = "UserName"
 	Success = 200
 
+	Criteria     = "Criteria"
+	ArchiveID    = "ArchiveId"
+	CriteriaType = "Criteria.Type"
+
 	EventTypeName = "EventTypeName"
 	PagerDuty     = "PAGER_DUTY"
 	OpsGenie      = "OPS_GENIE"

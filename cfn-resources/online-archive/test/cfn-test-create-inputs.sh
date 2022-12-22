@@ -37,7 +37,7 @@ export MCLI_PROJECT_ID=$projectId
 ClusterName="${projectName}"
 
 clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-sleep 1200
+sleep 900
 echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 
 if [ -z "$clusterId" ]; then

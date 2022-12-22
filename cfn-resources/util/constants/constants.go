@@ -17,6 +17,8 @@ const (
 	SubnetID            = "SubnetId"
 	GroupID             = "GroupId"
 	Region              = "Region"
+	HostName            = "HostName"
+	Port                = "Port"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"

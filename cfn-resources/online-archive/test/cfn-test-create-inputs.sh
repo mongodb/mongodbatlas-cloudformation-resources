@@ -10,11 +10,6 @@ set -o pipefail
 
 set -x
 
-function usage {
-    echo "usage:$1 <project/cluster_name> $2 collName $3 dbName"
-    echo "Creates a new project and cluster by that name for the test"
-}
-
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 

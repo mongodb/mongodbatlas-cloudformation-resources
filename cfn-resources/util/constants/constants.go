@@ -17,6 +17,8 @@ const (
 	SubnetID            = "SubnetId"
 	GroupID             = "GroupId"
 	Region              = "Region"
+	HostName            = "HostName"
+	Port                = "Port"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -63,6 +65,10 @@ const (
 
 	UserID  = "UserName"
 	Success = 200
+
+	Criteria     = "Criteria"
+	ArchiveID    = "ArchiveId"
+	CriteriaType = "Criteria.Type"
 
 	EventTypeName = "EventTypeName"
 	PagerDuty     = "PAGER_DUTY"

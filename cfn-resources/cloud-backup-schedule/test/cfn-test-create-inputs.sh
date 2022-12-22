@@ -20,34 +20,27 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
 projectName="${1}"
-projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+ClusterName=$projectName
+echo "Came inside create inputs to test"
+
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+    echo -e "Cant find project \"${projectName}\"\n"
+fi
+export MCLI_PROJECT_ID=$projectId
 
-    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
-fi
-echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-ClusterName="${projectName}"
-clusterId=$(mongocli atlas clusters list --output json  | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$clusterId" ]; then
-    clusterId=$(mongocli atlas cluster create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-    sleep 20m
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-else
-    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-fi
-SnapshotId=$(mongocli atlas backup snapshots list cfntest --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
-if [ -z "$SnapshotId" ]; then
-    SnapshotId=$(mongocli atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
-    sleep 5m
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
-else
-    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
-fi
+clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+sleep 900
+echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+
+SnapshotId=$(atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
+sleep 300
+echo -e "Created snapshot \"${SnapshotId}\""
+
 rm -rf inputs
 mkdir inputs
 name="${1}"

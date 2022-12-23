@@ -1,4 +1,4 @@
-# MongoDB::Atlas::onlinearchives PartitionFieldView
+# MongoDB::Atlas::OnlineArchive PartitionFieldView
 
 ## Syntax
 

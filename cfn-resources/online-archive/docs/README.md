@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::onlinearchives",
+    "Type" : "MongoDB::Atlas::OnlineArchive",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#collname" title="CollName">CollName</a>" : <i>String</i>,
@@ -29,7 +29,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::onlinearchives
+Type: MongoDB::Atlas::OnlineArchive
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#collname" title="CollName">CollName</a>: <i>String</i>

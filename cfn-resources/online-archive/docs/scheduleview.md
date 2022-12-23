@@ -1,4 +1,4 @@
-# MongoDB::Atlas::onlinearchives ScheduleView
+# MongoDB::Atlas::OnlineArchive ScheduleView
 
 ## Syntax
 

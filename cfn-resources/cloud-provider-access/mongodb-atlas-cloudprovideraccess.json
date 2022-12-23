@@ -128,7 +128,6 @@
     "/properties/CreatedDate",
     "/properties/FeatureUsages"
   ],
-
   "typeName": "MongoDB::Atlas::CloudProviderAccess",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

@@ -10,9 +10,6 @@ set -o pipefail
 
 set -x
 
-if [ "$#" -ne 2 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
-
 rm -rf inputs
 mkdir inputs
 
@@ -32,7 +29,7 @@ export MCLI_PROJECT_ID=$projectId
 ClusterName="${projectName}"
 
 clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-sleep 900
+sleep 600
 echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 
 if [ -z "$clusterId" ]; then
@@ -52,14 +49,23 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg cluster_name "$clusterName" \
    --arg coll_name "$collName" \
    --arg db_name "$dbName" \
+   --arg project_id "$projectId" \
    '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey
    | .ClusterName?|=$cluster_name
+   | .ProjectId?|=$project_id
    | .DbName?|=$db_name | .CollName?|=$coll_name' \
    "$(dirname "$0")/inputs_1_create.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
+  --arg cluster_name "$clusterName" \
+  --arg coll_name "$collName" \
+  --arg db_name "$dbName" \
+  --arg project_id "$projectId" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey
+    | .ClusterName?|=$cluster_name
+    | .ProjectId?|=$project_id
+    | .DbName?|=$db_name | .CollName?|=$coll_name' \
    "$(dirname "$0")/inputs_1_update.json" > "inputs/inputs_1_update.json"
 
 #SET INVALID NAME

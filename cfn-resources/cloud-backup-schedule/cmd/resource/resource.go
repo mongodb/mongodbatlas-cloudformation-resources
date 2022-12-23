@@ -196,7 +196,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 	// API call to Create/Update cloud backup schedule
 	clusterBackupScheduled, resp, err := client.CloudProviderSnapshotBackupPolicies.Update(context.Background(), *projectID, *clusterName, cloudBackupScheduleRequest)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error updating cloud backup schedule : %s", err.Error()),
 			resp.Response), nil
 	}
 	// Response

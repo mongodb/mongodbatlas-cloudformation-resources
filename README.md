@@ -50,8 +50,8 @@ Step 3) Follow the Github docs on how to [create a Secret](https://docs.github.c
 # Requirements
 
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli) 
-- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) 1.0
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) 1.14 
+- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) > v1.0
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) > v1.14 
 
 
 # Using the Atlas CFN Resources 

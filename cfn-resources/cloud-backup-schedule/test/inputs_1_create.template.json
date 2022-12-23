@@ -8,26 +8,6 @@
   "AutoExportEnabled": "false",
   "Export": {
   },
-  "CopySettings": [
-    {
-      "CloudProvider": "AWS",
-      "Frequencies": [
-        "HOURLY"
-      ],
-      "RegionName": "AP_NORTHEAST_2",
-      "ReplicationSpecId": "639db3eb42882a4bb573db75",
-      "ShouldCopyOplogs": "false"
-    },
-    {
-      "CloudProvider": "AWS",
-      "Frequencies": [
-        "DAILY"
-      ],
-      "RegionName": "US_EAST_2",
-      "ReplicationSpecId": "639db3eb42882a4bb573db75",
-      "ShouldCopyOplogs": "false"
-    }
-  ],
   "Policies": [
     {
       "ID": "639db611e0fc2c5efcc3c5fa",

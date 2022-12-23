@@ -60,4 +60,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
 ```
 
 ## For More Information
-See the MongoDB Atlas API [LDAP-Configuration Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/LDAP-Configuration) Documentation.
+See the MongoDB Atlas API Endpoint [LDAP-Configuration](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/LDAP-Configuration) Documentation.

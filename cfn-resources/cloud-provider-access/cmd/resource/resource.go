@@ -6,6 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
+	"math/big"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -14,11 +20,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	"math"
-	"math/big"
-	"regexp"
-	"strconv"
-	"strings"
 
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
@@ -617,8 +618,4 @@ func generateRandomRoleName() string {
 	_, _ = log.Warnf("the expected rolename is   %+v", roleName)
 
 	return roleName
-}
-
-func test() {
-
 }

@@ -10,6 +10,12 @@ NOTE: the process for disabling current LDAP configuration is bugged in the atla
 
 Please consult the [Resource Docs](docs/README.md)
 
+## Example
+This file can be used as a CloudFormation template to create a new LDAP Configuration resource
+
+[LDAPConfiguration.json](../../examples/ldap-configuration/LDAPConfiguration.json)
+
+
 ## Local Testing
 
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
@@ -37,7 +43,7 @@ cfn submit --verbose --set-default
 
 ## Usage
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh)  script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other neccessary parameters.
 

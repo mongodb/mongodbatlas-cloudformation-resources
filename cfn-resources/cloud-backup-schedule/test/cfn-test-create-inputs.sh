@@ -23,7 +23,7 @@ mkdir inputs
 
 projectName="${1}"
 ClusterName=$projectName
-echo "Came inside create inputs to test"
+echo "Creating required inputs"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -37,12 +37,6 @@ clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --back
 sleep 900
 echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 
-SnapshotId=$(atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
-sleep 300
-echo -e "Created snapshot \"${SnapshotId}\""
-
-rm -rf inputs
-mkdir inputs
 name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
@@ -50,6 +44,13 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg clusterName "$ClusterName" \
    '.ClusterName?|=$clusterName |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+  --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+  --arg group_id "$projectId" \
+  --arg clusterName "$ClusterName" \
+  '.ClusterName?|=$clusterName |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+  "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 name="${name}- more B@d chars !@(!(@====*** ;;::"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \

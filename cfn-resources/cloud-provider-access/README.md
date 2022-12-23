@@ -62,4 +62,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
 ```
 
 ## For More Information
-See the MongoDB Atlas API [Cloud-Provider-Access](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Provider-Access) Documentation.
+See the MongoDB Atlas API Endpoint [Cloud-Provider-Access](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Provider-Access) Documentation.

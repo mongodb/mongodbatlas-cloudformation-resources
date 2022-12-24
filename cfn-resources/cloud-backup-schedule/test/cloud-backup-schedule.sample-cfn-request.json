@@ -1,43 +1,22 @@
 {
   "desiredResourceState": {
     "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
+      "PublicKey": "xfqavjxw",
+      "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
     },
-    "ProjectId": "",
-    "ClusterName": "",
-    "AutoExportEnabled": "false",
-    "Export": {
-    },
-    "CopySettings": [
-      {
-        "CloudProvider": "",
-        "Frequencies": [
-          ""
-        ],
-        "RegionName": "",
-        "ReplicationSpecId": "",
-        "ShouldCopyOplogs": "false"
-      },
-      {
-        "CloudProvider": "",
-        "Frequencies": [
-          ""
-        ],
-        "RegionName": "",
-        "ReplicationSpecId": "",
-        "ShouldCopyOplogs": "false"
-      }
-    ],
+    "ProjectId": "63a64c362b78f57e08bb0001",
+    "ClusterName": "cfn-test-bot-280649-cloud-backup-schedule",
+    "AutoExportEnabled": "False",
+    "Export": {},
     "Policies": [
       {
-        "ID": "",
+        "ID": "63a64e5ce0eae22c795be874",
         "PolicyItems": [
           {
-            "FrequencyInterval": "1",
-            "FrequencyType": "daily",
+            "FrequencyInterval": 6,
+            "FrequencyType": "hourly",
             "RetentionUnit": "days",
-            "RetentionValue": "1"
+            "RetentionValue": 7
           }
         ]
       }
@@ -45,7 +24,6 @@
     "ReferenceHourOfDay": "0",
     "ReferenceMinuteOfHour": "0",
     "RestoreWindowDays": "1",
-    "UpdateSnapshots": "true",
     "UseOrgAndGroupNamesInExportPrefix": "true"
   },
   "providerLogGroupName" : "mongodb-atlas-cloud-backup-schedule-logs",

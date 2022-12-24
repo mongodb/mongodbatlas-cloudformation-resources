@@ -22,7 +22,7 @@ rm -rf inputs
 mkdir inputs
 
 projectName="${1}"
-ClusterName=$projectName
+clusterName=$projectName
 echo "Creating required inputs"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -32,10 +32,25 @@ if [ -z "$projectId" ]; then
 fi
 export MCLI_PROJECT_ID=$projectId
 
+clusterId=$(atlas clusters list --projectId "${projectId}"  --output json | jq --arg NAME "${clusterName}" -r '.results[]? | select(.name==$NAME) | .id')
+if [ -z "$clusterId" ]; then
+  echo "creating cluster.."
+  clusterId=$(atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+fi
 
-clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-sleep 900
-echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+echo "status: ${status}"
+
+while [[ "${status}" != "IDLE" ]]; do
+        sleep 30
+        status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}"  --output=json | jq -r '.stateName')
+        if [ -z "$status" ]; then
+          status="timeout"
+        fi
+        echo "status: ${status}"
+done
+
+echo -e "Created Cluster \"${clusterName}\" with id: ${clusterId}\n"
 
 policyId=$(atlas backups schedule describe "${clusterName}" --projectId "${projectId}" | jq -r '.policies[0].id')
 echo  "policyId: ${policyId}"

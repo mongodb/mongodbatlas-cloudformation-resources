@@ -10,13 +10,13 @@
   },
   "Policies": [
     {
-      "ID": "639db611e0fc2c5efcc3c5fa",
+      "ID": "",
       "PolicyItems": [
         {
-          "FrequencyInterval": "1",
-          "FrequencyType": "daily",
+          "FrequencyInterval": "6",
+          "FrequencyType": "hourly",
           "RetentionUnit": "days",
-          "RetentionValue": "1"
+          "RetentionValue": "7"
         }
       ]
     }
@@ -24,6 +24,5 @@
   "ReferenceHourOfDay": "0",
   "ReferenceMinuteOfHour": "0",
   "RestoreWindowDays": "1",
-  "UpdateSnapshots": "true",
   "UseOrgAndGroupNamesInExportPrefix": "true"
 }

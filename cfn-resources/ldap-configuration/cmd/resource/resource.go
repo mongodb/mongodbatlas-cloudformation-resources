@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	log2 "log"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -104,8 +103,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	// Validation
-	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -143,7 +141,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
 	// Validation
-	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel);  modelValidation != nil {
+	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -191,8 +189,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	// Validation
-	modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -235,8 +232,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	// Validation
-	modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -260,8 +256,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
+/*this functionality is used to disable the Authentication and Authorization, the client is currently failing when setting the properties as false*/
 func executeManualDelete(currentModel *Model) handler.ProgressEvent {
-	log2.Printf("Executing manual save")
 	URL := fmt.Sprintf("https://cloud.mongodb.com/api/atlas/v1.0/groups/%s/userSecurity", *currentModel.GroupId)
 
 	// create a new digest authentication request

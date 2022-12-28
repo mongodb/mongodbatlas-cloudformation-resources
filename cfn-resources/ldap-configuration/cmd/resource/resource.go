@@ -143,8 +143,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
 	// Validation
-	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel);  modelValidation != nil {
 		return *modelValidation, nil
 	}
 

@@ -37,10 +37,10 @@ do
   outputFile=${inputFile//$WORDTOREMOVE/};
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	   --arg org "$ATLAS_ORG_ID" \
+       --arg org "$ATLAS_ORG_ID" \
      --arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
      --arg group_id "$projectId" \
-     '.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
+     '.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .RoleAssignments[0].GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
      "$inputFile" > "../inputs/$outputFile"
 done
 cd ..

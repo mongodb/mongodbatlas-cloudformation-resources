@@ -21,16 +21,17 @@ region="us-east-1"
 
 #project_id
 
-ClusterName=$CFN_TEST_NEW_PROJECT_NAME
-echo "Came inside create inputs to test"
- if [ -z "${ProjectName}" ]; then
-          echo "Test" "$ClusterName" "$ProjectName"
-          echo "Error is testing cloud-provider-snapshots, we need ClusterName and SnapshotId provided in OtherParams during Automation. Kindly provide these values.
-          Example: 'ClusterName'='cluster-123','ProjectName'='Project-123'"
-          exit 1
- fi
+#ClusterName=$CFN_TEST_NEW_PROJECT_NAME
+#echo "Came inside create inputs to test"
+# if [ -z "${ProjectName}" ]; then
+#          echo "Test" "$ClusterName" "$ProjectName"
+#          echo "Error is testing cloud-provider-snapshots, we need ClusterName and SnapshotId provided in OtherParams during Automation. Kindly provide these values.
+#          Example: 'ClusterName'='cluster-123','ProjectName'='Project-123'"
+#          exit 1
+# fi
+#
+#echo "Project Name  $ProjectName"
 
-echo "Project Name  $ProjectName"
 projectId=$(atlas projects list --output json | jq --arg NAME "${ProjectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
     projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')

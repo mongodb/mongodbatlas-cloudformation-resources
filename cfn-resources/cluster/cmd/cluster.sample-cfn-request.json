@@ -1,10 +1,10 @@
 {
-    "desiredResourceState" : {
-      "ProjectId": "",
-      "Name": "cfn-test-bot-cluster",
+      "ProjectId": "63addd5696b6c7351e090e05",
+      "Name": "cfn-test-bot-34bb11-cluster",
+      "Id": "mongodb+ceore9heuokc76ik2im0+Cluster+cfn-test-bot-34bb11-cluster+Project+63addd5696b6c7351e090e05",
       "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
+        "PublicKey": "xfqavjxw",
+        "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
       },
       "AdvancedSettings": {
         "DefaultReadConcern": "available",
@@ -39,7 +39,4 @@
           ]
         }
       ]
-    },
-  "providerLogGroupName" : "mongodb-atlas-cluster-logs",
-    "previousResourceState": { }
 }

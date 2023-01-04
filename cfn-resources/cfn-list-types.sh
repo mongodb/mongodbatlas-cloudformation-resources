@@ -18,6 +18,7 @@ do
 #      lastUpdated=$(type_info | jq -r '.LastUpdated')
 #      if [ "${lastUpdated}" -le '2022-12-02' ];then
          echo "${resource} found in region : ${region}"
+         echo "${type_info}"
 #      fi
     fi
     cd ../

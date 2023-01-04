@@ -1,0 +1,131 @@
+{
+  "typeName": "MongoDB::Atlas::LDAPConfiguration",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "description": "Returns, edits, verifies, and removes LDAP configurations.",
+  "additionalProperties": false,
+  "definitions": {
+    "ApiAtlasNDSUserToDNMappingView": {
+      "type": "object",
+      "properties": {
+        "LdapQuery": {
+          "type": "string",
+          "description": "Lightweight Directory Access Protocol (LDAP) query template that inserts the LDAP name that the regular expression matches into an LDAP query Uniform Resource Identifier (URI). The formatting for the query must conform to [RFC 4515](https://datatracker.ietf.org/doc/html/rfc4515) and [RFC 4516](https://datatracker.ietf.org/doc/html/rfc4516)."
+        },
+        "Match": {
+          "type": "string",
+          "description": "Regular expression that MongoDB Cloud uses to match against the provided Lightweight Directory Access Protocol (LDAP) username. Each parenthesis-enclosed section represents a regular expression capture group that the substitution or `ldapQuery` template uses."
+        },
+        "Substitution": {
+          "type": "string",
+          "description": "Lightweight Directory Access Protocol (LDAP) Distinguished Name (DN) template that converts the LDAP username that matches regular expression in the *match* parameter into an LDAP Distinguished Name (DN)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "BindUsername": {
+      "type": "string",
+      "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253."
+    },
+    "Status": {
+      "type": "string",
+      "description": "The current status of the LDAP over TLS/SSL configuration."
+    },
+    "Hostname": {
+      "type": "string",
+      "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster."
+    },
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "AuthenticationEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether users can authenticate using an Lightweight Directory Access Protocol (LDAP) host."
+    },
+    "AuthorizationEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether users can authorize access to MongoDB Cloud resources using an Lightweight Directory Access Protocol (LDAP) host."
+    },
+    "CaCertificate": {
+      "type": "string",
+      "description": "Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass an empty string: `\"caCertificate\": \"\"`"
+    },
+    "AuthzQueryTemplate": {
+      "type": "string",
+      "description": "Lightweight Directory Access Protocol (LDAP) query template that MongoDB Cloud runs to obtain the LDAP groups associated with the authenticated user. MongoDB Cloud uses this parameter only for user authorization. Use the `{USER}` placeholder in the Uniform Resource Locator (URL) to substitute the authenticated username. The query relates to the host specified with the hostname. Format this query according to [RFC 4515](https://tools.ietf.org/search/rfc4515) and [RFC 4516](https://datatracker.ietf.org/doc/html/rfc4516)."
+    },
+    "BindPassword": {
+      "type": "string",
+      "description": "Password that MongoDB Cloud uses to authenticate the **bindUsername**."
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project."
+    },
+    "Port": {
+      "type": "integer",
+      "description": "Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
+    },
+    "UserToDNMapping": {
+      "type": "array",
+      "description": "User-to-Distinguished Name (DN) map that MongoDB Cloud uses to transform a Lightweight Directory Access Protocol (LDAP) username into an LDAP DN.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasNDSUserToDNMappingView",
+        "type": "object"
+      }
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId"],
+  "required": [
+    "GroupId",
+    "BindUsername",
+    "BindPassword",
+    "Hostname",
+    "Port",
+    "ApiKeys"
+  ],
+  "readOnlyProperties": [
+    "/properties/GroupId"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  }
+}

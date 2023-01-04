@@ -61,7 +61,7 @@ echo "roleName: ${roleName} , policyName: ${policyName}"
 echo "--------------------------------create key and key policy document starts ----------------------------"\n
 
 echo "--------------------------------create aws bucket document starts ----------------------------"\n
-bucketName="cfntest-demo-test-${keyRegion}"
+bucketName="cfntest-demo-test123-${keyRegion}"
 aws s3 rb s3://${bucketName} --force
 aws s3 mb s3://${bucketName} --output json
 

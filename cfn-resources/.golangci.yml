@@ -143,6 +143,7 @@ issues:
 
 run:
   tests: true
+  timeout: 5m
   build-tags:
     - integration
   skip-dirs:

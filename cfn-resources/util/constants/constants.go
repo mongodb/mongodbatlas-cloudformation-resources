@@ -17,6 +17,8 @@ const (
 	SubnetID            = "SubnetId"
 	GroupID             = "GroupId"
 	Region              = "Region"
+	HostName            = "HostName"
+	Port                = "Port"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -64,6 +66,10 @@ const (
 	UserID  = "UserName"
 	Success = 200
 
+	Criteria     = "Criteria"
+	ArchiveID    = "ArchiveId"
+	CriteriaType = "Criteria.Type"
+
 	EventTypeName = "EventTypeName"
 	PagerDuty     = "PAGER_DUTY"
 	OpsGenie      = "OPS_GENIE"
@@ -75,10 +81,20 @@ const (
 
 	DeliveryType = "DeliveryType"
 
-	TenantName = "TenantName"
-	ProjID     = "ProjectID"
-	Serverless = "SERVERLESS"
-	Duplicate  = "DUPLICATE"
+	TenantName                = "TenantName"
+	CloudProviderAccessRoleID = "RoleId"
+	LocalSessionType          = "LOCAL_SESSION"
+	RequestSessionType        = "REQUEST_SESSION"
+	TypeName                  = "AWS::IAM::Role"
+	AwsRolePrefix             = "mongodbatlas-role-"
+	RolePolicyJSON            = "{\"AssumeRolePolicyDocument\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{" +
+		"\"AWS\":\"$ATLAS_AWS_ACCOUNT_ARN\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{\"StringEquals\":{\"sts:ExternalId\":" +
+		"\"$ATLAS_ASSUMEDROLE_EXTERNAL_ID\"}}}]},\"RoleName\":\"$ROLE_NAME\"}"
+	RoleCreatingMessage = "Aws Role Creating..."
+	RoleDeletingMessage = "Aws Role Deleting..."
+	ProjID              = "ProjectID"
+	Serverless          = "SERVERLESS"
+	Duplicate           = "DUPLICATE"
 
 	AppID       = "AppId"
 	RealmPubKey = "RealmConfig.PublicKey"

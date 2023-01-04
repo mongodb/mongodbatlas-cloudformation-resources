@@ -1,13 +1,17 @@
 {
     "desiredResourceState" : {
         "GroupId" : "$ATLAS_ORG_ID",
-        "VpcId" : "",
-        "SubnetId": "",
+        "Region" : "",
         "ApiKeys" : {
             "PublicKey" : "$ATLAS_PUBLIC_KEY",
             "PrivateKey" : "$ATLAS_PRIVATE_KEY"
         },
-        "Region" : "us-east-1"
+        "PrivateEndpoints": [
+            {
+                "VpcId": "",
+                "SubnetId": ""
+            }
+        ]
     },
     "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
     "previousResourceState": { }

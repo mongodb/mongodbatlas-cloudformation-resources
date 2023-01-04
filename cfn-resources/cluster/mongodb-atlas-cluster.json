@@ -390,14 +390,14 @@
     "additionalProperties": false,
     "required": [
         "Name",
-        "ProjectId"
+        "ProjectId",
+        "ApiKeys"
     ],
     "readOnlyProperties": [
-        "/properties/ConnectionStrings",
-        "/properties/ConnectionStrings.Standard",
-        "/properties/ConnectionStrings.StandardSrv",
-        "/properties/ConnectionStrings.Private",
-        "/properties/ConnectionStrings.PrivateSrv",
+        "/properties/ConnectionStrings/Standard",
+        "/properties/ConnectionStrings/StandardSrv",
+        "/properties/ConnectionStrings/Private",
+        "/properties/ConnectionStrings/PrivateSrv",
         "/properties/StateName",
         "/properties/MongoDBVersion",
         "/properties/CreatedDate",

@@ -1,9 +1,9 @@
 # cfn-resources
 
-## MongoDB Atlas AWS CloudFormation Custom Resource Type
+## MongoDB Atlas AWS CloudFormation Resources
 
 This folder contains the source code for each of the AWS CloudFormation 
-MongoDB Atlas Resource Types.
+MongoDB Atlas Resources. Note these are also hosted on AWS CloudFormation Public Registry under Third Party Extensions. 
 
 ### Resource Status Table
 

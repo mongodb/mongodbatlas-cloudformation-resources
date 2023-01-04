@@ -1,19 +1,21 @@
-# MongoDB Atlas AWS CloudFormation Resources & Quickstart
+# MongoDB Atlas AWS CloudFormation Resources & AWS Partner Solution Deployments 
 
 Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
-The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Quick Start directly on the AWS Console.
+Partner Solutions (formally AWS Quick Starts) are automated reference deployments built by Amazon Web Services (AWS) solutions architects and AWS Partners. Partner Solutions help you deploy popular technologies to AWS according to AWS best practices. The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Partner Solution Deployment directly from the AWS Management Console.
+
+# Prerequisites
+
+To use MongoDB Atlas public extensions (AWS Third Party), you have to activate the Public extension from your AWS console.
+To activate Public extension, we have to create an execution role and pass the ARN of the role as an input. Use [this template](examples/execution-role.yaml) to create execution role.
 
 # Support, Bugs, Feature Requests
 
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
 
-CURRENT BETA INFO: Support questions submitted under the Issues section of this repo will be handled on a "best effort" basis.
-Bugs should be filed under the Issues section of this repo.
+Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. In addition, support questions submitted under the Issues section of this repo are also being monitored. Bugs should be filed under the Issues section of this repo.
 
-POST GA: Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. 
-
-# Securing your Quickstart
+# Securing your Deployment 
 
 This repository contains utilities which use both the AWS and MongoDB Atlas APIs to progamatically create, destory, or otherwise manage resources in the AWS and MongoDB clouds. This can have costs or other impact so please use these tools with diligence and follow best practices. 
 
@@ -52,7 +54,7 @@ Step 3) Follow the Github docs on how to [create a Secret](https://docs.github.c
 
 # Using the Atlas CFN Resources 
 
-The best way to use the resources is with the official [MongoDB Atlas on AWS Quick Start](https://github.com/aws-quickstart/quickstart-mongodb-atlas) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
+The best way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://github.com/aws-quickstart/quickstart-mongodb-atlas) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
 
 There are two main parts of this project:
 
@@ -81,15 +83,10 @@ If you are having difficulty with IAM access, suggest try registering first with
 
 The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE NAME]". 
 
-# Prerequisite to use MongoDB public extension
-To use MongoDB public extension(AWS third party), you have to activate the Public extension from your AWS console.
-To activate Public extension, we have to create an execution role and pass the ARN of the role as an input. Use [this template](examples/execution-role.yaml) to create execution role.
-
-
 ## Logging 
 Logging for AWS CloudFormation Public extensions is currently disabled. AWS is evaluating if logging is useful for consumers of third party extensions, if this is something you need or would like to request please open a ticket directly with AWS Support. 
 
-# Testing the Provider
+## Testing the Provider
 
 Please see README for each resource for details on unit and integrated AWS testing.
 

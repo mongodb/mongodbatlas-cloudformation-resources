@@ -6,8 +6,7 @@ Partner Solutions (formally AWS Quick Starts) are automated reference deployment
 
 # Prerequisites
 
-To use MongoDB Atlas public extensions (AWS Third Party), you have to activate the Public extension from your AWS console.
-To activate Public extension, we have to create an execution role and pass the ARN of the role as an input. Use [this template](examples/execution-role.yaml) to create execution role.
+To use CloudFormation MongoDB Atlas public extensions (AWS Third Party), you have to activate the Public extension from your AWS console. You have to do this in each AWS Account and in each AWS Region. To activate Public extension, we have to create an execution role and pass the ARN of the role as an input. Use [this template](examples/execution-role.yaml) to create execution role.
 
 # Support, Bugs, Feature Requests
 

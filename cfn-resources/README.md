@@ -7,21 +7,35 @@ MongoDB Atlas Resource Types.
 
 ### Resource Status Table
 
-| Resource                             | Status                                                 | Examples                                                                                   |
-|--------------------------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| project                              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project/test](./project/test)                                                           |
-| project-ip-access-list               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project-ip-access-list/test](./project-ip-access-list/test)                             |
-| cluster                              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cluster/test](./cluster/test)                                                           |
-| database-user                        | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./database-user/test](./database-user/test)                                               |
-| network-peering                      | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./network-peering/test](./network-peering/test)                                           |
-| encryption-at-rest                   | ![Build](https://img.shields.io/badge/Unstable-orange) | [./encryption-at-rest/test](./encryption-at-rest/test)                                     |
-| cloud-provider-snapshots             | ![Build](https://img.shields.io/badge/Unstable-orange) | [../cloud-provider-snapshots/test](./cloud-provider-snapshots/test)                        |
-| cloud-provider-snapshot-restore-jobs | ![Build](https://img.shields.io/badge/Unstable-orange) | [./cloud-provider-snapshot-restore-jobs/test](./cloud-provider-snapshot-restore-jobs/test) | 
-| network-container                    | ![Build](https://img.shields.io/badge/Beta-Admin-grey) | [./network-container/test](./network-container/test)                                       |
-| private-endpoint                     | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint/test](./private-endpoint/test)                                         |
-| custom-db-role                       | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./custom-db-role/test](./custom-db-role/test)                                             |
-| maintenance-window                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./maintenance-window/test](./maintenance-window/test)                                     |
-| auditing                             | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./auditing/test](./auditing/test)                                                         |
+| Resource                            | Status                                                 | Examples                                                                                 |
+|-------------------------------------|--------------------------------------------------------|------------------------------------------------------------------------------------------|
+| auditing                            | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./auditing/test](./auditing/test)                                                       |
+| cloud-backup-restore-jobs           | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cloud-backup-restore-jobs/test](./cloud-backup-restore-jobs/test)                     |
+| cloud-backup-schedule               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cloud-backup-schedule/test](./cloud-backup-schedule/test)                             |
+| cloud-backup-snapshot               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cloud-backup-snapshot/test](./cloud-backup-snapshot/test)                             |
+| cloud-backup-snapshot-export-bucket | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cloud-backup-snapshot-export-bucket/test](./cloud-backup-snapshot-export-bucket/test) |
+| cloud-provider-access               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cloud-provider-access/test](./cloud-provider-access/test)                             |
+| cluster                             | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./cluster/test](./cluster/test)                                                         |
+| custom-db-role                      | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./custom-db-role/test](./custom-db-role/test)                                           |
+| database-user                       | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./database-user/test](./database-user/test)                                             |
+| datalakes                           | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./datalakes/test](./datalakes/test)                                                     |
+| encryption-at-rest                  | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./encryption-at-rest/test](./encryption-at-rest/test)                                   |
+| global-cluster-config               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./global-cluster-config/test](./global-cluster-config/test)                             |
+| maintenance-window                  | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./maintenance-window/test](./maintenance-window/test)                                   |
+| network-container                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./network-container/test](./network-container/test)                                     |
+| network-peering                     | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./network-peering/test](./network-peering/test)                                         |
+| org-invitation                      | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./org-invitation/test](./org-invitation/test)                                           |
+| private-endpoint                    | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint/test](./private-endpoint/test)                                       |
+| private-endpoint-adl                | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint-adl/test](./private-endpoint-adl/test)                               |
+| private-endpoint-regional-mode      | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./private-endpoint-regional-mode/test](./private-endpoint-regional-mode/test)           |
+| project                             | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project/test](./project/test)                                                         |
+| project-invitation                  | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project-invitation/test](./project-invitation/test)                                   |
+| project-ip-access-list              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./project-ip-access-list/test](./project-ip-access-list/test)                           |
+| search-index                        | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./search-indexes/test](./search-indexes/test)                                           |
+| serverless-instance                 | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./serverless-instance/test](./serverless-instance/test)                                 |
+| teams                               | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./teams/test](./teams/test)                                                             |
+| third-party-integration             | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./third-party-integration/test](./third-party-integration/test)                         |
+| trigger                             | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./trigger/test](./trigger/test)                                                         |                                                 |
 Legend
 ---
 | Badge | Meaning |

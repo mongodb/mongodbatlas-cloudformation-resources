@@ -85,6 +85,11 @@ If you are having difficulty with IAM access, suggest try registering first with
 
 The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE NAME]". 
 
+# Prerequisite to use MongoDB public extension
+To use MongoDB public extension(AWS third party), you have to activate the Public extension from your AWS console.
+To activate Public extension, we have to create an execution role and pass the ARN of the role as an input. Use [this template](examples/execution-role.yaml) to create execution role.
+
+
 ## Logging 
 Logging for AWS CloudFormation Public extensions is currently disabled. AWS is evaluating if logging is useful for consumers of third party extensions, if this is something you need or would like to request please open a ticket directly with AWS Support. 
 

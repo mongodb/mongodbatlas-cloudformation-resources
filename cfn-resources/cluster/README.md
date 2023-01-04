@@ -51,7 +51,7 @@ The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-qui
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the [CFN Template](../../examples/cluster/cluster.json) to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 

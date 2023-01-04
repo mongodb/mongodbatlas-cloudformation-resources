@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpoint",
-    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint >Limitation: On this first Stage only one private endpoint can be attached to a service, Limitation: Only one private endpoint can be attached to a Service, future versions will support multiple private endpoint creation",
+    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
     "definitions": {
         "ApiKey": {
             "type": "object",
@@ -9,6 +9,33 @@
                     "type": "string"
                 },
                 "PrivateKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "PrivateEndpoint": {
+            "type": "object",
+            "properties": {
+                "VpcId": {
+                    "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "type": "string"
+                },
+                "SubnetId": {
+                    "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "type": "string"
+                },
+                "InterfaceEndpointId": {
+                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+                    "type": "string",
+                    "insertionOrder" : false
+                },
+                "AWSPrivateEndpointStatus": {
+                    "description": "Status of the AWS PrivateEndpoint connection.",
+                    "type": "string"
+                },
+                "AtlasPrivateEndpointStatus": {
+                    "description": "Status of the Atlas PrivateEndpoint connection.",
                     "type": "string"
                 }
             },
@@ -28,16 +55,8 @@
             "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
             "type": "string"
         },
-        "InterfaceEndpoints": {
-            "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "insertionOrder" : false
-        },
         "Status": {
-            "description": "Status of the AWS PrivateLink connection. Atlas returns one of the following",
+            "description": "Status of the Atlas PrivateEndpoint service connection",
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
@@ -46,28 +65,25 @@
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "VpcId": {
-            "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-            "type": "string"
-        },
-        "SubnetId": {
-            "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-            "type": "string"
-        },
         "ApiKeys": {
             "$ref": "#/definitions/ApiKey"
         },
         "Region": {
             "description": "Aws Region",
             "type": "string"
+        },
+        "PrivateEndpoints": {
+            "type": "array",
+            "description": "List of private endpoint associated to the service",
+            "items": {
+                "$ref": "#/definitions/PrivateEndpoint"
+            }
         }
     },
     "additionalProperties": false,
     "required": [
         "GroupId",
         "Region",
-        "VpcId",
-        "SubnetId",
         "ApiKeys"
     ],
     "readOnlyProperties": [

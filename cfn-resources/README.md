@@ -15,7 +15,7 @@ MongoDB Atlas Resource Types.
 | cloud-backup-schedule                | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cloud-backup-schedule/test](./cloud-backup-schedule/test)                               |
 | cloud-backup-snapshot                | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cloud-backup-snapshot/test](./cloud-backup-snapshot/test)                               |
 | cloud-backup-snapshot-export-bucket  | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cloud-backup-snapshot-export-bucket/test](./cloud-backup-snapshot-export-bucket/test)   |
-| cloud-provider-access                | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cloud-provider-access/test](./cloud-provider-access/test)                               |
+| cloud-provider-access                | ![Build](https://img.shields.io/badge/Unstable-orange) | [./cloud-provider-access/test](./cloud-provider-access/test)                               |
 | cluster                              | ![Build](https://img.shields.io/badge/Beta-yellow) | [./cluster/test](./cluster/test)                                                           |
 | custom-dns-configuration-cluster-aws | ![Build](https://img.shields.io/badge/Beta-yellow) | [./custom-db-role/test](./custom-db-role/test)                                             |
 | custom-db-role                       | ![Build](https://img.shields.io/badge/Beta-yellow) | [./custom-dns-configuration-cluster-aws/test](./custom-dns-configuration-cluster-aws/test) |

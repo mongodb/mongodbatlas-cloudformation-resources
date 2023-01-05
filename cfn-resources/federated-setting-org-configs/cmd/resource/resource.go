@@ -202,7 +202,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create MongoDb Atlas Client using keys
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
-		fmt.Printf(err.Error())
 		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
 		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}

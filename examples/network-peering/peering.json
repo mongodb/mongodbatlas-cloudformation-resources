@@ -2,11 +2,6 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This template creates a Network Peer on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
-    "ProjectName" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
-    },
     "VpcId" : {
       "Type" : "String",
       "Description" : "",
@@ -26,38 +21,25 @@
       "Type" : "String",
       "Description" : "",
       "ConstraintDescription" : ""
+    },
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "ContainerId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
     }
   },
   "Mappings" : {},
   "Resources" : {
-    "Project": {
-      "Type": "MongoDB::Atlas::Project",
-      "Properties": {
-        "Name": { "Ref" : "ProjectName" },
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
-      }
-    },
-    "NetworkContainer": {
-      "Type": "MongoDB::Atlas::NetworkContainer",
-      "Properties": {
-        "AtlasCidrBlock": "10.8.2.0/24",
-        "RegionName":  "US_EAST_1",
-        "ProjectId": { "Ref" : "Project" },
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
-      }
-    },
     "NetworkPeering": {
       "Type": "MongoDB::Atlas::NetworkPeering",
       "Properties": {
-        "ProjectId": { "Ref" : "Project" },
-        "ContainerId": { "Ref" : "NetworkContainer" },
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ContainerId": { "Ref" : "ContainerId" },
         "AccepterRegionName": { "Ref" : "AwsRegionName" },
         "AwsAccountId": { "Ref" : "AwsAccountId" },
         "RouteTableCidrBlock": { "Ref" : "RouteTableCidrBlock" },
@@ -70,14 +52,6 @@
     }
   },
   "Outputs" : {
-    "ProjectId": {
-      "Description": "Id of the project",
-      "Value" : { "Ref" : "Project" }
-    },
-    "ContainerId": {
-      "Description": "Id of the network container",
-      "Value" : { "Ref" : "NetworkContainer" }
-    },
     "PeerId": {
       "Description": "Id of the network peer",
       "Value" : { "Ref" : "NetworkPeering" }

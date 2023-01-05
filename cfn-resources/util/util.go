@@ -98,12 +98,12 @@ func ToStringMapE(ep any) (map[string]any, error) {
 	return eMap, nil
 }
 
-func CreateSSMClient(session *session.Session) (*ssm.SSM, error) {
+func CreateSSManagerClient(session *session.Session) (*ssm.SSM, error) {
 	ssmCli := ssm.New(session)
 	return ssmCli, nil
 }
-func Put(keyID, keyValue, prefix string, session *session.Session) (*ssm.PutParameterOutput, error) {
-	ssmClient, err := CreateSSMClient(session)
+func PutKey(keyID, keyValue, prefix string, session *session.Session) (*ssm.PutParameterOutput, error) {
+	ssmClient, err := CreateSSManagerClient(session)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +119,8 @@ func Put(keyID, keyValue, prefix string, session *session.Session) (*ssm.PutPara
 	return putParamOutput, nil
 }
 
-func Delete(keyID, prefix string, session *session.Session) (*ssm.DeleteParameterOutput, error) {
-	ssmClient, err := CreateSSMClient(session)
+func DeleteKey(keyID, prefix string, session *session.Session) (*ssm.DeleteParameterOutput, error) {
+	ssmClient, err := CreateSSManagerClient(session)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func Delete(keyID, prefix string, session *session.Session) (*ssm.DeleteParamete
 }
 
 func Get(keyID, prefix string, session *session.Session) string {
-	ssmClient, err := CreateSSMClient(session)
+	ssmClient, err := CreateSSManagerClient(session)
 	if err != nil {
 		return ""
 	}

@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// logic included for CFN Test starts-a workaround for missing delete handler
 	if currentModel.TestMode != nil {
-		_, _ = util.Delete(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session)
+		_, _ = util.DeleteKey(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session)
 	}
 	// logic included for CFN Test ends
 
@@ -149,11 +149,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.TestMode != nil && util.Get(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session) != "" {
 		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	_, _ = util.Put(*currentModel.GroupId, "deleted", cast.ToString(currentModel.ExportId), req.Session)
+	_, _ = util.PutKey(*currentModel.GroupId, "deleted", cast.ToString(currentModel.ExportId), req.Session)
 	// logic included for CFN Test ends
 
 	return handler.ProgressEvent{
-		Message:         "Delete Complete",
+		Message:         "DeleteKey Complete",
 		OperationStatus: handler.Success,
 	}, nil
 }

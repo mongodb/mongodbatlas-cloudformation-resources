@@ -48,6 +48,7 @@ Note these are also hosted on AWS CloudFormation Public Registry under Third Par
 | 35  | third-party-integration              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./third-party-integration/test](./third-party-integration/test)                           |
 | 36  | trigger                              | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./trigger/test](./trigger/test)                                                           |
 | 37  | X509AuthenticationDatabaseUser       | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./x509-authentication-database-user/test](./x509-authentication-database-user/test)       |
+
 Legend
 ---
 | Badge | Meaning |

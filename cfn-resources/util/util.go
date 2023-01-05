@@ -9,8 +9,8 @@ import (
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
-	session "github.com/aws/aws-sdk-go/aws/session"
-	ssm "github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -134,8 +134,8 @@ func DeleteKey(keyID, prefix string, curSession *session.Session) (*ssm.DeletePa
 	return deleteParamOutput, nil
 }
 
-func Get(keyID, prefix string, session *session.Session) string {
-	ssmClient, err := CreateSSManagerClient(session)
+func Get(keyID, prefix string, curSession *session.Session) string {
+	ssmClient, err := CreateSSManagerClient(curSession)
 	if err != nil {
 		return ""
 	}
@@ -149,6 +149,6 @@ func Get(keyID, prefix string, session *session.Session) string {
 }
 func buildKey(keyID, storePrefix string) string {
 	// this is strictly coupled with permissions for handlers, changing this means changing permissions in handler
-	// moreover changing this might cause polution in parameter store -  be sure you know what you are doing
+	// moreover changing this might cause pollution in parameter store -  be sure you know what you are doing
 	return fmt.Sprintf("%s-%s", storePrefix, keyID)
 }

@@ -17,16 +17,15 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-publishing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-trap "exit" INT TERM ERR
-trap "kill 0" EXIT
+#trap "exit" INT TERM ERR
 #set -x
-set -o errexit
-set -o nounset
-set -o pipefail
+#set -o errexit
+#set -o nounset
+#set -o pipefail
 
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
-echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
+#echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 
 _DRY_RUN=${DRY_RUN:-false}
@@ -37,8 +36,9 @@ _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
 major_version=${CFN_PUBLISH_MAJOR_VERSION:-0}
 minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
-version="00000001"
+version="${2:-00000001}"
 
+#echo " ******************** version : ${version}"
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
@@ -47,7 +47,12 @@ resources="${1:-project}"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
-aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
+  echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
+else
+  aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+fi
+
 for resource in ${resources};
 do
     echo "Working on resource:${resource}"
@@ -64,22 +69,37 @@ do
     echo "res_type=${res_type}"
     type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
     echo "type_info=${type_info}"
-    #version=$(echo ${type_info} | jq -r '.DefaultVersionId')
+    version=$(echo ${type_info} | jq -r '.DefaultVersionId')
     echo "version=${version}"
+
     test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
     arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')
+
+    echo "********** Initiated test-type command ***********"
+    sleep 10
     echo "Found arn:${arn}"
     # sit and watch the test----
     dt=$(aws cloudformation describe-type --arn ${arn})
     echo "dt=${dt}"
+    # sometime the status is not_tested after triggering the test, so keeping delay
     status=$(echo ${dt} | jq -r '.TypeTestsStatus')
+    if [[ "$status" == "NOT_TESTED" ]]; then
+        test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+        arn=$(echo ${test_type_resp} | jq -r '.TypeVersionArn')
+        sleep 60
+    fi
+
     while [[ "$status" == "IN_PROGRESS" ]]; do
-        sleep 3
+        sleep 15
         dt=$(aws cloudformation describe-type --arn ${arn})
-        echo "dt=${dt}"
+        #echo "dt=${dt}"
         status=$(echo ${dt} | jq -r '.TypeTestsStatus')
         echo "status=${status}"
     done
+    if [[ "${status}" == "FAILED" ||  "${status}" == "NOT_TESTED" ]]; then
+                echo "Test_type STATUS is ${status}"
+                exit 1
+    fi
     # Fetch the resource type
     cd -
 done

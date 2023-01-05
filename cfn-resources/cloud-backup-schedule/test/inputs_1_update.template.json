@@ -1,0 +1,47 @@
+{
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  },
+  "ProjectId": "625454459c4e6108393d650d",
+  "ClusterName": "CLoudBKPSchedule-Test",
+  "AutoExportEnabled": "false",
+  "Export": {
+  },
+  "CopySettings": [
+    {
+      "CloudProvider": "AWS",
+      "Frequencies": [
+        "HOURLY"
+      ],
+      "RegionName": "AP_NORTHEAST_2",
+      "ReplicationSpecId": "639db3eb42882a4bb573db75",
+      "ShouldCopyOplogs": "false"
+    }
+  ],
+  "DeleteCopiedBackups": [
+    {
+      "CloudProvider": "AWS",
+      "RegionName": "US_EAST_2",
+      "ReplicationSpecId": "639db3eb42882a4bb573db75"
+    }
+  ],
+  "Policies": [
+    {
+      "ID": "639db611e0fc2c5efcc3c5fa",
+      "PolicyItems": [
+        {
+          "FrequencyInterval": "1",
+          "FrequencyType": "daily",
+          "RetentionUnit": "days",
+          "RetentionValue": "7"
+        }
+      ]
+    }
+  ],
+  "ReferenceHourOfDay": "0",
+  "ReferenceMinuteOfHour": "0",
+  "RestoreWindowDays": "1",
+  "UpdateSnapshots": "true",
+  "UseOrgAndGroupNamesInExportPrefix": "true"
+}

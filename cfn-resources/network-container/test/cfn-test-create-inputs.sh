@@ -4,10 +4,9 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-set -o errexit
 set -o nounset
 set -o pipefail
-
+WORDTOREMOVE="template."
 function usage {
     echo "usage:$0 <project_name>"
 }
@@ -18,27 +17,29 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$ATLAS_PROJECT_ID" \
-   --arg regionName "$ATLAS_REGION_NAME" \
-   '.ProjectId?|=$projectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .RegionName?|=$regionName' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$ATLAS_PROJECT_ID" \
-   --arg regionName "$ATLAS_REGION_NAME" \
-   '.ProjectId?|=$projectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .RegionName?|=$regionName' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
+echo "Check if a project is created $projectId"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$ATLAS_PROJECT_ID" \
-   --arg regionName "$ATLAS_REGION_NAME" \
-   '.ProjectId?|=$projectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .RegionName?|=$regionName' \
-   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
+cd "$(dirname "$0")" || exit
+for inputFile in inputs_*;
+do
+  outputFile=${inputFile//$WORDTOREMOVE/};
+  jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
+     --arg pvtkey "$MCLI_PRIVATE_API_KEY" \
+     --arg ProjectId "$projectId" \
+     '.ProjectId?|=$ProjectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+     "$inputFile" > "../inputs/$outputFile"
+done
+cd ..
 
 ls -l inputs
 

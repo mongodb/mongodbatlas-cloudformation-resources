@@ -47,11 +47,11 @@ Please see the [CFN Template](test/cluster.sample-cfn-request.json) for example 
 
 Once the resource is installed, you can do integrated testing from your shell to AWS.
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the project.sample-template.yaml to create a stack using the resource.
+You can use the [CFN Template](../../examples/cluster/cluster.json) to create a stack using the resource.
 Similar to the local testing described above you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 

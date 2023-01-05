@@ -1,0 +1,11 @@
+{
+  "Comment": "materializeMonthlyProductSales1000",
+  "Provider": "PRD",
+  "Type": "DATA_LAKE",
+  "GroupId": "<grp_id>",
+  "EndpointId": "vpce-0cd1f01dbd6a3047d",
+  "ApiKeys": {
+    "PublicKey": "htcxduya",
+    "PrivateKey": "<private key>"
+  }
+}

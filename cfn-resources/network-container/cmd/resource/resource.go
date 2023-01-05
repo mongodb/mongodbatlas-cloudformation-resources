@@ -141,9 +141,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	containerRequest.ProviderName = constants.AWS
 	containerRequest.RegionName = *currentModel.RegionName
-	containerResponse, _, err := client.Containers.Update(context.Background(), projectID, containerID, containerRequest)
+	containerResponse, resp, err := client.Containers.Update(context.Background(), projectID, containerID, containerRequest)
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error updating container with id(project: %s, container: %v): %s", projectID, containerRequest, err)
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	currentModel.Id = &containerResponse.ID
@@ -183,7 +184,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
-		ResourceModel:   currentModel,
 	}, nil
 }
 

@@ -8,7 +8,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
     "<a href="#createdat" title="CreatedAt">CreatedAt</a>" : <i>String</i>,
     "<a href="#description" title="Description">Description</a>" : <i>String</i>,
     "<a href="#expiresat" title="ExpiresAt">ExpiresAt</a>" : <i>String</i>,
@@ -22,7 +21,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#snapshotids" title="SnapshotIds">SnapshotIds</a>" : <i>[ String, ... ]</i>,
     "<a href="#snapshottype" title="SnapshotType">SnapshotType</a>" : <i>String</i>,
     "<a href="#status" title="Status">Status</a>" : <i>String</i>,
-    "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>Integer</i>,
+    "<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>" : <i>String</i>,
     "<a href="#type" title="Type">Type</a>" : <i>String</i>
 }
 </pre>
@@ -30,7 +29,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 <a href="#createdat" title="CreatedAt">CreatedAt</a>: <i>String</i>
 <a href="#description" title="Description">Description</a>: <i>String</i>
 <a href="#expiresat" title="ExpiresAt">ExpiresAt</a>: <i>String</i>
@@ -48,19 +46,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
       - String</i>
 <a href="#snapshottype" title="SnapshotType">SnapshotType</a>: <i>String</i>
 <a href="#status" title="Status">Status</a>: <i>String</i>
-<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>Integer</i>
+<a href="#storagesizebytes" title="StorageSizeBytes">StorageSizeBytes</a>: <i>String</i>
 <a href="#type" title="Type">Type</a>: <i>String</i>
 </pre>
 
 ## Properties
-
-#### ApiKeys
-
-_Required_: No
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### CreatedAt
 
@@ -212,7 +202,7 @@ Number of bytes taken to store the backup snapshot.
 
 _Required_: No
 
-_Type_: Integer
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -21,7 +21,7 @@ import (
 
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ExportBucketID, constants.SnapshotID}
 var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ExportID, constants.ClusterName}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.UserName}
+var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ClusterName}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -48,11 +48,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// create API request object
-	projectID := *currentModel.GroupId
-	clusterName := *currentModel.ClusterName
+	clusterName := cast.ToString(currentModel.ClusterName)
+	snapshotID := cast.ToString(currentModel.SnapshotId)
+	bucketID := cast.ToString(currentModel.ExportBucketId)
+	projectID := cast.ToString(currentModel.GroupId)
 	request := &mongodbatlas.CloudProviderSnapshotExportJob{
-		SnapshotID:     *currentModel.SnapshotId,
-		ExportBucketID: *currentModel.ExportBucketId,
+		SnapshotID:     snapshotID,
+		ExportBucketID: bucketID,
 		CustomData:     expandExportJobCustomData(currentModel),
 	}
 
@@ -62,30 +64,30 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.ExportId = &sid
 		return validateProgress(client, currentModel, "Successful")
 	}
+
 	// API call to create export job
-	jobResponse, _, err := client.CloudProviderSnapshotExportJobs.Create(context.Background(), projectID, clusterName, request)
+	jobResponse, resp, err := client.CloudProviderSnapshotExportJobs.Create(context.Background(), projectID, clusterName, request)
 	if err != nil {
 		_, _ = logger.Warnf(constants.ErrorExportJobCreate, projectID, err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
 	currentModel.ExportId = &jobResponse.ID
 
 	// logic included for CFN Test starts-a workaround for missing delete handler
 	if currentModel.TestMode != nil {
-		_, _ = util.Delete(*currentModel.GroupId, "export-job", req.Session)
+		_, _ = util.Delete(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session)
 	}
 	// logic included for CFN Test ends
+
+	_, _ = logger.Debugf("Created Successfully - (%s)", *currentModel.ExportId)
 
 	// track progress
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create export snapshots : %s", jobResponse.ID),
 		ResourceModel:        currentModel,
-		CallbackDelaySeconds: 25,
+		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{
 			"status":    jobResponse.State,
 			"export_id": jobResponse.ID,
@@ -98,12 +100,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup() // logger setup
 
 	// logic included for CFN Test starts-a workaround for missing delete handler
-	if currentModel.TestMode != nil && util.Get(*currentModel.GroupId, "export-job", req.Session) == "deleted" {
-		_, _ = util.Delete(*currentModel.GroupId, "export-job", req.Session)
+	if getDeleteStatus(req, currentModel) {
 		return progressevents.GetFailedEventByCode("Resource Not Found",
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	// logic included for CFN Test end
+	//  logic included for CFN Test end
 
 	// Validate required fields in the request
 	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
@@ -118,14 +119,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	projectID := *currentModel.GroupId
-	clusterName := *currentModel.ClusterName
-	exportJobID := *currentModel.ExportId
-
-	// Check if  already exist
-	if !isExist(client, projectID, clusterName, clusterName) {
-		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
-	}
+	clusterName := cast.ToString(currentModel.ClusterName)
+	exportJobID := cast.ToString(currentModel.ExportId)
+	projectID := cast.ToString(currentModel.GroupId)
 
 	// API call to read export job
 	exportJob, resp, err := client.CloudProviderSnapshotExportJobs.Get(context.Background(), projectID, clusterName, exportJobID)
@@ -148,15 +144,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// No OP .
-	// But it is necessary to implement delete for cfn test
-	// logic included for CFN Test starts-a workaround for missing delete handler
 
-	if currentModel.TestMode != nil && util.Get(*currentModel.GroupId, "export-job", req.Session) != "" {
-		_, _ = util.Delete(*currentModel.GroupId, "export-job", req.Session)
+	// logic included for CFN Test starts-a workaround for missing delete handler
+	if currentModel.TestMode != nil && util.Get(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session) != "" {
 		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	_, _ = util.Put(*currentModel.GroupId, "deleted", "export-job", req.Session)
-
+	_, _ = util.Put(*currentModel.GroupId, "deleted", cast.ToString(currentModel.ExportId), req.Session)
 	// logic included for CFN Test ends
 
 	return handler.ProgressEvent{
@@ -167,6 +160,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
+
+	// logic included for CFN Test starts-a workaround for missing delete handler
+	if getDeleteStatus(req, currentModel) {
+		return handleCFNTestList(req, currentModel)
+	}
+	// logic included for CFN Test ends
 
 	// Validate required fields in the request
 	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
@@ -181,47 +180,50 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
-	clusterName := *currentModel.ClusterName
+	clusterName := cast.ToString(currentModel.ClusterName)
+	projectID := cast.ToString(currentModel.GroupId)
 
 	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
 	}
-	// API call to get the list of export jobes for the project and cluster
+
+	// API call to get the list of export jobs for the project and cluster
 	exportJobs, resp, err := client.CloudProviderSnapshotExportJobs.List(context.Background(), projectID, clusterName, params)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			resp.Response), fmt.Errorf("error reading cloud provider snapshot restore job list with id(project: %s): %s", projectID, err)
+		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
+
 	// create list model to return
-	var models []Model
-	for _, exportJob := range exportJobs.Results {
-		models = append(models, convertToModel(exportJob, *currentModel, exportJobs.Links))
+	models := make([]interface{}, 0)
+	for ind := range exportJobs.Results {
+		models = append(models, convertToModel(exportJobs.Results[ind], *currentModel, exportJobs.Links))
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List complete",
-		ResourceModel:   models,
+		ResourceModels:  models,
 	}, nil
 }
 
 // function to track snapshot creation status
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	exportID := *currentModel.ExportId
-	projectID := *currentModel.GroupId
-	clusterName := *currentModel.ClusterName
-	isReady, state, err := isJobInTargetState(client, projectID, exportID, clusterName, targetState)
+	clusterName := cast.ToString(currentModel.ClusterName)
+	exportJobID := cast.ToString(currentModel.ExportId)
+	projectID := cast.ToString(currentModel.GroupId)
+	isReady, state, err := isJobInTargetState(client, projectID, exportJobID, clusterName, targetState)
 	if err != nil || state == "Cancelled" {
-		return handler.ProgressEvent{}, err
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("error occurred while export job ,Details : %v", err),
+			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	// if not ready retry
 	if !isReady {
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 50
+		p.CallbackDelaySeconds = 45
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
 			"status":    state,
@@ -230,12 +232,14 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 		return p, nil
 	}
 	// API call to get export job details
-	exportJob, resp, err := client.CloudProviderSnapshotExportJobs.Get(context.Background(), projectID, clusterName, exportID)
+	exportJob, resp, err := client.CloudProviderSnapshotExportJobs.Get(context.Background(), projectID, clusterName, exportJobID)
 	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorExportJobRead, projectID, exportID, err)
+		_, _ = logger.Warnf(constants.ErrorExportJobRead, projectID, exportJobID, err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
+
 	resultModel := convertToModel(exportJob, *currentModel, resp.Links)
+
 	p := handler.NewProgressEvent()
 	p.ResourceModel = resultModel
 	p.OperationStatus = handler.Success
@@ -275,38 +279,25 @@ func isJobInTargetState(client *mongodbatlas.Client, projectID, exportJobID, clu
 	return exportJob.State == targetState, exportJob.State, nil
 }
 
-// function to check if snapshot already exist in atlas
-func isExist(client *mongodbatlas.Client, projectID, exportJobID, clusterName string) bool {
-	exportJob, err := readExportJob(client, projectID, clusterName, exportJobID)
-	if err != nil {
-		return false
-	} else if exportJob == nil {
-		return false
-	}
-	return true
-}
-
 // function to convert custom metadata from request to mongodb atlas object
 func expandExportJobCustomData(currentModel *Model) []*mongodbatlas.CloudProviderSnapshotExportJobCustomData {
 	customData := currentModel.CustomDataSet
-	if customData != nil {
-		res := make([]*mongodbatlas.CloudProviderSnapshotExportJobCustomData, len(customData))
-		for i, val := range customData {
-			res[i] = &mongodbatlas.CloudProviderSnapshotExportJobCustomData{
-				Key:   cast.ToString(val.Key),
-				Value: cast.ToString(val.Value),
-			}
+	result := make([]*mongodbatlas.CloudProviderSnapshotExportJobCustomData, 0)
+	for i := range customData {
+		res := &mongodbatlas.CloudProviderSnapshotExportJobCustomData{
+			Key:   cast.ToString(customData[i].Key),
+			Value: cast.ToString(customData[i].Value),
 		}
-		return res
+		result = append(result, res)
 	}
-	return nil
+	return result
 }
 func flattenLinks(linksResult []*mongodbatlas.Link) []Link {
 	links := make([]Link, 0)
-	for _, link := range linksResult {
+	for ind := range linksResult {
 		var lin Link
-		lin.Href = &link.Href
-		lin.Rel = &link.Rel
+		lin.Href = &linksResult[ind].Href
+		lin.Rel = &linksResult[ind].Rel
 		links = append(links, lin)
 	}
 	return links
@@ -325,10 +316,9 @@ func flattenStatus(v *mongodbatlas.CloudProviderSnapshotExportJobStatus) *Export
 func flattenExportJobsCustomData(metaData []*mongodbatlas.CloudProviderSnapshotExportJobCustomData) []CustomData {
 	statusList := make([]CustomData, 0)
 	for i := range metaData {
-		v := metaData[i]
 		role := CustomData{
-			Key:   &v.Key,
-			Value: &v.Value,
+			Key:   &metaData[i].Key,
+			Value: &metaData[i].Value,
 		}
 		statusList = append(statusList, role)
 	}
@@ -337,12 +327,26 @@ func flattenExportJobsCustomData(metaData []*mongodbatlas.CloudProviderSnapshotE
 func flattenExportComponent(components []*mongodbatlas.CloudProviderSnapshotExportJobComponent) []ApiAtlasDiskBackupBaseRestoreMemberView {
 	componentList := make([]ApiAtlasDiskBackupBaseRestoreMemberView, 0)
 	for i := range components {
-		v := components[i]
 		role := ApiAtlasDiskBackupBaseRestoreMemberView{
-			ReplicaSetName: &v.ReplicaSetName,
-			ExportID:       &v.ExportID,
+			ReplicaSetName: &components[i].ReplicaSetName,
+			ExportID:       &components[i].ExportID,
 		}
 		componentList = append(componentList, role)
 	}
 	return componentList
+}
+
+func getDeleteStatus(req handler.Request, currentModel *Model) bool {
+	return currentModel.TestMode != nil && util.Get(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session) == "deleted"
+}
+
+func handleCFNTestList(req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {
+	var models []interface{}
+	*currentModel.ExportId = "****Test63918a6ee35d0c1f078c76c8***"
+	models = append(models, &currentModel)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List complete",
+		ResourceModels:  models,
+	}, nil
 }

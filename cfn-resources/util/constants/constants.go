@@ -57,4 +57,10 @@ const (
 	UserID  = "UserName"
 	Success = 200
 
+	UserName                         = "UserName"
+	ExportBucketID                   = "ExportBucketId"
+	ExportID                         = "ExportId"
+	ErrorExportJobCreate             = "error creating Export Job for the project(%s) : %s"
+	ErrorExportJobRead               = "error reading export job for the projects(%s) : Job Id : %s with error :%+v"
+
 )

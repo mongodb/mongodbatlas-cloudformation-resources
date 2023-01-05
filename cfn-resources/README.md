@@ -25,9 +25,9 @@ Note these are also hosted on AWS CloudFormation Public Registry under Third Par
 | 12  | database-user                        | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./database-user/test](./database-user/test)                                               |
 | 13  | datalakes                            | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./datalakes/test](./datalakes/test)                                                       |
 | 14  | encryption-at-rest                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./encryption-at-rest/test](./encryption-at-rest/test)                                     |
-| 15  | federated-settings-org-role-mapping  | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./federated-settings-org-role-mapping/test](./federated-settings-org-role-mapping/test)   |
-| 16  | federated-settings-identity-provider | ![Build](https://img.shields.io/badge/Unstable-orange) |                                                                                            |
-| 17  | federated-settings-org-configs       | ![Build](https://img.shields.io/badge/Unstable-orange) |                                                                                            |
+| 15  | federated-settings-identity-provider | ![Build](https://img.shields.io/badge/Unstable-orange) |                                                                                            |
+| 16  | federated-settings-org-configs       | ![Build](https://img.shields.io/badge/Unstable-orange) |                                                                                            |
+| 17  | federated-settings-org-role-mapping  | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./federated-settings-org-role-mapping/test](./federated-settings-org-role-mapping/test)   |
 | 18  | global-cluster-config                | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./global-cluster-config/test](./global-cluster-config/test)                               |
 | 19  | ldap-configuration                   | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./ldap-configuration/test](./ldap-configuration/test)                                     |
 | 20  | ldap-verify                          | ![Build](https://img.shields.io/badge/Beta-yellow)     | [./ldap-verify/test](./ldap-verify/test)                                                   |

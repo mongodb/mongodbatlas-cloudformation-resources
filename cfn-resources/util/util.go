@@ -9,8 +9,8 @@ import (
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	session "github.com/aws/aws-sdk-go/aws/session"
+	ssm "github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -98,12 +98,12 @@ func ToStringMapE(ep any) (map[string]any, error) {
 	return eMap, nil
 }
 
-func CreateSSManagerClient(session *session.Session) (*ssm.SSM, error) {
-	ssmCli := ssm.New(session)
+func CreateSSManagerClient(curSession *session.Session) (*ssm.SSM, error) {
+	ssmCli := ssm.New(curSession)
 	return ssmCli, nil
 }
-func PutKey(keyID, keyValue, prefix string, session *session.Session) (*ssm.PutParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(session)
+func PutKey(keyID, keyValue, prefix string, curSession *session.Session) (*ssm.PutParameterOutput, error) {
+	ssmClient, err := CreateSSManagerClient(curSession)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +119,8 @@ func PutKey(keyID, keyValue, prefix string, session *session.Session) (*ssm.PutP
 	return putParamOutput, nil
 }
 
-func DeleteKey(keyID, prefix string, session *session.Session) (*ssm.DeleteParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(session)
+func DeleteKey(keyID, prefix string, curSession *session.Session) (*ssm.DeleteParameterOutput, error) {
+	ssmClient, err := CreateSSManagerClient(curSession)
 	if err != nil {
 		return nil, err
 	}

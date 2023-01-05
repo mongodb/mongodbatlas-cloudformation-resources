@@ -39,7 +39,7 @@ Please see the [CFN Template](test/federated-setting-org-configs.sample-template
 
 ## Integration Testing w/ AWS
 
-The [../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh]( ../../quickstart-mongodb-atlas/scripts/launch-quickstart.sh)  script
+The [/quickstart-mongodb-atlas/scripts/launch-quickstart.sh](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/quickstart-mongodb-atlas/scripts/launch-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
@@ -61,4 +61,4 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/federated-setting-org-configs/test/federated-setting-org-configs.sample-template.yaml SampleAccessList1 ParameterKey=FederationSettingsId,ParameterValue=<Federation-Settings-Id> ParameterKey=OrgId,ParameterValue=<Connected-Organization-Id> ParameterKey=DomainRestrictionEnabled,ParameterValue=<Domain-Restriction-Enabled-Flag> ParameterKey=IdentityProviderId,ParameterValue=<Identity-Provider-Id> ParameterKey=DomainAllowList,ParameterValue=<Comma-Separated-Domains-List> 
 ```
 
-For more information see: MongoDB Atlas API [Federated Authentication Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication) Documentation.
+For more information see: MongoDB Atlas API [Federated Authentication](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication) Endpoint Documentation.

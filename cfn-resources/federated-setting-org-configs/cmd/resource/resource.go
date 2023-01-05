@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -40,7 +41,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// logic included for CFN Test starts
 	if currentModel.TestMode != nil {
-		_, err := util.Put(*currentModel.OrgId, "created", "x509", req.Session)
+		_, err := util.PutKey(*currentModel.OrgId, "created", "x509", req.Session)
 		if err != nil {
 			return handler.ProgressEvent{}, err
 		}
@@ -150,7 +151,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if params == "" {
 			return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 		}
-		_, _ = util.Delete(*currentModel.OrgId, "x509", req.Session)
+		_, _ = util.DeleteKey(*currentModel.OrgId, "x509", req.Session)
 		return handler.ProgressEvent{
 			Message:         "Delete Complete",
 			OperationStatus: handler.Success,

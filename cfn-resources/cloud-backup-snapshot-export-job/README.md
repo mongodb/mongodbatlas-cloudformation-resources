@@ -35,7 +35,7 @@ cfn submit --verbose --set-default
 
 ## CloudFormation Examples
 
-Please use the [CFN Template](/examples/cloud-backup-restore-jobs/restore.json)
+Please use the [CFN Template](/examples/cloud-backup-snapshot-export-job/export.json)
 
 ## Integration Testing w/ AWS
 

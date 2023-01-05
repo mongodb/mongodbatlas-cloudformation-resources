@@ -32,7 +32,6 @@
       "Properties": {
         "AtlasCidrBlock": {"Ref": "AtlasCidrBlock"},
         "RegionName": { "Ref" : "RegionName" },
-        "ProviderName": "AWS",
         "ProjectId": { "Ref" : "Project" },
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",

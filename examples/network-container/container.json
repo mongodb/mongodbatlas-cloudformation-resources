@@ -4,6 +4,14 @@
   "Parameters" : {
     "ProjectName" : {
       "Type" : "String"
+    },
+    "RegionName" : {
+      "Type" : "String",
+      "Default": "US_EAST_1"
+    },
+    "AtlasCidrBlock" : {
+      "Type" : "String",
+      "Default": "10.8.2.0/24"
     }
   },
   "Mappings" : {},
@@ -22,8 +30,8 @@
     "NetworkContainer": {
       "Type": "MongoDB::Atlas::NetworkContainer",
       "Properties": {
-        "AtlasCidrBlock": "10.8.2.0/24",
-        "RegionName":  "US_EAST_1",
+        "AtlasCidrBlock": {"Ref": "AtlasCidrBlock"},
+        "RegionName": { "Ref" : "RegionName" },
         "ProviderName": "AWS",
         "ProjectId": { "Ref" : "Project" },
         "ApiKeys": {

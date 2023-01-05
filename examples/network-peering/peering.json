@@ -43,7 +43,7 @@
         "ContainerId": { "Ref" : "ContainerId" },
         "AccepterRegionName": { "Ref" : "AwsRegionName" },
         "AwsAccountId": { "Ref" : "AwsAccountId" },
-        "RouteTableCidrBlock": { "Ref" : "RouteTableCidrBlock" },
+        "RouteTableCIDRBlock": { "Ref" : "RouteTableCidrBlock" },
         "VpcId": { "Ref" : "VpcId" },
         "ApiKeys": {
           "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",

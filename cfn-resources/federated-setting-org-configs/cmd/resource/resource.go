@@ -38,7 +38,6 @@ func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
 	// logic included for CFN Test starts
 	if currentModel.TestMode != nil {
 		_, err := util.PutKey(*currentModel.OrgId, "created", "x509", req.Session)
@@ -138,7 +137,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
 	}, nil
-
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -206,8 +204,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		fmt.Printf(err.Error())
 		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	federationSettingsID := *currentModel.FederationSettingsId

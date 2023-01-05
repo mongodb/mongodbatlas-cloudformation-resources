@@ -1,9 +1,7 @@
 package util
 
 import (
-	"fmt"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"encoding/json"
 	"log"
 	"os"
 	"strings"
@@ -83,57 +81,16 @@ func SetupLogger(loggerPrefix string) {
 	logger.SetOutput(logr.Writer())
 	logger.SetLevel(getLogLevel())
 }
-func CreateSSMClient(session *session.Session) (*ssm.SSM, error) {
-	ssmCli := ssm.New(session)
-	return ssmCli, nil
-}
-func Put(keyID, keyValue, prefix string, session *session.Session) (*ssm.PutParameterOutput, error) {
-	ssmClient, err := CreateSSMClient(session)
-	if err != nil {
-		return nil, err
-	}
-	// transform api keys to json string
-	parameterName := buildKey(keyID, prefix)
-	parameterType := "SecureString"
-	overwrite := true
-	putParamOutput, err := ssmClient.PutParameter(&ssm.PutParameterInput{Name: &parameterName, Value: &keyValue, Type: &parameterType, Overwrite: &overwrite})
-	if err != nil {
-		return nil, err
-	}
 
-	return putParamOutput, nil
-}
-
-func Delete(keyID, prefix string, session *session.Session) (*ssm.DeleteParameterOutput, error) {
-	ssmClient, err := CreateSSMClient(session)
+func ToStringMapE(ep any) (map[string]any, error) {
+	var eMap map[string]any
+	inrec, err := json.Marshal(ep)
 	if err != nil {
-		return nil, err
+		return eMap, err
 	}
-	parameterName := buildKey(keyID, prefix)
-
-	deleteParamOutput, err := ssmClient.DeleteParameter(&ssm.DeleteParameterInput{Name: &parameterName})
+	err = json.Unmarshal(inrec, &eMap)
 	if err != nil {
-		return nil, err
+		return eMap, err
 	}
-
-	return deleteParamOutput, nil
-}
-
-func Get(keyID, prefix string, session *session.Session) string {
-	ssmClient, err := CreateSSMClient(session)
-	if err != nil {
-		return ""
-	}
-	parameterName := buildKey(keyID, prefix)
-	decrypt := true
-	getParamOutput, err := ssmClient.GetParameter(&ssm.GetParameterInput{Name: &parameterName, WithDecryption: &decrypt})
-	if err != nil {
-		return ""
-	}
-	return *getParamOutput.Parameter.Value
-}
-func buildKey(keyID, storePrefix string) string {
-	// this is strictly coupled with permissions for handlers, changing this means changing permissions in handler
-	// moreover changing this might cause polution in parameter store -  be sure you know what you are doing
-	return fmt.Sprintf("%s-%s", storePrefix, keyID)
+	return eMap, nil
 }

@@ -6,19 +6,19 @@ The Private Endpoint creation flow consists of the creation of three related res
 2. Aws VPC private Endpoint
 3. Atlas Private Endpoint
 
->Limitation: On this first Stage only one private endpoint can be attached to a service (future versions will support multiple Private Endpoints)
+AWS PrivateLink supports 50 addressable targets, Atlas can use port 1024 through port 65535, but typically starts with port 1024. The ports can change under specific circumstances, including (but not limited to) cluster changes.
 
 ### CREATION FLOW
 
 The creation process waits until all the resources gets created the next order
 
 1. Creates the Private Endpoint Service and waits until is completed (Available Status)
-2. Once the Private Endpoint Service gets completed, creates the Aws VPC Private endpoint and the Atlas Private Endpoint
+2. Once the Private Endpoint Service gets completed, creates the AWS VPC Private endpoint and the Atlas Private Endpoint
 3. Once the two last resources gets completed (Available Status) the flow returns Success
 
 ### SIMPLIFIED CREATION FLOW
 
-![](../docs_files/simplified_creation_flow.png)
+![](docs_files/simplified_creation_flow.png)
 
 ## Attributes & Parameters
 
@@ -51,7 +51,7 @@ cfn submit --verbose --set-default
 
 ## Usage
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other neccessary parameters.
 
@@ -74,4 +74,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
 ```
 
 ## For More Information
-See the MongoDB Atlas API [Project Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects) Documentation.
+See the MongoDB Atlas API [Private Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) Documentation.

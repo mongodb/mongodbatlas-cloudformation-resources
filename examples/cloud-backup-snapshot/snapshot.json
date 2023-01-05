@@ -2,6 +2,11 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "Returns, takes, and removes Cloud Backup snapshots, this will be billed to your Atlas account.",
   "Parameters" : {
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
     "ClusterName" : {
       "Type" : "String",
       "Description" : "",
@@ -10,21 +15,10 @@
   },
   "Mappings" : {},
   "Resources" : {
-    "Project": {
-      "Type": "MongoDB::Atlas::Project",
-      "Properties": {
-        "Name": { "Ref" : "ProjectName" },
-        "Orgid": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
-      }
-    },
     "CloudBackupSnapshot": {
       "Type": "MongoDB::Atlas::CloudBackupSnapshot",
       "Properties": {
-        "GroupId": { "Ref" : "Project" },
+        "GroupId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },
         "Description": "A testing for creating cloud provider snapshots",
         "RetentionInDays" : 3 ,

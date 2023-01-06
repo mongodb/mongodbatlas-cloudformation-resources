@@ -28,8 +28,19 @@ else
 fi
 
 echo "Waiting for cluster to get deleted"
-sleep 1200
+status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+echo "status: ${status}"
 
+while [[ "${status}" == "DELETING" ]]; do
+        sleep 30
+        if atlas clusters describe "${clusterName}" --projectId "${projectId}"
+        then
+          status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}"  --output=json | jq -r '.stateName')
+        else
+          status="DELETED"
+        fi
+        echo "status: ${status}"
+done
 
 #delete project
 if atlas projects delete "$projectId" --force

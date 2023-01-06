@@ -16,6 +16,7 @@ function usage {
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 clusterName=$(jq -r '.ClusterName' ./inputs/inputs_1_create.json)
 
+
 echo $projectId
 echo $clusterName
 
@@ -28,7 +29,21 @@ else
 fi
 
 echo "Waiting for cluster to get deleted"
-sleep 900
+#sleep 900
+
+status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+echo "status: ${status}"
+
+while atlas clusters describe "${clusterName}" --projectId "${projectId}"; do
+        sleep 30
+        if atlas clusters describe "${clusterName}" --projectId "${projectId}"
+        then
+          status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}"  --output=json | jq -r '.stateName')
+        else
+          status="DELETED"
+        fi
+        echo "status: ${status}"
+done
 
 
 #delete project

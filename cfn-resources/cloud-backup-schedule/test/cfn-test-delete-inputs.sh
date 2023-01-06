@@ -29,7 +29,6 @@ else
 fi
 
 echo "Waiting for cluster to get deleted"
-#sleep 900
 
 status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
 echo "status: ${status}"

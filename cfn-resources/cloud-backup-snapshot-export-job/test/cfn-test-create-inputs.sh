@@ -21,34 +21,32 @@ region="us-east-1"
 
 #project_id
 projectName="${1}"
-
-
-projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+
     echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
+echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-echo "Created project \"${projectName}\" with id: ${projectId}"
 ClusterName="${projectName}"
-clusterId=$(atlas clusters list --output json  | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .name')
+clusterId=$(mongocli atlas clusters list --output json  | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
-    clusterId=$(atlas cluster create ${ClusterName} --projectId ${projectId} --provider AWS --region US_EAST_1 --members 3 --backup --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.name')
-    sleep 1200
+    clusterId=$(mongocli atlas cluster create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+    sleep 20m
     echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 else
     echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 fi
-
-SnapshotId=$( atlas backup snapshots list ${ClusterName} --output json  | jq --arg ID "6396e836d8a0ce6c6e99c3ef" -r '.results[] | select(.id==$ID) | .id')
+SnapshotId=$(mongocli atlas backup snapshots list cfntest --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
 if [ -z "$SnapshotId" ]; then
-    SnapshotId=$( atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
-    sleep 120
-    echo -e "Created snapshot \"${SnapshotId}\""
+    SnapshotId=$(mongocli atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
+    sleep 5m
+    echo -e "Created Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
 else
-    echo -e "FOUND snapshot  with id: ${SnapshotId}\n"
+    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
 fi
 
 

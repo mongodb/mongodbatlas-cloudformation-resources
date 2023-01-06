@@ -23,6 +23,11 @@ var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constant
 var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ExportID, constants.ClusterName}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ClusterName}
 
+const (
+	ErrorExportJobCreate = "error creating Export Job for the project(%s) : %s"
+	ErrorExportJobRead   = "error reading export job for the projects(%s) : Job Id : %s with error :%+v"
+)
+
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
@@ -68,7 +73,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create export job
 	jobResponse, resp, err := client.CloudProviderSnapshotExportJobs.Create(context.Background(), projectID, clusterName, request)
 	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorExportJobCreate, projectID, err)
+		_, _ = logger.Warnf(ErrorExportJobCreate, projectID, err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
@@ -126,7 +131,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// API call to read export job
 	exportJob, resp, err := client.CloudProviderSnapshotExportJobs.Get(context.Background(), projectID, clusterName, exportJobID)
 	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorExportJobRead, projectID, exportJobID, err)
+		_, _ = logger.Warnf(ErrorExportJobRead, projectID, exportJobID, err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	readModel := convertToModel(exportJob, *currentModel, resp.Links)
@@ -234,7 +239,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	// API call to get export job details
 	exportJob, resp, err := client.CloudProviderSnapshotExportJobs.Get(context.Background(), projectID, clusterName, exportJobID)
 	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorExportJobRead, projectID, exportJobID, err)
+		_, _ = logger.Warnf(ErrorExportJobRead, projectID, exportJobID, err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 

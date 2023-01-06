@@ -1,0 +1,48 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::EncryptionAtRest
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  FederationSettingsId:
+    Description: " Identifies the federation to which this MongoDB Cloud user belongs"
+    Type: String
+    Default: ""
+  OrgId:
+    Description: "ID for  the connected organization "
+    Type: String
+    Default: ""
+  IdentityProviderId:
+    Description: "Identity Provider Id ."
+    Type: String
+  DomainRestrictionEnabled:
+    Description: "Value that indicates whether domain restriction is enabled for this connected org."
+    Type: String
+    Default: ""
+  DomainAllowList:
+      Description: "Approved domains that restrict users who can join the organization based on their email address."
+      Type: CommaDelimitedList
+Resources:
+  FederatedSettingOrgConfigs:
+    Type: MongoDB::Atlas::FederatedSettingOrgConfigs
+    Properties:
+      FederationSettingsId:  !Ref "FederationSettingsId"
+      OrgId:  !Ref "OrgId"
+      IdentityProviderId:  !Ref "IdentityProviderId"
+      DomainRestrictionEnabled:  !Ref "DomainRestrictionEnabled"
+      DomainAllowList: !Ref "DomainAllowList"
+      ApiKeys:
+        PublicKey:  !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+Outputs:
+  Id:
+    Description: "Info about Federated Settings for connected Orgs"
+    Value: !Ref FederatedSettingOrgConfigs
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","FederatedSettingOrgConfigs" ] ]

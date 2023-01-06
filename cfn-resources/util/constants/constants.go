@@ -99,4 +99,6 @@ const (
 	AppID       = "AppId"
 	RealmPubKey = "RealmConfig.PublicKey"
 	RealmPvtKey = "RealmConfig.PrivateKey"
+
+	FederationSettingsID = "FederationSettingsId"
 )

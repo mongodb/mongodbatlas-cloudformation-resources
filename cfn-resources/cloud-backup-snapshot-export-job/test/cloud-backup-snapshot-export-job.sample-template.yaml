@@ -1,0 +1,55 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::CloudBackupSnapshotExportJob
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  ProjectId:
+    Description: "Your Project Id"
+    Type: String
+    Default: ""
+  ClusterName:
+      Description: "The name of the Atlas cluster that contains the snapshots you want to retrieve."
+      Type: String
+      Default: ""
+  ExportBucketId:
+      Description: "export s3 bucket id."
+      Type: String
+      Default: ""
+Resources:
+  CloudBackUp:
+    "Type": "MongoDB::Atlas::BackupSnapshot",
+    Properties:
+      GroupId: !Ref "ProjectId"
+      ClusterName: !Ref  "ClusterName"
+      Description: "A testing for creating cloud provider snapshot 2",
+      RetentionInDays: 3 ,
+      ApiKeys:
+        PublicKey: !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+  CloudBackupSnapshotExportJob:
+    Type: MongoDB::Atlas::CloudBackupSnapshotExportJob
+    Properties:
+      ApiKeys:
+        PublicKey: !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      ProjectId: !Ref "ProjectId"
+      ClusterName: !Ref "ClusterName"
+      SnapshotId: !Ref  "CloudBackUp" ,
+      ExportBucketId: !Ref  "ExportBucketId"
+Outputs:
+  SnapshotId:
+    Description: "Id of the cloud provider snapshot",
+    Value: !Ref  CloudBackUp
+  CloudBackupSnapshotExportJob:
+    Description: "Info on your Atlas Projet"
+    Value: !Ref CloudBackUpRestoreJobs
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","CloudBackupSnapshotExportJob" ] ]
+

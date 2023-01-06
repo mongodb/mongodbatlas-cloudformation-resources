@@ -101,4 +101,7 @@ const (
 	RealmPvtKey = "RealmConfig.PrivateKey"
 
 	FederationSettingsID = "FederationSettingsId"
+
+	ExportBucketID = "ExportBucketId"
+	ExportID       = "ExportId"
 )

@@ -18,7 +18,16 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-projectId="${2:-625454459c4e6108393d650d}"
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+
+    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
+
 endpoint="${3:-vpce-0cd1f01dbd6a3047d}"
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

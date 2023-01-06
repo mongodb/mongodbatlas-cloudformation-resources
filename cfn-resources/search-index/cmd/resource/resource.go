@@ -77,7 +77,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"stateName": newSearchIndex.Status,
 			"id":        currentModel.IndexId,
 		},
-		CallbackDelaySeconds: 65,
+		CallbackDelaySeconds: 120,
 	}, nil
 }
 
@@ -259,7 +259,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"stateName": updatedSearchIndex.Status,
 			"id":        currentModel.IndexId,
 		},
-		CallbackDelaySeconds: 65,
+		CallbackDelaySeconds: 120,
 	}, nil
 }
 
@@ -314,7 +314,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"id":        currentModel.IndexId,
 		},
 		ResourceModel:        currentModel,
-		CallbackDelaySeconds: 30,
+		CallbackDelaySeconds: 120,
 	}, nil
 }
 
@@ -370,7 +370,7 @@ func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentM
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = cloudformation.OperationStatusInProgress
-		p.CallbackDelaySeconds = 60
+		p.CallbackDelaySeconds = 120
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
 			"stateName": index.Status,

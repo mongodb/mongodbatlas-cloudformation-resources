@@ -2,7 +2,7 @@
     "GroupId": "",
     "BindPassword": "",
     "BindUsername": "",
-    "Hostname": "",
+    "HostName": "",
     "Port": "636",
     "ApiKeys" : {
         "PublicKey" : "$ATLAS_PUBLIC_KEY",

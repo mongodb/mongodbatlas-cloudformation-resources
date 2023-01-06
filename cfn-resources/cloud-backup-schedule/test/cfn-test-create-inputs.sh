@@ -20,50 +20,64 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
 projectName="${1}"
-projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+clusterName=$projectName
+echo "Creating required inputs"
+
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
-
-    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
-else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+    echo -e "Cant find project \"${projectName}\"\n"
 fi
-echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
+export MCLI_PROJECT_ID=$projectId
 
-ClusterName="${projectName}"
-clusterId=$(mongocli atlas clusters list --output json  | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .id')
+clusterId=$(atlas clusters list --projectId "${projectId}"  --output json | jq --arg NAME "${clusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
-    clusterId=$(mongocli atlas cluster create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-    sleep 20m
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-else
-    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+  echo "creating cluster.."
+  clusterId=$(atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
 fi
-SnapshotId=$(mongocli atlas backup snapshots list cfntest --output json  | jq --arg ID "6321433" -r '.results[] | select(.id==$ID) | .id')
-if [ -z "$SnapshotId" ]; then
-    SnapshotId=$(mongocli atlas backup snapshots create ${ClusterName} --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
-    sleep 5m
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
-else
-    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${SnapshotId}\n"
-fi
-rm -rf inputs
-mkdir inputs
+
+status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+echo "status: ${status}"
+
+while [[ "${status}" != "IDLE" ]]; do
+        sleep 30
+        status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}"  --output=json | jq -r '.stateName')
+        if [ -z "$status" ]; then
+          status="timeout"
+        fi
+        echo "status: ${status}"
+done
+
+echo -e "Created Cluster \"${clusterName}\" with id: ${clusterId}\n"
+
+policyId=$(atlas backups schedule describe "${clusterName}" --projectId "${projectId}" | jq -r '.policies[0].id')
+echo  "policyId: ${policyId}"
+
 name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg group_id "$projectId" \
-   --arg clusterName "$ClusterName" \
-   '.ClusterName?|=$clusterName |.GroupId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+   --arg cluster_name "$clusterName" \
+   --arg policy_id "$policyId" \
+   '.ClusterName?|=$cluster_name |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Policies[0].ID?|=$policy_id' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+  --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+  --arg group_id "$projectId" \
+  --arg cluster_name "$clusterName" \
+  --arg policy_id "$policyId" \
+  '.ClusterName?|=$cluster_name |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Policies[0].ID?|=$policy_id' \
+  "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 name="${name}- more B@d chars !@(!(@====*** ;;::"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg group_id "$projectId" \
-   --arg clusterName "$ClusterName" \
-     '.ClusterName?|=$clusterName |.GroupId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+   --arg cluster_name "$clusterName" \
+     '.ClusterName?|=$cluster_name |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

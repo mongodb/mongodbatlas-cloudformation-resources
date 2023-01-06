@@ -98,10 +98,13 @@ fi
 echo "${PROJECT_NAME}"
 #if false; then
 
+
+
 for res in ${resources};
 do
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run ./test/cfn-test-create-inputs.sh for:${resource}" && continue
     cd "${res}"
+    chmod +x ./test/cfn-test-create-inputs.sh
     if [[ "${res}" == "network-peering" ]]; then
         #
         AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-711489243244}"
@@ -174,6 +177,7 @@ SAM_LOG=$(mktemp)
 for resource in ${resources};
 do
     cd "${res}"
+    chmod +x ./test/cfn-test-delete-inputs.sh
     ./test/cfn-test-delete-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs delete OK" || echo "resource:${res} input delete FAILED"
 done
 

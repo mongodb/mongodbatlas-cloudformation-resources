@@ -9,7 +9,7 @@
   "RoleAssignments": [
     {
       "Role": "GROUP_DATA_ACCESS_READ_WRITE",
-      "GroupId": "638a46aef75a91632ce26596"
+      "GroupId": ""
     }
   ]
 }

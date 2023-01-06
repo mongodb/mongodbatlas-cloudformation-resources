@@ -1,4 +1,4 @@
-# MongoDB::Atlas::onlinearchives CriteriaView
+# MongoDB::Atlas::OnlineArchive CriteriaView
 
 ## Syntax
 

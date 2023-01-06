@@ -28,7 +28,7 @@ const (
 var defaultLabel = mongodbatlas.Label{Key: "Infrastructure Tool", Value: "MongoDB Atlas Terraform Provider"}
 
 var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
+var ReadRequiredFields = []string{constants.ID}
 var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
 var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
 var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
@@ -99,7 +99,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
-	_, _ = log.Warnf("Created new deployment secret for cluster. Secert Name = Cluster Id:%s", *secretName)
+	_, _ = log.Warnf("Created new deployment secret for cluster. Secret Name = Cluster Id:%s", *secretName)
 	currentModel.Id = secretName
 	var none = "NONE"
 	if currentModel.EncryptionAtRestProvider == nil {
@@ -141,13 +141,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	callback := req.CallbackContext
-	_, _ = log.Debugf("Read -  callback: %v", callback)
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
 		_, _ = log.Warnf("Read - error: %+v", err)
@@ -183,7 +176,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Name = &id.ResourceID
 
 	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
 	if err != nil {
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
@@ -395,7 +388,7 @@ func mapClusterToModel(model *Model, cluster *mongodbatlas.AdvancedCluster) {
 }
 
 func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID string) (handler.ProgressEvent, error) {
-	progressEvent, err := validateProgress(client, currentModel, constants.IdleState, constants.CreatingState)
+	progressEvent, err := validateProgress(client, currentModel, constants.CreatingState, constants.IdleState)
 	if err != nil {
 		return progressEvent, nil
 	}
@@ -408,7 +401,7 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 				res.Response), nil
 		}
 		_, _ = log.Debugf("Updating cluster settings:%s", *currentModel.Name)
-		return updateClusterSettings(currentModel, client, projectID, cluster)
+		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
 }
@@ -675,11 +668,9 @@ func flattenBiConnectorConfig(biConnector *mongodbatlas.BiConnector) *BiConnecto
 	}
 }
 
-func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings) *ConnectionStrings {
-	var connStrings ConnectionStrings
-
+func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings) (connStrings *ConnectionStrings) {
 	if clusterConnStrings != nil {
-		connStrings = ConnectionStrings{
+		connStrings = &ConnectionStrings{
 			Standard:        &clusterConnStrings.Standard,
 			StandardSrv:     &clusterConnStrings.StandardSrv,
 			Private:         &clusterConnStrings.Private,
@@ -687,7 +678,7 @@ func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings
 			PrivateEndpoint: flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint),
 		}
 	}
-	return &connStrings
+	return
 }
 
 func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) []PrivateEndpoint {
@@ -967,13 +958,13 @@ func updateClusterCallback(client *mongodbatlas.Client, currentModel *Model, pro
 
 		_, _ = log.Debugf("Updating cluster :%s", *currentModel.Name)
 
-		return updateClusterSettings(currentModel, client, projectID, cluster)
+		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
 }
 
 func updateClusterSettings(currentModel *Model, client *mongodbatlas.Client,
-	projectID string, cluster *mongodbatlas.AdvancedCluster) (handler.ProgressEvent, error) {
+	projectID string, cluster *mongodbatlas.AdvancedCluster, pe *handler.ProgressEvent) (handler.ProgressEvent, error) {
 	// Update advanced configuration
 	if currentModel.AdvancedSettings != nil {
 		_, _ = log.Debugf("AdvancedSettings: %+v", *currentModel.AdvancedSettings)
@@ -999,11 +990,7 @@ func updateClusterSettings(currentModel *Model, client *mongodbatlas.Client,
 
 	jsonStr, _ := json.Marshal(currentModel)
 	_, _ = log.Debugf("Cluster Response --- value: %s ", jsonStr)
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         fmt.Sprintf("Cluster state `%s`", cluster.StateName),
-		ResourceModel:   currentModel,
-	}, nil
+	return *pe, nil
 }
 
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentState, targetState string) (handler.ProgressEvent, error) {
@@ -1026,17 +1013,18 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 		p.Message = constants.Pending
 		p.CallbackContext = map[string]interface{}{
 			constants.StateName: state,
+			constants.ID:        currentModel.Id,
 		}
 		return p, nil
 	}
 
-	if currentState == constants.CreatingState {
-		currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
-	}
 	p := handler.NewProgressEvent()
 	p.OperationStatus = handler.Success
 	p.Message = constants.Complete
-	if targetState != constants.DeletedState {
+	// Delete event shouldn't have model in the response
+	if targetState == constants.IdleState {
+		currentModel.StateName = &cluster.StateName
+		currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
 		p.ResourceModel = currentModel
 	}
 	return p, nil

@@ -5,39 +5,18 @@
       "PrivateKey": ""
     },
     "ProjectId": "",
-    "ClusterName": "",
-    "AutoExportEnabled": "false",
-    "Export": {
-    },
-    "CopySettings": [
-      {
-        "CloudProvider": "",
-        "Frequencies": [
-          ""
-        ],
-        "RegionName": "",
-        "ReplicationSpecId": "",
-        "ShouldCopyOplogs": "false"
-      },
-      {
-        "CloudProvider": "",
-        "Frequencies": [
-          ""
-        ],
-        "RegionName": "",
-        "ReplicationSpecId": "",
-        "ShouldCopyOplogs": "false"
-      }
-    ],
+    "ClusterName": "cfn-test-bot-280649-cloud-backup-schedule",
+    "AutoExportEnabled": "False",
+    "Export": {},
     "Policies": [
       {
-        "ID": "",
+        "ID": "63a64e5ce0eae22c795be874",
         "PolicyItems": [
           {
-            "FrequencyInterval": "1",
-            "FrequencyType": "daily",
+            "FrequencyInterval": 6,
+            "FrequencyType": "hourly",
             "RetentionUnit": "days",
-            "RetentionValue": "1"
+            "RetentionValue": 7
           }
         ]
       }
@@ -45,7 +24,6 @@
     "ReferenceHourOfDay": "0",
     "ReferenceMinuteOfHour": "0",
     "RestoreWindowDays": "1",
-    "UpdateSnapshots": "true",
     "UseOrgAndGroupNamesInExportPrefix": "true"
   },
   "providerLogGroupName" : "mongodb-atlas-cloud-backup-schedule-logs",

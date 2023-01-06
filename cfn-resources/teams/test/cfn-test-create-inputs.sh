@@ -23,9 +23,7 @@ projectName="${1}"
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-
- userName=$(mongocli iam organizations users list  --orgId "$ATLAS_ORG_ID" --output json | jq '.results[0]|.emailAddress')
-userName=$(echo ${userName} | sed 's/"//g')
+userName=$(atlas organizations users list --orgId "$ATLAS_ORG_ID" --output json | jq -r '.results' | jq -r '.[0].emailAddress')
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg org "$ATLAS_ORG_ID" \

@@ -1,4 +1,4 @@
-# MongoDB::Atlas::onlinearchives ApiKeyDefinition
+# MongoDB::Atlas::OnlineArchive ApiKeyDefinition
 
 ## Syntax
 

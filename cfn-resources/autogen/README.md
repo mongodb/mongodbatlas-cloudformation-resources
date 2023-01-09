@@ -21,7 +21,7 @@ eg:
     }`
 
 
-### step 2:
+### Step 2:
 Run below command to generate schema file that is required for ``cfn generagte`` in the next step.
 
     make schema

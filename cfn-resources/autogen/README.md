@@ -1,4 +1,4 @@
-# Auto Generate cfn template and generic GO Code
+# Auto Generate CloudFormation template and generic GO Code
 
 ## How to generate Resource setup and Respective Go template for a new Resource
 

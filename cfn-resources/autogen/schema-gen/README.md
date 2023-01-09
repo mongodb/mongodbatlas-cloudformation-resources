@@ -1,3 +1,3 @@
-#Read OpenAPI and generate CFN Schema
+# Read OpenAPI and generate CFN Schema
 
 make schema

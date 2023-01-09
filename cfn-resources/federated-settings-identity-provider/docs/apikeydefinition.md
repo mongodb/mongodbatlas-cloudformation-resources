@@ -1,4 +1,4 @@
-# MongoDB::Atlas::federatedsettingsidentityprovider ApiKeyDefinition
+# MongoDB::Atlas::FederatedSettingsIdentityProvider ApiKeyDefinition
 
 ## Syntax
 

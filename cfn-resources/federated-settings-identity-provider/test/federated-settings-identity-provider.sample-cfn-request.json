@@ -1,0 +1,23 @@
+{
+    "desiredResourceState" : {
+
+      "FederationSettingsId": "",
+      "OktaIdpId": "",
+      "SsoDebugEnabled": "",
+      "AssociatedDomains":"" ,
+      "DisplayName": "",
+      "Status": "",
+      "IssuerUri": "",
+      "RequestBinding": "",
+      "ResponseSignatureAlgorithm": "",
+      "SsoUrl": "",
+      "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+      }
+
+
+    },
+
+    "previousResourceState": { }
+}

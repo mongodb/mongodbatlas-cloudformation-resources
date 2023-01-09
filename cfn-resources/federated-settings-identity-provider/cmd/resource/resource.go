@@ -5,17 +5,22 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{"SsoDebugEnabled", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ReadRequiredFields = []string{"FederationSettingsId", "OktaIdpId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var UpdateRequiredFields = []string{"FederationSettingsId", "IdentityProviderId", "SsoDebugEnabled", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var DeleteRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "FederationSettingsId"}
+const (
+	OktaIdpId = "OktaIdpId"
+)
+
+var CreateRequiredFields = []string{constants.PvtKey, constants.PubKey}
+var ReadRequiredFields = []string{constants.FederationSettingsID, OktaIdpId, constants.PvtKey, constants.PubKey}
+var UpdateRequiredFields = []string{constants.FederationSettingsID, OktaIdpId, constants.PvtKey, constants.PubKey}
+var DeleteRequiredFields = []string{constants.PvtKey, constants.PubKey}
+var ListRequiredFields = []string{constants.PvtKey, constants.PubKey, constants.FederationSettingsID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)

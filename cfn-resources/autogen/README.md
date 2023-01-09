@@ -6,7 +6,7 @@
 
 Update mapping.json in schema folder with new resource details
 
-eg:
+For Example:
     `{
         "resources" : [
             {

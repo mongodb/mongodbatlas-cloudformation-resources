@@ -33,7 +33,7 @@ Run below command to generate Resource template which reads
 For example: to create search-index resource run below command.
 search-indexes is the directory name for resource to create
 indexes is the ResourceName that can be found in the end of the OpenAPI URL.
-eg: /api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes
+For Example: /api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes
 
     make create dirName=search-indexes resourceName=indexes
 

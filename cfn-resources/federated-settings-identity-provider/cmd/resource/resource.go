@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -9,16 +10,16 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
-	OktaIdpId = "OktaIdpId"
+	OktaIdpID = "OktaIdpId"
 )
 
 var CreateRequiredFields = []string{constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.FederationSettingsID, OktaIdpId, constants.PvtKey, constants.PubKey}
-var UpdateRequiredFields = []string{constants.FederationSettingsID, OktaIdpId, constants.PvtKey, constants.PubKey}
+var ReadRequiredFields = []string{constants.FederationSettingsID, OktaIdpID, constants.PvtKey, constants.PubKey}
+var UpdateRequiredFields = []string{constants.FederationSettingsID, OktaIdpID, constants.PvtKey, constants.PubKey}
 var DeleteRequiredFields = []string{constants.PvtKey, constants.PubKey}
 var ListRequiredFields = []string{constants.PvtKey, constants.PubKey, constants.FederationSettingsID}
 
@@ -38,7 +39,6 @@ func (m *Model) CompleteByResponse(response mongodbatlas.FederatedSettingsIdenti
 	m.RequestBinding = &response.RequestBinding
 	m.ResponseSignatureAlgorithm = &response.ResponseSignatureAlgorithm
 	m.SsoUrl = &response.SsoURL
-
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -186,9 +186,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	for _, federatedSettingsIdentityProvider := range federatedSettingsIdentityProviders {
+	for i := range federatedSettingsIdentityProviders {
 		var m Model
-		m.CompleteByResponse(federatedSettingsIdentityProvider)
+		m.CompleteByResponse(federatedSettingsIdentityProviders[i])
 		mm = append(mm, m)
 	}
 

@@ -28,6 +28,7 @@ Run below command to generate schema file that is required for ``cfn generagte``
 ```bash
     make schema
 ``` 
+
 ### Step 3:
 Run below command to generate Resource template which reads
 /configs/<resource>-schema.json and /configs/<resource>-req.json

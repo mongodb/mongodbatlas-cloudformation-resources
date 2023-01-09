@@ -24,7 +24,7 @@
                 }
             }
         },
-        "Cluster": {
+        "AtlasCluster": {
             "Type": "MongoDB::Atlas::Cluster",
             "Properties": {
                 "ProjectId": {
@@ -95,10 +95,18 @@
         }
     },
     "Outputs": {
-        "Id": {
-            "Description": "The ID of the cluster, it is not the actual cluster ID created by MongoDB Atlas.",
+        "MongoDBAtlasConnectionStrings": {
+            "Description": "Cluster connection strings",
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConnectionStrings"
+                }
+            },
             "Value": {
-                "Ref": "Cluster"
+                "Fn::GetAtt": [
+                    "AtlasCluster",
+                    "ConnectionStrings.Standard"
+                ]
             }
         }
     }

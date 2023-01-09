@@ -1,0 +1,13 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "MongoDB::Atlas::SearchIndex",
+    "language": "go",
+    "runtime": "go1.x",
+    "entrypoint": "handler",
+    "testEntrypoint": "handler",
+    "settings": {
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/search-index",
+        "protocolVersion": "2.0.0",
+        "pluginVersion": "2.0.4"
+    }
+}

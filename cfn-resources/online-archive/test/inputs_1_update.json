@@ -1,0 +1,14 @@
+{
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": "<>"
+  },
+  "ClusterName": "",
+  "Criteria": {
+    "Type": "DATE",
+    "DateField": "created",
+    "DateFormat": "ISODATE",
+    "ExpireAfterDays": "6"
+  },
+  "ProjectId": ""
+}

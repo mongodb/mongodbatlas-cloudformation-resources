@@ -12,7 +12,6 @@ set -x
 
 echo "$ATLAS_PUBLIC_KEY"
 echo "$ATLAS_PRIVATE_KEY"
-echo "$projectId"
 
 function usage {
     echo "Creates a new customdb role for the test"
@@ -23,20 +22,17 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-projectName="${1}"
 
-projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
     echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
-
-echo "Created project \"${projectName}\" with id: ${projectId}"
-
-clusterName="${projectName}"
+echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \

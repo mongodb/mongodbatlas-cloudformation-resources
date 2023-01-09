@@ -12,43 +12,23 @@
         "JavascriptEnabled": "true",
         "MinimumEnabledTLSProtocol": "TLS1_2",
         "NoTableScan": "false",
-        "OplogSizeMB": "2000",
+        "OplogSizeMB": "4000",
         "SampleSizeBIConnector": "110",
         "SampleRefreshIntervalBIConnector": "310"
       },
-      "BackupEnabled": "true",
+      "BackupEnabled": "false",
       "ClusterType": "REPLICASET",
-      "Paused": "false",
-      "PitEnabled": "false",
-      "BiConnector": {
-        "ReadPreference": "secondary",
-        "Enabled": "false"
-      },
       "ReplicationSpecs": [
         {
           "NumShards": "1",
           "AdvancedRegionConfigs": [
             {
-              "AutoScaling": {
-                "DiskGB": {
-                  "Enabled": "true"
-                },
-                "Compute": {
-                  "Enabled": "false",
-                  "ScaleDownEnabled": "false"
-                }
-              },
               "AnalyticsSpecs": {
                 "EbsVolumeType": "STANDARD",
                 "InstanceSize": "M10",
-                "NodeCount": "3"
+                "NodeCount": "1"
               },
               "ElectableSpecs": {
-                "EbsVolumeType": "STANDARD",
-                "InstanceSize": "M10",
-                "NodeCount": "3"
-              },
-              "ReadOnlySpecs": {
                 "EbsVolumeType": "STANDARD",
                 "InstanceSize": "M10",
                 "NodeCount": "3"

@@ -1,0 +1,11 @@
+{
+  "desiredResourceState": {
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    },
+    "ProjectId": ""
+  },
+  "providerLogGroupName" : "mongodb-atlas-custom-dns-config-cluster-aws-logs",
+  "previousResourceState": { }
+}

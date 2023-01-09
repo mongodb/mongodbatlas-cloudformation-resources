@@ -1,0 +1,63 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "",
+      "ConstraintDescription" : ""
+    },
+    "ClusterName" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "cfntest",
+      "ConstraintDescription" : ""
+    },
+	"ExportBucketId" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "CloudBackUp": {
+      "Type": "MongoDB::Atlas::BackupSnapshot",
+      "Properties": {
+        "GroupId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "Description": "A testing for creating cloud provider snapshot 2",
+        "RetentionInDays" : 3 ,
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    },
+    "CloudBackupSnapshotExportJob": {
+      "Type": "MongoDB::Atlas::CloudBackupSnapshotExportJob",
+      "Properties": {
+        "GroupId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "SnapshotId" : { "Ref" : "CloudBackUp" },
+        "ExportBucketId": { "Ref" : "ExportBucketId" },
+        "ApiKeys": {
+          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        }
+      }
+    }
+  },
+  "Outputs" : {
+    "SnapshotId": {
+      "Description": "Id of the cloud provider snapshot",
+      "Value" : { "Ref" : "CloudBackUp" }
+    },
+    "ExportId": {
+      "Description": "Id of the cloud provider snapshot restore job",
+      "Value" : { "Ref" : "CloudBackupSnapshotExportJob" }
+    }
+  }
+}

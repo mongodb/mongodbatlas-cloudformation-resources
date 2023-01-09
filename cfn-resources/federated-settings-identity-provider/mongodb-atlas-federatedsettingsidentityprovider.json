@@ -1,0 +1,96 @@
+{
+  "typeName": "MongoDB::Atlas::FederatedSettingsIdentityProvider",
+  "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
+  "additionalProperties": false,
+  "definitions": {
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/FederationSettingsId",
+    "/properties/OktaIdpId"
+  ],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "FederationSettingsId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your federation.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "OktaIdpId": {
+      "type": "string",
+      "description": "Unique 20-hexadecimal digit string that identifies the identity provider.",
+      "maxLength": 20,
+      "minLength": 20,
+      "pattern": "^([a-f0-9]{20})$"
+    },
+    "SsoDebugEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the identity provider has SSO debug enabled."
+    },
+    "AssociatedDomains": {
+      "type": "array",
+      "description": "List that contains the domains associated with the identity provider.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "Status": {
+      "type": "string",
+      "description": "String enum that indicates whether the identity provider is active."
+    },
+    "IssuerUri": {
+      "type": "string",
+      "description": "Unique string that identifies the issuer of the SAML Assertion."
+    },
+    "RequestBinding": {
+      "type": "string",
+      "description": "SAML Authentication Request Protocol HTTP method binding (POST or REDIRECT) that Federated Authentication uses to send the authentication request."
+    },
+    "ResponseSignatureAlgorithm": {
+      "type": "string",
+      "description": "Signature algorithm that Federated Authentication uses to encrypt the identity provider signature."
+    },
+    "SsoUrl": {
+      "type": "string",
+      "description": "URL that points to the receiver of the SAML authentication request."
+    },
+    "DisplayName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the IdP."
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/FederationSettingsId",
+    "/properties/OktaIdpId"
+  ],
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

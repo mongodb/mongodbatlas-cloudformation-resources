@@ -34,7 +34,7 @@ var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
-	compare := true
+	compare := false
 
 	file, doc, err := readConfig(compare)
 	if err != nil {

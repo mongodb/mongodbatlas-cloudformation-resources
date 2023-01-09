@@ -10,7 +10,7 @@ goarch=amd64
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=warning
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
-# example for resource: MongoDB::Atlas::Teams
+# example for resource naming convention: MongoDB::Atlas::Teams
 # example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/invites
 # example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/indexes
 

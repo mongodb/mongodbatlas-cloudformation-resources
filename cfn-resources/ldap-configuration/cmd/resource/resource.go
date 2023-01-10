@@ -1,12 +1,8 @@
 package resource
 
 import (
-	"bytes"
 	"context"
 	"errors"
-	"fmt"
-	"net/http"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -14,7 +10,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	dac "github.com/xinsnake/go-http-digest-auth-client"
+	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -37,8 +33,8 @@ func setup() {
 }
 
 func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
-	m.AuthenticationEnabled = &resp.LDAP.AuthenticationEnabled
-	m.AuthorizationEnabled = &resp.LDAP.AuthorizationEnabled
+	m.AuthenticationEnabled = resp.LDAP.AuthenticationEnabled
+	m.AuthorizationEnabled = resp.LDAP.AuthorizationEnabled
 
 	mapping := make([]ApiAtlasNDSUserToDNMappingView, len(resp.LDAP.UserToDNMapping))
 
@@ -57,12 +53,12 @@ func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
 
 	ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: true,
-		Hostname:              *m.Hostname,
-		Port:                  *m.Port,
-		BindUsername:          *m.BindUsername,
+		AuthenticationEnabled: pointy.Bool(true),
+		Hostname:              m.Hostname,
+		Port:                  m.Port,
+		BindUsername:          m.BindUsername,
 		UserToDNMapping:       DNMapping,
-		BindPassword:          *m.BindPassword,
+		BindPassword:          m.BindPassword,
 	}
 
 	ldapReq := &mongodbatlas.LDAPConfiguration{
@@ -70,15 +66,15 @@ func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
 	}
 
 	if m.AuthzQueryTemplate != nil {
-		ldapReq.LDAP.AuthzQueryTemplate = *m.AuthzQueryTemplate
+		ldapReq.LDAP.AuthzQueryTemplate = m.AuthzQueryTemplate
 	}
 
 	if m.CaCertificate != nil {
-		ldapReq.LDAP.CaCertificate = *m.CaCertificate
+		ldapReq.LDAP.CaCertificate = m.CaCertificate
 	}
 
 	if m.AuthorizationEnabled != nil {
-		ldapReq.LDAP.AuthorizationEnabled = *m.AuthorizationEnabled
+		ldapReq.LDAP.AuthorizationEnabled = m.AuthorizationEnabled
 	}
 
 	return ldapReq
@@ -167,7 +163,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func isResourceEnabled(ldapConf mongodbatlas.LDAPConfiguration) bool {
-	return ldapConf.LDAP.AuthenticationEnabled
+	if ldapConf.LDAP.AuthenticationEnabled != nil {
+		return *ldapConf.LDAP.AuthenticationEnabled
+	}
+	return false
 }
 
 func Get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfiguration, *handler.ProgressEvent) {
@@ -210,7 +209,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -249,42 +248,22 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errPe, nil
 	}
 
-	return executeManualDelete(currentModel), nil
-}
+	ldapReq := currentModel.GetAtlasModel()
+	ldapReq.LDAP.AuthorizationEnabled = pointy.Bool(false)
+	ldapReq.LDAP.AuthenticationEnabled = pointy.Bool(false)
 
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("not implemented: List")
-}
-
-/*this functionality is used to disable the Authentication and Authorization, the client is currently failing when setting the properties as false*/
-func executeManualDelete(currentModel *Model) handler.ProgressEvent {
-	URL := fmt.Sprintf("https://cloud.mongodb.com/api/atlas/v1.0/groups/%s/userSecurity", *currentModel.GroupId)
-
-	// create a new digest authentication request
-	dr := dac.NewRequest(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, "PATCH", URL, `{"ldap": {"authenticationEnabled": false,"authorizationEnabled" : false }}`)
-	dr.Header.Set("Content-Type", "application/json")
-	r, err := dr.Execute()
+	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		_, _ = log.Debugf(fmt.Sprintf("Error creating request %s", err.Error()))
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Error creating request %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
+		_, _ = log.Debugf("Update - error: %+v", err)
+		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-
-	defer r.Body.Close()
-
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(r.Body)
-	if err != nil {
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Error reading request body %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
-	}
-	s := buf.String() // Does a complete copy of the bytes in the buffer.
-
-	if r.StatusCode != http.StatusAccepted {
-		return progressEvents.GetFailedEventByResponse(fmt.Sprintf("Error calling API %s", err.Error()), r)
-	}
-	_, _ = log.Debugf(fmt.Sprintf("Status Code %d, Message %s", r.StatusCode, s))
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete success",
-	}
+	}, nil
+}
+
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }

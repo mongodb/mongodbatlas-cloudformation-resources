@@ -4,8 +4,6 @@ An LDAP configuration defines settings for Atlas to connect to your LDAP server 
 Your LDAP server must be visible to the internet or connected to your Atlas cluster with VPC Peering.
 In addition, your LDAP server must use TLS.
 
-NOTE: the process for disabling current LDAP configuration is bugged in the atlas client so a direct call is being done to the atlas api
-
 ## Attributes & Parameters
 
 Please consult the [Resource Docs](docs/README.md)

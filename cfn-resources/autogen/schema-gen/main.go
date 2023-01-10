@@ -23,7 +23,7 @@ const (
 	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
-	OpenAPISpecPath    = "https://www.mongodb.com/8c07de79-53d6-41d8-8fc8-bacdf7f271fa"
+	OpenAPISpecPath    = "https://mongodb-mms-prod-build-server.s3.amazonaws.com/openapi/bfb9c50bdcffe3100e37c3f7b73b52915701c98b.json"
 	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
 	CurrentDir         = "schema-gen"
@@ -34,6 +34,7 @@ var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
+	/*Set the compare variable to TRUE to get the latest swagger file*/
 	compare := false
 
 	file, doc, err := readConfig(compare)
@@ -260,7 +261,7 @@ func sortDefinitions(properties map[string]Definitions) (props map[string]Defini
 	return props
 }
 
-func downloadOpenAPISpec(url, fileName string) (err error) {
+func downloadOpenAPISpec(fileName string) (err error) {
 	spaceClient := http.Client{
 		Timeout: time.Second * 5,
 	}
@@ -311,9 +312,12 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
 	// For comparison download the latest openAPIspec file
 	if compare {
-		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
-		if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
-			return []byte{}, nil, err
+		latestFile := fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
+		if err := downloadOpenAPISpec(latestFile); err != nil {
+			fmt.Println("WARNING: Error getting last swagger version, continuing with current swagger version")
+		} else {
+			openAPISpecFile = latestFile
+			fmt.Println("New Swagger version updated successfully")
 		}
 	}
 	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)

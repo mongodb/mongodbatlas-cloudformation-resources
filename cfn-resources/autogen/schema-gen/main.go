@@ -569,12 +569,13 @@ func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare b
 	reqDone <- true
 }
 
-func processSchema(id string, v *openapi3.SchemaRef, schemas openapi3.Schemas) (properties map[string]map[string]Property,
-	pDefinitions map[string]Definitions) {
+var pDefinitions = make(map[string]Definitions, 0)
+
+func processSchema(id string, v *openapi3.SchemaRef, schemas openapi3.Schemas) (map[string]map[string]Property,
+	map[string]Definitions) {
 	definitions := make(map[string]*openapi3.SchemaRef, 0)
 
-	properties = make(map[string]map[string]Property, 0)
-	pDefinitions = make(map[string]Definitions, 0)
+	properties := make(map[string]map[string]Property, 0)
 
 	pMap := make(map[string]Property, 0)
 

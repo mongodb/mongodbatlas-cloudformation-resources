@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/openlyinc/pointy"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -133,10 +135,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	ldapReq := &mongodbatlas.LDAP{
-		Hostname:     "-",
-		Port:         1111,
-		BindPassword: "-",
-		BindUsername: "-",
+		Hostname:     pointy.String("-"),
+		Port:         pointy.Int(1111),
+		BindPassword: pointy.String("-"),
+		BindUsername: pointy.String("-"),
 	}
 
 	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
@@ -158,18 +160,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func (m *Model) GetAtlasModel() *mongodbatlas.LDAP {
 	ldap := &mongodbatlas.LDAP{
-		Hostname:     *m.HostName,
-		Port:         *m.Port,
-		BindPassword: *m.BindPassword,
-		BindUsername: *m.BindUsername,
+		Hostname:     m.HostName,
+		Port:         m.Port,
+		BindPassword: m.BindPassword,
+		BindUsername: m.BindUsername,
 	}
 
 	if m.AuthzQueryTemplate != nil {
-		ldap.AuthzQueryTemplate = *m.AuthzQueryTemplate
+		ldap.AuthzQueryTemplate = m.AuthzQueryTemplate
 	}
 
 	if m.CaCertificate != nil {
-		ldap.CaCertificate = *m.CaCertificate
+		ldap.CaCertificate = m.CaCertificate
 	}
 
 	return ldap

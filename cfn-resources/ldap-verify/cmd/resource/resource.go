@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/openlyinc/pointy"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -24,7 +26,7 @@ const (
 var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port, constants.PvtKey, constants.PubKey}
 var ReadRequiredFields = []string{constants.GroupID, RequestID, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
+var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey, RequestID}
 var ListRequiredFields []string
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -133,15 +135,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	ldapReq := &mongodbatlas.LDAP{
-		Hostname:     "-",
-		Port:         1111,
-		BindPassword: "-",
-		BindUsername: "-",
+		Hostname:     pointy.String("-"),
+		Port:         pointy.Int(1111),
+		BindPassword: pointy.String("-"),
+		BindUsername: pointy.String("-"),
 	}
 
 	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Delete - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
@@ -158,18 +160,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func (m *Model) GetAtlasModel() *mongodbatlas.LDAP {
 	ldap := &mongodbatlas.LDAP{
-		Hostname:     *m.HostName,
-		Port:         *m.Port,
-		BindPassword: *m.BindPassword,
-		BindUsername: *m.BindUsername,
+		Hostname:     m.HostName,
+		Port:         m.Port,
+		BindPassword: m.BindPassword,
+		BindUsername: m.BindUsername,
 	}
 
 	if m.AuthzQueryTemplate != nil {
-		ldap.AuthzQueryTemplate = *m.AuthzQueryTemplate
+		ldap.AuthzQueryTemplate = m.AuthzQueryTemplate
 	}
 
 	if m.CaCertificate != nil {
-		ldap.CaCertificate = *m.CaCertificate
+		ldap.CaCertificate = m.CaCertificate
 	}
 
 	return ldap

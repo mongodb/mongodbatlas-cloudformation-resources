@@ -236,7 +236,7 @@ func main() {
 }
 
 func sortProperties(properties map[string]Property) (props map[string]Property) {
-	keys := make([]string, len(properties))
+	keys := make([]string, 0, len(properties))
 	for key := range properties {
 		keys = append(keys, key)
 	}
@@ -249,7 +249,8 @@ func sortProperties(properties map[string]Property) (props map[string]Property) 
 }
 
 func sortDefinitions(properties map[string]Definitions) (props map[string]Definitions) {
-	keys := make([]string, len(properties))
+	keys := make([]string, 0, len(properties))
+
 	for key := range properties {
 		keys = append(keys, key)
 	}

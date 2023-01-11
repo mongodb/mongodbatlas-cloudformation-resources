@@ -26,7 +26,7 @@ const (
 var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port, constants.PvtKey, constants.PubKey}
 var ReadRequiredFields = []string{constants.GroupID, RequestID, constants.PvtKey, constants.PubKey}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
+var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey, RequestID}
 var ListRequiredFields []string
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -143,7 +143,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Delete - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 

@@ -55,7 +55,11 @@
     {
       "typeName" :"PrivateEndpoint",
       "openApiPath" : [
-        "/api/atlas/v1.0/groups/{groupId}/encryptionAtRest"
+        "/api/atlas/v1.0/groups/{groupId}/privateEndpoint/endpointService",
+        "/api/atlas/v1.0/groups/{groupId}/privateEndpoint/{cloudProvider}/endpointService",
+        "/api/atlas/v1.0/groups/{groupId}/privateEndpoint/{cloudProvider}/endpointService/{endpointServiceId}",
+        "/api/atlas/v1.0/groups/{groupId}/privateEndpoint/{cloudProvider}/endpointService/{endpointServiceId}/endpoint",
+        "/api/atlas/v1.0/groups/{groupId}/privateEndpoint/{cloudProvider}/endpointService/{endpointServiceId}/endpoint/{endpointId}"
       ]
     },
     {

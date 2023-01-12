@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/nsf/jsondiff"
@@ -21,7 +21,11 @@ func CompareJSONFiles(resourceName, existingFilePath, latestFilePath string) (di
 
 	differences, diffJSON := jsondiff.Compare(existingAPIContent, latestAPIContent, &jsondiff.Options{SkipMatches: true})
 	if differences > 0 {
-		fmt.Printf("Resource :%+v, diff %+v, val : %s", resourceName, differences, diffJSON)
+		log.Printf("found difference in %s schema ", resourceName)
+		err = os.WriteFile(resourceName+"-"+diffFile, []byte(diffJSON), 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	return
 }

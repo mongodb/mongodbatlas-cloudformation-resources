@@ -19,26 +19,49 @@ import (
 
 // https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
 
+var diffFile = "diff.json"
+
 const (
 	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
 	OpenAPISpecPath    = "https://www.mongodb.com/8c07de79-53d6-41d8-8fc8-bacdf7f271fa"
-	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
-	SchemasDir         = "schemas"
-	CurrentDir         = "schema-gen"
-	LatestSwaggerFile  = "swagger.latest.json"
+	//Dir                = "/schema-gen"
+	Dir               = "/autogen/schema-gen" //For debugging
+	SchemasDir        = "schemas"
+	CurrentDir        = "schema-gen"
+	LatestSwaggerFile = "swagger.latest.json"
 )
 
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
-	compare := true
+	compare := false
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		if arg == "compare" {
+			fmt.Println("comparing schemas..")
+			compare = true
+		}
+		if len(os.Args) > 2 {
+			diffFile = os.Args[2]
+		}
+		dir, _ := getCurrentDir()
+		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if diff == "" {
+			fmt.Println("No difference found in OpenAPI Spec")
+			return
+		}
+	}
 
 	file, doc, err := readConfig(compare)
 	if err != nil {
-		fmt.Printf("%v", err)
+		fmt.Printf("read config err:%v", err)
 		os.Exit(1)
 	}
 
@@ -64,6 +87,7 @@ func main() {
 	go generateSchemas(chn, done, compare)
 	go generateReqFields(reqFieldsChan, reqDone, compare)
 
+	fmt.Println("Generating schema")
 	for _, res := range data.Resources {
 		definitions := make(map[string]Definitions, 0)
 		var ids, readOnly, idsDef, readOnlyDef []string
@@ -309,16 +333,16 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	}
 
 	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
-	// For comparison download the latest openAPIspec file
+	// For comparison download the latest openAPI-spec file
 	if compare {
 		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
-		if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
-			return []byte{}, nil, err
-		}
+		//if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
+		//	return []byte{}, nil, err
+		//}
 	}
-	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
-	if err != nil {
-		return nil, nil, err
+	doc, er := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
+	if er != nil {
+		fmt.Printf("Load openapi error : %+v", er)
 	}
 
 	if doc == nil {

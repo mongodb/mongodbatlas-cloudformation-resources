@@ -38,3 +38,8 @@ eg: /api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes
     make create dirName=search-indexes resourceName=indexes
 
 
+## How to find the Atlas OpenAPI differences with the latest Spec.
+
+Run the below command to find out the differences. 
+Internally it considers the resources that are mentioned in (mapping.json)[schema-gen/mapping.json]
+

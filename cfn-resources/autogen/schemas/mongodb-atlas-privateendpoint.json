@@ -15,157 +15,9 @@
         }
       },
       "additionalProperties": false
-    },
-    "AwsKms": {
-      "type": "object",
-      "properties": {
-        "AccessKeyID": {
-          "type": "string",
-          "description": "Unique alphanumeric string that identifies an Identity and Access Management (IAM) access key with permissions required to access your Amazon Web Services (AWS) Customer Master Key (CMK).",
-          "maxLength": 128,
-          "minLength": 16,
-          "pattern": "^([\\w]+)$"
-        },
-        "ApiKeys": {
-          "$ref": "#/definitions/ApiKeyDefinition"
-        },
-        "CustomerMasterKeyID": {
-          "type": "string",
-          "description": "Unique alphanumeric string that identifies the Amazon Web Services (AWS) Customer Master Key (CMK) you used to encrypt and decrypt the MongoDB master keys.",
-          "maxLength": 2048,
-          "minLength": 1,
-          "pattern": "^([\\w]+)$"
-        },
-        "Enabled": {
-          "type": "boolean",
-          "description": "Flag that indicates whether someone enabled encryption at rest for the specified project through Amazon Web Services (AWS) Key Management Service (KMS). To disable encryption at rest using customer key management and remove the configuration details, pass only this parameter with a value of `false`."
-        },
-        "Region": {
-          "type": "string",
-          "description": "Amazon Web Services Regions",
-          "$ref": "#/definitions/ApiAtlasAWSRegionNameView",
-          "enum": [
-            "AP_NORTHEAST_1",
-            "AP_NORTHEAST_2",
-            "AP_SOUTH_1",
-            "AP_SOUTHEAST_1",
-            "AP_SOUTHEAST_2",
-            "AP_SOUTHEAST_3",
-            "CA_CENTRAL_1",
-            "EU_CENTRAL_1",
-            "EU_WEST_1",
-            "EU_WEST_2",
-            "EU_WEST_3",
-            "SA_EAST_1",
-            "US_EAST_1",
-            "US_EAST_2",
-            "US_WEST_1",
-            "US_WEST_2"
-          ]
-        },
-        "RoleId": {
-          "type": "string",
-          "description": "Unique 24-hexadecimal digit string that identifies an Amazon Web Services (AWS) Identity and Access Management (IAM) role. This IAM role has the permissions required to manage your AWS customer master key.",
-          "maxLength": 24,
-          "minLength": 24,
-          "pattern": "^([a-f0-9]{24})$"
-        },
-        "SecretAccessKey": {
-          "type": "string",
-          "description": "Human-readable label of the Identity and Access Management (IAM) secret access key with permissions required to access your Amazon Web Services (AWS) customer master key."
-        },
-        "Valid": {
-          "type": "boolean",
-          "description": "Flag that indicates whether the Amazon Web Services (AWS) Key Management Service (KMS) encryption key can encrypt and decrypt data."
-        }
-      },
-      "additionalProperties": false
-    },
-    "AzureKeyVault": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/ApiKeyDefinition"
-        },
-        "AzureEnvironment": {
-          "type": "string",
-          "description": "Azure environment in which your account credentials reside."
-        },
-        "ClientID": {
-          "type": "string",
-          "description": "Unique 36-hexadecimal character string that identifies an Azure application associated with your Azure Active Directory tenant.",
-          "maxLength": 36,
-          "minLength": 36,
-          "pattern": "^[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}$"
-        },
-        "Enabled": {
-          "type": "boolean",
-          "description": "Flag that indicates whether someone enabled encryption at rest for the specified  project. To disable encryption at rest using customer key management and remove the configuration details, pass only this parameter with a value of `false`."
-        },
-        "KeyIdentifier": {
-          "type": "string",
-          "description": "Web address with a unique key that identifies for your Azure Key Vault."
-        },
-        "KeyVaultName": {
-          "type": "string",
-          "description": "Unique string that identifies the Azure Key Vault that contains your key."
-        },
-        "ResourceGroupName": {
-          "type": "string",
-          "description": "Name of the Azure resource group that contains your Azure Key Vault."
-        },
-        "Secret": {
-          "type": "string",
-          "description": "Private data that you need secured and that belongs to the specified Azure Key Vault (AKV) tenant (**azureKeyVault.tenantID**). This data can include any type of sensitive data such as passwords, database connection strings, API keys, and the like. AKV stores this information as encrypted binary data."
-        },
-        "SubscriptionID": {
-          "type": "string",
-          "description": "Unique 36-hexadecimal character string that identifies your Azure subscription.",
-          "maxLength": 36,
-          "minLength": 36,
-          "pattern": "^[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}$"
-        },
-        "TenantID": {
-          "type": "string",
-          "description": "Unique 36-hexadecimal character string that identifies the Azure Active Directory tenant within your Azure subscription.",
-          "maxLength": 36,
-          "minLength": 36,
-          "pattern": "^[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}$"
-        },
-        "Valid": {
-          "type": "boolean",
-          "description": "Flag that indicates whether the Azure encryption key can encrypt and decrypt data."
-        }
-      },
-      "additionalProperties": false
-    },
-    "GoogleCloudKms": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/ApiKeyDefinition"
-        },
-        "Enabled": {
-          "type": "boolean",
-          "description": "Flag that indicates whether someone enabled encryption at rest for the specified  project. To disable encryption at rest using customer key management and remove the configuration details, pass only this parameter with a value of `false`."
-        },
-        "KeyVersionResourceID": {
-          "type": "string",
-          "description": "Resource path that displays the key version resource ID for your Google Cloud KMS."
-        },
-        "ServiceAccountKey": {
-          "type": "string",
-          "description": "JavaScript Object Notation (JSON) object that contains the Google Cloud Key Management Service (KMS). Format the JSON as a string and not as an object."
-        },
-        "Valid": {
-          "type": "boolean",
-          "description": "Flag that indicates whether the Google Cloud Key Management Service (KMS) encryption key can encrypt and decrypt data."
-        }
-      },
-      "additionalProperties": false
     }
   },
-  "description": "Returns and edits the Encryption at Rest using Customer Key Management configuration.",
+  "description": "Returns, adds, edits, and removes private endpoint services.",
   "handlers": {
     "create": {
       "permissions": []
@@ -181,13 +33,8 @@
     }
   },
   "primaryIdentifier": [
-    "/definitions/AwsKms/AccessKeyID",
-    "/definitions/AwsKms/CustomerMasterKeyID",
-    "/definitions/AwsKms/RoleId",
-    "/definitions/AzureKeyVault/ClientID",
-    "/definitions/AzureKeyVault/KeyVaultName",
-    "/definitions/AzureKeyVault/SubscriptionID",
-    "/definitions/AzureKeyVault/TenantID",
+    "/properties/EndpointId",
+    "/properties/EndpointServiceId",
     "/properties/GroupId"
   ],
   "properties": {
@@ -195,20 +42,22 @@
     "ApiKeys": {
       "$ref": "#/definitions/ApiKeyDefinition"
     },
-    "AwsKms": {
-      "type": "object",
-      "description": "Amazon Web Services (AWS) KMS configuration details and encryption at rest configuration set for the specified project.",
-      "$ref": "#/definitions/AwsKms"
+    "CloudProvider": {
+      "type": "string",
+      "description": "Cloud service provider that manages this private endpoint.",
+      "enum": ["AWS", "AZURE", "GCP"]
     },
-    "AzureKeyVault": {
-      "type": "object",
-      "description": "Details that define the configuration of Encryption at Rest using Azure Key Vault (AKV).",
-      "$ref": "#/definitions/AzureKeyVault"
+    "EndpointId": {
+      "type": "string",
+      "description": "Unique string that identifies the private endpoint you want to delete. The format of the **endpointId** parameter differs for AWS and Azure. You must URL encode the **endpointId** for Azure private endpoints.",
+      "pattern": "^vpce-[0-9a-f]{17}|^%2[fF]subscriptions%2[fF][0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}%2[fF]resource[gG]roups%2[fF]([-\\w._()]+)%2[fF]providers%2[fF]Microsoft\\.Network%2[fF]privateEndpoints%2[fF]([-\\w._()]+)"
     },
-    "GoogleCloudKms": {
-      "type": "object",
-      "description": "Details that define the configuration of Encryption at Rest using Google Cloud Key Management Service (KMS).",
-      "$ref": "#/definitions/GoogleCloudKms"
+    "EndpointServiceId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service from which you want to delete a private endpoint.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
     },
     "GroupId": {
       "type": "string",
@@ -216,13 +65,17 @@
       "maxLength": 24,
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
+    },
+    "ProviderName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cloud service provider for which you want to create the private endpoint service.",
+      "enum": ["AWS", "AZURE", "GCP"]
+    },
+    "Region": {
+      "type": "string",
+      "description": "Cloud provider region in which you want to create the private endpoint service. Regions accepted as values differ for [Amazon Web Services](https://docs.atlas.mongodb.com/reference/amazon-aws/), [Google Cloud Platform](https://docs.atlas.mongodb.com/reference/google-gcp/), and [Microsoft Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)."
     }
   },
-  "readOnlyProperties": [
-    "/definitions/AwsKms/Valid",
-    "/definitions/AzureKeyVault/Valid",
-    "/definitions/GoogleCloudKms/Valid"
-  ],
   "typeName": "MongoDB::Atlas::PrivateEndpoint",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

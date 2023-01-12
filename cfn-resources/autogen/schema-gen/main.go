@@ -571,8 +571,8 @@ func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare b
 
 var pDefinitions = make(map[string]Definitions, 0)
 
-func processSchema(id string, v *openapi3.SchemaRef, schemas openapi3.Schemas) (map[string]map[string]Property,
-	map[string]Definitions) {
+func processSchema(id string, v *openapi3.SchemaRef, schemas openapi3.Schemas) (prop map[string]map[string]Property,
+	defs map[string]Definitions) {
 	definitions := make(map[string]*openapi3.SchemaRef, 0)
 
 	properties := make(map[string]map[string]Property, 0)

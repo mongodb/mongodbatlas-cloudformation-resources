@@ -37,13 +37,8 @@ this procedure should generate 2 files in the schema folder (custom db role for 
 - mongodb-atlas-customdbrole-req.json : contains metadata related to the code generation, like potentially required fields, and fields that might be needed by the Atlas go Client
 
 ### Step 3:
-Run below command to generate Resource template which reads
+Run make create command to generate Resource template which reads
 /configs/<resource>-schema.json and /configs/<resource>-req.json
-
-For example: to create search-index resource run below command.
-search-indexes is the directory name for resource to create
-indexes is the ResourceName that can be found in the end of the OpenAPI URL.
-For Example: /api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes
 
 #### the make create requires 3 inputs:
 

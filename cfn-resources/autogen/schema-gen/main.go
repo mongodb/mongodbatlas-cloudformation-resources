@@ -23,7 +23,7 @@ const (
 	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
-	OpenAPISpecPath    = "https://mongodb-mms-prod-build-server.s3.amazonaws.com/openapi/bfb9c50bdcffe3100e37c3f7b73b52915701c98b.json"
+	OpenAPISpecPath    = "https://cloud-dev.mongodb.com/openapi.json"
 	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
 	CurrentDir         = "schema-gen"
@@ -264,7 +264,7 @@ func sortDefinitions(properties map[string]Definitions) (props map[string]Defini
 
 func downloadOpenAPISpec(fileName string) (err error) {
 	spaceClient := http.Client{
-		Timeout: time.Second * 5,
+		Timeout: time.Second * 10,
 	}
 
 	req, err := http.NewRequest(http.MethodGet, OpenAPISpecPath, http.NoBody)

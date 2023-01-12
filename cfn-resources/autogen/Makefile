@@ -19,11 +19,11 @@ create:
 	cd .. && \
 	mkdir $(dirName) && cp autogen/schemas/mongodb-atlas-$(resourceName).json $(dirName)/mongodb-atlas-$(resourceName).json && \
 	cd $(dirName) && \
-	cfn init -t MongoDB::Atlas::$(resourceName) -a r && cfn generate
+	cfn init -t MongoDB::Atlas::$(typeName) -a r && cfn generate
 	cd ../autogen && \
 	go run main.go -res ../$(dirName) -schemaName $(resourceName)
+	cp -fr templateMakeFile ../$(dirName)/Makefile
 	cd ../$(dirName) && rm go.mod && rm .gitignore
-
 schema:
 	cd schema-gen && go build
 	./schema-gen/schema-gen

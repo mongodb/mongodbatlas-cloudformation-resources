@@ -13,30 +13,30 @@
   },
   "ReadFields": {
     "InputParams": [
-      "Results",
-      "GroupId",
+      "Links",
+      "RoleNames",
       "TeamId",
       "ApiKeys",
+      "Results",
       "TotalCount",
-      "PageNum",
+      "GroupId",
       "IncludeCount",
       "ItemsPerPage",
-      "Links",
-      "RoleNames"
+      "PageNum"
     ],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
+      "ApiKeys",
       "Links",
       "RoleNames",
-      "TotalCount",
-      "PageNum",
+      "TeamId",
       "IncludeCount",
       "ItemsPerPage",
-      "TeamId",
-      "ApiKeys",
+      "PageNum",
       "Results",
+      "TotalCount",
       "GroupId"
     ],
     "RequiredParams": ["Links"]

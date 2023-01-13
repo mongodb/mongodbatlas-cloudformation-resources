@@ -10,7 +10,7 @@ goarch=amd64
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=warning
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
-# example for resource: MongoDB::Atlas::Teams
+# example for resource naming convention: MongoDB::Atlas::Teams
 # example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/invites
 # example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/indexes
 
@@ -19,11 +19,11 @@ create:
 	cd .. && \
 	mkdir $(dirName) && cp autogen/schemas/mongodb-atlas-$(resourceName).json $(dirName)/mongodb-atlas-$(resourceName).json && \
 	cd $(dirName) && \
-	cfn init -t MongoDB::Atlas::$(resourceName) -a r && cfn generate
+	cfn init -t MongoDB::Atlas::$(typeName) -a r && cfn generate
 	cd ../autogen && \
 	go run main.go -res ../$(dirName) -schemaName $(resourceName)
+	cp -fr templateMakeFile ../$(dirName)/Makefile
 	cd ../$(dirName) && rm go.mod && rm .gitignore
-
 schema:
 	cd schema-gen && go build
 	./schema-gen/schema-gen

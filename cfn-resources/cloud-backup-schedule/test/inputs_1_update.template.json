@@ -1,0 +1,28 @@
+{
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  },
+  "ProjectId": "",
+  "ClusterName": "",
+  "AutoExportEnabled": "false",
+  "Export": {
+  },
+  "Policies": [
+    {
+      "ID": "",
+      "PolicyItems": [
+        {
+          "FrequencyInterval": "6",
+          "FrequencyType": "hourly",
+          "RetentionUnit": "days",
+          "RetentionValue": "5"
+        }
+      ]
+    }
+  ],
+  "ReferenceHourOfDay": "0",
+  "ReferenceMinuteOfHour": "0",
+  "RestoreWindowDays": "1",
+  "UseOrgAndGroupNamesInExportPrefix": "true"
+}

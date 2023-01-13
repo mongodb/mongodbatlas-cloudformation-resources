@@ -1,52 +1,52 @@
 {
   "CreateFields": {
     "InputParams": [
+      "Id",
       "InviterUsername",
+      "ApiKeys",
+      "InvitationId",
       "Roles",
       "Username",
       "ExpiresAt",
-      "Id",
-      "Links",
-      "CreatedAt",
       "GroupId",
+      "CreatedAt",
       "GroupName",
-      "ApiKeys",
-      "InvitationId"
+      "Links"
     ]
   },
   "ReadFields": {
     "InputParams": [
-      "ApiKeys",
+      "GroupName",
       "Results",
-      "IncludeCount",
+      "ItemsPerPage",
       "PageNum",
       "Roles",
       "Username",
-      "ExpiresAt",
-      "Links",
-      "CreatedAt",
-      "GroupId",
-      "GroupName",
+      "ApiKeys",
       "InvitationId",
+      "CreatedAt",
+      "Links",
       "TotalCount",
+      "IncludeCount",
+      "ExpiresAt",
+      "GroupId",
       "Id",
-      "InviterUsername",
-      "ItemsPerPage"
+      "InviterUsername"
     ],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
-      "ExpiresAt",
-      "Id",
-      "Links",
-      "InviterUsername",
-      "Roles",
-      "Username",
+      "CreatedAt",
       "GroupName",
+      "Links",
+      "Id",
+      "InviterUsername",
       "ApiKeys",
       "InvitationId",
-      "CreatedAt",
+      "Roles",
+      "Username",
+      "ExpiresAt",
       "GroupId"
     ]
   },

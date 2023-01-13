@@ -1,17 +1,17 @@
 {
   "desiredResourceState":{
     "ApiKeys": {
-      "PublicKey": "xfqavjxw",
-      "PrivateKey": "7568e028-2e8b-424d-824b-17f3ad73d746"
+      "PublicKey": "",
+      "PrivateKey": ""
     },
-    "OrgId": "63350255419cf25e3d511c95",
-    "Username": "govardhan.pagidi@mongodb.com",
+    "OrgId": "",
+    "Username": "",
     "Roles": [
       "ORG_MEMBER"
     ],
     "TeamIds": [
-      "637638a1368def7111e8eaf1"
-    ],  "Id": "63763f9f4fa00f6a6b619bfc"
+      ""
+    ]
   }
 ,
   "providerLogGroupName" : "mongodb-atlas-project-logs",

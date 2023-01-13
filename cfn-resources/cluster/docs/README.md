@@ -76,7 +76,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ApiKeys
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
@@ -256,25 +256,21 @@ The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
 
-#### ConnectionStrings
+#### Standard
 
-Collection of Uniform Resource Locators that point to the MongoDB database.
+Returns the <code>Standard</code> value.
 
-#### ConnectionStrings.Standard
+#### StandardSrv
 
-Returns the <code>ConnectionStrings.Standard</code> value.
+Returns the <code>StandardSrv</code> value.
 
-#### ConnectionStrings.StandardSrv
+#### Private
 
-Returns the <code>ConnectionStrings.StandardSrv</code> value.
+Returns the <code>Private</code> value.
 
-#### ConnectionStrings.Private
+#### PrivateSrv
 
-Returns the <code>ConnectionStrings.Private</code> value.
-
-#### ConnectionStrings.PrivateSrv
-
-Returns the <code>ConnectionStrings.PrivateSrv</code> value.
+Returns the <code>PrivateSrv</code> value.
 
 #### StateName
 

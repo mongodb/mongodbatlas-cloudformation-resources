@@ -1,9 +1,9 @@
 {
   "CreateFields": {
     "InputParams": [
-      "RoleName",
       "ApiKeys",
       "GroupId",
+      "RoleName",
       "Actions",
       "InheritedRoles"
     ],
@@ -11,11 +11,11 @@
   },
   "ReadFields": {
     "InputParams": [
-      "GroupId",
-      "Actions",
       "InheritedRoles",
+      "ApiKeys",
+      "GroupId",
       "RoleName",
-      "ApiKeys"
+      "Actions"
     ],
     "RequiredParams": ["GroupId", "RoleName"]
   },
@@ -23,9 +23,9 @@
     "InputParams": [
       "Actions",
       "InheritedRoles",
-      "RoleName",
       "ApiKeys",
-      "GroupId"
+      "GroupId",
+      "RoleName"
     ],
     "RequiredParams": ["RoleName"]
   },

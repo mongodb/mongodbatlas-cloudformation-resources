@@ -36,8 +36,12 @@
         "Properties":  {
           "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
           "Region": { "Ref" : "AWSRegion" },
-          "VpcId": { "Ref" : "AWSVpcId" },
-          "SubnetId": { "Ref" : "AWSSubnetId" },
+          "PrivateEndpoints": [
+            {
+              "VpcId": { "Ref" : "AWSVpcId" },
+              "SubnetId": { "Ref" : "AWSSubnetId" }
+            }
+          ],
           "ApiKeys": {
             "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
             "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }

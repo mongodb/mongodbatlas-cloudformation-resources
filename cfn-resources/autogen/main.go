@@ -13,7 +13,7 @@ import (
 const (
 	pubKey           = "ApiKeys.PublicKey"
 	pvtKey           = "ApiKeys.PrivateKey"
-	schemaDir        = "configs"
+	schemaDir        = "schemas"
 	resourceFilePath = "/cmd/resource/resource.go"
 	CreateMethod     = "Create"
 	ReadMethod       = "Read"
@@ -32,8 +32,8 @@ const (
 	cloudformation  = "github.com/aws/aws-sdk-go/service/cloudformation"
 	util            = "github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	validator       = "github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	progressEvent   = "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
-	log             = "github.com/sirupsen/logrus"
+	progressEvent   = "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	log             = "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	atlas           = "go.mongodb.org/atlas/mongodbatlas"
 	res             = "res"
 )
@@ -60,7 +60,7 @@ func addResource(path, schemaName string) {
 	f.ImportName("errors", "errors")
 	f.ImportName(util, "util")
 	f.ImportName(validator, "validator")
-	f.ImportName(progressEvent, "progress_events")
+	f.ImportAlias(progressEvent, "progress_events")
 	f.ImportAlias(log, "log")
 
 	// Required Fields mapping

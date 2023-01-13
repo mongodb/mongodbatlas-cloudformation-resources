@@ -1,22 +1,22 @@
 {
   "CreateFields": {
     "InputParams": [
+      "HourOfDay",
       "StartASAP",
       "ApiKeys",
       "GroupId",
       "AutoDeferOnceEnabled",
-      "DayOfWeek",
-      "HourOfDay"
+      "DayOfWeek"
     ]
   },
   "ReadFields": {
     "InputParams": [
-      "GroupId",
       "AutoDeferOnceEnabled",
       "DayOfWeek",
       "HourOfDay",
       "StartASAP",
-      "ApiKeys"
+      "ApiKeys",
+      "GroupId"
     ],
     "RequiredParams": ["GroupId"]
   },

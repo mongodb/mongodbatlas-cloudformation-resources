@@ -20,27 +20,31 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
 projectName="${1}"
-projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
     echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
+export MCLI_PROJECT_ID=$projectId
 
 ClusterName="${projectName}"
-clusterId=$(mongocli atlas clusters list --output json  | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .id')
+
+clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+sleep 1200
+echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+
 if [ -z "$clusterId" ]; then
-    clusterId=$(mongocli atlas cluster create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M30 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-    sleep 1200
-   mongocli atlas clusters loadSampleData ${ClusterName} --projectId ${projectId}
-    echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-else
-    echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"
+    echo -e "Error Can't find Cluster \"${ClusterName}\""
+    exit 1
 fi
+
+atlas clusters loadSampleData ${ClusterName} --projectId ${projectId}
 
 rm -rf inputs
 mkdir inputs

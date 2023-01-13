@@ -2,12 +2,12 @@
   "CreateFields": {},
   "ReadFields": {
     "InputParams": [
-      "AuditAuthorizationSuccess",
-      "AuditFilter",
       "ConfigurationType",
       "Enabled",
       "ApiKeys",
-      "GroupId"
+      "GroupId",
+      "AuditAuthorizationSuccess",
+      "AuditFilter"
     ],
     "RequiredParams": ["GroupId"]
   },

@@ -19,25 +19,24 @@ import (
 
 // https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
 
-var diffFile = "diff.json"
-
 const (
 	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
-	OpenAPISpecPath    = "https://www.mongodb.com/8c07de79-53d6-41d8-8fc8-bacdf7f271fa"
-	//Dir                = "/schema-gen"
-	Dir               = "/autogen/schema-gen" //For debugging
-	SchemasDir        = "schemas"
-	CurrentDir        = "schema-gen"
-	LatestSwaggerFile = "swagger.latest.json"
+	OpenAPISpecPath    = "https://cloud-dev.mongodb.com/openapi.json"
+	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
+	SchemasDir         = "schemas"
+	CurrentDir         = "schema-gen"
+	LatestSwaggerFile  = "swagger.latest.json"
 )
 
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
+	/*Set the compare variable to TRUE to get the latest swagger file*/
 	compare := false
+
 	if len(os.Args) > 1 {
 		arg := os.Args[1]
 		if arg == "compare" {
@@ -333,16 +332,16 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	}
 
 	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
-	// For comparison download the latest openAPI-spec file
+	// For comparison download the latest openAPIspec file
 	if compare {
 		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
-		//if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
-		//	return []byte{}, nil, err
-		//}
+		if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
+			return []byte{}, nil, err
+		}
 	}
-	doc, er := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
-	if er != nil {
-		fmt.Printf("Load openapi error : %+v", er)
+	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	if doc == nil {

@@ -1,24 +1,40 @@
 {
-  "CreateFields": {},
+  "CreateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "CloudProvider",
+      "EndpointServiceId",
+      "ProviderName",
+      "Region"
+    ],
+    "RequiredParams": ["ProviderName", "Region"]
+  },
   "ReadFields": {
     "InputParams": [
-      "AzureKeyVault",
-      "GoogleCloudKms",
-      "AwsKms",
+      "EndpointServiceId",
+      "EndpointId",
+      "ProviderName",
+      "Region",
       "ApiKeys",
-      "GroupId"
-    ],
-    "RequiredParams": ["GroupId"]
-  },
-  "UpdateFields": {
-    "InputParams": [
       "GroupId",
-      "AzureKeyVault",
-      "GoogleCloudKms",
-      "AwsKms",
-      "ApiKeys"
+      "CloudProvider"
+    ],
+    "RequiredParams": [
+      "GroupId",
+      "CloudProvider",
+      "EndpointId",
+      "EndpointServiceId"
     ]
   },
-  "DeleteFields": {},
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": [
+      "GroupId",
+      "CloudProvider",
+      "EndpointId",
+      "EndpointServiceId"
+    ]
+  },
   "ListFields": {}
 }

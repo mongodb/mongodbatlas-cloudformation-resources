@@ -3,24 +3,24 @@
   "ReadFields": {
     "InputParams": [
       "Links",
+      "ApiKeys",
+      "GroupId",
+      "Links",
       "CustomerX509",
       "Links",
-      "Ldap",
-      "Links",
-      "ApiKeys",
-      "GroupId"
+      "Ldap"
     ],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
       "Links",
+      "ApiKeys",
+      "GroupId",
+      "Links",
       "CustomerX509",
       "Links",
-      "Ldap",
-      "Links",
-      "ApiKeys",
-      "GroupId"
+      "Ldap"
     ],
     "RequiredParams": ["Links"]
   },

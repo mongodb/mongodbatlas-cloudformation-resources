@@ -1,59 +1,59 @@
 {
   "CreateFields": {
     "InputParams": [
-      "ApiKeys",
-      "ClusterName",
-      "Analyzer",
-      "Analyzers",
       "Mappings",
       "SearchAnalyzer",
-      "Status",
-      "GroupId",
+      "ApiKeys",
+      "ClusterName",
       "CollectionName",
       "Database",
-      "Synonyms",
       "IndexID",
-      "Name"
+      "Analyzer",
+      "Status",
+      "GroupId",
+      "Analyzers",
+      "Name",
+      "Synonyms"
     ],
     "RequiredParams": ["CollectionName", "Database", "Name"]
   },
   "ReadFields": {
     "InputParams": [
-      "Status",
-      "ApiKeys",
-      "ClusterName",
-      "Analyzers",
-      "Mappings",
-      "Synonyms",
-      "GroupId",
       "Analyzer",
-      "SearchAnalyzer",
-      "IndexID",
-      "Name",
-      "DatabaseName",
+      "Status",
       "IndexId",
       "CollectionName",
-      "Database"
+      "SearchAnalyzer",
+      "DatabaseName",
+      "Analyzers",
+      "Name",
+      "Synonyms",
+      "GroupId",
+      "Database",
+      "IndexID",
+      "Mappings",
+      "ApiKeys",
+      "ClusterName"
     ],
     "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
   },
   "UpdateFields": {
     "InputParams": [
       "CollectionName",
-      "Database",
-      "IndexID",
-      "Name",
+      "SearchAnalyzer",
       "DatabaseName",
-      "IndexId",
       "Analyzers",
-      "Mappings",
-      "Status",
-      "ApiKeys",
-      "ClusterName",
+      "Name",
       "Synonyms",
       "GroupId",
+      "Database",
+      "IndexID",
+      "Mappings",
+      "ApiKeys",
+      "ClusterName",
       "Analyzer",
-      "SearchAnalyzer"
+      "Status",
+      "IndexId"
     ],
     "RequiredParams": ["CollectionName", "Database", "Name"]
   },

@@ -1,36 +1,38 @@
 {
   "CreateFields": {
     "InputParams": [
-      "ClusterCount",
-      "OrgId",
-      "Name",
-      "WithDefaultAlertsSettings",
-      "ApiKeys",
+      "Updated",
       "ProjectOwnerId",
       "Created",
+      "Links",
+      "OrgId",
+      "WithDefaultAlertsSettings",
+      "ApiKeys",
+      "ClusterCount",
       "Id",
-      "Links"
+      "Name"
     ],
     "RequiredParams": ["Links", "Name", "OrgId"]
   },
   "ReadFields": {
     "InputParams": [
-      "IncludeCount",
-      "WithDefaultAlertsSettings",
-      "ApiKeys",
-      "Results",
-      "TotalCount",
-      "GroupId",
-      "ClusterCount",
+      "Links",
       "OrgId",
-      "ItemsPerPage",
+      "IncludeCount",
       "PageNum",
+      "GroupName",
       "Created",
       "Id",
-      "Links",
-      "Name",
+      "WithDefaultAlertsSettings",
+      "ClusterCount",
       "ProjectOwnerId",
-      "GroupName"
+      "Results",
+      "TotalCount",
+      "ItemsPerPage",
+      "Updated",
+      "ApiKeys",
+      "GroupId",
+      "Name"
     ],
     "RequiredParams": ["GroupId"]
   },

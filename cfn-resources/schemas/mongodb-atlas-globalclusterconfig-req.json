@@ -1,12 +1,12 @@
 {
   "CreateFields": {
     "InputParams": [
-      "CustomZoneMappings",
       "CustomZoneMapping",
       "ManagedNamespaces",
       "ApiKeys",
+      "GroupId",
       "ClusterName",
-      "GroupId"
+      "CustomZoneMappings"
     ],
     "RequiredParams": ["CustomZoneMappings"]
   },
@@ -15,8 +15,8 @@
       "CustomZoneMapping",
       "ManagedNamespaces",
       "ApiKeys",
-      "ClusterName",
-      "GroupId"
+      "GroupId",
+      "ClusterName"
     ],
     "RequiredParams": ["GroupId", "ClusterName"]
   },

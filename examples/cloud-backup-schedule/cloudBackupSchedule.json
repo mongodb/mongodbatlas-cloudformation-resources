@@ -1,0 +1,124 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a cloud backup policy for snapshot on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "PublicKey": {
+      "Type": "String"
+    },
+    "PrivateKey": {
+      "Type": "String"
+    },
+    "ProjectId": {
+      "Type": "String",
+   "Default": ""
+    },
+    "ClusterName": {
+      "Type": "String",
+   "Default": ""
+    },
+    "CloudProvider": {
+      "Type": "String",
+   "Default": "AWS"
+    },
+    "RegionName": {
+      "Type": "String",
+   "Default": "AP_NORTHEAST_2"
+    },
+    "RegionName2": {
+      "Type": "String",
+   "Default": "AP_NORTHEAST_2"
+    },
+    "ReplicationSpecId": {
+      "Type": "String",
+   "Default": "639db3eb42882a4bb573db75"
+    },
+    "PolicyID": {
+      "Type": "String",
+   "Default": "639db611e0fc2c5efcc3c5fa"
+    },
+    "FrequencyInterval": {
+      "Type": "String",
+   "Default": "1"
+    },
+    "FrequencyType": {
+      "Type": "String",
+   "Default": "daily"
+    },
+    "RetentionUnit": {
+      "Type": "String",
+   "Default": "days"
+    },
+    "RetentionValue": {
+      "Type": "String",
+   "Default": "1"
+    },
+ "DeleteCloudProvider": {
+      "Type": "String",
+   "Default": "AWS"
+    },
+    "DeleteRegionName": {
+      "Type": "String",
+   "Default": "US_EAST_2"
+    },
+ "DeleteReplicationSpecId": {
+      "Type": "String",
+   "Default": "639db3eb42882a4bb573db75"
+    },
+  },
+  "Mappings": {},
+  "Resources": {
+    "CloudBackupSchedule": {
+      "Type": "MongoDB::Atlas::CloudBackupSchedule",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "AutoExportEnabled": "false",
+        "CopySettings": [
+          {
+            "CloudProvider": { "Ref" : "CloudProvider" },
+            "Frequencies": [
+              "DAILY"
+            ],
+            "RegionName": { "Ref" : "RegionName" },
+            "ReplicationSpecId": { "Ref" : "ReplicationSpecId" },
+            "ShouldCopyOplogs": false
+          }
+        ],
+   "DeleteCopiedBackups": [
+            {
+              "CloudProvider": { "Ref" : "DeleteCloudProvider" },
+              "RegionName": { "Ref" : "DeleteRegionName" },
+              "ReplicationSpecId": { "Ref" : "DeleteReplicationSpecId" }
+            }
+        ],
+        "Policies": [
+          {
+            "ID": { "Ref" : "PolicyID" },
+            "PolicyItems": [
+              {
+                "FrequencyInterval": { "Ref" : "FrequencyInterval" },
+                "FrequencyType": { "Ref" : "FrequencyType" },
+                "RetentionUnit": { "Ref" : "RetentionUnit" },
+                "RetentionValue": { "Ref" : "RetentionValue" }
+              }
+            ]
+          }
+        ],
+        "ReferenceHourOfDay": "0",
+        "ReferenceMinuteOfHour": "0",
+        "RestoreWindowDays": "1",
+        "UpdateSnapshots": "true",
+        "UseOrgAndGroupNamesInExportPrefix": "true",
+        "ApiKeys": {
+          "PublicKey": { "Ref" : "PublicKey" },
+          "PrivateKey": { "Ref" : "PrivateKey" }
+        }
+      }
+    }
+  },
+  "Outputs": {}
+}

@@ -4,16 +4,16 @@
     "RequiredParams": ["ProviderName"]
   },
   "ReadFields": {
-    "InputParams": ["GroupId", "AwsIamRoles", "ApiKeys"],
+    "InputParams": ["ApiKeys", "GroupId", "AwsIamRoles"],
     "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
+      "RoleId",
       "ApiKeys",
       "GroupId",
       "AwsIamRoles",
-      "CloudProvider",
-      "RoleId"
+      "CloudProvider"
     ],
     "RequiredParams": ["ProviderName"]
   },

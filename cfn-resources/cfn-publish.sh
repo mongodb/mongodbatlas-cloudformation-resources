@@ -12,24 +12,26 @@ resources="${1:-project}"
 otherParams="${2:-}"
 
 
-# Handling other parameters if there are any.
-IFS=","
 if [ -n "${otherParams}" ]; then
-for param in ${otherParams};
+paramKeys=$(echo $otherParams | jq -c -r 'keys[]' | tr '\n' ' ')
+echo "Exporting the following keys..."
+echo $paramKeys
+for param in ${paramKeys};
 do
-echo "$param"
-export "$param"
+paramKey="${param}="
+paramValue=$(echo $otherParams | jq -c -r --arg key $param '.[$key]')
+exportString=$(echo "$paramKey$paramValue")
+export "${exportString}"
 echo
 done
 fi
-
+#printenv
 
 cloud_publish=${3:-true}
 
 export CLOUD_PUBLISH="${cloud_publish}"
 
 echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
-
 
 for resource in ${resources};
 do

@@ -33,29 +33,15 @@ const (
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
+var diffFile = "diff"
+
 func main() {
 	/*Set the compare variable to TRUE to get the latest swagger file*/
 	compare := false
 
-	if len(os.Args) > 1 {
-		arg := os.Args[1]
-		if arg == "compare" {
-			fmt.Println("comparing schemas..")
-			compare = true
-		}
-		if len(os.Args) > 2 {
-			diffFile = os.Args[2]
-		}
-		dir, _ := getCurrentDir()
-		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		if diff == "" {
-			fmt.Println("No difference found in OpenAPI Spec")
-			return
-		}
+	compare, err := readArgs()
+	if err != nil {
+		return
 	}
 
 	file, doc, err := readConfig(compare)
@@ -255,6 +241,31 @@ func main() {
 
 	close(reqFieldsChan)
 	<-reqDone
+}
+
+func readArgs() (compare bool, err error) {
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		if arg == "compare" {
+			fmt.Println("comparing schemas..")
+			compare = true
+		}
+		if len(os.Args) > 2 {
+			diffFile = os.Args[2]
+		}
+		dir, _ := getCurrentDir()
+		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
+		if err != nil {
+			fmt.Println(err)
+			return compare, err
+		}
+		if diff == "" {
+			err = errors.New("no difference found in OpenAPI Spec")
+			return compare, err
+		}
+		return compare, err
+	}
+	return false, nil
 }
 
 func sortProperties(properties map[string]Property) (props map[string]Property) {

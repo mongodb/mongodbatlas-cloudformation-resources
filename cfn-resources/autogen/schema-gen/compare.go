@@ -22,7 +22,7 @@ func CompareJSONFiles(resourceName, existingFilePath, latestFilePath string) (di
 	differences, diffJSON := jsondiff.Compare(existingAPIContent, latestAPIContent, &jsondiff.Options{SkipMatches: true})
 	if differences > 0 {
 		log.Printf("found difference in %s schema ", resourceName)
-		err = os.WriteFile(resourceName+"-"+diffFile, []byte(diffJSON), 0644)
+		err = os.WriteFile(resourceName+"-"+diffFile, []byte(diffJSON), 0600)
 		if err != nil {
 			log.Fatal(err)
 		}

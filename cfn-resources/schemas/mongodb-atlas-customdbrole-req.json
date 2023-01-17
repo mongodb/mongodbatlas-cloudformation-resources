@@ -1,0 +1,36 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "RoleName",
+      "Actions",
+      "InheritedRoles"
+    ],
+    "RequiredParams": ["RoleName"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "InheritedRoles",
+      "ApiKeys",
+      "GroupId",
+      "RoleName",
+      "Actions"
+    ],
+    "RequiredParams": ["GroupId", "RoleName"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "Actions",
+      "InheritedRoles",
+      "ApiKeys",
+      "GroupId",
+      "RoleName"
+    ],
+    "RequiredParams": ["RoleName"]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "RoleName"]
+  },
+  "ListFields": {}
+}

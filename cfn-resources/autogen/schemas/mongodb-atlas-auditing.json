@@ -1,0 +1,69 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns and edits database auditing settings for MongoDB Cloud projects.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId"],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "AuditAuthorizationSuccess": {
+      "type": "boolean",
+      "description": "Flag that indicates whether someone set auditing to track successful authentications. This only applies to the `\"atype\" : \"authCheck\"` audit filter. Setting this parameter to `true` degrades cluster performance."
+    },
+    "AuditFilter": {
+      "type": "string",
+      "description": "JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\\`)."
+    },
+    "ConfigurationType": {
+      "type": "string",
+      "description": "Human-readable label that displays how to configure the audit filter.",
+      "enum": ["FILTER_BUILDER", "FILTER_JSON", "NONE"]
+    },
+    "Enabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether someone enabled database auditing for the specified project."
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    }
+  },
+  "readOnlyProperties": ["/properties/ConfigurationType"],
+  "typeName": "MongoDB::Atlas::Auditing",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

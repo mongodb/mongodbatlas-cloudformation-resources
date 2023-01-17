@@ -1,0 +1,281 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiAtlasAWSPeerVpcRequestView": {
+      "type": "object",
+      "properties": {
+        "AccepterRegionName": {
+          "type": "string",
+          "description": "Amazon Web Services (AWS) region where the Virtual Peering Connection (VPC) that you peered with the MongoDB Cloud VPC resides. The resource returns `null` if your VPC and the MongoDB Cloud VPC reside in the same region."
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "AwsAccountId": {
+          "type": "string",
+          "description": "Unique twelve-digit string that identifies the Amazon Web Services (AWS) account that owns the VPC that you peered with the MongoDB Cloud VPC.",
+          "maxLength": 12,
+          "minLength": 12,
+          "pattern": "^[0-9]{12}$"
+        },
+        "ConnectionId": {
+          "type": "string",
+          "description": "Unique string that identifies the peering connection on AWS."
+        },
+        "ContainerId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "ErrorStateName": {
+          "type": "string",
+          "description": "Type of error that can be returned when requesting an Amazon Web Services (AWS) peering connection. The resource returns `null` if the request succeeded.",
+          "enum": ["EXPIRED", "INVALID_ARGUMENT", "REJECTED"]
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the network peering connection.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "RouteTableCidrBlock": {
+          "type": "string",
+          "description": "Internet Protocol (IP) addresses expressed in Classless Inter-Domain Routing (CIDR) notation of the VPC's subnet that you want to peer with the MongoDB Cloud VPC.",
+          "pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)(\\.(?!$)|$)){4}"
+        },
+        "StatusName": {
+          "type": "string",
+          "description": "State of the network peering connection at the time you made the request.",
+          "enum": [
+            "AVAILABLE",
+            "FAILED",
+            "FINALIZING",
+            "INITIATING",
+            "PENDING_ACCEPTANCE",
+            "TERMINATING"
+          ]
+        },
+        "VpcId": {
+          "type": "string",
+          "description": "Unique string that identifies the VPC on Amazon Web Services (AWS) that you want to peer with the MongoDB Cloud VPC.",
+          "minLength": 5,
+          "pattern": "^vpc-[0-9a-f]{17}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasAzurePeerNetworkRequestView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "AzureDirectoryId": {
+          "type": "string",
+          "description": "Unique string that identifies the Azure AD directory in which the VNet peered with the MongoDB Cloud VNet resides.",
+          "maxLength": 32,
+          "minLength": 32,
+          "pattern": "^[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}$"
+        },
+        "AzureSubscriptionId": {
+          "type": "string",
+          "description": "Unique string that identifies the Azure subscription in which the VNet you peered with the MongoDB Cloud VNet resides.",
+          "maxLength": 32,
+          "minLength": 32,
+          "pattern": "^[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}$"
+        },
+        "ContainerId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "ErrorState": {
+          "type": "string",
+          "description": "Error message returned when a requested Azure network peering resource returns `\"status\" : \"FAILED\"`. The resource returns `null` if the request succeeded."
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the network peering connection.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "ResourceGroupName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the resource group in which the VNet to peer with the MongoDB Cloud VNet resides.",
+          "pattern": "^([-\\w._()])+$"
+        },
+        "Status": {
+          "type": "string",
+          "description": "State of the network peering connection at the time you made the request.",
+          "enum": [
+            "ADDING_PEER",
+            "AVAILABLE",
+            "DELETING",
+            "FAILED",
+            "WAITING_FOR_USER"
+          ]
+        },
+        "VnetName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the VNet that you want to peer with the MongoDB Cloud VNet.",
+          "pattern": "^([-\\w._()])+$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasGCPPeerVpcRequestView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "ContainerId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "ErrorMessage": {
+          "type": "string",
+          "description": "Details of the error returned when requesting a GCP network peering resource. The resource returns `null` if the request succeeded."
+        },
+        "GcpProjectId": {
+          "type": "string",
+          "description": "Human-readable label that identifies the GCP project that contains the network that you want to peer with the MongoDB Cloud VPC.",
+          "maxLength": 30,
+          "minLength": 6,
+          "pattern": "^[a-z][0-9a-z-]{4,28}[0-9a-z]{1}"
+        },
+        "Id": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies the network peering connection.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        },
+        "NetworkName": {
+          "type": "string",
+          "description": "Human-readable label that identifies the network to peer with the MongoDB Cloud VPC.",
+          "maxLength": 63,
+          "minLength": 1,
+          "pattern": "[a-z]([-a-z0-9]{0,62}[a-z0-9]{0,1})?"
+        },
+        "Status": {
+          "type": "string",
+          "description": "State of the network peering connection at the time you made the request.",
+          "enum": [
+            "ADDING_PEER",
+            "AVAILABLE",
+            "DELETING",
+            "FAILED",
+            "WAITING_FOR_USER"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes network peering connections.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/AwsAccountId",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/ConnectionId",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/ContainerId",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/Id",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/VpcId",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/AzureDirectoryId",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/AzureSubscriptionId",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/ContainerId",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/Id",
+    "/definitions/ApiAtlasGCPPeerVpcRequestView/ContainerId",
+    "/definitions/ApiAtlasGCPPeerVpcRequestView/Id",
+    "/properties/GroupId",
+    "/properties/PeerId"
+  ],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "PeerId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the network peering connection that you want to delete.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "ProviderName": {
+      "type": "string",
+      "description": "Cloud service provider to use for this VPC peering connection.",
+      "enum": ["AWS", "AZURE", "GCP"]
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/ConnectionId",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/ErrorStateName",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/Id",
+    "/definitions/ApiAtlasAWSPeerVpcRequestView/StatusName",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/ErrorState",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/Id",
+    "/definitions/ApiAtlasAzurePeerNetworkRequestView/Status",
+    "/definitions/ApiAtlasGCPPeerVpcRequestView/ErrorMessage",
+    "/definitions/ApiAtlasGCPPeerVpcRequestView/Id",
+    "/definitions/ApiAtlasGCPPeerVpcRequestView/Status"
+  ],
+  "typeName": "MongoDB::Atlas::NetworkPeering",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

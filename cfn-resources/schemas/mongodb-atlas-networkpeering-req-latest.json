@@ -1,0 +1,32 @@
+{
+  "CreateFields": {
+    "InputParams": ["ApiKeys", "GroupId"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "IncludeCount",
+      "ItemsPerPage",
+      "PageNum",
+      "ProviderName",
+      "PeerId"
+    ],
+    "RequiredParams": ["GroupId", "PeerId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "IncludeCount",
+      "ItemsPerPage",
+      "PageNum",
+      "ProviderName",
+      "PeerId"
+    ]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "PeerId"]
+  },
+  "ListFields": {}
+}

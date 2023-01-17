@@ -1,0 +1,149 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiAtlasDBActionView": {
+      "type": "object",
+      "properties": {
+        "Action": {
+          "type": "string",
+          "description": "Human-readable label that identifies the privilege action.",
+          "enum": [
+            "FIND",
+            "INSERT",
+            "REMOVE",
+            "UPDATE",
+            "BYPASS_DOCUMENT_VALIDATION",
+            "USE_UUID",
+            "CREATE_COLLECTION",
+            "CREATE_INDEX",
+            "DROP_COLLECTION",
+            "ENABLE_PROFILER",
+            "CHANGE_STREAM",
+            "COLL_MOD",
+            "COMPACT",
+            "CONVERT_TO_CAPPED",
+            "DROP_DATABASE",
+            "DROP_INDEX",
+            "RE_INDEX",
+            "RENAME_COLLECTION_SAME_DB",
+            "LIST_SESSIONS",
+            "KILL_ANY_SESSION",
+            "COLL_STATS",
+            "CONN_POOL_STATS",
+            "DB_HASH",
+            "DB_STATS",
+            "LIST_DATABASES",
+            "LIST_COLLECTIONS",
+            "LIST_INDEXES",
+            "SERVER_STATUS",
+            "VALIDATE",
+            "TOP",
+            "SQL_GET_SCHEMA",
+            "SQL_SET_SCHEMA",
+            "VIEW_ALL_HISTORY",
+            "OUT_TO_S3",
+            "STORAGE_GET_CONFIG",
+            "STORAGE_SET_CONFIG"
+          ]
+        },
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Resources": {
+          "type": "array",
+          "description": "List of resources on which you grant the action.",
+          "items": {
+            "$ref": "#/definitions/ApiAtlasDBResourceView",
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasInheritedRoleView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Db": {
+          "type": "string",
+          "description": "Human-readable label that identifies the database on which someone grants the action to one MongoDB user."
+        },
+        "Role": {
+          "type": "string",
+          "description": "Human-readable label that identifies the role inherited. Set this value to `admin` for every role except `read` or `readWrite`.",
+          "pattern": "^\\b(?!xgen-)([0-9A-Za-z_\\-]+)\\b(?\u003c!\\atlasAdmin|read|readWrite|dbAdmin|dbOwner|userAdmin|clusterAdmin|clusterManager|clusterMonitor|hostManager|backup|restore|readAnyDatabase|readWriteAnyDatabase|userAdminAnyDatabase|dbAdminAnyDatabase|root|__system)$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes custom database user privilege roles.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId"],
+  "properties": {
+    "": {},
+    "Actions": {
+      "type": "array",
+      "description": "List of the individual privilege actions that the role grants.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDBActionView",
+        "type": "object"
+      }
+    },
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "InheritedRoles": {
+      "type": "array",
+      "description": "List of the built-in roles that this custom role inherits.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasInheritedRoleView",
+        "type": "object"
+      }
+    },
+    "RoleName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the role for the request. This name must be unique for this custom role in this project.",
+      "pattern": "^\\b(?!xgen-)([0-9A-Za-z_\\-]+)\\b(?\u003c!\\atlasAdmin|read|readWrite|dbAdmin|dbOwner|userAdmin|clusterAdmin|clusterManager|clusterMonitor|hostManager|backup|restore|readAnyDatabase|readWriteAnyDatabase|userAdminAnyDatabase|dbAdminAnyDatabase|root|__system)$"
+    }
+  },
+  "typeName": "MongoDB::Atlas::CustomDBRole",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

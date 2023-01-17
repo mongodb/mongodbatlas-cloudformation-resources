@@ -1,0 +1,172 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiTeamRoleView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link",
+            "type": "object"
+          }
+        },
+        "RoleNames": {
+          "type": "array",
+          "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "GROUP_CLUSTER_MANAGER",
+              "GROUP_DATA_ACCESS_ADMIN",
+              "GROUP_DATA_ACCESS_READ_ONLY",
+              "GROUP_DATA_ACCESS_READ_WRITE",
+              "GROUP_OWNER",
+              "GROUP_READ_ONLY"
+            ]
+          }
+        },
+        "TeamId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the team.",
+          "maxLength": 24,
+          "minLength": 24,
+          "pattern": "^([a-f0-9]{24})$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, or removes teams.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/definitions/ApiTeamRoleView/TeamId",
+    "/properties/GroupId",
+    "/properties/TeamId"
+  ],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    },
+    "Results": {
+      "type": "array",
+      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
+      "items": {
+        "$ref": "#/definitions/ApiTeamRoleView",
+        "type": "object"
+      }
+    },
+    "RoleNames": {
+      "type": "array",
+      "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "GROUP_CLUSTER_MANAGER",
+          "GROUP_DATA_ACCESS_ADMIN",
+          "GROUP_DATA_ACCESS_READ_ONLY",
+          "GROUP_DATA_ACCESS_READ_WRITE",
+          "GROUP_OWNER",
+          "GROUP_READ_ONLY"
+        ]
+      }
+    },
+    "TeamId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the team that you want to remove from the specified project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "TotalCount": {
+      "type": "number",
+      "description": "Number of documents returned in this response."
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/ApiTeamRoleView/Links",
+    "/properties/Links",
+    "/properties/Results",
+    "/properties/TotalCount"
+  ],
+  "required": ["links"],
+  "typeName": "MongoDB::Atlas::Teams",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

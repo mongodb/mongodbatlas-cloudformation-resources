@@ -1,0 +1,64 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "Status",
+      "Analyzer",
+      "Analyzers",
+      "SearchAnalyzer",
+      "Synonyms",
+      "ClusterName",
+      "CollectionName",
+      "IndexID",
+      "Database",
+      "ApiKeys",
+      "GroupId",
+      "Mappings",
+      "Name"
+    ],
+    "RequiredParams": ["CollectionName", "Database", "Name"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "Mappings",
+      "Name",
+      "CollectionName",
+      "ClusterName",
+      "DatabaseName",
+      "Database",
+      "ApiKeys",
+      "GroupId",
+      "IndexId",
+      "IndexID",
+      "Status",
+      "Analyzer",
+      "Analyzers",
+      "SearchAnalyzer",
+      "Synonyms"
+    ],
+    "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "SearchAnalyzer",
+      "Synonyms",
+      "IndexID",
+      "Status",
+      "Analyzer",
+      "Analyzers",
+      "Mappings",
+      "Name",
+      "CollectionName",
+      "ClusterName",
+      "DatabaseName",
+      "Database",
+      "ApiKeys",
+      "GroupId",
+      "IndexId"
+    ],
+    "RequiredParams": ["CollectionName", "Database", "Name"]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
+  },
+  "ListFields": {}
+}

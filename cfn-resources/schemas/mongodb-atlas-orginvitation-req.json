@@ -1,0 +1,64 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "Roles",
+      "TeamIds",
+      "ApiKeys",
+      "Links",
+      "ExpiresAt",
+      "Username",
+      "InviterUsername",
+      "Id",
+      "OrgId",
+      "OrgName",
+      "CreatedAt"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "ExpiresAt",
+      "PageNum",
+      "ItemsPerPage",
+      "IncludeCount",
+      "Links",
+      "OrgName",
+      "CreatedAt",
+      "Id",
+      "TeamIds",
+      "ApiKeys",
+      "TotalCount",
+      "Roles",
+      "InviterUsername",
+      "OrgId",
+      "Results",
+      "InvitationId",
+      "Username"
+    ],
+    "RequiredParams": ["OrgId", "InvitationId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "TotalCount",
+      "Roles",
+      "TeamIds",
+      "OrgId",
+      "Results",
+      "InvitationId",
+      "Username",
+      "InviterUsername",
+      "PageNum",
+      "ItemsPerPage",
+      "IncludeCount",
+      "Links",
+      "ExpiresAt",
+      "CreatedAt",
+      "Id",
+      "OrgName"
+    ]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["OrgId", "InvitationId"]
+  },
+  "ListFields": {}
+}

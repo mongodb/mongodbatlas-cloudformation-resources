@@ -1,0 +1,31 @@
+{
+  "CreateFields": {},
+  "ReadFields": {
+    "InputParams": [
+      "Links",
+      "CustomerX509",
+      "Links",
+      "Ldap",
+      "Links",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "Links",
+      "CustomerX509",
+      "Links",
+      "Ldap",
+      "Links",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": ["Links"]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId"]
+  },
+  "ListFields": {}
+}

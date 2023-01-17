@@ -1,0 +1,24 @@
+{
+  "CreateFields": {
+    "InputParams": ["ApiKeys", "GroupId"],
+    "RequiredParams": ["ProviderName"]
+  },
+  "ReadFields": {
+    "InputParams": ["ApiKeys", "GroupId", "AwsIamRoles"],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "RoleId",
+      "ApiKeys",
+      "GroupId",
+      "AwsIamRoles",
+      "CloudProvider"
+    ],
+    "RequiredParams": ["ProviderName"]
+  },
+  "DeleteFields": {
+    "RequiredParams": ["GroupId", "CloudProvider", "RoleId"]
+  },
+  "ListFields": {}
+}

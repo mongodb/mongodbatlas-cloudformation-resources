@@ -1,0 +1,139 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "": {
+      "additionalProperties": false
+    },
+    "ApiAtlasManagedNamespacesView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Collection": {
+          "type": "string",
+          "description": "Human-readable label of the collection to manage for this Global Cluster."
+        },
+        "CustomShardKey": {
+          "type": "string",
+          "description": "Database parameter used to divide the *collection* into shards. Global clusters require a compound shard key. This compound shard key combines the location parameter and the user-selected custom key."
+        },
+        "Db": {
+          "type": "string",
+          "description": "Human-readable label of the database to manage for this Global Cluster."
+        },
+        "IsCustomShardKeyHashed": {
+          "type": "boolean",
+          "description": "Flag that indicates whether someone hashed the custom shard key for the specified collection. If you set this value to `false`, MongoDB Cloud uses ranged sharding."
+        },
+        "IsShardKeyUnique": {
+          "type": "boolean",
+          "description": "Flag that indicates whether someone [hashed](https://www.mongodb.com/docs/manual/reference/method/sh.shardCollection/#hashed-shard-keys) the custom shard key. If this parameter returns `false`, this cluster uses [ranged sharding](https://www.mongodb.com/docs/manual/core/ranged-sharding/)."
+        },
+        "NumInitialChunks": {
+          "type": "number",
+          "description": "Minimum number of chunks to create initially when sharding an empty collection with a [hashed shard key](https://www.mongodb.com/docs/manual/core/hashed-sharding/).",
+          "pattern": "^[0-9]+$"
+        },
+        "PresplitHashedZones": {
+          "type": "boolean",
+          "description": "Flag that indicates whether MongoDB Cloud should create and distribute initial chunks for an empty or non-existing collection. MongoDB Cloud distributes data based on the defined zones and zone ranges for the collection."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasZoneMappingView": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/ApiKeyDefinition"
+        },
+        "Location": {
+          "type": "string",
+          "description": "Code that represents a location that maps to a zone in your global cluster. MongoDB Cloud represents this location with a ISO 3166-2 location and subdivision codes when possible."
+        },
+        "Zone": {
+          "type": "string",
+          "description": "Human-readable label that identifies the zone in your global cluster. This zone maps to a location code."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": ["/properties/GroupId"],
+  "properties": {
+    "": {},
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKeyDefinition"
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies this global cluster.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+    },
+    "CustomZoneMapping": {
+      "type": "object",
+      "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.\n\nThis parameter returns an empty object if no custom zones exist."
+    },
+    "CustomZoneMappings": {
+      "type": "array",
+      "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to the human-readable label for the desired custom zone. MongoDB Cloud maps the ISO 3166-1a2 code to the nearest geographical zone by default. Include this parameter to override the default mappings.\n\nThis parameter returns an empty object if no custom zones exist.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasZoneMappingView",
+        "type": "object"
+      }
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "ManagedNamespaces": {
+      "type": "array",
+      "description": "List that contains a namespace for a Global Cluster. MongoDB Cloud manages this cluster.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasManagedNamespacesView",
+        "type": "object"
+      }
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/ApiAtlasManagedNamespacesView/CustomShardKey",
+    "/properties/CustomZoneMapping",
+    "/properties/ManagedNamespaces"
+  ],
+  "required": ["customZoneMappings"],
+  "typeName": "MongoDB::Atlas::GlobalClusterConfig",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

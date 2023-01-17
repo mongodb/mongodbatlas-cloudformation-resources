@@ -1,0 +1,42 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "Id",
+      "OrgId",
+      "Created",
+      "Name",
+      "WithDefaultAlertsSettings",
+      "ClusterCount",
+      "ApiKeys",
+      "ProjectOwnerId",
+      "Links"
+    ],
+    "RequiredParams": ["Links", "Name", "OrgId"]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "IncludeCount",
+      "Links",
+      "WithDefaultAlertsSettings",
+      "ApiKeys",
+      "PageNum",
+      "GroupName",
+      "Created",
+      "Id",
+      "ItemsPerPage",
+      "TotalCount",
+      "GroupId",
+      "Name",
+      "ClusterCount",
+      "ProjectOwnerId",
+      "OrgId",
+      "Results"
+    ],
+    "RequiredParams": ["GroupId"]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": ["GroupId"]
+  },
+  "ListFields": {}
+}

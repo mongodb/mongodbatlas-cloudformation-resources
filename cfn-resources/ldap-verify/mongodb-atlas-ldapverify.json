@@ -85,7 +85,7 @@
   "primaryIdentifier": ["/properties/RequestId"],
   "readOnlyProperties": ["/properties/RequestId"],
   "required": [
-    "GroupID",
+    "GroupId",
     "BindUsername",
     "BindPassword",
     "HostName",

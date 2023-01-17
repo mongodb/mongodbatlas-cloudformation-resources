@@ -17,12 +17,10 @@ update.json
 .hypothesis/
 
 # any "dot"-file, anywhere almost
-**/.*
 !/.github
 !/.gitignore
 !*.rpdk-config
 .taskcat_overrides.yml
-
 **/makebuild
 **/functions/packages
 **/taskcat_outputs/

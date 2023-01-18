@@ -1,13 +1,13 @@
-# mongodb-atlas-cluster
+# mongodb-atlas-customdbrole
 
-> AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::Cluster` v1.0.0.
+> AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::CustomDBRole` v1.0.0.
 
 [L1 construct]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html
 [AWS CloudFormation Registry]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry.html
 
 ## Description
 
-{resource description}
+Returns, adds, edits, and removes custom database user privilege roles.
 
 ## Usage
 
@@ -15,7 +15,7 @@ In order to use this library, you will need to activate this AWS CloudFormation 
 
 ```sh
 aws cloudformation activate-type \
-  --type-name MongoDB::Atlas::Cluster \
+  --type-name MongoDB::Atlas::CustomDBRole \
   --publisher-id bb989456c78c398a858fef18f2ca1bfc1fbba082 \
   --type RESOURCE \
   --execution-role-arn ROLE-ARN
@@ -33,10 +33,10 @@ You can find more information about activating this type in the [AWS CloudFormat
 
 ## Feedback
 
-This library is auto-generated and published to all supported programming languages by the [cdklabs/cdk-cloudformation] project based on the API schema published for `MongoDB::Atlas::Cluster`.
+This library is auto-generated and published to all supported programming languages by the [cdklabs/cdk-cloudformation] project based on the API schema published for `MongoDB::Atlas::CustomDBRole`.
 
-* Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-cluster+v1.0.0).
-* Issues related to `MongoDB::Atlas::Cluster` should be reported to the [publisher](undefined).
+* Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-customdbrole+v1.0.0).
+* Issues related to `MongoDB::Atlas::CustomDBRole` should be reported to the [publisher](undefined).
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

@@ -14,10 +14,10 @@ do
             cdk-import cfn -l typescript -s $file -o cdk-resources/${path}/src index
             cd cdk-resources/${path}
             npx projen new awscdk-construct --author-name "MongoDB"  --docgen true --sample-code false --name path
+            rm -rf .git
             cd ../..
           fi
       done
 done
-
 
 

@@ -1,10 +1,14 @@
 const { awscdk } = require('projen');
+const { ReleaseTrigger } = require('projen/lib/release');
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDB',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDB',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'main',
+  majorVersion: 1,
+  releaseToNpm: true,
+  releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: 'mongodb-atlas-project',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
@@ -41,4 +45,5 @@ const project = new awscdk.AwsCdkConstructLibrary({
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
+
 project.synth();

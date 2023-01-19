@@ -13,7 +13,7 @@ Returns and edits the conditions that trigger alerts and how MongoDB Cloud notif
 
 ## API Docs
 
-For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations)
+For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations)
 
 ## Usage
 

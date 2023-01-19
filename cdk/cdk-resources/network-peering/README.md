@@ -13,7 +13,7 @@ Returns, adds, edits, and removes network peering containers and peering connect
 
 ## API Docs
 
-For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering)
+For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering)
 
 ## Usage
 

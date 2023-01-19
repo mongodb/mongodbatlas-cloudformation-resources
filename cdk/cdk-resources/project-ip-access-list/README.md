@@ -13,7 +13,7 @@ Returns, adds, edits, and removes network access limits to database deployments 
 
 ## API Docs
 
-For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List)
+For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List)
 
 ## Usage
 

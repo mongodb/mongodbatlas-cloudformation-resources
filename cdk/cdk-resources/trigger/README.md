@@ -13,7 +13,7 @@ View and manage your application's [triggers](https://www.mongodb.com/docs/atlas
 
 ## API Docs
 
-For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Events)
+For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Events)
 
 ## Usage
 

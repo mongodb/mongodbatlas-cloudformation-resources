@@ -13,7 +13,7 @@ Returns, adds, and edits collections of clusters and users in MongoDB Cloud.
 
 ## API Docs
 
-For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects)
+For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects)
 
 ## Usage
 

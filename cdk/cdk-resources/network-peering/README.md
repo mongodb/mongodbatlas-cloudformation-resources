@@ -1,5 +1,7 @@
 # mongodb-atlas-networkpeering
 
+The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
+
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::NetworkPeering` v1.0.0.
 
 [L1 construct]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html

@@ -1,4 +1,4 @@
-# mongodb-atlas-serverlessinstance
+# mongodb-atlas-serverlessinstance-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

@@ -1,4 +1,4 @@
-# mongodb-atlas-teams
+# mongodb-atlas-teams-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

@@ -1,4 +1,4 @@
-# mongodb-atlas-trigger
+# mongodb-atlas-trigger-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

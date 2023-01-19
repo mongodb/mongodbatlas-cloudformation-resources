@@ -1,4 +1,4 @@
-# mongodb-atlas-projectinvitation
+# mongodb-atlas-projectinvitation-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

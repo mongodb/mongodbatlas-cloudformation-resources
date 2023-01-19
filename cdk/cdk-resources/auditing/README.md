@@ -1,4 +1,4 @@
-# mongodb-atlas-auditing
+# mongodb-atlas-auditing-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

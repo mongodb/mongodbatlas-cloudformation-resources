@@ -1,4 +1,4 @@
-# mongodb-atlas-privateendpoint
+# mongodb-atlas-privateendpoint-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

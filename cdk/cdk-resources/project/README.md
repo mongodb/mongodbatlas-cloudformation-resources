@@ -1,4 +1,4 @@
-# mongodb-atlas-project
+# mongodb-atlas-project-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

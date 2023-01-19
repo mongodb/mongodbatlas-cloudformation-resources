@@ -1,4 +1,4 @@
-# mongodb-atlas-networkpeering
+# mongodb-atlas-networkpeering-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

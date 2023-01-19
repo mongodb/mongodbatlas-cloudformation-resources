@@ -1,4 +1,4 @@
-# mongodb-atlas-databaseuser
+# mongodb-atlas-databaseuser-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

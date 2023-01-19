@@ -1,4 +1,4 @@
-# mongodb-atlas-searchindex
+# mongodb-atlas-searchindex-cdktf
 
 The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 

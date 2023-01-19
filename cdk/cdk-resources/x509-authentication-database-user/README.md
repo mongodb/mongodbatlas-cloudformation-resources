@@ -15,6 +15,14 @@ To get MongoDB Cloud to generate a managed certificate for a database user, set 
 
 If you are managing your own Certificate Authority (CA) in Self-Managed X.509 mode, you must generate certificates for database users using your own CA.
 
+## API Docs
+
+For more information about the Api refere to: [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
+
+## API Docs
+
+For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/x509-authentication-database-user)
+
 ## Usage
 
 In order to use this library, you will need to activate this AWS CloudFormation Registry type in your account. You can do this via the AWS Management Console or using the [AWS CLI](https://aws.amazon.com/cli/) using the following command:

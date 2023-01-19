@@ -70,4 +70,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
 ```
 
 ## For More Information
-See the MongoDB Atlas API [Private Endpoint ADL](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation-Private-Networks) documentation.
+See the MongoDB Atlas API [Private Endpoint ADL](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation-Priate-Networksv) documentation.

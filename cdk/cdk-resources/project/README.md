@@ -1,4 +1,6 @@
-# mongodb-atlas-project
+# mongodb-atlas-project-cdktf
+
+The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::Project` v1.0.0.
 
@@ -8,6 +10,10 @@
 ## Description
 
 Retrieves or creates projects in any given Atlas organization.
+
+## API Docs
+
+For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects)
 
 ## Usage
 
@@ -36,7 +42,7 @@ You can find more information about activating this type in the [AWS CloudFormat
 This library is auto-generated and published to all supported programming languages by the [cdklabs/cdk-cloudformation] project based on the API schema published for `MongoDB::Atlas::Project`.
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-project+v1.0.0).
-* Issues related to `MongoDB::Atlas::Project` should be reported to the [publisher](undefined).
+* Issues related to `MongoDB::Atlas::Project` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

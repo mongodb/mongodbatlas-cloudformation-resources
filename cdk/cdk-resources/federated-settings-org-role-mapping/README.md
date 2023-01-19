@@ -1,4 +1,6 @@
-# mongodb-atlas-federatedsettingsorgrolemapping
+# mongodb-atlas-federatedsettingsorgrolemapping-cdktf
+
+The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::FederatedSettingsOrgRoleMapping` v1.0.0.
 
@@ -8,6 +10,10 @@
 ## Description
 
 Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.
+
+## API Docs
+
+For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication)
 
 ## Usage
 
@@ -36,7 +42,7 @@ You can find more information about activating this type in the [AWS CloudFormat
 This library is auto-generated and published to all supported programming languages by the [cdklabs/cdk-cloudformation] project based on the API schema published for `MongoDB::Atlas::FederatedSettingsOrgRoleMapping`.
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-federatedsettingsorgrolemapping+v1.0.0).
-* Issues related to `MongoDB::Atlas::FederatedSettingsOrgRoleMapping` should be reported to the [publisher](undefined).
+* Issues related to `MongoDB::Atlas::FederatedSettingsOrgRoleMapping` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

@@ -1,4 +1,6 @@
-# mongodb-atlas-customdnsconfigurationclusteraws
+# mongodb-atlas-customdnsconfigurationclusteraws-cdktf
+
+The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::CustomDnsConfigurationClusterAws` v1.0.0.
 
@@ -8,6 +10,10 @@
 ## Description
 
 An example resource schema demonstrating some basic constructs and validation rules.
+
+## API Docs
+
+For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/custom-dns-configuration-cluster-aws)
 
 ## Usage
 
@@ -36,7 +42,7 @@ You can find more information about activating this type in the [AWS CloudFormat
 This library is auto-generated and published to all supported programming languages by the [cdklabs/cdk-cloudformation] project based on the API schema published for `MongoDB::Atlas::CustomDnsConfigurationClusterAws`.
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-customdnsconfigurationclusteraws+v1.0.0).
-* Issues related to `MongoDB::Atlas::CustomDnsConfigurationClusterAws` should be reported to the [publisher](undefined).
+* Issues related to `MongoDB::Atlas::CustomDnsConfigurationClusterAws` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

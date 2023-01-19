@@ -1,4 +1,6 @@
-# mongodb-atlas-x509authenticationdatabaseuser
+# mongodb-atlas-x509authenticationdatabaseuser-cdktf
+
+The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::X509AuthenticationDatabaseUser` v1.0.0.
 
@@ -12,6 +14,14 @@ Generates one X.509 certificate for the specified MongoDB user. Atlas manages th
 To get MongoDB Cloud to generate a managed certificate for a database user, set `"x509Type" : "MANAGED"` on the desired MongoDB Database User.
 
 If you are managing your own Certificate Authority (CA) in Self-Managed X.509 mode, you must generate certificates for database users using your own CA.
+
+## API Docs
+
+For more information about the Api refere to: [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
+
+## API Docs
+
+For more information about the Api refere to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/x509-authentication-database-user)
 
 ## Usage
 
@@ -40,7 +50,7 @@ You can find more information about activating this type in the [AWS CloudFormat
 This library is auto-generated and published to all supported programming languages by the [cdklabs/cdk-cloudformation] project based on the API schema published for `MongoDB::Atlas::X509AuthenticationDatabaseUser`.
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-x509authenticationdatabaseuser+v1.0.0).
-* Issues related to `MongoDB::Atlas::X509AuthenticationDatabaseUser` should be reported to the [publisher](undefined).
+* Issues related to `MongoDB::Atlas::X509AuthenticationDatabaseUser` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

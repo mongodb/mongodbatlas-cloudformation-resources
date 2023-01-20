@@ -1,31 +1,18 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const project = new awscdk.AwsCdkConstructLibrary({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'main',
+  defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: 'mongodb-atlas-project',
+  name: '@mongodbatlas-awscdk/mongodb-atlas-project',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-project',
-    module: 'mongodb_cdk_mongodb_atlas_project',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasProject',
-    packageId: 'MongoDBCdk.MongoDBAtlasProject',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_project',
-    mavenArtifactId: 'mongodb-atlas-project',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

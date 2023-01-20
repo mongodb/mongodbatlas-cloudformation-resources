@@ -1,32 +1,19 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
-const global-cluster-config = new awscdk.AwsCdkConstructLibrary
+const global_cluster_config = new awscdk.AwsCdkConstructLibrary
 ({
-    author: 'MongoDB',
+    author: 'MongoDBAtlas',
     authorAddress: 'https://mongodb.com',
-    authorName: 'MongoDB',
+    authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
-    defaultReleaseBranch: 'main',
+    defaultReleaseBranch: 'INTMDB-548',
     majorVersion: 1,
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),
     docgen: true,
-    name: 'mongodb-atlas-global-cluster-config',
+    name: '@mongodbatlas-awscdk/atlas-global-cluster-config',
     repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
     sampleCode: false,
-    publishToPypi: {
-        distName: 'mongodb-cdk-mongodb-atlas-global-cluster-config',
-        module: 'mongodb_cdk_mongodb_atlas_global-cluster-config',
-    },
-    dotnet: {
-        dotNetNamespace: 'MongoDBCdk.MongoDBAtlasGlobalClusterConfig',
-        packageId: 'MongoDBCdk.MongoDBAtlasGlobalClusterConfig',
-    },
-    publishToMaven: {
-        javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_global-cluster-config',
-        mavenArtifactId: 'mongodb-atlas-global-cluster-config',
-        mavenGroupId: 'com.github.mongodb.cdk',
-    },
     keywords: ['cdk',
         'awscdk',
         'aws-cdk',
@@ -47,4 +34,4 @@ const global-cluster-config = new awscdk.AwsCdkConstructLibrary
     // packageName: undefined,  /* The "name" in package.json. */
 });
 
-global-cluster-config.synth();
+global_cluster_config.synth();

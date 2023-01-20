@@ -2,31 +2,18 @@ const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const legacy_cluster = new awscdk.AwsCdkConstructLibrary
 ({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodb-cdk/atlas-legacy-cluster',
+  name: '@mongodbatlas-awscdk/atlas-legacy-cluster',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-legacy-cluster',
-    module: 'mongodb_cdk_mongodb_atlas_legacy-cluster',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCluster',
-    packageId: 'MongoDBCdk.MongoDBAtlasCluster',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_legacy-cluster',
-    mavenArtifactId: 'mongodb-atlas-legacy-cluster',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

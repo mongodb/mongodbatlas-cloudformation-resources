@@ -2,31 +2,18 @@ const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const ldap_verify = new awscdk.AwsCdkConstructLibrary
 ({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodb-cdk/atlas-ldap-verify',
+  name: '@mongodbatlas-awscdk/atlas-ldap-verify',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-ldap-verify',
-    module: 'mongodb_cdk_mongodb_atlas_ldap-verify',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasLDAPVerify',
-    packageId: 'MongoDBCdk.MongoDBAtlasLDAPVerify',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_ldap-verify',
-    mavenArtifactId: 'mongodb-atlas-ldap-verify',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

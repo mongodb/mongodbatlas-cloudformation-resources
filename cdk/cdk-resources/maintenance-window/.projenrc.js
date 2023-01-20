@@ -2,31 +2,18 @@ const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const maintenance_window = new awscdk.AwsCdkConstructLibrary
 ({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodb-cdk/atlas-maintenance-window',
+  name: '@mongodbatlas-awscdk/atlas-maintenance-window',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-maintenance-window',
-    module: 'mongodb_cdk_mongodb_atlas_maintenance-window',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasMaintenanceWindow',
-    packageId: 'MongoDBCdk.MongoDBAtlasMaintenanceWindow',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_maintenance-window',
-    mavenArtifactId: 'mongodb-atlas-maintenance-window',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

@@ -1,32 +1,19 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
-const project-ip-access-list = new awscdk.AwsCdkConstructLibrary
+const project_ip_access_list = new awscdk.AwsCdkConstructLibrary
 ({
-    author: 'MongoDB',
+    author: 'MongoDBAtlas',
     authorAddress: 'https://mongodb.com',
-    authorName: 'MongoDB',
+    authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
-    defaultReleaseBranch: 'main',
+    defaultReleaseBranch: 'INTMDB-548',
     majorVersion: 1,
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),
     docgen: true,
-    name: 'mongodb-atlas-project-ip-access-list',
+    name: '@mongodbatlas-awscdk/atlas-project-ip-access-list',
     repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
     sampleCode: false,
-    publishToPypi: {
-        distName: 'mongodb-cdk-mongodb-atlas-project-ip-access-list',
-        module: 'mongodb_cdk_mongodb_atlas_project-ip-access-list',
-    },
-    dotnet: {
-        dotNetNamespace: 'MongoDBCdk.MongoDBAtlasProjectIpAccessList',
-        packageId: 'MongoDBCdk.MongoDBAtlasProjectIpAccessList',
-    },
-    publishToMaven: {
-        javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_project-ip-access-list',
-        mavenArtifactId: 'mongodb-atlas-project-ip-access-list',
-        mavenGroupId: 'com.github.mongodb.cdk',
-    },
     keywords: ['cdk',
         'awscdk',
         'aws-cdk',
@@ -47,4 +34,4 @@ const project-ip-access-list = new awscdk.AwsCdkConstructLibrary
     // packageName: undefined,  /* The "name" in package.json. */
 });
 
-project-ip-access-list.synth();
+project_ip_access_list.synth();

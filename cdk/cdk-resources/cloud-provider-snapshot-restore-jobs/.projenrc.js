@@ -2,31 +2,18 @@ const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const cloud_provider_snapshot_restore_jobs = new awscdk.AwsCdkConstructLibrary
 ({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodb-cdk/atlas-cloud-provider-snapshot-restore-jobs',
+  name: '@mongodbatlas-awscdk/atlas-cloud-provider-snapshot-restore-jobs',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-cloud-provider-snapshot-restore-jobs',
-    module: 'mongodb_cdk_mongodb_atlas_cloud-provider-snapshot-restore-jobs',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCloudProviderSnapshotRestoreJobs',
-    packageId: 'MongoDBCdk.MongoDBAtlasCloudProviderSnapshotRestoreJobs',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_cloud-provider-snapshot-restore-jobs',
-    mavenArtifactId: 'mongodb-atlas-cloud-provider-snapshot-restore-jobs',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

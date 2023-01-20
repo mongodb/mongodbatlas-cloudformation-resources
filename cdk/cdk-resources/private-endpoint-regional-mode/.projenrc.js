@@ -2,31 +2,18 @@ const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const private_endpoint_regional_mode = new awscdk.AwsCdkConstructLibrary
 ({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodb-cdk/atlas-private-endpoint-regional-mode',
+  name: '@mongodbatlas-awscdk/atlas-private-endpoint-regional-mode',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-private-endpoint-regional-mode',
-    module: 'mongodb_cdk_mongodb_atlas_private-endpoint-regional-mode',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasPrivateEndPointRegionalMode',
-    packageId: 'MongoDBCdk.MongoDBAtlasPrivateEndPointRegionalMode',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_private-endpoint-regional-mode',
-    mavenArtifactId: 'mongodb-atlas-private-endpoint-regional-mode',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

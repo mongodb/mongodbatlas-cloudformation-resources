@@ -1,32 +1,19 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
-const cloud-backup-snapshot-export-job = new awscdk.AwsCdkConstructLibrary
+const cloud_backup_snapshot_export_job = new awscdk.AwsCdkConstructLibrary
 ({
-    author: 'MongoDB',
+    author: 'MongoDBAtlas',
     authorAddress: 'https://mongodb.com',
-    authorName: 'MongoDB',
+    authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
-    defaultReleaseBranch: 'main',
+    defaultReleaseBranch: 'INTMDB-548',
     majorVersion: 1,
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),
     docgen: true,
-    name: 'mongodb-atlas-cloud-backup-snapshot-export-job',
+    name: '@mongodbatlas-awscdk/atlas-cloud-backup-snapshot-export-job',
     repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
     sampleCode: false,
-    publishToPypi: {
-        distName: 'mongodb-cdk-mongodb-atlas-cloud-backup-snapshot-export-job',
-        module: 'mongodb_cdk_mongodb_atlas_cloud-backup-snapshot-export-job',
-    },
-    dotnet: {
-        dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCloudBackupSnapshotExportJob',
-        packageId: 'MongoDBCdk.MongoDBAtlasCloudBackupSnapshotExportJob',
-    },
-    publishToMaven: {
-        javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_cloud-backup-snapshot-export-job',
-        mavenArtifactId: 'mongodb-atlas-cloud-backup-snapshot-export-job',
-        mavenGroupId: 'com.github.mongodb.cdk',
-    },
     keywords: ['cdk',
         'awscdk',
         'aws-cdk',
@@ -47,4 +34,4 @@ const cloud-backup-snapshot-export-job = new awscdk.AwsCdkConstructLibrary
     // packageName: undefined,  /* The "name" in package.json. */
 });
 
-cloud-backup-snapshot-export-job.synth();
+cloud_backup_snapshot_export_job.synth();

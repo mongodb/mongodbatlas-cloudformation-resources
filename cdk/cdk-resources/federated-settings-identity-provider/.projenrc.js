@@ -1,32 +1,19 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
-const federated-settings-identity-provider = new awscdk.AwsCdkConstructLibrary
+const federated_settings_identity_provider = new awscdk.AwsCdkConstructLibrary
 ({
-    author: 'MongoDB',
+    author: 'MongoDBAtlas',
     authorAddress: 'https://mongodb.com',
-    authorName: 'MongoDB',
+    authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
-    defaultReleaseBranch: 'main',
+    defaultReleaseBranch: 'INTMDB-548',
     majorVersion: 1,
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),
     docgen: true,
-    name: 'mongodb-atlas-federated-settings-identity-provider',
+    name: '@mongodbatlas-awscdk/atlas-federated-settings-identity-provider',
     repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
     sampleCode: false,
-    publishToPypi: {
-        distName: 'mongodb-cdk-mongodb-atlas-federated-settings-identity-provider',
-        module: 'mongodb_cdk_mongodb_atlas_federated-settings-identity-provider',
-    },
-    dotnet: {
-        dotNetNamespace: 'MongoDBCdk.MongoDBAtlasFederatedSettingsIdentityProvider',
-        packageId: 'MongoDBCdk.MongoDBAtlasFederatedSettingsIdentityProvider',
-    },
-    publishToMaven: {
-        javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_federated-settings-identity-provider',
-        mavenArtifactId: 'mongodb-atlas-federated-settings-identity-provider',
-        mavenGroupId: 'com.github.mongodb.cdk',
-    },
     keywords: ['cdk',
         'awscdk',
         'aws-cdk',
@@ -47,4 +34,4 @@ const federated-settings-identity-provider = new awscdk.AwsCdkConstructLibrary
     // packageName: undefined,  /* The "name" in package.json. */
 });
 
-federated-settings-identity-provider.synth();
+federated_settings_identity_provider.synth();

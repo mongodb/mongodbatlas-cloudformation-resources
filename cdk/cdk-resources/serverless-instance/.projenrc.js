@@ -1,32 +1,19 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
-const serverless-instance = new awscdk.AwsCdkConstructLibrary
+const serverless_instance = new awscdk.AwsCdkConstructLibrary
 ({
-    author: 'MongoDB',
+    author: 'MongoDBAtlas',
     authorAddress: 'https://mongodb.com',
-    authorName: 'MongoDB',
+    authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
-    defaultReleaseBranch: 'main',
+    defaultReleaseBranch: 'INTMDB-548',
     majorVersion: 1,
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),
     docgen: true,
-    name: 'mongodb-atlas-serverless-instance',
+    name: '@mongodbatlas-awscdk/atlas-serverless-instance',
     repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
     sampleCode: false,
-    publishToPypi: {
-        distName: 'mongodb-cdk-mongodb-atlas-serverless-instance',
-        module: 'mongodb_cdk_mongodb_atlas_serverless-instance',
-    },
-    dotnet: {
-        dotNetNamespace: 'MongoDBCdk.MongoDBAtlasServerlessInstance',
-        packageId: 'MongoDBCdk.MongoDBAtlasServerlessInstance',
-    },
-    publishToMaven: {
-        javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_serverless-instance',
-        mavenArtifactId: 'mongodb-atlas-serverless-instance',
-        mavenGroupId: 'com.github.mongodb.cdk',
-    },
     keywords: ['cdk',
         'awscdk',
         'aws-cdk',
@@ -47,4 +34,4 @@ const serverless-instance = new awscdk.AwsCdkConstructLibrary
     // packageName: undefined,  /* The "name" in package.json. */
 });
 
-serverless-instance.synth();
+serverless_instance.synth();

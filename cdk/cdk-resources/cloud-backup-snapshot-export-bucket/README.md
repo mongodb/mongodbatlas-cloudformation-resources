@@ -13,7 +13,7 @@ The exportBuckets resource allows you to grant Atlas access to the specified buc
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Export)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Export)
 
 ## Usage
 

@@ -13,7 +13,7 @@ Returns, starts, and cancels Cloud Backup restore jobs.
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs)
 
 ## Usage
 

@@ -13,7 +13,7 @@ The maintenanceWindow resource provides access to retrieve or update the current
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Maintenance-Windows)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Maintenance-Windows)
 
 ## Usage
 

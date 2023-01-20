@@ -13,7 +13,7 @@ Returns, adds, and removes Global Cluster managed namespaces and custom zone map
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Global-Clusters)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Global-Clusters)
 
 ## Usage
 

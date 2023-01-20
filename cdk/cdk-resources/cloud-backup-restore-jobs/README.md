@@ -1,4 +1,4 @@
-# mongodb-atlas-cloudbackuprestorejobs
+# @mongodbatlas-awscdk/cloudbackuprestorejobs
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

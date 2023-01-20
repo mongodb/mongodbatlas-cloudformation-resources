@@ -1,4 +1,4 @@
-# mongodb-atlas-searchindex
+# @mongodbatlas-awscdk/searchindex
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

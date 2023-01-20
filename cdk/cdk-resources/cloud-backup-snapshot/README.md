@@ -1,6 +1,6 @@
-# mongodb-atlas-cloudbackupsnapshot-cdktf
+# @mongodbatlas-awscdk/cloudbackupsnapshot
 
-The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
+The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::CloudBackupSnapshot` v1.0.0.
 
@@ -11,9 +11,9 @@ The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
 
 Returns, takes, and removes Cloud Backup snapshots.
 
-## API Docs
+## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
 
 ## Usage
 
@@ -43,6 +43,7 @@ This library is auto-generated and published to all supported programming langua
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-cloudbackupsnapshot+v1.0.0).
 * Issues related to `MongoDB::Atlas::CloudBackupSnapshot` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
+* Feature requests should be [reported here](https://feedback.mongodb.com/forums/924145-atlas?category_id=392596)
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

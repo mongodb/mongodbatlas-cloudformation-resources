@@ -1,6 +1,6 @@
-# mongodb-atlas-x509authenticationdatabaseuser-cdktf
+# @mongodbatlas-awscdk/x509authenticationdatabaseuser
 
-The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
+The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::X509AuthenticationDatabaseUser` v1.0.0.
 
@@ -15,13 +15,13 @@ To get MongoDB Cloud to generate a managed certificate for a database user, set 
 
 If you are managing your own Certificate Authority (CA) in Self-Managed X.509 mode, you must generate certificates for database users using your own CA.
 
-## API Docs
+## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
+For more information about the API refer to: [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
 
-## API Docs
+## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/x509-authentication-database-user)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/x509-authentication-database-user)
 
 ## Usage
 
@@ -51,6 +51,7 @@ This library is auto-generated and published to all supported programming langua
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-x509authenticationdatabaseuser+v1.0.0).
 * Issues related to `MongoDB::Atlas::X509AuthenticationDatabaseUser` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
+* Feature requests should be [reported here](https://feedback.mongodb.com/forums/924145-atlas?category_id=392596)
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

@@ -1,6 +1,6 @@
 # mongodb-atlas-maintenancewindow-cdktf
 
-The official [MongoDB](https://www.mongodb.com/) driver for Node.js.
+The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
 > AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] type `MongoDB::Atlas::MaintenanceWindow` v1.0.0.
 

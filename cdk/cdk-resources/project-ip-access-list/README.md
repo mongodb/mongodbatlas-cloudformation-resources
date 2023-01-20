@@ -1,4 +1,4 @@
-# mongodb-atlas-projectipaccesslist-cdktf
+# mongodb-atlas-projectipaccesslist
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ Returns, adds, edits, and removes network access limits to database deployments 
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List)
 
 ## Usage
 

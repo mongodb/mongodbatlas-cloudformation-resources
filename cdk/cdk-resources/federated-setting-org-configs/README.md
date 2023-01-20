@@ -1,4 +1,4 @@
-# mongodb-atlas-federatedsettingorgconfigs-cdktf
+# mongodb-atlas-federatedsettingorgconfigs
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ Returns, adds, edits, and removes federation-related features such as role mappi
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication)
 
 ## Usage
 

@@ -1,4 +1,4 @@
-# mongodb-atlas-x509authenticationdatabaseuser-cdktf
+# mongodb-atlas-x509authenticationdatabaseuser
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -17,11 +17,11 @@ If you are managing your own Certificate Authority (CA) in Self-Managed X.509 mo
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
+For more information about the API refer to: [Custom Database Roles Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/x509-authentication-database-user)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/x509-authentication-database-user)
 
 ## Usage
 

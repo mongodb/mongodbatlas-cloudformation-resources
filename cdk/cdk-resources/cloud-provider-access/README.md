@@ -1,4 +1,4 @@
-# mongodb-atlas-cloudprovideraccess-cdktf
+# mongodb-atlas-cloudprovideraccess
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ Returns, adds, authorizes, and removes AWS IAM roles in Atlas.
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Provider-Access)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Provider-Access)
 
 ## Usage
 

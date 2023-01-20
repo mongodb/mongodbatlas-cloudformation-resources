@@ -1,4 +1,4 @@
-# mongodb-atlas-ldapverify-cdktf
+# mongodb-atlas-ldapverify
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ Requests a verification of an LDAP configuration over TLS for an Atlas project. 
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/LDAP-Configuration)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/LDAP-Configuration)
 
 ## Usage
 

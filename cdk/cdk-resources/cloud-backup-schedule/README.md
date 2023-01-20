@@ -1,4 +1,4 @@
-# mongodb-atlas-cloudbackupschedule-cdktf
+# mongodb-atlas-cloudbackupschedule
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ An example resource schema demonstrating some basic constructs and validation ru
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Schedule)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Schedule)
 
 ## Usage
 

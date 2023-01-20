@@ -1,4 +1,4 @@
-# mongodb-atlas-cloudbackupsnapshot-cdktf
+# mongodb-atlas-cloudbackupsnapshot
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ Returns, takes, and removes Cloud Backup snapshots.
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
 
 ## Usage
 

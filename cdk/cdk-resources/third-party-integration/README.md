@@ -1,4 +1,4 @@
-# mongodb-atlas-thirdpartyintegration-cdktf
+# mongodb-atlas-thirdpartyintegration
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
@@ -13,7 +13,7 @@ Returns, adds, edits, and removes third-party service integration configurations
 
 ## MongoDB Atlas API Docs
 
-For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations)
+For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations)
 
 ## Usage
 

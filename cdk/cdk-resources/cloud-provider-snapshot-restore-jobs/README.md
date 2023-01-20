@@ -13,7 +13,7 @@ This resource allows you to create, cancel, get one or list all cloud provider s
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Shared-Tier-Restore-Jobs)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Shared-Tier-Restore-Jobs)
 
 ## Usage
 

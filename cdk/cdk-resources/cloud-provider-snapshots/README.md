@@ -13,7 +13,7 @@ This resource allows to take one on-demand snapshot, get one or all cloud provid
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
 
 ## Usage
 

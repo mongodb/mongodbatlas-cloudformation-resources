@@ -13,7 +13,7 @@ An example resource schema demonstrating some basic constructs and validation ru
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/custom-dns-configuration-cluster-aws)
+For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/custom-dns-configuration-cluster-aws)
 
 ## Usage
 

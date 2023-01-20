@@ -43,6 +43,7 @@ This library is auto-generated and published to all supported programming langua
 
 * Issues related to this generated library should be [reported here](https://github.com/cdklabs/cdk-cloudformation/issues/new?title=Issue+with+%40cdk-cloudformation%2Fmongodb-atlas-customdnsconfigurationclusteraws+v1.0.0).
 * Issues related to `MongoDB::Atlas::CustomDnsConfigurationClusterAws` should be reported to the [publisher](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues).
+* Feature requests should be [reported here](https://feedback.mongodb.com/forums/924145-atlas?category_id=392596)
 
 [cdklabs/cdk-cloudformation]: https://github.com/cdklabs/cdk-cloudformation
 

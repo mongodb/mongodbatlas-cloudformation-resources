@@ -2,9 +2,9 @@ const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
 const auditing = new awscdk.AwsCdkConstructLibrary
 ({
-  author: 'MongoDB',
+  author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
-  authorName: 'MongoDB',
+  authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
@@ -14,19 +14,6 @@ const auditing = new awscdk.AwsCdkConstructLibrary
   name: '@mongodb-cdk/atlas-auditing',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  publishToPypi: {
-    distName: 'mongodb-cdk-mongodb-atlas-auditing',
-    module: 'mongodb_cdk_mongodb_atlas_auditing',
-  },
-  dotnet: {
-    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasAuditing',
-    packageId: 'MongoDBCdk.MongoDBAtlasAuditing',
-  },
-  publishToMaven: {
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_auditing',
-    mavenArtifactId: 'mongodb-atlas-auditing',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

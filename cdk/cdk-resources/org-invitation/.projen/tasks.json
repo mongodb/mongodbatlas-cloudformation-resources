@@ -145,6 +145,33 @@
       "steps": [
         {
           "spawn": "package:js"
+        },
+        {
+          "spawn": "package:java"
+        },
+        {
+          "spawn": "package:python"
+        },
+        {
+          "spawn": "package:dotnet"
+        }
+      ]
+    },
+    "package:dotnet": {
+      "name": "package:dotnet",
+      "description": "Create dotnet language bindings",
+      "steps": [
+        {
+          "exec": "jsii-pacmak -v --target dotnet"
+        }
+      ]
+    },
+    "package:java": {
+      "name": "package:java",
+      "description": "Create java language bindings",
+      "steps": [
+        {
+          "exec": "jsii-pacmak -v --target java"
         }
       ]
     },
@@ -154,6 +181,15 @@
       "steps": [
         {
           "exec": "jsii-pacmak -v --target js"
+        }
+      ]
+    },
+    "package:python": {
+      "name": "package:python",
+      "description": "Create python language bindings",
+      "steps": [
+        {
+          "exec": "jsii-pacmak -v --target python"
         }
       ]
     },
@@ -174,11 +210,34 @@
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
     },
-    "release": {
-      "name": "release",
-      "description": "Prepare a release from \"main\" branch",
+    "publish:git:INTMDB-548": {
+      "name": "publish:git:INTMDB-548",
+      "description": "Prepends the release changelog onto the project changelog, creates a release commit, and tags the release",
       "env": {
-        "RELEASE": "true"
+        "CHANGELOG": "dist/changelog.md",
+        "RELEASE_TAG_FILE": "dist/releasetag.txt",
+        "PROJECT_CHANGELOG_FILE": "CHANGELOG.md",
+        "VERSION_FILE": "dist/version.txt"
+      },
+      "steps": [
+        {
+          "builtin": "release/update-changelog"
+        },
+        {
+          "builtin": "release/tag-version"
+        },
+        {
+          "exec": "git push --follow-tags origin INTMDB-548"
+        }
+      ],
+      "condition": "! git log --oneline -1 | grep -q \"chore(release):\""
+    },
+    "release:INTMDB-548": {
+      "name": "release:INTMDB-548",
+      "description": "Prepare a release from \"INTMDB-548\" branch",
+      "env": {
+        "RELEASE": "true",
+        "MAJOR": "1"
       },
       "steps": [
         {
@@ -195,6 +254,9 @@
         },
         {
           "exec": "git diff --ignore-space-at-eol --exit-code"
+        },
+        {
+          "spawn": "publish:git:INTMDB-548"
         }
       ]
     },

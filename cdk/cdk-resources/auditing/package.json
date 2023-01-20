@@ -1,5 +1,6 @@
 {
-  "name": "path",
+  "name": "@mongodb-cdk/atlas-auditing",
+  "description": "Retrieves or creates auditings in any given Atlas organization",
   "repository": {
     "type": "git",
     "url": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git"
@@ -16,11 +17,15 @@
     "eslint": "npx projen eslint",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
+    "package:dotnet": "npx projen package:dotnet",
+    "package:java": "npx projen package:java",
     "package:js": "npx projen package:js",
+    "package:python": "npx projen package:python",
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
-    "release": "npx projen release",
+    "publish:git:INTMDB-548": "npx projen publish:git:INTMDB-548",
+    "release:INTMDB-548": "npx projen release:INTMDB-548",
     "test": "npx projen test",
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
@@ -30,7 +35,7 @@
   },
   "author": {
     "name": "MongoDB",
-    "email": "mohittalniya@gmail.com",
+    "url": "https://mongodb.com",
     "organization": false
   },
   "devDependencies": {
@@ -48,11 +53,11 @@
     "jest-junit": "^13",
     "jsii": "^1.73.0",
     "jsii-diff": "^1.73.0",
-    "jsii-docgen": "^7.0.205",
+    "jsii-docgen": "^7.0.208",
     "jsii-pacmak": "^1.73.0",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^16",
-    "projen": "^0.67.0",
+    "projen": "^0.67.6",
     "standard-version": "^9",
     "ts-jest": "^27",
     "typescript": "^4.9.4"
@@ -62,11 +67,23 @@
     "constructs": "^10.0.5"
   },
   "keywords": [
-    "cdk"
+    "atlas",
+    "auditing",
+    "aws-cdk",
+    "awscdk",
+    "cdk",
+    "cfn",
+    "cfn-resources",
+    "cloudformation",
+    "cloudformation-registry",
+    "constructs",
+    "extensions",
+    "l1",
+    "mongodb"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "jest": {
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.ts?(x)",
@@ -111,7 +128,23 @@
   "stability": "stable",
   "jsii": {
     "outdir": "dist",
-    "targets": {},
+    "targets": {
+      "java": {
+        "package": "com.github.mongodb.cdk.mongodb_atlas_auditing",
+        "maven": {
+          "groupId": "com.github.mongodb.cdk",
+          "artifactId": "mongodb-atlas-auditing"
+        }
+      },
+      "python": {
+        "distName": "mongodb-cdk-mongodb-atlas-auditing",
+        "module": "mongodb_cdk_mongodb_atlas_auditing"
+      },
+      "dotnet": {
+        "namespace": "MongoDBCdk.MongoDBAtlasAuditing",
+        "packageId": "MongoDBCdk.MongoDBAtlasAuditing"
+      }
+    },
     "tsc": {
       "outDir": "lib",
       "rootDir": "src"

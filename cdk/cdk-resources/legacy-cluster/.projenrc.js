@@ -1,18 +1,50 @@
 const { awscdk } = require('projen');
-const project = new awscdk.AwsCdkConstructLibrary({
-  author: 'Mohit Talniya',
-  authorAddress: 'mohittalniya@gmail.com',
+const { ReleaseTrigger } = require('projen/lib/release');
+const legacy_cluster = new awscdk.AwsCdkConstructLibrary
+({
+  author: 'MongoDB',
+  authorAddress: 'https://mongodb.com',
   authorName: 'MongoDB',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'main',
+  defaultReleaseBranch: 'INTMDB-548',
+  majorVersion: 1,
+  releaseToNpm: true,
+  releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: 'path',
+  name: '@mongodb-cdk/atlas-legacy-cluster',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-atlas-legacy-cluster',
+    module: 'mongodb_cdk_mongodb_atlas_legacy-cluster',
+  },
+  dotnet: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCluster',
+    packageId: 'MongoDBCdk.MongoDBAtlasCluster',
+  },
+  publishToMaven: {
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_legacy-cluster',
+    mavenArtifactId: 'mongodb-atlas-legacy-cluster',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },
+  keywords: ['cdk',
+    'awscdk',
+    'aws-cdk',
+    'cloudformation',
+    'cfn',
+    'extensions',
+    'constructs',
+    'cfn-resources',
+    'cloudformation-registry',
+    'l1',
+    'mongodb',
+    'atlas',
+    'legacy-cluster'],
+  description: 'Retrieves or creates legacy-clusters in any given Atlas organization',
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
-project.synth();
+
+legacy_cluster.synth();

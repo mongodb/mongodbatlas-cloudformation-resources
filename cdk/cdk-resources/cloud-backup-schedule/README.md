@@ -11,7 +11,7 @@ The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node
 
 An example resource schema demonstrating some basic constructs and validation rules.
 
-## API Docs
+## MongoDB Atlas API Docs
 
 For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Schedule)
 

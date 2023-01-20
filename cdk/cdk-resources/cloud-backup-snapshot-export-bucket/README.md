@@ -11,7 +11,7 @@ The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node
 
 The exportBuckets resource allows you to grant Atlas access to the specified bucket for exporting backup snapshots.
 
-## API Docs
+## MongoDB Atlas API Docs
 
 For more information about the Api refer to: [Api Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Export)
 

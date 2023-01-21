@@ -41,9 +41,16 @@ func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpoint
 	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
 
 	for i, ep := range m.PrivateEndpoints {
+
+		subnetIds := make([]string, len(ep.SubnetIds))
+
+		for j := range m.PrivateEndpoints[i].SubnetIds {
+			subnetIds[j] = m.PrivateEndpoints[i].SubnetIds[j]
+		}
+
 		endpoint := awsvpcendpoint.AwsPrivateEndpointInput{
 			VpcID:               *ep.VpcId,
-			SubnetID:            *ep.SubnetId,
+			SubnetIDs:           subnetIds,
 			InterfaceEndpointID: ep.InterfaceEndpointId,
 		}
 
@@ -95,7 +102,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for i, awsPe := range awsPrivateEndpointOutput {
 			privateEndpointInput[i] = privateendpoint.AtlasPrivateEndpointInput{
 				VpcID:               awsPe.VpcID,
-				SubnetID:            awsPe.SubnetID,
+				SubnetIDs:           awsPe.SubnetIDs,
 				InterfaceEndpointID: awsPe.InterfaceEndpointID,
 			}
 		}
@@ -114,7 +121,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, cmpe := range currentModel.PrivateEndpoints {
 			for i := range ValidationOutput.Endpoints {
 				vpe := ValidationOutput.Endpoints[i]
-				if vpe.VpcID == *cmpe.VpcId && vpe.SubnetID == *cmpe.SubnetId {
+				if vpe.VpcID == *cmpe.VpcId && CompareSlices(vpe.SubnetIDs, cmpe.SubnetIds) {
 					currentModel.PrivateEndpoints[i].InterfaceEndpointId = &vpe.InterfaceEndpointID
 				}
 			}
@@ -335,4 +342,8 @@ func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model)
 	}
 
 	return *progressEvent
+}
+
+func CompareSlices(a []string, b []string) bool {
+	return true
 }

@@ -10,7 +10,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/mongodb-atlas-project',
+  name: '@mongodbatlas-awscdk/project',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

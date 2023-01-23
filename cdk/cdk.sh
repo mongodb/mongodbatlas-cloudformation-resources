@@ -11,7 +11,7 @@ do
             path=$(basename $dir)
             echo $path
             rm -rf cdk-resources/${path}/src/*.ts
-            cdk-import cfn -l typescript -s $file -o cdk-resources/${path}/src index
+            cdk-import cfn -l typescript -s $file -o cdk-resources/${path}/src $src
             cd cdk-resources/${path}
             npx projen new awscdk-construct --author-name "MongoDB"  --docgen true --sample-code false --name path
             rm -rf .git

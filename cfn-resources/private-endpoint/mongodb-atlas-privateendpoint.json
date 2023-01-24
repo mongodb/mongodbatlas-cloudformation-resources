@@ -21,10 +21,6 @@
                     "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
                     "type": "string"
                 },
-                "SubnetId": {
-                    "description": "String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-                    "type": "string"
-                },
                 "SubnetIds": {
                     "type": "array",
                     "description": "List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",

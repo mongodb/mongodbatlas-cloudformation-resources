@@ -70,7 +70,8 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 			case "VpcID":
 				peCallback.VpcID = valStr
 			case "SubnetIDs":
-				peCallback.SubnetIDs = strings.Split(valStr, ",")
+				subnets := strings.Replace(strings.Replace(valStr, "[", "", 1), "]", "", 1)
+				peCallback.SubnetIDs = strings.Split(subnets, " ")
 			case "InterfaceEndpointID":
 				peCallback.InterfaceEndpointID = valStr
 			case "Status":

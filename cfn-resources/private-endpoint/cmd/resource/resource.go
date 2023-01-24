@@ -345,5 +345,22 @@ func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model)
 }
 
 func CompareSlices(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for _, v := range a {
+		found := false
+		for _, c := range b {
+			if v == c {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+
 	return true
 }

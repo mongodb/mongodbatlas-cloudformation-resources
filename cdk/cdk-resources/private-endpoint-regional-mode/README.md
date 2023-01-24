@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/privateendpointregionalmode
+# @mongodbatlas-awscdk/private-endpoint-regional-mode
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

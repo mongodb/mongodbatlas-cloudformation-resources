@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/privateendpointadl
+# @mongodbatlas-awscdk/private-endpoint-adl
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

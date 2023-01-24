@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/customdnsconfigurationclusteraws
+# @mongodbatlas-awscdk/custom-dns-configuration-cluster-aws
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

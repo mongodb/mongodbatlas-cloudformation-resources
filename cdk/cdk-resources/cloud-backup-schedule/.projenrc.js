@@ -11,7 +11,7 @@ const cloud_backup_schedule = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-cloud-backup-schedule',
+  name: '@mongodbatlas-awscdk/cloud-backup-schedule',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

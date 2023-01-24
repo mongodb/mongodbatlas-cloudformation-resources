@@ -11,7 +11,7 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-custom-dns-configuration-cluster-aws',
+  name: '@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',
@@ -32,6 +32,17 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
+});
+
+custom_dns_configuration_cluster_aws.eslint?.addOverride({
+  files: ['src/**'],
+  rules: {
+    'max-len': [
+      'error', {
+        code: 180,
+      },
+    ],
+  },
 });
 
 custom_dns_configuration_cluster_aws.synth();

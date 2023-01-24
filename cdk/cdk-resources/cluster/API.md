@@ -2,27 +2,27 @@
 
 ## Constructs <a name="Constructs" id="Constructs"></a>
 
-### CfnCluster <a name="CfnCluster" id="@mongodb-cdk/atlas-cluster.CfnCluster"></a>
+### CfnCluster <a name="CfnCluster" id="@mongodbatlas-awscdk/cluster.CfnCluster"></a>
 
 A CloudFormation `MongoDB::Atlas::Cluster`.
 
-#### Initializers <a name="Initializers" id="@mongodb-cdk/atlas-cluster.CfnCluster.Initializer"></a>
+#### Initializers <a name="Initializers" id="@mongodbatlas-awscdk/cluster.CfnCluster.Initializer"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/cluster'
 
 new CfnCluster(scope: Construct, id: string, props: CfnClusterProps)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - scope in which this resource is defined. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.Initializer.parameter.id">id</a></code> | <code>string</code> | - scoped id of the resource. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.Initializer.parameter.props">props</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps">CfnClusterProps</a></code> | - resource properties. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - scope in which this resource is defined. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.Initializer.parameter.id">id</a></code> | <code>string</code> | - scoped id of the resource. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.Initializer.parameter.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps">CfnClusterProps</a></code> | - resource properties. |
 
 ---
 
-##### `scope`<sup>Required</sup> <a name="scope" id="@mongodb-cdk/atlas-cluster.CfnCluster.Initializer.parameter.scope"></a>
+##### `scope`<sup>Required</sup> <a name="scope" id="@mongodbatlas-awscdk/cluster.CfnCluster.Initializer.parameter.scope"></a>
 
 - *Type:* constructs.Construct
 
@@ -30,7 +30,7 @@ scope in which this resource is defined.
 
 ---
 
-##### `id`<sup>Required</sup> <a name="id" id="@mongodb-cdk/atlas-cluster.CfnCluster.Initializer.parameter.id"></a>
+##### `id`<sup>Required</sup> <a name="id" id="@mongodbatlas-awscdk/cluster.CfnCluster.Initializer.parameter.id"></a>
 
 - *Type:* string
 
@@ -38,9 +38,9 @@ scoped id of the resource.
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="@mongodb-cdk/atlas-cluster.CfnCluster.Initializer.parameter.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/cluster.CfnCluster.Initializer.parameter.props"></a>
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps">CfnClusterProps</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps">CfnClusterProps</a>
 
 resource properties.
 
@@ -50,21 +50,21 @@ resource properties.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.overrideLogicalId">overrideLogicalId</a></code> | Overrides the auto-generated logical ID with a specific ID. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.addDeletionOverride">addDeletionOverride</a></code> | Syntactic sugar for `addOverride(path, undefined)`. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.addDependsOn">addDependsOn</a></code> | Indicates that this resource depends on another resource and cannot be provisioned unless the other resource has been successfully provisioned. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.addMetadata">addMetadata</a></code> | Add a value to the CloudFormation Resource Metadata. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.addOverride">addOverride</a></code> | Adds an override to the synthesized CloudFormation resource. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyDeletionOverride">addPropertyDeletionOverride</a></code> | Adds an override that deletes the value of a property from the resource definition. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyOverride">addPropertyOverride</a></code> | Adds an override to a resource property. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.applyRemovalPolicy">applyRemovalPolicy</a></code> | Sets the deletion policy of the resource based on the removal policy specified. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.getAtt">getAtt</a></code> | Returns a token for an runtime attribute of this resource. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.getMetadata">getMetadata</a></code> | Retrieve a value value from the CloudFormation Resource Metadata. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.overrideLogicalId">overrideLogicalId</a></code> | Overrides the auto-generated logical ID with a specific ID. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.addDeletionOverride">addDeletionOverride</a></code> | Syntactic sugar for `addOverride(path, undefined)`. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.addDependsOn">addDependsOn</a></code> | Indicates that this resource depends on another resource and cannot be provisioned unless the other resource has been successfully provisioned. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.addMetadata">addMetadata</a></code> | Add a value to the CloudFormation Resource Metadata. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.addOverride">addOverride</a></code> | Adds an override to the synthesized CloudFormation resource. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyDeletionOverride">addPropertyDeletionOverride</a></code> | Adds an override that deletes the value of a property from the resource definition. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyOverride">addPropertyOverride</a></code> | Adds an override to a resource property. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.applyRemovalPolicy">applyRemovalPolicy</a></code> | Sets the deletion policy of the resource based on the removal policy specified. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.getAtt">getAtt</a></code> | Returns a token for an runtime attribute of this resource. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.getMetadata">getMetadata</a></code> | Retrieve a value value from the CloudFormation Resource Metadata. |
 
 ---
 
-##### `toString` <a name="toString" id="@mongodb-cdk/atlas-cluster.CfnCluster.toString"></a>
+##### `toString` <a name="toString" id="@mongodbatlas-awscdk/cluster.CfnCluster.toString"></a>
 
 ```typescript
 public toString(): string
@@ -72,7 +72,7 @@ public toString(): string
 
 Returns a string representation of this construct.
 
-##### `overrideLogicalId` <a name="overrideLogicalId" id="@mongodb-cdk/atlas-cluster.CfnCluster.overrideLogicalId"></a>
+##### `overrideLogicalId` <a name="overrideLogicalId" id="@mongodbatlas-awscdk/cluster.CfnCluster.overrideLogicalId"></a>
 
 ```typescript
 public overrideLogicalId(newLogicalId: string): void
@@ -80,7 +80,7 @@ public overrideLogicalId(newLogicalId: string): void
 
 Overrides the auto-generated logical ID with a specific ID.
 
-###### `newLogicalId`<sup>Required</sup> <a name="newLogicalId" id="@mongodb-cdk/atlas-cluster.CfnCluster.overrideLogicalId.parameter.newLogicalId"></a>
+###### `newLogicalId`<sup>Required</sup> <a name="newLogicalId" id="@mongodbatlas-awscdk/cluster.CfnCluster.overrideLogicalId.parameter.newLogicalId"></a>
 
 - *Type:* string
 
@@ -88,7 +88,7 @@ The new logical ID to use for this stack element.
 
 ---
 
-##### `addDeletionOverride` <a name="addDeletionOverride" id="@mongodb-cdk/atlas-cluster.CfnCluster.addDeletionOverride"></a>
+##### `addDeletionOverride` <a name="addDeletionOverride" id="@mongodbatlas-awscdk/cluster.CfnCluster.addDeletionOverride"></a>
 
 ```typescript
 public addDeletionOverride(path: string): void
@@ -96,7 +96,7 @@ public addDeletionOverride(path: string): void
 
 Syntactic sugar for `addOverride(path, undefined)`.
 
-###### `path`<sup>Required</sup> <a name="path" id="@mongodb-cdk/atlas-cluster.CfnCluster.addDeletionOverride.parameter.path"></a>
+###### `path`<sup>Required</sup> <a name="path" id="@mongodbatlas-awscdk/cluster.CfnCluster.addDeletionOverride.parameter.path"></a>
 
 - *Type:* string
 
@@ -104,7 +104,7 @@ The path of the value to delete.
 
 ---
 
-##### `addDependsOn` <a name="addDependsOn" id="@mongodb-cdk/atlas-cluster.CfnCluster.addDependsOn"></a>
+##### `addDependsOn` <a name="addDependsOn" id="@mongodbatlas-awscdk/cluster.CfnCluster.addDependsOn"></a>
 
 ```typescript
 public addDependsOn(target: CfnResource): void
@@ -115,13 +115,13 @@ Indicates that this resource depends on another resource and cannot be provision
 This can be used for resources across stacks (or nested stack) boundaries
 and the dependency will automatically be transferred to the relevant scope.
 
-###### `target`<sup>Required</sup> <a name="target" id="@mongodb-cdk/atlas-cluster.CfnCluster.addDependsOn.parameter.target"></a>
+###### `target`<sup>Required</sup> <a name="target" id="@mongodbatlas-awscdk/cluster.CfnCluster.addDependsOn.parameter.target"></a>
 
 - *Type:* aws-cdk-lib.CfnResource
 
 ---
 
-##### `addMetadata` <a name="addMetadata" id="@mongodb-cdk/atlas-cluster.CfnCluster.addMetadata"></a>
+##### `addMetadata` <a name="addMetadata" id="@mongodbatlas-awscdk/cluster.CfnCluster.addMetadata"></a>
 
 ```typescript
 public addMetadata(key: string, value: any): void
@@ -139,19 +139,19 @@ Note that this is a different set of metadata from CDK node metadata; this
 metadata ends up in the stack template under the resource, whereas CDK
 node metadata ends up in the Cloud Assembly.)
 
-###### `key`<sup>Required</sup> <a name="key" id="@mongodb-cdk/atlas-cluster.CfnCluster.addMetadata.parameter.key"></a>
+###### `key`<sup>Required</sup> <a name="key" id="@mongodbatlas-awscdk/cluster.CfnCluster.addMetadata.parameter.key"></a>
 
 - *Type:* string
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-cluster.CfnCluster.addMetadata.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/cluster.CfnCluster.addMetadata.parameter.value"></a>
 
 - *Type:* any
 
 ---
 
-##### `addOverride` <a name="addOverride" id="@mongodb-cdk/atlas-cluster.CfnCluster.addOverride"></a>
+##### `addOverride` <a name="addOverride" id="@mongodbatlas-awscdk/cluster.CfnCluster.addOverride"></a>
 
 ```typescript
 public addOverride(path: string, value: any): void
@@ -195,7 +195,7 @@ would add the overrides
 }
 ```
 
-###### `path`<sup>Required</sup> <a name="path" id="@mongodb-cdk/atlas-cluster.CfnCluster.addOverride.parameter.path"></a>
+###### `path`<sup>Required</sup> <a name="path" id="@mongodbatlas-awscdk/cluster.CfnCluster.addOverride.parameter.path"></a>
 
 - *Type:* string
 
@@ -206,7 +206,7 @@ will be created as needed.
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-cluster.CfnCluster.addOverride.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/cluster.CfnCluster.addOverride.parameter.value"></a>
 
 - *Type:* any
 
@@ -216,7 +216,7 @@ Could be primitive or complex.
 
 ---
 
-##### `addPropertyDeletionOverride` <a name="addPropertyDeletionOverride" id="@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyDeletionOverride"></a>
+##### `addPropertyDeletionOverride` <a name="addPropertyDeletionOverride" id="@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyDeletionOverride"></a>
 
 ```typescript
 public addPropertyDeletionOverride(propertyPath: string): void
@@ -224,7 +224,7 @@ public addPropertyDeletionOverride(propertyPath: string): void
 
 Adds an override that deletes the value of a property from the resource definition.
 
-###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyDeletionOverride.parameter.propertyPath"></a>
+###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyDeletionOverride.parameter.propertyPath"></a>
 
 - *Type:* string
 
@@ -232,7 +232,7 @@ The path to the property.
 
 ---
 
-##### `addPropertyOverride` <a name="addPropertyOverride" id="@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyOverride"></a>
+##### `addPropertyOverride` <a name="addPropertyOverride" id="@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyOverride"></a>
 
 ```typescript
 public addPropertyOverride(propertyPath: string, value: any): void
@@ -242,7 +242,7 @@ Adds an override to a resource property.
 
 Syntactic sugar for `addOverride("Properties.<...>", value)`.
 
-###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyOverride.parameter.propertyPath"></a>
+###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyOverride.parameter.propertyPath"></a>
 
 - *Type:* string
 
@@ -250,7 +250,7 @@ The path of the property.
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-cluster.CfnCluster.addPropertyOverride.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/cluster.CfnCluster.addPropertyOverride.parameter.value"></a>
 
 - *Type:* any
 
@@ -258,7 +258,7 @@ The value.
 
 ---
 
-##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@mongodb-cdk/atlas-cluster.CfnCluster.applyRemovalPolicy"></a>
+##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@mongodbatlas-awscdk/cluster.CfnCluster.applyRemovalPolicy"></a>
 
 ```typescript
 public applyRemovalPolicy(policy?: RemovalPolicy, options?: RemovalPolicyOptions): void
@@ -274,19 +274,19 @@ to be replaced.
 The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
 account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
-###### `policy`<sup>Optional</sup> <a name="policy" id="@mongodb-cdk/atlas-cluster.CfnCluster.applyRemovalPolicy.parameter.policy"></a>
+###### `policy`<sup>Optional</sup> <a name="policy" id="@mongodbatlas-awscdk/cluster.CfnCluster.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
 
 ---
 
-###### `options`<sup>Optional</sup> <a name="options" id="@mongodb-cdk/atlas-cluster.CfnCluster.applyRemovalPolicy.parameter.options"></a>
+###### `options`<sup>Optional</sup> <a name="options" id="@mongodbatlas-awscdk/cluster.CfnCluster.applyRemovalPolicy.parameter.options"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicyOptions
 
 ---
 
-##### `getAtt` <a name="getAtt" id="@mongodb-cdk/atlas-cluster.CfnCluster.getAtt"></a>
+##### `getAtt` <a name="getAtt" id="@mongodbatlas-awscdk/cluster.CfnCluster.getAtt"></a>
 
 ```typescript
 public getAtt(attributeName: string): Reference
@@ -297,7 +297,7 @@ Returns a token for an runtime attribute of this resource.
 Ideally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility
 in case there is no generated attribute.
 
-###### `attributeName`<sup>Required</sup> <a name="attributeName" id="@mongodb-cdk/atlas-cluster.CfnCluster.getAtt.parameter.attributeName"></a>
+###### `attributeName`<sup>Required</sup> <a name="attributeName" id="@mongodbatlas-awscdk/cluster.CfnCluster.getAtt.parameter.attributeName"></a>
 
 - *Type:* string
 
@@ -305,7 +305,7 @@ The name of the attribute.
 
 ---
 
-##### `getMetadata` <a name="getMetadata" id="@mongodb-cdk/atlas-cluster.CfnCluster.getMetadata"></a>
+##### `getMetadata` <a name="getMetadata" id="@mongodbatlas-awscdk/cluster.CfnCluster.getMetadata"></a>
 
 ```typescript
 public getMetadata(key: string): any
@@ -323,7 +323,7 @@ Note that this is a different set of metadata from CDK node metadata; this
 metadata ends up in the stack template under the resource, whereas CDK
 node metadata ends up in the Cloud Assembly.)
 
-###### `key`<sup>Required</sup> <a name="key" id="@mongodb-cdk/atlas-cluster.CfnCluster.getMetadata.parameter.key"></a>
+###### `key`<sup>Required</sup> <a name="key" id="@mongodbatlas-awscdk/cluster.CfnCluster.getMetadata.parameter.key"></a>
 
 - *Type:* string
 
@@ -333,23 +333,23 @@ node metadata ends up in the Cloud Assembly.)
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.isCfnElement">isCfnElement</a></code> | Returns `true` if a construct is a stack element (i.e. part of the synthesized cloudformation template). |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.isCfnResource">isCfnResource</a></code> | Check whether the given construct is a CfnResource. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.isCfnElement">isCfnElement</a></code> | Returns `true` if a construct is a stack element (i.e. part of the synthesized cloudformation template). |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.isCfnResource">isCfnResource</a></code> | Check whether the given construct is a CfnResource. |
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@mongodb-cdk/atlas-cluster.CfnCluster.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@mongodbatlas-awscdk/cluster.CfnCluster.isConstruct"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/cluster'
 
 CfnCluster.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
 
-###### `x`<sup>Required</sup> <a name="x" id="@mongodb-cdk/atlas-cluster.CfnCluster.isConstruct.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="@mongodbatlas-awscdk/cluster.CfnCluster.isConstruct.parameter.x"></a>
 
 - *Type:* any
 
@@ -357,10 +357,10 @@ Any object.
 
 ---
 
-##### `isCfnElement` <a name="isCfnElement" id="@mongodb-cdk/atlas-cluster.CfnCluster.isCfnElement"></a>
+##### `isCfnElement` <a name="isCfnElement" id="@mongodbatlas-awscdk/cluster.CfnCluster.isCfnElement"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/cluster'
 
 CfnCluster.isCfnElement(x: any)
 ```
@@ -370,23 +370,23 @@ Returns `true` if a construct is a stack element (i.e. part of the synthesized c
 Uses duck-typing instead of `instanceof` to allow stack elements from different
 versions of this library to be included in the same stack.
 
-###### `x`<sup>Required</sup> <a name="x" id="@mongodb-cdk/atlas-cluster.CfnCluster.isCfnElement.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="@mongodbatlas-awscdk/cluster.CfnCluster.isCfnElement.parameter.x"></a>
 
 - *Type:* any
 
 ---
 
-##### `isCfnResource` <a name="isCfnResource" id="@mongodb-cdk/atlas-cluster.CfnCluster.isCfnResource"></a>
+##### `isCfnResource` <a name="isCfnResource" id="@mongodbatlas-awscdk/cluster.CfnCluster.isCfnResource"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/cluster'
 
 CfnCluster.isCfnResource(construct: IConstruct)
 ```
 
 Check whether the given construct is a CfnResource.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="@mongodb-cdk/atlas-cluster.CfnCluster.isCfnResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="@mongodbatlas-awscdk/cluster.CfnCluster.isCfnResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
@@ -396,22 +396,22 @@ Check whether the given construct is a CfnResource.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.creationStack">creationStack</a></code> | <code>string[]</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.logicalId">logicalId</a></code> | <code>string</code> | The logical ID for this CloudFormation stack element. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this element is defined. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.attrCreatedDate">attrCreatedDate</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.CreatedDate`. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.Id`. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.attrMongoDBVersion">attrMongoDBVersion</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoDBVersion`. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.attrStateName">attrStateName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.StateName`. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.props">props</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps">CfnClusterProps</a></code> | Resource props. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.creationStack">creationStack</a></code> | <code>string[]</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.logicalId">logicalId</a></code> | <code>string</code> | The logical ID for this CloudFormation stack element. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this element is defined. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.attrCreatedDate">attrCreatedDate</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.CreatedDate`. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.Id`. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.attrMongoDBVersion">attrMongoDBVersion</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoDBVersion`. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.attrStateName">attrStateName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.StateName`. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps">CfnClusterProps</a></code> | Resource props. |
 
 ---
 
-##### `node`<sup>Required</sup> <a name="node" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.node"></a>
+##### `node`<sup>Required</sup> <a name="node" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.node"></a>
 
 ```typescript
 public readonly node: Node;
@@ -423,7 +423,7 @@ The tree node.
 
 ---
 
-##### `creationStack`<sup>Required</sup> <a name="creationStack" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.creationStack"></a>
+##### `creationStack`<sup>Required</sup> <a name="creationStack" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.creationStack"></a>
 
 ```typescript
 public readonly creationStack: string[];
@@ -433,7 +433,7 @@ public readonly creationStack: string[];
 
 ---
 
-##### `logicalId`<sup>Required</sup> <a name="logicalId" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.logicalId"></a>
+##### `logicalId`<sup>Required</sup> <a name="logicalId" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.logicalId"></a>
 
 ```typescript
 public readonly logicalId: string;
@@ -450,7 +450,7 @@ To override this value, use `overrideLogicalId(newLogicalId)`.
 
 ---
 
-##### `stack`<sup>Required</sup> <a name="stack" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.stack"></a>
+##### `stack`<sup>Required</sup> <a name="stack" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.stack"></a>
 
 ```typescript
 public readonly stack: Stack;
@@ -464,7 +464,7 @@ CfnElements must be defined within a stack scope (directly or indirectly).
 
 ---
 
-##### `ref`<sup>Required</sup> <a name="ref" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.ref"></a>
+##### `ref`<sup>Required</sup> <a name="ref" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.ref"></a>
 
 ```typescript
 public readonly ref: string;
@@ -479,7 +479,7 @@ coerce it to an IResolvable through `Lazy.any({ produce: resource.ref })`.
 
 ---
 
-##### `cfnOptions`<sup>Required</sup> <a name="cfnOptions" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.cfnOptions"></a>
+##### `cfnOptions`<sup>Required</sup> <a name="cfnOptions" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.cfnOptions"></a>
 
 ```typescript
 public readonly cfnOptions: ICfnResourceOptions;
@@ -491,7 +491,7 @@ Options for this resource, such as condition, update policy etc.
 
 ---
 
-##### `cfnResourceType`<sup>Required</sup> <a name="cfnResourceType" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.cfnResourceType"></a>
+##### `cfnResourceType`<sup>Required</sup> <a name="cfnResourceType" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.cfnResourceType"></a>
 
 ```typescript
 public readonly cfnResourceType: string;
@@ -503,7 +503,7 @@ AWS resource type.
 
 ---
 
-##### `attrCreatedDate`<sup>Required</sup> <a name="attrCreatedDate" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.attrCreatedDate"></a>
+##### `attrCreatedDate`<sup>Required</sup> <a name="attrCreatedDate" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.attrCreatedDate"></a>
 
 ```typescript
 public readonly attrCreatedDate: string;
@@ -515,7 +515,7 @@ Attribute `MongoDB::Atlas::Cluster.CreatedDate`.
 
 ---
 
-##### `attrId`<sup>Required</sup> <a name="attrId" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.attrId"></a>
+##### `attrId`<sup>Required</sup> <a name="attrId" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.attrId"></a>
 
 ```typescript
 public readonly attrId: string;
@@ -527,7 +527,7 @@ Attribute `MongoDB::Atlas::Cluster.Id`.
 
 ---
 
-##### `attrMongoDBVersion`<sup>Required</sup> <a name="attrMongoDBVersion" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.attrMongoDBVersion"></a>
+##### `attrMongoDBVersion`<sup>Required</sup> <a name="attrMongoDBVersion" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.attrMongoDBVersion"></a>
 
 ```typescript
 public readonly attrMongoDBVersion: string;
@@ -539,7 +539,7 @@ Attribute `MongoDB::Atlas::Cluster.MongoDBVersion`.
 
 ---
 
-##### `attrStateName`<sup>Required</sup> <a name="attrStateName" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.attrStateName"></a>
+##### `attrStateName`<sup>Required</sup> <a name="attrStateName" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.attrStateName"></a>
 
 ```typescript
 public readonly attrStateName: string;
@@ -551,13 +551,13 @@ Attribute `MongoDB::Atlas::Cluster.StateName`.
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.props"></a>
 
 ```typescript
 public readonly props: CfnClusterProps;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps">CfnClusterProps</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps">CfnClusterProps</a>
 
 Resource props.
 
@@ -567,11 +567,11 @@ Resource props.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME">CFN_RESOURCE_TYPE_NAME</a></code> | <code>string</code> | The CloudFormation resource type name for this resource class. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME">CFN_RESOURCE_TYPE_NAME</a></code> | <code>string</code> | The CloudFormation resource type name for this resource class. |
 
 ---
 
-##### `CFN_RESOURCE_TYPE_NAME`<sup>Required</sup> <a name="CFN_RESOURCE_TYPE_NAME" id="@mongodb-cdk/atlas-cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME"></a>
+##### `CFN_RESOURCE_TYPE_NAME`<sup>Required</sup> <a name="CFN_RESOURCE_TYPE_NAME" id="@mongodbatlas-awscdk/cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME"></a>
 
 ```typescript
 public readonly CFN_RESOURCE_TYPE_NAME: string;
@@ -585,14 +585,14 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### AdvancedAutoScaling <a name="AdvancedAutoScaling" id="@mongodb-cdk/atlas-cluster.AdvancedAutoScaling"></a>
+### AdvancedAutoScaling <a name="AdvancedAutoScaling" id="@mongodbatlas-awscdk/cluster.AdvancedAutoScaling"></a>
 
 AWS Automatic Cluster Scaling.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.AdvancedAutoScaling.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.AdvancedAutoScaling.Initializer"></a>
 
 ```typescript
-import { AdvancedAutoScaling } from '@mongodb-cdk/atlas-cluster'
+import { AdvancedAutoScaling } from '@mongodbatlas-awscdk/cluster'
 
 const advancedAutoScaling: AdvancedAutoScaling = { ... }
 ```
@@ -601,32 +601,32 @@ const advancedAutoScaling: AdvancedAutoScaling = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedAutoScaling.property.compute">compute</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.Compute">Compute</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedAutoScaling.property.diskGb">diskGb</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.DiskGb">DiskGb</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedAutoScaling.property.compute">compute</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.Compute">Compute</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedAutoScaling.property.diskGb">diskGb</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.DiskGb">DiskGb</a></code> | *No description.* |
 
 ---
 
-##### `compute`<sup>Optional</sup> <a name="compute" id="@mongodb-cdk/atlas-cluster.AdvancedAutoScaling.property.compute"></a>
+##### `compute`<sup>Optional</sup> <a name="compute" id="@mongodbatlas-awscdk/cluster.AdvancedAutoScaling.property.compute"></a>
 
 ```typescript
 public readonly compute: Compute;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.Compute">Compute</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.Compute">Compute</a>
 
 ---
 
-##### `diskGb`<sup>Optional</sup> <a name="diskGb" id="@mongodb-cdk/atlas-cluster.AdvancedAutoScaling.property.diskGb"></a>
+##### `diskGb`<sup>Optional</sup> <a name="diskGb" id="@mongodbatlas-awscdk/cluster.AdvancedAutoScaling.property.diskGb"></a>
 
 ```typescript
 public readonly diskGb: DiskGb;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.DiskGb">DiskGb</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.DiskGb">DiskGb</a>
 
 ---
 
-### AdvancedRegionConfig <a name="AdvancedRegionConfig" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig"></a>
+### AdvancedRegionConfig <a name="AdvancedRegionConfig" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig"></a>
 
 Hardware specifications for nodes set for a given region.
 
@@ -636,10 +636,10 @@ Example:
 
 If you set "replicationSpecs[n].regionConfigs[m].analyticsSpecs.instanceSize" : "M30", set "replicationSpecs[n].regionConfigs[m].electableSpecs.instanceSize" : "M30"if you have electable nodes and"replicationSpecs[n].regionConfigs[m].readOnlySpecs.instanceSize" : "M30" if you have read-only nodes.",
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.Initializer"></a>
 
 ```typescript
-import { AdvancedRegionConfig } from '@mongodb-cdk/atlas-cluster'
+import { AdvancedRegionConfig } from '@mongodbatlas-awscdk/cluster'
 
 const advancedRegionConfig: AdvancedRegionConfig = { ... }
 ```
@@ -648,57 +648,57 @@ const advancedRegionConfig: AdvancedRegionConfig = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.analyticsAutoScaling">analyticsAutoScaling</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedAutoScaling">AdvancedAutoScaling</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.analyticsSpecs">analyticsSpecs</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.Specs">Specs</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.autoScaling">autoScaling</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedAutoScaling">AdvancedAutoScaling</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.electableSpecs">electableSpecs</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.Specs">Specs</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.priority">priority</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.readOnlySpecs">readOnlySpecs</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.Specs">Specs</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.regionName">regionName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.analyticsAutoScaling">analyticsAutoScaling</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedAutoScaling">AdvancedAutoScaling</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.analyticsSpecs">analyticsSpecs</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.Specs">Specs</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.autoScaling">autoScaling</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedAutoScaling">AdvancedAutoScaling</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.electableSpecs">electableSpecs</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.Specs">Specs</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.priority">priority</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.readOnlySpecs">readOnlySpecs</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.Specs">Specs</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.regionName">regionName</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `analyticsAutoScaling`<sup>Optional</sup> <a name="analyticsAutoScaling" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.analyticsAutoScaling"></a>
+##### `analyticsAutoScaling`<sup>Optional</sup> <a name="analyticsAutoScaling" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.analyticsAutoScaling"></a>
 
 ```typescript
 public readonly analyticsAutoScaling: AdvancedAutoScaling;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.AdvancedAutoScaling">AdvancedAutoScaling</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.AdvancedAutoScaling">AdvancedAutoScaling</a>
 
 ---
 
-##### `analyticsSpecs`<sup>Optional</sup> <a name="analyticsSpecs" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.analyticsSpecs"></a>
+##### `analyticsSpecs`<sup>Optional</sup> <a name="analyticsSpecs" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.analyticsSpecs"></a>
 
 ```typescript
 public readonly analyticsSpecs: Specs;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.Specs">Specs</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.Specs">Specs</a>
 
 ---
 
-##### `autoScaling`<sup>Optional</sup> <a name="autoScaling" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.autoScaling"></a>
+##### `autoScaling`<sup>Optional</sup> <a name="autoScaling" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.autoScaling"></a>
 
 ```typescript
 public readonly autoScaling: AdvancedAutoScaling;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.AdvancedAutoScaling">AdvancedAutoScaling</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.AdvancedAutoScaling">AdvancedAutoScaling</a>
 
 ---
 
-##### `electableSpecs`<sup>Optional</sup> <a name="electableSpecs" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.electableSpecs"></a>
+##### `electableSpecs`<sup>Optional</sup> <a name="electableSpecs" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.electableSpecs"></a>
 
 ```typescript
 public readonly electableSpecs: Specs;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.Specs">Specs</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.Specs">Specs</a>
 
 ---
 
-##### `priority`<sup>Optional</sup> <a name="priority" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.priority"></a>
+##### `priority`<sup>Optional</sup> <a name="priority" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.priority"></a>
 
 ```typescript
 public readonly priority: number;
@@ -708,17 +708,17 @@ public readonly priority: number;
 
 ---
 
-##### `readOnlySpecs`<sup>Optional</sup> <a name="readOnlySpecs" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.readOnlySpecs"></a>
+##### `readOnlySpecs`<sup>Optional</sup> <a name="readOnlySpecs" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.readOnlySpecs"></a>
 
 ```typescript
 public readonly readOnlySpecs: Specs;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.Specs">Specs</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.Specs">Specs</a>
 
 ---
 
-##### `regionName`<sup>Optional</sup> <a name="regionName" id="@mongodb-cdk/atlas-cluster.AdvancedRegionConfig.property.regionName"></a>
+##### `regionName`<sup>Optional</sup> <a name="regionName" id="@mongodbatlas-awscdk/cluster.AdvancedRegionConfig.property.regionName"></a>
 
 ```typescript
 public readonly regionName: string;
@@ -728,16 +728,16 @@ public readonly regionName: string;
 
 ---
 
-### AdvancedReplicationSpec <a name="AdvancedReplicationSpec" id="@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec"></a>
+### AdvancedReplicationSpec <a name="AdvancedReplicationSpec" id="@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec"></a>
 
 List of settings that configure your cluster regions.
 
 For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.Initializer"></a>
 
 ```typescript
-import { AdvancedReplicationSpec } from '@mongodb-cdk/atlas-cluster'
+import { AdvancedReplicationSpec } from '@mongodbatlas-awscdk/cluster'
 
 const advancedReplicationSpec: AdvancedReplicationSpec = { ... }
 ```
@@ -746,20 +746,20 @@ const advancedReplicationSpec: AdvancedReplicationSpec = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.advancedRegionConfigs">advancedRegionConfigs</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig">AdvancedRegionConfig</a>[]</code> | Hardware specifications for nodes set for a given region. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.id">id</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the replication object for a zone in a Multi-Cloud Cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.numShards">numShards</a></code> | <code>number</code> | Positive integer that specifies the number of shards to deploy in each specified zone. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.zoneName">zoneName</a></code> | <code>string</code> | Human-readable label that identifies the zone in a Global Cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.advancedRegionConfigs">advancedRegionConfigs</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig">AdvancedRegionConfig</a>[]</code> | Hardware specifications for nodes set for a given region. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.id">id</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the replication object for a zone in a Multi-Cloud Cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.numShards">numShards</a></code> | <code>number</code> | Positive integer that specifies the number of shards to deploy in each specified zone. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.zoneName">zoneName</a></code> | <code>string</code> | Human-readable label that identifies the zone in a Global Cluster. |
 
 ---
 
-##### `advancedRegionConfigs`<sup>Optional</sup> <a name="advancedRegionConfigs" id="@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.advancedRegionConfigs"></a>
+##### `advancedRegionConfigs`<sup>Optional</sup> <a name="advancedRegionConfigs" id="@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.advancedRegionConfigs"></a>
 
 ```typescript
 public readonly advancedRegionConfigs: AdvancedRegionConfig[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.AdvancedRegionConfig">AdvancedRegionConfig</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.AdvancedRegionConfig">AdvancedRegionConfig</a>[]
 
 Hardware specifications for nodes set for a given region.
 
@@ -771,7 +771,7 @@ If you set "replicationSpecs[n].regionConfigs[m].analyticsSpecs.instanceSize" : 
 
 ---
 
-##### `id`<sup>Optional</sup> <a name="id" id="@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.id"></a>
+##### `id`<sup>Optional</sup> <a name="id" id="@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.id"></a>
 
 ```typescript
 public readonly id: string;
@@ -785,7 +785,7 @@ If you include existing zones in the request, you must specify this parameter. I
 
 ---
 
-##### `numShards`<sup>Optional</sup> <a name="numShards" id="@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.numShards"></a>
+##### `numShards`<sup>Optional</sup> <a name="numShards" id="@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.numShards"></a>
 
 ```typescript
 public readonly numShards: number;
@@ -799,7 +799,7 @@ If you set this value to 1 and "clusterType" : "SHARDED", MongoDB Cloud deploys 
 
 ---
 
-##### `zoneName`<sup>Optional</sup> <a name="zoneName" id="@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec.property.zoneName"></a>
+##### `zoneName`<sup>Optional</sup> <a name="zoneName" id="@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec.property.zoneName"></a>
 
 ```typescript
 public readonly zoneName: string;
@@ -813,12 +813,12 @@ Provide this value only if "clusterType" : "GEOSHARDED".
 
 ---
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodb-cdk/atlas-cluster.ApiKeyDefinition"></a>
+### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.ApiKeyDefinition.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition.Initializer"></a>
 
 ```typescript
-import { ApiKeyDefinition } from '@mongodb-cdk/atlas-cluster'
+import { ApiKeyDefinition } from '@mongodbatlas-awscdk/cluster'
 
 const apiKeyDefinition: ApiKeyDefinition = { ... }
 ```
@@ -827,12 +827,12 @@ const apiKeyDefinition: ApiKeyDefinition = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodb-cdk/atlas-cluster.ApiKeyDefinition.property.privateKey"></a>
+##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.privateKey"></a>
 
 ```typescript
 public readonly privateKey: string;
@@ -842,7 +842,7 @@ public readonly privateKey: string;
 
 ---
 
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodb-cdk/atlas-cluster.ApiKeyDefinition.property.publicKey"></a>
+##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.publicKey"></a>
 
 ```typescript
 public readonly publicKey: string;
@@ -852,16 +852,16 @@ public readonly publicKey: string;
 
 ---
 
-### CfnClusterProps <a name="CfnClusterProps" id="@mongodb-cdk/atlas-cluster.CfnClusterProps"></a>
+### CfnClusterProps <a name="CfnClusterProps" id="@mongodbatlas-awscdk/cluster.CfnClusterProps"></a>
 
 The cluster resource provides access to your cluster configurations.
 
 The resource lets you create, edit and delete clusters. The resource requires your Project ID.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.Initializer"></a>
 
 ```typescript
-import { CfnClusterProps } from '@mongodb-cdk/atlas-cluster'
+import { CfnClusterProps } from '@mongodbatlas-awscdk/cluster'
 
 const cfnClusterProps: CfnClusterProps = { ... }
 ```
@@ -870,38 +870,38 @@ const cfnClusterProps: CfnClusterProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.name">name</a></code> | <code>string</code> | Human-readable label that identifies the advanced cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the project the cluster belongs to. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.advancedSettings">advancedSettings</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs">ProcessArgs</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.backupEnabled">backupEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster can perform backups. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.biConnector">biConnector</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a></code> | Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.clusterType">clusterType</a></code> | <code>string</code> | Configuration of nodes that comprise the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.connectionStrings">connectionStrings</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings">ConnectionStrings</a></code> | Set of connection strings that your applications use to connect to this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.diskSizeGb">diskSizeGb</a></code> | <code>number</code> | Storage capacity that the host's root volume possesses expressed in gigabytes. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.encryptionAtRestProvider">encryptionAtRestProvider</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a></code> | Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.labels">labels</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]</code> | Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.mongoDbMajorVersion">mongoDbMajorVersion</a></code> | <code>string</code> | Major MongoDB version of the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.paused">paused</a></code> | <code>boolean</code> | Flag that indicates whether the cluster is paused or not. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.pitEnabled">pitEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster uses continuous cloud backups. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.replicationSpecs">replicationSpecs</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec">AdvancedReplicationSpec</a>[]</code> | List of settings that configure your cluster regions. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.rootCertType">rootCertType</a></code> | <code>string</code> | Root Certificate Authority that MongoDB Cloud cluster uses. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.terminationProtectionEnabled">terminationProtectionEnabled</a></code> | <code>boolean</code> | Flag that indicates whether termination protection is enabled on the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterProps.property.versionReleaseSystem">versionReleaseSystem</a></code> | <code>string</code> | Method by which the cluster maintains the MongoDB versions. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.name">name</a></code> | <code>string</code> | Human-readable label that identifies the advanced cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the project the cluster belongs to. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.advancedSettings">advancedSettings</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs">ProcessArgs</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.backupEnabled">backupEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster can perform backups. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.biConnector">biConnector</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a></code> | Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.clusterType">clusterType</a></code> | <code>string</code> | Configuration of nodes that comprise the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.connectionStrings">connectionStrings</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings">ConnectionStrings</a></code> | Set of connection strings that your applications use to connect to this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.diskSizeGb">diskSizeGb</a></code> | <code>number</code> | Storage capacity that the host's root volume possesses expressed in gigabytes. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.encryptionAtRestProvider">encryptionAtRestProvider</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a></code> | Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.labels">labels</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]</code> | Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.mongoDbMajorVersion">mongoDbMajorVersion</a></code> | <code>string</code> | Major MongoDB version of the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.paused">paused</a></code> | <code>boolean</code> | Flag that indicates whether the cluster is paused or not. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.pitEnabled">pitEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster uses continuous cloud backups. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.replicationSpecs">replicationSpecs</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec">AdvancedReplicationSpec</a>[]</code> | List of settings that configure your cluster regions. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.rootCertType">rootCertType</a></code> | <code>string</code> | Root Certificate Authority that MongoDB Cloud cluster uses. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.terminationProtectionEnabled">terminationProtectionEnabled</a></code> | <code>boolean</code> | Flag that indicates whether termination protection is enabled on the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.versionReleaseSystem">versionReleaseSystem</a></code> | <code>string</code> | Method by which the cluster maintains the MongoDB versions. |
 
 ---
 
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.apiKeys"></a>
+##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.apiKeys"></a>
 
 ```typescript
 public readonly apiKeys: ApiKeyDefinition;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
-##### `name`<sup>Required</sup> <a name="name" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.name"></a>
+##### `name`<sup>Required</sup> <a name="name" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.name"></a>
 
 ```typescript
 public readonly name: string;
@@ -913,7 +913,7 @@ Human-readable label that identifies the advanced cluster.
 
 ---
 
-##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.projectId"></a>
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.projectId"></a>
 
 ```typescript
 public readonly projectId: string;
@@ -925,17 +925,17 @@ Unique identifier of the project the cluster belongs to.
 
 ---
 
-##### `advancedSettings`<sup>Optional</sup> <a name="advancedSettings" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.advancedSettings"></a>
+##### `advancedSettings`<sup>Optional</sup> <a name="advancedSettings" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.advancedSettings"></a>
 
 ```typescript
 public readonly advancedSettings: ProcessArgs;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.ProcessArgs">ProcessArgs</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.ProcessArgs">ProcessArgs</a>
 
 ---
 
-##### `backupEnabled`<sup>Optional</sup> <a name="backupEnabled" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.backupEnabled"></a>
+##### `backupEnabled`<sup>Optional</sup> <a name="backupEnabled" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.backupEnabled"></a>
 
 ```typescript
 public readonly backupEnabled: boolean;
@@ -949,19 +949,19 @@ If set to true, the cluster can perform backups. You must set this value to true
 
 ---
 
-##### `biConnector`<sup>Optional</sup> <a name="biConnector" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.biConnector"></a>
+##### `biConnector`<sup>Optional</sup> <a name="biConnector" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.biConnector"></a>
 
 ```typescript
 public readonly biConnector: CfnClusterPropsBiConnector;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a>
 
 Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster.
 
 ---
 
-##### `clusterType`<sup>Optional</sup> <a name="clusterType" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.clusterType"></a>
+##### `clusterType`<sup>Optional</sup> <a name="clusterType" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.clusterType"></a>
 
 ```typescript
 public readonly clusterType: string;
@@ -973,13 +973,13 @@ Configuration of nodes that comprise the cluster.
 
 ---
 
-##### `connectionStrings`<sup>Optional</sup> <a name="connectionStrings" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.connectionStrings"></a>
+##### `connectionStrings`<sup>Optional</sup> <a name="connectionStrings" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.connectionStrings"></a>
 
 ```typescript
 public readonly connectionStrings: ConnectionStrings;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings">ConnectionStrings</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings">ConnectionStrings</a>
 
 Set of connection strings that your applications use to connect to this cluster.
 
@@ -987,7 +987,7 @@ Use the parameters in this object to connect your applications to this cluster. 
 
 ---
 
-##### `diskSizeGb`<sup>Optional</sup> <a name="diskSizeGb" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.diskSizeGb"></a>
+##### `diskSizeGb`<sup>Optional</sup> <a name="diskSizeGb" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.diskSizeGb"></a>
 
 ```typescript
 public readonly diskSizeGb: number;
@@ -1001,13 +1001,13 @@ Increase this number to add capacity. MongoDB Cloud requires this parameter if y
 
 ---
 
-##### `encryptionAtRestProvider`<sup>Optional</sup> <a name="encryptionAtRestProvider" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.encryptionAtRestProvider"></a>
+##### `encryptionAtRestProvider`<sup>Optional</sup> <a name="encryptionAtRestProvider" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.encryptionAtRestProvider"></a>
 
 ```typescript
 public readonly encryptionAtRestProvider: CfnClusterPropsEncryptionAtRestProvider;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a>
 
 Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster.
 
@@ -1015,13 +1015,13 @@ To enable customer key management for encryption at rest, the cluster replicatio
 
 ---
 
-##### `labels`<sup>Optional</sup> <a name="labels" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.labels"></a>
+##### `labels`<sup>Optional</sup> <a name="labels" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.labels"></a>
 
 ```typescript
 public readonly labels: CfnClusterPropsLabels[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]
 
 Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster.
 
@@ -1029,7 +1029,7 @@ The MongoDB Cloud console doesn't display your labels.
 
 ---
 
-##### `mongoDbMajorVersion`<sup>Optional</sup> <a name="mongoDbMajorVersion" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.mongoDbMajorVersion"></a>
+##### `mongoDbMajorVersion`<sup>Optional</sup> <a name="mongoDbMajorVersion" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.mongoDbMajorVersion"></a>
 
 ```typescript
 public readonly mongoDbMajorVersion: string;
@@ -1043,7 +1043,7 @@ MongoDB Cloud deploys the cluster with the latest stable release of the specifie
 
 ---
 
-##### `paused`<sup>Optional</sup> <a name="paused" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.paused"></a>
+##### `paused`<sup>Optional</sup> <a name="paused" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.paused"></a>
 
 ```typescript
 public readonly paused: boolean;
@@ -1055,7 +1055,7 @@ Flag that indicates whether the cluster is paused or not.
 
 ---
 
-##### `pitEnabled`<sup>Optional</sup> <a name="pitEnabled" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.pitEnabled"></a>
+##### `pitEnabled`<sup>Optional</sup> <a name="pitEnabled" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.pitEnabled"></a>
 
 ```typescript
 public readonly pitEnabled: boolean;
@@ -1067,13 +1067,13 @@ Flag that indicates whether the cluster uses continuous cloud backups.
 
 ---
 
-##### `replicationSpecs`<sup>Optional</sup> <a name="replicationSpecs" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.replicationSpecs"></a>
+##### `replicationSpecs`<sup>Optional</sup> <a name="replicationSpecs" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.replicationSpecs"></a>
 
 ```typescript
 public readonly replicationSpecs: AdvancedReplicationSpec[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.AdvancedReplicationSpec">AdvancedReplicationSpec</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec">AdvancedReplicationSpec</a>[]
 
 List of settings that configure your cluster regions.
 
@@ -1081,7 +1081,7 @@ For Global Clusters, each object in the array represents a zone where your clust
 
 ---
 
-##### `rootCertType`<sup>Optional</sup> <a name="rootCertType" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.rootCertType"></a>
+##### `rootCertType`<sup>Optional</sup> <a name="rootCertType" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.rootCertType"></a>
 
 ```typescript
 public readonly rootCertType: string;
@@ -1095,7 +1095,7 @@ MongoDB Cloud supports Internet Security Research Group.
 
 ---
 
-##### `terminationProtectionEnabled`<sup>Optional</sup> <a name="terminationProtectionEnabled" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.terminationProtectionEnabled"></a>
+##### `terminationProtectionEnabled`<sup>Optional</sup> <a name="terminationProtectionEnabled" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.terminationProtectionEnabled"></a>
 
 ```typescript
 public readonly terminationProtectionEnabled: boolean;
@@ -1109,7 +1109,7 @@ If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB
 
 ---
 
-##### `versionReleaseSystem`<sup>Optional</sup> <a name="versionReleaseSystem" id="@mongodb-cdk/atlas-cluster.CfnClusterProps.property.versionReleaseSystem"></a>
+##### `versionReleaseSystem`<sup>Optional</sup> <a name="versionReleaseSystem" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.versionReleaseSystem"></a>
 
 ```typescript
 public readonly versionReleaseSystem: string;
@@ -1123,14 +1123,14 @@ If value is CONTINUOUS, you must not specify mongoDBMajorVersion
 
 ---
 
-### CfnClusterPropsBiConnector <a name="CfnClusterPropsBiConnector" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector"></a>
+### CfnClusterPropsBiConnector <a name="CfnClusterPropsBiConnector" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector"></a>
 
 Settings needed to configure the MongoDB Connector for Business Intelligence for this cluster.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector.Initializer"></a>
 
 ```typescript
-import { CfnClusterPropsBiConnector } from '@mongodb-cdk/atlas-cluster'
+import { CfnClusterPropsBiConnector } from '@mongodbatlas-awscdk/cluster'
 
 const cfnClusterPropsBiConnector: CfnClusterPropsBiConnector = { ... }
 ```
@@ -1139,12 +1139,12 @@ const cfnClusterPropsBiConnector: CfnClusterPropsBiConnector = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether MongoDB Connector for Business Intelligence is enabled on the specified cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector.property.readPreference">readPreference</a></code> | <code>string</code> | Data source node designated for the MongoDB Connector for Business Intelligence on MongoDB Cloud. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether MongoDB Connector for Business Intelligence is enabled on the specified cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector.property.readPreference">readPreference</a></code> | <code>string</code> | Data source node designated for the MongoDB Connector for Business Intelligence on MongoDB Cloud. |
 
 ---
 
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector.property.enabled"></a>
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector.property.enabled"></a>
 
 ```typescript
 public readonly enabled: boolean;
@@ -1156,7 +1156,7 @@ Flag that indicates whether MongoDB Connector for Business Intelligence is enabl
 
 ---
 
-##### `readPreference`<sup>Optional</sup> <a name="readPreference" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsBiConnector.property.readPreference"></a>
+##### `readPreference`<sup>Optional</sup> <a name="readPreference" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector.property.readPreference"></a>
 
 ```typescript
 public readonly readPreference: string;
@@ -1171,12 +1171,12 @@ The MongoDB Connector for Business Intelligence on MongoDB Cloud reads data from
 
 ---
 
-### CfnClusterPropsLabels <a name="CfnClusterPropsLabels" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels"></a>
+### CfnClusterPropsLabels <a name="CfnClusterPropsLabels" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels.Initializer"></a>
 
 ```typescript
-import { CfnClusterPropsLabels } from '@mongodb-cdk/atlas-cluster'
+import { CfnClusterPropsLabels } from '@mongodbatlas-awscdk/cluster'
 
 const cfnClusterPropsLabels: CfnClusterPropsLabels = { ... }
 ```
@@ -1185,12 +1185,12 @@ const cfnClusterPropsLabels: CfnClusterPropsLabels = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels.property.key">key</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels.property.value">value</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels.property.key">key</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels.property.value">value</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `key`<sup>Optional</sup> <a name="key" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels.property.key"></a>
+##### `key`<sup>Optional</sup> <a name="key" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels.property.key"></a>
 
 ```typescript
 public readonly key: string;
@@ -1200,7 +1200,7 @@ public readonly key: string;
 
 ---
 
-##### `value`<sup>Optional</sup> <a name="value" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsLabels.property.value"></a>
+##### `value`<sup>Optional</sup> <a name="value" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsLabels.property.value"></a>
 
 ```typescript
 public readonly value: string;
@@ -1210,14 +1210,14 @@ public readonly value: string;
 
 ---
 
-### Compute <a name="Compute" id="@mongodb-cdk/atlas-cluster.Compute"></a>
+### Compute <a name="Compute" id="@mongodbatlas-awscdk/cluster.Compute"></a>
 
 Automatic Compute Scaling.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.Compute.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.Compute.Initializer"></a>
 
 ```typescript
-import { Compute } from '@mongodb-cdk/atlas-cluster'
+import { Compute } from '@mongodbatlas-awscdk/cluster'
 
 const compute: Compute = { ... }
 ```
@@ -1226,14 +1226,14 @@ const compute: Compute = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Compute.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether someone enabled instance size auto-scaling. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Compute.property.maxInstanceSize">maxInstanceSize</a></code> | <code>string</code> | Maximum instance size to which your cluster can automatically scale. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Compute.property.minInstanceSize">minInstanceSize</a></code> | <code>string</code> | Minimum instance size to which your cluster can automatically scale. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Compute.property.scaleDownEnabled">scaleDownEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the instance size may scale down. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Compute.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether someone enabled instance size auto-scaling. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Compute.property.maxInstanceSize">maxInstanceSize</a></code> | <code>string</code> | Maximum instance size to which your cluster can automatically scale. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Compute.property.minInstanceSize">minInstanceSize</a></code> | <code>string</code> | Minimum instance size to which your cluster can automatically scale. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Compute.property.scaleDownEnabled">scaleDownEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the instance size may scale down. |
 
 ---
 
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodb-cdk/atlas-cluster.Compute.property.enabled"></a>
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/cluster.Compute.property.enabled"></a>
 
 ```typescript
 public readonly enabled: boolean;
@@ -1248,7 +1248,7 @@ Set to false to disable instance size automatic scaling.
 
 ---
 
-##### `maxInstanceSize`<sup>Optional</sup> <a name="maxInstanceSize" id="@mongodb-cdk/atlas-cluster.Compute.property.maxInstanceSize"></a>
+##### `maxInstanceSize`<sup>Optional</sup> <a name="maxInstanceSize" id="@mongodbatlas-awscdk/cluster.Compute.property.maxInstanceSize"></a>
 
 ```typescript
 public readonly maxInstanceSize: string;
@@ -1262,7 +1262,7 @@ MongoDB Cloud requires this parameter if "replicationSpecs[n].regionConfigs[m].a
 
 ---
 
-##### `minInstanceSize`<sup>Optional</sup> <a name="minInstanceSize" id="@mongodb-cdk/atlas-cluster.Compute.property.minInstanceSize"></a>
+##### `minInstanceSize`<sup>Optional</sup> <a name="minInstanceSize" id="@mongodbatlas-awscdk/cluster.Compute.property.minInstanceSize"></a>
 
 ```typescript
 public readonly minInstanceSize: string;
@@ -1276,7 +1276,7 @@ MongoDB Cloud requires this parameter if "replicationSpecs[n].regionConfigs[m].a
 
 ---
 
-##### `scaleDownEnabled`<sup>Optional</sup> <a name="scaleDownEnabled" id="@mongodb-cdk/atlas-cluster.Compute.property.scaleDownEnabled"></a>
+##### `scaleDownEnabled`<sup>Optional</sup> <a name="scaleDownEnabled" id="@mongodbatlas-awscdk/cluster.Compute.property.scaleDownEnabled"></a>
 
 ```typescript
 public readonly scaleDownEnabled: boolean;
@@ -1290,14 +1290,14 @@ MongoDB Cloud requires this parameter if "replicationSpecs[n].regionConfigs[m].a
 
 ---
 
-### ConnectionStrings <a name="ConnectionStrings" id="@mongodb-cdk/atlas-cluster.ConnectionStrings"></a>
+### ConnectionStrings <a name="ConnectionStrings" id="@mongodbatlas-awscdk/cluster.ConnectionStrings"></a>
 
 Collection of Uniform Resource Locators that point to the MongoDB database.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.Initializer"></a>
 
 ```typescript
-import { ConnectionStrings } from '@mongodb-cdk/atlas-cluster'
+import { ConnectionStrings } from '@mongodbatlas-awscdk/cluster'
 
 const connectionStrings: ConnectionStrings = { ... }
 ```
@@ -1306,17 +1306,17 @@ const connectionStrings: ConnectionStrings = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.awsPrivateLink">awsPrivateLink</a></code> | <code>string</code> | Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.awsPrivateLinkSrv">awsPrivateLinkSrv</a></code> | <code>string</code> | Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.private">private</a></code> | <code>string</code> | Network peering connection strings for each interface Virtual Private Cloud (VPC) endpoint that you configured to connect to this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.privateEndpoint">privateEndpoint</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.PrivateEndpoint">PrivateEndpoint</a>[]</code> | List of private endpoint connection strings that you can use to connect to this cluster through a private endpoint. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.privateSrv">privateSrv</a></code> | <code>string</code> | Network peering connection strings for each interface Virtual Private Cloud (VPC) endpoint that you configured to connect to this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.standard">standard</a></code> | <code>string</code> | Public connection string that you can use to connect to this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ConnectionStrings.property.standardSrv">standardSrv</a></code> | <code>string</code> | Public connection string that you can use to connect to this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.awsPrivateLink">awsPrivateLink</a></code> | <code>string</code> | Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.awsPrivateLinkSrv">awsPrivateLinkSrv</a></code> | <code>string</code> | Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.private">private</a></code> | <code>string</code> | Network peering connection strings for each interface Virtual Private Cloud (VPC) endpoint that you configured to connect to this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.privateEndpoint">privateEndpoint</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.PrivateEndpoint">PrivateEndpoint</a>[]</code> | List of private endpoint connection strings that you can use to connect to this cluster through a private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.privateSrv">privateSrv</a></code> | <code>string</code> | Network peering connection strings for each interface Virtual Private Cloud (VPC) endpoint that you configured to connect to this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.standard">standard</a></code> | <code>string</code> | Public connection string that you can use to connect to this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ConnectionStrings.property.standardSrv">standardSrv</a></code> | <code>string</code> | Public connection string that you can use to connect to this cluster. |
 
 ---
 
-##### `awsPrivateLink`<sup>Optional</sup> <a name="awsPrivateLink" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.awsPrivateLink"></a>
+##### `awsPrivateLink`<sup>Optional</sup> <a name="awsPrivateLink" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.awsPrivateLink"></a>
 
 ```typescript
 public readonly awsPrivateLink: string;
@@ -1330,7 +1330,7 @@ Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value 
 
 ---
 
-##### `awsPrivateLinkSrv`<sup>Optional</sup> <a name="awsPrivateLinkSrv" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.awsPrivateLinkSrv"></a>
+##### `awsPrivateLinkSrv`<sup>Optional</sup> <a name="awsPrivateLinkSrv" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.awsPrivateLinkSrv"></a>
 
 ```typescript
 public readonly awsPrivateLinkSrv: string;
@@ -1344,7 +1344,7 @@ Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value 
 
 ---
 
-##### `private`<sup>Optional</sup> <a name="private" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.private"></a>
+##### `private`<sup>Optional</sup> <a name="private" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.private"></a>
 
 ```typescript
 public readonly private: string;
@@ -1358,13 +1358,13 @@ This connection string uses the mongodb+srv:// protocol. The resource returns th
 
 ---
 
-##### `privateEndpoint`<sup>Optional</sup> <a name="privateEndpoint" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.privateEndpoint"></a>
+##### `privateEndpoint`<sup>Optional</sup> <a name="privateEndpoint" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.privateEndpoint"></a>
 
 ```typescript
 public readonly privateEndpoint: PrivateEndpoint[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.PrivateEndpoint">PrivateEndpoint</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.PrivateEndpoint">PrivateEndpoint</a>[]
 
 List of private endpoint connection strings that you can use to connect to this cluster through a private endpoint.
 
@@ -1372,7 +1372,7 @@ This parameter returns only if you deployed a private endpoint to all regions to
 
 ---
 
-##### `privateSrv`<sup>Optional</sup> <a name="privateSrv" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.privateSrv"></a>
+##### `privateSrv`<sup>Optional</sup> <a name="privateSrv" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.privateSrv"></a>
 
 ```typescript
 public readonly privateSrv: string;
@@ -1386,7 +1386,7 @@ This connection string uses the mongodb+srv:// protocol. The resource returns th
 
 ---
 
-##### `standard`<sup>Optional</sup> <a name="standard" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.standard"></a>
+##### `standard`<sup>Optional</sup> <a name="standard" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.standard"></a>
 
 ```typescript
 public readonly standard: string;
@@ -1400,7 +1400,7 @@ This connection string uses the mongodb:// protocol.
 
 ---
 
-##### `standardSrv`<sup>Optional</sup> <a name="standardSrv" id="@mongodb-cdk/atlas-cluster.ConnectionStrings.property.standardSrv"></a>
+##### `standardSrv`<sup>Optional</sup> <a name="standardSrv" id="@mongodbatlas-awscdk/cluster.ConnectionStrings.property.standardSrv"></a>
 
 ```typescript
 public readonly standardSrv: string;
@@ -1414,14 +1414,14 @@ This connection string uses the mongodb+srv:// protocol.
 
 ---
 
-### DiskGb <a name="DiskGb" id="@mongodb-cdk/atlas-cluster.DiskGb"></a>
+### DiskGb <a name="DiskGb" id="@mongodbatlas-awscdk/cluster.DiskGb"></a>
 
 Automatic cluster storage settings that apply to this cluster.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.DiskGb.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.DiskGb.Initializer"></a>
 
 ```typescript
-import { DiskGb } from '@mongodb-cdk/atlas-cluster'
+import { DiskGb } from '@mongodbatlas-awscdk/cluster'
 
 const diskGb: DiskGb = { ... }
 ```
@@ -1430,11 +1430,11 @@ const diskGb: DiskGb = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.DiskGb.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether this cluster enables disk auto-scaling. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.DiskGb.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether this cluster enables disk auto-scaling. |
 
 ---
 
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodb-cdk/atlas-cluster.DiskGb.property.enabled"></a>
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/cluster.DiskGb.property.enabled"></a>
 
 ```typescript
 public readonly enabled: boolean;
@@ -1448,12 +1448,12 @@ The maximum memory allowed for the selected cluster tier and the oplog size can 
 
 ---
 
-### Endpoint <a name="Endpoint" id="@mongodb-cdk/atlas-cluster.Endpoint"></a>
+### Endpoint <a name="Endpoint" id="@mongodbatlas-awscdk/cluster.Endpoint"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.Endpoint.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.Endpoint.Initializer"></a>
 
 ```typescript
-import { Endpoint } from '@mongodb-cdk/atlas-cluster'
+import { Endpoint } from '@mongodbatlas-awscdk/cluster'
 
 const endpoint: Endpoint = { ... }
 ```
@@ -1462,13 +1462,13 @@ const endpoint: Endpoint = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Endpoint.property.endpointId">endpointId</a></code> | <code>string</code> | Unique string that the cloud provider uses to identify the private endpoint. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Endpoint.property.providerName">providerName</a></code> | <code>string</code> | Cloud provider in which MongoDB Cloud deploys the private endpoint. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Endpoint.property.region">region</a></code> | <code>string</code> | Region in which MongoDB Cloud deploys the private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Endpoint.property.endpointId">endpointId</a></code> | <code>string</code> | Unique string that the cloud provider uses to identify the private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Endpoint.property.providerName">providerName</a></code> | <code>string</code> | Cloud provider in which MongoDB Cloud deploys the private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Endpoint.property.region">region</a></code> | <code>string</code> | Region in which MongoDB Cloud deploys the private endpoint. |
 
 ---
 
-##### `endpointId`<sup>Optional</sup> <a name="endpointId" id="@mongodb-cdk/atlas-cluster.Endpoint.property.endpointId"></a>
+##### `endpointId`<sup>Optional</sup> <a name="endpointId" id="@mongodbatlas-awscdk/cluster.Endpoint.property.endpointId"></a>
 
 ```typescript
 public readonly endpointId: string;
@@ -1480,7 +1480,7 @@ Unique string that the cloud provider uses to identify the private endpoint.
 
 ---
 
-##### `providerName`<sup>Optional</sup> <a name="providerName" id="@mongodb-cdk/atlas-cluster.Endpoint.property.providerName"></a>
+##### `providerName`<sup>Optional</sup> <a name="providerName" id="@mongodbatlas-awscdk/cluster.Endpoint.property.providerName"></a>
 
 ```typescript
 public readonly providerName: string;
@@ -1492,7 +1492,7 @@ Cloud provider in which MongoDB Cloud deploys the private endpoint.
 
 ---
 
-##### `region`<sup>Optional</sup> <a name="region" id="@mongodb-cdk/atlas-cluster.Endpoint.property.region"></a>
+##### `region`<sup>Optional</sup> <a name="region" id="@mongodbatlas-awscdk/cluster.Endpoint.property.region"></a>
 
 ```typescript
 public readonly region: string;
@@ -1504,16 +1504,16 @@ Region in which MongoDB Cloud deploys the private endpoint.
 
 ---
 
-### PrivateEndpoint <a name="PrivateEndpoint" id="@mongodb-cdk/atlas-cluster.PrivateEndpoint"></a>
+### PrivateEndpoint <a name="PrivateEndpoint" id="@mongodbatlas-awscdk/cluster.PrivateEndpoint"></a>
 
 List of private endpoint connection strings that you can use to connect to this cluster through a private endpoint.
 
 This parameter returns only if you deployed a private endpoint to all regions to which you deployed this clusters' nodes.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.PrivateEndpoint.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.PrivateEndpoint.Initializer"></a>
 
 ```typescript
-import { PrivateEndpoint } from '@mongodb-cdk/atlas-cluster'
+import { PrivateEndpoint } from '@mongodbatlas-awscdk/cluster'
 
 const privateEndpoint: PrivateEndpoint = { ... }
 ```
@@ -1522,14 +1522,14 @@ const privateEndpoint: PrivateEndpoint = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.connectionString">connectionString</a></code> | <code>string</code> | Private endpoint-aware connection string that uses the mongodb:// protocol to connect to MongoDB Cloud through a private endpoint. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.endpoints">endpoints</a></code> | <code><a href="#@mongodb-cdk/atlas-cluster.Endpoint">Endpoint</a>[]</code> | List that contains the private endpoints through which you connect to MongoDB Cloud when you use connectionStrings.privateEndpoint[n].connectionString or connectionStrings.privateEndpoint[n].srvConnectionString. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.srvConnectionString">srvConnectionString</a></code> | <code>string</code> | Private endpoint-aware connection string that uses the mongodb+srv:// protocol to connect to MongoDB Cloud through a private endpoint. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.type">type</a></code> | <code>string</code> | Enum: "MONGOD" "MONGOS" MongoDB process type to which your application connects. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.connectionString">connectionString</a></code> | <code>string</code> | Private endpoint-aware connection string that uses the mongodb:// protocol to connect to MongoDB Cloud through a private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.endpoints">endpoints</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.Endpoint">Endpoint</a>[]</code> | List that contains the private endpoints through which you connect to MongoDB Cloud when you use connectionStrings.privateEndpoint[n].connectionString or connectionStrings.privateEndpoint[n].srvConnectionString. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.srvConnectionString">srvConnectionString</a></code> | <code>string</code> | Private endpoint-aware connection string that uses the mongodb+srv:// protocol to connect to MongoDB Cloud through a private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.type">type</a></code> | <code>string</code> | Enum: "MONGOD" "MONGOS" MongoDB process type to which your application connects. |
 
 ---
 
-##### `connectionString`<sup>Optional</sup> <a name="connectionString" id="@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.connectionString"></a>
+##### `connectionString`<sup>Optional</sup> <a name="connectionString" id="@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.connectionString"></a>
 
 ```typescript
 public readonly connectionString: string;
@@ -1541,19 +1541,19 @@ Private endpoint-aware connection string that uses the mongodb:// protocol to co
 
 ---
 
-##### `endpoints`<sup>Optional</sup> <a name="endpoints" id="@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.endpoints"></a>
+##### `endpoints`<sup>Optional</sup> <a name="endpoints" id="@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.endpoints"></a>
 
 ```typescript
 public readonly endpoints: Endpoint[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-cluster.Endpoint">Endpoint</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/cluster.Endpoint">Endpoint</a>[]
 
 List that contains the private endpoints through which you connect to MongoDB Cloud when you use connectionStrings.privateEndpoint[n].connectionString or connectionStrings.privateEndpoint[n].srvConnectionString.
 
 ---
 
-##### `srvConnectionString`<sup>Optional</sup> <a name="srvConnectionString" id="@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.srvConnectionString"></a>
+##### `srvConnectionString`<sup>Optional</sup> <a name="srvConnectionString" id="@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.srvConnectionString"></a>
 
 ```typescript
 public readonly srvConnectionString: string;
@@ -1567,7 +1567,7 @@ The mongodb+srv protocol tells the driver to look up the seed list of hosts in t
 
 ---
 
-##### `type`<sup>Optional</sup> <a name="type" id="@mongodb-cdk/atlas-cluster.PrivateEndpoint.property.type"></a>
+##### `type`<sup>Optional</sup> <a name="type" id="@mongodbatlas-awscdk/cluster.PrivateEndpoint.property.type"></a>
 
 ```typescript
 public readonly type: string;
@@ -1581,14 +1581,14 @@ Use MONGOD for replica sets and MONGOS for sharded clusters.
 
 ---
 
-### ProcessArgs <a name="ProcessArgs" id="@mongodb-cdk/atlas-cluster.ProcessArgs"></a>
+### ProcessArgs <a name="ProcessArgs" id="@mongodbatlas-awscdk/cluster.ProcessArgs"></a>
 
 Advanced configuration details to add for one cluster in the specified project.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.ProcessArgs.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.ProcessArgs.Initializer"></a>
 
 ```typescript
-import { ProcessArgs } from '@mongodb-cdk/atlas-cluster'
+import { ProcessArgs } from '@mongodbatlas-awscdk/cluster'
 
 const processArgs: ProcessArgs = { ... }
 ```
@@ -1597,19 +1597,19 @@ const processArgs: ProcessArgs = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.defaultReadConcern">defaultReadConcern</a></code> | <code>string</code> | Default level of acknowledgment requested from MongoDB for read operations set for this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.defaultWriteConcern">defaultWriteConcern</a></code> | <code>string</code> | Default level of acknowledgment requested from MongoDB for write operations set for this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.failIndexKeyTooLong">failIndexKeyTooLong</a></code> | <code>boolean</code> | Flag that indicates whether you can insert or update documents where all indexed entries don't exceed 1024 bytes. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.javascriptEnabled">javascriptEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster allows execution of operations that perform server-side executions of JavaScript. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.minimumEnabledTlsProtocol">minimumEnabledTlsProtocol</a></code> | <code>string</code> | Minimum Transport Layer Security (TLS) version that the cluster accepts for incoming connections. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.noTableScan">noTableScan</a></code> | <code>boolean</code> | Flag that indicates whether the cluster disables executing any query that requires a collection scan to return results. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.oplogSizeMb">oplogSizeMb</a></code> | <code>number</code> | Storage limit of cluster's oplog expressed in megabytes. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.sampleRefreshIntervalBiConnector">sampleRefreshIntervalBiConnector</a></code> | <code>number</code> | Number of documents per database to sample when gathering schema information. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.ProcessArgs.property.sampleSizeBiConnector">sampleSizeBiConnector</a></code> | <code>number</code> | Interval in seconds at which the mongosqld process re-samples data to create its relational schema. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.defaultReadConcern">defaultReadConcern</a></code> | <code>string</code> | Default level of acknowledgment requested from MongoDB for read operations set for this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.defaultWriteConcern">defaultWriteConcern</a></code> | <code>string</code> | Default level of acknowledgment requested from MongoDB for write operations set for this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.failIndexKeyTooLong">failIndexKeyTooLong</a></code> | <code>boolean</code> | Flag that indicates whether you can insert or update documents where all indexed entries don't exceed 1024 bytes. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.javascriptEnabled">javascriptEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster allows execution of operations that perform server-side executions of JavaScript. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.minimumEnabledTlsProtocol">minimumEnabledTlsProtocol</a></code> | <code>string</code> | Minimum Transport Layer Security (TLS) version that the cluster accepts for incoming connections. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.noTableScan">noTableScan</a></code> | <code>boolean</code> | Flag that indicates whether the cluster disables executing any query that requires a collection scan to return results. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.oplogSizeMb">oplogSizeMb</a></code> | <code>number</code> | Storage limit of cluster's oplog expressed in megabytes. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.sampleRefreshIntervalBiConnector">sampleRefreshIntervalBiConnector</a></code> | <code>number</code> | Number of documents per database to sample when gathering schema information. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs.property.sampleSizeBiConnector">sampleSizeBiConnector</a></code> | <code>number</code> | Interval in seconds at which the mongosqld process re-samples data to create its relational schema. |
 
 ---
 
-##### `defaultReadConcern`<sup>Optional</sup> <a name="defaultReadConcern" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.defaultReadConcern"></a>
+##### `defaultReadConcern`<sup>Optional</sup> <a name="defaultReadConcern" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.defaultReadConcern"></a>
 
 ```typescript
 public readonly defaultReadConcern: string;
@@ -1621,7 +1621,7 @@ Default level of acknowledgment requested from MongoDB for read operations set f
 
 ---
 
-##### `defaultWriteConcern`<sup>Optional</sup> <a name="defaultWriteConcern" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.defaultWriteConcern"></a>
+##### `defaultWriteConcern`<sup>Optional</sup> <a name="defaultWriteConcern" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.defaultWriteConcern"></a>
 
 ```typescript
 public readonly defaultWriteConcern: string;
@@ -1633,7 +1633,7 @@ Default level of acknowledgment requested from MongoDB for write operations set 
 
 ---
 
-##### `failIndexKeyTooLong`<sup>Optional</sup> <a name="failIndexKeyTooLong" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.failIndexKeyTooLong"></a>
+##### `failIndexKeyTooLong`<sup>Optional</sup> <a name="failIndexKeyTooLong" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.failIndexKeyTooLong"></a>
 
 ```typescript
 public readonly failIndexKeyTooLong: boolean;
@@ -1647,7 +1647,7 @@ If you set this to false, mongod writes documents that exceed this limit but doe
 
 ---
 
-##### `javascriptEnabled`<sup>Optional</sup> <a name="javascriptEnabled" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.javascriptEnabled"></a>
+##### `javascriptEnabled`<sup>Optional</sup> <a name="javascriptEnabled" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.javascriptEnabled"></a>
 
 ```typescript
 public readonly javascriptEnabled: boolean;
@@ -1659,7 +1659,7 @@ Flag that indicates whether the cluster allows execution of operations that perf
 
 ---
 
-##### `minimumEnabledTlsProtocol`<sup>Optional</sup> <a name="minimumEnabledTlsProtocol" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.minimumEnabledTlsProtocol"></a>
+##### `minimumEnabledTlsProtocol`<sup>Optional</sup> <a name="minimumEnabledTlsProtocol" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.minimumEnabledTlsProtocol"></a>
 
 ```typescript
 public readonly minimumEnabledTlsProtocol: string;
@@ -1673,7 +1673,7 @@ Clusters using TLS 1.0 or 1.1 should consider setting TLS 1.2 as the minimum TLS
 
 ---
 
-##### `noTableScan`<sup>Optional</sup> <a name="noTableScan" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.noTableScan"></a>
+##### `noTableScan`<sup>Optional</sup> <a name="noTableScan" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.noTableScan"></a>
 
 ```typescript
 public readonly noTableScan: boolean;
@@ -1685,7 +1685,7 @@ Flag that indicates whether the cluster disables executing any query that requir
 
 ---
 
-##### `oplogSizeMb`<sup>Optional</sup> <a name="oplogSizeMb" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.oplogSizeMb"></a>
+##### `oplogSizeMb`<sup>Optional</sup> <a name="oplogSizeMb" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.oplogSizeMb"></a>
 
 ```typescript
 public readonly oplogSizeMb: number;
@@ -1699,7 +1699,7 @@ A value of null indicates that the cluster uses the default oplog size that Mong
 
 ---
 
-##### `sampleRefreshIntervalBiConnector`<sup>Optional</sup> <a name="sampleRefreshIntervalBiConnector" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.sampleRefreshIntervalBiConnector"></a>
+##### `sampleRefreshIntervalBiConnector`<sup>Optional</sup> <a name="sampleRefreshIntervalBiConnector" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.sampleRefreshIntervalBiConnector"></a>
 
 ```typescript
 public readonly sampleRefreshIntervalBiConnector: number;
@@ -1711,7 +1711,7 @@ Number of documents per database to sample when gathering schema information.
 
 ---
 
-##### `sampleSizeBiConnector`<sup>Optional</sup> <a name="sampleSizeBiConnector" id="@mongodb-cdk/atlas-cluster.ProcessArgs.property.sampleSizeBiConnector"></a>
+##### `sampleSizeBiConnector`<sup>Optional</sup> <a name="sampleSizeBiConnector" id="@mongodbatlas-awscdk/cluster.ProcessArgs.property.sampleSizeBiConnector"></a>
 
 ```typescript
 public readonly sampleSizeBiConnector: number;
@@ -1723,12 +1723,12 @@ Interval in seconds at which the mongosqld process re-samples data to create its
 
 ---
 
-### Specs <a name="Specs" id="@mongodb-cdk/atlas-cluster.Specs"></a>
+### Specs <a name="Specs" id="@mongodbatlas-awscdk/cluster.Specs"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-cluster.Specs.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.Specs.Initializer"></a>
 
 ```typescript
-import { Specs } from '@mongodb-cdk/atlas-cluster'
+import { Specs } from '@mongodbatlas-awscdk/cluster'
 
 const specs: Specs = { ... }
 ```
@@ -1737,14 +1737,14 @@ const specs: Specs = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Specs.property.diskIops">diskIops</a></code> | <code>string</code> | Target throughput desired for storage attached to your AWS-provisioned cluster. Only change this parameter if you:. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Specs.property.ebsVolumeType">ebsVolumeType</a></code> | <code>string</code> | Type of storage you want to attach to your AWS-provisioned cluster. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Specs.property.instanceSize">instanceSize</a></code> | <code>string</code> | Hardware specification for the instance sizes in this region. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.Specs.property.nodeCount">nodeCount</a></code> | <code>number</code> | Number of read-only nodes for MongoDB Cloud deploys to the region. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Specs.property.diskIops">diskIops</a></code> | <code>string</code> | Target throughput desired for storage attached to your AWS-provisioned cluster. Only change this parameter if you:. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Specs.property.ebsVolumeType">ebsVolumeType</a></code> | <code>string</code> | Type of storage you want to attach to your AWS-provisioned cluster. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Specs.property.instanceSize">instanceSize</a></code> | <code>string</code> | Hardware specification for the instance sizes in this region. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.Specs.property.nodeCount">nodeCount</a></code> | <code>number</code> | Number of read-only nodes for MongoDB Cloud deploys to the region. |
 
 ---
 
-##### `diskIops`<sup>Optional</sup> <a name="diskIops" id="@mongodb-cdk/atlas-cluster.Specs.property.diskIops"></a>
+##### `diskIops`<sup>Optional</sup> <a name="diskIops" id="@mongodbatlas-awscdk/cluster.Specs.property.diskIops"></a>
 
 ```typescript
 public readonly diskIops: string;
@@ -1763,7 +1763,7 @@ Instance sizes greater than M40 have a ratio of 120:1.
 
 ---
 
-##### `ebsVolumeType`<sup>Optional</sup> <a name="ebsVolumeType" id="@mongodb-cdk/atlas-cluster.Specs.property.ebsVolumeType"></a>
+##### `ebsVolumeType`<sup>Optional</sup> <a name="ebsVolumeType" id="@mongodbatlas-awscdk/cluster.Specs.property.ebsVolumeType"></a>
 
 ```typescript
 public readonly ebsVolumeType: string;
@@ -1779,7 +1779,7 @@ PROVISIONED volume types must fall within the allowable IOPS range for the selec
 
 ---
 
-##### `instanceSize`<sup>Optional</sup> <a name="instanceSize" id="@mongodb-cdk/atlas-cluster.Specs.property.instanceSize"></a>
+##### `instanceSize`<sup>Optional</sup> <a name="instanceSize" id="@mongodbatlas-awscdk/cluster.Specs.property.instanceSize"></a>
 
 ```typescript
 public readonly instanceSize: string;
@@ -1793,7 +1793,7 @@ Each instance size has a default storage and memory capacity. The instance size 
 
 ---
 
-##### `nodeCount`<sup>Optional</sup> <a name="nodeCount" id="@mongodb-cdk/atlas-cluster.Specs.property.nodeCount"></a>
+##### `nodeCount`<sup>Optional</sup> <a name="nodeCount" id="@mongodbatlas-awscdk/cluster.Specs.property.nodeCount"></a>
 
 ```typescript
 public readonly nodeCount: number;
@@ -1811,7 +1811,7 @@ Read-only nodes can never become the primary, but can enable local reads.
 
 ## Enums <a name="Enums" id="Enums"></a>
 
-### CfnClusterPropsEncryptionAtRestProvider <a name="CfnClusterPropsEncryptionAtRestProvider" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider"></a>
+### CfnClusterPropsEncryptionAtRestProvider <a name="CfnClusterPropsEncryptionAtRestProvider" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider"></a>
 
 Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster.
 
@@ -1821,35 +1821,35 @@ To enable customer key management for encryption at rest, the cluster replicatio
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.AWS">AWS</a></code> | AWS. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.GCP">GCP</a></code> | GCP. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE">AZURE</a></code> | AZURE. |
-| <code><a href="#@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.NONE">NONE</a></code> | NONE. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.AWS">AWS</a></code> | AWS. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.GCP">GCP</a></code> | GCP. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE">AZURE</a></code> | AZURE. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.NONE">NONE</a></code> | NONE. |
 
 ---
 
-##### `AWS` <a name="AWS" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.AWS"></a>
+##### `AWS` <a name="AWS" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.AWS"></a>
 
 AWS.
 
 ---
 
 
-##### `GCP` <a name="GCP" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.GCP"></a>
+##### `GCP` <a name="GCP" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.GCP"></a>
 
 GCP.
 
 ---
 
 
-##### `AZURE` <a name="AZURE" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE"></a>
+##### `AZURE` <a name="AZURE" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE"></a>
 
 AZURE.
 
 ---
 
 
-##### `NONE` <a name="NONE" id="@mongodb-cdk/atlas-cluster.CfnClusterPropsEncryptionAtRestProvider.NONE"></a>
+##### `NONE` <a name="NONE" id="@mongodbatlas-awscdk/cluster.CfnClusterPropsEncryptionAtRestProvider.NONE"></a>
 
 NONE.
 

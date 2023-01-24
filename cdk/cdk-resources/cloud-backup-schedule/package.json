@@ -1,5 +1,5 @@
 {
-  "name": "@mongodb-cdk/atlas-cloud-backup-schedule",
+  "name": "@mongodbatlas-awscdk/cloud-backup-schedule",
   "description": "Retrieves or creates cloud-backup-schedules in any given Atlas organization",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "MongoDB",
+    "name": "MongoDBAtlas",
     "url": "https://mongodb.com",
     "organization": false
   },

@@ -2,27 +2,27 @@
 
 ## Constructs <a name="Constructs" id="Constructs"></a>
 
-### CfnCluster <a name="CfnCluster" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster"></a>
+### CfnCluster <a name="CfnCluster" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster"></a>
 
 A CloudFormation `MongoDB::Atlas::Cluster`.
 
-#### Initializers <a name="Initializers" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer"></a>
+#### Initializers <a name="Initializers" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/legacy-cluster'
 
 new CfnCluster(scope: Construct, id: string, props: CfnClusterProps)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - scope in which this resource is defined. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer.parameter.id">id</a></code> | <code>string</code> | - scoped id of the resource. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer.parameter.props">props</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps">CfnClusterProps</a></code> | - resource properties. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - scope in which this resource is defined. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer.parameter.id">id</a></code> | <code>string</code> | - scoped id of the resource. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer.parameter.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps">CfnClusterProps</a></code> | - resource properties. |
 
 ---
 
-##### `scope`<sup>Required</sup> <a name="scope" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer.parameter.scope"></a>
+##### `scope`<sup>Required</sup> <a name="scope" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer.parameter.scope"></a>
 
 - *Type:* constructs.Construct
 
@@ -30,7 +30,7 @@ scope in which this resource is defined.
 
 ---
 
-##### `id`<sup>Required</sup> <a name="id" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer.parameter.id"></a>
+##### `id`<sup>Required</sup> <a name="id" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer.parameter.id"></a>
 
 - *Type:* string
 
@@ -38,9 +38,9 @@ scoped id of the resource.
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.Initializer.parameter.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.Initializer.parameter.props"></a>
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps">CfnClusterProps</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps">CfnClusterProps</a>
 
 resource properties.
 
@@ -50,21 +50,21 @@ resource properties.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.overrideLogicalId">overrideLogicalId</a></code> | Overrides the auto-generated logical ID with a specific ID. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addDeletionOverride">addDeletionOverride</a></code> | Syntactic sugar for `addOverride(path, undefined)`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addDependsOn">addDependsOn</a></code> | Indicates that this resource depends on another resource and cannot be provisioned unless the other resource has been successfully provisioned. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addMetadata">addMetadata</a></code> | Add a value to the CloudFormation Resource Metadata. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addOverride">addOverride</a></code> | Adds an override to the synthesized CloudFormation resource. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyDeletionOverride">addPropertyDeletionOverride</a></code> | Adds an override that deletes the value of a property from the resource definition. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyOverride">addPropertyOverride</a></code> | Adds an override to a resource property. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.applyRemovalPolicy">applyRemovalPolicy</a></code> | Sets the deletion policy of the resource based on the removal policy specified. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.getAtt">getAtt</a></code> | Returns a token for an runtime attribute of this resource. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.getMetadata">getMetadata</a></code> | Retrieve a value value from the CloudFormation Resource Metadata. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.overrideLogicalId">overrideLogicalId</a></code> | Overrides the auto-generated logical ID with a specific ID. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addDeletionOverride">addDeletionOverride</a></code> | Syntactic sugar for `addOverride(path, undefined)`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addDependsOn">addDependsOn</a></code> | Indicates that this resource depends on another resource and cannot be provisioned unless the other resource has been successfully provisioned. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addMetadata">addMetadata</a></code> | Add a value to the CloudFormation Resource Metadata. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addOverride">addOverride</a></code> | Adds an override to the synthesized CloudFormation resource. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyDeletionOverride">addPropertyDeletionOverride</a></code> | Adds an override that deletes the value of a property from the resource definition. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyOverride">addPropertyOverride</a></code> | Adds an override to a resource property. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.applyRemovalPolicy">applyRemovalPolicy</a></code> | Sets the deletion policy of the resource based on the removal policy specified. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.getAtt">getAtt</a></code> | Returns a token for an runtime attribute of this resource. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.getMetadata">getMetadata</a></code> | Retrieve a value value from the CloudFormation Resource Metadata. |
 
 ---
 
-##### `toString` <a name="toString" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.toString"></a>
+##### `toString` <a name="toString" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.toString"></a>
 
 ```typescript
 public toString(): string
@@ -72,7 +72,7 @@ public toString(): string
 
 Returns a string representation of this construct.
 
-##### `overrideLogicalId` <a name="overrideLogicalId" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.overrideLogicalId"></a>
+##### `overrideLogicalId` <a name="overrideLogicalId" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.overrideLogicalId"></a>
 
 ```typescript
 public overrideLogicalId(newLogicalId: string): void
@@ -80,7 +80,7 @@ public overrideLogicalId(newLogicalId: string): void
 
 Overrides the auto-generated logical ID with a specific ID.
 
-###### `newLogicalId`<sup>Required</sup> <a name="newLogicalId" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.overrideLogicalId.parameter.newLogicalId"></a>
+###### `newLogicalId`<sup>Required</sup> <a name="newLogicalId" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.overrideLogicalId.parameter.newLogicalId"></a>
 
 - *Type:* string
 
@@ -88,7 +88,7 @@ The new logical ID to use for this stack element.
 
 ---
 
-##### `addDeletionOverride` <a name="addDeletionOverride" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addDeletionOverride"></a>
+##### `addDeletionOverride` <a name="addDeletionOverride" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addDeletionOverride"></a>
 
 ```typescript
 public addDeletionOverride(path: string): void
@@ -96,7 +96,7 @@ public addDeletionOverride(path: string): void
 
 Syntactic sugar for `addOverride(path, undefined)`.
 
-###### `path`<sup>Required</sup> <a name="path" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addDeletionOverride.parameter.path"></a>
+###### `path`<sup>Required</sup> <a name="path" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addDeletionOverride.parameter.path"></a>
 
 - *Type:* string
 
@@ -104,7 +104,7 @@ The path of the value to delete.
 
 ---
 
-##### `addDependsOn` <a name="addDependsOn" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addDependsOn"></a>
+##### `addDependsOn` <a name="addDependsOn" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addDependsOn"></a>
 
 ```typescript
 public addDependsOn(target: CfnResource): void
@@ -115,13 +115,13 @@ Indicates that this resource depends on another resource and cannot be provision
 This can be used for resources across stacks (or nested stack) boundaries
 and the dependency will automatically be transferred to the relevant scope.
 
-###### `target`<sup>Required</sup> <a name="target" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addDependsOn.parameter.target"></a>
+###### `target`<sup>Required</sup> <a name="target" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addDependsOn.parameter.target"></a>
 
 - *Type:* aws-cdk-lib.CfnResource
 
 ---
 
-##### `addMetadata` <a name="addMetadata" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addMetadata"></a>
+##### `addMetadata` <a name="addMetadata" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addMetadata"></a>
 
 ```typescript
 public addMetadata(key: string, value: any): void
@@ -139,19 +139,19 @@ Note that this is a different set of metadata from CDK node metadata; this
 metadata ends up in the stack template under the resource, whereas CDK
 node metadata ends up in the Cloud Assembly.)
 
-###### `key`<sup>Required</sup> <a name="key" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addMetadata.parameter.key"></a>
+###### `key`<sup>Required</sup> <a name="key" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addMetadata.parameter.key"></a>
 
 - *Type:* string
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addMetadata.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addMetadata.parameter.value"></a>
 
 - *Type:* any
 
 ---
 
-##### `addOverride` <a name="addOverride" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addOverride"></a>
+##### `addOverride` <a name="addOverride" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addOverride"></a>
 
 ```typescript
 public addOverride(path: string, value: any): void
@@ -195,7 +195,7 @@ would add the overrides
 }
 ```
 
-###### `path`<sup>Required</sup> <a name="path" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addOverride.parameter.path"></a>
+###### `path`<sup>Required</sup> <a name="path" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addOverride.parameter.path"></a>
 
 - *Type:* string
 
@@ -206,7 +206,7 @@ will be created as needed.
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addOverride.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addOverride.parameter.value"></a>
 
 - *Type:* any
 
@@ -216,7 +216,7 @@ Could be primitive or complex.
 
 ---
 
-##### `addPropertyDeletionOverride` <a name="addPropertyDeletionOverride" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyDeletionOverride"></a>
+##### `addPropertyDeletionOverride` <a name="addPropertyDeletionOverride" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyDeletionOverride"></a>
 
 ```typescript
 public addPropertyDeletionOverride(propertyPath: string): void
@@ -224,7 +224,7 @@ public addPropertyDeletionOverride(propertyPath: string): void
 
 Adds an override that deletes the value of a property from the resource definition.
 
-###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyDeletionOverride.parameter.propertyPath"></a>
+###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyDeletionOverride.parameter.propertyPath"></a>
 
 - *Type:* string
 
@@ -232,7 +232,7 @@ The path to the property.
 
 ---
 
-##### `addPropertyOverride` <a name="addPropertyOverride" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyOverride"></a>
+##### `addPropertyOverride` <a name="addPropertyOverride" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyOverride"></a>
 
 ```typescript
 public addPropertyOverride(propertyPath: string, value: any): void
@@ -242,7 +242,7 @@ Adds an override to a resource property.
 
 Syntactic sugar for `addOverride("Properties.<...>", value)`.
 
-###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyOverride.parameter.propertyPath"></a>
+###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyOverride.parameter.propertyPath"></a>
 
 - *Type:* string
 
@@ -250,7 +250,7 @@ The path of the property.
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.addPropertyOverride.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.addPropertyOverride.parameter.value"></a>
 
 - *Type:* any
 
@@ -258,7 +258,7 @@ The value.
 
 ---
 
-##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.applyRemovalPolicy"></a>
+##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.applyRemovalPolicy"></a>
 
 ```typescript
 public applyRemovalPolicy(policy?: RemovalPolicy, options?: RemovalPolicyOptions): void
@@ -274,19 +274,19 @@ to be replaced.
 The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
 account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
-###### `policy`<sup>Optional</sup> <a name="policy" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.applyRemovalPolicy.parameter.policy"></a>
+###### `policy`<sup>Optional</sup> <a name="policy" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
 
 ---
 
-###### `options`<sup>Optional</sup> <a name="options" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.applyRemovalPolicy.parameter.options"></a>
+###### `options`<sup>Optional</sup> <a name="options" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.applyRemovalPolicy.parameter.options"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicyOptions
 
 ---
 
-##### `getAtt` <a name="getAtt" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.getAtt"></a>
+##### `getAtt` <a name="getAtt" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.getAtt"></a>
 
 ```typescript
 public getAtt(attributeName: string): Reference
@@ -297,7 +297,7 @@ Returns a token for an runtime attribute of this resource.
 Ideally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility
 in case there is no generated attribute.
 
-###### `attributeName`<sup>Required</sup> <a name="attributeName" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.getAtt.parameter.attributeName"></a>
+###### `attributeName`<sup>Required</sup> <a name="attributeName" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.getAtt.parameter.attributeName"></a>
 
 - *Type:* string
 
@@ -305,7 +305,7 @@ The name of the attribute.
 
 ---
 
-##### `getMetadata` <a name="getMetadata" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.getMetadata"></a>
+##### `getMetadata` <a name="getMetadata" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.getMetadata"></a>
 
 ```typescript
 public getMetadata(key: string): any
@@ -323,7 +323,7 @@ Note that this is a different set of metadata from CDK node metadata; this
 metadata ends up in the stack template under the resource, whereas CDK
 node metadata ends up in the Cloud Assembly.)
 
-###### `key`<sup>Required</sup> <a name="key" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.getMetadata.parameter.key"></a>
+###### `key`<sup>Required</sup> <a name="key" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.getMetadata.parameter.key"></a>
 
 - *Type:* string
 
@@ -333,23 +333,23 @@ node metadata ends up in the Cloud Assembly.)
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isCfnElement">isCfnElement</a></code> | Returns `true` if a construct is a stack element (i.e. part of the synthesized cloudformation template). |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isCfnResource">isCfnResource</a></code> | Check whether the given construct is a CfnResource. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isCfnElement">isCfnElement</a></code> | Returns `true` if a construct is a stack element (i.e. part of the synthesized cloudformation template). |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isCfnResource">isCfnResource</a></code> | Check whether the given construct is a CfnResource. |
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isConstruct"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/legacy-cluster'
 
 CfnCluster.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
 
-###### `x`<sup>Required</sup> <a name="x" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isConstruct.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isConstruct.parameter.x"></a>
 
 - *Type:* any
 
@@ -357,10 +357,10 @@ Any object.
 
 ---
 
-##### `isCfnElement` <a name="isCfnElement" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isCfnElement"></a>
+##### `isCfnElement` <a name="isCfnElement" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isCfnElement"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/legacy-cluster'
 
 CfnCluster.isCfnElement(x: any)
 ```
@@ -370,23 +370,23 @@ Returns `true` if a construct is a stack element (i.e. part of the synthesized c
 Uses duck-typing instead of `instanceof` to allow stack elements from different
 versions of this library to be included in the same stack.
 
-###### `x`<sup>Required</sup> <a name="x" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isCfnElement.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isCfnElement.parameter.x"></a>
 
 - *Type:* any
 
 ---
 
-##### `isCfnResource` <a name="isCfnResource" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isCfnResource"></a>
+##### `isCfnResource` <a name="isCfnResource" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isCfnResource"></a>
 
 ```typescript
-import { CfnCluster } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnCluster } from '@mongodbatlas-awscdk/legacy-cluster'
 
 CfnCluster.isCfnResource(construct: IConstruct)
 ```
 
 Check whether the given construct is a CfnResource.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.isCfnResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.isCfnResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
@@ -396,25 +396,25 @@ Check whether the given construct is a CfnResource.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.creationStack">creationStack</a></code> | <code>string[]</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.logicalId">logicalId</a></code> | <code>string</code> | The logical ID for this CloudFormation stack element. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this element is defined. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.Id`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoDBVersion">attrMongoDBVersion</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoDBVersion`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoURI">attrMongoURI</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoURI`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoURIUpdated">attrMongoURIUpdated</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoURIUpdated`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoURIWithOptions">attrMongoURIWithOptions</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoURIWithOptions`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrSrvAddress">attrSrvAddress</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.SrvAddress`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrStateName">attrStateName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.StateName`. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.props">props</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps">CfnClusterProps</a></code> | Resource props. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.creationStack">creationStack</a></code> | <code>string[]</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.logicalId">logicalId</a></code> | <code>string</code> | The logical ID for this CloudFormation stack element. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this element is defined. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.Id`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoDBVersion">attrMongoDBVersion</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoDBVersion`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoURI">attrMongoURI</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoURI`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoURIUpdated">attrMongoURIUpdated</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoURIUpdated`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoURIWithOptions">attrMongoURIWithOptions</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.MongoURIWithOptions`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrSrvAddress">attrSrvAddress</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.SrvAddress`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrStateName">attrStateName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Cluster.StateName`. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps">CfnClusterProps</a></code> | Resource props. |
 
 ---
 
-##### `node`<sup>Required</sup> <a name="node" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.node"></a>
+##### `node`<sup>Required</sup> <a name="node" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.node"></a>
 
 ```typescript
 public readonly node: Node;
@@ -426,7 +426,7 @@ The tree node.
 
 ---
 
-##### `creationStack`<sup>Required</sup> <a name="creationStack" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.creationStack"></a>
+##### `creationStack`<sup>Required</sup> <a name="creationStack" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.creationStack"></a>
 
 ```typescript
 public readonly creationStack: string[];
@@ -436,7 +436,7 @@ public readonly creationStack: string[];
 
 ---
 
-##### `logicalId`<sup>Required</sup> <a name="logicalId" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.logicalId"></a>
+##### `logicalId`<sup>Required</sup> <a name="logicalId" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.logicalId"></a>
 
 ```typescript
 public readonly logicalId: string;
@@ -453,7 +453,7 @@ To override this value, use `overrideLogicalId(newLogicalId)`.
 
 ---
 
-##### `stack`<sup>Required</sup> <a name="stack" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.stack"></a>
+##### `stack`<sup>Required</sup> <a name="stack" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.stack"></a>
 
 ```typescript
 public readonly stack: Stack;
@@ -467,7 +467,7 @@ CfnElements must be defined within a stack scope (directly or indirectly).
 
 ---
 
-##### `ref`<sup>Required</sup> <a name="ref" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.ref"></a>
+##### `ref`<sup>Required</sup> <a name="ref" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.ref"></a>
 
 ```typescript
 public readonly ref: string;
@@ -482,7 +482,7 @@ coerce it to an IResolvable through `Lazy.any({ produce: resource.ref })`.
 
 ---
 
-##### `cfnOptions`<sup>Required</sup> <a name="cfnOptions" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.cfnOptions"></a>
+##### `cfnOptions`<sup>Required</sup> <a name="cfnOptions" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.cfnOptions"></a>
 
 ```typescript
 public readonly cfnOptions: ICfnResourceOptions;
@@ -494,7 +494,7 @@ Options for this resource, such as condition, update policy etc.
 
 ---
 
-##### `cfnResourceType`<sup>Required</sup> <a name="cfnResourceType" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.cfnResourceType"></a>
+##### `cfnResourceType`<sup>Required</sup> <a name="cfnResourceType" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.cfnResourceType"></a>
 
 ```typescript
 public readonly cfnResourceType: string;
@@ -506,7 +506,7 @@ AWS resource type.
 
 ---
 
-##### `attrId`<sup>Required</sup> <a name="attrId" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrId"></a>
+##### `attrId`<sup>Required</sup> <a name="attrId" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrId"></a>
 
 ```typescript
 public readonly attrId: string;
@@ -518,7 +518,7 @@ Attribute `MongoDB::Atlas::Cluster.Id`.
 
 ---
 
-##### `attrMongoDBVersion`<sup>Required</sup> <a name="attrMongoDBVersion" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoDBVersion"></a>
+##### `attrMongoDBVersion`<sup>Required</sup> <a name="attrMongoDBVersion" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoDBVersion"></a>
 
 ```typescript
 public readonly attrMongoDBVersion: string;
@@ -530,7 +530,7 @@ Attribute `MongoDB::Atlas::Cluster.MongoDBVersion`.
 
 ---
 
-##### `attrMongoURI`<sup>Required</sup> <a name="attrMongoURI" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoURI"></a>
+##### `attrMongoURI`<sup>Required</sup> <a name="attrMongoURI" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoURI"></a>
 
 ```typescript
 public readonly attrMongoURI: string;
@@ -542,7 +542,7 @@ Attribute `MongoDB::Atlas::Cluster.MongoURI`.
 
 ---
 
-##### `attrMongoURIUpdated`<sup>Required</sup> <a name="attrMongoURIUpdated" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoURIUpdated"></a>
+##### `attrMongoURIUpdated`<sup>Required</sup> <a name="attrMongoURIUpdated" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoURIUpdated"></a>
 
 ```typescript
 public readonly attrMongoURIUpdated: string;
@@ -554,7 +554,7 @@ Attribute `MongoDB::Atlas::Cluster.MongoURIUpdated`.
 
 ---
 
-##### `attrMongoURIWithOptions`<sup>Required</sup> <a name="attrMongoURIWithOptions" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrMongoURIWithOptions"></a>
+##### `attrMongoURIWithOptions`<sup>Required</sup> <a name="attrMongoURIWithOptions" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrMongoURIWithOptions"></a>
 
 ```typescript
 public readonly attrMongoURIWithOptions: string;
@@ -566,7 +566,7 @@ Attribute `MongoDB::Atlas::Cluster.MongoURIWithOptions`.
 
 ---
 
-##### `attrSrvAddress`<sup>Required</sup> <a name="attrSrvAddress" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrSrvAddress"></a>
+##### `attrSrvAddress`<sup>Required</sup> <a name="attrSrvAddress" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrSrvAddress"></a>
 
 ```typescript
 public readonly attrSrvAddress: string;
@@ -578,7 +578,7 @@ Attribute `MongoDB::Atlas::Cluster.SrvAddress`.
 
 ---
 
-##### `attrStateName`<sup>Required</sup> <a name="attrStateName" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.attrStateName"></a>
+##### `attrStateName`<sup>Required</sup> <a name="attrStateName" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.attrStateName"></a>
 
 ```typescript
 public readonly attrStateName: string;
@@ -590,13 +590,13 @@ Attribute `MongoDB::Atlas::Cluster.StateName`.
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.props"></a>
 
 ```typescript
 public readonly props: CfnClusterProps;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps">CfnClusterProps</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps">CfnClusterProps</a>
 
 Resource props.
 
@@ -606,11 +606,11 @@ Resource props.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME">CFN_RESOURCE_TYPE_NAME</a></code> | <code>string</code> | The CloudFormation resource type name for this resource class. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME">CFN_RESOURCE_TYPE_NAME</a></code> | <code>string</code> | The CloudFormation resource type name for this resource class. |
 
 ---
 
-##### `CFN_RESOURCE_TYPE_NAME`<sup>Required</sup> <a name="CFN_RESOURCE_TYPE_NAME" id="@mongodb-cdk/atlas-legacy-cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME"></a>
+##### `CFN_RESOURCE_TYPE_NAME`<sup>Required</sup> <a name="CFN_RESOURCE_TYPE_NAME" id="@mongodbatlas-awscdk/legacy-cluster.CfnCluster.property.CFN_RESOURCE_TYPE_NAME"></a>
 
 ```typescript
 public readonly CFN_RESOURCE_TYPE_NAME: string;
@@ -624,12 +624,12 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition"></a>
+### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition.Initializer"></a>
 
 ```typescript
-import { ApiKeyDefinition } from '@mongodb-cdk/atlas-legacy-cluster'
+import { ApiKeyDefinition } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const apiKeyDefinition: ApiKeyDefinition = { ... }
 ```
@@ -638,12 +638,12 @@ const apiKeyDefinition: ApiKeyDefinition = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition.property.privateKey"></a>
+##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition.property.privateKey"></a>
 
 ```typescript
 public readonly privateKey: string;
@@ -653,7 +653,7 @@ public readonly privateKey: string;
 
 ---
 
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition.property.publicKey"></a>
+##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition.property.publicKey"></a>
 
 ```typescript
 public readonly publicKey: string;
@@ -663,12 +663,12 @@ public readonly publicKey: string;
 
 ---
 
-### AutoScaling <a name="AutoScaling" id="@mongodb-cdk/atlas-legacy-cluster.AutoScaling"></a>
+### AutoScaling <a name="AutoScaling" id="@mongodbatlas-awscdk/legacy-cluster.AutoScaling"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.AutoScaling.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.AutoScaling.Initializer"></a>
 
 ```typescript
-import { AutoScaling } from '@mongodb-cdk/atlas-legacy-cluster'
+import { AutoScaling } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const autoScaling: AutoScaling = { ... }
 ```
@@ -677,22 +677,22 @@ const autoScaling: AutoScaling = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.AutoScaling.property.compute">compute</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.Compute">Compute</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.AutoScaling.property.diskGbEnabled">diskGbEnabled</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.AutoScaling.property.compute">compute</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.Compute">Compute</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.AutoScaling.property.diskGbEnabled">diskGbEnabled</a></code> | <code>boolean</code> | *No description.* |
 
 ---
 
-##### `compute`<sup>Optional</sup> <a name="compute" id="@mongodb-cdk/atlas-legacy-cluster.AutoScaling.property.compute"></a>
+##### `compute`<sup>Optional</sup> <a name="compute" id="@mongodbatlas-awscdk/legacy-cluster.AutoScaling.property.compute"></a>
 
 ```typescript
 public readonly compute: Compute;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.Compute">Compute</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.Compute">Compute</a>
 
 ---
 
-##### `diskGbEnabled`<sup>Optional</sup> <a name="diskGbEnabled" id="@mongodb-cdk/atlas-legacy-cluster.AutoScaling.property.diskGbEnabled"></a>
+##### `diskGbEnabled`<sup>Optional</sup> <a name="diskGbEnabled" id="@mongodbatlas-awscdk/legacy-cluster.AutoScaling.property.diskGbEnabled"></a>
 
 ```typescript
 public readonly diskGbEnabled: boolean;
@@ -702,16 +702,16 @@ public readonly diskGbEnabled: boolean;
 
 ---
 
-### CfnClusterProps <a name="CfnClusterProps" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps"></a>
+### CfnClusterProps <a name="CfnClusterProps" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps"></a>
 
 The cluster resource provides access to your cluster configurations.
 
 The resource lets you create, edit and delete clusters. The resource requires your Project ID.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.Initializer"></a>
 
 ```typescript
-import { CfnClusterProps } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnClusterProps } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const cfnClusterProps: CfnClusterProps = { ... }
 ```
@@ -720,29 +720,29 @@ const cfnClusterProps: CfnClusterProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.name">name</a></code> | <code>string</code> | Name of the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.autoScaling">autoScaling</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.AutoScaling">AutoScaling</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.backupEnabled">backupEnabled</a></code> | <code>boolean</code> | Applicable only for M10+ clusters. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.biConnector">biConnector</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.clusterType">clusterType</a></code> | <code>string</code> | Type of the cluster that you want to create. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.connectionStrings">connectionStrings</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings">ConnectionStrings</a></code> | Set of connection strings that your applications use to connect to this cluster. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.diskSizeGb">diskSizeGb</a></code> | <code>number</code> | Capacity, in gigabytes, of the hosts root volume. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.encryptionAtRestProvider">encryptionAtRestProvider</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a></code> | Set the Encryption at Rest parameter. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.labels">labels</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]</code> | Array containing key-value pairs that tag and categorize the cluster. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.mongoDbMajorVersion">mongoDbMajorVersion</a></code> | <code>string</code> | Major version of the cluster to deploy. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.numShards">numShards</a></code> | <code>number</code> | Positive integer that specifies the number of shards to deploy for a sharded cluster. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.paused">paused</a></code> | <code>boolean</code> | Flag that indicates whether the cluster is paused or not. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.pitEnabled">pitEnabled</a></code> | <code>boolean</code> | Flag that indicates if the cluster uses Point-in-Time backups. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the project the cluster belongs to. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.providerBackupEnabled">providerBackupEnabled</a></code> | <code>boolean</code> | Applicable only for M10+ clusters. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.providerSettings">providerSettings</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings">CfnClusterPropsProviderSettings</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.replicationFactor">replicationFactor</a></code> | <code>number</code> | ReplicationFactor is deprecated. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.replicationSpecs">replicationSpecs</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec">ReplicationSpec</a>[]</code> | Configuration for cluster regions. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.name">name</a></code> | <code>string</code> | Name of the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.autoScaling">autoScaling</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.AutoScaling">AutoScaling</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.backupEnabled">backupEnabled</a></code> | <code>boolean</code> | Applicable only for M10+ clusters. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.biConnector">biConnector</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.clusterType">clusterType</a></code> | <code>string</code> | Type of the cluster that you want to create. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.connectionStrings">connectionStrings</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings">ConnectionStrings</a></code> | Set of connection strings that your applications use to connect to this cluster. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.diskSizeGb">diskSizeGb</a></code> | <code>number</code> | Capacity, in gigabytes, of the hosts root volume. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.encryptionAtRestProvider">encryptionAtRestProvider</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a></code> | Set the Encryption at Rest parameter. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.labels">labels</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]</code> | Array containing key-value pairs that tag and categorize the cluster. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.mongoDbMajorVersion">mongoDbMajorVersion</a></code> | <code>string</code> | Major version of the cluster to deploy. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.numShards">numShards</a></code> | <code>number</code> | Positive integer that specifies the number of shards to deploy for a sharded cluster. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.paused">paused</a></code> | <code>boolean</code> | Flag that indicates whether the cluster is paused or not. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.pitEnabled">pitEnabled</a></code> | <code>boolean</code> | Flag that indicates if the cluster uses Point-in-Time backups. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the project the cluster belongs to. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.providerBackupEnabled">providerBackupEnabled</a></code> | <code>boolean</code> | Applicable only for M10+ clusters. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.providerSettings">providerSettings</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings">CfnClusterPropsProviderSettings</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.replicationFactor">replicationFactor</a></code> | <code>number</code> | ReplicationFactor is deprecated. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.replicationSpecs">replicationSpecs</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec">ReplicationSpec</a>[]</code> | Configuration for cluster regions. |
 
 ---
 
-##### `name`<sup>Required</sup> <a name="name" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.name"></a>
+##### `name`<sup>Required</sup> <a name="name" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.name"></a>
 
 ```typescript
 public readonly name: string;
@@ -756,27 +756,27 @@ Once the cluster is created, its name cannot be changed.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.apiKeys"></a>
+##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.apiKeys"></a>
 
 ```typescript
 public readonly apiKeys: ApiKeyDefinition;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
-##### `autoScaling`<sup>Optional</sup> <a name="autoScaling" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.autoScaling"></a>
+##### `autoScaling`<sup>Optional</sup> <a name="autoScaling" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.autoScaling"></a>
 
 ```typescript
 public readonly autoScaling: AutoScaling;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.AutoScaling">AutoScaling</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.AutoScaling">AutoScaling</a>
 
 ---
 
-##### `backupEnabled`<sup>Optional</sup> <a name="backupEnabled" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.backupEnabled"></a>
+##### `backupEnabled`<sup>Optional</sup> <a name="backupEnabled" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.backupEnabled"></a>
 
 ```typescript
 public readonly backupEnabled: boolean;
@@ -790,17 +790,17 @@ Set to true to enable Atlas continuous backups for the cluster. Set to false to 
 
 ---
 
-##### `biConnector`<sup>Optional</sup> <a name="biConnector" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.biConnector"></a>
+##### `biConnector`<sup>Optional</sup> <a name="biConnector" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.biConnector"></a>
 
 ```typescript
 public readonly biConnector: CfnClusterPropsBiConnector;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector">CfnClusterPropsBiConnector</a>
 
 ---
 
-##### `clusterType`<sup>Optional</sup> <a name="clusterType" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.clusterType"></a>
+##### `clusterType`<sup>Optional</sup> <a name="clusterType" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.clusterType"></a>
 
 ```typescript
 public readonly clusterType: string;
@@ -812,13 +812,13 @@ Type of the cluster that you want to create.
 
 ---
 
-##### `connectionStrings`<sup>Optional</sup> <a name="connectionStrings" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.connectionStrings"></a>
+##### `connectionStrings`<sup>Optional</sup> <a name="connectionStrings" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.connectionStrings"></a>
 
 ```typescript
 public readonly connectionStrings: ConnectionStrings;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings">ConnectionStrings</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings">ConnectionStrings</a>
 
 Set of connection strings that your applications use to connect to this cluster.
 
@@ -826,7 +826,7 @@ Use the parameters in this object to connect your applications to this cluster. 
 
 ---
 
-##### `diskSizeGb`<sup>Optional</sup> <a name="diskSizeGb" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.diskSizeGb"></a>
+##### `diskSizeGb`<sup>Optional</sup> <a name="diskSizeGb" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.diskSizeGb"></a>
 
 ```typescript
 public readonly diskSizeGb: number;
@@ -840,31 +840,31 @@ Increase this number to add capacity, up to a maximum possible value of 4096 (i.
 
 ---
 
-##### `encryptionAtRestProvider`<sup>Optional</sup> <a name="encryptionAtRestProvider" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.encryptionAtRestProvider"></a>
+##### `encryptionAtRestProvider`<sup>Optional</sup> <a name="encryptionAtRestProvider" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.encryptionAtRestProvider"></a>
 
 ```typescript
 public readonly encryptionAtRestProvider: CfnClusterPropsEncryptionAtRestProvider;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider">CfnClusterPropsEncryptionAtRestProvider</a>
 
 Set the Encryption at Rest parameter.
 
 ---
 
-##### `labels`<sup>Optional</sup> <a name="labels" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.labels"></a>
+##### `labels`<sup>Optional</sup> <a name="labels" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.labels"></a>
 
 ```typescript
 public readonly labels: CfnClusterPropsLabels[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels">CfnClusterPropsLabels</a>[]
 
 Array containing key-value pairs that tag and categorize the cluster.
 
 ---
 
-##### `mongoDbMajorVersion`<sup>Optional</sup> <a name="mongoDbMajorVersion" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.mongoDbMajorVersion"></a>
+##### `mongoDbMajorVersion`<sup>Optional</sup> <a name="mongoDbMajorVersion" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.mongoDbMajorVersion"></a>
 
 ```typescript
 public readonly mongoDbMajorVersion: string;
@@ -876,7 +876,7 @@ Major version of the cluster to deploy.
 
 ---
 
-##### `numShards`<sup>Optional</sup> <a name="numShards" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.numShards"></a>
+##### `numShards`<sup>Optional</sup> <a name="numShards" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.numShards"></a>
 
 ```typescript
 public readonly numShards: number;
@@ -888,7 +888,7 @@ Positive integer that specifies the number of shards to deploy for a sharded clu
 
 ---
 
-##### `paused`<sup>Optional</sup> <a name="paused" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.paused"></a>
+##### `paused`<sup>Optional</sup> <a name="paused" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.paused"></a>
 
 ```typescript
 public readonly paused: boolean;
@@ -900,7 +900,7 @@ Flag that indicates whether the cluster is paused or not.
 
 ---
 
-##### `pitEnabled`<sup>Optional</sup> <a name="pitEnabled" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.pitEnabled"></a>
+##### `pitEnabled`<sup>Optional</sup> <a name="pitEnabled" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.pitEnabled"></a>
 
 ```typescript
 public readonly pitEnabled: boolean;
@@ -914,7 +914,7 @@ If set to true, providerBackupEnabled must also be set to true.
 
 ---
 
-##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.projectId"></a>
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.projectId"></a>
 
 ```typescript
 public readonly projectId: string;
@@ -926,7 +926,7 @@ Unique identifier of the project the cluster belongs to.
 
 ---
 
-##### `providerBackupEnabled`<sup>Optional</sup> <a name="providerBackupEnabled" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.providerBackupEnabled"></a>
+##### `providerBackupEnabled`<sup>Optional</sup> <a name="providerBackupEnabled" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.providerBackupEnabled"></a>
 
 ```typescript
 public readonly providerBackupEnabled: boolean;
@@ -940,17 +940,17 @@ Set to true to enable Atlas Cloud Provider Snapshots backups for the cluster. Se
 
 ---
 
-##### `providerSettings`<sup>Optional</sup> <a name="providerSettings" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.providerSettings"></a>
+##### `providerSettings`<sup>Optional</sup> <a name="providerSettings" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.providerSettings"></a>
 
 ```typescript
 public readonly providerSettings: CfnClusterPropsProviderSettings;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings">CfnClusterPropsProviderSettings</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings">CfnClusterPropsProviderSettings</a>
 
 ---
 
-##### `replicationFactor`<sup>Optional</sup> <a name="replicationFactor" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.replicationFactor"></a>
+##### `replicationFactor`<sup>Optional</sup> <a name="replicationFactor" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.replicationFactor"></a>
 
 ```typescript
 public readonly replicationFactor: number;
@@ -964,24 +964,24 @@ Use replicationSpecs.
 
 ---
 
-##### `replicationSpecs`<sup>Optional</sup> <a name="replicationSpecs" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterProps.property.replicationSpecs"></a>
+##### `replicationSpecs`<sup>Optional</sup> <a name="replicationSpecs" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterProps.property.replicationSpecs"></a>
 
 ```typescript
 public readonly replicationSpecs: ReplicationSpec[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec">ReplicationSpec</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec">ReplicationSpec</a>[]
 
 Configuration for cluster regions.
 
 ---
 
-### CfnClusterPropsBiConnector <a name="CfnClusterPropsBiConnector" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector"></a>
+### CfnClusterPropsBiConnector <a name="CfnClusterPropsBiConnector" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector.Initializer"></a>
 
 ```typescript
-import { CfnClusterPropsBiConnector } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnClusterPropsBiConnector } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const cfnClusterPropsBiConnector: CfnClusterPropsBiConnector = { ... }
 ```
@@ -990,12 +990,12 @@ const cfnClusterPropsBiConnector: CfnClusterPropsBiConnector = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector.property.enabled">enabled</a></code> | <code>boolean</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector.property.readPreference">readPreference</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector.property.enabled">enabled</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector.property.readPreference">readPreference</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector.property.enabled"></a>
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector.property.enabled"></a>
 
 ```typescript
 public readonly enabled: boolean;
@@ -1005,7 +1005,7 @@ public readonly enabled: boolean;
 
 ---
 
-##### `readPreference`<sup>Optional</sup> <a name="readPreference" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsBiConnector.property.readPreference"></a>
+##### `readPreference`<sup>Optional</sup> <a name="readPreference" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsBiConnector.property.readPreference"></a>
 
 ```typescript
 public readonly readPreference: string;
@@ -1015,12 +1015,12 @@ public readonly readPreference: string;
 
 ---
 
-### CfnClusterPropsLabels <a name="CfnClusterPropsLabels" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels"></a>
+### CfnClusterPropsLabels <a name="CfnClusterPropsLabels" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels.Initializer"></a>
 
 ```typescript
-import { CfnClusterPropsLabels } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnClusterPropsLabels } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const cfnClusterPropsLabels: CfnClusterPropsLabels = { ... }
 ```
@@ -1029,12 +1029,12 @@ const cfnClusterPropsLabels: CfnClusterPropsLabels = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels.property.key">key</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels.property.value">value</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels.property.key">key</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels.property.value">value</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `key`<sup>Optional</sup> <a name="key" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels.property.key"></a>
+##### `key`<sup>Optional</sup> <a name="key" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels.property.key"></a>
 
 ```typescript
 public readonly key: string;
@@ -1044,7 +1044,7 @@ public readonly key: string;
 
 ---
 
-##### `value`<sup>Optional</sup> <a name="value" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsLabels.property.value"></a>
+##### `value`<sup>Optional</sup> <a name="value" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsLabels.property.value"></a>
 
 ```typescript
 public readonly value: string;
@@ -1054,12 +1054,12 @@ public readonly value: string;
 
 ---
 
-### CfnClusterPropsProviderSettings <a name="CfnClusterPropsProviderSettings" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings"></a>
+### CfnClusterPropsProviderSettings <a name="CfnClusterPropsProviderSettings" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.Initializer"></a>
 
 ```typescript
-import { CfnClusterPropsProviderSettings } from '@mongodb-cdk/atlas-legacy-cluster'
+import { CfnClusterPropsProviderSettings } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const cfnClusterPropsProviderSettings: CfnClusterPropsProviderSettings = { ... }
 ```
@@ -1068,28 +1068,28 @@ const cfnClusterPropsProviderSettings: CfnClusterPropsProviderSettings = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.autoScaling">autoScaling</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.AutoScaling">AutoScaling</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.backingProviderName">backingProviderName</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.diskIops">diskIops</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.encryptEbsVolume">encryptEbsVolume</a></code> | <code>boolean</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.instanceSizeName">instanceSizeName</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.providerName">providerName</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.regionName">regionName</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.volumeType">volumeType</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.autoScaling">autoScaling</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.AutoScaling">AutoScaling</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.backingProviderName">backingProviderName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.diskIops">diskIops</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.encryptEbsVolume">encryptEbsVolume</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.instanceSizeName">instanceSizeName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.providerName">providerName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.regionName">regionName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.volumeType">volumeType</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `autoScaling`<sup>Optional</sup> <a name="autoScaling" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.autoScaling"></a>
+##### `autoScaling`<sup>Optional</sup> <a name="autoScaling" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.autoScaling"></a>
 
 ```typescript
 public readonly autoScaling: AutoScaling;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.AutoScaling">AutoScaling</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.AutoScaling">AutoScaling</a>
 
 ---
 
-##### `backingProviderName`<sup>Optional</sup> <a name="backingProviderName" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.backingProviderName"></a>
+##### `backingProviderName`<sup>Optional</sup> <a name="backingProviderName" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.backingProviderName"></a>
 
 ```typescript
 public readonly backingProviderName: string;
@@ -1099,7 +1099,7 @@ public readonly backingProviderName: string;
 
 ---
 
-##### `diskIops`<sup>Optional</sup> <a name="diskIops" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.diskIops"></a>
+##### `diskIops`<sup>Optional</sup> <a name="diskIops" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.diskIops"></a>
 
 ```typescript
 public readonly diskIops: number;
@@ -1109,7 +1109,7 @@ public readonly diskIops: number;
 
 ---
 
-##### `encryptEbsVolume`<sup>Optional</sup> <a name="encryptEbsVolume" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.encryptEbsVolume"></a>
+##### `encryptEbsVolume`<sup>Optional</sup> <a name="encryptEbsVolume" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.encryptEbsVolume"></a>
 
 ```typescript
 public readonly encryptEbsVolume: boolean;
@@ -1119,7 +1119,7 @@ public readonly encryptEbsVolume: boolean;
 
 ---
 
-##### `instanceSizeName`<sup>Optional</sup> <a name="instanceSizeName" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.instanceSizeName"></a>
+##### `instanceSizeName`<sup>Optional</sup> <a name="instanceSizeName" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.instanceSizeName"></a>
 
 ```typescript
 public readonly instanceSizeName: string;
@@ -1129,7 +1129,7 @@ public readonly instanceSizeName: string;
 
 ---
 
-##### `providerName`<sup>Optional</sup> <a name="providerName" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.providerName"></a>
+##### `providerName`<sup>Optional</sup> <a name="providerName" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.providerName"></a>
 
 ```typescript
 public readonly providerName: string;
@@ -1139,7 +1139,7 @@ public readonly providerName: string;
 
 ---
 
-##### `regionName`<sup>Optional</sup> <a name="regionName" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.regionName"></a>
+##### `regionName`<sup>Optional</sup> <a name="regionName" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.regionName"></a>
 
 ```typescript
 public readonly regionName: string;
@@ -1149,7 +1149,7 @@ public readonly regionName: string;
 
 ---
 
-##### `volumeType`<sup>Optional</sup> <a name="volumeType" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsProviderSettings.property.volumeType"></a>
+##### `volumeType`<sup>Optional</sup> <a name="volumeType" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsProviderSettings.property.volumeType"></a>
 
 ```typescript
 public readonly volumeType: string;
@@ -1159,12 +1159,12 @@ public readonly volumeType: string;
 
 ---
 
-### Compute <a name="Compute" id="@mongodb-cdk/atlas-legacy-cluster.Compute"></a>
+### Compute <a name="Compute" id="@mongodbatlas-awscdk/legacy-cluster.Compute"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.Compute.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.Compute.Initializer"></a>
 
 ```typescript
-import { Compute } from '@mongodb-cdk/atlas-legacy-cluster'
+import { Compute } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const compute: Compute = { ... }
 ```
@@ -1173,14 +1173,14 @@ const compute: Compute = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.Compute.property.enabled">enabled</a></code> | <code>boolean</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.Compute.property.maxInstanceSize">maxInstanceSize</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.Compute.property.minInstanceSize">minInstanceSize</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.Compute.property.scaleDownEnabled">scaleDownEnabled</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.Compute.property.enabled">enabled</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.Compute.property.maxInstanceSize">maxInstanceSize</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.Compute.property.minInstanceSize">minInstanceSize</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.Compute.property.scaleDownEnabled">scaleDownEnabled</a></code> | <code>boolean</code> | *No description.* |
 
 ---
 
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodb-cdk/atlas-legacy-cluster.Compute.property.enabled"></a>
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/legacy-cluster.Compute.property.enabled"></a>
 
 ```typescript
 public readonly enabled: boolean;
@@ -1190,7 +1190,7 @@ public readonly enabled: boolean;
 
 ---
 
-##### `maxInstanceSize`<sup>Optional</sup> <a name="maxInstanceSize" id="@mongodb-cdk/atlas-legacy-cluster.Compute.property.maxInstanceSize"></a>
+##### `maxInstanceSize`<sup>Optional</sup> <a name="maxInstanceSize" id="@mongodbatlas-awscdk/legacy-cluster.Compute.property.maxInstanceSize"></a>
 
 ```typescript
 public readonly maxInstanceSize: string;
@@ -1200,7 +1200,7 @@ public readonly maxInstanceSize: string;
 
 ---
 
-##### `minInstanceSize`<sup>Optional</sup> <a name="minInstanceSize" id="@mongodb-cdk/atlas-legacy-cluster.Compute.property.minInstanceSize"></a>
+##### `minInstanceSize`<sup>Optional</sup> <a name="minInstanceSize" id="@mongodbatlas-awscdk/legacy-cluster.Compute.property.minInstanceSize"></a>
 
 ```typescript
 public readonly minInstanceSize: string;
@@ -1210,7 +1210,7 @@ public readonly minInstanceSize: string;
 
 ---
 
-##### `scaleDownEnabled`<sup>Optional</sup> <a name="scaleDownEnabled" id="@mongodb-cdk/atlas-legacy-cluster.Compute.property.scaleDownEnabled"></a>
+##### `scaleDownEnabled`<sup>Optional</sup> <a name="scaleDownEnabled" id="@mongodbatlas-awscdk/legacy-cluster.Compute.property.scaleDownEnabled"></a>
 
 ```typescript
 public readonly scaleDownEnabled: boolean;
@@ -1220,12 +1220,12 @@ public readonly scaleDownEnabled: boolean;
 
 ---
 
-### ConnectionStrings <a name="ConnectionStrings" id="@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings"></a>
+### ConnectionStrings <a name="ConnectionStrings" id="@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.Initializer"></a>
 
 ```typescript
-import { ConnectionStrings } from '@mongodb-cdk/atlas-legacy-cluster'
+import { ConnectionStrings } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const connectionStrings: ConnectionStrings = { ... }
 ```
@@ -1234,14 +1234,14 @@ const connectionStrings: ConnectionStrings = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.private">private</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.privateSrv">privateSrv</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.standard">standard</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.standardSrv">standardSrv</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.private">private</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.privateSrv">privateSrv</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.standard">standard</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.standardSrv">standardSrv</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `private`<sup>Optional</sup> <a name="private" id="@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.private"></a>
+##### `private`<sup>Optional</sup> <a name="private" id="@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.private"></a>
 
 ```typescript
 public readonly private: string;
@@ -1251,7 +1251,7 @@ public readonly private: string;
 
 ---
 
-##### `privateSrv`<sup>Optional</sup> <a name="privateSrv" id="@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.privateSrv"></a>
+##### `privateSrv`<sup>Optional</sup> <a name="privateSrv" id="@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.privateSrv"></a>
 
 ```typescript
 public readonly privateSrv: string;
@@ -1261,7 +1261,7 @@ public readonly privateSrv: string;
 
 ---
 
-##### `standard`<sup>Optional</sup> <a name="standard" id="@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.standard"></a>
+##### `standard`<sup>Optional</sup> <a name="standard" id="@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.standard"></a>
 
 ```typescript
 public readonly standard: string;
@@ -1271,7 +1271,7 @@ public readonly standard: string;
 
 ---
 
-##### `standardSrv`<sup>Optional</sup> <a name="standardSrv" id="@mongodb-cdk/atlas-legacy-cluster.ConnectionStrings.property.standardSrv"></a>
+##### `standardSrv`<sup>Optional</sup> <a name="standardSrv" id="@mongodbatlas-awscdk/legacy-cluster.ConnectionStrings.property.standardSrv"></a>
 
 ```typescript
 public readonly standardSrv: string;
@@ -1281,12 +1281,12 @@ public readonly standardSrv: string;
 
 ---
 
-### RegionsConfig <a name="RegionsConfig" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig"></a>
+### RegionsConfig <a name="RegionsConfig" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.Initializer"></a>
 
 ```typescript
-import { RegionsConfig } from '@mongodb-cdk/atlas-legacy-cluster'
+import { RegionsConfig } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const regionsConfig: RegionsConfig = { ... }
 ```
@@ -1295,15 +1295,15 @@ const regionsConfig: RegionsConfig = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.analyticsNodes">analyticsNodes</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.electableNodes">electableNodes</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.priority">priority</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.readOnlyNodes">readOnlyNodes</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.regionName">regionName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.analyticsNodes">analyticsNodes</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.electableNodes">electableNodes</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.priority">priority</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.readOnlyNodes">readOnlyNodes</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.regionName">regionName</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `analyticsNodes`<sup>Optional</sup> <a name="analyticsNodes" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.analyticsNodes"></a>
+##### `analyticsNodes`<sup>Optional</sup> <a name="analyticsNodes" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.analyticsNodes"></a>
 
 ```typescript
 public readonly analyticsNodes: number;
@@ -1313,7 +1313,7 @@ public readonly analyticsNodes: number;
 
 ---
 
-##### `electableNodes`<sup>Optional</sup> <a name="electableNodes" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.electableNodes"></a>
+##### `electableNodes`<sup>Optional</sup> <a name="electableNodes" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.electableNodes"></a>
 
 ```typescript
 public readonly electableNodes: number;
@@ -1323,7 +1323,7 @@ public readonly electableNodes: number;
 
 ---
 
-##### `priority`<sup>Optional</sup> <a name="priority" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.priority"></a>
+##### `priority`<sup>Optional</sup> <a name="priority" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.priority"></a>
 
 ```typescript
 public readonly priority: number;
@@ -1333,7 +1333,7 @@ public readonly priority: number;
 
 ---
 
-##### `readOnlyNodes`<sup>Optional</sup> <a name="readOnlyNodes" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.readOnlyNodes"></a>
+##### `readOnlyNodes`<sup>Optional</sup> <a name="readOnlyNodes" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.readOnlyNodes"></a>
 
 ```typescript
 public readonly readOnlyNodes: number;
@@ -1343,7 +1343,7 @@ public readonly readOnlyNodes: number;
 
 ---
 
-##### `regionName`<sup>Optional</sup> <a name="regionName" id="@mongodb-cdk/atlas-legacy-cluster.RegionsConfig.property.regionName"></a>
+##### `regionName`<sup>Optional</sup> <a name="regionName" id="@mongodbatlas-awscdk/legacy-cluster.RegionsConfig.property.regionName"></a>
 
 ```typescript
 public readonly regionName: string;
@@ -1353,12 +1353,12 @@ public readonly regionName: string;
 
 ---
 
-### ReplicationSpec <a name="ReplicationSpec" id="@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec"></a>
+### ReplicationSpec <a name="ReplicationSpec" id="@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.Initializer"></a>
 
 ```typescript
-import { ReplicationSpec } from '@mongodb-cdk/atlas-legacy-cluster'
+import { ReplicationSpec } from '@mongodbatlas-awscdk/legacy-cluster'
 
 const replicationSpec: ReplicationSpec = { ... }
 ```
@@ -1367,14 +1367,14 @@ const replicationSpec: ReplicationSpec = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.id">id</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.numShards">numShards</a></code> | <code>number</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.regionsConfig">regionsConfig</a></code> | <code><a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig">RegionsConfig</a>[]</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.zoneName">zoneName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.numShards">numShards</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.regionsConfig">regionsConfig</a></code> | <code><a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig">RegionsConfig</a>[]</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.zoneName">zoneName</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `id`<sup>Optional</sup> <a name="id" id="@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.id"></a>
+##### `id`<sup>Optional</sup> <a name="id" id="@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.id"></a>
 
 ```typescript
 public readonly id: string;
@@ -1384,7 +1384,7 @@ public readonly id: string;
 
 ---
 
-##### `numShards`<sup>Optional</sup> <a name="numShards" id="@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.numShards"></a>
+##### `numShards`<sup>Optional</sup> <a name="numShards" id="@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.numShards"></a>
 
 ```typescript
 public readonly numShards: number;
@@ -1394,17 +1394,17 @@ public readonly numShards: number;
 
 ---
 
-##### `regionsConfig`<sup>Optional</sup> <a name="regionsConfig" id="@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.regionsConfig"></a>
+##### `regionsConfig`<sup>Optional</sup> <a name="regionsConfig" id="@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.regionsConfig"></a>
 
 ```typescript
 public readonly regionsConfig: RegionsConfig[];
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-legacy-cluster.RegionsConfig">RegionsConfig</a>[]
+- *Type:* <a href="#@mongodbatlas-awscdk/legacy-cluster.RegionsConfig">RegionsConfig</a>[]
 
 ---
 
-##### `zoneName`<sup>Optional</sup> <a name="zoneName" id="@mongodb-cdk/atlas-legacy-cluster.ReplicationSpec.property.zoneName"></a>
+##### `zoneName`<sup>Optional</sup> <a name="zoneName" id="@mongodbatlas-awscdk/legacy-cluster.ReplicationSpec.property.zoneName"></a>
 
 ```typescript
 public readonly zoneName: string;
@@ -1418,7 +1418,7 @@ public readonly zoneName: string;
 
 ## Enums <a name="Enums" id="Enums"></a>
 
-### CfnClusterPropsEncryptionAtRestProvider <a name="CfnClusterPropsEncryptionAtRestProvider" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider"></a>
+### CfnClusterPropsEncryptionAtRestProvider <a name="CfnClusterPropsEncryptionAtRestProvider" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider"></a>
 
 Set the Encryption at Rest parameter.
 
@@ -1426,35 +1426,35 @@ Set the Encryption at Rest parameter.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AWS">AWS</a></code> | AWS. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.GCP">GCP</a></code> | GCP. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE">AZURE</a></code> | AZURE. |
-| <code><a href="#@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.NONE">NONE</a></code> | NONE. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AWS">AWS</a></code> | AWS. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.GCP">GCP</a></code> | GCP. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE">AZURE</a></code> | AZURE. |
+| <code><a href="#@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.NONE">NONE</a></code> | NONE. |
 
 ---
 
-##### `AWS` <a name="AWS" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AWS"></a>
+##### `AWS` <a name="AWS" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AWS"></a>
 
 AWS.
 
 ---
 
 
-##### `GCP` <a name="GCP" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.GCP"></a>
+##### `GCP` <a name="GCP" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.GCP"></a>
 
 GCP.
 
 ---
 
 
-##### `AZURE` <a name="AZURE" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE"></a>
+##### `AZURE` <a name="AZURE" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.AZURE"></a>
 
 AZURE.
 
 ---
 
 
-##### `NONE` <a name="NONE" id="@mongodb-cdk/atlas-legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.NONE"></a>
+##### `NONE` <a name="NONE" id="@mongodbatlas-awscdk/legacy-cluster.CfnClusterPropsEncryptionAtRestProvider.NONE"></a>
 
 NONE.
 

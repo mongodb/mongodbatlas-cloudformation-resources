@@ -11,7 +11,7 @@ const auditing = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-auditing',
+  name: '@mongodbatlas-awscdk/auditing',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

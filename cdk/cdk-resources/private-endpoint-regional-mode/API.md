@@ -2,27 +2,27 @@
 
 ## Constructs <a name="Constructs" id="Constructs"></a>
 
-### CfnPrivateEndPointRegionalMode <a name="CfnPrivateEndPointRegionalMode" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode"></a>
+### CfnPrivateEndPointRegionalMode <a name="CfnPrivateEndPointRegionalMode" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode"></a>
 
 A CloudFormation `MongoDB::Atlas::PrivateEndPointRegionalMode`.
 
-#### Initializers <a name="Initializers" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer"></a>
+#### Initializers <a name="Initializers" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer"></a>
 
 ```typescript
-import { CfnPrivateEndPointRegionalMode } from '@mongodb-cdk/atlas-private-endpoint-regional-mode'
+import { CfnPrivateEndPointRegionalMode } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
 
 new CfnPrivateEndPointRegionalMode(scope: Construct, id: string, props: CfnPrivateEndPointRegionalModeProps)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - scope in which this resource is defined. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.id">id</a></code> | <code>string</code> | - scoped id of the resource. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.props">props</a></code> | <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a></code> | - resource properties. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - scope in which this resource is defined. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.id">id</a></code> | <code>string</code> | - scoped id of the resource. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a></code> | - resource properties. |
 
 ---
 
-##### `scope`<sup>Required</sup> <a name="scope" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.scope"></a>
+##### `scope`<sup>Required</sup> <a name="scope" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.scope"></a>
 
 - *Type:* constructs.Construct
 
@@ -30,7 +30,7 @@ scope in which this resource is defined.
 
 ---
 
-##### `id`<sup>Required</sup> <a name="id" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.id"></a>
+##### `id`<sup>Required</sup> <a name="id" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.id"></a>
 
 - *Type:* string
 
@@ -38,9 +38,9 @@ scoped id of the resource.
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.Initializer.parameter.props"></a>
 
-- *Type:* <a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a>
 
 resource properties.
 
@@ -50,21 +50,21 @@ resource properties.
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.toString">toString</a></code> | Returns a string representation of this construct. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.overrideLogicalId">overrideLogicalId</a></code> | Overrides the auto-generated logical ID with a specific ID. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDeletionOverride">addDeletionOverride</a></code> | Syntactic sugar for `addOverride(path, undefined)`. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDependsOn">addDependsOn</a></code> | Indicates that this resource depends on another resource and cannot be provisioned unless the other resource has been successfully provisioned. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata">addMetadata</a></code> | Add a value to the CloudFormation Resource Metadata. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride">addOverride</a></code> | Adds an override to the synthesized CloudFormation resource. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyDeletionOverride">addPropertyDeletionOverride</a></code> | Adds an override that deletes the value of a property from the resource definition. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride">addPropertyOverride</a></code> | Adds an override to a resource property. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy">applyRemovalPolicy</a></code> | Sets the deletion policy of the resource based on the removal policy specified. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getAtt">getAtt</a></code> | Returns a token for an runtime attribute of this resource. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getMetadata">getMetadata</a></code> | Retrieve a value value from the CloudFormation Resource Metadata. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.overrideLogicalId">overrideLogicalId</a></code> | Overrides the auto-generated logical ID with a specific ID. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDeletionOverride">addDeletionOverride</a></code> | Syntactic sugar for `addOverride(path, undefined)`. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDependsOn">addDependsOn</a></code> | Indicates that this resource depends on another resource and cannot be provisioned unless the other resource has been successfully provisioned. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata">addMetadata</a></code> | Add a value to the CloudFormation Resource Metadata. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride">addOverride</a></code> | Adds an override to the synthesized CloudFormation resource. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyDeletionOverride">addPropertyDeletionOverride</a></code> | Adds an override that deletes the value of a property from the resource definition. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride">addPropertyOverride</a></code> | Adds an override to a resource property. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy">applyRemovalPolicy</a></code> | Sets the deletion policy of the resource based on the removal policy specified. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getAtt">getAtt</a></code> | Returns a token for an runtime attribute of this resource. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getMetadata">getMetadata</a></code> | Retrieve a value value from the CloudFormation Resource Metadata. |
 
 ---
 
-##### `toString` <a name="toString" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.toString"></a>
+##### `toString` <a name="toString" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.toString"></a>
 
 ```typescript
 public toString(): string
@@ -72,7 +72,7 @@ public toString(): string
 
 Returns a string representation of this construct.
 
-##### `overrideLogicalId` <a name="overrideLogicalId" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.overrideLogicalId"></a>
+##### `overrideLogicalId` <a name="overrideLogicalId" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.overrideLogicalId"></a>
 
 ```typescript
 public overrideLogicalId(newLogicalId: string): void
@@ -80,7 +80,7 @@ public overrideLogicalId(newLogicalId: string): void
 
 Overrides the auto-generated logical ID with a specific ID.
 
-###### `newLogicalId`<sup>Required</sup> <a name="newLogicalId" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.overrideLogicalId.parameter.newLogicalId"></a>
+###### `newLogicalId`<sup>Required</sup> <a name="newLogicalId" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.overrideLogicalId.parameter.newLogicalId"></a>
 
 - *Type:* string
 
@@ -88,7 +88,7 @@ The new logical ID to use for this stack element.
 
 ---
 
-##### `addDeletionOverride` <a name="addDeletionOverride" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDeletionOverride"></a>
+##### `addDeletionOverride` <a name="addDeletionOverride" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDeletionOverride"></a>
 
 ```typescript
 public addDeletionOverride(path: string): void
@@ -96,7 +96,7 @@ public addDeletionOverride(path: string): void
 
 Syntactic sugar for `addOverride(path, undefined)`.
 
-###### `path`<sup>Required</sup> <a name="path" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDeletionOverride.parameter.path"></a>
+###### `path`<sup>Required</sup> <a name="path" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDeletionOverride.parameter.path"></a>
 
 - *Type:* string
 
@@ -104,7 +104,7 @@ The path of the value to delete.
 
 ---
 
-##### `addDependsOn` <a name="addDependsOn" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDependsOn"></a>
+##### `addDependsOn` <a name="addDependsOn" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDependsOn"></a>
 
 ```typescript
 public addDependsOn(target: CfnResource): void
@@ -115,13 +115,13 @@ Indicates that this resource depends on another resource and cannot be provision
 This can be used for resources across stacks (or nested stack) boundaries
 and the dependency will automatically be transferred to the relevant scope.
 
-###### `target`<sup>Required</sup> <a name="target" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDependsOn.parameter.target"></a>
+###### `target`<sup>Required</sup> <a name="target" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addDependsOn.parameter.target"></a>
 
 - *Type:* aws-cdk-lib.CfnResource
 
 ---
 
-##### `addMetadata` <a name="addMetadata" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata"></a>
+##### `addMetadata` <a name="addMetadata" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata"></a>
 
 ```typescript
 public addMetadata(key: string, value: any): void
@@ -139,19 +139,19 @@ Note that this is a different set of metadata from CDK node metadata; this
 metadata ends up in the stack template under the resource, whereas CDK
 node metadata ends up in the Cloud Assembly.)
 
-###### `key`<sup>Required</sup> <a name="key" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata.parameter.key"></a>
+###### `key`<sup>Required</sup> <a name="key" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata.parameter.key"></a>
 
 - *Type:* string
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addMetadata.parameter.value"></a>
 
 - *Type:* any
 
 ---
 
-##### `addOverride` <a name="addOverride" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride"></a>
+##### `addOverride` <a name="addOverride" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride"></a>
 
 ```typescript
 public addOverride(path: string, value: any): void
@@ -195,7 +195,7 @@ would add the overrides
 }
 ```
 
-###### `path`<sup>Required</sup> <a name="path" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride.parameter.path"></a>
+###### `path`<sup>Required</sup> <a name="path" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride.parameter.path"></a>
 
 - *Type:* string
 
@@ -206,7 +206,7 @@ will be created as needed.
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addOverride.parameter.value"></a>
 
 - *Type:* any
 
@@ -216,7 +216,7 @@ Could be primitive or complex.
 
 ---
 
-##### `addPropertyDeletionOverride` <a name="addPropertyDeletionOverride" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyDeletionOverride"></a>
+##### `addPropertyDeletionOverride` <a name="addPropertyDeletionOverride" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyDeletionOverride"></a>
 
 ```typescript
 public addPropertyDeletionOverride(propertyPath: string): void
@@ -224,7 +224,7 @@ public addPropertyDeletionOverride(propertyPath: string): void
 
 Adds an override that deletes the value of a property from the resource definition.
 
-###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyDeletionOverride.parameter.propertyPath"></a>
+###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyDeletionOverride.parameter.propertyPath"></a>
 
 - *Type:* string
 
@@ -232,7 +232,7 @@ The path to the property.
 
 ---
 
-##### `addPropertyOverride` <a name="addPropertyOverride" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride"></a>
+##### `addPropertyOverride` <a name="addPropertyOverride" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride"></a>
 
 ```typescript
 public addPropertyOverride(propertyPath: string, value: any): void
@@ -242,7 +242,7 @@ Adds an override to a resource property.
 
 Syntactic sugar for `addOverride("Properties.<...>", value)`.
 
-###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride.parameter.propertyPath"></a>
+###### `propertyPath`<sup>Required</sup> <a name="propertyPath" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride.parameter.propertyPath"></a>
 
 - *Type:* string
 
@@ -250,7 +250,7 @@ The path of the property.
 
 ---
 
-###### `value`<sup>Required</sup> <a name="value" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride.parameter.value"></a>
+###### `value`<sup>Required</sup> <a name="value" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.addPropertyOverride.parameter.value"></a>
 
 - *Type:* any
 
@@ -258,7 +258,7 @@ The value.
 
 ---
 
-##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy"></a>
+##### `applyRemovalPolicy` <a name="applyRemovalPolicy" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy"></a>
 
 ```typescript
 public applyRemovalPolicy(policy?: RemovalPolicy, options?: RemovalPolicyOptions): void
@@ -274,19 +274,19 @@ to be replaced.
 The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
 account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
 
-###### `policy`<sup>Optional</sup> <a name="policy" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy.parameter.policy"></a>
+###### `policy`<sup>Optional</sup> <a name="policy" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy.parameter.policy"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicy
 
 ---
 
-###### `options`<sup>Optional</sup> <a name="options" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy.parameter.options"></a>
+###### `options`<sup>Optional</sup> <a name="options" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.applyRemovalPolicy.parameter.options"></a>
 
 - *Type:* aws-cdk-lib.RemovalPolicyOptions
 
 ---
 
-##### `getAtt` <a name="getAtt" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getAtt"></a>
+##### `getAtt` <a name="getAtt" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getAtt"></a>
 
 ```typescript
 public getAtt(attributeName: string): Reference
@@ -297,7 +297,7 @@ Returns a token for an runtime attribute of this resource.
 Ideally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility
 in case there is no generated attribute.
 
-###### `attributeName`<sup>Required</sup> <a name="attributeName" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getAtt.parameter.attributeName"></a>
+###### `attributeName`<sup>Required</sup> <a name="attributeName" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getAtt.parameter.attributeName"></a>
 
 - *Type:* string
 
@@ -305,7 +305,7 @@ The name of the attribute.
 
 ---
 
-##### `getMetadata` <a name="getMetadata" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getMetadata"></a>
+##### `getMetadata` <a name="getMetadata" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getMetadata"></a>
 
 ```typescript
 public getMetadata(key: string): any
@@ -323,7 +323,7 @@ Note that this is a different set of metadata from CDK node metadata; this
 metadata ends up in the stack template under the resource, whereas CDK
 node metadata ends up in the Cloud Assembly.)
 
-###### `key`<sup>Required</sup> <a name="key" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getMetadata.parameter.key"></a>
+###### `key`<sup>Required</sup> <a name="key" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.getMetadata.parameter.key"></a>
 
 - *Type:* string
 
@@ -333,23 +333,23 @@ node metadata ends up in the Cloud Assembly.)
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnElement">isCfnElement</a></code> | Returns `true` if a construct is a stack element (i.e. part of the synthesized cloudformation template). |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnResource">isCfnResource</a></code> | Check whether the given construct is a CfnResource. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnElement">isCfnElement</a></code> | Returns `true` if a construct is a stack element (i.e. part of the synthesized cloudformation template). |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnResource">isCfnResource</a></code> | Check whether the given construct is a CfnResource. |
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isConstruct"></a>
 
 ```typescript
-import { CfnPrivateEndPointRegionalMode } from '@mongodb-cdk/atlas-private-endpoint-regional-mode'
+import { CfnPrivateEndPointRegionalMode } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
 
 CfnPrivateEndPointRegionalMode.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
 
-###### `x`<sup>Required</sup> <a name="x" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isConstruct.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isConstruct.parameter.x"></a>
 
 - *Type:* any
 
@@ -357,10 +357,10 @@ Any object.
 
 ---
 
-##### `isCfnElement` <a name="isCfnElement" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnElement"></a>
+##### `isCfnElement` <a name="isCfnElement" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnElement"></a>
 
 ```typescript
-import { CfnPrivateEndPointRegionalMode } from '@mongodb-cdk/atlas-private-endpoint-regional-mode'
+import { CfnPrivateEndPointRegionalMode } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
 
 CfnPrivateEndPointRegionalMode.isCfnElement(x: any)
 ```
@@ -370,23 +370,23 @@ Returns `true` if a construct is a stack element (i.e. part of the synthesized c
 Uses duck-typing instead of `instanceof` to allow stack elements from different
 versions of this library to be included in the same stack.
 
-###### `x`<sup>Required</sup> <a name="x" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnElement.parameter.x"></a>
+###### `x`<sup>Required</sup> <a name="x" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnElement.parameter.x"></a>
 
 - *Type:* any
 
 ---
 
-##### `isCfnResource` <a name="isCfnResource" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnResource"></a>
+##### `isCfnResource` <a name="isCfnResource" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnResource"></a>
 
 ```typescript
-import { CfnPrivateEndPointRegionalMode } from '@mongodb-cdk/atlas-private-endpoint-regional-mode'
+import { CfnPrivateEndPointRegionalMode } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
 
 CfnPrivateEndPointRegionalMode.isCfnResource(construct: IConstruct)
 ```
 
 Check whether the given construct is a CfnResource.
 
-###### `construct`<sup>Required</sup> <a name="construct" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnResource.parameter.construct"></a>
+###### `construct`<sup>Required</sup> <a name="construct" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.isCfnResource.parameter.construct"></a>
 
 - *Type:* constructs.IConstruct
 
@@ -396,18 +396,18 @@ Check whether the given construct is a CfnResource.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.creationStack">creationStack</a></code> | <code>string[]</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.logicalId">logicalId</a></code> | <code>string</code> | The logical ID for this CloudFormation stack element. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this element is defined. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.props">props</a></code> | <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a></code> | Resource props. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.creationStack">creationStack</a></code> | <code>string[]</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.logicalId">logicalId</a></code> | <code>string</code> | The logical ID for this CloudFormation stack element. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.stack">stack</a></code> | <code>aws-cdk-lib.Stack</code> | The stack in which this element is defined. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a></code> | Resource props. |
 
 ---
 
-##### `node`<sup>Required</sup> <a name="node" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.node"></a>
+##### `node`<sup>Required</sup> <a name="node" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.node"></a>
 
 ```typescript
 public readonly node: Node;
@@ -419,7 +419,7 @@ The tree node.
 
 ---
 
-##### `creationStack`<sup>Required</sup> <a name="creationStack" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.creationStack"></a>
+##### `creationStack`<sup>Required</sup> <a name="creationStack" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.creationStack"></a>
 
 ```typescript
 public readonly creationStack: string[];
@@ -429,7 +429,7 @@ public readonly creationStack: string[];
 
 ---
 
-##### `logicalId`<sup>Required</sup> <a name="logicalId" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.logicalId"></a>
+##### `logicalId`<sup>Required</sup> <a name="logicalId" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.logicalId"></a>
 
 ```typescript
 public readonly logicalId: string;
@@ -446,7 +446,7 @@ To override this value, use `overrideLogicalId(newLogicalId)`.
 
 ---
 
-##### `stack`<sup>Required</sup> <a name="stack" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.stack"></a>
+##### `stack`<sup>Required</sup> <a name="stack" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.stack"></a>
 
 ```typescript
 public readonly stack: Stack;
@@ -460,7 +460,7 @@ CfnElements must be defined within a stack scope (directly or indirectly).
 
 ---
 
-##### `ref`<sup>Required</sup> <a name="ref" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.ref"></a>
+##### `ref`<sup>Required</sup> <a name="ref" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.ref"></a>
 
 ```typescript
 public readonly ref: string;
@@ -475,7 +475,7 @@ coerce it to an IResolvable through `Lazy.any({ produce: resource.ref })`.
 
 ---
 
-##### `cfnOptions`<sup>Required</sup> <a name="cfnOptions" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnOptions"></a>
+##### `cfnOptions`<sup>Required</sup> <a name="cfnOptions" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnOptions"></a>
 
 ```typescript
 public readonly cfnOptions: ICfnResourceOptions;
@@ -487,7 +487,7 @@ Options for this resource, such as condition, update policy etc.
 
 ---
 
-##### `cfnResourceType`<sup>Required</sup> <a name="cfnResourceType" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnResourceType"></a>
+##### `cfnResourceType`<sup>Required</sup> <a name="cfnResourceType" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.cfnResourceType"></a>
 
 ```typescript
 public readonly cfnResourceType: string;
@@ -499,13 +499,13 @@ AWS resource type.
 
 ---
 
-##### `props`<sup>Required</sup> <a name="props" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.props"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.props"></a>
 
 ```typescript
 public readonly props: CfnPrivateEndPointRegionalModeProps;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps">CfnPrivateEndPointRegionalModeProps</a>
 
 Resource props.
 
@@ -515,11 +515,11 @@ Resource props.
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.CFN_RESOURCE_TYPE_NAME">CFN_RESOURCE_TYPE_NAME</a></code> | <code>string</code> | The CloudFormation resource type name for this resource class. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.CFN_RESOURCE_TYPE_NAME">CFN_RESOURCE_TYPE_NAME</a></code> | <code>string</code> | The CloudFormation resource type name for this resource class. |
 
 ---
 
-##### `CFN_RESOURCE_TYPE_NAME`<sup>Required</sup> <a name="CFN_RESOURCE_TYPE_NAME" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.CFN_RESOURCE_TYPE_NAME"></a>
+##### `CFN_RESOURCE_TYPE_NAME`<sup>Required</sup> <a name="CFN_RESOURCE_TYPE_NAME" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalMode.property.CFN_RESOURCE_TYPE_NAME"></a>
 
 ```typescript
 public readonly CFN_RESOURCE_TYPE_NAME: string;
@@ -533,12 +533,12 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKey <a name="ApiKey" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey"></a>
+### ApiKey <a name="ApiKey" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey"></a>
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.Initializer"></a>
 
 ```typescript
-import { ApiKey } from '@mongodb-cdk/atlas-private-endpoint-regional-mode'
+import { ApiKey } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
 
 const apiKey: ApiKey = { ... }
 ```
@@ -547,12 +547,12 @@ const apiKey: ApiKey = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey.property.privateKey"></a>
+##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.privateKey"></a>
 
 ```typescript
 public readonly privateKey: string;
@@ -562,7 +562,7 @@ public readonly privateKey: string;
 
 ---
 
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey.property.publicKey"></a>
+##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.publicKey"></a>
 
 ```typescript
 public readonly publicKey: string;
@@ -572,14 +572,14 @@ public readonly publicKey: string;
 
 ---
 
-### CfnPrivateEndPointRegionalModeProps <a name="CfnPrivateEndPointRegionalModeProps" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps"></a>
+### CfnPrivateEndPointRegionalModeProps <a name="CfnPrivateEndPointRegionalModeProps" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps"></a>
 
 An example resource schema demonstrating some basic constructs and validation rules.
 
-#### Initializer <a name="Initializer" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.Initializer"></a>
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.Initializer"></a>
 
 ```typescript
-import { CfnPrivateEndPointRegionalModeProps } from '@mongodb-cdk/atlas-private-endpoint-regional-mode'
+import { CfnPrivateEndPointRegionalModeProps } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
 
 const cfnPrivateEndPointRegionalModeProps: CfnPrivateEndPointRegionalModeProps = { ... }
 ```
@@ -588,13 +588,13 @@ const cfnPrivateEndPointRegionalModeProps: CfnPrivateEndPointRegionalModeProps =
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey">ApiKey</a></code> | *No description.* |
-| <code><a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey">ApiKey</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project. |
 
 ---
 
-##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.projectId"></a>
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.projectId"></a>
 
 ```typescript
 public readonly projectId: string;
@@ -606,17 +606,17 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.apiKeys"></a>
+##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.apiKeys"></a>
 
 ```typescript
 public readonly apiKeys: ApiKey;
 ```
 
-- *Type:* <a href="#@mongodb-cdk/atlas-private-endpoint-regional-mode.ApiKey">ApiKey</a>
+- *Type:* <a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey">ApiKey</a>
 
 ---
 
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodb-cdk/atlas-private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.enabled"></a>
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.enabled"></a>
 
 ```typescript
 public readonly enabled: boolean;

@@ -11,7 +11,7 @@ const private_endpoint_regional_mode = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-private-endpoint-regional-mode',
+  name: '@mongodbatlas-awscdk/private-endpoint-regional-mode',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

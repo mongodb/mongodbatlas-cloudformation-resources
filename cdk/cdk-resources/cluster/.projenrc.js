@@ -11,7 +11,7 @@ const cluster = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-cluster',
+  name: '@mongodbatlas-awscdk/cluster',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

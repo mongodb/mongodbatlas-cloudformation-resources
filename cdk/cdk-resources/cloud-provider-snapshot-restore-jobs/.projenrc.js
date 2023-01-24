@@ -11,7 +11,7 @@ const cloud_provider_snapshot_restore_jobs = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-cloud-provider-snapshot-restore-jobs',
+  name: '@mongodbatlas-awscdk/cloud-provider-snapshot-restore-jobs',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',
@@ -32,6 +32,16 @@ const cloud_provider_snapshot_restore_jobs = new awscdk.AwsCdkConstructLibrary
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
+});
+cloud_provider_snapshot_restore_jobs.eslint?.addOverride({
+  files: ['src/**'],
+  rules: {
+    'max-len': [
+      'error', {
+        code: 180,
+      },
+    ],
+  },
 });
 
 cloud_provider_snapshot_restore_jobs.synth();

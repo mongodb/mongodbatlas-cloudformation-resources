@@ -11,7 +11,7 @@ const cloud_backup_snapshot_export_bucket = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-cloud-backup-snapshot-export-bucket',
+  name: '@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',
@@ -32,6 +32,18 @@ const cloud_backup_snapshot_export_bucket = new awscdk.AwsCdkConstructLibrary
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
+  // eslint
+});
+
+cloud_backup_snapshot_export_bucket.eslint?.addOverride({
+  files: ['src/**'],
+  rules: {
+    'max-len': [
+      'error', {
+        code: 180,
+      },
+    ],
+  },
 });
 
 cloud_backup_snapshot_export_bucket.synth();

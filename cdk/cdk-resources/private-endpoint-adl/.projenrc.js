@@ -11,7 +11,7 @@ const private_endpoint_adl = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-private-endpoint-adl',
+  name: '@mongodbatlas-awscdk/private-endpoint-adl',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

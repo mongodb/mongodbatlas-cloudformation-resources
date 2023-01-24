@@ -1,5 +1,6 @@
 {
-  "name": "path",
+  "name": "@mongodbatlas-awscdk/third-party-integration",
+  "description": "Retrieves or creates third-party-integrations in any given Atlas organization",
   "repository": {
     "type": "git",
     "url": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git"
@@ -20,7 +21,8 @@
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
-    "release": "npx projen release",
+    "publish:git:INTMDB-548": "npx projen publish:git:INTMDB-548",
+    "release:INTMDB-548": "npx projen release:INTMDB-548",
     "test": "npx projen test",
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
@@ -29,8 +31,8 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "MongoDB",
-    "email": "mohittalniya@gmail.com",
+    "name": "MongoDBAtlas",
+    "url": "https://mongodb.com",
     "organization": false
   },
   "devDependencies": {
@@ -62,7 +64,19 @@
     "constructs": "^10.0.5"
   },
   "keywords": [
-    "cdk"
+    "atlas",
+    "aws-cdk",
+    "awscdk",
+    "cdk",
+    "cfn",
+    "cfn-resources",
+    "cloudformation",
+    "cloudformation-registry",
+    "constructs",
+    "extensions",
+    "l1",
+    "mongodb",
+    "third-party-integration"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",

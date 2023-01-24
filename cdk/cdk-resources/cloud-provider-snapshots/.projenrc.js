@@ -11,7 +11,7 @@ const cloud_provider_snapshots = new awscdk.AwsCdkConstructLibrary
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
-  name: '@mongodbatlas-awscdk/atlas-cloud-provider-snapshots',
+  name: '@mongodbatlas-awscdk/cloud-provider-snapshots',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
   keywords: ['cdk',

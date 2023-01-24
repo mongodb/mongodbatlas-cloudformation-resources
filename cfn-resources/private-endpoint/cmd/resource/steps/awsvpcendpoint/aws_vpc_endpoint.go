@@ -34,7 +34,6 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 	subnetIds := make([]AwsPrivateEndpointOutput, len(privateEndpointInputs))
 
 	for i, pe := range privateEndpointInputs {
-
 		subnetIdsIn := make([]*string, len(pe.SubnetIDs))
 
 		for i := range pe.SubnetIDs {

@@ -41,12 +41,9 @@ func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpoint
 	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
 
 	for i, ep := range m.PrivateEndpoints {
-
 		subnetIds := make([]string, len(ep.SubnetIds))
 
-		for j := range m.PrivateEndpoints[i].SubnetIds {
-			subnetIds[j] = m.PrivateEndpoints[i].SubnetIds[j]
-		}
+		copy(subnetIds, m.PrivateEndpoints[i].SubnetIds)
 
 		endpoint := awsvpcendpoint.AwsPrivateEndpointInput{
 			VpcID:               *ep.VpcId,

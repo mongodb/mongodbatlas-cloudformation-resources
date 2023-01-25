@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/networkcontainer
+# @mongodbatlas-awscdk/network-container
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

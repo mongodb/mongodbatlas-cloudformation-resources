@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/cloudbackupsnapshot
+# @mongodbatlas-awscdk/cloud-backup-snapshot
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

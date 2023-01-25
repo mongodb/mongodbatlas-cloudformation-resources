@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/projectipaccesslist
+# @mongodbatlas-awscdk/project-ip-access-list
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

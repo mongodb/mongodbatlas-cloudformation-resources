@@ -11,7 +11,7 @@ const serverless_instance = new awscdk.AwsCdkConstructLibrary
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),
     docgen: true,
-    name: '@mongodbatlas-awscdk/atlas-serverless-instance',
+    name: '@mongodbatlas-awscdk/serverless-instance',
     repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
     sampleCode: false,
     keywords: ['cdk',

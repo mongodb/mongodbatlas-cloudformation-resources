@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/federatedsettingsorgrolemapping
+# @mongodbatlas-awscdk/federated-settings-org-role-mapping
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

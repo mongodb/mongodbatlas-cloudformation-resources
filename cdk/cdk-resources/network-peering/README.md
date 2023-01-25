@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/networkpeering
+# @mongodbatlas-awscdk/network-peering
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

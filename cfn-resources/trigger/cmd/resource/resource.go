@@ -320,6 +320,6 @@ type AWSEVENTB struct {
 
 type AWSConf struct {
 	AccountID           *string `json:"account_id,omitempty"`
-	Region              *string `json:",omitempty"`
+	Region              *string `json:"region,omitempty"`
 	ExtendedJSONEnabled *bool   `json:"extended_json_enabled,omitempty"`
 }

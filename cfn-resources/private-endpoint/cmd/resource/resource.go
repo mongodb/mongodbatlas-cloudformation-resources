@@ -208,20 +208,21 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			response.Response), nil
 	}
 
-	currentModel.completeByConnection(*privateEndpointResponse)
+	if privateEndpointResponse == nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting resource, private Endpoint Response is null : %s", err.Error()),
+			cloudformation.HandlerErrorCodeNotFound), nil
+	}
 
-	if currentModel.HasInterfaceEndpoints() {
-		interfaceEndpointIds := make([]string, 0, len(currentModel.PrivateEndpoints))
-		for _, i := range currentModel.PrivateEndpoints {
-			interfaceEndpointIds = append(interfaceEndpointIds, *i.InterfaceEndpointId)
-		}
+	privateEndpoint := *privateEndpointResponse
+
+	if hasInterfaceEndpoints(privateEndpoint) {
 		epr := privateendpoint.Delete(mongodbClient, *currentModel.GroupId, *currentModel.Id,
-			interfaceEndpointIds)
+			privateEndpoint.InterfaceEndpoints)
 		if epr != nil {
 			return *epr, nil
 		}
 
-		epr = awsvpcendpoint.Delete(req, interfaceEndpointIds, *currentModel.Region)
+		epr = awsvpcendpoint.Delete(req, privateEndpoint.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
@@ -298,8 +299,8 @@ func isDeleting(req handler.Request) bool {
 	return callbackValue == "DELETING"
 }
 
-func (m *Model) HasInterfaceEndpoints() bool {
-	return len(m.PrivateEndpoints) != 0
+func hasInterfaceEndpoints(p mongodbatlas.PrivateEndpointConnection) bool {
+	return len(p.InterfaceEndpoints) != 0
 }
 
 func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {

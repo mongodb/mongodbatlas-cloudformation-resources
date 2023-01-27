@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -30,14 +31,14 @@ type privateEndpointCreationCallBackContext struct {
 
 type AtlasPrivateEndpointCallBack struct {
 	VpcID               string
-	SubnetID            string
+	SubnetIDs           []string
 	InterfaceEndpointID string
 	Status              string
 }
 
 type AtlasPrivateEndpointInput struct {
 	VpcID               string
-	SubnetID            string
+	SubnetIDs           []string
 	InterfaceEndpointID string
 	Status              *string
 }
@@ -68,8 +69,9 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 			switch key.String() {
 			case "VpcID":
 				peCallback.VpcID = valStr
-			case "SubnetID":
-				peCallback.SubnetID = valStr
+			case "SubnetIDs":
+				subnets := strings.Replace(strings.Replace(valStr, "[", "", 1), "]", "", 1)
+				peCallback.SubnetIDs = strings.Split(subnets, " ")
 			case "InterfaceEndpointID":
 				peCallback.InterfaceEndpointID = valStr
 			case "Status":
@@ -90,7 +92,7 @@ func GetCallback(privateEndpointInput []AtlasPrivateEndpointInput, endpointServi
 	for i, pe := range privateEndpointInput {
 		callBack := AtlasPrivateEndpointCallBack{
 			VpcID:               pe.VpcID,
-			SubnetID:            pe.SubnetID,
+			SubnetIDs:           pe.SubnetIDs,
 			InterfaceEndpointID: pe.InterfaceEndpointID,
 		}
 
@@ -195,7 +197,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 		for i, v := range callBackContext.PrivateEndpoints {
 			endpoints[i] = AtlasPrivateEndpointCallBack{
 				VpcID:               v.VpcID,
-				SubnetID:            v.SubnetID,
+				SubnetIDs:           v.SubnetIDs,
 				InterfaceEndpointID: v.InterfaceEndpointID,
 				Status:              v.Status,
 			}
@@ -213,7 +215,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 }
 
 func (i AtlasPrivateEndpointInput) ToString() string {
-	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetID)
+	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetIDs)
 }
 
 func Delete(mongodbClient *mongodbatlas.Client, groupID string, endpointServiceID string, interfaceEndpoints []string) *handler.ProgressEvent {

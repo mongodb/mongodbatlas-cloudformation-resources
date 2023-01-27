@@ -4,7 +4,7 @@
     "PrivateEndpoints": [
         {
             "VpcId": "",
-            "SubnetId": ""
+            "SubnetIds": [""]
         }
     ],
     "ApiKeys" : {

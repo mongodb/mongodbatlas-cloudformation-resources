@@ -26,5 +26,5 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg region "$region" \
    --arg vpcId "$vpcId" \
    --arg subnetId "$subnetId" \
-   '.desiredResourceState.GroupId?|=$org | .desiredResourceState.PrivateEndpoints[0].VpcId?|=$vpcId | .desiredResourceState.PrivateEndpoints[0].SubnetId?|=$subnetId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Region?|=$region' \
+   '.desiredResourceState.GroupId?|=$org | .desiredResourceState.PrivateEndpoints[0].VpcId?|=$vpcId | .desiredResourceState.PrivateEndpoints[0].SubnetIds[0]?|=$subnetId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Region?|=$region' \
    "$(dirname "$0")/private-endpoint.sample-cfn-request.json"

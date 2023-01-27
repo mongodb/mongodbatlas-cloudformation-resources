@@ -41,9 +41,13 @@ func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpoint
 	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
 
 	for i, ep := range m.PrivateEndpoints {
+		subnetIds := make([]string, len(ep.SubnetIds))
+
+		copy(subnetIds, m.PrivateEndpoints[i].SubnetIds)
+
 		endpoint := awsvpcendpoint.AwsPrivateEndpointInput{
 			VpcID:               *ep.VpcId,
-			SubnetID:            *ep.SubnetId,
+			SubnetIDs:           subnetIds,
 			InterfaceEndpointID: ep.InterfaceEndpointId,
 		}
 
@@ -95,7 +99,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for i, awsPe := range awsPrivateEndpointOutput {
 			privateEndpointInput[i] = privateendpoint.AtlasPrivateEndpointInput{
 				VpcID:               awsPe.VpcID,
-				SubnetID:            awsPe.SubnetID,
+				SubnetIDs:           awsPe.SubnetIDs,
 				InterfaceEndpointID: awsPe.InterfaceEndpointID,
 			}
 		}
@@ -114,7 +118,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		for _, cmpe := range currentModel.PrivateEndpoints {
 			for i := range ValidationOutput.Endpoints {
 				vpe := ValidationOutput.Endpoints[i]
-				if vpe.VpcID == *cmpe.VpcId && vpe.SubnetID == *cmpe.SubnetId {
+				if vpe.VpcID == *cmpe.VpcId && CompareSlices(vpe.SubnetIDs, cmpe.SubnetIds) {
 					currentModel.PrivateEndpoints[i].InterfaceEndpointId = &vpe.InterfaceEndpointID
 				}
 			}
@@ -204,20 +208,21 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			response.Response), nil
 	}
 
-	currentModel.completeByConnection(*privateEndpointResponse)
+	if privateEndpointResponse == nil {
+		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting resource, private Endpoint Response is null : %s", err.Error()),
+			cloudformation.HandlerErrorCodeNotFound), nil
+	}
 
-	if currentModel.HasInterfaceEndpoints() {
-		interfaceEndpointIds := make([]string, 0, len(currentModel.PrivateEndpoints))
-		for _, i := range currentModel.PrivateEndpoints {
-			interfaceEndpointIds = append(interfaceEndpointIds, *i.InterfaceEndpointId)
-		}
+	privateEndpoint := *privateEndpointResponse
+
+	if hasInterfaceEndpoints(privateEndpoint) {
 		epr := privateendpoint.Delete(mongodbClient, *currentModel.GroupId, *currentModel.Id,
-			interfaceEndpointIds)
+			privateEndpoint.InterfaceEndpoints)
 		if epr != nil {
 			return *epr, nil
 		}
 
-		epr = awsvpcendpoint.Delete(req, interfaceEndpointIds, *currentModel.Region)
+		epr = awsvpcendpoint.Delete(req, privateEndpoint.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}
@@ -294,8 +299,8 @@ func isDeleting(req handler.Request) bool {
 	return callbackValue == "DELETING"
 }
 
-func (m *Model) HasInterfaceEndpoints() bool {
-	return len(m.PrivateEndpoints) != 0
+func hasInterfaceEndpoints(p mongodbatlas.PrivateEndpointConnection) bool {
+	return len(p.InterfaceEndpoints) != 0
 }
 
 func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
@@ -335,4 +340,25 @@ func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model)
 	}
 
 	return *progressEvent
+}
+
+func CompareSlices(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for _, v := range a {
+		found := false
+		for _, c := range b {
+			if v == c {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+
+	return true
 }

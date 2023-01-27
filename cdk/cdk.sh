@@ -13,7 +13,7 @@ do
             rm -rf cdk-resources/${path}/src/*.ts
             cdk-import cfn -l typescript -s $file -o cdk-resources/${path}/src $src
             cd cdk-resources/${path}
-            npx projen new awscdk-construct --author-name "MongoDB"  --docgen true --sample-code false --name path
+            npx projen new awscdk-construct --author "MongoDBAtlas" --author-name "MongoDBAtlas" --docgen true --sample-code false --name '@mongodbatlas-awscdk/'${path} --author-address 'https://mongodb.com' --cdk-version '2.1.0' --default-release-branch 'INTMDB-548' --major-version 1 --release-to-npm true --repository-url 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git' --description 'Retrieves or creates '${path}' in any given Atlas organization' --keywords {'cdk','awscdk','aws-cdk','cloudformation','cfn','extensions','constructs','cfn-resources','cloudformation-registry','l1','mongodb','atlas',$path}
             rm -rf .git
             cd ../..
           fi

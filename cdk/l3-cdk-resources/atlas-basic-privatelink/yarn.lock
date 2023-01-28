@@ -585,6 +585,26 @@
   dependencies:
     ajv "^8.12.0"
 
+"@mongodbatlas-awscdk/cluster@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/cluster/-/cluster-1.0.0.tgz#3f15231626fd6da9ae1840a3975537a35a87ac1f"
+  integrity sha512-2NjcO3YfJVWwVt0/sA0nUY+JFibJ+8p8odx/17o7n1qe3gBgXfAK+gldZ6DkFX6MD9uJrtU9rSaXw/JBcQmROQ==
+
+"@mongodbatlas-awscdk/database-user@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/database-user/-/database-user-1.0.0.tgz#36c693d58d35ab1837925cb0518711fd1d584ab7"
+  integrity sha512-wzfcIF0lZafWTC7EuBd0e+I8Ax2pWq7FaBA+Zix2mLGG4eGSs8Eyw6IVI7izSzrAhe+vsueKJ2KiLdmeW9KnZQ==
+
+"@mongodbatlas-awscdk/project-ip-access-list@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/project-ip-access-list/-/project-ip-access-list-1.0.0.tgz#7b5eb1c28b4fe216c2ed85ded998f8e87aafd244"
+  integrity sha512-uCf5/lo7aohK4HoFEcVxoFTE380NVp1li2oBHPJFNLPPEDqKM/JU9Fy/LdVSBRQzGD7v7rpyy+Xg1eu+6eRiXA==
+
+"@mongodbatlas-awscdk/project@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/project/-/project-1.0.0.tgz#c42f26db01f97bc7d2b0a9409e04cf806ad5becc"
+  integrity sha512-z+4vkE60jdOeOZknU+xarj7sPe9e1FqeIEmy26bqNa6/zGw/t39iidbcEU4PvW+J7FRGS0g+woSWxJABjCkrfg==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

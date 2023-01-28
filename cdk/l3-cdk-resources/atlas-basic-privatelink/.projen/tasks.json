@@ -174,9 +174,9 @@
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
     },
-    "release": {
-      "name": "release",
-      "description": "Prepare a release from \"main\" branch",
+    "release:INTMDB-548": {
+      "name": "release:INTMDB-548",
+      "description": "Prepare a release from \"INTMDB-548\" branch",
       "env": {
         "RELEASE": "true"
       },

@@ -1,8 +1,8 @@
 {
-  "name": "atlas-basic-privatelink",
+  "name": "@mongodbatlas-awscdk/atlas-basic-privatelink",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sangramPeerI/mongodbatlas-cloudformation-resources.git"
+    "url": "https://github.com/mongodb/mongodbatlas-cloudformation-resources"
   },
   "scripts": {
     "build": "npx projen build",
@@ -20,7 +20,7 @@
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
-    "release": "npx projen release",
+    "release:INTMDB-548": "npx projen release:INTMDB-548",
     "test": "npx projen test",
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
@@ -29,11 +29,15 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "sangramPeerI",
-    "email": "sangram.konde@peerislands.io",
+    "name": "MongoDBAtlas",
+    "url": "https://mongodb.com",
     "organization": false
   },
   "devDependencies": {
+    "@mongodbatlas-awscdk/cluster": "^1.0.0",
+    "@mongodbatlas-awscdk/database-user": "^1.0.0",
+    "@mongodbatlas-awscdk/project": "^1.0.0",
+    "@mongodbatlas-awscdk/project-ip-access-list": "^1.0.0",
     "@types/jest": "^27",
     "@types/node": "^14",
     "@typescript-eslint/eslint-plugin": "^5",

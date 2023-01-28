@@ -1,6 +1,22 @@
 {
   "dependencies": [
     {
+      "name": "@mongodbatlas-awscdk/cluster",
+      "type": "build"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/database-user",
+      "type": "build"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/project",
+      "type": "build"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/project-ip-access-list",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "version": "^27",
       "type": "build"

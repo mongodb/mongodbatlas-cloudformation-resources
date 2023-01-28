@@ -1,0 +1,20 @@
+{
+  "version": "15.0.0",
+  "files": {
+    "af57a20f80198899bc98fa5d99833deef168585b7fccc0946ca6b94575b0c699": {
+      "source": {
+        "path": "CDK-L3-Cluster.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "816546967292-ap-south-1": {
+          "bucketName": "cdk-hnb659fds-assets-816546967292-ap-south-1",
+          "objectKey": "af57a20f80198899bc98fa5d99833deef168585b7fccc0946ca6b94575b0c699.json",
+          "region": "ap-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::816546967292:role/cdk-hnb659fds-file-publishing-role-816546967292-ap-south-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

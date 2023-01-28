@@ -1,0 +1,83 @@
+{
+  "version": "15.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CDK-L3-Cluster.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CDK-L3-Cluster.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CDK-L3-Cluster": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://816546967292/ap-south-1",
+      "properties": {
+        "templateFile": "CDK-L3-Cluster.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::816546967292:role/cdk-hnb659fds-deploy-role-816546967292-ap-south-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::816546967292:role/cdk-hnb659fds-cfn-exec-role-816546967292-ap-south-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-816546967292-ap-south-1/af57a20f80198899bc98fa5d99833deef168585b7fccc0946ca6b94575b0c699.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CDK-L3-Cluster.assets"
+        ]
+      },
+      "dependencies": [
+        "CDK-L3-Cluster.assets"
+      ],
+      "metadata": {
+        "/CDK-L3-Cluster/MyProject": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject"
+          }
+        ],
+        "/CDK-L3-Cluster/MyCluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCluster"
+          }
+        ],
+        "/CDK-L3-Cluster/MyUser": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUser"
+          }
+        ],
+        "/CDK-L3-Cluster/MyIpAccessList": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyIpAccessList"
+          }
+        ],
+        "/CDK-L3-Cluster/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CDK-L3-Cluster/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CDK-L3-Cluster/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CDK-L3-Cluster"
+    }
+  }
+}

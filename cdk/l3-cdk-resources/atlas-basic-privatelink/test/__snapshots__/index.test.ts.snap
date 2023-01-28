@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot 1`] = `
+Object {
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "MyCluster": Object {
+      "Properties": Object {
+        "ApiKeys": Object {
+          "PrivateKey": "",
+          "PublicKey": "",
+        },
+        "BackupEnabled": false,
+        "ClusterType": "REPLICASET",
+        "Name": "cdk-cluster",
+        "ProjectId": Object {
+          "Ref": "MyProject",
+        },
+        "ReplicationSpecs": Array [
+          Object {
+            "AdvancedRegionConfigs": Array [
+              Object {
+                "AnalyticsSpecs": Object {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": 1,
+                },
+                "ElectableSpecs": Object {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": 3,
+                },
+                "Priority": 7,
+                "RegionName": "US_EAST_1",
+              },
+            ],
+            "NumShards": 1,
+          },
+        ],
+      },
+      "Type": "MongoDB::Atlas::Cluster",
+    },
+    "MyIpAccessList": Object {
+      "Properties": Object {
+        "AccessList": Array [
+          Object {
+            "Comment": "Testing open all ips",
+            "IPAddress": "0.0.0.0/1",
+          },
+        ],
+        "ApiKeys": Object {
+          "PrivateKey": "",
+          "PublicKey": "",
+        },
+        "ProjectId": Object {
+          "Ref": "MyProject",
+        },
+      },
+      "Type": "MongoDB::Atlas::ProjectIpAccessList",
+    },
+    "MyProject": Object {
+      "Properties": Object {
+        "ApiKeys": Object {
+          "PrivateKey": "",
+          "PublicKey": "",
+        },
+        "Name": "cdk-project",
+        "OrgId": "5fe4ea50d1a2b617175ee3d4",
+      },
+      "Type": "MongoDB::Atlas::Project",
+    },
+    "MyUser": Object {
+      "Properties": Object {
+        "ApiKeys": Object {
+          "PrivateKey": "",
+          "PublicKey": "",
+        },
+        "DatabaseName": "admin",
+        "Password": "test123",
+        "ProjectId": Object {
+          "Ref": "MyProject",
+        },
+        "Roles": Array [
+          Object {
+            "DatabaseName": "admin",
+            "RoleName": "atlasAdmin",
+          },
+        ],
+        "Username": "testUser",
+      },
+      "Type": "MongoDB::Atlas::DatabaseUser",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

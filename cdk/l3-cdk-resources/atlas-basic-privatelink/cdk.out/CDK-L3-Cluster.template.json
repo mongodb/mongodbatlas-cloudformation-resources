@@ -1,0 +1,145 @@
+{
+  "Resources": {
+    "MyProject": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": "cdk-project",
+        "OrgId": "5fe4ea50d1a2b617175ee3d4",
+        "ApiKeys": {
+          "PublicKey": "",
+          "PrivateKey": ""
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "CDK-L3-Cluster/MyProject"
+      }
+    },
+    "MyCluster": {
+      "Type": "MongoDB::Atlas::Cluster",
+      "Properties": {
+        "ApiKeys": {
+          "PublicKey": "",
+          "PrivateKey": ""
+        },
+        "BackupEnabled": false,
+        "ClusterType": "REPLICASET",
+        "ProjectId": {
+          "Ref": "MyProject"
+        },
+        "Name": "cdk-cluster",
+        "ReplicationSpecs": [
+          {
+            "NumShards": 1,
+            "AdvancedRegionConfigs": [
+              {
+                "RegionName": "US_EAST_1",
+                "AnalyticsSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": 1
+                },
+                "ElectableSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": 3
+                },
+                "Priority": 7
+              }
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "CDK-L3-Cluster/MyCluster"
+      }
+    },
+    "MyUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "ApiKeys": {
+          "PrivateKey": "",
+          "PublicKey": ""
+        },
+        "DatabaseName": "admin",
+        "Password": "test123",
+        "ProjectId": {
+          "Ref": "MyProject"
+        },
+        "Roles": [
+          {
+            "DatabaseName": "admin",
+            "RoleName": "atlasAdmin"
+          }
+        ],
+        "Username": "testUser"
+      },
+      "Metadata": {
+        "aws:cdk:path": "CDK-L3-Cluster/MyUser"
+      }
+    },
+    "MyIpAccessList": {
+      "Type": "MongoDB::Atlas::ProjectIpAccessList",
+      "Properties": {
+        "AccessList": [
+          {
+            "Comment": "Testing open all ips",
+            "IPAddress": "0.0.0.0/1"
+          }
+        ],
+        "ApiKeys": {
+          "PrivateKey": "",
+          "PublicKey": ""
+        },
+        "ProjectId": {
+          "Ref": "MyProject"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "CDK-L3-Cluster/MyIpAccessList"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSM9QzUEwsL9ZNTsnWzclM0nNOywtKLc4vLUpO1cnLT0nVyyrWLzO00DM00jNUzCrOzNQtKs0rycxN1QuC0ADt5iwhQwAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "CDK-L3-Cluster/CDKMetadata/Default"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

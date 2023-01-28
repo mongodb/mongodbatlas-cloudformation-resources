@@ -1,0 +1,81 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.5"
+        }
+      },
+      "CDK-L3-Cluster": {
+        "id": "CDK-L3-Cluster",
+        "path": "CDK-L3-Cluster",
+        "children": {
+          "MyProject": {
+            "id": "MyProject",
+            "path": "CDK-L3-Cluster/MyProject",
+            "constructInfo": {
+              "fqn": "@mongodbatlas-awscdk/project.CfnProject",
+              "version": "1.0.0"
+            }
+          },
+          "MyCluster": {
+            "id": "MyCluster",
+            "path": "CDK-L3-Cluster/MyCluster",
+            "constructInfo": {
+              "fqn": "@mongodbatlas-awscdk/cluster.CfnCluster",
+              "version": "1.0.0"
+            }
+          },
+          "MyUser": {
+            "id": "MyUser",
+            "path": "CDK-L3-Cluster/MyUser",
+            "constructInfo": {
+              "fqn": "@mongodbatlas-awscdk/database-user.CfnDatabaseUser",
+              "version": "1.0.0"
+            }
+          },
+          "MyIpAccessList": {
+            "id": "MyIpAccessList",
+            "path": "CDK-L3-Cluster/MyIpAccessList",
+            "constructInfo": {
+              "fqn": "@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList",
+              "version": "1.0.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CDK-L3-Cluster/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CDK-L3-Cluster/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.1.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@mongodbatlas-awscdk/atlas-basic-privatelink.ClusterL3",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.1.0"
+    }
+  }
+}

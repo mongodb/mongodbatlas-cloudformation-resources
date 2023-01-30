@@ -218,14 +218,14 @@
     "/properties/Links",
     "/properties/StateName", 
     "/properties/MongoDBVersion", 
-    "/definitions/ServerlessInstancePrivateEndpoint/Endpoints", 
-    "/definitions/ServerlessInstancePrivateEndpoint/SrvConnectionString", 
-    "/definitions/ServerlessInstancePrivateEndpoint/Type", 
-    "/definitions/ServerlessInstanceConnectionStrings/PrivateEndpoint", 
-    "/definitions/ServerlessInstanceConnectionStrings/StandardSrv", 
-    "/definitions/ServerlessInstancePrivateEndpointEndpoint/EndpointId",
-    "/definitions/ServerlessInstancePrivateEndpointEndpoint/ProviderName", 
-    "/definitions/ServerlessInstancePrivateEndpointEndpoint/Region"
+    "/properties/ConnectionStrings/PrivateEndpoint/Endpoints",
+    "/properties/ConnectionStrings/PrivateEndpoint/SrvConnectionString",
+    "/properties/ConnectionStrings/PrivateEndpoint/Type",
+    "/properties/ConnectionStrings/PrivateEndpoint",
+    "/properties/ConnectionStrings/StandardSrv",
+    "/properties/ConnectionStrings/PrivateEndpoint/Endpoints/EndpointId",
+    "/properties/ConnectionStrings/PrivateEndpoint/Endpoints/ProviderName",
+    "/properties/ConnectionStrings/PrivateEndpoint/Endpoints/Region"
   ],
   "createOnlyProperties": [
     "/properties/Name"

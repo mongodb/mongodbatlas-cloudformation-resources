@@ -1,7 +1,16 @@
 # This shell script can be use to generate one or multiple L1 Constrcuts from CFN resources.
 # How to execute:
-#   For all resources without arguments  :  ./cdk.sh
-#   For specific resource with arguments :  ./cdk/sh "auditing cluster"  
+#   1. For all resources without arguments :  ./cdk.sh
+#   2. For specific resource with argument :  ./cdk/sh "<RESOURCE NAME>"
+#                            For example   :  ./cdk/sh "auditing"  or  ./cdk/sh "cluster"
+#   
+#   3. We can run it for multiple resources, let's say we are creating for "auditing", "cluster" and  "database-user"
+#      then we can pass resource name with space separated.
+#                                          : ./cdk/sh "<RESOURCE NAME> <RESOURCE NAME> <RESOURCE NAME>"
+#                            For example   : ./cdk.sh "auditing cluster database-user"
+# 
+#   In this way we can run it for one or multiple resources  
+
 resources=$1
 if [[ ! -z "$resources" ]]; 
 then

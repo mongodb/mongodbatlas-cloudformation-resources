@@ -188,6 +188,6 @@ export class CfnGlobalClusterConfig extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrCustomZoneMappings = this.getAtt('CustomZoneMappings');
+    this.attrCustomZoneMappings = cdk.Token.asList(this.getAtt('CustomZoneMappings'));
   }
 }

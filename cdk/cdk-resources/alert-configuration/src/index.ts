@@ -1148,11 +1148,11 @@ export class CfnAlertConfiguration extends cdk.CfnResource {
 
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
     this.attrGroupId = cdk.Token.asString(this.getAtt('GroupId'));
-    this.attrLinks = this.getAtt('Links');
+    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
     this.attrTypeName = cdk.Token.asString(this.getAtt('TypeName'));
     this.attrCreated = cdk.Token.asString(this.getAtt('Created'));
     this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
     this.attrUpdated = cdk.Token.asString(this.getAtt('Updated'));
-    this.attrResults = this.getAtt('Results');
+    this.attrResults = cdk.Token.asList(this.getAtt('Results'));
   }
 }

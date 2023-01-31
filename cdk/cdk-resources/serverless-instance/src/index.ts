@@ -371,7 +371,7 @@ export class CfnServerlessInstance extends cdk.CfnResource {
     this.attrCreateDate = cdk.Token.asString(this.getAtt('CreateDate'));
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
     this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
-    this.attrLinks = this.getAtt('Links');
+    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
     this.attrStateName = cdk.Token.asString(this.getAtt('StateName'));
     this.attrMongoDBVersion = cdk.Token.asString(this.getAtt('MongoDBVersion'));
   }

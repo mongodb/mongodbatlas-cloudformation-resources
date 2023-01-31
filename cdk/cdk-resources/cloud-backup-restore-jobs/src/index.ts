@@ -235,6 +235,6 @@ export class CfnCloudBackUpRestoreJobs extends cdk.CfnResource {
     this.attrExpiresAt = cdk.Token.asString(this.getAtt('ExpiresAt'));
     this.attrFinishedAt = cdk.Token.asString(this.getAtt('FinishedAt'));
     this.attrTimestamp = cdk.Token.asString(this.getAtt('Timestamp'));
-    this.attrLinks = this.getAtt('Links');
+    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
   }
 }

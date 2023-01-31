@@ -166,11 +166,15 @@ export class CfnX509AuthenticationDatabaseUser extends cdk.CfnResource {
    * @param props - resource properties
    */
   constructor(scope: constructs.Construct, id: string, props: CfnX509AuthenticationDatabaseUserProps) {
-    super(scope, id, { type: CfnX509AuthenticationDatabaseUser.CFN_RESOURCE_TYPE_NAME, properties: toJson_CfnX509AuthenticationDatabaseUserProps(props)! });
+    super(scope, id, {
+      type: CfnX509AuthenticationDatabaseUser.CFN_RESOURCE_TYPE_NAME,
+      properties:
+          toJson_CfnX509AuthenticationDatabaseUserProps(props)!,
+    });
 
     this.props = props;
 
-    this.attrLinks = this.getAtt('Links');
-    this.attrResults = this.getAtt('Results');
+    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
+    this.attrResults = cdk.Token.asList(this.getAtt('Results'));
   }
 }

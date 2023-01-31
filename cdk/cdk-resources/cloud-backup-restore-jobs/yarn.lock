@@ -800,6 +800,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/fs-extra@^8.0.0":
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.2.tgz#7125cc2e4bdd9bd2fc83005ffdb1d0ba00cca61f"
+  integrity sha512-SvSrYXfWSc7R4eqnOzbQF4TZmfpNSM9FrSWLU3EUnWBuyZqNBOrv1B1JA3byUDPUl9z4Ab3jeZG2eDdySlgNMg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/glob@*":
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-8.0.0.tgz#321607e9cbaec54f687a0792b2d1d370739455d2"
@@ -2631,7 +2638,7 @@ fs-extra@^10.1.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
-fs-extra@^8.1.0:
+fs-extra@^8.0.0, fs-extra@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-8.1.0.tgz#49d43c45a88cd9677668cb7be1b46efdb8d2e1c0"
   integrity sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==
@@ -5112,10 +5119,10 @@ progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.67.6:
-  version "0.67.6"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.6.tgz#4a415b9fbf4cc99fd13b5e3fae005adeeacc7583"
-  integrity sha512-xY8SGIjlEoFvP4cppo3cj2npCJRG4L/OnbRQcZ1xO8XhVxYhlDRcvq/NOhaQyfMIyDVoJFbyejwDLA5cPQV7Hw==
+projen@^0.67.19:
+  version "0.67.19"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.19.tgz#92bb9418729cc9df10f16b2afd8c9c2e1f237cad"
+  integrity sha512-qRfFwzZlGjSuaELUNw1+WKDA/VT0Ee7J2hJnSEAIvNYkNH+ktRkkOql6IkIYrnqa8JDwIu+PgZD+Tei5Gus6qg==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
@@ -5171,6 +5178,15 @@ psl@^1.1.33:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.9.0.tgz#d0df2a137f00794565fcaf3b2c00cd09f8d5a5a7"
   integrity sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==
+
+publib@^0.2.578:
+  version "0.2.578"
+  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.578.tgz#111529eaa6c5e1794804e26deba2bdaf2ed86f1b"
+  integrity sha512-TnZfs3j30/NJPqNiRLD+x8hECzcVrjO2McG+43iCI6Q5rD3KCMuowuAB0KpyskDfMZ6At7OqKyQTYQ2xtac//A==
+  dependencies:
+    "@types/fs-extra" "^8.0.0"
+    fs-extra "^8.0.0"
+    shlex "^2.1.2"
 
 punycode@^2.1.0, punycode@^2.1.1:
   version "2.2.0"
@@ -5542,6 +5558,11 @@ shelljs@^0.8.5:
     glob "^7.0.0"
     interpret "^1.0.0"
     rechoir "^0.6.2"
+
+shlex@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/shlex/-/shlex-2.1.2.tgz#5b5384d603885281c1dee05d56975865edddcba0"
+  integrity sha512-Nz6gtibMVgYeMEhUjp2KuwAgqaJA1K155dU/HuDaEJUGgnmYfVtVZah+uerVWdH8UGnyahhDCgABbYTbs254+w==
 
 shx@^0.3.4:
   version "0.3.4"

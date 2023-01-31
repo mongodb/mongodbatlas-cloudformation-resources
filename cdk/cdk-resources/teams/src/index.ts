@@ -158,6 +158,6 @@ export class CfnTeams extends cdk.CfnResource {
     this.props = props;
 
     this.attrTeamId = cdk.Token.asString(this.getAtt('TeamId'));
-    this.attrUsers = this.getAtt('Users');
+    this.attrUsers = cdk.Token.asList(this.getAtt('Users'));
   }
 }

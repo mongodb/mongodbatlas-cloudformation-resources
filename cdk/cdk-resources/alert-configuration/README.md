@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/alertconfiguration
+# @mongodbatlas-awscdk/alert-configuration
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/x509authenticationdatabaseuser
+# @mongodbatlas-awscdk/x509-authentication-database-user
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

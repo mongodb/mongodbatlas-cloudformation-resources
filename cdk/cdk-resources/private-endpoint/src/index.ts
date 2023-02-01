@@ -120,11 +120,11 @@ export interface PrivateEndpoint {
   readonly vpcId?: string;
 
   /**
-   * List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)
+   * String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)
    *
-   * @schema PrivateEndpoint#SubnetIds
+   * @schema PrivateEndpoint#SubnetId
    */
-  readonly subnetIds?: string[];
+  readonly subnetId?: string;
 
   /**
    * Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.
@@ -157,7 +157,7 @@ export function toJson_PrivateEndpoint(obj: PrivateEndpoint | undefined): Record
   if (obj === undefined) { return undefined; }
   const result = {
     'VpcId': obj.vpcId,
-    'SubnetIds': obj.subnetIds?.map(y => y),
+    'SubnetId': obj.subnetId,
     'InterfaceEndpointId': obj.interfaceEndpointId,
     'AWSPrivateEndpointStatus': obj.awsPrivateEndpointStatus,
     'AtlasPrivateEndpointStatus': obj.atlasPrivateEndpointStatus,

@@ -33,10 +33,18 @@ do
             #mkdir -p cdk/${dir} && cd cdk/${dir}
             path=$(basename $dir)
             echo $path
-            rm -rf cdk-resources/${path}/src/*.ts
+            index_exists=false
+             if [ -f cdk-resources/${path}/src/index.ts ]; then
+                rm -rf cdk-resources/${path}/src/*.ts
+                index_exists=true
+             fi
+
             cdk-import cfn -l typescript -s $file -o cdk-resources/${path}/src $src
             # need rename resource file to index.ts file
             mv cdk-resources/${path}/src/"mongodb-atlas-"${path//-}.ts cdk-resources/${path}/src/index.ts
+            if [ "$index_exists" = true ] ; then
+               continue
+            fi
             cd cdk-resources/${path}
             npx projen new awscdk-construct --npm-access "public" --author "MongoDBAtlas" --author-name "MongoDBAtlas" --docgen true --sample-code false --name '@mongodbatlas-awscdk/'${path} --author-address 'https://mongodb.com' --cdk-version '2.1.0' --default-release-branch 'INTMDB-548' --major-version 1 --release-to-npm true --repository-url 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git' --description 'Retrieves or creates '${path}' in any given Atlas organization' --keywords {'cdk','awscdk','aws-cdk','cloudformation','cfn','extensions','constructs','cfn-resources','cloudformation-registry','l1','mongodb','atlas',$path}
             rm -rf .git
@@ -44,5 +52,4 @@ do
           fi
       done
 done
-
 

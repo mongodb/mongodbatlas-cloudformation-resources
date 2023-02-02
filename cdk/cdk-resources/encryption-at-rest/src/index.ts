@@ -11,7 +11,7 @@ export interface CfnEncryptionAtRestProps {
   /**
    * @schema CfnEncryptionAtRestProps#AwsKms
    */
-  readonly awsKms: AwsKms;
+  readonly awsKms: AwsKmsConfiguration;
 
   /**
    * @schema CfnEncryptionAtRestProps#ApiKeys
@@ -48,7 +48,7 @@ export function toJson_CfnEncryptionAtRestProps(obj: CfnEncryptionAtRestProps | 
  *
  * @schema AwsKms
  */
-export interface AwsKms {
+export interface AwsKmsConfiguration {
   /**
    * ID of an AWS IAM role authorized to manage an AWS customer master key.
    *
@@ -83,7 +83,7 @@ export interface AwsKms {
  * Converts an object of type 'AwsKms' to JSON representation.
  */
 /* eslint-disable max-len, quote-props */
-export function toJson_AwsKms(obj: AwsKms | undefined): Record<string, any> | undefined {
+export function toJson_AwsKms(obj: AwsKmsConfiguration | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
     'RoleID': obj.roleId,

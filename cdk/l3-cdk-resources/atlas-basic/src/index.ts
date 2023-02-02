@@ -5,10 +5,11 @@ import * as user from '@mongodbatlas-awscdk/database-user';
 import * as ipAccessList from '@mongodbatlas-awscdk/project-ip-access-list';
 import * as cloudformation from 'aws-cdk-lib/aws-cloudformation';
 import * as defaults from "./defaults.json";
+import * as constructs from 'constructs';
 
 
 export class AtlasBasic extends cdk.Stack {
-    constructor(scope: cdk.App, id: string, props: AtlasBasicProps) {
+    constructor(scope: constructs.Construct, id: string, props: AtlasBasicProps) {
         super(scope, id, props);
         // Create a new MongoDB Atlas Project
         const mProject = new project.CfnProject(this, 'project-'.concat(id), {
@@ -96,7 +97,7 @@ export interface IpAccessListProps extends Omit<ipAccessList.CfnProjectIpAccessL
 export interface AtlasBasicProps extends cdk.StackProps{
     apiKeys : atlas.ApiKeyDefinition
     projectProps: ProjectProps;
-    clusterProps: ClusterProps;
-    dbUserProps:  DatabaseUserProps;
-    ipAccessListProps: IpAccessListProps;
+    clusterProps?: ClusterProps;
+    dbUserProps?:  DatabaseUserProps;
+    ipAccessListProps?: IpAccessListProps;
 }

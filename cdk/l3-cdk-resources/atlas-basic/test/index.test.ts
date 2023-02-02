@@ -1,16 +1,11 @@
 import { App } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
-import {AtlasBasic, AtlasBasicProps} from '../src/index';
+import {AtlasBasic} from '../src/index';
 
-test('Snapshot', () => {
+test('Synth', () => {
     const app = new App();
-    let apiKeys: {};
-    const stack = new AtlasBasic(app, 'test', {
-        apiKeys: {},
-        clusterProps:{},
-        dbUserProps: {},
-        ipAccessListProps: {},
-        projectProps: {orgId:''}
+    new AtlasBasic(app, 'test-app', {
+        apiKeys: {privateKey: 'e6c4bac8-8312-4add-bfca-ee750d4798e4', publicKey: 'hynkfzcw'},
+        projectProps: {orgId:'5fe4ea50d1a2b617175ee3d4'}
     });
-
+    app.synth();
 });

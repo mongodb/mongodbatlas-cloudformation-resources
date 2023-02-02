@@ -431,10 +431,6 @@ export class CfnOnlineArchive extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::OnlineArchive.ProjectId`
    */
   public readonly attrProjectId: string;
-  /**
-   * Attribute `MongoDB::Atlas::OnlineArchive.State`
-   */
-  public readonly attrState: string;
 
   /**
    * Create a new `MongoDB::Atlas::OnlineArchive`.

@@ -3,7 +3,7 @@ REGION="${2:-us-east-1}"
 if [[ "$*" == *killall* ]]
 then
     echo "*********** killall initiated ******************"
-    STACKS=$(aws cloudformation describe-stacks --region ${REGION} --output text --query 'Stacks[*].{Stack:StackName}')
+    STACKS=$(aws cloudformation describe-stacks --region "${REGION}" --output text --query 'Stacks[*].{Stack:StackName}')
     echo "Region: ${REGION} Stacks: ${STACKS}"
 else
     if [[ -z "${1}" ]];
@@ -13,7 +13,7 @@ else
     fi
     FILTER="${1}"
     echo ";;;stack cleaner;FILTER=${FILTER};REGION=${REGION}"
-    STACKS=$(aws cloudformation describe-stacks --region ${REGION} --output text --query 'Stacks[*].{Stack:StackName}'  | grep $FILTER)
+    STACKS=$(aws cloudformation describe-stacks --region "${REGION}" --output text --query 'Stacks[*].{Stack:StackName}'  | grep "$FILTER")
 
 fi
 if [[ "$*" == *dry-run* ]]

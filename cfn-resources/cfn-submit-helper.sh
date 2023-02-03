@@ -16,6 +16,8 @@
 # LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 set -xeo
+
+# shellcheck source=/dev/null
 . ./cfn-submit-helper.config
 env | grep CFN_SUBMIT_
 #echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"

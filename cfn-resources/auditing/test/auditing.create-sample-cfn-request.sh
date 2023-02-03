@@ -11,6 +11,6 @@ set -o pipefail
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg groupID "$projectId" \
+   --arg groupID "$PROJECT_ID" \
    '.desiredResourceState.GroupId?|=$groupID | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
    "$(dirname "$0")/auditing.sample-cfn-request.json"

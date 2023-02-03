@@ -10,7 +10,8 @@ do
   for region in ${regions};
   do
     pushd "${resource}"
-    jsonschema="mongodb-atlas-$(sed s/-//g "${resource}").json"
+    # shellcheck disable=SC2001
+    jsonschema="mongodb-atlas-$(echo "${resource}"| sed s/-//g).json"
     type_name=$(jq -r '.typeName' "${jsonschema}")
     type_info=$(aws cloudformation --region "${region}"  list-types --visibility PUBLIC --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
     if [ -z "${type_info}" ]; then

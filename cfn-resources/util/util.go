@@ -18,13 +18,13 @@ import (
 )
 
 const (
-	CFN         = "mongodbatlas-cloudformation-resources"
-	EnvLogLevel = "LOG_LEVEL"
-	Debug       = "debug"
+	cfn         = "mongodbatlas-cloudformation-resources"
+	envLogLevel = "LOG_LEVEL"
+	debug       = "debug"
 )
 
 var (
-	toolName        = CFN
+	toolName        = cfn
 	defaultLogLevel = "warning"
 	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 )
@@ -70,13 +70,13 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 // env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="-s -w -X \
 // 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/handler cmd/main.go
 func getLogLevel() logger.Level {
-	levelString, exists := os.LookupEnv(EnvLogLevel)
+	levelString, exists := os.LookupEnv(envLogLevel)
 	if !exists {
-		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", EnvLogLevel, defaultLogLevel)
+		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, defaultLogLevel)
 		levelString = defaultLogLevel
 	}
 	switch levelString {
-	case Debug:
+	case debug:
 		return logger.DebugLevel
 	default:
 		return logger.WarningLevel

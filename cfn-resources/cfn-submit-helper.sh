@@ -15,7 +15,7 @@
 # Example with DEBUG logging enabled by default for set of resources:
 # LOG_LEVEL=debug ./cfn-submit-helper.sh project database-user project-ip-access-list cluster network-peering
 #
-
+set -xeo
 . ./cfn-submit-helper.config
 env | grep CFN_SUBMIT_
 #echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
@@ -23,7 +23,7 @@ env | grep CFN_SUBMIT_
 _DRY_RUN=${DRY_RUN:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
-_CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
+#_CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
@@ -42,7 +42,6 @@ else
     do
         [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
         echo "Working on resource:${resource}"
-        cwd=$(pwd)
         cd "${resource}"
         echo "resource: ${resource}"
 
@@ -66,11 +65,10 @@ for resource in ${resources};
 do
     echo "Working on resource:${resource}"
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn submit' on:${resource}" && continue
-    cwd=$(pwd)
     cd "${resource}"
     echo "resource: ${resource}"
     echo "Submiting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-    cfn submit ${CFN_SUBMIT_CFN_FLAGS}||true
+    cfn submit "${CFN_SUBMIT_CFN_FLAGS}"||true
     cat rpdk.log
     cd -
 done

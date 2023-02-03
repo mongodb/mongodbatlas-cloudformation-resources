@@ -23,6 +23,7 @@ set -xe
 #set -o nounset
 #set -o pipefail
 
+# shellcheck source=/dev/null
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
 #echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"

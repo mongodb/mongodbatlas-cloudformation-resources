@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#set -x
+set -xeo
 
 
 export CLOUD_PUBLISH=true
@@ -17,14 +17,11 @@ for resource in ${resources};
 do
   for region in ${regions}
   do
-#    echo " Started Publishing ${resource} resource in ${region}"
 
-    AWS_DEFAULT_REGION=$region
+    export AWS_DEFAULT_REGION="${region}"
 
     echo "Step 1: cfn test"
     ./cfn-testing-helper.sh "${resource}"
-
-    AWS_DEFAULT_REGION="${region}"
 
     echo "step 2: cfn submit for ${resource}"
     ./cfn-submit-helper.sh "${resource}"
@@ -33,8 +30,9 @@ do
 
     cd "${resource}"
     pwd
-    jsonschema="mongodb-atlas-$(echo ${resource}| sed s/-//g).json"
-    res_type=$(cat ${jsonschema}| jq -r '.typeName')
+    # shellcheck disable=SC2001
+    jsonschema="mongodb-atlas-$(echo "${resource}"| sed s/-//g).json"
+    res_type=$(jq -r '.typeName' "${jsonschema}")
     echo "${res_type}"
     cd -
 

@@ -1,5 +1,5 @@
 {
-  "name": "@mongodb-cdk/atlas-encryption-at-rest",
+  "name": "@mongodbatlas-awscdk/encryption-at-rest",
   "description": "Retrieves or creates encryption-at-rests in any given Atlas organization",
   "repository": {
     "type": "git",
@@ -17,10 +17,7 @@
     "eslint": "npx projen eslint",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
-    "package:dotnet": "npx projen package:dotnet",
-    "package:java": "npx projen package:java",
     "package:js": "npx projen package:js",
-    "package:python": "npx projen package:python",
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
@@ -34,7 +31,7 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "MongoDB",
+    "name": "MongoDBAtlas",
     "url": "https://mongodb.com",
     "organization": false
   },
@@ -55,9 +52,8 @@
     "jsii-diff": "^1.73.0",
     "jsii-docgen": "^7.0.208",
     "jsii-pacmak": "^1.73.0",
-    "json-schema": "^0.4.0",
     "npm-check-updates": "^16",
-    "projen": "^0.67.6",
+    "projen": "^0.67.12",
     "standard-version": "^9",
     "ts-jest": "^27",
     "typescript": "^4.9.4"
@@ -83,7 +79,7 @@
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "jest": {
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.ts?(x)",
@@ -128,23 +124,7 @@
   "stability": "stable",
   "jsii": {
     "outdir": "dist",
-    "targets": {
-      "java": {
-        "package": "com.github.mongodb.cdk.mongodb_atlas_encryption-at-rest",
-        "maven": {
-          "groupId": "com.github.mongodb.cdk",
-          "artifactId": "mongodb-atlas-encryption-at-rest"
-        }
-      },
-      "python": {
-        "distName": "mongodb-cdk-mongodb-atlas-encryption-at-rest",
-        "module": "mongodb_cdk_mongodb_atlas_encryption-at-rest"
-      },
-      "dotnet": {
-        "namespace": "MongoDBCdk.MongoDBAtlasEncryptionAtRest",
-        "packageId": "MongoDBCdk.MongoDBAtlasEncryptionAtRest"
-      }
-    },
+    "targets": {},
     "tsc": {
       "outDir": "lib",
       "rootDir": "src"

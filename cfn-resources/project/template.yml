@@ -22,5 +22,5 @@ Resources:
       CodeUri: bin/
       Environment:
         Variables:
-          MCLI_OPS_MANAGER_URL:
+          MONGODB_ATLAS_BASE_URL:
 

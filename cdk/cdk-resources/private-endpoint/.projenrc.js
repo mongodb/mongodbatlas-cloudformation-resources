@@ -9,6 +9,7 @@ const private_endpoint = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'INTMDB-548',
   majorVersion: 1,
   releaseToNpm: true,
+  npmAccess: 'public',
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/private-endpoint',

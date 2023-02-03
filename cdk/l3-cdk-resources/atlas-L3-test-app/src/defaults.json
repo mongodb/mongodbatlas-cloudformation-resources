@@ -1,0 +1,40 @@
+{
+  "name": "CDK-Cluster",
+  "projectName": "cdk-project",
+  "clusterName": "cdk-cluster",
+  "clusterType": "REPLICASET",
+  "replicationSpecs":[
+    {
+      "numShards": 1,
+      "advancedRegionConfigs": [
+        {
+          "analyticsSpecs": {
+            "ebsVolumeType": "STANDARD",
+            "instanceSize": "M10",
+            "nodeCount": 1
+          },
+          "electableSpecs": {
+            "ebsVolumeType": "STANDARD",
+            "instanceSize": "M10",
+            "nodeCount": 3
+          },
+          "priority":  7,
+          "regionName": "US_EAST_1"
+        }
+      ]
+    }
+  ],
+  "databaseName": "admin",
+  "roles": [{
+    "roleName": "atlasAdmin",
+    "databaseName": "admin"
+  }],
+  "username": "testUser",
+  "password": "test123",
+  "accessList": [
+    {
+      "ipAddress": "0.0.0.0/1",
+      "comment": "Testing open all ips"
+    }
+  ]
+}

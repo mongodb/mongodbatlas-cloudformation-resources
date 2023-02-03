@@ -3,9 +3,10 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"log"
-	"net/url"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
@@ -16,7 +17,17 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const Version = "beta"
+const (
+	CFN         = "mongodbatlas-cloudformation-resources"
+	EnvLogLevel = "LOG_LEVEL"
+	Debug       = "debug"
+)
+
+var (
+	toolName        = CFN
+	defaultLogLevel = "warning"
+	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+)
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
 // and returns "US_EAST_1" -- i.e. a valid Atlas region
@@ -45,38 +56,13 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 		return nil, err
 	}
 
-	// Initialize the MongoDB Atlas API Client.
-	atlas := mongodbatlas.NewClient(client)
-	atlas.UserAgent = "mongodbatlas-cloudformation-resources/" + Version
-
-	basePath, err := newBasePath()
-
-	if err != nil {
-		return nil, err
+	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if baseURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL"); baseURL != "" {
+		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
 	}
 
-	if basePath != nil {
-		atlas.BaseURL = basePath
-	}
-
-	return atlas, nil
+	return mongodbatlas.New(client, opts...)
 }
-
-func newBasePath() (*url.URL, error) {
-	atlasURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL")
-	if atlasURL == "" {
-		return nil, nil
-	}
-
-	return url.Parse(atlasURL)
-}
-
-const (
-	EnvLogLevel = "LOG_LEVEL"
-	Debug       = "debug"
-)
-
-var defaultLogLevel = "warning"
 
 // defaultLogLevel can be set during compile time with an ld flag to enable
 // more verbose logging.

@@ -4106,11 +4106,6 @@ json-schema-traverse@^1.0.0:
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz#ae7bcb3656ab77a73ba5c49bf654f38e6b6860e2"
   integrity sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==
 
-json-schema@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.4.0.tgz#f7de4cf6efab838ebaeb3236474cbba5a1930ab5"
-  integrity sha512-es94M3nTIfsEPisRafak+HDLfHXnKBhV3vU5eqPcS3flIWqcxJWgXHXiey3YrpaNsanY5ei1VoYEbOzijuq9BA==
-
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
@@ -5119,10 +5114,10 @@ progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.67.19:
-  version "0.67.19"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.19.tgz#92bb9418729cc9df10f16b2afd8c9c2e1f237cad"
-  integrity sha512-qRfFwzZlGjSuaELUNw1+WKDA/VT0Ee7J2hJnSEAIvNYkNH+ktRkkOql6IkIYrnqa8JDwIu+PgZD+Tei5Gus6qg==
+projen@^0.67.0:
+  version "0.67.31"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.31.tgz#de2c35bb76ac1b6a28d76fe26087ab786db8517e"
+  integrity sha512-LoAc4egCwFTwjNbvlpVtJ1W+ZA82qbjtDOW2V2FVg+0epRg5a9TfwjpWcWIAWLzIfykRj8ZHjFFfEBrx8KjPXQ==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
@@ -5179,10 +5174,10 @@ psl@^1.1.33:
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.9.0.tgz#d0df2a137f00794565fcaf3b2c00cd09f8d5a5a7"
   integrity sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==
 
-publib@^0.2.578:
-  version "0.2.578"
-  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.578.tgz#111529eaa6c5e1794804e26deba2bdaf2ed86f1b"
-  integrity sha512-TnZfs3j30/NJPqNiRLD+x8hECzcVrjO2McG+43iCI6Q5rD3KCMuowuAB0KpyskDfMZ6At7OqKyQTYQ2xtac//A==
+publib@^0.2.584:
+  version "0.2.584"
+  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.584.tgz#d537ada233fd394222d5bc159cea9001fe0891ac"
+  integrity sha512-VcuqudZuumwqSJsvh08W6F6G5dT6q9jmCOIcm+GrLXe1UaFKPMliyYApx8ElMdVNSd0lgY+ea+7RvDY4gA32rQ==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     fs-extra "^8.0.0"

@@ -5169,10 +5169,10 @@ psl@^1.1.33:
   resolved "https://registry.npmjs.org/psl/-/psl-1.9.0.tgz"
   integrity sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==
 
-publib@^0.2.576:
-  version "0.2.576"
-  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.576.tgz#6dbd4307cd75846d8a4cf7673f3ea9fa8268d004"
-  integrity sha512-8kKRMe3lNDhaNGIXkh9Ym4YEBcGoS9XGo5XPW6KiW/H6MPrTfJ1TsrlGCV/u2WjOgrS9B6iF2TeiWKkQo2RW7g==
+publib@^0.2.584:
+  version "0.2.584"
+  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.584.tgz#d537ada233fd394222d5bc159cea9001fe0891ac"
+  integrity sha512-VcuqudZuumwqSJsvh08W6F6G5dT6q9jmCOIcm+GrLXe1UaFKPMliyYApx8ElMdVNSd0lgY+ea+7RvDY4gA32rQ==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     fs-extra "^8.0.0"

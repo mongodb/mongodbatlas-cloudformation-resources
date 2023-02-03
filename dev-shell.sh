@@ -3,8 +3,8 @@ COMMAND="${1:-/bin/bash}"
 IMAGE="${2-jmimick/mdb-cfn-dev}"
 NAME="${3-mdb-cfn-dev}"
 docker run -it --rm \
-   -v $HOME/.aws:/root/.aws \
-   -v $HOME/.config:/root/.config \
+   -v "$HOME"/.aws:/root/.aws \
+   -v "$HOME"/.config:/root/.config \
    -v get-started-aws:/cache \
    -v /tmp:/tmp \
    -v "$(pwd)":/workspace \

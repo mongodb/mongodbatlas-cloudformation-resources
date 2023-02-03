@@ -18,7 +18,6 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-region="us-east-1"
 
 #project_id
 projectName="${1}"

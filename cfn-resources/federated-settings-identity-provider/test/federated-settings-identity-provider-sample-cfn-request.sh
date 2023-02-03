@@ -17,10 +17,11 @@ function usage {
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-federationSettingsId="${1}"
+export federationSettingsId="${1}"
+export connectedOrganizationId="${2}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg org "$connectedOrganizationId" \
-   '.desiredResourceState.FederationSettingsId?|=$FederationSettingsId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey ' \
+   '.desiredResourceState.FederationSettingsId?|=$federationSettingsId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey ' \
      "$(dirname "$0")/federated-settings-identity-provider.sample-cfn-request.json"

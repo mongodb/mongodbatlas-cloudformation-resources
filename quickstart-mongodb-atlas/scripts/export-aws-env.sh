@@ -5,7 +5,14 @@ set -o pipefail
 
 temp=$(mktemp)
 aws sts get-session-token > "${temp}"
-echo "export AWS_SESSION_TOKEN=$(cat "${temp}" | jq -r '.Credentials.SessionToken')"
-echo "export AWS_SECRET_ACCESS_KEY=$(cat "${temp}" | jq -r '.Credentials.SecretAccessKey')"
-echo "export AWS_ACCESS_KEY_ID=$(cat "${temp}" | jq -r '.Credentials.AccessKeyId')"
+
+AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "$temp")
+export AWS_SESSION_TOKEN
+
+AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "$temp")
+export AWS_SECRET_ACCESS_KEY
+
+AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' "$temp")
+export AWS_ACCESS_KEY_ID
+
 rm "${temp}"

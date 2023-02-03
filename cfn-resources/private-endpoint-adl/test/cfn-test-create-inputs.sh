@@ -8,7 +8,7 @@ set -o nounset
 set -o pipefail
 
 function usage {
-    echo "usage:$2 <projectId> $3<endpoint>"
+    echo "usage: cfn-test-create-inputs.sh <projectId> <endpoint>"
     echo "Creates a new Search Index"
 }
 

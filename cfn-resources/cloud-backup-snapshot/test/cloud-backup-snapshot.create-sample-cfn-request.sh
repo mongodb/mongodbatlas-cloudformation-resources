@@ -10,8 +10,8 @@ set -o pipefail
 
 
 function usage {
-    echo "usage:$0 <project_name>"
-    echo "usage:$2 <cluster_name>"
+    echo "usage: cloud-backup-snapshot-export-job.create-sample-cfn-request.sh <project_name>"
+    echo "usage: cloud-backup-snapshot-export-job.create-sample-cfn-request.sh <cluster_name>"
 }
 
 if [ "$#" -ne 2 ]; then usage; fi

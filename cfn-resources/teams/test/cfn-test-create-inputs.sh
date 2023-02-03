@@ -19,7 +19,7 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 name="${1}"
-projectName="${1}"
+
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 

@@ -63,8 +63,8 @@ echo "--------------------------------create key and key policy document starts 
 
 echo "--------------------------------create aws bucket document starts ----------------------------"
 bucketName="cfntest-demo-test123-${keyRegion}"
-aws s3 rb s3://${bucketName} --force
-aws s3 mb s3://${bucketName} --output json
+aws s3 rb s3://"${bucketName}" --force
+aws s3 mb s3://"${bucketName}" --output json
 
 echo "--------------------------------create aws bucket document  ends ----------------------------"
 
@@ -100,7 +100,7 @@ echo "--------------------------------AWS Role creation ends -------------------
 
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
 
-aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document file://$(dirname "$0")/policy.json
+aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document file://"$(dirname "$0")"/policy.json
 echo "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------"
 
 echo "--------------------------------Role Id ----------------------------""${roleID}"

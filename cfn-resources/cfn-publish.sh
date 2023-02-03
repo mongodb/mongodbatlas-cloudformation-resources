@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-
-#trap "exit" INT TERM ERR
-#set -x
-#set -o errexit
+set -xe
 set -o nounset
-#set -o pipefail
 
 
 resources="${1:-project}"
@@ -13,19 +9,18 @@ otherParams="${2:-}"
 
 
 if [ -n "${otherParams}" ]; then
-paramKeys=$(echo $otherParams | jq -c -r 'keys[]' | tr '\n' ' ')
+paramKeys=$(echo "$otherParams" | jq -c -r 'keys[]' | tr '\n' ' ')
 echo "Exporting the following keys..."
-echo $paramKeys
+echo "$paramKeys"
 for param in ${paramKeys};
 do
 paramKey="${param}="
-paramValue=$(echo $otherParams | jq -c -r --arg key $param '.[$key]')
-exportString=$(echo "$paramKey$paramValue")
-export "${exportString}"
+paramValue=$(echo "$otherParams" | jq -c -r --arg key "$param" '.[$key]')
+exportString="$paramKey$paramValue"
+export exportString
 echo
 done
 fi
-#printenv
 
 cloud_publish=${3:-true}
 
@@ -62,8 +57,9 @@ do
 
     cd "${resource}"
     pwd
-    jsonschema="mongodb-atlas-$(echo ${resource}| sed s/-//g).json"
-    res_type=$(cat ${jsonschema}| jq -r '.typeName')
+    # shellcheck disable=SC2001
+    jsonschema="mongodb-atlas-$(echo "${resource}"| sed s/-//g).json"
+    res_type=$(jq -r '.typeName' "${jsonschema}")
     echo "${res_type}"
     cd -
 
@@ -94,7 +90,13 @@ do
     [ -z "$p_id" ] && echo "No project found" && continue
     p_name=$(atlas project list --output=json | jq --arg name "${PROJECT_NAME}-${resource}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${resource}, project:${p_name} id:${p_id}"
-    atlas project delete "${p_id}" --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+
+    if atlas project delete "${p_id}" --force; then
+      echo "Cleaned up project:${p_name} id:${p_id}"
+    else
+      echo "Failed cleaning up project:${p_id}"
+      exit 1
+    fi
 
     echo "******** Successfully published ${resource} *************"
  done

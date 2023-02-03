@@ -17,7 +17,6 @@ if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 projectId="${1}"
 
-name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg projectId "$projectId" \

@@ -29,8 +29,6 @@ team_id=$(atlas teams create "${team_name}" --username "${user_name}" --orgId "$
 
 username="cfntest@mongodb.com"
 
-#inputs_1_create.json
-name="${1}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg orgID "$ATLAS_ORG_ID" \

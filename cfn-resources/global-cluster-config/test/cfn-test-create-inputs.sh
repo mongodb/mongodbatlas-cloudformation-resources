@@ -35,7 +35,7 @@ export MCLI_PROJECT_ID=$projectId
 
 ClusterName="${projectName}"
 
-clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+clusterId=$(atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
 sleep 1200
 echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 
@@ -44,7 +44,8 @@ if [ -z "$clusterId" ]; then
     exit 1
 fi
 
-atlas clusters loadSampleData ${ClusterName} --projectId ${projectId}
+
+atlas clusters loadSampleData "${ClusterName}" --projectId "${projectId}"
 
 rm -rf inputs
 mkdir inputs
@@ -64,5 +65,4 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
      '.ClusterName?|=$clusterName |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
-#echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs

@@ -28,10 +28,11 @@ _DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
 _SKIP_BUILD=${SKIP_BUILD:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
-_SUBMIT_ONLY=${SUBMIT_ONLY:-false}
+#_SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 
+# shellcheck source=/dev/null
 . ./cfn-testing-helper.config
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
@@ -87,6 +88,7 @@ echo "Step 2/4: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-
 #
 
 if [ -z "${2}" ]; then
+  # shellcheck source=/dev/null
 . ./cfn-testing-helper.config
 env | grep CFN_TEST_
 PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
@@ -155,16 +157,15 @@ for resource in ${resources};
 do
     echo "Working on resource:${resource}"
     [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn test' for:${resource}" && continue
-    cwd=$(pwd)
     cd "${resource}"
     sam_log="${SAM_LOG}.${resource}"
     echo "starting resource handler lambda in background - capture output to: ${sam_log}"
     sam local start-lambda &> "${sam_log}" &
     sam_pid=$!
     echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
-    ps -ef | grep ${sam_pid}
+    pgrep ${sam_pid}
     echo "resource: ${resource}, running 'cfn test' with flags: ${_CFN_FLAGS}"
-    cfn test ${_CFN_FLAGS}
+    cfn test "${_CFN_FLAGS}"
     echo "killing sam_pid:${sam_pid}"
     kill ${sam_pid}
     echo "sam_log: ${sam_log}"
@@ -190,7 +191,13 @@ do
     [ -z "$p_id" ] && echo "No project found" && continue
     p_name=$(atlas project list --output=json | jq --arg name "${PROJECT_NAME}-${res}" -r '.results[] | select(.name==$name) | .name')
     echo "Cleaning up for resource:${res}, project:${p_name} id:${p_id}"
-    atlas project delete ${p_id} --force && echo "Cleaned up project:${p_name} id:${p_id}" || (echo "Failed cleaning up project:${p_id}" && exit 1)
+
+    if atlas project delete "${p_id}" --force; then
+      echo "Cleaned up project:${p_name} id:${p_id}"
+    else
+      echo "Failed cleaning up project:${p_id}"
+      exit 1
+    fi
 done
 
 

@@ -20,4 +20,7 @@ Resources:
       Handler: handler
       Runtime: go1.x
       CodeUri: bin/
+      Environment:
+        Variables:
+          MCLI_OPS_MANAGER_URL:
 

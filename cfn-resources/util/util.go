@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 
@@ -47,7 +48,27 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	// Initialize the MongoDB Atlas API Client.
 	atlas := mongodbatlas.NewClient(client)
 	atlas.UserAgent = "mongodbatlas-cloudformation-resources/" + Version
+
+	basePath, err := newBasePath()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if basePath != nil {
+		atlas.BaseURL = basePath
+	}
+
 	return atlas, nil
+}
+
+func newBasePath() (*url.URL, error) {
+	atlasURL := os.Getenv("MCLI_OPS_MANAGER_URL")
+	if atlasURL == "" {
+		return nil, nil
+	}
+
+	return url.Parse(atlasURL)
 }
 
 const (

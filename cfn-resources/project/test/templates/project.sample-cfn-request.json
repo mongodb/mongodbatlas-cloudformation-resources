@@ -1,10 +1,10 @@
 {
   "desiredResourceState":{
-    "Name": "",
-    "OrgId": "",
+    "Name": "<ADD_PROJECT_NAME>",
+    "OrgId": "<ADD_ORG_ID>",
     "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
+      "PublicKey": "<ADD_PUBLIC_KEY>",
+      "PrivateKey": "<ADD_PRIVATE_KEY>"
     },
     "ProjectSettings": {
       "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
@@ -12,25 +12,8 @@
       "IsPerformanceAdvisorEnabled": "false",
       "IsRealtimePerformancePanelEnabled": "false",
       "IsSchemaAdvisorEnabled": "true"
-    },
-    "ProjectApiKeys": [
-      {
-        "Key": "",
-        "RoleNames": [
-          "GROUP_CLUSTER_MANAGER"
-        ]
-      }
-    ],
-    "ProjectTeams": [
-      {
-        "TeamId": "",
-        "RoleNames": [
-          "GROUP_OWNER"
-        ]
-      }
-    ]
-  }
-,
+    }
+  },
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }
 }

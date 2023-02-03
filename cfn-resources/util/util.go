@@ -3,7 +3,6 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"log"
 	"os"
 	"runtime"
@@ -14,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 

@@ -62,7 +62,7 @@ cfn invoke --function-name TestEntrypoint resource READ test/templates/project.s
 cfn invoke --function-name TestEntrypoint resource DELETE test/templates/project.sample-cfn-request.json
 ```
 ### Update the SAM template to test the UPDATE operation
-In order to test DELETE, you need to add the property `Id` (projectId) and `ProjectTeams` in `test/templates/sam/project.sample-cfn-request.json`.
+In order to test UPDATE, you need to add the property `Id` (projectId) and `ProjectTeams` in `test/templates/sam/project.sample-cfn-request.json`.
 Example:
 ```yaml
 "desiredResourceState":{

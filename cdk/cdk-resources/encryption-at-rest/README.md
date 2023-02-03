@@ -1,4 +1,4 @@
-# @mongodbatlas-awscdk/encryptionatrest
+# @mongodbatlas-awscdk/encryption-at-rest
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

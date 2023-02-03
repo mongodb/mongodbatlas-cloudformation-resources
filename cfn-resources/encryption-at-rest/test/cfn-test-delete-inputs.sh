@@ -50,5 +50,3 @@ echo "--------------------------------delete role starts -----------------------
 aws iam delete-role-policy --role-name "$roleName" --policy-name "$policyName"
 aws iam delete-role --role-name "$roleName"
 echo "--------------------------------delete role ends ----------------------------"
-
-#mongocli iam projects delete "${projectId}" --force

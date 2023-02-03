@@ -30,6 +30,7 @@ echo "CLOUD_PUBLISH : ${CLOUD_PUBLISH}"
 
 for resource in ${resources};
 do
+    # shellcheck source=/dev/null
     . ./cfn-testing-helper.config
     env | grep CFN_TEST_
 

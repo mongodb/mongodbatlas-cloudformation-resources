@@ -51,7 +51,7 @@ do
         echo "_SKIP_BUILD was true, not building"
         continue
     fi
-    cwd=$(pwd)
+
     cd "${resource}"
     echo "resource: ${resource}"
     if [[ "${_DEFAULT_LOG_LEVEL}" == "debug" ]]; then

@@ -14,7 +14,7 @@ rm -rf inputs
 mkdir inputs
 
 projectName="${1}"
-echo $projectName
+echo "$projectName"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
     projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
@@ -28,7 +28,8 @@ export MCLI_PROJECT_ID=$projectId
 
 ClusterName="${projectName}"
 
-clusterId=$(atlas clusters create ${ClusterName} --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+# shellcheck disable=SC2086
+clusterId=$(atlas clusters create "${ClusterName}" --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
 sleep 600
 echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 
@@ -37,7 +38,7 @@ if [ -z "$clusterId" ]; then
     exit 1
 fi
 
-atlas clusters loadSampleData ${ClusterName} --projectId ${projectId}
+atlas clusters loadSampleData "${ClusterName}" --projectId "${projectId}"
 
 
 clusterName=${ClusterName}

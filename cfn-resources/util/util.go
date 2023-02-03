@@ -63,7 +63,7 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 }
 
 func newBasePath() (*url.URL, error) {
-	atlasURL := os.Getenv("MONGODB_ATLAS_BASE_URL")
+	atlasURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL")
 	if atlasURL == "" {
 		return nil, nil
 	}

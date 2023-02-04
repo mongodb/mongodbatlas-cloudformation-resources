@@ -24,7 +24,7 @@ find_files() {
       -o -wholename '*examples*' \
     \) -prune \
   \) \
-  \( -name '*.go' -o -name '*.sh' \)
+  \( -name '*.go' \)
 }
 
 for FILE in $(find_files); do

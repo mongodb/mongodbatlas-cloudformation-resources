@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ "master", "INT**" ]
 jobs:
-  lint-go:
+  check-copyright:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,5 +13,5 @@ jobs:
         with:
           go-version: 1.19
       - name: check copyright
-        run: ../../build/ci/check-licence.sh
+        run: ../../build/ci/check-licences.sh
         shell: bash

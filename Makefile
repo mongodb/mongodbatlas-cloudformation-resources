@@ -14,3 +14,11 @@ submit:
 	cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS))
 test:
 	cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: devtools
+devtools:  ## Install dev tools
+	@echo "==> Installing dev tools..."
+	go install github.com/google/addlicense@latest
+	go install golang.org/x/tools/cmd/goimports@latest
+	go install github.com/google/go-licenses@latest
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)

@@ -27,8 +27,6 @@ find_files() {
   \( -name '*.go' -o -name '*.sh' \)
 }
 
-go install github.com/google/go-licenses@latest
-
 for FILE in $(find_files); do
     addlicense -c "MongoDB Inc" -check "${FILE}"
 done

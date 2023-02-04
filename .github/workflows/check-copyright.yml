@@ -1,4 +1,4 @@
-name: golangci-lint
+name: check-copyright
 on:
   push:
     branches: [ "master" , "INT**"]

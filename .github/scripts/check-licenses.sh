@@ -21,7 +21,7 @@ find_files() {
   find . -not \( \
     \( \
       -wholename '*.github*' \
-      -o -wholename '*third_party*' \
+      -o -wholename '*examples*' \
     \) -prune \
   \) \
   \( -name '*.go' -o -name '*.sh' \)

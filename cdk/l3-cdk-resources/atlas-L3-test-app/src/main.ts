@@ -1,5 +1,6 @@
 
 import * as cdk from 'aws-cdk-lib';
+import { env } from 'node:process';
 import { Construct } from 'constructs';
 import * as atlas_basic from 'test-atlas-client';
 import * as defaults from './defaults.json';
@@ -11,31 +12,33 @@ export class CdkMigrateFromCfnStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // if (env.ORG_ID == undefined) {
-    //   throw 'ORG_ID is missing. Please, set the ORG_ID as an environment variable';
-    // }
-    //
-    // if (env.PUBLIC_KEY == undefined) {
-    //   throw 'PUBLIC_KEY is missing. Please, set the PUBLIC_KEY as an environment variable';
-    // }
-    //
-    // if (env.PRIVATE_KEY == undefined) {
-    //   throw 'PRIVATE_KEY is missing. Please, set the PRIVATE_KEY as an environment variable';
-    // }
+    if (env.ORG_ID == undefined) {
+      throw 'ORG_ID is missing. Please, set the ORG_ID as an environment variable';
+    }
 
-    const apiKey = { privateKey: 'e6c4bac8-8312-4add-bfca-ee750d4798e4', publicKey: 'hynkfzcw' };
+    if (env.PUBLIC_KEY == undefined) {
+      throw 'PUBLIC_KEY is missing. Please, set the PUBLIC_KEY as an environment variable';
+    }
+
+    if (env.PRIVATE_KEY == undefined) {
+      throw 'PRIVATE_KEY is missing. Please, set the PRIVATE_KEY as an environment variable';
+    }
+
+    const apiKey = { privateKey: env.PRIVATE_KEY , publicKey: env.PUBLIC_KEY };
     // Create a new MongoDB Atlas Project
       const mProject = new project.CfnProject(this, 'project-'.concat(id), {
-          orgId: '5fe4ea50d1a2b617175ee3d4',
+          orgId: env.ORG_ID,
           name: defaults.projectName,
           apiKeys: apiKey
       });
 
     new atlas_basic.AtlasBasic(this,
+
       'test-app',
       {
         apiKeys: apiKey,
         clusterProps: {
+
           apiKeys: apiKey,
           projectId: mProject.ref,
           name: defaults.name,

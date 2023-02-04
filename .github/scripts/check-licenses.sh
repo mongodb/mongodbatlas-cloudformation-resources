@@ -20,7 +20,7 @@ set -Eeou pipefail
 find_files() {
   find . -not \( \
     \( \
-      -wholename '*mock*' \
+      -wholename '*.github*' \
       -o -wholename '*third_party*' \
     \) -prune \
   \) \

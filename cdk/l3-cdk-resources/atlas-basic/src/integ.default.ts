@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { AtlasBasic, ApiKeyDefinition } from './index';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'atlas-basic-default-02022', {
+const stack = new cdk.Stack(app, 'atlas-basic-default', {
     env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 
@@ -35,7 +35,7 @@ const replicationSpecs = [
     }
 ]
 
-new AtlasBasic(stack, 'atlas-basic-98022', {
+new AtlasBasic(stack, 'atlas-basic', {
     apiKeys: apiKeys,
     clusterProps: {
         replicationSpecs : replicationSpecs

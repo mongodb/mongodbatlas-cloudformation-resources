@@ -9,8 +9,8 @@ import { Construct } from 'constructs';
 
 
 const defaults = {
-    projectName: "cdk-project-0112",
-    clusterName: "cdk-cluster-112",
+    projectName: "cdk-project",
+    clusterName: "cdk-cluster",
     dbName: "admin",
     username: "cdk-user",
     password: "cdk-pwd",

@@ -12,6 +12,7 @@
     ".projen/deps.json",
     ".projen/files.json",
     ".projen/tasks.json",
+    "cdk.json",
     "LICENSE",
     "tsconfig.dev.json"
   ],

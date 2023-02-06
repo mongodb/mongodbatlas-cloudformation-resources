@@ -50,3 +50,7 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+!/cdk.json
+cdk.out
+cdk.context.json
+yarn-error.log

@@ -2,12 +2,10 @@ import * as atlas from '@mongodbatlas-awscdk/cluster';
 import * as user from '@mongodbatlas-awscdk/database-user';
 import * as project from '@mongodbatlas-awscdk/project';
 import * as ipAccessList from '@mongodbatlas-awscdk/project-ip-access-list';
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 /** @type {*} */
 const projectDefaults = {
-
   projectName: 'cdk-project',
 };
 /** @type {*} */
@@ -15,7 +13,7 @@ const ipAccessDefaults = {
   accessList: [
     {
       ipAddress: '0.0.0.0/1',
-      comment: 'Testing open all ips',
+      comment: 'open all ips',
     },
   ],
 };
@@ -51,6 +49,7 @@ export interface ProjectProps {
      * @description
      * @type {string}
      * @memberof ProjectProps
+     * @default auto-generated
      */
   readonly orgId: string;
   /**
@@ -130,6 +129,7 @@ export interface ClusterProps {
      * @description
      * @type {atlas.ConnectionStrings}
      * @memberof ClusterProps
+     * @default REPLICASET
      */
   readonly connectionStrings?: atlas.ConnectionStrings;
   /**
@@ -172,6 +172,7 @@ export interface ClusterProps {
      * @description
      * @type {boolean}
      * @memberof ClusterProps
+     * @default auto-generated
      */
   readonly paused?: boolean;
   /**
@@ -233,6 +234,7 @@ export interface DatabaseUserProps {
      * @description
      * @type {user.LabelDefinition[]}
      * @memberof DatabaseUserProps
+     * @default admin
      */
   readonly labels?: user.LabelDefinition[];
   /**
@@ -256,6 +258,7 @@ export interface DatabaseUserProps {
   /**
      * @description
      * @type {string}
+     * @default cdk-pwd
      * @memberof DatabaseUserProps
      */
   readonly projectId?: string;
@@ -275,6 +278,7 @@ export interface DatabaseUserProps {
      * @description
      * @type {string}
      * @memberof DatabaseUserProps
+     * @default cdk-user
      */
   readonly username?: string;
 }
@@ -294,6 +298,7 @@ export interface IpAccessListProps {
      * @description
      * @type {string}
      * @memberof IpAccessListProps
+     * @default allow-all
      */
   readonly projectId?: string;
   /**
@@ -333,9 +338,8 @@ export interface ApiKeyDefinition {
  * @description
  * @export
  * @interface AtlasBasicProps
- * @extends {cdk.StackProps}
  */
-export interface AtlasBasicProps extends cdk.StackProps{
+export interface AtlasBasicProps {
   /**
      * @description
      * @type {ApiKeyDefinition}
@@ -371,9 +375,9 @@ export interface AtlasBasicProps extends cdk.StackProps{
  * @description
  * @export
  * @class AtlasBasic
- * @extends {cdk.Stack}
+ * @extends {Construct}
  */
-export class AtlasBasic extends cdk.Stack {
+export class AtlasBasic extends Construct {
   /**
    * Creates an instance of AtlasBasic.
    * @param {Construct} scope
@@ -382,7 +386,7 @@ export class AtlasBasic extends cdk.Stack {
    * @memberof AtlasBasic
    */
   constructor(scope: Construct, id: string, props: AtlasBasicProps) {
-    super(scope, id, props);
+    super(scope, id);
     //Create a new MongoDB Atlas Project
     const mProject = new project.CfnProject(this, 'project-'.concat(id), {
       apiKeys: props.apiKeys,
@@ -400,7 +404,7 @@ export class AtlasBasic extends cdk.Stack {
       },
     );
     // Create a new MongoDB Atlas Database User
-    new user.CfnDatabaseUser(this, 'cfn-db-user-'.concat(id),
+    new user.CfnDatabaseUser(this, 'db-user-'.concat(id),
       {
         apiKeys: props.apiKeys,
         databaseName: props.dbUserProps?.databaseName || dbDefaults.dbName,

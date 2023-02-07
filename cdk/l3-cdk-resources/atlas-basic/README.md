@@ -10,7 +10,7 @@ The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node
 ## Description
 
 The cluster basic resource provides access to your cluster configurations. 
-The resource lets you create Project, cluster, DB user and configure IpAccesslist. 
+The resource lets you create Project, Cluster, DB User and configures IpAccesslist. 
 
 
 

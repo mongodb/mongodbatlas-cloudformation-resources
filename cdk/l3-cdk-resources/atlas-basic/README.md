@@ -2,7 +2,7 @@
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
-> AWS CDK [L1 construct] and data structures for the [AWS CloudFormation Registry] L3 type.
+> This construct uses MongoDB [L1 construct](https://constructs.dev/search?q=&offset=0&tags=mongodb-published) and data structures for the [AWS CloudFormation Registry] L3 type.
 
 [L1 construct]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html
 [AWS CloudFormation Registry]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry.html

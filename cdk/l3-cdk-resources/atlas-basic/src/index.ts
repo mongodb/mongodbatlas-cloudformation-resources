@@ -5,91 +5,372 @@ import * as ipAccessList from '@mongodbatlas-awscdk/project-ip-access-list';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-
-
+/** @type {*} */
 const defaults = {
-    projectName: "cdk-project",
-    clusterName: "cdk-cluster",
-    dbName: "admin",
-    username: "cdk-user",
-    password: "cdk-pwd",
-    roles: [{
-        "roleName": "atlasAdmin",
-        "databaseName": "admin"
-    }],
-    accessList: [
-        {
-            "ipAddress": "0.0.0.0/1",
-            "comment": "Testing open all ips"
-        }
-    ],
-    clusterType: "REPLICASET",
+  projectName: 'cdk-project',
+  clusterName: 'cdk-cluster',
+  dbName: 'admin',
+  username: 'cdk-user',
+  password: 'cdk-pwd',
+  roles: [{
+    roleName: 'atlasAdmin',
+    databaseName: 'admin',
+  }],
+  accessList: [
+    {
+      ipAddress: '0.0.0.0/1',
+      comment: 'Testing open all ips',
+    },
+  ],
+  clusterType: 'REPLICASET',
 };
 
+/**
+ * @description
+ * @export
+ * @interface ProjectProps
+ */
 export interface ProjectProps {
-    readonly name?: string;
-    readonly orgId: string;
-    readonly projectOwnerId?: string;
-    readonly withDefaultAlertsSettings?: boolean;
-    readonly clusterCount?: number;
-    readonly projectSettings?: project.ProjectSettings;
-    readonly projectTeams?: project.ProjectTeam[];
-    readonly projectApiKeys?: project.ProjectApiKey[];
+  /**
+     * @description
+     * @type {string}
+     * @memberof ProjectProps
+     */
+  readonly name?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ProjectProps
+     */
+  readonly orgId: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ProjectProps
+     */
+  readonly projectOwnerId?: string;
+  /**
+     * @description
+     * @type {boolean}
+     * @memberof ProjectProps
+     */
+  readonly withDefaultAlertsSettings?: boolean;
+  /**
+     * @description
+     * @type {number}
+     * @memberof ProjectProps
+     */
+  readonly clusterCount?: number;
+  /**
+     * @description
+     * @type {project.ProjectSettings}
+     * @memberof ProjectProps
+     */
+  readonly projectSettings?: project.ProjectSettings;
+  /**
+     * @description
+     * @type {project.ProjectTeam[]}
+     * @memberof ProjectProps
+     */
+  readonly projectTeams?: project.ProjectTeam[];
+  /**
+     * @description
+     * @type {project.ProjectApiKey[]}
+     * @memberof ProjectProps
+     */
+  readonly projectApiKeys?: project.ProjectApiKey[];
 }
+/**
+ * @description
+ * @export
+ * @interface ClusterProps
+ */
 export interface ClusterProps {
-    readonly advancedSettings?: atlas.ProcessArgs;
-    readonly apiKeys?: atlas.ApiKeyDefinition;
-    readonly backupEnabled?: boolean;
-    readonly biConnector?: atlas.CfnClusterPropsBiConnector;
-    readonly clusterType?: string;
-    readonly connectionStrings?: atlas.ConnectionStrings;
-    readonly diskSizeGb?: number;
-    readonly encryptionAtRestProvider?: atlas.CfnClusterPropsEncryptionAtRestProvider;
-    readonly projectId?: string;
-    readonly labels?: atlas.CfnClusterPropsLabels[];
-    readonly mongoDbMajorVersion?: string;
-    readonly name?: string;
-    readonly paused?: boolean;
-    readonly pitEnabled?: boolean;
-    readonly replicationSpecs?: atlas.AdvancedReplicationSpec[];
-    readonly rootCertType?: string;
-    readonly versionReleaseSystem?: string;
-    readonly terminationProtectionEnabled?: boolean;
+  /**
+     * @description
+     * @type {atlas.ProcessArgs}
+     * @memberof ClusterProps
+     */
+  readonly advancedSettings?: atlas.ProcessArgs;
+  /**
+     * @description
+     * @type {atlas.ApiKeyDefinition}
+     * @memberof ClusterProps
+     */
+  readonly apiKeys?: atlas.ApiKeyDefinition;
+  /**
+     * @description
+     * @type {boolean}
+     * @memberof ClusterProps
+     */
+  readonly backupEnabled?: boolean;
+  /**
+     * @description
+     * @type {atlas.CfnClusterPropsBiConnector}
+     * @memberof ClusterProps
+     */
+  readonly biConnector?: atlas.CfnClusterPropsBiConnector;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ClusterProps
+     */
+  readonly clusterType?: string;
+  /**
+     * @description
+     * @type {atlas.ConnectionStrings}
+     * @memberof ClusterProps
+     */
+  readonly connectionStrings?: atlas.ConnectionStrings;
+  /**
+     * @description
+     * @type {number}
+     * @memberof ClusterProps
+     */
+  readonly diskSizeGb?: number;
+  /**
+     * @description
+     * @type {atlas.CfnClusterPropsEncryptionAtRestProvider}
+     * @memberof ClusterProps
+     */
+  readonly encryptionAtRestProvider?: atlas.CfnClusterPropsEncryptionAtRestProvider;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ClusterProps
+     */
+  readonly projectId?: string;
+  /**
+     * @description
+     * @type {atlas.CfnClusterPropsLabels[]}
+     * @memberof ClusterProps
+     */
+  readonly labels?: atlas.CfnClusterPropsLabels[];
+  /**
+     * @description
+     * @type {string}
+     * @memberof ClusterProps
+     */
+  readonly mongoDbMajorVersion?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ClusterProps
+     */
+  readonly name?: string;
+  /**
+     * @description
+     * @type {boolean}
+     * @memberof ClusterProps
+     */
+  readonly paused?: boolean;
+  /**
+     * @description
+     * @type {boolean}
+     * @memberof ClusterProps
+     */
+  readonly pitEnabled?: boolean;
+  /**
+     * @description
+     * @type {atlas.AdvancedReplicationSpec[]}
+     * @memberof ClusterProps
+     */
+  readonly replicationSpecs?: atlas.AdvancedReplicationSpec[];
+  /**
+     * @description
+     * @type {string}
+     * @memberof ClusterProps
+     */
+  readonly rootCertType?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ClusterProps
+     */
+  readonly versionReleaseSystem?: string;
+  /**
+     * @description
+     * @type {boolean}
+     * @memberof ClusterProps
+     */
+  readonly terminationProtectionEnabled?: boolean;
 }
+/**
+ * @description
+ * @export
+ * @interface DatabaseUserProps
+ */
 export interface DatabaseUserProps {
-    readonly deleteAfterDate?: string;
-    readonly awsiamType?:user.CfnDatabaseUserPropsAwsiamType;
-    readonly databaseName?: string;
-    readonly labels?: user.LabelDefinition[];
-    readonly ldapAuthType?: user.CfnDatabaseUserPropsLdapAuthType;
-    readonly x509Type?: user.CfnDatabaseUserPropsX509Type;
-    readonly password?: string;
-    readonly projectId?: string;
-    readonly roles?: user.RoleDefinition[];
-    readonly scopes?: user.ScopeDefinition[];
-    readonly username?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof DatabaseUserProps
+     */
+  readonly deleteAfterDate?: string;
+  /**
+     * @description
+     * @type {user.CfnDatabaseUserPropsAwsiamType}
+     * @memberof DatabaseUserProps
+     */
+  readonly awsiamType?:user.CfnDatabaseUserPropsAwsiamType;
+  /**
+     * @description
+     * @type {string}
+     * @memberof DatabaseUserProps
+     */
+  readonly databaseName?: string;
+  /**
+     * @description
+     * @type {user.LabelDefinition[]}
+     * @memberof DatabaseUserProps
+     */
+  readonly labels?: user.LabelDefinition[];
+  /**
+     * @description
+     * @type {user.CfnDatabaseUserPropsLdapAuthType}
+     * @memberof DatabaseUserProps
+     */
+  readonly ldapAuthType?: user.CfnDatabaseUserPropsLdapAuthType;
+  /**
+     * @description
+     * @type {user.CfnDatabaseUserPropsX509Type}
+     * @memberof DatabaseUserProps
+     */
+  readonly x509Type?: user.CfnDatabaseUserPropsX509Type;
+  /**
+     * @description
+     * @type {string}
+     * @memberof DatabaseUserProps
+     */
+  readonly password?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof DatabaseUserProps
+     */
+  readonly projectId?: string;
+  /**
+     * @description
+     * @type {user.RoleDefinition[]}
+     * @memberof DatabaseUserProps
+     */
+  readonly roles?: user.RoleDefinition[];
+  /**
+     * @description
+     * @type {user.ScopeDefinition[]}
+     * @memberof DatabaseUserProps
+     */
+  readonly scopes?: user.ScopeDefinition[];
+  /**
+     * @description
+     * @type {string}
+     * @memberof DatabaseUserProps
+     */
+  readonly username?: string;
 }
+/**
+ * @description
+ * @export
+ * @interface IpAccessListProps
+ */
 export interface IpAccessListProps {
-    readonly accessList: ipAccessList.AccessListDefinition[];
-    readonly projectId?: string;
-    readonly totalCount?: number;
-    readonly listOptions?: ipAccessList.ListOptions;
+  /**
+     * @description
+     * @type {ipAccessList.AccessListDefinition[]}
+     * @memberof IpAccessListProps
+     */
+  readonly accessList: ipAccessList.AccessListDefinition[];
+  /**
+     * @description
+     * @type {string}
+     * @memberof IpAccessListProps
+     */
+  readonly projectId?: string;
+  /**
+     * @description
+     * @type {number}
+     * @memberof IpAccessListProps
+     */
+  readonly totalCount?: number;
+  /**
+     * @description
+     * @type {ipAccessList.ListOptions}
+     * @memberof IpAccessListProps
+     */
+  readonly listOptions?: ipAccessList.ListOptions;
 }
+/**
+ * @description
+ * @export
+ * @interface ApiKeyDefinition
+ */
 export interface ApiKeyDefinition {
-    readonly privateKey?: string;
-    readonly publicKey?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ApiKeyDefinition
+     */
+  readonly privateKey?: string;
+  /**
+     * @description
+     * @type {string}
+     * @memberof ApiKeyDefinition
+     */
+  readonly publicKey?: string;
 
 }
-
+/**
+ * @description
+ * @export
+ * @interface AtlasBasicProps
+ * @extends {cdk.StackProps}
+ */
 export interface AtlasBasicProps extends cdk.StackProps{
-    readonly apiKeys : ApiKeyDefinition;
-    readonly projectProps: ProjectProps;
-    readonly clusterProps: ClusterProps;
-    readonly dbUserProps?: DatabaseUserProps;
-    readonly ipAccessListProps?: IpAccessListProps;
+  /**
+     * @description
+     * @type {ApiKeyDefinition}
+     * @memberof AtlasBasicProps
+     */
+  readonly apiKeys : ApiKeyDefinition;
+  /**
+     * @description
+     * @type {ProjectProps}
+     * @memberof AtlasBasicProps
+     */
+  readonly projectProps: ProjectProps;
+  /**
+     * @description
+     * @type {ClusterProps}
+     * @memberof AtlasBasicProps
+     */
+  readonly clusterProps: ClusterProps;
+  /**
+     * @description
+     * @type {DatabaseUserProps}
+     * @memberof AtlasBasicProps
+     */
+  readonly dbUserProps?: DatabaseUserProps;
+  /**
+     * @description
+     * @type {IpAccessListProps}
+     * @memberof AtlasBasicProps
+     */
+  readonly ipAccessListProps?: IpAccessListProps;
 }
-
+/**
+ * @description
+ * @export
+ * @class AtlasBasic
+ * @extends {cdk.Stack}
+ */
 export class AtlasBasic extends cdk.Stack {
+  /**
+   * Creates an instance of AtlasBasic.
+   * @param {Construct} scope
+   * @param {string} id
+   * @param {AtlasBasicProps} props
+   * @memberof AtlasBasic
+   */
   constructor(scope: Construct, id: string, props: AtlasBasicProps) {
     super(scope, id, props);
     //Create a new MongoDB Atlas Project

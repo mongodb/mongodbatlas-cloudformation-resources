@@ -3,7 +3,6 @@ import * as user from '@mongodbatlas-awscdk/database-user';
 import * as project from '@mongodbatlas-awscdk/project';
 import * as ipAccessList from '@mongodbatlas-awscdk/project-ip-access-list';
 import * as cdk from 'aws-cdk-lib';
-// import * as cloudformation from 'aws-cdk-lib/aws-cloudformation';
 import { Construct } from 'constructs';
 
 
@@ -130,27 +129,5 @@ export class AtlasBasic extends cdk.Stack {
         }
     );
 
-    //
-    // new cloudformation.CfnTypeActivation(this, 'ProjectActivation', {
-    //     type: mProject.cfnResourceType,
-    //     executionRoleArn: ""
-    // });
-    //
-    // new cloudformation.CfnTypeActivation(this, 'ClusterActivation', {
-    //     type: mCluster.cfnResourceType,
-    //     executionRoleArn: ""
-    // });
-    //
-    // new cloudformation.CfnTypeActivation(this, 'DatabaseUserActivation', {
-    //     type: dbUser.cfnResourceType,
-    //     executionRoleArn: "",
-    // });
-    //
-    // new cloudformation.CfnTypeActivation(this, 'ProjectIpAccessListActivation', {
-    //     type: ipAccess.cfnResourceType,
-    //     executionRoleArn: "",
-    // });
-
   }
 }
-

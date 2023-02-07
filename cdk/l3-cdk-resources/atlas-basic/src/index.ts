@@ -6,9 +6,21 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 /** @type {*} */
-const defaults = {
+const projectDefaults = {
+        
   projectName: 'cdk-project',
-  clusterName: 'cdk-cluster',
+};
+/** @type {*} */
+const ipAccessDefaults = {    
+  accessList: [
+    {
+      ipAddress: '0.0.0.0/1',
+      comment: 'Testing open all ips',
+    },
+  ],
+}
+/** @type {*} */
+const dbDefaults = {
   dbName: 'admin',
   username: 'cdk-user',
   password: 'cdk-pwd',
@@ -16,14 +28,12 @@ const defaults = {
     roleName: 'atlasAdmin',
     databaseName: 'admin',
   }],
-  accessList: [
-    {
-      ipAddress: '0.0.0.0/1',
-      comment: 'Testing open all ips',
-    },
-  ],
+}
+/** @type {*} */
+const clusterDefaults = {
+  clusterName: 'cdk-cluster',
   clusterType: 'REPLICASET',
-};
+}
 
 /**
  * @description
@@ -376,16 +386,16 @@ export class AtlasBasic extends cdk.Stack {
     //Create a new MongoDB Atlas Project
   const mProject = new project.CfnProject(this, 'project-'.concat(id), {
       apiKeys: props.apiKeys,
-      name: props.projectProps.name || defaults.projectName,
+      name: props.projectProps.name || projectDefaults.projectName,
       ...props.projectProps
   });
     // Create a new MongoDB Atlas Cluster and pass project ID
     new atlas.CfnCluster(this, 'cluster-'.concat(id),
       {
           apiKeys: props.apiKeys,
-          name: props.clusterProps.name || defaults.clusterName,
+          name: props.clusterProps.name || clusterDefaults.clusterName,
           projectId: mProject.ref,
-          clusterType: defaults.clusterType,
+          clusterType: clusterDefaults.clusterType,
           ...props.clusterProps,
       }
     );
@@ -393,11 +403,11 @@ export class AtlasBasic extends cdk.Stack {
     new user.CfnDatabaseUser(this, 'cfn-db-user-'.concat(id),
       {
           apiKeys: props.apiKeys,
-          databaseName: props.dbUserProps?.databaseName || defaults.dbName,
+          databaseName: props.dbUserProps?.databaseName || dbDefaults.dbName,
           projectId: mProject.ref,
-          username: props.dbUserProps?.username || defaults.username,
-          roles: props.dbUserProps?.roles || defaults.roles,
-          password: props.dbUserProps?.password || defaults.password,
+          username: props.dbUserProps?.username || dbDefaults.username,
+          roles: props.dbUserProps?.roles || dbDefaults.roles,
+          password: props.dbUserProps?.password || dbDefaults.password,
           ...props.dbUserProps,
       });
     // Create a new MongoDB Atlas Project IP Access List
@@ -405,7 +415,7 @@ export class AtlasBasic extends cdk.Stack {
         {
             apiKeys: props.apiKeys,
             projectId: mProject.ref,
-            accessList: props.ipAccessListProps?.accessList || defaults.accessList,
+            accessList: props.ipAccessListProps?.accessList || ipAccessDefaults.accessList,
             ...props.ipAccessListProps,
         }
     );

@@ -70,6 +70,40 @@ aws cloudformation activate-type \
     
 ```
 
+Check the [Sample App](src/integ.default.ts) that uses this construct to deploy the stackset.
+
+The library also defines some default values for individual L1s.
+
+```typescript
+
+const projectDefaults = {
+        projectName: 'cdk-project',
+    };
+
+const ipAccessDefaults = {
+    accessList: [
+        {
+            ipAddress: '0.0.0.0/1',
+            comment: 'Testing open all ips',
+        },
+    ],
+}
+
+const dbDefaults = {
+    dbName: 'admin',
+    username: 'cdk-user',
+    password: 'cdk-pwd',
+    roles: [{
+        roleName: 'atlasAdmin',
+        databaseName: 'admin',
+    }],
+}
+const clusterDefaults = {
+    clusterName: 'cdk-cluster',
+    clusterType: 'REPLICASET',
+}
+```
+
 You can find more information about activating this type in the [AWS CloudFormation documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-public.html).
 
 ## Feedback

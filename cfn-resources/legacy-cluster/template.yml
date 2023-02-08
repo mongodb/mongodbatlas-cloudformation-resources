@@ -20,7 +20,9 @@ Resources:
       Handler: handler
       Runtime: go1.x
       CodeUri: bin/
-      Environment: 
-        Variables: 
+      Environment:
+        Variables:
           MODE: Test
+          LOG_LEVEL: debug
+          MONGODB_ATLAS_OPS_MANAGER_URL:
 

@@ -84,8 +84,8 @@ echo "--------------------------------authorize mongodb  Role ends -------------
 
 bucketName="cloud-backup-snapshot-test123-"${awsRegion}
 
-aws s3 rb s3://"${bucketName}" --force
-aws s3 mb s3://"${bucketName}" --output json
+aws s3 rb "s3://${bucketName}" --force
+aws s3 mb "s3://${bucketName}" --output json
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi

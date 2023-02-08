@@ -17,15 +17,12 @@
 #
 set -xeo
 
-# shellcheck source=/dev/null
 . ./cfn-submit-helper.config
 env | grep CFN_SUBMIT_
-#echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 _DRY_RUN=${DRY_RUN:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
 _SUBMIT_ONLY=${SUBMIT_ONLY:-false}
-#_CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 

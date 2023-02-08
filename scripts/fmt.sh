@@ -14,19 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -Eeou pipefail
+STAGED_GO_FILES=$(git diff --name-only | grep ".go$")
 
-find_files() {
-	find . -not \( \
-		\( \
-		-wholename '*.github*' \
-		-o -wholename '*examples*' \
-		\) -prune \
-		\) \
-		\( -name '*.go' \)
-}
-
-for FILE in $(find_files); do
-	echo "Checking $FILE"
-	addlicense -c "MongoDB Inc" -check "${FILE}"
+echo "==> Formatting changed go files..."
+for FILE in ${STAGED_GO_FILES}; do
+	gofmt -w -s "${FILE}"
+	goimports -w "${FILE}"
 done
+
+echo "==> Formatting changed sh files..."
+STAGED_SH_FILES=$(git diff --name-only | grep ".sh$")
+for FILE in ${STAGED_SH_FILES}; do
+    shfmt -l -w "${FILE}"
+done
+
+echo "==> Done..."

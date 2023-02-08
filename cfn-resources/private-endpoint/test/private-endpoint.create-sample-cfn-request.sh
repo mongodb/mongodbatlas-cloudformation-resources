@@ -8,9 +8,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 function usage {
-    echo "usage:$0 <project_name>"
+	echo "usage:$0 <project_name>"
 }
 
 if [ "$#" -ne 1 ]; then usage; fi
@@ -21,10 +20,10 @@ vpcId="${2}"
 subnetId="${3}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$ATLAS_ORG_ID" \
-   --arg region "$region" \
-   --arg vpcId "$vpcId" \
-   --arg subnetId "$subnetId" \
-   '.desiredResourceState.GroupId?|=$org | .desiredResourceState.PrivateEndpoints[0].VpcId?|=$vpcId | .desiredResourceState.PrivateEndpoints[0].SubnetIds[0]?|=$subnetId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Region?|=$region' \
-   "$(dirname "$0")/private-endpoint.sample-cfn-request.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg org "$ATLAS_ORG_ID" \
+	--arg region "$region" \
+	--arg vpcId "$vpcId" \
+	--arg subnetId "$subnetId" \
+	'.desiredResourceState.GroupId?|=$org | .desiredResourceState.PrivateEndpoints[0].VpcId?|=$vpcId | .desiredResourceState.PrivateEndpoints[0].SubnetIds[0]?|=$subnetId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Region?|=$region' \
+	"$(dirname "$0")/private-endpoint.sample-cfn-request.json"

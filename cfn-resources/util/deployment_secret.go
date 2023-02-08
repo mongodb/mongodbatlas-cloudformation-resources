@@ -64,13 +64,13 @@ func GetAPIKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
 		log.Printf("Error --- %v", err.Error())
 		return DeploymentSecret{}, err
 	}
-	fmt.Println(*output.SecretString)
+
 	var key DeploymentSecret
 	err = json.Unmarshal([]byte(*output.SecretString), &key)
 	if err != nil {
 		log.Printf("Error --- %v", err.Error())
 		return key, err
 	}
-	fmt.Printf("%v", key)
+
 	return key, nil
 }

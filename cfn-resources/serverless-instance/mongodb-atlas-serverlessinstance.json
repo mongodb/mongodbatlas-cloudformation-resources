@@ -1,18 +1,9 @@
 {
+  "typeName": "MongoDB::Atlas::ServerlessInstance",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "additionalProperties": false,
+  "description": "Returns, adds, edits, and removes serverless instances.",
   "definitions": {
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
     "Link": {
       "type": "object",
       "properties": {
@@ -102,28 +93,11 @@
       "additionalProperties": false
     }
   },
-  "description": "Returns, adds, edits, and removes serverless instances.",
-  "handlers": {
-    "create": {
-      "permissions": []
-    },
-    "read": {
-      "permissions": []
-    },
-    "update": {
-      "permissions": []
-    },
-    "delete": {
-      "permissions": []
-    }
-  },
   "primaryIdentifier": [
-    "/properties/Name"
+    "/properties/Name",
+    "/properties/ProjectID"
   ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/ApiKeyDefinition"
-    },
     "ConnectionStrings": {
       "type": "object",
       "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
@@ -228,9 +202,29 @@
     "/properties/ConnectionStrings/PrivateEndpoint/Endpoints/Region"
   ],
   "createOnlyProperties": [
-    "/properties/Name"
+    "/properties/Name",
+    "/properties/ProjectID"
   ],
-
-  "typeName": "MongoDB::Atlas::ServerlessInstance",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

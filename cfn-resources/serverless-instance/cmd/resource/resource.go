@@ -43,8 +43,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	keys, handlerError := getApiKeys(req)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
@@ -98,8 +103,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
+	keys, handlerError := getApiKeys(req)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
@@ -113,10 +123,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	// Read Instance
 	model := readServerlessInstance(cluster)
-	model.ApiKeys = &ApiKeyDefinition{
-		PrivateKey: currentModel.ApiKeys.PrivateKey,
-		PublicKey:  currentModel.ApiKeys.PublicKey,
-	}
+
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -135,8 +142,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	keys, handlerError := getApiKeys(req)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
@@ -189,8 +201,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	keys, handlerError := getApiKeys(req)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
@@ -230,8 +247,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
+	keys, handlerError := getApiKeys(req)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, err := util.CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
 	if err != nil {
 		_, _ = log.Warnf("List - error: %+v", err)
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
@@ -382,14 +404,25 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 	_, _ = log.Debugf("Response : %+v", serverless)
 
 	model := readServerlessInstance(serverless)
-	model.ApiKeys = &ApiKeyDefinition{
-		PrivateKey: currentModel.ApiKeys.PrivateKey,
-		PublicKey:  currentModel.ApiKeys.PublicKey,
-	}
+
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
 		ResourceModel:   model,
 	}, nil
+}
+
+func getApiKeys(req handler.Request) (*util.DeploymentSecret, *handler.ProgressEvent) {
+	key, err := util.GetAPIKeyFromDeploymentSecret(&req, "Atlas-Cloud-Formation-ApiKey-Secret")
+	if err != nil {
+		_, _ = log.Warnf("Read - error: %+v", err)
+		pe := handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error getting api keyd secrets, the apikeys needs to be provided using aws secret, remember to validate if a secret named Atlas-Cloud-Formation-ApiKey-Secret is created with the PublicKey and PrivateKey properties, error: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		return nil, &pe
+	}
+
+	return &key, nil
 }

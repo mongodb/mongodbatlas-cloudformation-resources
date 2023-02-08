@@ -23,8 +23,9 @@ for FILE in ${STAGED_GO_FILES}; do
 done
 
 echo "==> Formatting changed sh files..."
-for file in $files; do
-	shfmt -l -w "${file}"
+STAGED_SH_FILES=$(git diff --name-only | grep ".sh$")
+for FILE in ${STAGED_SH_FILES}; do
+    shfmt -l -w "${FILE}"
 done
 
 echo "==> Done..."

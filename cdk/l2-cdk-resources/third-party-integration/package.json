@@ -1,6 +1,6 @@
 {
-  "name": "@mongodbatlas-awscdk/third-party-integration-defaults",
-  "description": "Retrieves or creates third-party-integrations in any given Atlas organization",
+  "name": "@mongodbatlas-awscdk/atlas-integrations",
+  "description": "Retrieves or creates third-party-integrations with MicrosoftTeams, Datadog and PagerDuty for a given Atlas project",
   "repository": {
     "type": "git",
     "url": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git"

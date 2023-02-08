@@ -1,12 +1,6 @@
 const { awscdk } = require('projen');
 const { ReleaseTrigger } = require('projen/lib/release');
-const project = new awscdk.AwsCdkConstructLibrary({
-  // author: 'Aastha Mahendru',
-  // authorAddress: 'aastha.mahendru@mongodb.com',
-  // cdkVersion: '2.1.0',
-  // defaultReleaseBranch: 'main',
-  // name: 'third-party-integration',
-  // repositoryUrl: 'git@github.com:mongodb/mongodbatlas-cloudformation-resources.git',
+const thirdPartyIntegration = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -32,7 +26,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'mongodb',
     'atlas',
     'third-party-integration'],
-  description: 'Retrieves or creates third-party-integrations in any given Atlas organization',
+  description: 'Retrieves or creates third-party-integrations with MicrosoftTeams, Datadog and PagerDuty for a given Atlas project',
   stability: 'experimental',
   deps: [
     '@mongodbatlas-awscdk/third-party-integration',
@@ -41,4 +35,4 @@ const project = new awscdk.AwsCdkConstructLibrary({
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
-project.synth();
+thirdPartyIntegration.synth();

@@ -82,11 +82,11 @@ const stack = new cdk.Stack(app, 'atlas-basic-default', {
 });
 
 const apiKeys: ApiKeyDefinition = {
-    privateKey: stack.node.tryGetContext('MONGO_PRIVATE_KEY') || process.env.MONGO_PRIVATE_KEY,
-    publicKey: stack.node.tryGetContext('MONGO_PUBLIC_KEY') || process.env.MONGO_PUBLIC_KEY,
+    privateKey: stack.node.tryGetContext('MONGODB_ATLAS_PRIVATE_KEY') || process.env.MONGODB_ATLAS_PRIVATE_KEY,
+    publicKey: stack.node.tryGetContext('MONGODB_ATLAS_PUBLIC_KEY') || process.env.MONGO_PUBLIC_KEY,
 };
 
-const orgId = stack.node.tryGetContext('MONGO_ORG_ID') || process.env.MONGO_ORG_ID;
+const orgId = stack.node.tryGetContext('MONGODB_ATLAS_ORG_ID') || process.env.MONGODB_ATLAS_ORG_ID;
 
 const replicationSpecs = [
     {

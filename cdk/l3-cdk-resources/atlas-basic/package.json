@@ -1,8 +1,9 @@
 {
-  "name": "test-atlas-client",
+  "name": "@mongodbatlas-awscdk/atlas-basic",
+  "description": "Creates a project, cluster, dbuser and ipaccess list in MongoDB Atlas",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SuperMohit"
+    "url": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git"
   },
   "scripts": {
     "build": "npx projen build",
@@ -29,15 +30,20 @@
     "projen": "npx projen"
   },
   "author": {
-    "name": "Mohit Talniya",
-    "email": "mohittalniya@gmail.com",
+    "name": "MongoDBAtlas",
+    "url": "https://mongodb.com",
     "organization": false
   },
   "devDependencies": {
+    "@mongodbatlas-awscdk/cluster": "1.0.1",
+    "@mongodbatlas-awscdk/database-user": "1.0.1",
+    "@mongodbatlas-awscdk/project": "1.0.1",
+    "@mongodbatlas-awscdk/project-ip-access-list": "1.0.1",
     "@types/jest": "^27",
     "@types/node": "^14",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
+    "aws-cdk": "^2.63.2",
     "aws-cdk-lib": "2.1.0",
     "constructs": "10.0.5",
     "eslint": "^8",
@@ -48,27 +54,39 @@
     "jest-junit": "^13",
     "jsii": "^1.74.0",
     "jsii-diff": "^1.74.0",
-    "jsii-docgen": "^7.0.222",
+    "jsii-docgen": "^7.0.227",
     "jsii-pacmak": "^1.74.0",
     "npm-check-updates": "^16",
-    "projen": "^0.67.32",
+    "projen": "^0.67.41",
     "standard-version": "^9",
     "ts-jest": "^27",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.1.0",
-    "constructs": "^10.0.5"
-  },
-  "dependencies": {
     "@mongodbatlas-awscdk/cluster": "^1.0.1",
     "@mongodbatlas-awscdk/database-user": "^1.0.1",
     "@mongodbatlas-awscdk/project": "^1.0.1",
     "@mongodbatlas-awscdk/project-ip-access-list": "^1.0.1",
-    "publib": "^0.2.584"
+    "aws-cdk-lib": "^2.1.0",
+    "constructs": "^10.0.5"
   },
   "keywords": [
-    "cdk"
+    "atlas",
+    "aws-cdk",
+    "awscdk",
+    "cdk",
+    "cfn",
+    "cfn-resources",
+    "cloudformation",
+    "cloudformation-registry",
+    "cluster",
+    "constructs",
+    "dbuser",
+    "extensions",
+    "ip-access-list",
+    "l3",
+    "mongodb"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",

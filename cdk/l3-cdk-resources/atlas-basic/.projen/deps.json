@@ -1,6 +1,22 @@
 {
   "dependencies": [
     {
+      "name": "@mongodbatlas-awscdk/cluster",
+      "type": "build"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/database-user",
+      "type": "build"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/project",
+      "type": "build"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/project-ip-access-list",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "version": "^27",
       "type": "build"
@@ -18,6 +34,10 @@
     {
       "name": "@typescript-eslint/parser",
       "version": "^5",
+      "type": "build"
+    },
+    {
+      "name": "aws-cdk",
       "type": "build"
     },
     {
@@ -74,10 +94,6 @@
       "type": "build"
     },
     {
-      "name": "json-schema",
-      "type": "build"
-    },
-    {
       "name": "npm-check-updates",
       "version": "^16",
       "type": "build"
@@ -97,6 +113,10 @@
       "type": "build"
     },
     {
+      "name": "ts-node",
+      "type": "build"
+    },
+    {
       "name": "typescript",
       "type": "build"
     },
@@ -109,6 +129,22 @@
       "name": "@types/prettier",
       "version": "2.6.0",
       "type": "override"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/cluster",
+      "type": "peer"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/database-user",
+      "type": "peer"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/project",
+      "type": "peer"
+    },
+    {
+      "name": "@mongodbatlas-awscdk/project-ip-access-list",
+      "type": "peer"
     },
     {
       "name": "aws-cdk-lib",

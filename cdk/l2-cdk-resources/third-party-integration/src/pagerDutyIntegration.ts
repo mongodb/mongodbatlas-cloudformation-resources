@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as atlas_integrations from '@mongodbatlas-awscdk/third-party-integration';
+import {
+  CfnThirdPartyIntegration,
+  CfnThirdPartyIntegrationPropsType,
+} from '@mongodbatlas-awscdk/third-party-integration';
 import { Construct } from 'constructs';
 import { ThirdPartyIntegrationProps } from './thirdPartyIntegrationBase';
 
-export interface PagerDutyIntegrationProps extends ThirdPartyIntegrationProps{
+export interface PagerDutyIntegrationProps extends ThirdPartyIntegrationProps {
   readonly serviceKey: string;
 }
 
@@ -24,11 +27,11 @@ export class PagerDutyIntegration extends Construct {
   constructor(scope: Construct, id: string, props: PagerDutyIntegrationProps) {
     super(scope, id);
 
-    new atlas_integrations.CfnThirdPartyIntegration(this,
+    new CfnThirdPartyIntegration(this,
       'PagerDutyThirdPartyIntegration',
       {
         ...props,
-        type: atlas_integrations.CfnThirdPartyIntegrationPropsType.PAGER_DUTY,
+        type: CfnThirdPartyIntegrationPropsType.PAGER_DUTY,
       });
   }
 }

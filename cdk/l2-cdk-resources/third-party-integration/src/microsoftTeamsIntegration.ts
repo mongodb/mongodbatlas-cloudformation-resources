@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as atlas_integrations from '@mongodbatlas-awscdk/third-party-integration';
+import {
+  CfnThirdPartyIntegration,
+  CfnThirdPartyIntegrationPropsType,
+} from '@mongodbatlas-awscdk/third-party-integration';
 import { Construct } from 'constructs';
 import { ThirdPartyIntegrationProps } from './thirdPartyIntegrationBase';
 
-export interface MicrosoftTeamsIntegrationProps extends ThirdPartyIntegrationProps{
+export interface MicrosoftTeamsIntegrationProps extends ThirdPartyIntegrationProps {
   readonly microsoftTeamsWebhookUrl: string;
 }
 
@@ -24,11 +27,11 @@ export class MicrosoftTeamsIntegration extends Construct {
   constructor(scope: Construct, id: string, props: MicrosoftTeamsIntegrationProps) {
     super(scope, id);
 
-    new atlas_integrations.CfnThirdPartyIntegration(this,
+    new CfnThirdPartyIntegration(this,
       'MicrosoftTeamsIntegration',
       {
         ...props,
-        type: atlas_integrations.CfnThirdPartyIntegrationPropsType.MICROSOFT_TEAMS,
+        type: CfnThirdPartyIntegrationPropsType.MICROSOFT_TEAMS,
       });
   }
 }

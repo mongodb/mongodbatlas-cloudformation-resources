@@ -19,11 +19,11 @@ const (
 	CallBackSeconds = 30
 )
 
-var CreateRequiredFields = []string{constants.ProjID, constants.PvtKey, constants.PubKey, constants.Name}
-var ReadRequiredFields = []string{constants.ProjID, constants.Name, constants.PvtKey, constants.PubKey}
-var UpdateRequiredFields = []string{constants.PvtKey, constants.PubKey}
-var DeleteRequiredFields = []string{constants.ProjID, constants.Name, constants.PvtKey, constants.PubKey}
-var ListRequiredFields = []string{constants.PvtKey, constants.PubKey}
+var CreateRequiredFields = []string{constants.ProjID, constants.Name}
+var ReadRequiredFields = []string{constants.ProjID, constants.Name}
+var UpdateRequiredFields = []string{constants.ProjID, constants.Name}
+var DeleteRequiredFields = []string{constants.ProjID, constants.Name}
+var ListRequiredFields = []string{constants.ProjID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)

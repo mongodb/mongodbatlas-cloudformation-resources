@@ -1,9 +1,9 @@
 name: check-copyright
 on:
   push:
-    branches: [ "master" , "INT**"]
+    branches:
+      - master
   pull_request:
-    branches: [ "master", "INT**" ]
 jobs:
   check-copyright:
     runs-on: ubuntu-latest

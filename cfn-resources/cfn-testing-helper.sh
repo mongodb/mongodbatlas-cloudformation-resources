@@ -16,17 +16,13 @@
 # LOG_LEVEL=debug ./cfn-testing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 trap "exit" INT TERM ERR
-#trap "kill 0" EXIT
-#set -x
 set -o errexit
-#set -o nounset
 set -o pipefail
 
 _DRY_RUN=${DRY_RUN:-false}
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
 _SKIP_BUILD=${SKIP_BUILD:-false}
 _BUILD_ONLY=${BUILD_ONLY:-false}
-#_SUBMIT_ONLY=${SUBMIT_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CLOUD_PUBLISH=${CLOUD_PUBLISH:-false}
 
@@ -93,14 +89,12 @@ else
 fi
 
 echo "${PROJECT_NAME}"
-#if false; then
 
 for res in ${resources}; do
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run ./test/cfn-test-create-inputs.sh for:${resource}" && continue
 	cd "${res}"
 	chmod +x ./test/cfn-test-create-inputs.sh
 	if [[ "${res}" == "network-peering" ]]; then
-		#
 		AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-711489243244}"
 		# grab the first vpc-id found to test with,
 		AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
@@ -108,7 +102,6 @@ for res in ${resources}; do
 		./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" &&
 			echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 	elif [[ "${res}" == "private-endpoint" ]]; then
-		#
 		# grab the first vpc-id found to test with,
 		AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
 		AWS_SUBNET_ID=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${AWS_VPC_ID}" --output=json | jq -r '.Subnets[0].SubnetId')

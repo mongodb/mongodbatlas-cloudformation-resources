@@ -36,8 +36,6 @@ _PUBLISH_ONLY=${PUBLISH_ONLY:-false}
 # shellcheck disable=SC2034
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
-#major_version=${CFN_PUBLISH_MAJOR_VERSION:-0}
-#minor_version=${CFN_PUBLISH_MINOR_VERSION:-0}
 version="${2:-00000001}"
 
 #echo " ******************** version : ${version}"
@@ -62,7 +60,7 @@ for resource in ${resources}; do
 		echo "_PUBLISH_ONLY was true, not running 'cfn test' in cloud"
 		continue
 	fi
-	#    cwd=$(pwd)
+
 	cd "${resource}"
 	echo "resource: ${resource}"
 	# shellcheck disable=SC2001

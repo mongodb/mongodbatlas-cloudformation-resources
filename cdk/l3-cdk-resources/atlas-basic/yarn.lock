@@ -600,22 +600,22 @@
   dependencies:
     ajv "^8.12.0"
 
-"@mongodbatlas-awscdk/cluster@^1.0.1":
+"@mongodbatlas-awscdk/cluster@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/cluster/-/cluster-1.0.1.tgz#b19b288fc38390f3cdba9e5180f636fc8c89d946"
   integrity sha512-lalwMTvRhflzDgH80dT3Q0ULSn4jevgx4bWc1MUs00omhEqSMZKsLsqUc1Txt5+pxTfnzsF8qbHm6Tyfz1qtrQ==
 
-"@mongodbatlas-awscdk/database-user@^1.0.1":
+"@mongodbatlas-awscdk/database-user@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/database-user/-/database-user-1.0.1.tgz#2cb715898a0098e8e29122d3e366a4bab521956c"
   integrity sha512-9f93yR1OVfzwVwrEQX+HyGLpdN2TQ317xRF6xjXprs82nsYGk6cE2f3hY34hTTIIPpu/br32CuDrB/WLPzLz/g==
 
-"@mongodbatlas-awscdk/project-ip-access-list@^1.0.1":
+"@mongodbatlas-awscdk/project-ip-access-list@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/project-ip-access-list/-/project-ip-access-list-1.0.1.tgz#dd3ffadb9ede9a95fdb60b529665cb9ed9337e9c"
   integrity sha512-75bbLmMw6Q3nPRtlY5wRtwqPzGFOI1p/FRltOmVfifuqIPPwGDFbpMpdWtXwuFP+US7xQUC7K8035ZYJUO+ONA==
 
-"@mongodbatlas-awscdk/project@^1.0.1":
+"@mongodbatlas-awscdk/project@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/project/-/project-1.0.1.tgz#e7b8a7313d8b2ed040799d1629aa5c32a82a8574"
   integrity sha512-P9BwXdJECa2tqG0zjdAljD8QtWMDXMaALNsjF55zN5OOPPzl5KBSQYsQ22Q98re6Etpqt9Ankgg7U231qFCfig==
@@ -4063,10 +4063,10 @@ jsii-diff@^1.74.0:
     log4js "^6.7.1"
     yargs "^16.2.0"
 
-jsii-docgen@^7.0.222:
-  version "7.0.222"
-  resolved "https://registry.yarnpkg.com/jsii-docgen/-/jsii-docgen-7.0.222.tgz#40aa699b053d68a44d129cbf5c8b1ef032208e64"
-  integrity sha512-Osuqje/6sWJNqInvv0QYQaTua4kG8RusIIF68sRJTht0m7AzQ3o0mQ3oR/Rw8ZOWrk8Cl2LHx1F8YMvuXeOfIA==
+jsii-docgen@^7.0.227:
+  version "7.0.227"
+  resolved "https://registry.yarnpkg.com/jsii-docgen/-/jsii-docgen-7.0.227.tgz#06084e259c2f53fa8e6e9f645e65c64d25e71f06"
+  integrity sha512-uBfOfg+BGCwtVZpW+YEBHNtmbXmt4JYnc/DWdPlN5EPZrsoqz/3uvccQSnlacmlZ1kjIIVR5512495gUr+Vhrg==
   dependencies:
     "@jsii/spec" "^1.74.0"
     case "^1.6.3"
@@ -5187,10 +5187,10 @@ progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.67.32:
-  version "0.67.32"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.32.tgz#9d59e60f5a46c3b1c8d3deeddc41f8623f5ceadf"
-  integrity sha512-BMMwYIijjYLMOOVwpA+ZNlifOoUrVJPS2hLZCBSFGmAYWlLV0DGS6Xzm06t4N7Tt19IWucrhbd2e3SHbrz2wBw==
+projen@^0.67.41:
+  version "0.67.41"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.41.tgz#105522093d509c57e61c1cd90381bcdee8ebe864"
+  integrity sha512-QpaDV8WeAm2EoIqn82aL0rPP77E/7SciI4BprkoIFMAqQGkr+aSeCW2eEbZqjVOVLcH4AqSYEcLSMI+aRUqe/Q==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"

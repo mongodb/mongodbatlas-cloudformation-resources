@@ -126,7 +126,7 @@ The library also defines some default values for individual L1s.
 ```typescript
 
 const projectDefaults = {
-        projectName: 'cdk-project',
+        projectName: 'atlas-project-{random_num}',
     };
 
 const ipAccessDefaults = {
@@ -140,15 +140,15 @@ const ipAccessDefaults = {
 
 const dbDefaults = {
     dbName: 'admin',
-    username: 'cdk-user',
-    password: 'cdk-pwd',
+    username: 'atlas-user',
+    password: 'atlas-pwd',
     roles: [{
         roleName: 'atlasAdmin',
         databaseName: 'admin',
     }],
 }
 const clusterDefaults = {
-    clusterName: 'cdk-cluster',
+    clusterName: 'atlas-cluster-{random_num}',
     clusterType: 'REPLICASET',
 }
 ```

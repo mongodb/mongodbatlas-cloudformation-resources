@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 
 /** @type {*} */
 const projectDefaults = {
-  projectName: 'cdk-project',
+  projectName: 'atlas-project-',
 };
 /** @type {*} */
 const ipAccessDefaults = {
@@ -20,8 +20,8 @@ const ipAccessDefaults = {
 /** @type {*} */
 const dbDefaults = {
   dbName: 'admin',
-  username: 'cdk-user',
-  password: 'cdk-pwd',
+  username: 'atlas-user',
+  password: 'atlas-pwd',
   roles: [{
     roleName: 'atlasAdmin',
     databaseName: 'admin',
@@ -29,7 +29,7 @@ const dbDefaults = {
 };
 /** @type {*} */
 const clusterDefaults = {
-  clusterName: 'cdk-cluster',
+  clusterName: 'atlas-cluster-',
   clusterType: 'REPLICASET',
 };
 
@@ -390,14 +390,14 @@ export class AtlasBasic extends Construct {
     //Create a new MongoDB Atlas Project
     const mProject = new project.CfnProject(this, 'project-'.concat(id), {
       apiKeys: props.apiKeys,
-      name: props.projectProps.name || projectDefaults.projectName,
+      name: props.projectProps.name || projectDefaults.projectName.concat(String(randomNumber())),
       ...props.projectProps,
     });
     // Create a new MongoDB Atlas Cluster and pass project ID
     new atlas.CfnCluster(this, 'cluster-'.concat(id),
       {
         apiKeys: props.apiKeys,
-        name: props.clusterProps.name || clusterDefaults.clusterName,
+        name: props.clusterProps.name || clusterDefaults.clusterName.concat(String(randomNumber())),
         projectId: mProject.ref,
         clusterType: clusterDefaults.clusterType,
         ...props.clusterProps,
@@ -425,4 +425,10 @@ export class AtlasBasic extends Construct {
     );
 
   }
+}
+
+function randomNumber() {
+  const min = 10;
+  const max = 9999999;
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }

@@ -35,7 +35,6 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = log.Debugf("Create() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
@@ -95,8 +94,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-
 	// Validation
 	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -133,8 +130,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	_, _ = log.Debugf("Update() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(UpdateRequiredFields, currentModel)
@@ -193,8 +188,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
-
 	// Validation
 	modelValidation := validateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -228,7 +221,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              "Deleting ServerlessInstance",
-		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.StateName: constants.DeletingState,
@@ -238,8 +230,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(ListRequiredFields, currentModel)
@@ -388,7 +378,6 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 		return progress_events.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
-	_, _ = log.Debugf("stateName : %s", serverless.StateName)
 	currentModel.Id = &serverless.ID
 	if serverless.StateName != constants.IdleState {
 		return handler.ProgressEvent{
@@ -401,7 +390,6 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 			},
 		}, nil
 	}
-	_, _ = log.Debugf("Response : %+v", serverless)
 
 	model := readServerlessInstance(serverless)
 

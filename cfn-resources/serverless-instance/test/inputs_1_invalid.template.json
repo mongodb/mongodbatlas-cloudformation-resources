@@ -1,10 +1,6 @@
 {
     "Name": "",
     "ProjectID": "",
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    },
     "ProviderSettings": {
         "RegionName": "US_EAST_1",
         "ProviderName": "SERVERLESS"

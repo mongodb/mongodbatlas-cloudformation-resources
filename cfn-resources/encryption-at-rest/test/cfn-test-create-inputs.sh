@@ -6,11 +6,9 @@
 
 #set -x
 function usage {
-    echo "usage:$0 <project_name>"
-    echo "Creates a new encryption key for the the project "
+	echo "usage:$0 <project_name>"
+	echo "Creates a new encryption key for the the project "
 }
-
-
 
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
@@ -20,11 +18,11 @@ mkdir inputs
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
 echo "Check if a project is created $projectId"
@@ -32,7 +30,7 @@ export MCLI_PROJECT_ID=$projectId
 
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
-keyRegion=$(aws configure get region)
+	keyRegion=$(aws configure get region)
 fi
 # shellcheck disable=SC2001
 keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
@@ -56,12 +54,12 @@ cleanedkeyARN=$(echo "${keyARN}" | sed 's/"//g')
 echo "$cleanedkeyARN"
 echo "--------------------------------printing key  ends ----------------------------"
 
-policyContent=$(jq --arg cleanedkeyARN "$cleanedkeyARN" '.Statement[0]|.Resource[0]?|=$cleanedkeyARN' "$(dirname "$0")/key-policy-template.json" )
+policyContent=$(jq --arg cleanedkeyARN "$cleanedkeyARN" '.Statement[0]|.Resource[0]?|=$cleanedkeyARN' "$(dirname "$0")/key-policy-template.json")
 suffix=']}'
 policyDocument="${prefix} ${policyContent} ${suffix}"
-echo "$policyDocument" > "$(dirname "$0")"/policy.json
+echo "$policyDocument" >"$(dirname "$0")"/policy.json
 
-policyContent=$(jq '.Statement[0].Resource[0]' "$(dirname "$0")/policy.json" )
+policyContent=$(jq '.Statement[0].Resource[0]' "$(dirname "$0")/policy.json")
 echo "$policyContent"
 # shellcheck disable=SC2116
 keyID=$(echo "${policyContent##*/}")
@@ -71,40 +69,35 @@ echo "$cleanedKeyID"
 
 echo "--------------------------------create key and key policy document policy document ends ----------------------------"
 
-
 echo "$policyDocument"
 echo "--------------------------------policy document finished ----------------------------"
-
 
 roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
 echo "--------------------------------Mongo CLI Role creation ends ----------------------------"
 
-
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
-   --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
-  '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
+	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
+	'.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
 echo cat add-policy.json
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
-
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
-    awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
-    echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
-    aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
-    aws iam delete-role --role-name "${roleName}"
- awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
-    echo -e "FOUND id: ${awsRoleID}\n"
+	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
+	aws iam delete-role --role-name "${roleName}"
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://"$(dirname "$0")"/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
-
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
 
-aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document file://"$(dirname "$0")"/policy.json
+aws iam put-role-policy --role-name "${roleName}" --policy-name "${policyName}" --policy-document file://"$(dirname "$0")"/policy.json
 echo "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------"
 
 # shellcheck disable=SC2001
@@ -117,34 +110,32 @@ atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
-   --arg KMS_KEY "$cleanedKeyID" \
-   --arg KMS_ROLE "${roleID}" \
-   --arg region "$keyRegion" \
-   '.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg projectId "$projectId" \
+	--arg KMS_KEY "$cleanedKeyID" \
+	--arg KMS_ROLE "${roleID}" \
+	--arg region "$keyRegion" \
+	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg KMS_KEY "$cleanedKeyID" \
-   --arg KMS_ROLE "${roleID}" \
-   --arg projectId "$projectId" \
-   --arg region "$keyRegion" \
-    '.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg KMS_KEY "$cleanedKeyID" \
+	--arg KMS_ROLE "${roleID}" \
+	--arg projectId "$projectId" \
+	--arg region "$keyRegion" \
+	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region' \
+	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
-   --arg KMS_KEY "$cleanedKeyID" \
-   --arg KMS_ROLE "${roleID}" \
-   --arg region "$keyRegion" \
-   '.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
-   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg projectId "$projectId" \
+	--arg KMS_KEY "$cleanedKeyID" \
+	--arg KMS_ROLE "${roleID}" \
+	--arg region "$keyRegion" \
+	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
+	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 ls -l inputs
 #mongocli iam projects delete "${projectId}" --force
-
-
 
 #mongocli atlas cloudProviders accessRoles aws authorize 63721b924ad9a46eeef105ae --iamAssumedRoleArn "arn:aws:iam::816546967292:role/mongodb-test-enc-role"

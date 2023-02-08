@@ -10,7 +10,7 @@ set -o pipefail
 set -x
 
 function usage {
-    echo "usage:$0 <project_name>"
+	echo "usage:$0 <project_name>"
 }
 
 if [ "$#" -ne 1 ]; then usage; fi
@@ -27,49 +27,49 @@ hostname="$LDAP_HOST_NAME"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 ClusterName="${projectName}"
-clusterId=$(atlas clusters list --projectId "${projectId}"  --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
+clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
-  echo "creating cluster.."
-  clusterId=$(atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+	echo "creating cluster.."
+	clusterId=$(atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
 fi
 
 status=$(atlas clusters describe "${ClusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
 echo "status: ${status}"
 
 while [[ "${status}" != "IDLE" ]]; do
-        sleep 30
-        status=$(atlas clusters describe "${ClusterName}" --projectId "${projectId}"  --output=json | jq -r '.stateName')
-        if [ -z "$status" ]; then
-          status="timeout"
-        fi
-        echo "status: ${status}"
+	sleep 30
+	status=$(atlas clusters describe "${ClusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+	if [ -z "$status" ]; then
+		status="timeout"
+	fi
+	echo "status: ${status}"
 done
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg group_id "$projectId" \
-   --arg bindPassword "$bindPassword" \
-   --arg bindUsername "$bindUsername" \
-   --arg hostname "$hostname" \
-   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg group_id "$projectId" \
+	--arg bindPassword "$bindPassword" \
+	--arg bindUsername "$bindUsername" \
+	--arg hostname "$hostname" \
+	'.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg group_id "$projectId" \
-   --arg bindPassword "$bindPassword" \
-   --arg bindUsername "$bindUsername" \
-   --arg hostname "$hostname" \
-   '.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg group_id "$projectId" \
+	--arg bindPassword "$bindPassword" \
+	--arg bindUsername "$bindUsername" \
+	--arg hostname "$hostname" \
+	'.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
+	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

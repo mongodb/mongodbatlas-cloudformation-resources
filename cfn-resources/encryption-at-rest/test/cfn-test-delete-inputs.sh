@@ -6,7 +6,6 @@
 set -x
 echo "--------------------------------delete key and key policy document policy document starts ----------------------------"
 
-
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 echo "Check if a project is created $projectId"
@@ -14,7 +13,7 @@ export MCLI_PROJECT_ID=$projectId
 
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
-keyRegion=$(aws configure get region)
+	keyRegion=$(aws configure get region)
 fi
 # shellcheck disable=SC2001
 keyRegion=$(echo "$keyRegion" | sed -e "s/-/_/g")
@@ -24,7 +23,7 @@ echo "$keyRegion"
 roleName="mongodb-test-enc-role-${keyRegion}"
 policyName="atlas-kms-role-policy-${keyRegion}"
 
-policyContent=$(jq '.Statement[0].Resource[0]' "$(dirname "$0")/policy.json" )
+policyContent=$(jq '.Statement[0].Resource[0]' "$(dirname "$0")/policy.json")
 echo "$policyContent"
 keyID=$(${policyContent##*/})
 # shellcheck disable=SC2001
@@ -34,14 +33,14 @@ echo "$cleanedKeyID"
 aws kms schedule-key-deletion --key-id "$cleanedKeyID" --pending-window-in-days 7
 echo "--------------------------------delete key and key policy document policy document ends ----------------------------"
 pwd
-trustPolicy=$(jq '.Statement[0].Condition.StringEquals["sts:ExternalId"]' "add-policy.json" )
+trustPolicy=$(jq '.Statement[0].Condition.StringEquals["sts:ExternalId"]' "add-policy.json")
 echo "$trustPolicy"
 roleExternalID=$(${trustPolicy##*/})
 # shellcheck disable=SC2001
 atlasAssumedRoleExternalID=$(echo "${roleExternalID}" | sed 's/"//g')
 echo "$atlasAssumedRoleExternalID"
 
-roleId=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
+roleId=$(atlas cloudProviders accessRoles list --output json | jq --arg roleID "${atlasAssumedRoleExternalID}" -r '.awsIamRoles[] |select(.atlasAssumedRoleExternalId |test( $roleID)) |.roleId')
 echo "$roleId"
 
 atlas cloudProviders accessRoles aws deauthorize "${roleId}" --force

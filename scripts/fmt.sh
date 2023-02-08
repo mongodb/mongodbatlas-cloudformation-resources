@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2023 MongoDB Inc
+# Copyright 2020 MongoDB Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -Eeou pipefail
+STAGED_GO_FILES=$(git diff --name-only | grep ".go$")
 
-find_files() {
-	find . -not \( \
-		\( \
-		-wholename '*.github*' \
-		-o -wholename '*examples*' \
-		\) -prune \
-		\) \
-		\( -name '*.go' \)
-}
-
-for FILE in $(find_files); do
-	echo "Checking $FILE"
-	addlicense -c "MongoDB Inc" -check "${FILE}"
+echo "==> Formatting changed go files..."
+for FILE in ${STAGED_GO_FILES}; do
+	gofmt -w -s "${FILE}"
+	goimports -w "${FILE}"
 done
+
+echo "==> Formatting changed sh files..."
+for file in $files; do
+	shfmt -l -w "${file}"
+done
+
+echo "==> Done..."

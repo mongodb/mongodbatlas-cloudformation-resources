@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 
 temp=$(mktemp)
-aws sts get-session-token > "${temp}"
+aws sts get-session-token >"${temp}"
 
 AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "$temp")
 export AWS_SESSION_TOKEN

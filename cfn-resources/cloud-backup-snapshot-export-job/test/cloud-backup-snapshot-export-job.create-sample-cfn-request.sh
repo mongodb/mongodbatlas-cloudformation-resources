@@ -8,9 +8,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 function usage {
-    echo "usage:$0 <project_name>"
+	echo "usage:$0 <project_name>"
 }
 
 if [ "$#" -ne 1 ]; then usage; fi
@@ -21,11 +20,11 @@ snapshotId="${3}"
 ExportBucketId="${4}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$ATLAS_ORG_ID" \
-   --arg ClusterName "$ClusterName" \
-   --arg group_id "$projectId" \
-   --arg SnapshotId "$snapshotId" \
-    --arg ExportBucketId "$ExportBucketId" \
-   '.desiredResourceState.ExportBucketId?|=$ExportBucketId |.desiredResourceState.SnapshotId?|=$SnapshotId | .desiredResourceState.GroupId?|=$group_id | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ClusterName?|=$ClusterName' \
-  "$(dirname "$0")/cloud-backup-restore-job.sample-cfn-request.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg org "$ATLAS_ORG_ID" \
+	--arg ClusterName "$ClusterName" \
+	--arg group_id "$projectId" \
+	--arg SnapshotId "$snapshotId" \
+	--arg ExportBucketId "$ExportBucketId" \
+	'.desiredResourceState.ExportBucketId?|=$ExportBucketId |.desiredResourceState.SnapshotId?|=$SnapshotId | .desiredResourceState.GroupId?|=$group_id | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ClusterName?|=$ClusterName' \
+	"$(dirname "$0")/cloud-backup-restore-job.sample-cfn-request.json"

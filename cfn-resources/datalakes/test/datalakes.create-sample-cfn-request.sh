@@ -8,15 +8,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 function usage {
-    echo "usage:$0 <project_name>"
-    echo "usage:$0 <ExternalId>"
-    echo "usage:$0 <IamAssumedRoleARN>"
-    echo "usage:$0 <IamUserARN>"
-    echo "usage:$0 <RoleId>"
-    echo "usage:$0 <TestS3Bucket>"
-    exit;
+	echo "usage:$0 <project_name>"
+	echo "usage:$0 <ExternalId>"
+	echo "usage:$0 <IamAssumedRoleARN>"
+	echo "usage:$0 <IamUserARN>"
+	echo "usage:$0 <RoleId>"
+	echo "usage:$0 <TestS3Bucket>"
+	exit
 }
 
 if [ "$#" -ne 6 ]; then usage; fi
@@ -28,14 +27,13 @@ awsArne="${4}"
 roleID="${5}"
 bucketName="${6}"
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$ATLAS_ORG_ID" \
-   --arg group_id "$projectId" \
-   --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
-   --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
-   --arg AWSAssumedArn "$awsArne" \
-   --arg role "$roleID" \
-   --arg bucketName "$bucketName" \
-   '.desiredResourceState.TenantName?|=$bucketName |.desiredResourceState.CloudProviderConfig.Aws.TestS3Bucket?|=$bucketName |.desiredResourceState.CloudProviderConfig.Aws.RoleId?|=$role |.desiredResourceState.CloudProviderConfig.Aws.IamUserARN?|=$atlasAWSAccountArn |.desiredResourceState.CloudProviderConfig.Aws.ExternalId?|=$atlasAssumedRoleExternalId | .desiredResourceState.CloudProviderConfig.Aws.IamAssumedRoleARN?|=$AWSAssumedArn | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.GroupId?|=$group_id' \
-   "$(dirname "$0")/datalakes.sample-cfn-request.json"
-
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg org "$ATLAS_ORG_ID" \
+	--arg group_id "$projectId" \
+	--arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
+	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
+	--arg AWSAssumedArn "$awsArne" \
+	--arg role "$roleID" \
+	--arg bucketName "$bucketName" \
+	'.desiredResourceState.TenantName?|=$bucketName |.desiredResourceState.CloudProviderConfig.Aws.TestS3Bucket?|=$bucketName |.desiredResourceState.CloudProviderConfig.Aws.RoleId?|=$role |.desiredResourceState.CloudProviderConfig.Aws.IamUserARN?|=$atlasAWSAccountArn |.desiredResourceState.CloudProviderConfig.Aws.ExternalId?|=$atlasAssumedRoleExternalId | .desiredResourceState.CloudProviderConfig.Aws.IamAssumedRoleARN?|=$AWSAssumedArn | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.GroupId?|=$group_id' \
+	"$(dirname "$0")/datalakes.sample-cfn-request.json"

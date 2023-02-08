@@ -19,7 +19,7 @@ export ATLAS_PROJECT_ID=625454459c4e6108393d650d
 export ATLAS_REGION_NAME=us-east-1
 
 function usage {
-    echo "usage:$0 <project_id> <cluster_name>"
+	echo "usage:$0 <project_id> <cluster_name>"
 }
 
 if [ "$#" -ne 2 ]; then usage; fi
@@ -27,7 +27,7 @@ if [[ "$*" == help ]]; then usage; fi
 
 projectId=625454459c4e6108393d650d
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
-   '.desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ProjectId?|=$projectId ' \
-   "$(dirname "$0")/cloudprovideraccess.sample-cfn-request.json" > "test.request.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg projectId "$projectId" \
+	'.desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ProjectId?|=$projectId ' \
+	"$(dirname "$0")/cloudprovideraccess.sample-cfn-request.json" >"test.request.json"

@@ -28,7 +28,6 @@ set -xe
 env | grep CFN_PUBLISH_
 #echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
-
 _DRY_RUN=${DRY_RUN:-false}
 # shellcheck disable=SC2034
 _CFN_FLAGS=${CFN_FLAGS:---verbose}
@@ -51,103 +50,93 @@ echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
 if aws s3api head-bucket --bucket "${_CFN_TEST_LOG_BUCKET}"; then
-  echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
+	echo "found bucket with ${_CFN_TEST_LOG_BUCKET}"
 else
-  aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
+	aws s3 mb "s3://${_CFN_TEST_LOG_BUCKET}"
 fi
 
-for resource in ${resources};
-do
-    echo "Working on resource:${resource}"
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
-    if [[ "${_PUBLISH_ONLY}" == "true" ]]; then
-        echo "_PUBLISH_ONLY was true, not running 'cfn test' in cloud"
-        continue
-    fi
-#    cwd=$(pwd)
-    cd "${resource}"
-    echo "resource: ${resource}"
-    # shellcheck disable=SC2001
-    jsonschema="mongodb-atlas-$(echo "${resource}"| sed s/-//g).json"
-    res_type=$(jq -r '.typeName' "${jsonschema}")
-    echo "res_type=${res_type}"
-    type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
-    echo "type_info=${type_info}"
-    version=$(jq -r '.DefaultVersionId' "${type_info}")
-    echo "version=${version}"
+for resource in ${resources}; do
+	echo "Working on resource:${resource}"
+	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
+	if [[ "${_PUBLISH_ONLY}" == "true" ]]; then
+		echo "_PUBLISH_ONLY was true, not running 'cfn test' in cloud"
+		continue
+	fi
+	#    cwd=$(pwd)
+	cd "${resource}"
+	echo "resource: ${resource}"
+	# shellcheck disable=SC2001
+	jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
+	res_type=$(jq -r '.typeName' "${jsonschema}")
+	echo "res_type=${res_type}"
+	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
+	echo "type_info=${type_info}"
+	version=$(jq -r '.DefaultVersionId' "${type_info}")
+	echo "version=${version}"
 
-    test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-    arn=$(jq -r '.TypeVersionArn' "${test_type_resp}" )
+	test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+	arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
 
-    echo "********** Initiated test-type command ***********"
-    sleep 10
-    echo "Found arn:${arn}"
-    # sit and watch the test----
-    dt=$(aws cloudformation describe-type --arn "${arn}")
-    echo "dt=${dt}"
-    # sometime the status is not_tested after triggering the test, so keeping delay
-    status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
-    if [[ "$status" == "NOT_TESTED" ]]; then
-        test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-        arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
-        sleep 60
-    fi
+	echo "********** Initiated test-type command ***********"
+	sleep 10
+	echo "Found arn:${arn}"
+	# sit and watch the test----
+	dt=$(aws cloudformation describe-type --arn "${arn}")
+	echo "dt=${dt}"
+	# sometime the status is not_tested after triggering the test, so keeping delay
+	status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
+	if [[ "$status" == "NOT_TESTED" ]]; then
+		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+		arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
+		sleep 60
+	fi
 
-    while [[ "$status" == "IN_PROGRESS" ]]; do
-        sleep 15
-        dt=$(aws cloudformation describe-type --arn "${arn}")
-        status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
-        echo "status=${status}"
-    done
-    if [[ "${status}" == "FAILED" ||  "${status}" == "NOT_TESTED" ]]; then
-                echo "Test_type STATUS is ${status}"
-                exit 1
-    fi
-    # Fetch the resource type
-    cd -
+	while [[ "$status" == "IN_PROGRESS" ]]; do
+		sleep 15
+		dt=$(aws cloudformation describe-type --arn "${arn}")
+		status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
+		echo "status=${status}"
+	done
+	if [[ "${status}" == "FAILED" || "${status}" == "NOT_TESTED" ]]; then
+		echo "Test_type STATUS is ${status}"
+		exit 1
+	fi
+	# Fetch the resource type
+	cd -
 done
 if [[ "${_TEST_ONLY}" == "true" ]]; then
-    echo "TEST_ONLY true, skipping testing with the CloudFormation CLI"
-    exit 0
+	echo "TEST_ONLY true, skipping testing with the CloudFormation CLI"
+	exit 0
 fi
 
-
-
 echo "Step: Running 'publish-type' on ${resources}"
-for resource in ${resources};
-do
-    cd "${resource}"
-    echo "Working on resource:${resource}"
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'publish-type' for:${resource}" && continue
-    # shellcheck disable=SC2001
-    jsonschema="mongodb-atlas-$(echo "${resource}"| sed s/-//g).json"
-    echo "jsonschema=${jsonschema}"
-    type_name=$(jq -r '.typeName' "${jsonschema}")
-    echo "type_name=${type_name}"
-    type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
-    echo "type_info=${type_info}"
-    type_arn=$(jq -r '.TypeArn' "${type_info}")
-    echo "type_arn=${type_arn}"
+for resource in ${resources}; do
+	cd "${resource}"
+	echo "Working on resource:${resource}"
+	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'publish-type' for:${resource}" && continue
+	# shellcheck disable=SC2001
+	jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
+	echo "jsonschema=${jsonschema}"
+	type_name=$(jq -r '.typeName' "${jsonschema}")
+	echo "type_name=${type_name}"
+	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
+	echo "type_info=${type_info}"
+	type_arn=$(jq -r '.TypeArn' "${type_info}")
+	echo "type_arn=${type_arn}"
 
-    echo "version=${version}"
-#    public_version_number="${major_version}.${minor_version}.$(echo $version | sed 's/^0*//')"
-    echo "publish-command"
-    #echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn} --public-version-number ${public_version_number}"
-    echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn}"
-    echo "publish-command-exe"
-    aws cloudformation publish-type --type RESOURCE --arn "${type_arn}"
-    #--public-version-number ${public_version_number}
-    cd -
+	echo "version=${version}"
+	#    public_version_number="${major_version}.${minor_version}.$(echo $version | sed 's/^0*//')"
+	echo "publish-command"
+	#echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn} --public-version-number ${public_version_number}"
+	echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn}"
+	echo "publish-command-exe"
+	aws cloudformation publish-type --type RESOURCE --arn "${type_arn}"
+	#--public-version-number ${public_version_number}
+	cd -
 done
-
-
 
 echo "Clean up afterwards"
-for resource in ${resources};
-do
-    [[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run clean-up step for:${resource}" && continue
-    echo "running clean-up step for ${resource}"
+for resource in ${resources}; do
+	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run clean-up step for:${resource}" && continue
+	echo "running clean-up step for ${resource}"
 done
-
-
-

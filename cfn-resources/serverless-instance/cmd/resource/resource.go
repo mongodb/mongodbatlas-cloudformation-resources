@@ -221,6 +221,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              "Deleting ServerlessInstance",
+		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.StateName: constants.DeletingState,

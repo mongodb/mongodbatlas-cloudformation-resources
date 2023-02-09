@@ -3,6 +3,10 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	cfnlog "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"log"
 	"os"
 	"strings"
@@ -33,6 +37,9 @@ func EnsureAWSRegion(region string) string {
 	return r
 }
 
+// CreateMongoDBClient creates a new Client using apikeys
+//
+// Deprecated: In the future this function will be private, the NewMongoDBClient should be used instead.
 func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
 	// setup a transport to handle digest
 	log.Printf("CreateMongoDBClient--- publicKey:%s", publicKey)
@@ -48,6 +55,38 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	atlas := mongodbatlas.NewClient(client)
 	atlas.UserAgent = "mongodbatlas-cloudformation-resources/" + Version
 	return atlas, nil
+}
+
+func NewMongoDBClient(req handler.Request) (*mongodbatlas.Client, *handler.ProgressEvent) {
+	keys, handlerError := getApiKeys(req)
+	if handlerError != nil {
+		return nil, handlerError
+	}
+
+	// Create atlas client
+	client, err := CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
+	if err != nil {
+		_, _ = cfnlog.Warnf("Create - error: %+v", err)
+		peErr := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest)
+		return nil, &peErr
+	}
+
+	return client, nil
+}
+
+func getApiKeys(req handler.Request) (*DeploymentSecret, *handler.ProgressEvent) {
+	key, err := GetAPIKeyFromDeploymentSecret(&req, "Atlas-Cloud-Formation-ApiKey-Secret")
+	if err != nil {
+		_, _ = cfnlog.Warnf("Read - error: %+v", err)
+		pe := handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error getting api keyd secrets, the apikeys needs to be provided using aws secret, remember to validate if a secret named Atlas-Cloud-Formation-ApiKey-Secret is created with the PublicKey and PrivateKey properties, error: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		return nil, &pe
+	}
+
+	return &key, nil
 }
 
 const (

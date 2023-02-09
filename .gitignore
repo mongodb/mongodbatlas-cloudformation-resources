@@ -27,3 +27,11 @@ update.json
 **/inputs/**
 pytestdebug.log
 !*.rpdk-config
+
+
+# We don't want to commit env variables
+*.env
+
+# Tool generated files
+*.idea
+*.iml

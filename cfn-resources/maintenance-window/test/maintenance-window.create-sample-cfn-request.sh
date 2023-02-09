@@ -16,9 +16,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg groupID "$projectId" \
-   '.desiredResourceState.GroupId?|=$groupID | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
-   "$(dirname "$0")/maintenance-window.sample-cfn-request.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg groupID "$PROJECT_ID" \
+	'.desiredResourceState.GroupId?|=$groupID | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
+	"$(dirname "$0")/maintenance-window.sample-cfn-request.json"

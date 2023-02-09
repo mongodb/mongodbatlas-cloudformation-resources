@@ -6,8 +6,8 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-  jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
-     --arg pvtkey "$MCLI_PRIVATE_API_KEY" \
-     --arg ProjectId "$MCLI_PROJECT_ID" \
-     '.desiredResourceState.ProjectId?|=$ProjectId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
-    "$(dirname "$0")/private-endpoint-regional-mode.sample-cfn-request.json"
+jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
+	--arg pvtkey "$MCLI_PRIVATE_API_KEY" \
+	--arg ProjectId "$MCLI_PROJECT_ID" \
+	'.desiredResourceState.ProjectId?|=$ProjectId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
+	"$(dirname "$0")/private-endpoint-regional-mode.sample-cfn-request.json"

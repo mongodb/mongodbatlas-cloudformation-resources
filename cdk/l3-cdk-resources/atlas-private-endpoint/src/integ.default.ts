@@ -73,7 +73,8 @@ const privateEndpointProps : PrivateEndpointProps = {
 }
 
 const props   = {
-    apiKeys: apiKeys,
+    privateKey: apiKeys.privateKey,
+    publicKey: apiKeys.publicKey,
     atlasBasicProps: atlasBasicProps,
     privateEndpointProps: privateEndpointProps,
     region: awsRegion

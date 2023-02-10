@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-import {ApiKeyDefinition, AtlasBasic, AtlasBasicProps, ProjectProps} from "@mongodbatlas-awscdk/atlas-basic";
+import {AtlasBasic, AtlasBasicProps} from "@mongodbatlas-awscdk/atlas-basic";
 import {Construct} from "constructs";
 import {
     ApiKey,
@@ -34,8 +34,8 @@ const privateEndpointDefaults = {
  */
 export class AtlasBasicPrivateEndpoint extends Construct {
 
-    readonly atlas : AtlasBasic;
-    readonly private_endpoint : CfnPrivateEndpoint;
+    readonly atlasBasic : AtlasBasic;
+    readonly privateEndpoint : CfnPrivateEndpoint;
 
     /**
      * Creates an instance of AtlasBasicPrivateEndpoint.
@@ -47,15 +47,21 @@ export class AtlasBasicPrivateEndpoint extends Construct {
     constructor(scope: Construct, id: string, props: AtlasPrivateEndpointProps) {
         super(scope, id);
         
-        this.atlas = new AtlasBasic(this, 'atlas-basic-'.concat(id),
+        this.atlasBasic = new AtlasBasic(this, 'atlas-basic-'.concat(id),
             {
-                apiKeys: props.apiKeys,
+                apiKeys: {
+                    privateKey: props.privateKey,
+                    publicKey: props.publicKey
+                },
                 ...props.atlasBasicProps,
             });
 
-        this.private_endpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),
+        this.privateEndpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),
             {
-                apiKeys: props.apiKeys,
+                apiKeys: {
+                    privateKey: props.privateKey,
+                    publicKey: props.publicKey
+                },
                 groupId: 'this.atlas.',  //TODO
                 region: props.region || privateEndpointDefaults.region,
                 ...props.privateEndpointProps
@@ -74,13 +80,13 @@ export interface AtlasPrivateEndpointProps {
      * @type {string}
      * @memberof AtlasPrivateEndpointProps
      */
-    readonly groupId?: string;
+    readonly privateKey: string;
     /**
      * @description
-     * @type {ApiKeyDefinition}
+     * @type {string}
      * @memberof AtlasPrivateEndpointProps
      */
-    readonly apiKeys: ApiKeyDefinition;
+    readonly publicKey: string;
     /**
      * @description
      * @type {string}

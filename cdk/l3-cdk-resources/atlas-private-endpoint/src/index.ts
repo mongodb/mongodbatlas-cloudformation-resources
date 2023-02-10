@@ -44,12 +44,12 @@ export class AtlasBasicPrivateEndpoint extends Construct {
      */
     constructor(scope: Construct, id: string, props: AtlasPrivateEndpointProps) {
         super(scope, id);
-        
+        validate(props)
+        // Validation for atlas basic would be delegated to the library
         this.atlasBasic = new AtlasBasic(this, 'atlas-basic-'.concat(id),
             {
                 ...props.atlasBasicProps,
             });
-
         this.privateEndpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),
             {
                 apiKeys: props.apiKeys,
@@ -59,6 +59,15 @@ export class AtlasBasicPrivateEndpoint extends Construct {
             });
     }
 }
+
+const validate = (props: AtlasPrivateEndpointProps) => {
+    if (!props.atlasBasicProps.projectProps.orgId) {throw Error('Validation error: orgId is not defined');}
+
+    if (!props.apiKeys.publicKey) {throw Error('Validation error: publicKey is not defined');}
+
+    if (!props.apiKeys.privateKey) {throw Error('Validation error: privateKey is not defined');}
+};
+
 
 /**
  * @description
@@ -75,7 +84,7 @@ export interface AtlasPrivateEndpointProps {
      * @default us-east-1
      * @memberof AtlasPrivateEndpointProps
      */
-    readonly region: string;
+    readonly region?: string;
     /**
      * @description
      * @type {AtlasBasicProps}

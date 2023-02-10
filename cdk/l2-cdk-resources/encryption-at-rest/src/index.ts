@@ -64,6 +64,10 @@ export interface AtlasEncryptionAtRestProps {
 }
 
 
+/**
+ * It throws an error if any of the required properties are not defined
+ * @param {AtlasEncryptionAtRestProps} props - AtlasEncryptionAtRestProps
+ */
 const validate = (props: AtlasEncryptionAtRestProps) => {
   if (!props.projectId) {throw Error('Validation error: projectId is not defined');}
 
@@ -75,6 +79,7 @@ const validate = (props: AtlasEncryptionAtRestProps) => {
 
   if (!props.roleId) {throw Error('Validation error: roleId is not defined');}
 };
+
 
 export class AtlasEncryptionAtRest extends Construct {
   constructor(scope: Construct, id: string, props: AtlasEncryptionAtRestProps) {

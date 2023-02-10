@@ -17,7 +17,7 @@ import {
 } from '@mongodbatlas-awscdk/encryption-at-rest';
 import { Construct } from 'constructs';
 
-const US_EAST_1='us-east-1';
+const US_EAST_1='US_EAST_1';
 
 export interface AtlasEncryptionAtRestProps {
   /**
@@ -80,13 +80,28 @@ const validate = (props: AtlasEncryptionAtRestProps) => {
   if (!props.roleId) {throw Error('Validation error: roleId is not defined');}
 };
 
-
+/**
+ *
+ *
+ * @export
+ * @class AtlasEncryptionAtRest
+ * @extends {Construct}
+ */
 export class AtlasEncryptionAtRest extends Construct {
+
+  /**
+   *
+   *
+   * @type {CfnEncryptionAtRest}
+   * @memberof AtlasEncryptionAtRest
+   */
+  readonly cfnEncryptionAtRest: CfnEncryptionAtRest;
+
   constructor(scope: Construct, id: string, props: AtlasEncryptionAtRestProps) {
     super(scope, id);
 
     validate(props);
-    new CfnEncryptionAtRest(this,
+    this.cfnEncryptionAtRest = new CfnEncryptionAtRest(this,
       'AtlasEncryptionAtRest',
       {
         apiKeys: {

@@ -49,7 +49,7 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
       RoleID: ROLE_ID,
       CustomerMasterKeyID: CUSTOMER_MASTER_KEY_ID,
       Enabled: true,
-      Region: 'us-east-1',
+      Region: 'US_EAST_1',
     },
   });
 });

@@ -274,38 +274,4 @@ public readonly roleId: string;
 
 ID of an AWS IAM role authorized to manage an AWS customer master key.
 
----
-
-### AtlasEncryptionAtRest
-
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRest.Initializer"></a>
-
-```typescript
-import { AtlasEncryptionAtRest } from '@mongodbatlas-awscdk/atlas-encryption-at-rest'
-
-const atlasEncryptionAtRest: AtlasEncryptionAtRest{ ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRest.property.awsKms">awsKms</a></code> | <code><a h@mongodbatlas-awscdk/atlas-encryption-at-restt-rest.AwsKmsConfiguration">AwsKmsConfiguration</a></code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRest.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the Atlas project to which the user belongs. |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRest.property.apiKeys">apiKeys</a></code> | <code><a h@mongodbatlas-awscdk/atlas-encryption-at-restt-rest.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
-
-
-
-##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRest.property.projectId"></a>
-
-```typescript
-public readonly projectId: string;
-```
-
-- *Type:* string
-
-Unique identifier of the Atlas project to which the user belongs.
-
-
 

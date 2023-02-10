@@ -379,6 +379,31 @@ export interface AtlasBasicProps {
  */
 export class AtlasBasic extends Construct {
   /**
+   * @description
+   * @type {project.CfnProject}
+   * @memberof AtlasBasic
+   */
+  readonly mProject : project.CfnProject;
+  /**
+   * @description
+   * @type {atlas.CfnCluster}
+   * @memberof AtlasBasic
+   */
+  readonly mCluster : atlas.CfnCluster;
+  /**
+   * @description
+   * @type {user.CfnDatabaseUser}
+   * @memberof AtlasBasic
+   */
+  readonly mDBUser: user.CfnDatabaseUser;
+  /**
+   * @description
+   * @type {ipAccessList.CfnProjectIpAccessList}
+   * @memberof AtlasBasic
+   */
+  readonly ipAccessList: ipAccessList.CfnProjectIpAccessList;
+
+  /**
    * Creates an instance of AtlasBasic.
    * @param {Construct} scope
    * @param {string} id
@@ -388,40 +413,40 @@ export class AtlasBasic extends Construct {
   constructor(scope: Construct, id: string, props: AtlasBasicProps) {
     super(scope, id);
     //Create a new MongoDB Atlas Project
-    const mProject = new project.CfnProject(this, 'project-'.concat(id), {
+    this.mProject = new project.CfnProject(this, 'project-'.concat(id), {
       apiKeys: props.apiKeys,
       name: props.projectProps.name || projectDefaults.projectName.concat(String(randomNumber())),
       ...props.projectProps,
     });
     // Create a new MongoDB Atlas Cluster and pass project ID
-    new atlas.CfnCluster(this, 'cluster-'.concat(id),
-      {
-        apiKeys: props.apiKeys,
-        name: props.clusterProps.name || clusterDefaults.clusterName.concat(String(randomNumber())),
-        projectId: mProject.ref,
-        clusterType: clusterDefaults.clusterType,
-        ...props.clusterProps,
-      },
+    this.mCluster = new atlas.CfnCluster(this, 'cluster-'.concat(id),
+        {
+          apiKeys: props.apiKeys,
+          name: props.clusterProps.name || clusterDefaults.clusterName.concat(String(randomNumber())),
+          projectId: this.mProject.ref,
+          clusterType: clusterDefaults.clusterType,
+          ...props.clusterProps,
+        },
     );
     // Create a new MongoDB Atlas Database User
-    new user.CfnDatabaseUser(this, 'db-user-'.concat(id),
-      {
-        apiKeys: props.apiKeys,
-        databaseName: props.dbUserProps?.databaseName || dbDefaults.dbName,
-        projectId: mProject.ref,
-        username: props.dbUserProps?.username || dbDefaults.username,
-        roles: props.dbUserProps?.roles || dbDefaults.roles,
-        password: props.dbUserProps?.password || dbDefaults.password,
-        ...props.dbUserProps,
-      });
+    this.mDBUser = new user.CfnDatabaseUser(this, 'db-user-'.concat(id),
+        {
+          apiKeys: props.apiKeys,
+          databaseName: props.dbUserProps?.databaseName || dbDefaults.dbName,
+          projectId: this.mProject.ref,
+          username: props.dbUserProps?.username || dbDefaults.username,
+          roles: props.dbUserProps?.roles || dbDefaults.roles,
+          password: props.dbUserProps?.password || dbDefaults.password,
+          ...props.dbUserProps,
+        });
     // Create a new MongoDB Atlas Project IP Access List
-    new ipAccessList.CfnProjectIpAccessList(this, 'ip-access-list-'.concat(id),
-      {
-        apiKeys: props.apiKeys,
-        projectId: mProject.ref,
-        accessList: props.ipAccessListProps?.accessList || ipAccessDefaults.accessList,
-        ...props.ipAccessListProps,
-      },
+    this.ipAccessList = new ipAccessList.CfnProjectIpAccessList(this, 'ip-access-list-'.concat(id),
+        {
+          apiKeys: props.apiKeys,
+          projectId: this.mProject.ref,
+          accessList: props.ipAccessListProps?.accessList || ipAccessDefaults.accessList,
+          ...props.ipAccessListProps,
+        },
     );
 
   }

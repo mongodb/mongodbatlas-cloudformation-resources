@@ -9,7 +9,7 @@ The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node
 
 ## Description
 
-This construct lets you create Project, Cluster, DB User and configures IpAccesslist and Private Endpoint.
+Creates a project, cluster, dbuser, private endpoint and add an IP entry to the access list in MongoDB Atlas.
 
 
 ## MongoDB Atlas API Docs

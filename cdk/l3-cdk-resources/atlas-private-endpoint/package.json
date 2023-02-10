@@ -1,6 +1,6 @@
 {
   "name": "@mongodbatlas-awscdk/atlas-basic-private-endpoint",
-  "description": "Creates a project, cluster, dbuser, ipaccess list and private endpoint in MongoDB Atlas",
+  "description": "Creates a project, cluster, dbuser, private endpoint and adds an IP entry to the access list in MongoDB Atlas",
   "repository": {
     "type": "git",
     "url": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git"

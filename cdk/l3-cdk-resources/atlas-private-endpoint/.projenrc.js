@@ -50,12 +50,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
         'cluster',
         'dbuser',
         'ip-access-list'],
-    description: 'Creates a project, cluster, dbuser, ipaccess list and private endpoint in MongoDB Atlas',
-
-    // deps: [],                /* Runtime dependencies of this module. */
-    // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
-    // devDeps: [],             /* Build dependencies for this module. */
-    // packageName: undefined,  /* The "name" in package.json. */
+    description: 'Creates a project, cluster, dbuser, private endpoint and adds an IP entry to the access list in MongoDB Atlas',
 });
 
 new JsonFile(project, 'cdk.json', {

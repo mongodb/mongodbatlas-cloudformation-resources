@@ -81,10 +81,8 @@ aws cloudformation activate-type \
 
 ```typescript
 import * as cdk from 'aws-cdk-lib';
-import {ApiKeyDefinition, AtlasBasicProps} from "@mongodbatlas-awscdk/atlas-basic";
-import {AtlasBasicPrivateEndpoint, AtlasPrivateEndpointProps} from "./index";
-import {CfnPrivateEndpointProps} from "@mongodbatlas-awscdk/private-endpoint";
-
+import { AtlasBasicProps } from "@mongodbatlas-awscdk/atlas-basic";
+import {AtlasBasicPrivateEndpoint, PrivateEndpointProps} from "./index";
 
 const app = new cdk.App();
 
@@ -92,12 +90,15 @@ const stack = new cdk.Stack(app, 'atlas-basic-default', {
     env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 
-const apiKeys: ApiKeyDefinition = {
+const apiKeys = {
     privateKey: stack.node.tryGetContext('MONGODB_ATLAS_PRIVATE_KEY') || process.env.MONGODB_ATLAS_PRIVATE_KEY,
     publicKey: stack.node.tryGetContext('MONGODB_ATLAS_PUBLIC_KEY') || process.env.MONGODB_ATLAS_PUBLIC_KEY,
 };
 
 const orgId = stack.node.tryGetContext('MONGODB_ATLAS_ORG_ID') || process.env.MONGODB_ATLAS_ORG_ID;
+const vpcId = stack.node.tryGetContext('AWS_VPC_ID') || process.env.AWS_VPC_ID;
+const subnetId = stack.node.tryGetContext('AWS_SUBNET_ID') || process.env.AWS_SUBNET_ID;
+const awsRegion = stack.node.tryGetContext('AWS_REGION') || process.env.AWS_REGION;
 
 const replicationSpecs = [
     {
@@ -131,27 +132,24 @@ const atlasBasicProps : AtlasBasicProps = {
     },
 }
 
-const privateEndpointProps : CfnPrivateEndpointProps = {
-    groupId: '',
-    apiKeys: apiKeys,
+const privateEndpointProps : PrivateEndpointProps = {
     privateEndpoints: [{
-        vpcId: '',
-        subnetIds: ['']
+        vpcId: vpcId,
+        subnetIds: [subnetId]
     }],
-    region: 'us-east-1'
 }
 
 const props   = {
     apiKeys: apiKeys,
     atlasBasicProps: atlasBasicProps,
     privateEndpointProps: privateEndpointProps,
-    groupId: '',
-    region: 'us-east-1'
+    region: awsRegion
 }
 
 new AtlasBasicPrivateEndpoint(stack,'private-endpoint', props)
 ```
 
+Default Region is set to us-east-1
 
 You can find more information about activating this type in the [AWS CloudFormation documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-public.html).
 

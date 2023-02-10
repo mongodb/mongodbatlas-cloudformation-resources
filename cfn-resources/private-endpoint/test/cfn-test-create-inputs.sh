@@ -14,7 +14,7 @@ echo "$ATLAS_PUBLIC_KEY"
 echo "$ATLAS_PRIVATE_KEY"
 
 function usage {
-    echo "Creates a new private endpoint role for the test"
+	echo "Creates a new private endpoint role for the test"
 }
 
 if [ "$#" -ne 2 ]; then usage; fi
@@ -25,7 +25,7 @@ mkdir inputs
 
 region=$AWS_DEFAULT_REGION
 if [ -z "$region" ]; then
-region=$(aws configure get region)
+	region=$(aws configure get region)
 fi
 
 projectName="${1}"
@@ -34,31 +34,31 @@ subnetId="${3}"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
 echo "Created project \"${projectName}\" with id: ${projectId}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg groupId "$projectId" \
-   --arg region "$region" \
-   --arg vpcId "$vpcId" \
-   --arg subnetId "$subnetId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetId?|=$subnetId' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg groupId "$projectId" \
+	--arg region "$region" \
+	--arg vpcId "$vpcId" \
+	--arg subnetId "$subnetId" \
+	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetIds[0]?|=$subnetId' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg groupId "dsafasdgsdhsdfh" \
-   --arg region "$region" \
-   --arg vpcId "$vpcId" \
-   --arg subnetId "$subnetId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetId?|=$subnetId' \
-      "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_invalid.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg groupId "dsafasdgsdhsdfh" \
+	--arg region "$region" \
+	--arg vpcId "$vpcId" \
+	--arg subnetId "$subnetId" \
+	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetIds[0]?|=$subnetId' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

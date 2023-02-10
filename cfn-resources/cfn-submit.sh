@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-#set -x
-
+set -xeo
 
 export CLOUD_PUBLISH=true
 
@@ -13,34 +12,28 @@ regions="${2:-us-east-1 }"
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 # Deploy in given regions
-for resource in ${resources};
-do
-  for region in ${regions}
-  do
-#    echo " Started Publishing ${resource} resource in ${region}"
+for resource in ${resources}; do
+	for region in ${regions}; do
 
-    AWS_DEFAULT_REGION=$region
+		export AWS_DEFAULT_REGION="${region}"
 
-    echo "Step 1: cfn test"
-    ./cfn-testing-helper.sh "${resource}"
+		echo "Step 1: cfn test"
+		./cfn-testing-helper.sh "${resource}"
 
-    AWS_DEFAULT_REGION="${region}"
+		echo "step 2: cfn submit for ${resource}"
+		./cfn-submit-helper.sh "${resource}"
 
-    echo "step 2: cfn submit for ${resource}"
-    ./cfn-submit-helper.sh "${resource}"
+		echo " step 3: update default version for ${resource}"
 
-    echo " step 3: update default version for ${resource}"
+		cd "${resource}"
+		pwd
+		# shellcheck disable=SC2001
+		jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
+		res_type=$(jq -r '.typeName' "${jsonschema}")
+		echo "${res_type}"
+		cd -
 
-    cd "${resource}"
-    pwd
-    jsonschema="mongodb-atlas-$(echo ${resource}| sed s/-//g).json"
-    res_type=$(cat ${jsonschema}| jq -r '.typeName')
-    echo "${res_type}"
-    cd -
+		echo "******** Successfully submitted ${resource} *************"
 
-
-
-    echo "******** Successfully submitted ${resource} *************"
-
-  done
+	done
 done

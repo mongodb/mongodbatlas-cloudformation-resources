@@ -8,8 +8,8 @@ externalGroupName="RoleMappingGroup-02"
 groupId="638a46aef75a91632ce26596"
 echo "FederatedSettingsOrgRoleMapping creation"
 aws cloudformation deploy \
-   --stack-name atlas-federated-settings-org-role-mapping \
-   --template-file federatedSettingsOrgRoleMapping.json \
-    --no-fail-on-empty-changeset \
-    --parameter-overrides PrivateKey="${ATLAS_PRIVATE_KEY}" PublicKey="${ATLAS_PUBLIC_KEY}" ExternalGroupName="$externalGroupName" GroupId="$groupId" FederationSettingsId="$federationSettingsId" OrgId="$orgId" \
-    "$@"
+	--stack-name atlas-federated-settings-org-role-mapping \
+	--template-file federatedSettingsOrgRoleMapping.json \
+	--no-fail-on-empty-changeset \
+	--parameter-overrides PrivateKey="${ATLAS_PRIVATE_KEY}" PublicKey="${ATLAS_PUBLIC_KEY}" ExternalGroupName="$externalGroupName" GroupId="$groupId" FederationSettingsId="$federationSettingsId" OrgId="$orgId" \
+	"$@"

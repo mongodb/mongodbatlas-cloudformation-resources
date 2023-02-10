@@ -91,7 +91,7 @@ export class AtlasEncryptionAtRest extends Construct {
 
         awsKms: {
           enabled: props.enabled == undefined ? true: props.enabled,
-          region: props.region == undefined ? US_EAST_1 : props.region,
+          region: !props.region ? US_EAST_1 : props.region,
           roleId: props.roleId,
           customerMasterKeyId: props.customerMasterKeyId,
         },

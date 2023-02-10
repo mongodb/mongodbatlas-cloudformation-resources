@@ -9,7 +9,7 @@
         "PrivateEndpoints": [
             {
                 "VpcId": "",
-                "SubnetId": ""
+                "SubnetIds": [""]
             }
         ]
     },

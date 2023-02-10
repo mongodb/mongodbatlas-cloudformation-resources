@@ -8,19 +8,19 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 function usage {
-    echo "usage:$0 <FederationSettingsId> <ConnectedOrganizationId>"
-    exit 1
+	echo "usage:$0 <FederationSettingsId> <ConnectedOrganizationId>"
+	exit 1
 }
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-federationSettingsId="${1}"
+export federationSettingsId="${1}"
+export connectedOrganizationId="${2}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg org "$connectedOrganizationId" \
-   '.desiredResourceState.FederationSettingsId?|=$FederationSettingsId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey ' \
-     "$(dirname "$0")/federated-settings-identity-provider.sample-cfn-request.json"
+	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+	--arg org "$connectedOrganizationId" \
+	'.desiredResourceState.FederationSettingsId?|=$federationSettingsId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey ' \
+	"$(dirname "$0")/federated-settings-identity-provider.sample-cfn-request.json"

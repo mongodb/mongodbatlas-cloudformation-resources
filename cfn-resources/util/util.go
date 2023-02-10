@@ -1,3 +1,17 @@
+// Copyright 2023 MongoDB Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package util
 
 import (
@@ -5,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
@@ -12,10 +27,21 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const Version = "beta"
+const (
+	cfn         = "mongodbatlas-cloudformation-resources"
+	envLogLevel = "LOG_LEVEL"
+	debug       = "debug"
+)
+
+var (
+	toolName        = cfn
+	defaultLogLevel = "warning"
+	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+)
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
 // and returns "US_EAST_1" -- i.e. a valid Atlas region
@@ -44,18 +70,13 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 		return nil, err
 	}
 
-	// Initialize the MongoDB Atlas API Client.
-	atlas := mongodbatlas.NewClient(client)
-	atlas.UserAgent = "mongodbatlas-cloudformation-resources/" + Version
-	return atlas, nil
+	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if baseURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL"); baseURL != "" {
+		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
+	}
+
+	return mongodbatlas.New(client, opts...)
 }
-
-const (
-	EnvLogLevel = "LOG_LEVEL"
-	Debug       = "debug"
-)
-
-var defaultLogLevel = "warning"
 
 // defaultLogLevel can be set during compile time with an ld flag to enable
 // more verbose logging.
@@ -63,13 +84,13 @@ var defaultLogLevel = "warning"
 // env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="-s -w -X \
 // 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/handler cmd/main.go
 func getLogLevel() logger.Level {
-	levelString, exists := os.LookupEnv(EnvLogLevel)
+	levelString, exists := os.LookupEnv(envLogLevel)
 	if !exists {
-		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", EnvLogLevel, defaultLogLevel)
+		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, defaultLogLevel)
 		levelString = defaultLogLevel
 	}
 	switch levelString {
-	case Debug:
+	case debug:
 		return logger.DebugLevel
 	default:
 		return logger.WarningLevel

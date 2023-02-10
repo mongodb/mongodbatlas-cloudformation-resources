@@ -3,6 +3,7 @@ package constants
 type Event string
 
 const (
+	Profile             = "Profile"
 	PubKey              = "ApiKeys.PublicKey"
 	PvtKey              = "ApiKeys.PrivateKey"
 	OrgID               = "OrgId"

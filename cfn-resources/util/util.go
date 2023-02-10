@@ -19,7 +19,11 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const Version = "beta"
+const (
+	Version        = "beta"
+	SecretName     = "cfn/atlas/profile/%s"
+	DefaultProfile = "default"
+)
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
 // and returns "US_EAST_1" -- i.e. a valid Atlas region
@@ -57,8 +61,14 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	return atlas, nil
 }
 
-func NewMongoDBClient(req handler.Request) (*mongodbatlas.Client, *handler.ProgressEvent) {
-	keys, handlerError := getApiKeys(req)
+func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
+
+	profileInput := DefaultProfile
+	if profile != nil {
+		profileInput = *profile
+	}
+
+	keys, handlerError := getApiKeys(req, profileInput)
 	if handlerError != nil {
 		return nil, handlerError
 	}
@@ -75,13 +85,13 @@ func NewMongoDBClient(req handler.Request) (*mongodbatlas.Client, *handler.Progr
 	return client, nil
 }
 
-func getApiKeys(req handler.Request) (*DeploymentSecret, *handler.ProgressEvent) {
-	key, err := GetAPIKeyFromDeploymentSecret(&req, "Atlas-Cloud-Formation-ApiKey-Secret")
+func getApiKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
+	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(SecretName, profile))
 	if err != nil {
 		_, _ = cfnlog.Warnf("Read - error: %+v", err)
 		pe := handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("Error getting api keyd secrets, the apikeys needs to be provided using aws secret, remember to validate if a secret named Atlas-Cloud-Formation-ApiKey-Secret is created with the PublicKey and PrivateKey properties, error: %s", err.Error()),
+			Message:          fmt.Sprintf("Error getting api keyd secrets, the apikeys needs to be provided using aws secret, remember to validate if a secret named cfn/atlas/profile/%s is created with the PublicKey and PrivateKey properties, error: %s", profile, err.Error()),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
 		return nil, &pe
 	}

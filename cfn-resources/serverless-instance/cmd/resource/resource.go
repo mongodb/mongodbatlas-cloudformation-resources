@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"github.com/openlyinc/pointy"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -42,8 +43,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -94,7 +99,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -124,7 +129,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -174,7 +179,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -212,7 +217,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}

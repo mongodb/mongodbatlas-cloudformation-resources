@@ -21,6 +21,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectID">ProjectID</a>" : <i>String</i>,
         "<a href="#providersettings" title="ProviderSettings">ProviderSettings</a>" : <i><a href="serverlessinstanceprovidersettings.md">ServerlessInstanceProviderSettings</a></i>,
         "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
 </pre>
@@ -39,6 +40,7 @@ Properties:
     <a href="#projectid" title="ProjectID">ProjectID</a>: <i>String</i>
     <a href="#providersettings" title="ProviderSettings">ProviderSettings</a>: <i><a href="serverlessinstanceprovidersettings.md">ServerlessInstanceProviderSettings</a></i>
     <a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>: <i>Boolean</i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -138,6 +140,16 @@ Flag that indicates whether termination protection is enabled on the serverless 
 _Required_: No
 
 _Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Profile
+
+Profile used to provide credentials information, (a secret with the cfn/profile/{Profile_name}, is required), if not provided Default is used
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

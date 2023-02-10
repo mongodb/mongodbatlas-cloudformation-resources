@@ -95,7 +95,8 @@
   },
   "primaryIdentifier": [
     "/properties/Name",
-    "/properties/ProjectID"
+    "/properties/ProjectID",
+    "/properties/Profile"
   ],
   "properties": {
     "ConnectionStrings": {
@@ -182,6 +183,11 @@
     "TotalCount": {
       "type": "number",
       "description": "Number of documents returned in this response."
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/profile/{Profile_name}, is required), if not provided Default is used",
+      "default": "default"
     }
   },
   "readOnlyProperties": [

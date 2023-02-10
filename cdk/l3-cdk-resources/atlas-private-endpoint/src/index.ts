@@ -16,9 +16,7 @@
 import {AtlasBasic, AtlasBasicProps} from "@mongodbatlas-awscdk/atlas-basic";
 import {Construct} from "constructs";
 import {
-    ApiKey,
-    CfnPrivateEndpoint,
-    CfnPrivateEndpointProps, PrivateEndpoint,
+    CfnPrivateEndpoint, PrivateEndpoint,
 } from "@mongodbatlas-awscdk/private-endpoint";
 
 /** @type {*} */
@@ -49,20 +47,13 @@ export class AtlasBasicPrivateEndpoint extends Construct {
         
         this.atlasBasic = new AtlasBasic(this, 'atlas-basic-'.concat(id),
             {
-                apiKeys: {
-                    privateKey: props.privateKey,
-                    publicKey: props.publicKey
-                },
                 ...props.atlasBasicProps,
             });
 
         this.privateEndpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),
             {
-                apiKeys: {
-                    privateKey: props.privateKey,
-                    publicKey: props.publicKey
-                },
-                groupId: 'this.atlas.',  //TODO
+                apiKeys: props.apiKeys,
+                groupId: this.atlasBasic.mProject.ref,
                 region: props.region || privateEndpointDefaults.region,
                 ...props.privateEndpointProps
             });
@@ -75,18 +66,9 @@ export class AtlasBasicPrivateEndpoint extends Construct {
  * @interface AtlasPrivateEndpointProps
  */
 export interface AtlasPrivateEndpointProps {
-    /**
-     * @description
-     * @type {string}
-     * @memberof AtlasPrivateEndpointProps
-     */
-    readonly privateKey: string;
-    /**
-     * @description
-     * @type {string}
-     * @memberof AtlasPrivateEndpointProps
-     */
-    readonly publicKey: string;
+
+    readonly apiKeys: ApiKeys;
+
     /**
      * @description
      * @type {string}
@@ -106,6 +88,21 @@ export interface AtlasPrivateEndpointProps {
      * @memberof AtlasPrivateEndpointProps
      */
     readonly privateEndpointProps: PrivateEndpointProps;
+}
+
+export interface ApiKeys {
+    /**
+     * @description
+     * @type {string}
+     * @memberof AtlasPrivateEndpointProps
+     */
+    readonly privateKey: string;
+    /**
+     * @description
+     * @type {string}
+     * @memberof AtlasPrivateEndpointProps
+     */
+    readonly publicKey: string;
 }
 
 /**
@@ -138,12 +135,6 @@ export interface PrivateEndpointProps {
      * @memberof PrivateEndpointProps
      */
     readonly groupId?: string;
-    /**
-     * @description
-     * @type {ApiKey}
-     * @memberof PrivateEndpointProps
-     */
-    readonly apiKeys?: ApiKey;
     /**
      * @description
      * @type {string}

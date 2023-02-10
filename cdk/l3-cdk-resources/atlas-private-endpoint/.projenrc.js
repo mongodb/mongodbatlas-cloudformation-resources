@@ -24,9 +24,16 @@ const project = new awscdk.AwsCdkConstructLibrary({
     stability: 'experimental',
     peerDeps: [
         '@mongodbatlas-awscdk/atlas-basic',
-        '@mongodbatlas-awscdk/private-endpoint'
+        '@mongodbatlas-awscdk/private-endpoint',
+        '@mongodbatlas-awscdk/cluster',
+        '@mongodbatlas-awscdk/project',
+        '@mongodbatlas-awscdk/database-user',
+        '@mongodbatlas-awscdk/project-ip-access-list',
     ],
-    devDeps: ['aws-cdk', 'ts-node'],
+    devDeps: [
+        '@mongodbatlas-awscdk/atlas-basic',
+        '@mongodbatlas-awscdk/private-endpoint'],
+
     sampleCode: false,
     keywords: ['cdk',
         'awscdk',

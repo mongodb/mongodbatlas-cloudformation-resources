@@ -14,7 +14,7 @@
 
 
 import * as cdk from 'aws-cdk-lib';
-import {ApiKeyDefinition, AtlasBasicProps} from "@mongodbatlas-awscdk/atlas-basic";
+import { AtlasBasicProps } from "@mongodbatlas-awscdk/atlas-basic";
 import {AtlasBasicPrivateEndpoint, PrivateEndpointProps} from "./index";
 
 const app = new cdk.App();
@@ -23,7 +23,7 @@ const stack = new cdk.Stack(app, 'atlas-basic-default', {
     env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 
-const apiKeys: ApiKeyDefinition = {
+const apiKeys = {
     privateKey: stack.node.tryGetContext('MONGODB_ATLAS_PRIVATE_KEY') || process.env.MONGODB_ATLAS_PRIVATE_KEY,
     publicKey: stack.node.tryGetContext('MONGODB_ATLAS_PUBLIC_KEY') || process.env.MONGODB_ATLAS_PUBLIC_KEY,
 };
@@ -73,8 +73,7 @@ const privateEndpointProps : PrivateEndpointProps = {
 }
 
 const props   = {
-    privateKey: apiKeys.privateKey,
-    publicKey: apiKeys.publicKey,
+    apiKeys: apiKeys,
     atlasBasicProps: atlasBasicProps,
     privateEndpointProps: privateEndpointProps,
     region: awsRegion

@@ -1,8 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import {ApiKeyDefinition, AtlasBasicProps} from "@mongodbatlas-awscdk/atlas-basic";
-import {AtlasBasicPrivateEndpoint, AtlasPrivateEndpointProps} from "./index";
-import {CfnPrivateEndpointProps} from "@mongodbatlas-awscdk/private-endpoint";
-
+import {AtlasBasicPrivateEndpoint, PrivateEndpointProps} from "./index";
 
 const app = new cdk.App();
 
@@ -16,6 +14,9 @@ const apiKeys: ApiKeyDefinition = {
 };
 
 const orgId = stack.node.tryGetContext('MONGODB_ATLAS_ORG_ID') || process.env.MONGODB_ATLAS_ORG_ID;
+const vpcId = stack.node.tryGetContext('AWS_VPC_ID') || process.env.AWS_VPC_ID;
+const subnetId = stack.node.tryGetContext('AWS_SUBNET_ID') || process.env.AWS_SUBNET_ID;
+const awsRegion = stack.node.tryGetContext('AWS_REGION') || process.env.AWS_REGION;
 
 const replicationSpecs = [
     {
@@ -49,24 +50,22 @@ const atlasBasicProps : AtlasBasicProps = {
     },
 }
 
-const privateEndpointProps : CfnPrivateEndpointProps = {
-    groupId: '',
-    apiKeys: apiKeys,
+const privateEndpointProps : PrivateEndpointProps = {
     privateEndpoints: [{
-        vpcId: '',
-        subnetIds: ['']
+        vpcId: vpcId,
+        subnetIds: [subnetId]
     }],
-    region: 'us-east-1'
 }
 
 const props   = {
     apiKeys: apiKeys,
     atlasBasicProps: atlasBasicProps,
     privateEndpointProps: privateEndpointProps,
-    groupId: '',
-    region: 'us-east-1'
+    region: awsRegion
 }
 
 new AtlasBasicPrivateEndpoint(stack,'private-endpoint', props)
+
+
 
 

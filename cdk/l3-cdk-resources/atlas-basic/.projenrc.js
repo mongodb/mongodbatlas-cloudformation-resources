@@ -7,6 +7,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   defaultReleaseBranch: 'main',
   name: '@mongodbatlas-awscdk/atlas-basic',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  stability: 'experimental',
   peerDeps: [
     '@mongodbatlas-awscdk/cluster',
     '@mongodbatlas-awscdk/project',

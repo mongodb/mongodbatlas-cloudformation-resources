@@ -13,6 +13,7 @@ const atlasEncryptionAtRest = new awscdk.AwsCdkConstructLibrary({
   name: '@mongodbatlas-awscdk/atlas-encryption-at-rest',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
+  peerDeps: ['@mongodbatlas-awscdk/encryption-at-rest'],
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',

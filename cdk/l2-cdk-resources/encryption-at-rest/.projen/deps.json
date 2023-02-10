@@ -107,6 +107,10 @@
       "type": "override"
     },
     {
+      "name": "@mongodbatlas-awscdk/encryption-at-rest",
+      "type": "peer"
+    },
+    {
       "name": "aws-cdk-lib",
       "version": "^2.64.0",
       "type": "peer"
@@ -118,7 +122,6 @@
     },
     {
       "name": "@mongodbatlas-awscdk/encryption-at-rest",
-      "version": "1.0.1",
       "type": "runtime"
     }
   ],

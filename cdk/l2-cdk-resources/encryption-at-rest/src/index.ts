@@ -37,13 +37,13 @@ export interface AtlasEncryptionAtRestProps {
      *
      * @schema AwsKms#Enabled
      */
-  enabled?: boolean;
+  readonly enabled?: boolean;
   /**
      * The AWS region in which the AWS customer master key exists.
      *
      * @schema AwsKms#Region
      */
-  region?: string;
+  readonly region?: string;
 
   /**
      * Unique identifier of the Atlas project to which the user belongs.

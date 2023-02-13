@@ -6,7 +6,7 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'INTMDB-548',
+  defaultReleaseBranch: 'master',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),

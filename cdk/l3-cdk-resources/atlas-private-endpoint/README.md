@@ -14,7 +14,7 @@ Creates a project, cluster, dbuser, private endpoint and add an IP entry to the 
 
 ## MongoDB Atlas API Docs
 
-For more information about the API refer to: [API Endpoints](https://www.mongodb.com/docs/atlas/reference/api-resources-spec)
+For more information for each of the specific APIs used in this Level 3 AWS CDK resource please refer to: [Official Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec)
 
 ## Usage
 

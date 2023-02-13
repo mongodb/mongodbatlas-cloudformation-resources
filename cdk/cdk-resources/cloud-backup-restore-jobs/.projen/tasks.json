@@ -145,33 +145,6 @@
       "steps": [
         {
           "spawn": "package:js"
-        },
-        {
-          "spawn": "package:java"
-        },
-        {
-          "spawn": "package:python"
-        },
-        {
-          "spawn": "package:dotnet"
-        }
-      ]
-    },
-    "package:dotnet": {
-      "name": "package:dotnet",
-      "description": "Create dotnet language bindings",
-      "steps": [
-        {
-          "exec": "jsii-pacmak -v --target dotnet"
-        }
-      ]
-    },
-    "package:java": {
-      "name": "package:java",
-      "description": "Create java language bindings",
-      "steps": [
-        {
-          "exec": "jsii-pacmak -v --target java"
         }
       ]
     },
@@ -181,15 +154,6 @@
       "steps": [
         {
           "exec": "jsii-pacmak -v --target js"
-        }
-      ]
-    },
-    "package:python": {
-      "name": "package:python",
-      "description": "Create python language bindings",
-      "steps": [
-        {
-          "exec": "jsii-pacmak -v --target python"
         }
       ]
     },
@@ -210,8 +174,8 @@
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
     },
-    "publish:git:INTMDB-548": {
-      "name": "publish:git:INTMDB-548",
+    "publish:git": {
+      "name": "publish:git",
       "description": "Prepends the release changelog onto the project changelog, creates a release commit, and tags the release",
       "env": {
         "CHANGELOG": "dist/changelog.md",
@@ -227,14 +191,14 @@
           "builtin": "release/tag-version"
         },
         {
-          "exec": "git push --follow-tags origin INTMDB-548"
+          "exec": "git push --follow-tags origin master"
         }
       ],
       "condition": "! git log --oneline -1 | grep -q \"chore(release):\""
     },
-    "release:INTMDB-548": {
-      "name": "release:INTMDB-548",
-      "description": "Prepare a release from \"INTMDB-548\" branch",
+    "release": {
+      "name": "release",
+      "description": "Prepare a release from \"master\" branch",
       "env": {
         "RELEASE": "true",
         "MAJOR": "1"
@@ -256,7 +220,7 @@
           "exec": "git diff --ignore-space-at-eol --exit-code"
         },
         {
-          "spawn": "publish:git:INTMDB-548"
+          "spawn": "publish:git"
         }
       ]
     },

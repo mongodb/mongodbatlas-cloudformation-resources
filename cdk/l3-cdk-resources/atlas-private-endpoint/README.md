@@ -148,6 +148,37 @@ const props   = {
 
 new AtlasBasicPrivateEndpoint(stack,'private-endpoint', props)
 ```
+The library also defines some default values for individual L1s.
+
+```typescript
+
+const projectDefaults = {
+        projectName: 'atlas-project-{random_num}',
+    };
+
+const ipAccessDefaults = {
+    accessList: [
+        {
+            ipAddress: '0.0.0.0/1',
+            comment: 'Testing open all ips',
+        },
+    ],
+}
+
+const dbDefaults = {
+    dbName: 'admin',
+    username: 'atlas-user',
+    password: 'atlas-pwd',
+    roles: [{
+        roleName: 'atlasAdmin',
+        databaseName: 'admin',
+    }],
+}
+const clusterDefaults = {
+    clusterName: 'atlas-cluster-{random_num}',
+    clusterType: 'REPLICASET',
+}
+```
 
 Default Region is set to us-east-1 region (AWS US East N. Virginia)
 
@@ -163,4 +194,4 @@ You can find more information about activating this type in the [AWS CloudFormat
 
 ## License
 
-Distributed under the Apache-2.0 License.# replace this
+Distributed under the Apache-2.0 License.

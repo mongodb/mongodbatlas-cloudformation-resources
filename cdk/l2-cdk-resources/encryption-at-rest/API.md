@@ -133,8 +133,8 @@ const atlasEncryptionAtRestProps: AtlasEncryptionAtRestProps = { ... }
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the Atlas project to which the user belongs. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.roleId">roleId</a></code> | <code>string</code> | ID of an AWS IAM role authorized to manage an AWS customer master key. |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.enabled">enabled</a></code> | <code>boolean</code> | Specifies whether Encryption at Rest is enabled for an Atlas project. Default: true |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.region">region</a></code> | <code>string</code> | The AWS region in which the AWS customer master key exists. Default: US_EAST_1 |
+| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.enabled">enabled</a></code> | <code>boolean</code> | Specifies whether Encryption at Rest is enabled for an Atlas project. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.region">region</a></code> | <code>string</code> | The AWS region in which the AWS customer master key exists. |
 
 ---
 
@@ -205,6 +205,7 @@ public readonly enabled: boolean;
 Specifies whether Encryption at Rest is enabled for an Atlas project.
 
 To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details.
+Default Value: true
 
 ---
 
@@ -217,6 +218,8 @@ public readonly region: string;
 - *Type:* string
 
 The AWS region in which the AWS customer master key exists.
+
+Default Value: US_EAST_1
 
 ---
 

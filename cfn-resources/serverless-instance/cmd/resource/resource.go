@@ -3,8 +3,9 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/openlyinc/pointy"
 	"strings"
+
+	"github.com/openlyinc/pointy"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -110,8 +111,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	// Read Instance
-	model := readServerlessInstance(cluster)
-	model.Profile = currentModel.Profile
+	model := readServerlessInstance(cluster, currentModel.Profile)
 
 	// Response
 	return handler.ProgressEvent{
@@ -235,8 +235,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	instances := []interface{}{} // cfn test needs empty array instead nil, when items entries found
 	for i := range clustersResp.Results {
-		cluster := readServerlessInstance(clustersResp.Results[i])
-		cluster.Profile = currentModel.Profile
+		cluster := readServerlessInstance(clustersResp.Results[i], currentModel.Profile)
 		instances = append(instances, cluster)
 	}
 	// Response
@@ -275,11 +274,12 @@ func setProviderSettings(currentModel *Model) (serverlessProviderSettings *mongo
 	return serverlessProviderSettings
 }
 
-func readServerlessInstance(cluster *mongodbatlas.Cluster) (serverless *Model) {
+func readServerlessInstance(cluster *mongodbatlas.Cluster, profile *string) (serverless *Model) {
 	serverless = &Model{}
 	serverless.Name = &cluster.Name
 	serverless.Id = &cluster.ID
 	serverless.ProjectID = &cluster.GroupID
+	serverless.Profile = profile
 	if cluster.ProviderSettings != nil {
 		serverless.ProviderSettings = &ServerlessInstanceProviderSettings{
 			ProviderName: &cluster.ProviderSettings.ProviderName,
@@ -365,8 +365,8 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 		}, nil
 	}
 
-	model := readServerlessInstance(serverless)
-	model.Profile = currentModel.Profile
+	model := readServerlessInstance(serverless, currentModel.Profile)
+
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

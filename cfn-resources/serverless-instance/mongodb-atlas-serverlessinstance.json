@@ -209,7 +209,8 @@
   ],
   "createOnlyProperties": [
     "/properties/Name",
-    "/properties/ProjectID"
+    "/properties/ProjectID",
+    "/properties/Profile"
   ],
   "handlers": {
     "create": {

@@ -2,7 +2,6 @@ package util
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
@@ -57,7 +56,6 @@ func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, pub
 }
 
 func GetAPIKeyFromDeploymentSecret(req *handler.Request, secretName string) (DeploymentSecret, error) {
-	fmt.Printf("secretName=%s\n", secretName)
 	sm := secretsmanager.New(req.Session)
 	output, err := sm.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretName})
 	if err != nil {

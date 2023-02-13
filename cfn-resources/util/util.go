@@ -3,13 +3,13 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	cfnlog "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
@@ -21,7 +21,7 @@ import (
 
 const (
 	Version        = "beta"
-	SecretName     = "cfn/atlas/profile/%s"
+	ProfileName    = "cfn/atlas/profile/%s"
 	DefaultProfile = "default"
 )
 
@@ -62,13 +62,12 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 }
 
 func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
-
 	profileInput := DefaultProfile
 	if profile != nil {
 		profileInput = *profile
 	}
 
-	keys, handlerError := getApiKeys(req, profileInput)
+	keys, handlerError := getAPIKeys(req, profileInput)
 	if handlerError != nil {
 		return nil, handlerError
 	}
@@ -76,7 +75,7 @@ func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Clien
 	// Create atlas client
 	client, err := CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
 	if err != nil {
-		_, _ = cfnlog.Warnf("Create - error: %+v", err)
+		_, _ = logger.Warnf("Create - error: %+v", err)
 		peErr := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest)
 		return nil, &peErr
@@ -85,13 +84,15 @@ func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Clien
 	return client, nil
 }
 
-func getApiKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
-	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(SecretName, profile))
+func getAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
+	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(ProfileName, profile))
 	if err != nil {
-		_, _ = cfnlog.Warnf("Read - error: %+v", err)
+		_, _ = logger.Warnf("Read - error: %+v", err)
 		pe := handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("Error getting api keyd secrets, the apikeys needs to be provided using aws secret, remember to validate if a secret named cfn/atlas/profile/%s is created with the PublicKey and PrivateKey properties, error: %s", profile, err.Error()),
+			OperationStatus: handler.Failed,
+			Message: fmt.Sprintf("Error getting API-key, API-key needs to be provided using an AWS secret,"+
+				"  Ensure a secret named 'cfn/atlas/profile/%s' is created with the 'PublicKey' and 'PrivateKey' properties, error: %s",
+				profile, err.Error()),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
 		return nil, &pe
 	}

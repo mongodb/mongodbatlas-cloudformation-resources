@@ -33,6 +33,7 @@
         }
     },
     "primaryIdentifier": [
+        "/properties/ProjectId",
         "/properties/Type"
     ],
     "writeOnlyProperties": [

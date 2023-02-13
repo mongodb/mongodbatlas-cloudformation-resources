@@ -3060,9 +3060,9 @@ html-escaper@^2.0.0:
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
 
 http-cache-semantics@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
-  integrity sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.1.tgz#abe02fcb2985460bf0323be664436ec3476a6d5a"
+  integrity sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==
 
 http-proxy-agent@^4.0.1:
   version "4.0.1"
@@ -5179,10 +5179,10 @@ psl@^1.1.33:
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.9.0.tgz#d0df2a137f00794565fcaf3b2c00cd09f8d5a5a7"
   integrity sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==
 
-publib@^0.2.584:
-  version "0.2.584"
-  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.584.tgz#d537ada233fd394222d5bc159cea9001fe0891ac"
-  integrity sha512-VcuqudZuumwqSJsvh08W6F6G5dT6q9jmCOIcm+GrLXe1UaFKPMliyYApx8ElMdVNSd0lgY+ea+7RvDY4gA32rQ==
+publib@^0.2.577:
+  version "0.2.593"
+  resolved "https://registry.yarnpkg.com/publib/-/publib-0.2.593.tgz#eef57124446e110e5127dc342912f2c0b797506b"
+  integrity sha512-IwMrSgQaaEo1ZTojqT7II2DsHxaGQcD2nrKg93PUHZlcmBy9zhORZ7zAQ0wzvTMYy3Jo0g+BKCEuwG2VRBV82A==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     fs-extra "^8.0.0"

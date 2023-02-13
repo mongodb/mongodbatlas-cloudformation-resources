@@ -111,6 +111,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	// Read Instance
 	model := readServerlessInstance(cluster)
+	model.Profile = currentModel.Profile
 
 	// Response
 	return handler.ProgressEvent{
@@ -235,7 +236,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	instances := []interface{}{} // cfn test needs empty array instead nil, when items entries found
 	for i := range clustersResp.Results {
 		cluster := readServerlessInstance(clustersResp.Results[i])
-
+		cluster.Profile = currentModel.Profile
 		instances = append(instances, cluster)
 	}
 	// Response
@@ -365,7 +366,7 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 	}
 
 	model := readServerlessInstance(serverless)
-
+	model.Profile = currentModel.Profile
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

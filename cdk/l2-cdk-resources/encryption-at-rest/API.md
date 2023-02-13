@@ -205,6 +205,7 @@ public readonly enabled: boolean;
 Specifies whether Encryption at Rest is enabled for an Atlas project.
 
 To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details.
+Default Value: true
 
 ---
 
@@ -217,6 +218,8 @@ public readonly region: string;
 - *Type:* string
 
 The AWS region in which the AWS customer master key exists.
+
+Default Value: US_EAST_1
 
 ---
 

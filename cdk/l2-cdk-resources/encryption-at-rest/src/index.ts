@@ -19,6 +19,7 @@ import { Construct } from 'constructs';
 
 const US_EAST_1='US_EAST_1';
 
+
 export interface AtlasEncryptionAtRestProps {
   /**
      * ID of an AWS IAM role authorized to manage an AWS customer master key.
@@ -34,13 +35,13 @@ export interface AtlasEncryptionAtRestProps {
   readonly customerMasterKeyId: string;
   /**
      * Specifies whether Encryption at Rest is enabled for an Atlas project. To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details.
-     *
+     * Default Value: true
      * @schema AwsKms#Enabled
      */
   readonly enabled?: boolean;
   /**
      * The AWS region in which the AWS customer master key exists.
-     *
+     * Default Value: US_EAST_1
      * @schema AwsKms#Region
      */
   readonly region?: string;

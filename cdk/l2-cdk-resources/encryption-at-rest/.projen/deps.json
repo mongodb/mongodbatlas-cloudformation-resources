@@ -1,6 +1,11 @@
 {
   "dependencies": [
     {
+      "name": "@mongodbatlas-awscdk/encryption-at-rest",
+      "version": "1.0.1",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "version": "^27",
       "type": "build"
@@ -108,6 +113,7 @@
     },
     {
       "name": "@mongodbatlas-awscdk/encryption-at-rest",
+      "version": "1.0.1",
       "type": "peer"
     },
     {
@@ -122,6 +128,7 @@
     },
     {
       "name": "@mongodbatlas-awscdk/encryption-at-rest",
+      "version": "1.0.1",
       "type": "runtime"
     }
   ],

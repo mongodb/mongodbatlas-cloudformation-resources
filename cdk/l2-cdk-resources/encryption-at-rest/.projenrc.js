@@ -13,7 +13,7 @@ const atlasEncryptionAtRest = new awscdk.AwsCdkConstructLibrary({
   name: '@mongodbatlas-awscdk/atlas-encryption-at-rest',
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  peerDeps: ['@mongodbatlas-awscdk/encryption-at-rest'],
+  peerDeps: ['@mongodbatlas-awscdk/encryption-at-rest@1.0.1'],
   keywords: ['cdk',
     'awscdk',
     'aws-cdk',
@@ -30,7 +30,10 @@ const atlasEncryptionAtRest = new awscdk.AwsCdkConstructLibrary({
   description: 'Returns and edits the Encryption at Rest using Customer Key Management configuration.',
   stability: 'experimental',
   deps: [
-    '@mongodbatlas-awscdk/encryption-at-rest',
+    '@mongodbatlas-awscdk/encryption-at-rest@1.0.1',
+  ],
+  devDeps: [
+    '@mongodbatlas-awscdk/encryption-at-rest@1.0.1',
   ],
 });
 atlasEncryptionAtRest.synth();

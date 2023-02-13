@@ -149,7 +149,7 @@ const props   = {
 new AtlasBasicPrivateEndpoint(stack,'private-endpoint', props)
 ```
 
-Default Region is set to us-east-1
+Default Region is set to us-east-1 region (AWS US East N. Virginia)
 
 You can find more information about activating this type in the [AWS CloudFormation documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/registry-public.html).
 

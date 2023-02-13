@@ -17,6 +17,7 @@ update.json
 .hypothesis/
 
 # any "dot"-file, anywhere almost
+**/.*
 !/.github
 !/.gitignore
 !*.rpdk-config
@@ -27,6 +28,7 @@ update.json
 **/inputs/**
 pytestdebug.log
 !*.rpdk-config
+!/cdk/**/.*
 
 
 # We don't want to commit env variables

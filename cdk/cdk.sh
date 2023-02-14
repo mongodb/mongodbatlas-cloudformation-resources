@@ -75,28 +75,28 @@ cdk_type=$(echo "$2" | tr '[:upper:]' '[:lower:]')
 
 if [[ -z "${cdk_type}" || "${cdk_type}" = "l1" ]]; then # Generate L1 CDK constructor
 	echo "Generating L1 CDK resource"
-	dir="../cfn-resources/$resource"
-	for file in "$dir"/mongodb-atlas-*.json; do
+	dir="../cfn-resources/${resource}"
+	for file in "${dir}"/mongodb-atlas-*.json; do
 		if [[ -f $file ]]; then
-			src=$(jq -r '.typeName' "$file")
+			src=$(jq -r '.typeName' "${file}")
 			echo "generating for $src"
-			path=$(basename "$dir")
+			path=$(basename "${dir}")
 			index_exists=false
 			if [ -f cdk-resources/"${path}"/src/index.ts ]; then
 				rm -rf cdk-resources/"${path}"/src/*.ts
 				index_exists=true
 			fi
 
-			cdk-import cfn -l typescript -s "$file" -o cdk-resources/"${path}"/src "$src"
+			cdk-import cfn -l typescript -s "${file}" -o "cdk-resources/${path}/src" "${src}"
 			# need rename resource file to index.ts file
-			mv "cdk-resources"/"${path}"/"src"/"mongodb-atlas-""${path//-/}".ts cdk-resources/"${path}"/src/index.ts
-			if [ "$index_exists" = true ]; then
+			mv "cdk-resources/${path}/src/mongodb-atlas-${path//-/}.ts" "cdk-resources/${path}/src/index.ts"
+			if [ "${index_exists}" = true ]; then
 				continue
 			fi
 
-			_run_projen_aws_cdk_construct "${resource}" "$path"
+			_run_projen_aws_cdk_construct "${resource}" "${path}"
 		fi
 	done
 else
-	_run_projen_aws_cdk_construct "${resource}" "$cdk_type" # Generate L2 or L3 CDK constructor
+	_run_projen_aws_cdk_construct "${resource}" "${cdk_type}" # Generate L2 or L3 CDK constructor
 fi

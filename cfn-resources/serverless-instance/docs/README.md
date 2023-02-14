@@ -145,7 +145,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Profile
 
-Profile used to provide credentials information, (a secret with the cfn/profile/{Profile_name}, is required), if not provided Default is used
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: No
 

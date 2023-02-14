@@ -94,7 +94,7 @@ if [[ -z "${cdk_type}" || "${cdk_type}" = "l1" ]]; then # Generate L1 CDK constr
 				continue
 			fi
 
-			_run_projen_aws_cdk_construct "${resource}" "${path}"
+			_run_projen_aws_cdk_construct "${path}" "${cdk_type}"
 		fi
 	done
 else

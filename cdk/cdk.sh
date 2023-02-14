@@ -34,7 +34,7 @@ _print_usage() {
 	echo
 }
 
-_run_projen_awscdk-construct() {
+_run_projen_aws_cdk_construct() {
 	if [ "$#" -ne 2 ]; then
 		echo "Error: please provide the resource name and the cdk type"
 		echo
@@ -94,9 +94,9 @@ if [[ -z "${cdk_type}" || "${cdk_type}" = "l1" ]]; then # Generate L1 CDK constr
 				continue
 			fi
 
-			_run_projen_awscdk-construct() "${resource}" "$path"
+			_run_projen_aws_cdk_construct "${resource}" "$path"
 		fi
 	done
 else
-	_run_projen_awscdk-construct() "${resource}" "$cdk_type" # Generate L2 or L3 CDK constructor
+	_run_projen_aws_cdk_construct "${resource}" "$cdk_type" # Generate L2 or L3 CDK constructor
 fi

@@ -20,7 +20,6 @@
 #
 # How to use it:
 #   1. CDK L1:  ./cdk.sh "<RESOURCE NAME>" L1
-#   1. CDK L1:  ./cdk.sh "<RESOURCE NAME>" L1
 #   2. CDK L2:  ./cdk/sh "<RESOURCE NAME>" L2
 #   4. CDK L3:  ./cdk/sh "<RESOURCE NAME>" L3
 
@@ -29,9 +28,9 @@ set -euo pipefail
 
 _print_usage() {
 	echo
-  echo 'Usage:'
+	echo 'Usage:'
 	echo './cdk.sh   "<RESOURCE NAME>" "<L1|L2|L3>"'
-  echo
+	echo
   echo 'Example:'
   echo './cdk.sh cluster L1'
   echo

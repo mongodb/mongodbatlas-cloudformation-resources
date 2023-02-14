@@ -52,7 +52,7 @@ _run_projen_aws_cdk_construct() {
 		mkdir -p "${dir}"
 	fi
 
-	if [ "$cdk_type" = "l2" ]; then
+	if [ "$cdk_type" = "l3" ]; then
 		echo "Generating L3 CDK resource"
 		dir="l3-cdk-resources/${resource}"
 		mkdir -p "${dir}"

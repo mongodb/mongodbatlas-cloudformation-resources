@@ -86,7 +86,6 @@ if [ "$cdk_type" = "L2" ]; then
   rm -rf .git
 
   popd
-  exit 0
 fi
 
 if [ "$cdk_type" = "L3" ]; then
@@ -98,7 +97,6 @@ if [ "$cdk_type" = "L3" ]; then
   rm -rf .git
 
   popd
-  exit 0
 fi
 
 

@@ -1,17 +1,17 @@
-.PHONY: submit test
-tags=logging callback metrics scheduler
+tags="logging callback metrics scheduler"
 cgo=0 
 goos=linux
 goarch=amd64
-#export TAGS
-#export CGO_ENABLED
-#export GOARCH
+
 # Set next value at compile time for fallback log-level
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
+.PHONY: submit
 submit:
 	cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: test
 test:
 	cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS))
 
@@ -28,3 +28,8 @@ devtools:  ## Install dev tools
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)
 
+.PHONY: link-git-hooks
+link-git-hooks: ## Install git hooks
+	@echo "==> Installing all git hooks..."
+	find .git/hooks -type l -exec rm {} \;
+	find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;

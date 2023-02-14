@@ -34,36 +34,34 @@ _print_usage() {
 	echo
 }
 
-_run_projen_awscdk-construct(){
-  if [ "$#" -ne 2 ]; then
-	  echo "Error: please provide the resource name and the cdk type"
-    echo 
-    echo "Example: _run_projen_awscdk-construct cluster L2"
-	  exit 1
-  fi
+_run_projen_awscdk-construct() {
+	if [ "$#" -ne 2 ]; then
+		echo "Error: please provide the resource name and the cdk type"
+		echo
+		echo "Example: _run_projen_awscdk-construct cluster L2"
+		exit 1
+	fi
 
-    resource=$1
-    dir="cdk-resources/${resource}"
-    cdk_type=$2
+	resource=$1
+	dir="cdk-resources/${resource}"
+	cdk_type=$2
 
+	if [ "$cdk_type" = "l2" ]; then
+		echo "Generating L2 CDK resource"
+		dir="l2-cdk-resources/${resource}"
+		mkdir -p "${dir}"
+	fi
 
-    if [ "$cdk_type" = "l2" ]; then
-      echo "Generating L2 CDK resource"
-      dir="l2-cdk-resources/${resource}"
-      mkdir -p "${dir}"
-    fi
+	if [ "$cdk_type" = "l2" ]; then
+		echo "Generating L3 CDK resource"
+		dir="l3-cdk-resources/${resource}"
+		mkdir -p "${dir}"
+	fi
 
-    if [ "$cdk_type" = "l2" ]; then
-      echo "Generating L3 CDK resource"
-      dir="l3-cdk-resources/${resource}"
-      mkdir -p "${dir}"
-    fi
-
-
-  	pushd "${dir}"
-    npx projen new awscdk-construct --npm-access "public" --author "MongoDBAtlas" --author-name "MongoDBAtlas" --docgen true --sample-code false --name "@mongodbatlas-awscdk-${cdk_type}/${resource}" --author-address 'https://mongodb.com' --cdk-version '2.1.0' --default-release-branch 'master' --major-version 1 --release-to-npm true --repository-url 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git' --description "Retrieves or creates ${resource} in any given Atlas organization" --keywords {'cdk','awscdk','aws-cdk','cloudformation','cfn','extensions','constructs','cfn-resources','cloudformation-registry',"${cdk_type}",'mongodb','atlas',"$resource"}
-    rm -rf .git
-    popd
+	pushd "${dir}"
+	npx projen new awscdk-construct --npm-access "public" --author "MongoDBAtlas" --author-name "MongoDBAtlas" --docgen true --sample-code false --name "@mongodbatlas-awscdk-${cdk_type}/${resource}" --author-address 'https://mongodb.com' --cdk-version '2.1.0' --default-release-branch 'master' --major-version 1 --release-to-npm true --repository-url 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git' --description "Retrieves or creates ${resource} in any given Atlas organization" --keywords {'cdk','awscdk','aws-cdk','cloudformation','cfn','extensions','constructs','cfn-resources','cloudformation-registry',"${cdk_type}",'mongodb','atlas',"$resource"}
+	rm -rf .git
+	popd
 }
 
 if [ "$#" -ne 2 ]; then
@@ -96,9 +94,9 @@ if [[ -z "${cdk_type}" || "${cdk_type}" = "l1" ]]; then # Generate L1 CDK constr
 				continue
 			fi
 
-      _run_projen_awscdk-construct() "${resource}" "$path"
+			_run_projen_awscdk-construct() "${resource}" "$path"
 		fi
 	done
 else
-  _run_projen_awscdk-construct() "${resource}" "$cdk_type" # Generate L2 or L3 CDK constructor
+	_run_projen_awscdk-construct() "${resource}" "$cdk_type" # Generate L2 or L3 CDK constructor
 fi

@@ -17,7 +17,8 @@
 
 # This shell script can be use to generate one L1 | L2 | L3 CDK Construct.
 # In case of L1 constructor, the script uses the CFN template to generate the CDK resource.
-# How to execute:
+#
+# How to use it:
 #   1. CDK L1:  ./cdk.sh "<RESOURCE NAME>" L1
 #   1. CDK L1:  ./cdk.sh "<RESOURCE NAME>" L1
 #   2. CDK L2:  ./cdk/sh "<RESOURCE NAME>" L2

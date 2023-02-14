@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+
 # This shell script can be use to generate one L1 | L2 | L3 CDK Construct.
 # In case of L1 constructor, the script uses the CFN template to generate the CDK resource.
 # How to execute:

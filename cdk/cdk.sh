@@ -78,7 +78,7 @@ if [[ -z "${cdk_type}" || "${cdk_type}" = "L1" ]]; then
 fi
 
 if [ "$cdk_type" = "L2" ]; then
-  echo "Generating L2 CDK resource"
+echo "Generating L2 CDK resource"
   mkdir "l2-cdk-resources/${resource}"
   pushd "l2-cdk-resources/${resource}"
 

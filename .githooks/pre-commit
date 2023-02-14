@@ -14,18 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-STAGED_GO_FILES=$(git diff --name-only | grep ".go$")
+STAGED_GO_FILES=$(git diff --cached --name-only | grep ".go$")
 
-echo "==> Formatting changed go files..."
+echo "==> Formatting changed go files... $STAGED_GO_FILES"
 for FILE in ${STAGED_GO_FILES}; do
 	gofmt -w -s "${FILE}"
 	goimports -w "${FILE}"
+	git add "${FILE}"
 done
 
 echo "==> Formatting changed sh files..."
-STAGED_SH_FILES=$(git diff --name-only | grep ".sh$")
+STAGED_SH_FILES=$(git diff --cached --name-only | grep ".sh$")
 for FILE in ${STAGED_SH_FILES}; do
 	shfmt -l -w "${FILE}"
+	git add "${FILE}"
 done
 
 echo "==> Done..."
+

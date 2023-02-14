@@ -28,7 +28,6 @@ else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-
 name="serverless-cfn-bot"
 
 jq --arg org "$ATLAS_ORG_ID" \

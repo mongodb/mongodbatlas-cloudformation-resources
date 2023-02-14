@@ -27,10 +27,10 @@ set -euo pipefail
 
 
 _print_usage() {
-	echo
-	echo 'Usage:'
-	echo './cdk.sh   "<RESOURCE NAME>" "<L1|L2|L3>"'
-	echo
+  echo
+  echo 'Usage:'
+  echo './cdk.sh   "<RESOURCE NAME>" "<L1|L2|L3>"'
+  echo
   echo 'Example:'
   echo './cdk.sh cluster L1'
   echo

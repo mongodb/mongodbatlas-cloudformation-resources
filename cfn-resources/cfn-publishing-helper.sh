@@ -67,13 +67,15 @@ for resource in ${resources}; do
 	jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
 	res_type=$(jq -r '.typeName' "${jsonschema}")
 	echo "res_type=${res_type}"
-	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
-	echo "type_info=${type_info}"
-	version=$(jq -r '.DefaultVersionId' "${type_info}")
-	echo "version=${version}"
-
-	test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-	arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
+#	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
+#	echo "type_info=${type_info}"
+#	version=$(jq -r '.DefaultVersionId' "${type_info}")
+	version=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)' | jq -r '.DefaultVersionId')
+	echo "version from cfn-publishing-helper=${version}"
+arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
+#	test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+#	arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
+  echo "arn from cfn-publishing-helper=${arn}"
 
 	echo "********** Initiated test-type command ***********"
 	sleep 10

@@ -1,4 +1,4 @@
-name: check-copyright
+name: 'Check Copyright'
 on:
   push:
     branches:

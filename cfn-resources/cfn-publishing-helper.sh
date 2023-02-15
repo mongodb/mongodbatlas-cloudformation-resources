@@ -65,17 +65,18 @@ for resource in ${resources}; do
 	echo "resource: ${resource}"
 	# shellcheck disable=SC2001
 	jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
-	res_type=$(jq -r '.typeName' "${jsonschema}")
+	# shellcheck disable=SC2002
+	res_type=$(cat "${jsonschema}" | jq -r '.typeName')
 	echo "res_type=${res_type}"
-#	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
-#	echo "type_info=${type_info}"
-#	version=$(jq -r '.DefaultVersionId' "${type_info}")
+	#	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
+	#	echo "type_info=${type_info}"
+	#	version=$(jq -r '.DefaultVersionId' "${type_info}")
 	version=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)' | jq -r '.DefaultVersionId')
 	echo "version from cfn-publishing-helper=${version}"
-arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
-#	test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-#	arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
-  echo "arn from cfn-publishing-helper=${arn}"
+	arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
+	#	test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+	#	arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
+	echo "arn from cfn-publishing-helper=${arn}"
 
 	echo "********** Initiated test-type command ***********"
 	sleep 10
@@ -87,7 +88,8 @@ arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --l
 	status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
 	if [[ "$status" == "NOT_TESTED" ]]; then
 		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-		arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
+		# shellcheck disable=SC2002
+		arn=$(cat "${test_type_resp}" | jq -r '.TypeVersionArn')
 		sleep 60
 	fi
 
@@ -117,11 +119,13 @@ for resource in ${resources}; do
 	# shellcheck disable=SC2001
 	jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
 	echo "jsonschema=${jsonschema}"
-	type_name=$(jq -r '.typeName' "${jsonschema}")
+	# shellcheck disable=SC2002
+	type_name=$(cat "${jsonschema}" | jq -r '.typeName')
 	echo "type_name=${type_name}"
 	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
 	echo "type_info=${type_info}"
-	type_arn=$(jq -r '.TypeArn' "${type_info}")
+	# shellcheck disable=SC2002
+	type_arn=$(cat "${type_info}" | jq -r '.TypeArn')
 	echo "type_arn=${type_arn}"
 
 	echo "version=${version}"

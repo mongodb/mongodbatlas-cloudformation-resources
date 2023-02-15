@@ -18,10 +18,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/spf13/cast"
-
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -33,37 +32,28 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.UserID}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
-
-// ValidateRequest function to validate the request
-func ValidateRequest(requiredFields []string, currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
-	// Validate required fields are empty or nil
-	if modelValidation := validateModel(requiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil, errors.New("required field not found")
-	}
-	// Validate API Keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil, err
-	}
-	return handler.ProgressEvent{}, client, nil
-}
+var CreateRequiredFields = []string{constants.ProjectID, constants.UserID}
+var ReadRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
-
-	_, _ = logger.Debugf("Create - creating MongoDB X509 Authentication for DB User:%+v", currentModel)
-
-	// Validate required fields in the request
-	event, client, err := ValidateRequest(CreateRequiredFields, currentModel)
-	if err != nil {
-		return event, err
+	log.Print(currentModel.ProjectId)
+	log.Print(currentModel.UserName)
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
 	}
-	_, _ = logger.Debug("Creating MongoDB X509 Authentication for DB User starts")
+
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
 
 	// progress callback setup
 	if _, ok := req.CallbackContext["status"]; ok {
@@ -105,7 +95,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 	// track progress
-	event = handler.ProgressEvent{
+	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Created  Certificate  for DB User ",
 		ResourceModel:   currentModel,
@@ -117,11 +107,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
-	_, _ = logger.Debugf("Read - X509 certificates for Request() :%+v", currentModel)
-	// Validate required fields in the request
-	event, client, err := ValidateRequest(ReadRequiredFields, currentModel)
-	if err != nil {
-		return event, err
+	modelValidation := validateModel(ReadRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	_, _ = logger.Debug("Read - X509 Certificates starts ")
@@ -194,12 +192,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
-	_, _ = logger.Debugf("Delete - X509 Certificates  for Request() currentModel:%+v", currentModel)
+	modelValidation := validateModel(CreateRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 
-	// Validate required fields in the request
-	event, client, err := ValidateRequest(CreateRequiredFields, currentModel)
-	if err != nil {
-		return event, err
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Create Atlas API Request Object
@@ -212,7 +217,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = logger.Debug("Delete - X509 Certificates  starts ")
 	// API call
 	projectID := *currentModel.ProjectId
-	_, err = client.X509AuthDBUsers.DisableCustomerX509(context.Background(), projectID)
+	_, err := client.X509AuthDBUsers.DisableCustomerX509(context.Background(), projectID)
 	if err != nil {
 		_, _ = logger.Warnf("error deleting Customer X509 Authentication in the project(%s): %s", projectID, *currentModel.UserName)
 		return handler.ProgressEvent{

@@ -36,18 +36,6 @@
             },
             "additionalProperties": false
         },
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PrivateKey": {
-                    "type": "string"
-                },
-                "PublicKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
         "customerX509": {
             "type": "object",
             "properties": {
@@ -75,10 +63,12 @@
             ]
         }
     },
-    "primaryIdentifier": ["/properties/ProjectId"],
+    "primaryIdentifier": ["/properties/ProjectId","/properties/UserName","/properties/Profile"],
     "properties": {
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "Links": {
             "description": "One or more links to sub-resources and/or related resources.",

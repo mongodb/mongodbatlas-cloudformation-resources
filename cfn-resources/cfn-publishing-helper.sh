@@ -68,14 +68,9 @@ for resource in ${resources}; do
 	# shellcheck disable=SC2002
 	res_type=$(cat "${jsonschema}" | jq -r '.typeName')
 	echo "res_type=${res_type}"
-	#	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)')
-	#	echo "type_info=${type_info}"
-	#	version=$(jq -r '.DefaultVersionId' "${type_info}")
 	version=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)' | jq -r '.DefaultVersionId')
 	echo "version from cfn-publishing-helper=${version}"
 	arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
-	#	test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-	#	arn=$(jq -r '.TypeVersionArn' "${test_type_resp}")
 	echo "arn from cfn-publishing-helper=${arn}"
 
 	echo "********** Initiated test-type command ***********"
@@ -88,8 +83,7 @@ for resource in ${resources}; do
 	status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
 	if [[ "$status" == "NOT_TESTED" ]]; then
 		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
-		# shellcheck disable=SC2002
-		arn=$(cat "${test_type_resp}" | jq -r '.TypeVersionArn')
+		arn=$(echo "${test_type_resp}" | jq -r '.TypeVersionArn')
 		sleep 60
 	fi
 
@@ -124,18 +118,14 @@ for resource in ${resources}; do
 	echo "type_name=${type_name}"
 	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
 	echo "type_info=${type_info}"
-	# shellcheck disable=SC2002
 	type_arn=$(echo "${type_info}" | jq -r '.TypeArn')
 	echo "type_arn=${type_arn}"
 
 	echo "version=${version}"
-	#    public_version_number="${major_version}.${minor_version}.$(echo $version | sed 's/^0*//')"
 	echo "publish-command"
-	#echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn} --public-version-number ${public_version_number}"
 	echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn}"
 	echo "publish-command-exe"
 	aws cloudformation publish-type --type RESOURCE --arn "${type_arn}"
-	#--public-version-number ${public_version_number}
 	cd -
 done
 

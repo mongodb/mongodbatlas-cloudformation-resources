@@ -1,5 +1,5 @@
 ---
-name: shellcheck
+name: 'Shellcheck'
 on:
   push:
     branches:

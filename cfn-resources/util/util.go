@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -16,13 +17,22 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
-	Version        = "beta"
-	ProfileName    = "cfn/atlas/profile/%s"
+	cfn            = "mongodbatlas-cloudformation-resources"
 	DefaultProfile = "default"
+	envLogLevel    = "LOG_LEVEL"
+	debug          = "debug"
+	profileName    = "cfn/atlas/profile/%s"
+)
+
+var (
+	toolName        = cfn
+	defaultLogLevel = "warning"
+	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 )
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
@@ -55,10 +65,12 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 		return nil, err
 	}
 
-	// Initialize the MongoDB Atlas API Client.
-	atlas := mongodbatlas.NewClient(client)
-	atlas.UserAgent = "mongodbatlas-cloudformation-resources/" + Version
-	return atlas, nil
+	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if baseURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL"); baseURL != "" {
+		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
+	}
+
+	return mongodbatlas.New(client, opts...)
 }
 
 func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
@@ -85,7 +97,7 @@ func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Clien
 }
 
 func getAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
-	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(ProfileName, profile))
+	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(profileName, profile))
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
 		pe := handler.ProgressEvent{
@@ -100,26 +112,19 @@ func getAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handle
 	return &key, nil
 }
 
-const (
-	EnvLogLevel = "LOG_LEVEL"
-	Debug       = "debug"
-)
-
-var defaultLogLevel = "warning"
-
 // defaultLogLevel can be set during compile time with an ld flag to enable
 // more verbose logging.
 // For example,
 // env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="-s -w -X \
 // 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/handler cmd/main.go
 func getLogLevel() logger.Level {
-	levelString, exists := os.LookupEnv(EnvLogLevel)
+	levelString, exists := os.LookupEnv(envLogLevel)
 	if !exists {
-		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", EnvLogLevel, defaultLogLevel)
+		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, defaultLogLevel)
 		levelString = defaultLogLevel
 	}
 	switch levelString {
-	case Debug:
+	case debug:
 		return logger.DebugLevel
 	default:
 		return logger.WarningLevel

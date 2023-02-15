@@ -125,7 +125,7 @@ for resource in ${resources}; do
 	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
 	echo "type_info=${type_info}"
 	# shellcheck disable=SC2002
-	type_arn=$(cat "${type_info}" | jq -r '.TypeArn')
+	type_arn=$(echo "${type_info}" | jq -r '.TypeArn')
 	echo "type_arn=${type_arn}"
 
 	echo "version=${version}"

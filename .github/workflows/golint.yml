@@ -1,12 +1,11 @@
-name: golangci-lint
+name: 'Go Lint'
 on:
   push:
-    branches: [ "master" , "INT**"]
+    branches:
+      - master
   pull_request:
-    branches: [ "master", "INT**" ]
 jobs:
-  # ...
-  lint-go:
+  golangci-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

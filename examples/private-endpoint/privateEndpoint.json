@@ -39,7 +39,7 @@
           "PrivateEndpoints": [
             {
               "VpcId": { "Ref" : "AWSVpcId" },
-              "SubnetId": { "Ref" : "AWSSubnetId" }
+              "SubnetIds": [{ "Ref" : "AWSSubnetId" }]
             }
           ],
           "ApiKeys": {

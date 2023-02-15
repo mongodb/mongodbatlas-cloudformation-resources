@@ -1,3 +1,17 @@
+// Copyright 2023 MongoDB Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package awsvpcendpoint
 
 import (
@@ -16,13 +30,13 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 
 type AwsPrivateEndpointInput struct {
 	VpcID               string
-	SubnetID            string
+	SubnetIDs           []string
 	InterfaceEndpointID *string
 }
 
 type AwsPrivateEndpointOutput struct {
 	VpcID               string
-	SubnetID            string
+	SubnetIDs           []string
 	InterfaceEndpointID string
 }
 
@@ -34,11 +48,17 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 	subnetIds := make([]AwsPrivateEndpointOutput, len(privateEndpointInputs))
 
 	for i, pe := range privateEndpointInputs {
+		subnetIdsIn := make([]*string, len(pe.SubnetIDs))
+
+		for i := range pe.SubnetIDs {
+			subnetIdsIn[i] = &(pe.SubnetIDs[i])
+		}
+
 		connection := ec2.CreateVpcEndpointInput{
 			VpcId:           &pe.VpcID,
 			ServiceName:     &endpointServiceName,
 			VpcEndpointType: &vcpType,
-			SubnetIds:       []*string{&pe.SubnetID},
+			SubnetIds:       subnetIdsIn,
 		}
 
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
@@ -50,7 +70,7 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 
 		subnetIds[i] = AwsPrivateEndpointOutput{
 			VpcID:               pe.VpcID,
-			SubnetID:            pe.SubnetID,
+			SubnetIDs:           pe.SubnetIDs,
 			InterfaceEndpointID: *vpcE.VpcEndpoint.VpcEndpointId,
 		}
 	}
@@ -84,5 +104,5 @@ func Delete(req handler.Request, interfaceEndpoints []string, region string) *ha
 }
 
 func (i AwsPrivateEndpointInput) ToString() string {
-	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetID)
+	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetIDs)
 }

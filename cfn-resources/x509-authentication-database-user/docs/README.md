@@ -45,7 +45,7 @@ _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### CustomerX509
 
@@ -63,7 +63,7 @@ _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ProjectId
 
@@ -73,7 +73,7 @@ _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
 
@@ -99,7 +99,31 @@ Total number of unexpired certificates returned in this response.
 
 A number of months that the created certificate is valid for before expiry, up to 24 months.default 3.
 
-#### CustomerX509
+#### Cas
 
-Returns the <code>CustomerX509</code> value.
+Returns the <code>Cas</code> value.
+
+#### UserName
+
+Returns the <code>UserName</code> value.
+
+#### MonthsUntilExpiration
+
+Returns the <code>MonthsUntilExpiration</code> value.
+
+#### NotAfter
+
+Returns the <code>NotAfter</code> value.
+
+#### Subject
+
+Returns the <code>Subject</code> value.
+
+#### GroupId
+
+Returns the <code>GroupId</code> value.
+
+#### Id
+
+Returns the <code>Id</code> value.
 

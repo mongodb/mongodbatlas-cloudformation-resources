@@ -62,6 +62,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel)
 	}
 
+	if isEnabled(client, currentModel) {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "resource already exists",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+	}
+
 	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
 	userName := *currentModel.UserName

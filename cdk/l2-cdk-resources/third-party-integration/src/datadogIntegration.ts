@@ -53,7 +53,7 @@ export class DatadogIntegration extends Construct {
     validate(props);
 
     this.cfnThirdPartyIntegration = new CfnThirdPartyIntegration(this,
-      'DatadogIntegration',
+      'DATADOG_Integration',
       {
         ...props,
         type: CfnThirdPartyIntegrationPropsType.DATADOG,

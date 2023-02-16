@@ -51,7 +51,7 @@ export class PagerDutyIntegration extends Construct {
     validate(props);
 
     this.cfnThirdPartyIntegration = new CfnThirdPartyIntegration(this,
-      'PagerDutyThirdPartyIntegration',
+      'PAGER_DUTY_Integration',
       {
         ...props,
         type: CfnThirdPartyIntegrationPropsType.PAGER_DUTY,

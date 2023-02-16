@@ -40,7 +40,7 @@ export class MicrosoftTeamsIntegration extends Construct {
     validate(props);
 
     this.cfnThirdPartyIntegration = new CfnThirdPartyIntegration(this,
-      'MicrosoftTeamsIntegration',
+      'MICROSOFT_TEAMS_Integration',
       {
         ...props,
         type: CfnThirdPartyIntegrationPropsType.MICROSOFT_TEAMS,

@@ -62,7 +62,7 @@ for resource in ${resources}; do
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn submit' on:${resource}" && continue
 	cd "${resource}"
 	echo "resource: ${resource}"
-	echo "Submiting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
+	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
 	cfn submit "${CFN_SUBMIT_CFN_FLAGS}" || true
 	cat rpdk.log
 	cd -

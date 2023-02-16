@@ -18,16 +18,39 @@ import {
 } from '@mongodbatlas-awscdk/third-party-integration';
 import { Construct } from 'constructs';
 import { ThirdPartyIntegrationProps } from './thirdPartyIntegrationBase';
+import * as util from './util';
 
-export interface PagerDutyIntegrationProps extends ThirdPartyIntegrationProps {
-  readonly serviceKey: string;
+export enum PagerDutyRegion {
+  US = 'US',
+  EU = 'EU',
 }
 
+export interface PagerDutyIntegrationProps extends ThirdPartyIntegrationProps {
+  /**
+   * Service key associated with your PagerDuty account.
+   */
+  readonly serviceKey: string;
+
+  /**
+   * PagerDuty region that indicates the API Uniform Resource Locator (URL) to use.
+   */
+  readonly region: PagerDutyRegion;
+}
+
+const validate = (props: PagerDutyIntegrationProps) => {
+  util.validate(props);
+  if (!props.serviceKey) { throw Error(util.getPropUndefinedMsg('serviceKey')); }
+  if (!props.region) { throw Error(util.getPropUndefinedMsg('region')); }
+};
+
 export class PagerDutyIntegration extends Construct {
+  readonly cfnThirdPartyIntegration: CfnThirdPartyIntegration;
+
   constructor(scope: Construct, id: string, props: PagerDutyIntegrationProps) {
     super(scope, id);
+    validate(props);
 
-    new CfnThirdPartyIntegration(this,
+    this.cfnThirdPartyIntegration = new CfnThirdPartyIntegration(this,
       'PagerDutyThirdPartyIntegration',
       {
         ...props,

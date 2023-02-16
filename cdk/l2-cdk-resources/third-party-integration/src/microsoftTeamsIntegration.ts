@@ -18,16 +18,28 @@ import {
 } from '@mongodbatlas-awscdk/third-party-integration';
 import { Construct } from 'constructs';
 import { ThirdPartyIntegrationProps } from './thirdPartyIntegrationBase';
+import * as util from './util';
 
 export interface MicrosoftTeamsIntegrationProps extends ThirdPartyIntegrationProps {
+  /**
+   * Endpoint web address of the Microsoft Teams webhook to which MongoDB Cloud sends notifications.
+   */
   readonly microsoftTeamsWebhookUrl: string;
 }
 
+const validate = (props: MicrosoftTeamsIntegrationProps) => {
+  util.validate(props);
+  if (!props.microsoftTeamsWebhookUrl) { throw Error(util.getPropUndefinedMsg('microsoftTeamsWebhookUrl')); }
+};
+
 export class MicrosoftTeamsIntegration extends Construct {
+  readonly cfnThirdPartyIntegration: CfnThirdPartyIntegration;
+
   constructor(scope: Construct, id: string, props: MicrosoftTeamsIntegrationProps) {
     super(scope, id);
+    validate(props);
 
-    new CfnThirdPartyIntegration(this,
+    this.cfnThirdPartyIntegration = new CfnThirdPartyIntegration(this,
       'MicrosoftTeamsIntegration',
       {
         ...props,

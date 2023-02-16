@@ -13,11 +13,27 @@
 // limitations under the License.
 
 export interface ApiKeyDefinition {
+  /**
+   * Atlas private API key.
+   */
   readonly privateKey: string;
+
+  /**
+   * Atlas public API key.
+   */
   readonly publicKey: string;
 }
 
 export interface ThirdPartyIntegrationProps {
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   */
   readonly projectId: string;
+
+  /**
+   * Atlas API keys.
+   */
   readonly apiKeys: ApiKeyDefinition;
 }
+

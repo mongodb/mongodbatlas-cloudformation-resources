@@ -406,7 +406,7 @@ func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.
 		if res.Response.StatusCode == 401 { // cfn test
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
-				Message:          "Error while GetOneProjectByName",
+				Message:          "Error while getting project by name",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
 		}
 		return progressevents.GetFailedEventByResponse(err.Error(),
@@ -421,7 +421,7 @@ func getProjectByID(id *string, client *mongodbatlas.Client) (event handler.Prog
 		if res.Response.StatusCode == 401 { // cfn test
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
-				Message:          "Error while  GetOneProject",
+				Message:          "Error while  getting project by id",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
 		}
 		return progressevents.GetFailedEventByResponse(err.Error(),

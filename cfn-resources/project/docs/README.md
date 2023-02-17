@@ -14,8 +14,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
+        "<a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>" : <i>Boolean</i>,
         "<a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>" : <i><a href="projectsettings.md">projectSettings</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
+        "<a href="#projectteams" title="ProjectTeams">ProjectTeams</a>" : <i>[ <a href="projectteam.md">projectTeam</a>, ... ]</i>,
         "<a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>" : <i>[ <a href="projectapikey.md">projectApiKey</a>, ... ]</i>
     }
 }
@@ -28,8 +30,11 @@ Type: MongoDB::Atlas::Project
 Properties:
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
+    <a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>: <i>Boolean</i>
     <a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>: <i><a href="projectsettings.md">projectSettings</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
+    <a href="#projectteams" title="ProjectTeams">ProjectTeams</a>: <i>
+      - <a href="projectteam.md">projectTeam</a></i>
     <a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>: <i>
       - <a href="projectapikey.md">projectApiKey</a></i>
 </pre>
@@ -56,6 +61,16 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### WithDefaultAlertsSettings
+
+Flag that indicates whether to create the project with default alert settings.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### ProjectSettings
 
 _Required_: No
@@ -73,6 +88,14 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### ProjectTeams
+
+_Required_: No
+
+_Type_: List of <a href="projectteam.md">projectTeam</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ProjectApiKeys
 
@@ -105,32 +128,4 @@ Unique identifier of the organization within which to create the project.
 #### ClusterCount
 
 The number of Atlas clusters deployed in the project.
-
-#### WithDefaultAlertsSettings
-
-Unique identifier of the organization within which to create the project.
-
-#### ProjectTeams
-
-Returns the <code>ProjectTeams</code> value.
-
-#### IsCollectDatabaseSpecificsStatisticsEnabled
-
-Returns the <code>IsCollectDatabaseSpecificsStatisticsEnabled</code> value.
-
-#### IsDataExplorerEnabled
-
-Returns the <code>IsDataExplorerEnabled</code> value.
-
-#### IsPerformanceAdvisorEnabled
-
-Returns the <code>IsPerformanceAdvisorEnabled</code> value.
-
-#### IsRealtimePerformancePanelEnabled
-
-Returns the <code>IsRealtimePerformancePanelEnabled</code> value.
-
-#### IsSchemaAdvisorEnabled
-
-Returns the <code>IsSchemaAdvisorEnabled</code> value.
 

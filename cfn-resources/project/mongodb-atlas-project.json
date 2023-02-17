@@ -78,7 +78,7 @@
 
         },
         "WithDefaultAlertsSettings": {
-            "description": "Unique identifier of the organization within which to create the project.",
+            "description": "Flag that indicates whether to create the project with default alert settings.",
             "type": "boolean",
             "default": "false"
         },

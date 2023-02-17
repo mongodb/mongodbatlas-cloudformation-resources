@@ -22,6 +22,10 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -32,9 +36,11 @@ import (
 )
 
 const (
-	cfn         = "mongodbatlas-cloudformation-resources"
-	envLogLevel = "LOG_LEVEL"
-	debug       = "debug"
+	cfn            = "mongodbatlas-cloudformation-resources"
+	DefaultProfile = "default"
+	envLogLevel    = "LOG_LEVEL"
+	debug          = "debug"
+	profileName    = "cfn/atlas/profile/%s"
 )
 
 var (
@@ -59,6 +65,9 @@ func EnsureAWSRegion(region string) string {
 	return r
 }
 
+// CreateMongoDBClient creates a new Client using apikeys
+//
+// Deprecated: In the future this function will be private, the NewMongoDBClient should be used instead.
 func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
 	// setup a transport to handle digest
 	log.Printf("CreateMongoDBClient--- publicKey:%s", publicKey)
@@ -76,6 +85,45 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	}
 
 	return mongodbatlas.New(client, opts...)
+}
+
+func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
+	profileInput := DefaultProfile
+	if profile != nil {
+		profileInput = *profile
+	}
+
+	keys, handlerError := getAPIKeys(req, profileInput)
+	if handlerError != nil {
+		return nil, handlerError
+	}
+
+	// Create atlas client
+	client, err := CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
+	if err != nil {
+		_, _ = logger.Warnf("Create - error: %+v", err)
+		peErr := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			cloudformation.HandlerErrorCodeInvalidRequest)
+		return nil, &peErr
+	}
+
+	return client, nil
+}
+
+func getAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
+	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(profileName, profile))
+	if err != nil {
+		_, _ = logger.Warnf("Read - error: %+v", err)
+		pe := handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message: fmt.Sprintf("Error getting API-key, API-key needs to be provided using an AWS secret,"+
+				"  Ensure a secret named 'cfn/atlas/profile/%s' is created with the 'PublicKey' and 'PrivateKey' properties, error: %s",
+				profile, err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+		return nil, &pe
+	}
+
+	return &key, nil
 }
 
 // defaultLogLevel can be set during compile time with an ld flag to enable

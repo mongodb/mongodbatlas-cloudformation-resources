@@ -85,6 +85,10 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.ipAccessList">ipAccessList</a></code> | <code>@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mCluster">mCluster</a></code> | <code>@mongodbatlas-awscdk/cluster.CfnCluster</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mDBUser">mDBUser</a></code> | <code>@mongodbatlas-awscdk/database-user.CfnDatabaseUser</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mProject">mProject</a></code> | <code>@mongodbatlas-awscdk/project.CfnProject</code> | *No description.* |
 
 ---
 
@@ -97,6 +101,46 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
+
+---
+
+##### `ipAccessList`<sup>Required</sup> <a name="ipAccessList" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.ipAccessList"></a>
+
+```typescript
+public readonly ipAccessList: CfnProjectIpAccessList;
+```
+
+- *Type:* @mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList
+
+---
+
+##### `mCluster`<sup>Required</sup> <a name="mCluster" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mCluster"></a>
+
+```typescript
+public readonly mCluster: CfnCluster;
+```
+
+- *Type:* @mongodbatlas-awscdk/cluster.CfnCluster
+
+---
+
+##### `mDBUser`<sup>Required</sup> <a name="mDBUser" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mDBUser"></a>
+
+```typescript
+public readonly mDBUser: CfnDatabaseUser;
+```
+
+- *Type:* @mongodbatlas-awscdk/database-user.CfnDatabaseUser
+
+---
+
+##### `mProject`<sup>Required</sup> <a name="mProject" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mProject"></a>
+
+```typescript
+public readonly mProject: CfnProject;
+```
+
+- *Type:* @mongodbatlas-awscdk/project.CfnProject
 
 ---
 

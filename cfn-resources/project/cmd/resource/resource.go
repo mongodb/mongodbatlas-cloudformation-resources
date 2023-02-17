@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -56,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
@@ -141,7 +142,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
@@ -171,7 +172,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
@@ -323,7 +324,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
@@ -364,7 +365,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Read project
 func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	var project *mongodbatlas.Project
-	if len(*currentModel.Name) > 0 {
+	if currentModel.Name != nil && len(*currentModel.Name) > 0 {
 		event, project, err = getProjectByName(currentModel.Name, client)
 		if err != nil {
 			return event, nil, err
@@ -461,8 +462,6 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 		}
 	}
 
-	// Set api-keys
-	// apiKeys := readKeys(*currentModel.Id, projectAPIKeys, currentModel)
 	currentModel.ProjectTeams = teams
 	currentModel.ProjectApiKeys = nil // hack: cfn test. Extra APIKey(default) getting added and cfn test fails.
 	return handler.ProgressEvent{}, currentModel, err

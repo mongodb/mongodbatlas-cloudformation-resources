@@ -5,7 +5,7 @@ Parameters:
   Profile:
     Description: "Your MongoDB ATLAS Profile Name created in secret manager"
     Type: String
-    Default: ""
+    Default: "default"
   OrgId:
     Description: "Your MongoDB Cloud OrgId"
     Type: String

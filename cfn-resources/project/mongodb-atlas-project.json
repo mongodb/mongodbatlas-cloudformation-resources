@@ -133,10 +133,12 @@
     "readOnlyProperties": [
         "/properties/Id",
         "/properties/Created",
+        "/properties/ProjectOwnerId",
         "/properties/ClusterCount"
     ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {

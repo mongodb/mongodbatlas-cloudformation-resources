@@ -1,7 +1,7 @@
 {
     "Name" : "Name",
     "OrgId" : "$ATLAS_ORG_ID",
-    "Profile" : "",
+    "Profile" : "default",
     "ProjectSettings": {
         "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
         "IsDataExplorerEnabled": "false",

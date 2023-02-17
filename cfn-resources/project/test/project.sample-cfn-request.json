@@ -1,8 +1,8 @@
 {
-  "desiredResourceState":{
-    "Name": "cfn-test-bot-784962-project",
-    "OrgId": "63350255419cf25e3d511c95",
-    "Profile": "govardhan",
+  "desiredResourceState": {
+    "Name": "cfn-test-bot-a1e5f5-projec",
+    "OrgId": "",
+    "Profile": "default",
     "ProjectSettings": {
       "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
       "IsDataExplorerEnabled": "false",
@@ -12,7 +12,7 @@
     },
     "ProjectApiKeys": [
       {
-        "Key": "63ebd6a691cb760dc0784512",
+        "Key": "",
         "RoleNames": [
           "GROUP_CLUSTER_MANAGER"
         ]
@@ -20,14 +20,13 @@
     ],
     "ProjectTeams": [
       {
-        "TeamId": "63ebd6acb5f64b48b5680d57",
+        "TeamId": "",
         "RoleNames": [
           "GROUP_OWNER"
         ]
       }
     ]
-  }
-,
+  },
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }
 }

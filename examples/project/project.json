@@ -112,6 +112,9 @@
             "Ref": "IsSchemaAdvisorEnabled"
           }
         },
+        "WithDefaultAlertsSettings": {
+          "Ref": "WithDefaultAlertsSettings"
+        },
         "ProjectApiKeys": [
           {
             "Key": {
@@ -137,9 +140,19 @@
   },
   "Outputs" : {
     "ProjectID": {
-      "Description": "Project ID",
       "Value": {
-        "Ref": "Project"
+        "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ]
+      }
+    },
+    "ClusterCount": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "ClusterCount"
+        ]
       }
     }
   }

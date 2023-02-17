@@ -438,14 +438,6 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 			res.Response), nil, err
 	}
 
-	// Get APIKeys from project
-	//projectAPIKeys, res, err := client.ProjectAPIKeys.List(context.Background(), id, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
-	//if err != nil {
-	//	_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
-	//	return progressevents.GetFailedEventByResponse(err.Error(),
-	//		res.Response), nil, err
-	//}
-
 	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
 	if err != nil {
 		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
@@ -470,7 +462,7 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 	}
 
 	// Set api-keys
-	//apiKeys := readKeys(*currentModel.Id, projectAPIKeys, currentModel)
+	// apiKeys := readKeys(*currentModel.Id, projectAPIKeys, currentModel)
 	currentModel.ProjectTeams = teams
 	currentModel.ProjectApiKeys = nil // hack: cfn test. Extra APIKey(default) getting added and cfn test fails.
 	return handler.ProgressEvent{}, currentModel, err

@@ -11,7 +11,7 @@
     "MongoDBAtlasProjectId": {
       "Type": "String",
       "Default" : "63d164dc35d1b034f879fe37",
-      "Description" : "MongoDB project Key"
+      "Description" : "MongoDB project Id"
     },
     "UserName" : {
       "Type" : "String",

@@ -7,6 +7,12 @@
       "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
       "ConstraintDescription": "Required, 1 to 64 characters length"
     },
+    "Profile": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Proj Profile Id",
+      "Default" : "default",
+      "ConstraintDescription": ""
+    },
     "ProjectID": {
       "Type": "String",
       "Description": "Unique 24-hexadecimal digit string that identifies your project.",
@@ -47,10 +53,6 @@
           "Ref": "Name"
         },
         "ProjectID": {"Ref": "ProjectID"},
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        },
         "ProviderSettings": {
           "RegionName": {
             "Ref": "RegionName"
@@ -62,6 +64,9 @@
         },
         "TerminationProtectionEnabled": {
           "Ref": "TerminationProtectionEnabled"
+        },
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     }

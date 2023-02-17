@@ -18,9 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/openlyinc/pointy"
-	"strings"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -28,6 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -564,24 +562,4 @@ func readTeams(teams []ProjectTeam) []*mongodbatlas.ProjectTeam {
 		}
 	}
 	return newTeams
-}
-
-func readKeys(groupID string, keys []mongodbatlas.APIKey, currentModel *Model) []ProjectApiKey {
-	var apiKeys []ProjectApiKey
-
-	for i := range keys {
-		// Don't include the org level key used for atlas authentication
-		// cfn test doesn't allow extra keys in the response
-		//if keys[i].PublicKey == *currentModel.ApiKeys.PublicKey {
-		//	continue
-		//}
-		var roles []string
-		for j := range keys[i].Roles {
-			if keys[i].Roles[j].GroupID == groupID && !strings.HasPrefix(keys[i].Roles[j].RoleName, "ORG_") {
-				roles = append(roles, keys[i].Roles[j].RoleName)
-			}
-		}
-		apiKeys = append(apiKeys, ProjectApiKey{Key: &keys[i].ID, RoleNames: roles})
-	}
-	return apiKeys
 }

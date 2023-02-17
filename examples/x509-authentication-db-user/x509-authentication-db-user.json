@@ -27,7 +27,7 @@
     },
     "Profile": {
       "Type": "String",
-      "Description": "MongoDB Atlas Proj Profile Id",
+      "Description": "MongoDB Atlas Project Profile name",
       "Default" : "default",
       "ConstraintDescription": ""
     }

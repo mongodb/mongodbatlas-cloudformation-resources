@@ -1,6 +1,11 @@
 {
   "dependencies": [
     {
+      "name": "@mongodbatlas-awscdk/third-party-integration",
+      "version": "1.0.1",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "version": "^27",
       "type": "build"
@@ -107,6 +112,11 @@
       "type": "override"
     },
     {
+      "name": "@mongodbatlas-awscdk/third-party-integration",
+      "version": "1.0.1",
+      "type": "peer"
+    },
+    {
       "name": "aws-cdk-lib",
       "version": "^2.1.0",
       "type": "peer"
@@ -118,6 +128,7 @@
     },
     {
       "name": "@mongodbatlas-awscdk/third-party-integration",
+      "version": "1.0.1",
       "type": "runtime"
     }
   ],

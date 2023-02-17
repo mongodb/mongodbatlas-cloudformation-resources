@@ -585,10 +585,10 @@
   dependencies:
     ajv "^8.12.0"
 
-"@mongodbatlas-awscdk/third-party-integration@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@mongodbatlas-awscdk/third-party-integration/-/third-party-integration-1.0.0.tgz"
-  integrity sha512-3/5RIrl2ELbtTRqwGJgQn8rMWHr+mSg4SYbc3eYtSMKs3iF4tbKe/Zk9ph26+pTTef6bE987gJnaS5sjn8UaLQ==
+"@mongodbatlas-awscdk/third-party-integration@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/third-party-integration/-/third-party-integration-1.0.1.tgz#11d60a2398290e99b41c2b32565fa487db4ee821"
+  integrity sha512-vVAx9iYTl171nrFIGSSRpyYwPlL3zs8tDzOkIU9P8oPIA6B6vEqJifMMEtSJ8JcBkdX/UMGx/fvjBs7UPGpRoQ==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

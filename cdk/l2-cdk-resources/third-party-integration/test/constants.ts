@@ -17,5 +17,4 @@ export const TEST_PRIVATE_KEY: string = 'testPrivateKey';
 export const TEST_PUBLIC_KEY: string = 'testPublicKey';
 export const TEST_PROJECT_ID: string = 'testProjectId';
 export const TEST_WEBHOOK_URL: string = 'https://testwebhook.com/tst';
-export const TEST_REGION: string = 'testRegion';
 export const TEST_KEY: string = 'testKey';

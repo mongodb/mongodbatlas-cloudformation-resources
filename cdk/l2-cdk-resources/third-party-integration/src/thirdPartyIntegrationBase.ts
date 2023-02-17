@@ -36,4 +36,3 @@ export interface ThirdPartyIntegrationProps {
    */
   readonly apiKeys: ApiKeyDefinition;
 }
-

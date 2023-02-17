@@ -2,18 +2,6 @@
     "typeName": "MongoDB::Atlas::Project",
     "description": "Retrieves or creates projects in any given Atlas organization.",
     "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
         "projectSettings": {
             "type": "object",
             "properties": {
@@ -110,8 +98,10 @@
         "ProjectSettings": {
             "$ref": "#/definitions/projectSettings"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "ProjectTeams": {
             "items": {
@@ -134,7 +124,11 @@
         "OrgId"
     ],
     "createOnlyProperties": [
-        "/properties/Name"
+        "/properties/Name",
+        "/properties/Profile"
+    ],
+    "writeOnlyProperties": [
+        "/properties/ProjectApiKeys"
     ],
     "readOnlyProperties": [
         "/properties/Id",
@@ -147,14 +141,22 @@
     "handlers": {
         "create": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

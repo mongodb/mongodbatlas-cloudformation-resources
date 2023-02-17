@@ -135,5 +135,12 @@
       }
     }
   },
-  "Outputs" : {}
+  "Outputs" : {
+    "ProjectID": {
+      "Description": "Project ID",
+      "Value": {
+        "Ref": "Project"
+      }
+    }
+  }
 }

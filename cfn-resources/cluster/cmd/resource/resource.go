@@ -70,6 +70,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+
 	_, _ = log.Debugf("Create cluster model : %+v", currentModel)
 
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
@@ -96,32 +97,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 
-	// AWS
-	// This is the initial call to Create, so inject a deployment
-	// secret for this resource in order to lookup progress properly
-	projectResID := &util.ResourceIdentifier{
-		ResourceType: "Project",
-		ResourceID:   *currentModel.ProjectId,
-	}
-	_, _ = log.Debugf("Created projectResID:%s", projectResID)
-	resourceID := util.NewResourceIdentifier("Cluster", *currentModel.Name, projectResID)
-	_, _ = log.Debugf("Created resourceID:%s", resourceID)
-	resourceProps := map[string]string{
-		"ClusterName": *currentModel.Name,
-	}
-
-	secret, _ := util.GetAPIKeys(req, *currentModel.Profile)
-	secretName, err := util.CreateDeploymentSecret(&req, resourceID, secret.PublicKey, secret.PrivateKey, resourceProps)
-	if err != nil {
-		_, _ = log.Warnf("Create - CreateDeploymentSecret - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-	}
-
-	_, _ = log.Warnf("Created new deployment secret for cluster. Secret Name = Cluster Id:%s", *secretName)
-	currentModel.Id = secretName
+	var err error
 	var none = "NONE"
 	if currentModel.EncryptionAtRestProvider == nil {
 		currentModel.EncryptionAtRestProvider = &none
@@ -134,13 +110,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create Cluster
-	cluster, _, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
+	cluster, res, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
 	if err != nil {
 		_, _ = log.Warnf("Create - Cluster.Create() - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.Duplicate) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+		}
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.StateName = &cluster.StateName
@@ -152,7 +131,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.StateName: cluster.StateName,
-			constants.ID:        *currentModel.Id,
+			constants.ID:        cluster.ID,
 		},
 	}, nil
 }
@@ -161,40 +140,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-	if currentModel.Id == nil {
-		err := errors.New("no Id found in currentModel")
-		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	secretName := *currentModel.Id
-	_, _ = log.Warnf("Read for Cluster Id/SecretName:%s", secretName)
-	key, err := util.GetAPIKeyFromDeploymentSecret(&req, secretName)
-	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	_, _ = log.Debugf("key:%+v", key)
-
-	// key.ResourceID should == *currentModel.Id
-	id, err := util.ParseResourceIdentifier(*currentModel.Id)
-	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	_, _ = log.Debugf("Parsed resource identifier: id:%+v", id)
-
-	currentModel.ProjectId = &id.Parent.ResourceID
-	currentModel.Name = &id.ResourceID
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -319,12 +264,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
-		pe, err := validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
-		// Delete the secret created during cluster creation.
-		if pe.OperationStatus == handler.Success {
-			err = util.DeleteDeploymentSecret(&req, *currentModel.Id)
-		}
-		return pe, err
+		return validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
 	}
 
 	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name)

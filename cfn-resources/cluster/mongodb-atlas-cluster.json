@@ -399,45 +399,28 @@
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",
-        "/properties/Id",
+        "/properties/Name",
         "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
                 "secretsmanager:GetSecretValue"
             ]
         },
         "update": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:DeleteSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

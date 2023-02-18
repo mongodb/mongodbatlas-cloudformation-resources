@@ -16,7 +16,6 @@ package util
 
 import (
 	"encoding/json"
-	"github.com/openlyinc/pointy"
 	"log"
 	"os"
 
@@ -86,10 +85,4 @@ func GetAPIKeyFromDeploymentSecret(req *handler.Request, secretName string) (Dep
 	}
 
 	return key, nil
-}
-
-func DeleteDeploymentSecret(req *handler.Request, secretName string) (err error) {
-	sm := secretsmanager.New(req.Session)
-	_, err = sm.DeleteSecret(&secretsmanager.DeleteSecretInput{SecretId: &secretName, ForceDeleteWithoutRecovery: pointy.Bool(true)})
-	return err
 }

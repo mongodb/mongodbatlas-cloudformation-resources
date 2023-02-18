@@ -13,13 +13,13 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::Cluster",
     "Properties" : {
         "<a href="#advancedsettings" title="AdvancedSettings">AdvancedSettings</a>" : <i><a href="processargs.md">processArgs</a></i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#backupenabled" title="BackupEnabled">BackupEnabled</a>" : <i>Boolean</i>,
         "<a href="#biconnector" title="BiConnector">BiConnector</a>" : <i><a href="biconnector.md">BiConnector</a></i>,
         "<a href="#clustertype" title="ClusterType">ClusterType</a>" : <i>String</i>,
         "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="connectionstrings.md">connectionStrings</a></i>,
         "<a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>" : <i>Double</i>,
         "<a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>" : <i>String</i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ [ <a href="labels.md">Labels</a>, ... ], ... ]</i>,
         "<a href="#mongodbmajorversion" title="MongoDBMajorVersion">MongoDBMajorVersion</a>" : <i>String</i>,
@@ -40,13 +40,13 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::Cluster
 Properties:
     <a href="#advancedsettings" title="AdvancedSettings">AdvancedSettings</a>: <i><a href="processargs.md">processArgs</a></i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#backupenabled" title="BackupEnabled">BackupEnabled</a>: <i>Boolean</i>
     <a href="#biconnector" title="BiConnector">BiConnector</a>: <i><a href="biconnector.md">BiConnector</a></i>
     <a href="#clustertype" title="ClusterType">ClusterType</a>: <i>String</i>
     <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="connectionstrings.md">connectionStrings</a></i>
     <a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>: <i>Double</i>
     <a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>: <i>String</i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
       - 
@@ -71,14 +71,6 @@ Advanced configuration details to add for one cluster in the specified project.
 _Required_: No
 
 _Type_: <a href="processargs.md">processArgs</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ApiKeys
-
-_Required_: Yes
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -144,6 +136,16 @@ _Allowed Values_: <code>AWS</code> | <code>GCP</code> | <code>AZURE</code> | <co
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Profile
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### ProjectId
 
 Unique identifier of the project the cluster belongs to.
@@ -152,7 +154,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Labels
 
@@ -182,7 +184,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Paused
 
@@ -245,10 +247,6 @@ _Type_: Boolean
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
 
 ### Fn::GetAtt
 

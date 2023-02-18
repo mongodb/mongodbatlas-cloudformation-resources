@@ -93,7 +93,7 @@ func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Clien
 		profileInput = *profile
 	}
 
-	keys, handlerError := getAPIKeys(req, profileInput)
+	keys, handlerError := GetAPIKeys(req, profileInput)
 	if handlerError != nil {
 		return nil, handlerError
 	}
@@ -110,7 +110,7 @@ func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Clien
 	return client, nil
 }
 
-func getAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
+func GetAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
 	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(profileName, profile))
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)

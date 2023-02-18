@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/openlyinc/pointy"
 	"reflect"
 	"strconv"
 	"strings"
@@ -41,11 +42,11 @@ const (
 
 var defaultLabel = mongodbatlas.Label{Key: "Infrastructure Tool", Value: "MongoDB Atlas Terraform Provider"}
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var ReadRequiredFields = []string{constants.ID}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.Name}
+var ReadRequiredFields = []string{constants.Name}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.Name}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+var ListRequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-cluster")
@@ -76,10 +77,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s ", *currentModel.ProjectId, *currentModel.Name)
@@ -104,7 +109,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	resourceProps := map[string]string{
 		"ClusterName": *currentModel.Name,
 	}
-	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, resourceProps)
+
+	secret, _ := util.GetAPIKeys(req, *currentModel.Profile)
+	secretName, err := util.CreateDeploymentSecret(&req, resourceID, secret.PublicKey, secret.PrivateKey, resourceProps)
 	if err != nil {
 		_, _ = log.Warnf("Create - CreateDeploymentSecret - error: %+v", err)
 		return handler.ProgressEvent{
@@ -154,7 +161,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
 		_, _ = log.Warnf("Read - error: %+v", err)
@@ -163,6 +169,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
+
 	secretName := *currentModel.Id
 	_, _ = log.Warnf("Read for Cluster Id/SecretName:%s", secretName)
 	key, err := util.GetAPIKeyFromDeploymentSecret(&req, secretName)
@@ -189,11 +196,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.ProjectId = &id.Parent.ResourceID
 	currentModel.Name = &id.ResourceID
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Read call
@@ -229,11 +239,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Update callback
@@ -294,16 +307,24 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	ctx := context.Background()
 
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
-		return validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
+		pe, err := validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
+		// Delete the secret created during cluster creation.
+		if pe.OperationStatus == handler.Success {
+			err = util.DeleteDeploymentSecret(&req, *currentModel.Id)
+		}
+		return pe, err
 	}
 
 	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name)
@@ -345,11 +366,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	listOptions := &mongodbatlas.ListOptions{ItemsPerPage: 100, PageNum: 1}
@@ -1041,6 +1065,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 		currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
 		p.ResourceModel = currentModel
 	}
+
 	return p, nil
 }
 

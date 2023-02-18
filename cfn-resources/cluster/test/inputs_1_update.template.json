@@ -1,10 +1,7 @@
 {
   "ProjectId": "",
   "Name": "",
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
+  "Profile": "default",
   "AdvancedSettings": {
     "DefaultReadConcern": "available",
     "DefaultWriteConcern": "1",

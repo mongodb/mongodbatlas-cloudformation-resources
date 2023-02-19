@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # Change these variables according to your configuration.
-profile=serverless-admin
-region=us-west-2
+profile=default
+region=us-east-1
 repo_name=process-result
 
 # Get AWS account ID.

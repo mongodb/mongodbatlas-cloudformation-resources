@@ -7,8 +7,8 @@ import boto3
 import sagemaker
 import subprocess
 
-profile_name = 'serverless-admin'
-region_name = 'us-west-2'
+profile_name = 'default'
+region_name = 'us-east-1'
 
 # Create sessions.
 boto3.setup_default_session(

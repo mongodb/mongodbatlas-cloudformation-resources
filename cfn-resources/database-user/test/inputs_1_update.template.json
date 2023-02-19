@@ -2,10 +2,7 @@
     "Username" : "DataUser1",
     "Password" : "MongoDB12345%",
     "ProjectId" : "ProjectId",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    },
+    "Profile" : "",
     "DatabaseName": "admin",
     "Roles": [
         { "RoleName": "readWrite",

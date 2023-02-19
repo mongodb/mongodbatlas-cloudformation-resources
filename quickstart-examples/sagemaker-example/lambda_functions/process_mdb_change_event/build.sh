@@ -9,12 +9,10 @@ repo_name=process-mdb-change-event
 account_id=$(aws sts get-caller-identity --profile ${profile} --query Account --output text)
 
 # If the repository doesn't exist in ECR, create it.
-aws ecr describe-repositories \
+if ! aws ecr describe-repositories \
     --profile "${profile}" \
     --region "${region}" \
     --repository-names "${repo_name}" > /dev/null 2>&1
-
-if [ $? -ne 0 ]
 then
     aws ecr create-repository \
         --profile "${profile}" \
@@ -37,4 +35,4 @@ docker build -q -t "${repo_name}" .
 docker tag "${repo_name}" "${full_name}"
 docker push "${full_name}"
 
-printf "\nPullLambdaECRImageURI: %s\n\n" ${full_name}
+printf "\nPullLambdaECRImageURI: %s\n\n" "${full_name}"

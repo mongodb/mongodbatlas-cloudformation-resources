@@ -91,9 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s ", *currentModel.ProjectId, *currentModel.Name)
 
 	// Callback
-	if id, idExists := req.CallbackContext[constants.ID]; idExists {
-		idStr := fmt.Sprint(id)
-		currentModel.Id = &idStr
+	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 
@@ -131,7 +129,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.StateName: cluster.StateName,
-			constants.ID:        cluster.ID,
 		},
 	}, nil
 }
@@ -283,8 +280,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-	mm := fmt.Sprintf("%s-Deleting", *currentModel.Id)
-	currentModel.Id = &mm
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -991,7 +986,6 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 		p.Message = constants.Pending
 		p.CallbackContext = map[string]interface{}{
 			constants.StateName: state,
-			constants.ID:        currentModel.Id,
 		}
 		return p, nil
 	}

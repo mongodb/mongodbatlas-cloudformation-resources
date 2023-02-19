@@ -2,7 +2,7 @@
     "Username" : "DataUser1",
     "Password" : "MongoDB12345%",
     "ProjectId" : "ProjectId",
-    "Profile" : "",
+    "Profile" : "default",
     "DatabaseName": "admin",
     "Roles": [
         { "RoleName": "readWrite",

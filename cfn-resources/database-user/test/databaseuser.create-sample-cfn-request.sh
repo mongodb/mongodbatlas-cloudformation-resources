@@ -21,9 +21,8 @@ projectId="${1}"
 username="${2}"
 password="${3}"
 
- jq --arg profile "$ATLAS_PROFILE" \
-   --arg ProjectId "$projectId" \
+ jq --arg ProjectId "$projectId" \
    --arg username "$username" \
    --arg password "$password" \
-   '.desiredResourceState.properties.Profile?|=$profile | .desiredResourceState.properties.Username?|=$username | .desiredResourceState.properties.Password?|=$password | .desiredResourceState.properties.ProjectId?|=$projectId' \
+   '.desiredResourceState.properties.Username?|=$username | .desiredResourceState.properties.Password?|=$password | .desiredResourceState.properties.ProjectId?|=$projectId' \
   "$(dirname "$0")/databaseuser.sample-cfn-request.json"

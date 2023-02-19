@@ -145,7 +145,8 @@ for resource in ${resources}; do
 	sam local start-lambda &>"${sam_log}" &
 	sam_pid=$!
 	echo "Started 'sam local start-lamda' with PID:${sam_pid}, wait 3 seconds to startup..." && sleep 3
-	pgrep ${sam_pid}
+	# shellcheck disable=SC2009
+	ps -ef | grep  ${sam_pid}
 	echo "resource: ${resource}, running 'cfn test' with flags: ${_CFN_FLAGS}"
 	cfn test "${_CFN_FLAGS}"
 	echo "killing sam_pid:${sam_pid}"

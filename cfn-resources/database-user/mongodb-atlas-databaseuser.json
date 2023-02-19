@@ -171,7 +171,8 @@
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",
-        "/properties/UserCFNIdentifier",
+        "/properties/DatabaseName",
+        "/properties/Username",
         "/properties/Profile"
     ],
     "description": "Returns, adds, edits, and removes database users.",

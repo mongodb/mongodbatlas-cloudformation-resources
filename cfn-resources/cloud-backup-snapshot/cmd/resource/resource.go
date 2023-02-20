@@ -18,24 +18,24 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-
-	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/openlyinc/pointy"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ClusterName, constants.GroupID}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ClusterName, constants.GroupID, constants.SnapshotID}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.SnapshotID}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
+var CreateRequiredFields = []string{constants.ClusterName, constants.GroupID}
+var DeleteRequiredFields = []string{constants.ClusterName, constants.GroupID, constants.SnapshotID}
+var ReadRequiredFields = []string{constants.GroupID, constants.SnapshotID}
+var ListRequiredFields = []string{constants.GroupID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -46,11 +46,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	// progress callback setup
@@ -74,10 +77,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// API call to create snapshot
-	snapshot, _, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
+	snapshot, res, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
 	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateCloudBackup, projectID, clusterName, err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeServiceInternalError), nil
+		_, _ = logger.Warnf("Create - CloudProviderSnapshots.Create() - error: %+v", err)
+		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.UnfinishedOnDemandSnapshot) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+		}
+		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.SnapshotId = &snapshot.ID
 
@@ -110,11 +119,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	clusterName := cast.ToString(currentModel.ClusterName)
@@ -129,7 +141,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}, nil
 	}
 	// Check if  exist
-	if !isSnapshotExist(currentModel) {
+	if !isSnapshotExist(req, currentModel) {
 		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -145,7 +157,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		GroupID:    projectID,
 		SnapshotID: snapshotID,
 	}
-
+	var err error
 	// API call to read snapshot
 	if clusterName != "" {
 		snapshotRequest.ClusterName = clusterName
@@ -185,16 +197,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	// check if exist
-	if !isSnapshotExist(currentModel) {
+	if !isSnapshotExist(req, currentModel) {
 		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -226,11 +240,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 // function to check if snapshot already available for the snapshot id
-func isSnapshotExist(currentModel *Model) bool {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return false
-	}
+func isSnapshotExist(req handler.Request, currentModel *Model) bool {
+	client, _ := util.NewMongoDBClient(req, currentModel.Profile)
 
 	// Create Atlas API Request Object
 	clusterName := cast.ToString(currentModel.ClusterName)
@@ -245,6 +256,7 @@ func isSnapshotExist(currentModel *Model) bool {
 		ItemsPerPage: 100,
 	}
 
+	var err error
 	// API call to list snapshot
 	if clusterName != "" {
 		snapshotRequest.ClusterName = clusterName
@@ -279,11 +291,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressEvents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	// Create Atlas API Request Object
@@ -301,6 +312,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ItemsPerPage: 100,
 	}
 
+	var err error
 	// API call to list snapshot
 	if clusterName != "" {
 		snapshotRequest.ClusterName = clusterName

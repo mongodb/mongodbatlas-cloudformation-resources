@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::CloudBackupSnapshot",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
@@ -27,7 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::CloudBackupSnapshot
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
     <a href="#description" title="Description">Description</a>: <i>String</i>
@@ -37,13 +37,15 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### Profile
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: No
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ClusterName
 
@@ -101,7 +103,7 @@ _Maximum_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### RetentionInDays
 
@@ -114,10 +116,6 @@ _Type_: Integer
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the SnapshotId.
 
 ### Fn::GetAtt
 

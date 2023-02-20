@@ -1,4 +1,6 @@
 {
+  "typeName": "MongoDB::Atlas::CloudBackupSnapshot",
+  "description": "Returns, takes, and removes Cloud Backup snapshots.",
   "additionalProperties": false,
   "definitions": {
     "ApiAtlasDiskBackupReplicaSetView": {
@@ -234,28 +236,11 @@
       "additionalProperties": false
     }
   },
-  "description": "Returns, takes, and removes Cloud Backup snapshots.",
-  "handlers": {
-    "create": {
-      "permissions": []
-    },
-    "read": {
-      "permissions": []
-    },
-    "list": {
-      "permissions": []
-    },
-    "delete": {
-      "permissions": []
-    }
-  },
-  "primaryIdentifier": [
-    "/properties/SnapshotId"
-
-  ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     },
     "CloudProvider": {
       "type": "string",
@@ -412,6 +397,23 @@
       "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
     }
   },
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
   "readOnlyProperties": [
     "/properties/SnapshotId",
     "/properties/SnapshotIds",
@@ -469,6 +471,18 @@
     "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Description",
     "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Links"
   ],
-  "typeName": "MongoDB::Atlas::CloudBackupSnapshot",
+  "createOnlyProperties": [
+    "/properties/GroupId",
+    "/properties/SnapshotId",
+    "/properties/Profile"
+  ],
+  "required": [
+    "properties/GroupId"
+  ],
+  "primaryIdentifier": [
+    "/properties/GroupId",
+    "/properties/SnapshotId",
+    "/properties/Profile"
+  ],
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

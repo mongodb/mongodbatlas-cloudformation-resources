@@ -105,7 +105,9 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/TotalCount"
+    "/properties/AccessList/CIDRBlock",
+    "/properties/AccessList/IPAddress",
+    "/properties/AccessList/AwsSecurityGroup"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",

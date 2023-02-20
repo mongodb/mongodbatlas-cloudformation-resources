@@ -26,14 +26,11 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/openlyinc/pointy"
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var UpdateRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var ListRequiredFields []string
+var RequiredFields = []string{constants.GroupID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-auditing")
@@ -43,21 +40,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	// Validation
-	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("CRATE Validation Error")
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	var res *mongodbatlas.Response
 
@@ -108,21 +104,20 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 
 	// Validation
-	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("READ Validation Error")
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	var res *mongodbatlas.Response
 
@@ -140,6 +135,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+	currentModel.AuditFilter = &atlasAuditing.AuditFilter
+	currentModel.AuditAuthorizationSuccess = atlasAuditing.AuditAuthorizationSuccess
 
 	// Response
 	return handler.ProgressEvent{
@@ -153,21 +150,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	// Validation
-	modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("UPDATE Validation Error")
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	resourceEnabled, handlerEvent := isEnabled(*client, *currentModel)
@@ -232,21 +228,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("DELETE Validation Error")
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	resourceEnabled, handlerEvent := isEnabled(*client, *currentModel)
@@ -269,7 +264,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Enabled: &enabled,
 	}
 
-	_, res, err = client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+	_, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)

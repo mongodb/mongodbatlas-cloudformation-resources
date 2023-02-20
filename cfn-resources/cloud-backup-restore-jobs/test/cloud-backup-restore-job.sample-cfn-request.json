@@ -5,10 +5,7 @@
         "DeliveryType": "download",
         "SnapshotId": "",
         "Id": "",
-        "ApiKeys": {
-            "PublicKey": "$ATLAS_PUBLIC_KEY",
-            "PrivateKey": "$ATLAS_PRIVATE_KEY"
-        }
+        "Profile": "default"
     },
         "previousResourceState": {
         }

@@ -31,23 +31,13 @@ else
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg projectId "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId ' \
+jq --arg projectId "$projectId" \
+	'.ProjectId?|=$projectId ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg projectId "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId ' \
+jq--arg projectId "$projectId" \
+	'.ProjectId?|=$projectId ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
-
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg projectId "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs
 #mongocli iam projects delete "${projectId}" --force

@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"github.com/openlyinc/pointy"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -26,7 +27,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/rs/xid"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -34,11 +34,11 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-project-ip-access-list")
 }
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.AccessList}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.AccessList}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.AccessList}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.AccessList}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.AccessList}
+var ReadRequiredFields = []string{constants.ProjectID}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.AccessList}
+var DeleteRequiredFields = []string{constants.ProjectID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -48,19 +48,28 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf("currentModel: %+v, prevModel: %+v", currentModel, prevModel)
 
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	_, _ = logger.Debugf("currentModel: %+v, prevModel: %+v", currentModel, prevModel)
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	exists, peErr := existsEntries(currentModel, client)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	if exists {
+		return progressevents.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
 	event, err := createEntries(currentModel, client)
@@ -69,10 +78,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return event, nil
 	}
 
-	guid := xid.New()
-
-	x := guid.String()
-	currentModel.Id = &x
 	_, _ = logger.Debugf("Create --- currentModel:%+v", currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -89,34 +94,41 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
 
-	_, _ = logger.Debugf("Read --- currentModel:%+v", currentModel)
-
-	var entries []string
-	for i := range currentModel.AccessList {
-		wl := currentModel.AccessList[i]
-		entry := getEntry(wl)
-		entries = append(entries, entry)
+	listOptions := &mongodbatlas.ListOptions{
+		PageNum:      0,
+		IncludeCount: true,
+		ItemsPerPage: 200,
 	}
 
-	_, _ = logger.Debugf("Read --- entries:%+v", entries)
-	accesslist, progressEvent, err := getProjectIPAccessList(projectID, entries, client)
-	_, _ = logger.Debugf("Read --- accesslist:%+v, progressEvent:%+v", accesslist, progressEvent)
+	result, resp, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
 	if err != nil {
-		_, _ = logger.Warnf("error READ access list projectID:%s, error: %s, progressEvent: %+v", projectID, err, progressEvent)
-		return progressEvent, nil
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
 	}
 
-	currentModel.AccessList = flattenAccessList(currentModel.AccessList, accesslist)
-	_, _ = logger.Debugf("Read --- currentModel.AccessList:%+v", currentModel.AccessList)
+	if !accessListHasEntries(*result) {
+		return progressevents.GetFailedEventByCode("Resource not found", cloudformation.HandlerErrorCodeNotFound), nil
+	}
+
+	mm := make([]AccessListDefinition, 0)
+	for i := range result.Results {
+		var m AccessListDefinition
+		m.completeByConnection(result.Results[i])
+		mm = append(mm, m)
+	}
+	currentModel.AccessList = mm
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -132,20 +144,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
-	progressEvent, err := deleteEntries(currentModel, client)
-	if err != nil {
-		_, _ = logger.Warnf("Update deleteEntries error:%+v", err)
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	progressEvent := deleteEntries(currentModel, client)
+	if progressEvent.OperationStatus == handler.Failed {
+		_, _ = logger.Warnf("Update deleteEntries error:%+v", progressEvent.Message)
 		return progressEvent, nil
 	}
 
-	progressEvent, err = createEntries(currentModel, client)
+	progressEvent, err := createEntries(currentModel, client)
 	if err != nil {
 		_, _ = logger.Warnf("Update createEntries error:%+v", err)
 		return progressEvent, nil
@@ -165,16 +180,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
-	event, err := deleteEntries(currentModel, client)
-	if err != nil {
-		_, _ = logger.Warnf("Delete deleteEntries error:%+v", err)
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	event := deleteEntries(currentModel, client)
+	if event.OperationStatus == handler.Failed {
+		_, _ = logger.Warnf("Delete deleteEntries error:%+v", event.Message)
 		return event, nil
 	}
 
@@ -193,11 +211,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	var pageNum, itemsPerPage int
@@ -250,7 +271,6 @@ func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAcce
 	m.CIDRBlock = &c.CIDRBlock
 	m.Comment = &c.Comment
 	m.AwsSecurityGroup = &c.AwsSecurityGroup
-	m.ProjectId = &c.GroupID
 }
 
 func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPAccessList, handler.ProgressEvent, error) {
@@ -298,15 +318,15 @@ func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccess
 	return accesslist
 }
 
-func getEntry(wl AccessListDefinition) string {
-	if wl.CIDRBlock != nil {
-		return *wl.CIDRBlock
+func getEntry(wl mongodbatlas.ProjectIPAccessList) string {
+	if wl.CIDRBlock != "" {
+		return wl.CIDRBlock
 	}
-	if wl.AwsSecurityGroup != nil {
-		return *wl.AwsSecurityGroup
+	if wl.AwsSecurityGroup != "" {
+		return wl.AwsSecurityGroup
 	}
-	if wl.IPAddress != nil {
-		return *wl.IPAddress
+	if wl.IPAddress != "" {
+		return wl.IPAddress
 	}
 	return ""
 }
@@ -350,18 +370,55 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 	return handler.ProgressEvent{}, nil
 }
 
-func deleteEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
+func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEvent {
 	projectID := *model.ProjectId
 
-	for i := range model.AccessList {
-		wl := model.AccessList[i]
+	listOptions := &mongodbatlas.ListOptions{
+		PageNum:      0,
+		IncludeCount: true,
+		ItemsPerPage: 200,
+	}
+
+	result, resp, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
+	if err != nil {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response)
+	}
+
+	if !accessListHasEntries(*result) {
+		return progressevents.GetFailedEventByCode("error trying to delete Resource not found", cloudformation.HandlerErrorCodeNotFound)
+	}
+
+	for i := range result.Results {
+		wl := result.Results[i]
 		entry := getEntry(wl)
 		resp, err := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry)
 		if err != nil {
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-				resp.Response), err
+				resp.Response)
 		}
 	}
 
-	return handler.ProgressEvent{}, nil
+	return handler.ProgressEvent{}
+}
+
+func existsEntries(model *Model, client *mongodbatlas.Client) (bool, *handler.ProgressEvent) {
+	listOptions := &mongodbatlas.ListOptions{
+		PageNum:      0,
+		IncludeCount: true,
+		ItemsPerPage: 1,
+	}
+
+	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *model.ProjectId, listOptions)
+	if err != nil {
+		pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("Validating if the resource already exists : %s", err.Error()),
+			resp.Response)
+		return false, &pe
+	}
+
+	return accessListHasEntries(*result), nil
+}
+
+func accessListHasEntries(list mongodbatlas.ProjectIPAccessLists) bool {
+	return list.TotalCount != 0
 }

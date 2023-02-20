@@ -6,7 +6,12 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-  jq --arg group_id "$projectId" \
-     --arg ClusterName "$ClusterName" \
-     '.desiredResourceState.ProjectId?|=$group_id | .desiredResourceState.ClusterName?|=$ClusterName' \
+
+
+projectId="${1}"
+clusterName="${2}"
+
+  jq --arg projectId "$projectId" \
+     --arg clusterName "$clusterName" \
+     '.desiredResourceState.ProjectId?|=$projectId | .desiredResourceState.ClusterName?|=$clusterName' \
     "$(dirname "$0")/cloud-backup-schedule.sample-cfn-request.json"

@@ -1,9 +1,6 @@
 {
   "desiredResourceState": {
-    "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
-    },
+    "Profile": "default",
     "ProjectId": "",
     "ClusterName": "cfn-test-bot-280649-cloud-backup-schedule",
     "AutoExportEnabled": "False",

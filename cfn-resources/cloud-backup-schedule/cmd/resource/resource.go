@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/openlyinc/pointy"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -30,10 +31,7 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
+var RequiredFields = []string{constants.ProjectID, constants.ClusterName}
 
 // validateModel inputs based on the method
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -51,17 +49,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = logger.Debugf("Create() currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
+
 	// API call to Create cloud backup schedule
 	return cloudBackupScheduleCreateOrUpdate(req, prevModel, currentModel, client)
 }
@@ -72,17 +73,20 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	_, _ = logger.Debugf("Get the current snapshot schedule and retention settings for the cluster:%+v", currentModel.ClusterName)
 	// Validate required fields in the request
-	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
+
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 
@@ -114,17 +118,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// logger setup
 	setup()
 	// Validate required fields in the request
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
+	modelValidation := validateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
 	_, _ = logger.Debugf("Update() currentModel:%+v", currentModel)
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 	// API call to Get the cloud backup schedule
 	events, _ := Read(req, prevModel, currentModel)
@@ -144,17 +151,21 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = logger.Debugf("Delete all the snapshot schedules for the cluster with currentModel:%+v", currentModel)
 	// Validate required fields in the request
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
+	modelValidation := validateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	// Create atlas client
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
+
 	projectID := currentModel.ProjectId
 	clusterName := currentModel.ClusterName
 	// Check if cloud backup policy already exist
@@ -463,7 +474,7 @@ func modelToCLoudBackupSchedule(currentModel *Model) (out *mongodbatlas.CloudPro
 // function to converts  mongodb 'CloudProviderSnapshotBackupPolicy' class to 'currentModel' model class.
 func backupPolicyToModel(currentModel Model, backupPolicy *mongodbatlas.CloudProviderSnapshotBackupPolicy) *Model {
 	out := &Model{
-		ApiKeys:                           currentModel.ApiKeys,
+		Profile:                           currentModel.Profile,
 		ProjectId:                         currentModel.ProjectId,
 		ClusterId:                         &backupPolicy.ClusterID,
 		ClusterName:                       &backupPolicy.ClusterName,

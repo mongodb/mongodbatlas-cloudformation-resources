@@ -27,7 +27,6 @@ echo "Created project \"${projectName}\" with id: ${projectId}"
 
 rm -rf inputs
 mkdir inputs
-name="${1}"
 jq --arg group_id "$projectId" \
 	'.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"

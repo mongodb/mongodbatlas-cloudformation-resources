@@ -84,9 +84,14 @@ cd mongodbatlas-cloudformation-resources\cfn-resources
 ```
 
 ## IAM Access Error When Previsioning Resources 
-If you are having difficulty with IAM access, suggest try registering first with the following IAM role [here](https://github.com/aws-quickstart/quickstart-mongodb-atlas/blob/main/templates/register-mongodb-atlas-resources.yaml#L217). This activates the public registry extensions by first using the private registry extensions.
+If you are having difficulty with IAM access, suggest try registering first with the following IAM role [here](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/execute-role.template.yml). This activates the public registry extensions by first using the private registry extensions.
 
-The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE NAME]". 
+The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE-NAME]". 
 
-
+## Common gotchas when using AWS CloudFormation/CDK with MongoDB Atlas Resources  
+1. Activate the 3rd party extension for each resource (i.e. MONGODB::ATLAS::[RESOURCE-NAME]) in each AWS region and from each AWS account that you wish to deploy from
+2. Ensure you have sufficiently strong AWS IAM Activation Role attached to each 3rd party extension. For sample IAM Role see [here](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/execute-role.template.yml)
+3. Ensure your activated 3rd party public extension matches name exactly to MONGODB::ATLAS::[RESOURCE-NAME] (you may need to delete private extension if this namespace is already occupied)
+4. Ensure your MongoDB Atlas Programmatic API Keys (PAKs) being used with CloudFormation have sufficiently strong permissions (Organization Project Creator or Organization Owner)
+5. Ensure your MongoDB Atlas PAKs have correct IP Address / CIDR range access. For testing purposes with caution you can open keys to all access by adding “0.0.0.0/1” and “128.0.0.0/1” (do not use for production workloads). 
 

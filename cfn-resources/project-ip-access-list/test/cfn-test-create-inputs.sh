@@ -32,11 +32,11 @@ fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	".ProjectId?|=$projectId " \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq--arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	".ProjectId?|=$projectId " \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

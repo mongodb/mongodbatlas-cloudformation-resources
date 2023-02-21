@@ -17,8 +17,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/openlyinc/pointy"
-	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -27,6 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -273,22 +272,6 @@ func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAcce
 	m.AwsSecurityGroup = &c.AwsSecurityGroup
 }
 
-func getProjectIPAccessList(projectID string, entries []string, conn *mongodbatlas.Client) ([]*mongodbatlas.ProjectIPAccessList, handler.ProgressEvent, error) {
-	var accesslist []*mongodbatlas.ProjectIPAccessList
-	for i := range entries {
-		entry := entries[i]
-		result, resp, err := conn.ProjectIPAccessList.Get(context.Background(), projectID, entry)
-		if err != nil {
-			return nil, progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-				resp.Response), err
-		}
-		_, _ = logger.Debugf("%+v", strings.Split(result.CIDRBlock, "/"))
-		_, _ = logger.Debugf("getProjectIPAccessList result:%+v", result)
-		accesslist = append(accesslist, result)
-	}
-	return accesslist, handler.ProgressEvent{}, nil
-}
-
 func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
 	var accesslist []*mongodbatlas.ProjectIPAccessList
 	for i := range model.AccessList {
@@ -329,29 +312,6 @@ func getEntry(wl mongodbatlas.ProjectIPAccessList) string {
 		return wl.IPAddress
 	}
 	return ""
-}
-
-func flattenAccessList(original []AccessListDefinition, accesslist []*mongodbatlas.ProjectIPAccessList) []AccessListDefinition {
-	var results []AccessListDefinition
-	for i := range accesslist {
-		wl := accesslist[i]
-		// only add properties which were in model to begin with
-		r := AccessListDefinition{
-			IPAddress: &wl.IPAddress,
-			Comment:   &wl.Comment,
-		}
-		if original[i].CIDRBlock != nil {
-			r.CIDRBlock = &wl.CIDRBlock
-		}
-		if original[i].ProjectId != nil {
-			r.ProjectId = &wl.GroupID
-		}
-		if original[i].AwsSecurityGroup != nil {
-			r.AwsSecurityGroup = &wl.AwsSecurityGroup
-		}
-		results = append(results, r)
-	}
-	return results
 }
 
 func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {

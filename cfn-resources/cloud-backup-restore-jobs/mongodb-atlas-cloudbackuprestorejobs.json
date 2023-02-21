@@ -144,6 +144,11 @@
             "permissions": [
                 "secretsmanager:GetSecretValue"
             ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         }
     }
 }

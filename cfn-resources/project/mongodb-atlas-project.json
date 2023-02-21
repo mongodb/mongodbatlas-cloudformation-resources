@@ -2,18 +2,6 @@
     "typeName": "MongoDB::Atlas::Project",
     "description": "Retrieves or creates projects in any given Atlas organization.",
     "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
         "projectSettings": {
             "type": "object",
             "properties": {
@@ -90,7 +78,7 @@
 
         },
         "WithDefaultAlertsSettings": {
-            "description": "Unique identifier of the organization within which to create the project.",
+            "description": "Flag that indicates whether to create the project with default alert settings.",
             "type": "boolean",
             "default": "false"
         },
@@ -110,8 +98,10 @@
         "ProjectSettings": {
             "$ref": "#/definitions/projectSettings"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "ProjectTeams": {
             "items": {
@@ -134,27 +124,41 @@
         "OrgId"
     ],
     "createOnlyProperties": [
-        "/properties/Name"
+        "/properties/Name",
+        "/properties/Profile"
+    ],
+    "writeOnlyProperties": [
+        "/properties/ProjectApiKeys"
     ],
     "readOnlyProperties": [
         "/properties/Id",
         "/properties/Created",
+        "/properties/ProjectOwnerId",
         "/properties/ClusterCount"
     ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

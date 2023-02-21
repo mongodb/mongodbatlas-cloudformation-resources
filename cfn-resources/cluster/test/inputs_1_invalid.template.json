@@ -1,10 +1,7 @@
 {
   "ProjectId": "",
   "Name": "a98a78(*^%$%^$%^*&(8",
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
+  "Profile": "default",
   "AdvancedSettings": {
     "DefaultReadConcern": "available",
     "DefaultWriteConcern": "1",

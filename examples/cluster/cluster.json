@@ -28,7 +28,10 @@
             "Type": "MongoDB::Atlas::Cluster",
             "Properties": {
                 "ProjectId": {
-                    "Ref": "Project"
+                    "Fn::GetAtt": [
+                        "Project",
+                        "Id"
+                    ]
                 },
                 "Name": {
                     "Ref": "ClusterName"

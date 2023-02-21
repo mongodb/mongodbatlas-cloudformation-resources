@@ -192,6 +192,10 @@
     "/properties/IndexId",
     "/properties/Status"
   ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
   "typeName": "MongoDB::Atlas::SearchIndex",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

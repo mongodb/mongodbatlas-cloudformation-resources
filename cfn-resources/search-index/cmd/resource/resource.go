@@ -34,10 +34,10 @@ func setup() {
 	util.SetupLogger("search-index")
 }
 
-var CreateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID}
-var UpdateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID}
-var DeleteRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -67,6 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.IndexId = &id
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
+
 	searchIndex, err := ToSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -76,6 +77,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:    currentModel,
 		}, nil
 	}
+
 	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &searchIndex)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -83,6 +85,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  cloudformation.OperationStatusFailed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+
 	currentModel.Status = &newSearchIndex.Status
 	currentModel.IndexId = &newSearchIndex.IndexID
 	return handler.ProgressEvent{

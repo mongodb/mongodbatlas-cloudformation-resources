@@ -5,7 +5,7 @@
   "Profile": "default",
   "Database": "testdb",
   "Name": "abc-123",
-  "GroupId": "$PROJECT_ID",
+  "ProjectId": "$PROJECT_ID",
   "Mappings": {
     "Dynamic": "true"
   }

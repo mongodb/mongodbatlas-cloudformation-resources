@@ -14,11 +14,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#analyzer" title="Analyzer">Analyzer</a>" : <i>String</i>,
         "<a href="#analyzers" title="Analyzers">Analyzers</a>" : <i>[ <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzersViewManual</a>, ... ]</i>,
-        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,  
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#collectionname" title="CollectionName">CollectionName</a>" : <i>String</i>,
         "<a href="#database" title="Database">Database</a>" : <i>String</i>,
-        "<a href="#projectId" title="GroupId">ProjectId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#mappings" title="Mappings">Mappings</a>" : <i><a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a></i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>" : <i>String</i>,
@@ -35,11 +35,11 @@ Properties:
     <a href="#analyzer" title="Analyzer">Analyzer</a>: <i>String</i>
     <a href="#analyzers" title="Analyzers">Analyzers</a>: <i>
       - <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzersViewManual</a></i>
-    <a href="#profile" title="Profile">Profile</a> : <i>String</i>,
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#collectionname" title="CollectionName">CollectionName</a>: <i>String</i>
     <a href="#database" title="Database">Database</a>: <i>String</i>
-    <a href="#projectId" title="ProjectId">ProjectId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#mappings" title="Mappings">Mappings</a>: <i><a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a></i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>: <i>String</i>
@@ -79,6 +79,7 @@ _Type_: List of <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzers
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Profile
+
 The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
@@ -95,9 +96,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>64</code>
+_Maximum Length_: <code>64</code>
 
 _Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
 
@@ -131,13 +132,13 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Mappings
 
@@ -179,10 +180,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 ## Return Values
 
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the IndexId.
-
 ### Fn::GetAtt
 
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
@@ -197,11 +194,11 @@ Unique 24-hexadecimal digit string that identifies the Atlas Search index. Use t
 
 Condition of the search index when you made this request.
 
-    | Status | Index Condition |
-    |---|---|
-    | IN_PROGRESS | Atlas is building or re-building the index after an edit. |
-    | STEADY | You can use this search index. |
-    | FAILED | Atlas could not build the index. |
-    | MIGRATING | Atlas is upgrading the underlying cluster tier and migrating indexes. |
+| Status | Index Condition |
+ |---|---|
+ | IN_PROGRESS | Atlas is building or re-building the index after an edit. |
+ | STEADY | You can use this search index. |
+ | FAILED | Atlas could not build the index. |
+ | MIGRATING | Atlas is upgrading the underlying cluster tier and migrating indexes. |
 
 

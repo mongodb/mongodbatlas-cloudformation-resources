@@ -18,34 +18,12 @@ Resources:
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                - "secretsmanager:CreateSecret"
-                - "secretsmanager:CreateSecretInput"
-                - "secretsmanager:DescribeSecret"
-                - "secretsmanager:GetSecretValue"
-                - "secretsmanager:PutSecretValue"
-                - "secretsmanager:UpdateSecretVersionStage"
-                - "ec2:CreateVpcEndpoint"
-                - "ec2:DeleteVpcEndpoints"
-                - "cloudformation:CreateResource"
-                - "cloudformation:DeleteResource"
-                - "cloudformation:GetResource"
-                - "cloudformation:GetResourceRequestStatus"
-                - "cloudformation:ListResources"
-                - "cloudformation:UpdateResource"
-                - "iam:AttachRolePolicy"
-                - "iam:CreateRole"
-                - "iam:DeleteRole"
-                - "iam:GetRole"
-                - "iam:GetRolePolicy"
-                - "iam:ListAttachedRolePolicies"
-                - "iam:ListRolePolicies"
-                - "iam:PutRolePolicy"
-                Resource: "*"
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Deny
+                  Action:
+                    - "*"
 Outputs:
   ExecutionRoleArn:
     Value:

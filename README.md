@@ -88,7 +88,7 @@ If you are having difficulty with IAM access, suggest try registering first with
 
 The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-Party Public Registry is "MongoDB::Atlas::[RESOURCE-NAME]". 
 
-## Common gotchas when using AWS CloudFormation/CDK with MongoDB Atlas Resources  
+# Common Troubleshooting when using AWS CloudFormation/CDK with MongoDB Atlas Resources  
 1. Activate the 3rd party extension for each resource (i.e. MONGODB::ATLAS::[RESOURCE-NAME]) in each AWS region and from each AWS account that you wish to deploy from
 2. Ensure you have sufficiently strong AWS IAM Activation Role attached to each 3rd party extension. For sample IAM Role see [here](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/execute-role.template.yml)
 3. Ensure your activated 3rd party public extension matches name exactly to MONGODB::ATLAS::[RESOURCE-NAME] (you may need to delete private extension if this namespace is already occupied)

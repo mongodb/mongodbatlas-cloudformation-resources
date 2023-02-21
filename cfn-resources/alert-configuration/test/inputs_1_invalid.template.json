@@ -1,8 +1,7 @@
 {
-
-    "GroupId": "",
-    "ClusterName": "",
-    "Description": "snapshot through cloud formation template",
-    "RetentionInDays": 5,
-    "Profile":"default"
+  "GroupId": "",
+  "ClusterName": "",
+  "Description": "snapshot through cloud formation template",
+  "RetentionInDays": 5,
+  "Profile": "default"
 }

@@ -1,10 +1,10 @@
 {
-    "ProjectId": "$ATLAS_PROJECT_ID",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    },
-    "Type": "WEBHOOK_Invalid",
-    "Url" : "https://www.google.com/happy",
-    "Secret": "Hello@1234"
+  "ProjectId": "$ATLAS_PROJECT_ID",
+  "ApiKeys": {
+    "PublicKey": "$ATLAS_PUBLIC_KEY",
+    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  },
+  "Type": "WEBHOOK_Invalid",
+  "Url": "https://www.google.com/happy",
+  "Secret": "Hello@1234"
 }

@@ -6,6 +6,6 @@
     },
     "ProjectId": ""
   },
-  "providerLogGroupName" : "mongodb-atlas-private-endpoint-regional-mode-logs",
-  "previousResourceState": { }
+  "providerLogGroupName": "mongodb-atlas-private-endpoint-regional-mode-logs",
+  "previousResourceState": {}
 }

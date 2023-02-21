@@ -113,7 +113,7 @@
       "description": "Human-readable label that identifies the cluster.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
     },
     "Components": {
       "type": "array",
@@ -213,7 +213,13 @@
     "State": {
       "type": "string",
       "description": "State of the export job.",
-      "enum": ["Cancelled", "Failed", "InProgress", "Queued", "Successful"]
+      "enum": [
+        "Cancelled",
+        "Failed",
+        "InProgress",
+        "Queued",
+        "Successful"
+      ]
     }
   },
   "readOnlyProperties": [

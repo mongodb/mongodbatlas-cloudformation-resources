@@ -1,31 +1,25 @@
 {
-    "desiredResourceState": {
-
-        "ApiKeys": {
-            "PublicKey": "",
-            "PrivateKey": ""
-        },
-        "CloudProviderConfig":{
-            "Aws":{
-                "ExternalId":"",
-                "IamAssumedRoleARN":"",
-                "IamUserARN":"",
-                "RoleId":"",
-                "TestS3Bucket":""
-            }
-        },
-        "GroupId":"",
-        "Name":"",
-        "TenantName":"cfntest",
-        "DataProcessRegion":
-        {
-            "CloudProvider": "AWS",
-            "Region":""
-        }
-
+  "desiredResourceState": {
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
     },
-        "previousResourceState": {
-        }
-
+    "CloudProviderConfig": {
+      "Aws": {
+        "ExternalId": "",
+        "IamAssumedRoleARN": "",
+        "IamUserARN": "",
+        "RoleId": "",
+        "TestS3Bucket": ""
+      }
+    },
+    "GroupId": "",
+    "Name": "",
+    "TenantName": "cfntest",
+    "DataProcessRegion": {
+      "CloudProvider": "AWS",
+      "Region": ""
+    }
+  },
+  "previousResourceState": {}
 }
-

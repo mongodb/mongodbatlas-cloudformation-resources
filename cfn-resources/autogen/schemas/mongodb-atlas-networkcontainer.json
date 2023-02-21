@@ -153,7 +153,13 @@
         "ProviderName": {
           "type": "string",
           "description": "Cloud service provider that serves the requested network peering containers.",
-          "enum": ["AWS", "GCP", "AZURE", "TENANT", "SERVERLESS"]
+          "enum": [
+            "AWS",
+            "GCP",
+            "AZURE",
+            "TENANT",
+            "SERVERLESS"
+          ]
         },
         "Provisioned": {
           "type": "boolean",
@@ -332,7 +338,13 @@
     "ProviderName": {
       "type": "string",
       "description": "Cloud service provider that serves the requested network peering containers.",
-      "enum": ["AWS", "GCP", "AZURE", "TENANT", "SERVERLESS"]
+      "enum": [
+        "AWS",
+        "GCP",
+        "AZURE",
+        "TENANT",
+        "SERVERLESS"
+      ]
     },
     "Provisioned": {
       "type": "boolean",

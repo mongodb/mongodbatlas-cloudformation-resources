@@ -1,25 +1,28 @@
 {
-    "Name" : "Name",
-    "OrgId" : "$ATLAS_ORG_ID",
-    "Profile" : "default",
-    "ProjectSettings": {
-        "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
-        "IsDataExplorerEnabled": "false",
-        "IsPerformanceAdvisorEnabled": "false",
-        "IsRealtimePerformancePanelEnabled": "false",
-        "IsSchemaAdvisorEnabled": "true"
-    },
-    "ProjectApiKeys": [
-        {
-            "Key": "api_key_goes_here",
-            "RoleNames": ["GROUP_CLUSTER_MANAGER"]
-        }
-
-    ],
-    "ProjectTeams": [
-        {
-            "TeamId": "Team_id_goes_here",
-            "RoleNames": ["GROUP_OWNER"]
-        }
-    ]
+  "Name": "Name",
+  "OrgId": "$ATLAS_ORG_ID",
+  "Profile": "default",
+  "ProjectSettings": {
+    "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+    "IsDataExplorerEnabled": "false",
+    "IsPerformanceAdvisorEnabled": "false",
+    "IsRealtimePerformancePanelEnabled": "false",
+    "IsSchemaAdvisorEnabled": "true"
+  },
+  "ProjectApiKeys": [
+    {
+      "Key": "api_key_goes_here",
+      "RoleNames": [
+        "GROUP_CLUSTER_MANAGER"
+      ]
+    }
+  ],
+  "ProjectTeams": [
+    {
+      "TeamId": "Team_id_goes_here",
+      "RoleNames": [
+        "GROUP_OWNER"
+      ]
+    }
+  ]
 }

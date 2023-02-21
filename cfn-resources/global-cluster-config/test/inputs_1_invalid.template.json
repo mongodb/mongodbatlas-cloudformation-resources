@@ -1,12 +1,14 @@
 {
-    "ProjectId": "",
-    "ClusterName": "",
-    "CustomZoneMappings": [{
-        "Location": "IN",
-        "Zone": "Zone 1"
-    }],
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
+  "ProjectId": "",
+  "ClusterName": "",
+  "CustomZoneMappings": [
+    {
+      "Location": "IN",
+      "Zone": "Zone 1"
     }
+  ],
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  }
 }

@@ -45,7 +45,11 @@
     "CloudProvider": {
       "type": "string",
       "description": "Cloud service provider that manages this private endpoint.",
-      "enum": ["AWS", "AZURE", "GCP"]
+      "enum": [
+        "AWS",
+        "AZURE",
+        "GCP"
+      ]
     },
     "EndpointId": {
       "type": "string",
@@ -69,7 +73,11 @@
     "ProviderName": {
       "type": "string",
       "description": "Human-readable label that identifies the cloud service provider for which you want to create the private endpoint service.",
-      "enum": ["AWS", "AZURE", "GCP"]
+      "enum": [
+        "AWS",
+        "AZURE",
+        "GCP"
+      ]
     },
     "Region": {
       "type": "string",

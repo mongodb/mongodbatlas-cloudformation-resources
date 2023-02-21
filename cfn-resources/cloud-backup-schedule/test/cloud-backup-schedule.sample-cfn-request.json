@@ -23,6 +23,6 @@
     "RestoreWindowDays": "1",
     "UseOrgAndGroupNamesInExportPrefix": "true"
   },
-  "providerLogGroupName" : "mongodb-atlas-cloud-backup-schedule-logs",
-  "previousResourceState": { }
+  "providerLogGroupName": "mongodb-atlas-cloud-backup-schedule-logs",
+  "previousResourceState": {}
 }

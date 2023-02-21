@@ -35,7 +35,11 @@
         "ErrorStateName": {
           "type": "string",
           "description": "Type of error that can be returned when requesting an Amazon Web Services (AWS) peering connection. The resource returns `null` if the request succeeded.",
-          "enum": ["EXPIRED", "INVALID_ARGUMENT", "REJECTED"]
+          "enum": [
+            "EXPIRED",
+            "INVALID_ARGUMENT",
+            "REJECTED"
+          ]
         },
         "Id": {
           "type": "string",
@@ -261,7 +265,11 @@
     "ProviderName": {
       "type": "string",
       "description": "Cloud service provider to use for this VPC peering connection.",
-      "enum": ["AWS", "AZURE", "GCP"]
+      "enum": [
+        "AWS",
+        "AZURE",
+        "GCP"
+      ]
     }
   },
   "readOnlyProperties": [

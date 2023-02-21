@@ -1,5 +1,5 @@
 {
-  "desiredResourceState":{
+  "desiredResourceState": {
     "ApiKeys": {
       "PublicKey": "",
       "PrivateKey": ""
@@ -13,8 +13,7 @@
       "GROUP_OWNER",
       "GROUP_READ_ONLY"
     ]
-  }
-,
-  "providerLogGroupName" : "mongodb-atlas-project-logs",
-  "previousResourceState": { }
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
 }

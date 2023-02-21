@@ -129,7 +129,7 @@
         "AcknowledgingUsername": {
           "type": "string",
           "description": "MongoDB Cloud username of the person who acknowledged the alert. The response returns this parameter if a MongoDB Cloud user previously acknowledged this alert.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "AlertConfigId": {
           "type": "string",
@@ -146,7 +146,7 @@
           "description": "Human-readable label that identifies the cluster to which this alert applies. This resource returns this parameter for alerts of events impacting backups, replica sets, or sharded clusters.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
         },
         "Created": {
           "type": "string",
@@ -324,7 +324,12 @@
         "Status": {
           "type": "string",
           "description": "State of this alert at the time you requested its details.",
-          "enum": ["CANCELLED", "CLOSED", "OPEN", "TRACKING"]
+          "enum": [
+            "CANCELLED",
+            "CLOSED",
+            "OPEN",
+            "TRACKING"
+          ]
         },
         "TypeName": {
           "type": "string",
@@ -347,7 +352,10 @@
         "Operator": {
           "type": "string",
           "description": "Comparison operator to apply when checking the current metric value.",
-          "enum": ["GREATER_THAN", "LESS_THAN"]
+          "enum": [
+            "GREATER_THAN",
+            "LESS_THAN"
+          ]
         },
         "Threshold": {
           "type": "integer",
@@ -558,12 +566,17 @@
         "Mode": {
           "type": "string",
           "description": "MongoDB Cloud computes the current metric value as an average.",
-          "enum": ["AVERAGE"]
+          "enum": [
+            "AVERAGE"
+          ]
         },
         "Operator": {
           "type": "string",
           "description": "Comparison operator to apply when checking the current metric value.",
-          "enum": ["GREATER_THAN", "LESS_THAN"]
+          "enum": [
+            "GREATER_THAN",
+            "LESS_THAN"
+          ]
         },
         "Threshold": {
           "type": "number",
@@ -618,7 +631,10 @@
           "description": "Datadog region that indicates which API Uniform Resource Locator (URL) to use. The resource requires this parameter when `\"notifications.typeName\" : \"DATADOG\"`.",
           "maxLength": 2,
           "minLength": 2,
-          "enum": ["EU", "US"]
+          "enum": [
+            "EU",
+            "US"
+          ]
         },
         "DelayMin": {
           "type": "number",
@@ -627,7 +643,7 @@
         "EmailAddress": {
           "type": "string",
           "description": "Email address to which MongoDB Cloud sends alert notifications. The resource requires this parameter when `\"notifications.typeName\" : \"EMAIL\"`. You don’t need to set this value to send emails to individual or groups of MongoDB Cloud users including:\n\n- specific MongoDB Cloud users (`\"notifications.typeName\" : \"USER\"`)\n- MongoDB Cloud users with specific project roles (`\"notifications.typeName\" : \"GROUP\"`)\n- MongoDB Cloud users with specific organization roles (`\"notifications.typeName\" : \"ORG\"`)\n- MongoDB Cloud teams (`\"notifications.typeName\" : \"TEAM\"`)\n\nTo send emails to one MongoDB Cloud user or grouping of users, set the **notifications.emailEnabled** parameter.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "EmailEnabled": {
           "type": "boolean",
@@ -635,7 +651,7 @@
         },
         "FlowName": {
           "type": "string",
-          "description": "Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: `www.flowdock.com/app/\u003corganization-name\u003e/\u003cflow-name\u003e`. The resource requires this parameter when `\"notifications.typeName\" : \"FLOWDOCK\"`.",
+          "description": "Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: `www.flowdock.com/app/<organization-name>/<flow-name>`. The resource requires this parameter when `\"notifications.typeName\" : \"FLOWDOCK\"`.",
           "maxLength": 100,
           "minLength": 1,
           "pattern": "^([a-z\\-]+)$"
@@ -670,7 +686,10 @@
           "description": "Opsgenie region that indicates which API Uniform Resource Locator (URL) to use.",
           "maxLength": 2,
           "minLength": 2,
-          "enum": ["EU", "US"]
+          "enum": [
+            "EU",
+            "US"
+          ]
         },
         "OrgName": {
           "type": "string",
@@ -710,7 +729,11 @@
         "Severity": {
           "type": "string",
           "description": "Degree of seriousness given to this notification.",
-          "enum": ["CRITICAL", "ERROR", "WARNING"]
+          "enum": [
+            "CRITICAL",
+            "ERROR",
+            "WARNING"
+          ]
         },
         "SmsEnabled": {
           "type": "boolean",
@@ -751,7 +774,7 @@
         "Username": {
           "type": "string",
           "description": "MongoDB Cloud username of the person to whom MongoDB Cloud sends notifications. Specify only MongoDB Cloud users who belong to the project that owns the alert configuration. The resource requires this parameter when `\"notifications.typeName\" : \"USER\"`.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "VictorOpsApiKey": {
           "type": "string",

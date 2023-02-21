@@ -76,7 +76,7 @@
         "Role": {
           "type": "string",
           "description": "Human-readable label that identifies the role inherited. Set this value to `admin` for every role except `read` or `readWrite`.",
-          "pattern": "^\\b(?!xgen-)([0-9A-Za-z_\\-]+)\\b(?\u003c!\\atlasAdmin|read|readWrite|dbAdmin|dbOwner|userAdmin|clusterAdmin|clusterManager|clusterMonitor|hostManager|backup|restore|readAnyDatabase|readWriteAnyDatabase|userAdminAnyDatabase|dbAdminAnyDatabase|root|__system)$"
+          "pattern": "^\\b(?!xgen-)([0-9A-Za-z_\\-]+)\\b(?<!\\atlasAdmin|read|readWrite|dbAdmin|dbOwner|userAdmin|clusterAdmin|clusterManager|clusterMonitor|hostManager|backup|restore|readAnyDatabase|readWriteAnyDatabase|userAdminAnyDatabase|dbAdminAnyDatabase|root|__system)$"
         }
       },
       "additionalProperties": false
@@ -109,7 +109,9 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": ["/properties/GroupId"],
+  "primaryIdentifier": [
+    "/properties/GroupId"
+  ],
   "properties": {
     "": {},
     "Actions": {
@@ -141,7 +143,7 @@
     "RoleName": {
       "type": "string",
       "description": "Human-readable label that identifies the role for the request. This name must be unique for this custom role in this project.",
-      "pattern": "^\\b(?!xgen-)([0-9A-Za-z_\\-]+)\\b(?\u003c!\\atlasAdmin|read|readWrite|dbAdmin|dbOwner|userAdmin|clusterAdmin|clusterManager|clusterMonitor|hostManager|backup|restore|readAnyDatabase|readWriteAnyDatabase|userAdminAnyDatabase|dbAdminAnyDatabase|root|__system)$"
+      "pattern": "^\\b(?!xgen-)([0-9A-Za-z_\\-]+)\\b(?<!\\atlasAdmin|read|readWrite|dbAdmin|dbOwner|userAdmin|clusterAdmin|clusterManager|clusterMonitor|hostManager|backup|restore|readAnyDatabase|readWriteAnyDatabase|userAdminAnyDatabase|dbAdminAnyDatabase|root|__system)$"
     }
   },
   "typeName": "MongoDB::Atlas::CustomDBRole",

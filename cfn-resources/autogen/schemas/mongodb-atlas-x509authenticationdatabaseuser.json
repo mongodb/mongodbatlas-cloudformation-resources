@@ -50,7 +50,7 @@
         "BindUsername": {
           "type": "string",
           "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.",
-          "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+          "pattern": "^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$"
         },
         "CaCertificate": {
           "type": "string",
@@ -122,7 +122,7 @@
         "Subject": {
           "type": "string",
           "description": "Subject Alternative Name associated with this certificate. This parameter expresses its value as a distinguished name as defined in [RFC 2253](https://tools.ietf.org/html/2253).",
-          "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+          "pattern": "^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$"
         },
         "_id": {
           "type": "string",
@@ -252,7 +252,7 @@
     "Subject": {
       "type": "string",
       "description": "Subject Alternative Name associated with this certificate. This parameter expresses its value as a distinguished name as defined in [RFC 2253](https://tools.ietf.org/html/2253).",
-      "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
+      "pattern": "^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$"
     },
     "TotalCount": {
       "type": "number",

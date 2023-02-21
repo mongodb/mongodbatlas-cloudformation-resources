@@ -8,5 +8,7 @@
   "Roles": [
     "ORG_MEMBER"
   ],
-  "TeamIds": [""]
+  "TeamIds": [
+    ""
+  ]
 }

@@ -41,7 +41,10 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": ["/properties/GroupId", "/properties/RoleId"],
+  "primaryIdentifier": [
+    "/properties/GroupId",
+    "/properties/RoleId"
+  ],
   "properties": {
     "": {},
     "ApiKeys": {
@@ -57,7 +60,9 @@
     "CloudProvider": {
       "type": "string",
       "description": "Human-readable label that identifies the cloud provider of the role to deauthorize.",
-      "enum": ["AWS"]
+      "enum": [
+        "AWS"
+      ]
     },
     "GroupId": {
       "type": "string",
@@ -74,7 +79,9 @@
       "pattern": "^([a-f0-9]{24})$"
     }
   },
-  "required": ["providerName"],
+  "required": [
+    "providerName"
+  ],
   "typeName": "MongoDB::Atlas::CloudProviderAccess",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

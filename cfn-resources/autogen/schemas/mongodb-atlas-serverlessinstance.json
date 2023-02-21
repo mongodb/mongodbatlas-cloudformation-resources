@@ -52,7 +52,7 @@
           "description": "Human-readable label that identifies the serverless instance.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
         },
         "ProviderSettings": {
           "type": "object",
@@ -133,12 +133,18 @@
         "BackingProviderName": {
           "type": "string",
           "description": "Cloud service provider on which MongoDB Cloud provisioned the serverless instance.",
-          "enum": ["AWS", "AZURE", "GCP"]
+          "enum": [
+            "AWS",
+            "AZURE",
+            "GCP"
+          ]
         },
         "ProviderName": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud service provider.",
-          "enum": ["SERVERLESS"]
+          "enum": [
+            "SERVERLESS"
+          ]
         },
         "RegionName": {
           "type": "string",
@@ -224,7 +230,7 @@
       "description": "Human-readable label that identifies the serverless instance.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
     },
     "PageNum": {
       "type": "integer",

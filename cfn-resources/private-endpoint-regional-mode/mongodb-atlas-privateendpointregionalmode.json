@@ -1,60 +1,57 @@
 {
-    "typeName": "MongoDB::Atlas::PrivateEndPointRegionalMode",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-    "definitions": {
-        "ApiKey": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
+  "typeName": "MongoDB::Atlas::PrivateEndPointRegionalMode",
+  "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "definitions": {
+    "ApiKey": {
+      "type": "object",
+      "properties": {
+        "PublicKey": {
+          "type": "string"
+        },
+        "PrivateKey": {
+          "type": "string"
         }
-    },
-    "properties": {
-        "Enabled": {
-            "description": "Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project",
-            "type": "boolean"
-        },
-        "ProjectId": {
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
-        },
-        "ApiKeys": {
-            "$ref": "#/definitions/ApiKey"
-        }
-    },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId"
-    ],
-    "readOnlyProperties": [
-        "/properties/Enabled"
-    ],
-    "primaryIdentifier": [
-        "/properties/ProjectId"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-            ]
-        },
-        "read": {
-            "permissions": [
-            ]
-        },
-        "delete": {
-            "permissions": [
-            ]
-        }
+      },
+      "additionalProperties": false
     }
+  },
+  "properties": {
+    "Enabled": {
+      "description": "Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project",
+      "type": "boolean"
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string",
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "ApiKeys": {
+      "$ref": "#/definitions/ApiKey"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId"
+  ],
+  "readOnlyProperties": [
+    "/properties/Enabled"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  }
 }

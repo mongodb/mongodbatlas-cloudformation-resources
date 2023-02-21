@@ -1,9 +1,8 @@
-
 {
-    "ProjectId": "$GroupId",
-    "ClusterName": "$ClusterName",
-    "DeliveryType": "download",
-    "SnapshotId": "$SnapshotId",
-    "Id": "",
-    "Profile": "default"
+  "ProjectId": "$GroupId",
+  "ClusterName": "$ClusterName",
+  "DeliveryType": "download",
+  "SnapshotId": "$SnapshotId",
+  "Id": "",
+  "Profile": "default"
 }

@@ -14,7 +14,9 @@
       "ClusterName",
       "CollName"
     ],
-    "RequiredParams": ["Criteria"]
+    "RequiredParams": [
+      "Criteria"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -41,7 +43,11 @@
       "TotalCount",
       "ArchiveOnly"
     ],
-    "RequiredParams": ["GroupId", "ArchiveId", "ClusterName"]
+    "RequiredParams": [
+      "GroupId",
+      "ArchiveId",
+      "ClusterName"
+    ]
   },
   "UpdateFields": {
     "InputParams": [
@@ -68,10 +74,15 @@
       "StartDate",
       "ArchiveId"
     ],
-    "RequiredParams": ["Criteria"]
+    "RequiredParams": [
+      "Criteria"
+    ]
   },
   "DeleteFields": {
-    "RequiredParams": ["ArchiveId", "ClusterName"]
+    "RequiredParams": [
+      "ArchiveId",
+      "ClusterName"
+    ]
   },
   "ListFields": {}
 }

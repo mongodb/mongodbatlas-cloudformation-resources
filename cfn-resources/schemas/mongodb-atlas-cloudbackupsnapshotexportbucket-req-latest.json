@@ -9,7 +9,9 @@
       "Links",
       "_id"
     ],
-    "RequiredParams": ["Links"]
+    "RequiredParams": [
+      "Links"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -24,11 +26,17 @@
       "TotalCount",
       "ExportBucketId"
     ],
-    "RequiredParams": ["GroupId", "ExportBucketId"]
+    "RequiredParams": [
+      "GroupId",
+      "ExportBucketId"
+    ]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": ["GroupId", "ExportBucketId"]
+    "RequiredParams": [
+      "GroupId",
+      "ExportBucketId"
+    ]
   },
   "ListFields": {}
 }

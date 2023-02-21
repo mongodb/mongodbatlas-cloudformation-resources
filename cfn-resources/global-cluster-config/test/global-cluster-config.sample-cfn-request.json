@@ -1,27 +1,28 @@
 {
-    "desiredResourceState": {
-      "ProjectId": "",
-      "ClusterName": "",
-      "ManagedNamespaces": [{
+  "desiredResourceState": {
+    "ProjectId": "",
+    "ClusterName": "",
+    "ManagedNamespaces": [
+      {
         "Collection": "planets",
         "CustomShardKey": "numberKey",
         "Db": "sample_guides",
         "IsCustomShardKeyHashed": "false",
         "IsShardKeyUnique": "false",
         "NumInitialChunks": 2
-      }],
-      "CustomZoneMappings": [{
+      }
+    ],
+    "CustomZoneMappings": [
+      {
         "Location": "IN",
         "Zone": "Zone 1"
-      }],
-      "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-      },
-      "RemoveAllZoneMapping": true
-
+      }
+    ],
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
     },
-    "previousResourceState": {
-    }
+    "RemoveAllZoneMapping": true
+  },
+  "previousResourceState": {}
 }
-

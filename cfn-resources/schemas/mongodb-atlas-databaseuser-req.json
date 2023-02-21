@@ -17,7 +17,9 @@
       "PageNum",
       "Subject"
     ],
-    "RequiredParams": ["Links"]
+    "RequiredParams": [
+      "Links"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -37,7 +39,10 @@
       "PageNum",
       "Subject"
     ],
-    "RequiredParams": ["GroupId", "Username"]
+    "RequiredParams": [
+      "GroupId",
+      "Username"
+    ]
   },
   "UpdateFields": {
     "InputParams": [
@@ -54,7 +59,11 @@
     ]
   },
   "DeleteFields": {
-    "RequiredParams": ["GroupId", "DatabaseName", "Username"]
+    "RequiredParams": [
+      "GroupId",
+      "DatabaseName",
+      "Username"
+    ]
   },
   "ListFields": {}
 }

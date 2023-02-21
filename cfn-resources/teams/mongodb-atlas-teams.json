@@ -4,7 +4,6 @@
     "AtlasUser": {
       "type": "object",
       "properties": {
-
         "Country": {
           "type": "string",
           "description": "Two alphabet characters that identifies MongoDB Cloud user's geographic location. This parameter uses the ISO 3166-1a2 code format.",
@@ -13,7 +12,7 @@
         "EmailAddress": {
           "type": "string",
           "description": "Email address that belongs to the MongoDB Cloud user.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "FirstName": {
           "type": "string",
@@ -69,16 +68,14 @@
         "Username": {
           "type": "string",
           "description": "Email address that represents the username of the MongoDB Cloud user.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         }
-
       },
       "additionalProperties": false
     },
     "AtlasRole": {
       "type": "object",
       "properties": {
-
         "GroupId": {
           "type": "string",
           "description": "Unique 24-hexadecimal digit string that identifies the project to which this role belongs. You can set a value for this parameter or **orgId** but not both in the same request.",
@@ -116,17 +113,16 @@
     },
     "Link": {
       "description": "One or more links to sub-resources and/or related resources.",
-        "type" : "object",
-        "properties": {
-          "Rel": {
-            "type": "string"
-          },
-          "Href": {
-            "type": "string"
-          }
+      "type": "object",
+      "properties": {
+        "Rel": {
+          "type": "string"
         },
-        "additionalProperties": false
-
+        "Href": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     },
     "apiKeyDefinition": {
       "type": "object",
@@ -145,7 +141,7 @@
   "handlers": {
     "create": {
       "permissions": [
-       ""
+        ""
       ]
     },
     "read": {
@@ -164,12 +160,13 @@
       ]
     }
   },
-  "primaryIdentifier": ["/properties/TeamId"],
+  "primaryIdentifier": [
+    "/properties/TeamId"
+  ],
   "properties": {
     "ApiKeys": {
       "$ref": "#/definitions/apiKeyDefinition"
     },
-
     "RoleNames": {
       "type": "array",
       "insertionOrder": false,
@@ -196,25 +193,21 @@
     "GroupId": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the project."
-
     },
     "TeamId": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the team."
-
     },
-	    "Name": {
+    "Name": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the team."
-
     },
-	    "Usernames": {
-          "insertionOrder": false,
+    "Usernames": {
+      "insertionOrder": false,
       "type": "array",
       "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
       "items": {
         "type": "string"
-
       }
     },
     "Users": {
@@ -232,5 +225,4 @@
     "/properties/Users"
   ],
   "typeName": "MongoDB::Atlas::Teams"
-
 }

@@ -1,23 +1,23 @@
 {
-    "desiredResourceState" : {
-      "GroupId": "",
-      "Actions": [
-        {
-          "Action": "FIND",
-          "Resources": [
-            {
-              "Collection": "listingsAndReviews",
-              "DB": "sample_airbnb"
-            }
-          ]
-        }
-      ],
-      "RoleName": "testcreate",
-      "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+  "desiredResourceState": {
+    "GroupId": "",
+    "Actions": [
+      {
+        "Action": "FIND",
+        "Resources": [
+          {
+            "Collection": "listingsAndReviews",
+            "DB": "sample_airbnb"
+          }
+        ]
       }
-    },
-    "providerLogGroupName" : "mongodb-atlas-project-logs",
-    "previousResourceState": { }
+    ],
+    "RoleName": "testcreate",
+    "ApiKeys": {
+      "PublicKey": "$ATLAS_PUBLIC_KEY",
+      "PrivateKey": "$ATLAS_PRIVATE_KEY"
+    }
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
 }

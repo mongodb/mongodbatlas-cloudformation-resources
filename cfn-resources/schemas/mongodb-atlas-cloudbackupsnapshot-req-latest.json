@@ -8,7 +8,9 @@
       "GroupId",
       "ClusterName"
     ],
-    "RequiredParams": ["Links"]
+    "RequiredParams": [
+      "Links"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -40,11 +42,19 @@
       "SnapshotType",
       "Type"
     ],
-    "RequiredParams": ["GroupId", "ClusterName", "SnapshotId"]
+    "RequiredParams": [
+      "GroupId",
+      "ClusterName",
+      "SnapshotId"
+    ]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": ["GroupId", "ClusterName", "SnapshotId"]
+    "RequiredParams": [
+      "GroupId",
+      "ClusterName",
+      "SnapshotId"
+    ]
   },
   "ListFields": {}
 }

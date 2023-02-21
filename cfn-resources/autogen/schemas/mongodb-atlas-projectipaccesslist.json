@@ -177,7 +177,11 @@
     "STATUS": {
       "type": "string",
       "description": "State of the access list entry when MongoDB Cloud made this request.\n\n| Status | Activity |\n|---|---|\n| `ACTIVE` | This access list entry applies to all relevant cloud providers. |\n| `PENDING` | MongoDB Cloud has started to add access list entry. This access list entry may not apply to all cloud providers at the time of this request. |\n| `FAILED` | MongoDB Cloud didn't succeed in adding this access list entry. |\n",
-      "enum": ["PENDING", "FAILED", "ACTIVE"]
+      "enum": [
+        "PENDING",
+        "FAILED",
+        "ACTIVE"
+      ]
     },
     "TotalCount": {
       "type": "number",

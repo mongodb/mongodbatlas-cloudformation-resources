@@ -6,6 +6,6 @@
     },
     "ProjectId": ""
   },
-  "providerLogGroupName" : "mongodb-atlas-custom-dns-config-cluster-aws-logs",
-  "previousResourceState": { }
+  "providerLogGroupName": "mongodb-atlas-custom-dns-config-cluster-aws-logs",
+  "previousResourceState": {}
 }

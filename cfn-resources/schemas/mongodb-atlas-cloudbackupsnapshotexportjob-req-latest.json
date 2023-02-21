@@ -17,7 +17,11 @@
       "CustomData",
       "Prefix"
     ],
-    "RequiredParams": ["ExportBucketId", "Links", "SnapshotId"]
+    "RequiredParams": [
+      "ExportBucketId",
+      "Links",
+      "SnapshotId"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -41,7 +45,11 @@
       "ApiKeys",
       "IncludeCount"
     ],
-    "RequiredParams": ["GroupId", "ClusterName", "ExportId"]
+    "RequiredParams": [
+      "GroupId",
+      "ClusterName",
+      "ExportId"
+    ]
   },
   "UpdateFields": {},
   "DeleteFields": {},

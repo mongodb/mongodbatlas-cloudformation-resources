@@ -11,7 +11,11 @@
       "ProjectOwnerId",
       "Links"
     ],
-    "RequiredParams": ["Links", "Name", "OrgId"]
+    "RequiredParams": [
+      "Links",
+      "Name",
+      "OrgId"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -32,11 +36,15 @@
       "OrgId",
       "Results"
     ],
-    "RequiredParams": ["GroupId"]
+    "RequiredParams": [
+      "GroupId"
+    ]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": ["GroupId"]
+    "RequiredParams": [
+      "GroupId"
+    ]
   },
   "ListFields": {}
 }

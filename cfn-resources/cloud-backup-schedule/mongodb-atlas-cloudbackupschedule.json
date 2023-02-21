@@ -1,279 +1,278 @@
 {
-    "typeName": "MongoDB::Atlas::CloudBackupSchedule",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-    "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
+  "typeName": "MongoDB::Atlas::CloudBackupSchedule",
+  "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "definitions": {
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PublicKey": {
+          "type": "string"
         },
-        "Export": {
-            "type": "object",
-            "properties": {
-                "ExportBucketId": {
-                    "description": "Unique identifier of the AWS bucket to export the cloud backup snapshot to",
-                    "type": "string"
-                },
-                "FrequencyType": {
-                    "description": "Frequency associated with the export policy. Value can be daily, weekly, or monthly.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ApiPolicyItemView": {
-            "type": "object",
-            "properties": {
-                "ID": {
-                    "description": "Unique identifier of the backup policy item.",
-                    "type": "string"
-                },
-                "FrequencyType": {
-                    "description": "Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly or monthly.",
-                    "type": "string"
-                },
-                "FrequencyInterval": {
-                    "description": "Desired frequency of the new backup policy item specified by frequencyType.",
-                    "type": "integer"
-                },
-                "RetentionValue": {
-                    "description": "Duration for which the backup is kept. Associated with retentionUnit.",
-                    "type": "integer"
-                },
-                "RetentionUnit": {
-                    "description": "Metric of duration of the backup policy item: days, weeks, or months.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ApiAtlasDiskBackupCopySettingView": {
-            "type": "object",
-            "properties": {
-                "CloudProvider": {
-                    "description": "A label that identifies the cloud provider that stores the snapshot copy.",
-                    "type": "string"
-                },
-                "RegionName": {
-                    "description": "Target region to copy snapshots belonging to replicationSpecId to.",
-                    "type": "string"
-                },
-                "ReplicationSpecId": {
-                    "description": "Unique 24-hexadecimal digit string that identifies the replication object for a zone in a cluster.",
-                    "type": "string"
-                },
-                "ShouldCopyOplogs": {
-                    "description": "Flag that indicates whether to copy the oplogs to the target region. ",
-                    "type": "boolean"
-                },
-                "Frequencies": {
-                    "description": "List that describes which types of snapshots to copy.",
-                    "items": {
-                        "type" : "string"
-                    },
-                    "type": "array",
-                    "insertionOrder": false
-                }
-            },
-            "additionalProperties": false
-        },
-        "ApiDeleteCopiedBackupsView": {
-            "type": "object",
-            "properties": {
-                "CloudProvider": {
-                    "description": "A label that identifies the cloud provider for the deleted copy setting whose backup copies you want to delete",
-                    "type": "string"
-                },
-                "RegionName": {
-                    "description": "Target region for the deleted copy setting whose backup copies you want to delete.",
-                    "type": "string"
-                },
-                "ReplicationSpecId": {
-                    "description": "Unique 24-hexadecimal digit string that identifies the replication object for a zone in a cluster.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ApiPolicyView": {
-            "type": "object",
-            "properties": {
-                "ID": {
-                    "type": "string"
-                },
-                "PolicyItems": {
-                    "type": "array",
-                    "insertionOrder": false,
-                    "items": {
-                        "$ref": "#/definitions/ApiPolicyItemView"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "Link": {
-            "type": "object",
-            "properties": {
-                "ApiKeys": {
-                    "$ref": "#/definitions/apiKeyDefinition"
-                },
-                "Href": {
-                    "type": "string",
-                    "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
-                },
-                "Rel": {
-                    "type": "string",
-                    "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
-                }
-            },
-            "additionalProperties": false
+        "PrivateKey": {
+          "type": "string"
         }
+      },
+      "additionalProperties": false
     },
-    "properties": {
-        "ProjectId": {
-            "description": "The unique identifier of the project for the Atlas cluster.",
-            "type": "string"
+    "Export": {
+      "type": "object",
+      "properties": {
+        "ExportBucketId": {
+          "description": "Unique identifier of the AWS bucket to export the cloud backup snapshot to",
+          "type": "string"
         },
-        "ClusterName": {
-            "description": "The name of the Atlas cluster that contains the snapshots you want to retrieve.",
-            "type": "string"
-        },
-        "Id": {
-            "description": "Unique identifier of the snapshot.",
-            "type": "string"
-        },
-        "AutoExportEnabled": {
-            "description": "Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled.",
-            "type": "boolean"
-        },
-        "UseOrgAndGroupNamesInExportPrefix": {
-            "description": "Specify true to use organization and project names instead of organization and project UUIDs in the path for the metadata files that Atlas uploads to your S3 bucket after it finishes exporting the snapshots.",
-            "type": "boolean"
-        },
-        "Export": {
-            "description": "Policy for automatically exporting cloud backup snapshots.",
-            "$ref": "#/definitions/Export",
-            "type": "object"
-        },
-        "CopySettings": {
-            "type": "array",
-            "insertionOrder": false,
-            "description": "List that contains a document for each copy setting item in the desired backup policy.",
-            "items":{
-                "$ref": "#/definitions/ApiAtlasDiskBackupCopySettingView",
-                "type": "object"
-            }
-        },
-        "DeleteCopiedBackups": {
-            "type": "array",
-            "insertionOrder": false,
-            "description": "List that contains a document for each deleted copy setting whose backup copies you want to delete.",
-            "items":{
-                "$ref": "#/definitions/ApiDeleteCopiedBackupsView",
-                "type": "object"
-            }
-        },
-        "Policies": {
-            "type": "array",
-            "insertionOrder": false,
-            "description": "Rules set for this backup schedule.",
-            "items":{
-                "$ref": "#/definitions/ApiPolicyView",
-                "type": "array"
-            }
-        },
-        "ReferenceHourOfDay": {
-            "description": "UTC Hour of day between 0 and 23 representing which hour of the day that Atlas takes a snapshot",
-            "type": "integer"
-        },
-        "ReferenceMinuteOfHour": {
-            "description": "UTC Minute of day between 0 and 59 representing which minute of the referenceHourOfDay that Atlas takes the snapshot.",
-            "type": "integer"
-        },
-        "RestoreWindowDays": {
-            "description": "Number of days back in time you can restore to with Continuous Cloud Backup accuracy. Must be a positive, non-zero integer.",
-            "type": "integer"
-        },
-        "UpdateSnapshots": {
-            "description": "Flag indicating if updates to retention in the backup policy were applied to snapshots that Atlas took earlier. ",
-            "type": "boolean"
-        },
-        "ClusterId": {
-            "description": "Unique identifier of the Atlas cluster.",
-            "type": "string"
-        },
-        "NextSnapshot": {
-            "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoc when Atlas takes the next snapshot.",
-            "type": "string"
-        },
-        "Profile": {
-            "type": "string",
-            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-            "default": "default"
-        },
-        "Links": {
-            "type": "array",
-            "insertionOrder": false,
-            "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-            "items": {
-                "$ref": "#/definitions/Link",
-                "type": "object"
-            }
+        "FrequencyType": {
+          "description": "Frequency associated with the export policy. Value can be daily, weekly, or monthly.",
+          "type": "string"
         }
+      },
+      "additionalProperties": false
     },
-    "additionalProperties": false,
-    "required": [
-        "Profile"
-    ],
-    "writeOnlyProperties": [
-        "/properties/UpdateSnapshots",
-        "/properties/DeleteCopiedBackups"
-    ],
-    "readOnlyProperties": [
-        "/properties/ClusterId",
-        "/properties/NextSnapshot",
-        "/properties/Policies/*/PolicyItems/*/ID",
-        "/properties/ProjectId",
-        "/properties/ClusterName",
-        "/definitions/Links"
-    ],
-    "createOnlyProperties": [
-        "/properties/Profile"
-    ],
-    "primaryIdentifier": [
-        "/properties/ProjectId",
-        "/properties/ClusterName",
-        "/properties/Profile"
-
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
+    "ApiPolicyItemView": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "Unique identifier of the backup policy item.",
+          "type": "string"
         },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
+        "FrequencyType": {
+          "description": "Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly or monthly.",
+          "type": "string"
         },
-        "update": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
+        "FrequencyInterval": {
+          "description": "Desired frequency of the new backup policy item specified by frequencyType.",
+          "type": "integer"
         },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
+        "RetentionValue": {
+          "description": "Duration for which the backup is kept. Associated with retentionUnit.",
+          "type": "integer"
+        },
+        "RetentionUnit": {
+          "description": "Metric of duration of the backup policy item: days, weeks, or months.",
+          "type": "string"
         }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasDiskBackupCopySettingView": {
+      "type": "object",
+      "properties": {
+        "CloudProvider": {
+          "description": "A label that identifies the cloud provider that stores the snapshot copy.",
+          "type": "string"
+        },
+        "RegionName": {
+          "description": "Target region to copy snapshots belonging to replicationSpecId to.",
+          "type": "string"
+        },
+        "ReplicationSpecId": {
+          "description": "Unique 24-hexadecimal digit string that identifies the replication object for a zone in a cluster.",
+          "type": "string"
+        },
+        "ShouldCopyOplogs": {
+          "description": "Flag that indicates whether to copy the oplogs to the target region. ",
+          "type": "boolean"
+        },
+        "Frequencies": {
+          "description": "List that describes which types of snapshots to copy.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "insertionOrder": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiDeleteCopiedBackupsView": {
+      "type": "object",
+      "properties": {
+        "CloudProvider": {
+          "description": "A label that identifies the cloud provider for the deleted copy setting whose backup copies you want to delete",
+          "type": "string"
+        },
+        "RegionName": {
+          "description": "Target region for the deleted copy setting whose backup copies you want to delete.",
+          "type": "string"
+        },
+        "ReplicationSpecId": {
+          "description": "Unique 24-hexadecimal digit string that identifies the replication object for a zone in a cluster.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiPolicyView": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string"
+        },
+        "PolicyItems": {
+          "type": "array",
+          "insertionOrder": false,
+          "items": {
+            "$ref": "#/definitions/ApiPolicyItemView"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "ApiKeys": {
+          "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
+        }
+      },
+      "additionalProperties": false
     }
+  },
+  "properties": {
+    "ProjectId": {
+      "description": "The unique identifier of the project for the Atlas cluster.",
+      "type": "string"
+    },
+    "ClusterName": {
+      "description": "The name of the Atlas cluster that contains the snapshots you want to retrieve.",
+      "type": "string"
+    },
+    "Id": {
+      "description": "Unique identifier of the snapshot.",
+      "type": "string"
+    },
+    "AutoExportEnabled": {
+      "description": "Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled.",
+      "type": "boolean"
+    },
+    "UseOrgAndGroupNamesInExportPrefix": {
+      "description": "Specify true to use organization and project names instead of organization and project UUIDs in the path for the metadata files that Atlas uploads to your S3 bucket after it finishes exporting the snapshots.",
+      "type": "boolean"
+    },
+    "Export": {
+      "description": "Policy for automatically exporting cloud backup snapshots.",
+      "$ref": "#/definitions/Export",
+      "type": "object"
+    },
+    "CopySettings": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "List that contains a document for each copy setting item in the desired backup policy.",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasDiskBackupCopySettingView",
+        "type": "object"
+      }
+    },
+    "DeleteCopiedBackups": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "List that contains a document for each deleted copy setting whose backup copies you want to delete.",
+      "items": {
+        "$ref": "#/definitions/ApiDeleteCopiedBackupsView",
+        "type": "object"
+      }
+    },
+    "Policies": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "Rules set for this backup schedule.",
+      "items": {
+        "$ref": "#/definitions/ApiPolicyView",
+        "type": "array"
+      }
+    },
+    "ReferenceHourOfDay": {
+      "description": "UTC Hour of day between 0 and 23 representing which hour of the day that Atlas takes a snapshot",
+      "type": "integer"
+    },
+    "ReferenceMinuteOfHour": {
+      "description": "UTC Minute of day between 0 and 59 representing which minute of the referenceHourOfDay that Atlas takes the snapshot.",
+      "type": "integer"
+    },
+    "RestoreWindowDays": {
+      "description": "Number of days back in time you can restore to with Continuous Cloud Backup accuracy. Must be a positive, non-zero integer.",
+      "type": "integer"
+    },
+    "UpdateSnapshots": {
+      "description": "Flag indicating if updates to retention in the backup policy were applied to snapshots that Atlas took earlier. ",
+      "type": "boolean"
+    },
+    "ClusterId": {
+      "description": "Unique identifier of the Atlas cluster.",
+      "type": "string"
+    },
+    "NextSnapshot": {
+      "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoc when Atlas takes the next snapshot.",
+      "type": "string"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
+    "Links": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link",
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "Profile"
+  ],
+  "writeOnlyProperties": [
+    "/properties/UpdateSnapshots",
+    "/properties/DeleteCopiedBackups"
+  ],
+  "readOnlyProperties": [
+    "/properties/ClusterId",
+    "/properties/NextSnapshot",
+    "/properties/Policies/*/PolicyItems/*/ID",
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/definitions/Links"
+  ],
+  "createOnlyProperties": [
+    "/properties/Profile"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

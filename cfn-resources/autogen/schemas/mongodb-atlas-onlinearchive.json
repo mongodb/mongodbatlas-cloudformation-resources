@@ -27,7 +27,7 @@
           "description": "Human-readable label that identifies the cluster that contains the collection for which you want to create an online archive.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
         },
         "CollName": {
           "type": "string",
@@ -36,7 +36,10 @@
         "CollectionType": {
           "type": "string",
           "description": "Classification of MongoDB database collection that you want to return.\n\nIf you set this parameter to `TIMESERIES`, set `\"criteria.type\" : \"date\"` and `\"criteria.dateFormat\" : \"ISODATE\"`.",
-          "enum": ["STANDARD", "TIMESERIES"]
+          "enum": [
+            "STANDARD",
+            "TIMESERIES"
+          ]
         },
         "Criteria": {
           "type": "object",
@@ -111,7 +114,10 @@
         "Type": {
           "type": "string",
           "description": "Means by which MongoDB Cloud selects data to archive. Data can be chosen using the age of the data or a MongoDB query.\n**DATE** selects documents to archive based on a date.\n**CUSTOM** selects documents to archive based on a custom JSON query. MongoDB Cloud doesn't support **CUSTOM** when `\"collectionType\": \"TIMESERIES\"`.",
-          "enum": ["DATE", "CUSTOM"]
+          "enum": [
+            "DATE",
+            "CUSTOM"
+          ]
         }
       },
       "additionalProperties": false
@@ -147,7 +153,14 @@
         "FieldType": {
           "type": "string",
           "description": "Data type of the parameter that that MongoDB Cloud uses to partition data. Partition parameters of type [UUID](http://bsonspec.org/spec.html) must be of binary subtype 4. MongoDB Cloud skips partition parameters of type UUID with subtype 3.",
-          "enum": ["date", "int", "long", "objectId", "string", "uuid"]
+          "enum": [
+            "date",
+            "int",
+            "long",
+            "objectId",
+            "string",
+            "uuid"
+          ]
         },
         "Order": {
           "type": "integer",
@@ -200,7 +213,7 @@
       "description": "Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
     },
     "CollName": {
       "type": "string",
@@ -209,7 +222,10 @@
     "CollectionType": {
       "type": "string",
       "description": "Classification of MongoDB database collection that you want to return.\n\nIf you set this parameter to `TIMESERIES`, set `\"criteria.type\" : \"date\"` and `\"criteria.dateFormat\" : \"ISODATE\"`.",
-      "enum": ["STANDARD", "TIMESERIES"]
+      "enum": [
+        "STANDARD",
+        "TIMESERIES"
+      ]
     },
     "Criteria": {
       "type": "object",

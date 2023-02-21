@@ -1,14 +1,16 @@
 {
-    "GroupId" : "",
-    "Region" : "",
-    "PrivateEndpoints": [
-        {
-            "VpcId": "",
-            "SubnetIds": [""]
-        }
-    ],
-    "ApiKeys" : {
-        "PublicKey" : "",
-        "PrivateKey" : ""
+  "GroupId": "",
+  "Region": "",
+  "PrivateEndpoints": [
+    {
+      "VpcId": "",
+      "SubnetIds": [
+        ""
+      ]
     }
+  ],
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  }
 }

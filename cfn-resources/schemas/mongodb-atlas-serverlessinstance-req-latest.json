@@ -37,11 +37,17 @@
       "ApiKeys",
       "TotalCount"
     ],
-    "RequiredParams": ["GroupId", "Name"]
+    "RequiredParams": [
+      "GroupId",
+      "Name"
+    ]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": ["GroupId", "Name"]
+    "RequiredParams": [
+      "GroupId",
+      "Name"
+    ]
   },
   "ListFields": {}
 }

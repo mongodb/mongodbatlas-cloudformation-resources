@@ -1,19 +1,19 @@
 {
-    "GroupId": "",
-    "Actions": [
+  "GroupId": "",
+  "Actions": [
+    {
+      "Action": "asdfasfgasdgasdg",
+      "Resources": [
         {
-            "Action": "asdfasfgasdgasdg",
-            "Resources": [
-                {
-                    "Collection": "listingsAndReviews",
-                    "DB": "sample_airbnb"
-                }
-            ]
+          "Collection": "listingsAndReviews",
+          "DB": "sample_airbnb"
         }
-    ],
-    "RoleName": "testcreate",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+      ]
     }
+  ],
+  "RoleName": "testcreate",
+  "ApiKeys": {
+    "PublicKey": "$ATLAS_PUBLIC_KEY",
+    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  }
 }

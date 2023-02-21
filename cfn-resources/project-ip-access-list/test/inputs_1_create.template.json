@@ -1,13 +1,17 @@
 {
-    "ProjectId" : "ProjectId",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+  "ProjectId": "ProjectId",
+  "ApiKeys": {
+    "PublicKey": "$ATLAS_PUBLIC_KEY",
+    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  },
+  "AccessList": [
+    {
+      "CIDRBlock": "0.0.0.0/1",
+      "Comment": "Testing open all ips"
     },
-    "AccessList" : [
-        { "CIDRBlock": "0.0.0.0/1",
-          "Comment": "Testing open all ips" },
-        { "CIDRBlock": "203.0.113.0/24",
-          "Comment": "CIDR block for Application Server B - D" }
-    ]
+    {
+      "CIDRBlock": "203.0.113.0/24",
+      "Comment": "CIDR block for Application Server B - D"
+    }
+  ]
 }

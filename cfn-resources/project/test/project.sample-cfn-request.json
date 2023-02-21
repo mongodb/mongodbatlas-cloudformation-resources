@@ -27,6 +27,6 @@
       }
     ]
   },
-    "providerLogGroupName" : "mongodb-atlas-project-logs",
-    "previousResourceState": { }
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
 }

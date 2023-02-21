@@ -1,12 +1,13 @@
 {
-    "FederationSettingsId": "",
-    "OrgId": "",
-    "DomainRestrictionEnabled": "false",
-    "DomainAllowList":["gmail.com"],
-    "TestMode": "true",
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    }
-
+  "FederationSettingsId": "",
+  "OrgId": "",
+  "DomainRestrictionEnabled": "false",
+  "DomainAllowList": [
+    "gmail.com"
+  ],
+  "TestMode": "true",
+  "ApiKeys": {
+    "PublicKey": "",
+    "PrivateKey": ""
+  }
 }

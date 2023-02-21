@@ -10,7 +10,7 @@
         "EmailAddress": {
           "type": "string",
           "description": "Email address of the MongoDB Cloud user linked to the federated organization.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "FederationSettingsId": {
           "type": "string",
@@ -49,7 +49,6 @@
     "RoleAssignment": {
       "type": "object",
       "properties": {
-
         "GroupId": {
           "type": "string"
         },
@@ -68,8 +67,6 @@
             "GLOBAL_READ_ONLY",
             "ORG_OWNER",
             "ORG_MEMBER"
-
-
           ]
         }
       },
@@ -78,7 +75,6 @@
     "RoleMappingView": {
       "type": "object",
       "properties": {
-
         "ExternalGroupName": {
           "type": "string",
           "description": "Unique human-readable label that identifies the identity provider group to whichthis role mapping applies.",
@@ -175,7 +171,6 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-
     "PostAuthRoleGrants": {
       "type": "array",
       "insertionOrder": false,
@@ -191,7 +186,6 @@
           "GLOBAL_OWNER",
           "ORG_OWNER",
           "ORG_MEMBER"
-
         ]
       }
     },

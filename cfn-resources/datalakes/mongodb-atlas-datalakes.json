@@ -22,7 +22,6 @@
           "type": "string",
           "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
         },
-
         "TestS3Bucket": {
           "type": "string",
           "description": "Name of the S3 data bucket that the provided role ID is authorized to access.Required if specifying cloudProviderConfig."
@@ -47,7 +46,13 @@
         "CloudProvider": {
           "type": "string",
           "description": "Name of the cloud service that hosts the data lake's data stores.",
-          "enum": ["AWS", "GCP", "AZURE", "TENANT", "SERVERLESS"]
+          "enum": [
+            "AWS",
+            "GCP",
+            "AZURE",
+            "TENANT",
+            "SERVERLESS"
+          ]
         },
         "Region": {
           "type": "string",
@@ -194,55 +199,48 @@
       },
       "additionalProperties": false
     },
-    "StoreDetail":{
-      "type":"object",
+    "StoreDetail": {
+      "type": "object",
       "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
-      "properties":{
-        "Name":{
+      "properties": {
+        "Name": {
           "description": "Human-readable label that identifies the data store.",
-          "type":"string"
+          "type": "string"
         },
-        "Provider":{
+        "Provider": {
           "description": "Human-readable label that identifies the Federated Database to update.",
-          "type":"string"
+          "type": "string"
         },
         "Region": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "Bucket": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "Prefix": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "Delimiter": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "IncludeTags": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "boolean"
-
         },
         "AdditionalStorageClasses": {
-          "type":"array",
+          "type": "array",
           "insertionOrder": false,
           "description": "Human-readable label that identifies the Federated Database to update.",
-          "items":
-          {
+          "items": {
             "type": "string"
-
           }
         }
       },
-      "additionalProperties":false
+      "additionalProperties": false
     },
     "DataLakeViewView": {
       "type": "object",
@@ -293,7 +291,14 @@
         "CloudProvider": {
           "type": "string",
           "description": "Name of the cloud service that hosts the data lake's data stores.",
-          "enum": ["NONE", "AWS", "GCP", "AZURE", "FREE", "SERVERLESS"]
+          "enum": [
+            "NONE",
+            "AWS",
+            "GCP",
+            "AZURE",
+            "FREE",
+            "SERVERLESS"
+          ]
         },
         "Region": {
           "type": "string",
@@ -544,19 +549,18 @@
       "type": "string",
       "description": "Human-readable label that identifies the Federated Database to remove."
     },
-    "Hostnames":{
-      "type":"array",
+    "Hostnames": {
+      "type": "array",
       "insertionOrder": false,
       "description": "Human-readable label that identifies the Federated Database to update.",
-      "items":{
-        "type":"string"
+      "items": {
+        "type": "string"
       }
     },
-    "State":{
-      "type":"string",
+    "State": {
+      "type": "string",
       "description": "Human-readable label that identifies the Federated Database to update."
     }
-
   },
   "readOnlyProperties": [
     "/properties/GroupId",

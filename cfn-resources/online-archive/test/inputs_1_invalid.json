@@ -4,7 +4,7 @@
     "PrivateKey": "<>"
   },
   "ClusterName": "",
-  "CollName":"rombo-bongo",
+  "CollName": "rombo-bongo",
   "DbName": "testdb",
   "ProjectId": "",
   "PartitionFields": [

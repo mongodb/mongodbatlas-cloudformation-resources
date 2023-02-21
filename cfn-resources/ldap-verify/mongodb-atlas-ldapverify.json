@@ -82,8 +82,12 @@
       "description": "Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
     }
   },
-  "primaryIdentifier": ["/properties/RequestId"],
-  "readOnlyProperties": ["/properties/RequestId"],
+  "primaryIdentifier": [
+    "/properties/RequestId"
+  ],
+  "readOnlyProperties": [
+    "/properties/RequestId"
+  ],
   "required": [
     "GroupId",
     "BindUsername",

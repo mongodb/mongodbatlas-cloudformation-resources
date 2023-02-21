@@ -1,11 +1,11 @@
 {
-    "GroupId": "",
-    "BindPassword": "",
-    "BindUsername": "",
-    "Hostname": "",
-    "Port": "636",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    }
+  "GroupId": "",
+  "BindPassword": "",
+  "BindUsername": "",
+  "Hostname": "",
+  "Port": "636",
+  "ApiKeys": {
+    "PublicKey": "$ATLAS_PUBLIC_KEY",
+    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  }
 }

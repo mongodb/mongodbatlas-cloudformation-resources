@@ -35,8 +35,6 @@ var UpdateRequiredFields = []string{constants.OrgID, constants.ID}
 var DeleteRequiredFields = []string{constants.OrgID, constants.ID}
 var ListRequiredFields = []string{constants.OrgID}
 
-//var ListRequiredFields = []string{constants.PubKey, constants.PubKey}
-
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }

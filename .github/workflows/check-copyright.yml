@@ -13,8 +13,8 @@ jobs:
         with:
           go-version: 1.19
       - uses: actions/setup-ruby@v1
-          with:
-            ruby-version: 2.6
+        with:
+          ruby-version: 2.6
       - name: install devtools
         run: | 
            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null

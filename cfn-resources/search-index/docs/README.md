@@ -94,9 +94,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum Length_: <code>1</code>
+_Minimum_: <code>1</code>
 
-_Maximum Length_: <code>64</code>
+_Maximum_: <code>64</code>
 
 _Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
 

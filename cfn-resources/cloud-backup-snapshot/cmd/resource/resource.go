@@ -21,13 +21,13 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -48,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -121,7 +121,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -199,7 +199,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -454,7 +454,7 @@ func convertToUIModel(snapShot *mongodbatlas.CloudProviderSnapshot, currentModel
 	storageInBytesString := strconv.Itoa(snapShot.StorageSizeBytes)
 	currentModel.StorageSizeBytes = &storageInBytesString
 	currentModel.Links = flattenLinks(snapShot.Links)
-	currentModel.CloudProvider = pointy.String(constants.AWS)
+	currentModel.CloudProvider = aws.String(constants.AWS)
 	currentModel.SnapshotIds = snapShot.SnapshotsIds
 	currentModel.Members = flattenCloudMembers(snapShot.Members)
 	return currentModel

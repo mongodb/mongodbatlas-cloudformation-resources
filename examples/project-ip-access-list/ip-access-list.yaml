@@ -2,14 +2,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::ProjectIpAccessList
 Parameters:
-  PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
+  Profile:
+    Description: "MongoDB Atlas Proj Profile Name"
     Type: String
-    Default: ""
-  PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
-    Type: String
-    Default: ""
+    Default: "default"
   ProjectId:
     Description: "Your MongoDB Cloud Project ID"
     Type: String
@@ -19,9 +15,7 @@ Resources:
     Type: MongoDB::Atlas::ProjectIpAccessList
     Properties:
       ProjectId: !Ref "ProjectId"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      Profile: !Ref "Profile"
       AccessList:
       - IPAddress: "0.0.0.0/1"
         Comment: "Testing open all ips"

@@ -31,10 +31,10 @@
         "AwsKms": {
             "$ref": "#/definitions/AwsKms"
         },
-			 "Profile": {
-						"type": "string",
-						"description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
-						"default": "default"
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+            "default": "default"
 				},
         "ProjectId": {
             "description": "Unique identifier of the Atlas project to which the user belongs.",

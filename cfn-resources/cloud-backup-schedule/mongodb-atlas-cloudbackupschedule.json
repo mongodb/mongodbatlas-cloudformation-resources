@@ -214,8 +214,10 @@
             "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoc when Atlas takes the next snapshot.",
             "type": "string"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "Links": {
             "type": "array",
@@ -229,7 +231,7 @@
     },
     "additionalProperties": false,
     "required": [
-        "ApiKeys"
+        "Profile"
     ],
     "writeOnlyProperties": [
         "/properties/UpdateSnapshots",
@@ -243,29 +245,34 @@
         "/properties/ClusterName",
         "/definitions/Links"
     ],
+    "createOnlyProperties": [
+        "/properties/Profile"
+    ],
     "primaryIdentifier": [
         "/properties/ProjectId",
-        "/properties/ClusterName"
+        "/properties/ClusterName",
+        "/properties/Profile"
+
     ],
     "handlers": {
         "create": {
             "permissions": [
-                
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                
+                "secretsmanager:GetSecretValue"
             ]
         },
         "update": {
             "permissions": [
-                
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-               
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

@@ -111,8 +111,10 @@
         "type": "object"
       }
     },
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "ClusterName": {
       "type": "string",

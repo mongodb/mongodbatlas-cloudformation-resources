@@ -33,7 +33,7 @@
         },
 			 "Profile": {
 						"type": "string",
-						"description": "Profile used to provide credentials information",
+						"description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
 						"default": "default"
 				},
         "ProjectId": {

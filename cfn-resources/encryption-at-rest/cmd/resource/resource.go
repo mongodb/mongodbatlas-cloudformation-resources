@@ -48,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, &currentModel.Profile)
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, fmt.Errorf(handlerError.Message)
@@ -89,7 +89,7 @@ func validateRequest(req *handler.Request, requiredFields []string, currentModel
 		return *modelValidation, nil, errors.New("required field not found")
 	}
 
-	client, handlerError := util.NewMongoDBClient(*req, &currentModel.Profile)
+	client, handlerError := util.NewMongoDBClient(*req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, nil, errors.New(handlerError.Message)

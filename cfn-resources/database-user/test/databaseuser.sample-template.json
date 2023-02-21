@@ -7,7 +7,12 @@
       "Description": "",
       "ConstraintDescription": ""
     },
-    "Profile": {
+    "PublicKey": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
+    },
+    "Privatekey": {
       "Type": "String",
       "Description": "",
       "ConstraintDescription": ""
@@ -30,10 +35,15 @@
             "DatabaseName": "admin"
           }
         ],
-        "Profile": {
-            "Ref": "Profile"
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
           }
         }
+      }
     },
     "x509User": {
       "Type": "MongoDB::Atlas::DatabaseUser",
@@ -43,8 +53,13 @@
         "ProjectId": {
           "Ref": "ProjectId"
         },
-        "Profile": {
-          "Ref": "Profile"
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
+          }
         },
         "DatabaseName": "$external",
         "Roles": [
@@ -76,8 +91,13 @@
             "DatabaseName": "admin"
           }
         ],
-        "Profile": {
-          "Ref": "Profile"
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
+          }
         }
       }
     },
@@ -96,8 +116,13 @@
             "DatabaseName": "admin"
           }
         ],
-        "Profile": {
-          "Ref": "Profile"
+        "ApiKeys": {
+          "PublicKey": {
+            "Ref": "PublicKey"
+          },
+          "PrivateKey": {
+            "Ref": "Privatekey"
+          }
         }
       }
     }

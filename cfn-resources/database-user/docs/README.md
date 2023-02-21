@@ -14,6 +14,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#deleteafterdate" title="DeleteAfterDate">DeleteAfterDate</a>" : <i>String</i>,
         "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
+        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#databasename" title="DatabaseName">DatabaseName</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>,
         "<a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>" : <i>String</i>,
@@ -22,8 +23,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
         "<a href="#scopes" title="Scopes">Scopes</a>" : <i>[ <a href="scopedefinition.md">scopeDefinition</a>, ... ]</i>,
-        "<a href="#username" title="Username">Username</a>" : <i>String</i>,
-        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
+        "<a href="#username" title="Username">Username</a>" : <i>String</i>
     }
 }
 </pre>
@@ -35,6 +35,7 @@ Type: MongoDB::Atlas::DatabaseUser
 Properties:
     <a href="#deleteafterdate" title="DeleteAfterDate">DeleteAfterDate</a>: <i>String</i>
     <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
+    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#databasename" title="DatabaseName">DatabaseName</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
       - <a href="labeldefinition.md">labelDefinition</a></i>
@@ -47,7 +48,6 @@ Properties:
     <a href="#scopes" title="Scopes">Scopes</a>: <i>
       - <a href="scopedefinition.md">scopeDefinition</a></i>
     <a href="#username" title="Username">Username</a>: <i>String</i>
-    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -71,6 +71,14 @@ _Required_: No
 _Type_: String
 
 _Allowed Values_: <code>NONE</code> | <code>USER</code> | <code>ROLE</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ApiKeys
+
+_Required_: No
+
+_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -136,7 +144,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Roles
 
@@ -168,17 +176,11 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Profile
-
-Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
 ## Return Values
+
+### Ref
+
+When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the UserCFNIdentifier.
 
 ### Fn::GetAtt
 

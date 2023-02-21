@@ -127,14 +127,5 @@
       }
     }
   },
-  "Outputs": {
-    "MongoDBIamUsername": {
-      "Value": {
-        "Fn::GetAtt": [
-          "awsIamUser",
-          "UserCFNIdentifier"
-        ]
-      }
-    }
-  }
+  "Outputs": {}
 }

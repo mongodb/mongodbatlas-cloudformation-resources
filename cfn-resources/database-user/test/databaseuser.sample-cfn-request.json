@@ -5,7 +5,10 @@
             "Username" : "Name",
             "Password" : "Name",
             "ProjectId" : "ProjectId",
-            "Profile" : "",
+            "ApiKeys" : {
+                "PublicKey" : "$ATLAS_PUBLIC_KEY",
+                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+            },
             "DatabaseName": "admin",
             "Roles": [
                 { "RoleName": "readWrite",
@@ -17,6 +20,8 @@
                   "Name": "testdb"
                 }
             ]
+
+
         }
     },
     "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",

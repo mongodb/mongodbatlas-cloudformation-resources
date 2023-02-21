@@ -2,21 +2,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Example for MongoDB::Atlas::ThirdPartyIntegration
 Parameters:
-  PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
+  Profile:
+    Description: "Your MongoDB ATLAS Profile Name created in secret manager"
     Type: String
-    Default: ""
-  PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
-    Type: String
-    Default: ""
+    Default: "default"
 Resources:
   WebhookIntegration:
     Type: MongoDB::Atlas::ThirdPartyIntegration
     Properties:
-      ApiKeys:
-        PublicKey: !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      Profile: !Ref "Profile"
       ProjectId: "625454459c4e6108393d650d"
       Type: "WEBHOOK"
       Url: "https://www.google.com"

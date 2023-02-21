@@ -2,15 +2,9 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "MongoDB Atlas AWS CloudFormation Example for MongoDB::Atlas::ThirdPartyIntegration",
   "Parameters": {
-    "PublicKey": {
-      "Description": "Your MongoDB Cloud Public API Key",
+    "Profile": {
       "Type": "String",
-      "Default": ""
-    },
-    "PrivateKey": {
-      "Description": "Your MongoDB Cloud Private API Key",
-      "Type": "String",
-      "Default": ""
+      "Default": "default"
     },
     "ProjectId": {
       "Description": "Your MongoDB Project Id",
@@ -22,19 +16,14 @@
     "PrometheusIntegration": {
       "Type": "MongoDB::Atlas::ThirdPartyIntegration",
       "Properties": {
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "PrivateKey"
-          }
+        "Profile": {
+          "Ref": "Profile"
         },
         "ProjectId": {
           "Ref": "ProjectID"
         },
         "Type": "WEBHOOK",
-        "Url" : "http://7e9ea9dc.ngrok.io/github-webhook"
+        "Url": "http://7e9ea9dc.ngrok.io/github-webhook"
       }
     }
   }

@@ -1,11 +1,11 @@
 {
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
-  "ProjectId": "",
-  "Username": "",
-  "Roles": [
-    "GROUP_DATA_ACCESS_ADMINjs"
-  ]
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    },
+    "ProjectId": "",
+    "Username": "",
+    "Roles": [
+        "GROUP_DATA_ACCESS_ADMINjs"
+    ]
 }

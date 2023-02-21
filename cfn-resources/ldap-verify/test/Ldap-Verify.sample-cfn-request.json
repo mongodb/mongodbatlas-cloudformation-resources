@@ -1,15 +1,15 @@
 {
-  "desiredResourceState": {
+  "desiredResourceState":{
     "GroupId": "",
     "BindPassword": "",
     "BindUsername": "",
     "Hostname": "",
     "Port": "636",
-    "ApiKeys": {
-      "PublicKey": "$ATLAS_PUBLIC_KEY",
-      "PrivateKey": "$ATLAS_PRIVATE_KEY"
+    "ApiKeys" : {
+      "PublicKey" : "$ATLAS_PUBLIC_KEY",
+      "PrivateKey" : "$ATLAS_PRIVATE_KEY"
     }
   },
-  "providerLogGroupName": "mongodb-atlas-Ldap-Verify-logs",
-  "previousResourceState": {}
+  "providerLogGroupName" : "mongodb-atlas-Ldap-Verify-logs",
+  "previousResourceState": { }
 }

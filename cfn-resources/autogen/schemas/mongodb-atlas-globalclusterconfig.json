@@ -87,9 +87,7 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId"
-  ],
+  "primaryIdentifier": ["/properties/GroupId"],
   "properties": {
     "": {},
     "ApiKeys": {
@@ -100,7 +98,7 @@
       "description": "Human-readable label that identifies this global cluster.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "CustomZoneMapping": {
       "type": "object",
@@ -135,9 +133,7 @@
     "/properties/CustomZoneMapping",
     "/properties/ManagedNamespaces"
   ],
-  "required": [
-    "customZoneMappings"
-  ],
+  "required": ["customZoneMappings"],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

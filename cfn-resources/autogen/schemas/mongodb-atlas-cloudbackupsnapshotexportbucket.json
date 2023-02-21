@@ -17,11 +17,7 @@
         "CloudProvider": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud provider that stores this snapshot.",
-          "enum": [
-            "AWS",
-            "AZURE",
-            "GCP"
-          ]
+          "enum": ["AWS", "AZURE", "GCP"]
         },
         "IamRoleId": {
           "type": "string",
@@ -113,11 +109,7 @@
     "CloudProvider": {
       "type": "string",
       "description": "Human-readable label that identifies the cloud provider that stores this snapshot.",
-      "enum": [
-        "AWS",
-        "AZURE",
-        "GCP"
-      ]
+      "enum": ["AWS", "AZURE", "GCP"]
     },
     "ExportBucketId": {
       "type": "string",

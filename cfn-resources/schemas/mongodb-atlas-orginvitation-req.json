@@ -34,10 +34,7 @@
       "InvitationId",
       "Username"
     ],
-    "RequiredParams": [
-      "OrgId",
-      "InvitationId"
-    ]
+    "RequiredParams": ["OrgId", "InvitationId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -61,10 +58,7 @@
     ]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "OrgId",
-      "InvitationId"
-    ]
+    "RequiredParams": ["OrgId", "InvitationId"]
   },
   "ListFields": {}
 }

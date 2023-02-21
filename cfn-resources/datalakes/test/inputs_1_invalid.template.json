@@ -1,16 +1,18 @@
+
 {
-  "CloudProviderConfig": {
-    "Aws": {
-      "ExternalId": "",
-      "IamAssumedRoleARN": "",
-      "IamUserARN": "",
-      "RoleId": "",
-      "TestS3Bucket": ""
+    "CloudProviderConfig":{
+        "Aws":{
+            "ExternalId":"",
+            "IamAssumedRoleARN":"",
+            "IamUserARN":"",
+            "RoleId":"",
+            "TestS3Bucket":""
+        }
+    },
+    "GroupId":"",
+
+    "ApiKeys": {
+        "PublicKey": "$ATLAS_PUBLIC_KEY",
+        "PrivateKey": "$ATLAS_PRIVATE_KEY"
     }
-  },
-  "GroupId": "",
-  "ApiKeys": {
-    "PublicKey": "$ATLAS_PUBLIC_KEY",
-    "PrivateKey": "$ATLAS_PRIVATE_KEY"
-  }
 }

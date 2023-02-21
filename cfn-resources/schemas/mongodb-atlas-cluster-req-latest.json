@@ -23,9 +23,7 @@
       "ClusterType",
       "DiskSizeGB"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "ReadFields": {
     "InputParams": [
@@ -57,10 +55,7 @@
       "Name",
       "RootCertType"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -92,15 +87,10 @@
       "VersionReleaseSystem",
       "Links"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName"]
   },
   "ListFields": {}
 }

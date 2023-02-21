@@ -1,75 +1,75 @@
 {
-  "typeName": "MongoDB::Atlas::Auditing",
-  "description": "Returns and edits database auditing settings for MongoDB Cloud projects.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-  "properties": {
-    "Profile": {
-      "type": "string",
-      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-      "default": "default"
+    "typeName":"MongoDB::Atlas::Auditing",
+    "description":"Returns and edits database auditing settings for MongoDB Cloud projects.",
+    "sourceUrl":"https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "properties":{
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
+        },
+        "AuditAuthorizationSuccess":{
+            "type":"boolean",
+            "description":"Flag that indicates whether someone set auditing to track successful authentications. This only applies to the `\"atype\" : \"authCheck\"` audit filter. Setting this parameter to `true` degrades cluster performance."
+        },
+        "AuditFilter":{
+            "type":"string",
+            "description":"JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/."
+        },
+        "ConfigurationType":{
+            "type":"string",
+            "description":"Human-readable label that displays how to configure the audit filter.",
+            "enum":[
+                "FILTER_BUILDER",
+                "FILTER_JSON",
+                "NONE"
+            ]
+        },
+        "GroupId":{
+            "type":"string",
+            "description":"Unique 24-hexadecimal digit string that identifies your project.",
+            "maxLength":24,
+            "minLength":24,
+            "pattern":"^([a-f0-9]{24})$"
+        }
     },
-    "AuditAuthorizationSuccess": {
-      "type": "boolean",
-      "description": "Flag that indicates whether someone set auditing to track successful authentications. This only applies to the `\"atype\" : \"authCheck\"` audit filter. Setting this parameter to `true` degrades cluster performance."
-    },
-    "AuditFilter": {
-      "type": "string",
-      "description": "JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/."
-    },
-    "ConfigurationType": {
-      "type": "string",
-      "description": "Human-readable label that displays how to configure the audit filter.",
-      "enum": [
-        "FILTER_BUILDER",
-        "FILTER_JSON",
-        "NONE"
-      ]
-    },
-    "GroupId": {
-      "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies your project.",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
+    "additionalProperties":false,
+    "readOnlyProperties": [
+        "/properties/AuditFilter",
+        "/properties/ConfigurationType",
+        "/properties/AuditAuthorizationSuccess"
+    ],
+    "required":[
+        "GroupId"
+    ],
+    "primaryIdentifier":[
+        "/properties/GroupId",
+        "/properties/Profile"
+    ],
+    "createOnlyProperties":[
+        "/properties/GroupId",
+        "/properties/Profile"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
     }
-  },
-  "additionalProperties": false,
-  "readOnlyProperties": [
-    "/properties/AuditFilter",
-    "/properties/ConfigurationType",
-    "/properties/AuditAuthorizationSuccess"
-  ],
-  "required": [
-    "GroupId"
-  ],
-  "primaryIdentifier": [
-    "/properties/GroupId",
-    "/properties/Profile"
-  ],
-  "createOnlyProperties": [
-    "/properties/GroupId",
-    "/properties/Profile"
-  ],
-  "handlers": {
-    "create": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "read": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "update": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "delete": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    }
-  }
 }

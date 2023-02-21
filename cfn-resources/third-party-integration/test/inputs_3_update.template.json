@@ -1,8 +1,8 @@
 {
   "ProjectId": "$ATLAS_PROJECT_ID",
-  "ApiKeys": {
-    "PublicKey": "$ATLAS_PUBLIC_KEY",
-    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  "ApiKeys" : {
+    "PublicKey" : "$ATLAS_PUBLIC_KEY",
+    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
   "Type": "PAGER_DUTY",
   "ServiceKey": "525f12a9a9194f00d0418a2089385451"

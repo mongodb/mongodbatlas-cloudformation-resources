@@ -166,9 +166,7 @@
     "/properties/Results",
     "/properties/TotalCount"
   ],
-  "required": [
-    "links"
-  ],
+  "required": ["links"],
   "typeName": "MongoDB::Atlas::Teams",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

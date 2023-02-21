@@ -1,163 +1,166 @@
 {
-  "typeName": "MongoDB::Atlas::Project",
-  "description": "Retrieves or creates projects in any given Atlas organization.",
-  "definitions": {
-    "projectSettings": {
-      "type": "object",
-      "properties": {
-        "IsCollectDatabaseSpecificsStatisticsEnabled": {
-          "type": "boolean"
+    "typeName": "MongoDB::Atlas::Project",
+    "description": "Retrieves or creates projects in any given Atlas organization.",
+    "definitions": {
+        "projectSettings": {
+            "type": "object",
+            "properties": {
+                "IsCollectDatabaseSpecificsStatisticsEnabled": {
+                    "type": "boolean"
+                },
+                "IsDataExplorerEnabled": {
+                    "type": "boolean"
+                },
+                "IsPerformanceAdvisorEnabled": {
+                    "type": "boolean"
+                },
+                "IsRealtimePerformancePanelEnabled": {
+                    "type": "boolean"
+                },
+                "IsSchemaAdvisorEnabled": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false
         },
-        "IsDataExplorerEnabled": {
-          "type": "boolean"
+        "projectTeam": {
+            "type": "object",
+            "properties": {
+                "TeamId": {
+                    "type": "string"
+                },
+                "RoleNames": {
+                    "items": {
+                        "$ref": "#/definitions/Roles"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                }
+            },
+            "additionalProperties": false
         },
-        "IsPerformanceAdvisorEnabled": {
-          "type": "boolean"
+        "projectApiKey": {
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string"
+                },
+                "RoleNames": {
+                    "items": {
+                        "$ref": "#/definitions/Roles"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                }
+            },
+            "additionalProperties": false
         },
-        "IsRealtimePerformancePanelEnabled": {
-          "type": "boolean"
-        },
-        "IsSchemaAdvisorEnabled": {
-          "type": "boolean"
+        "Roles": {
+            "type": "string"
         }
-      },
-      "additionalProperties": false
     },
-    "projectTeam": {
-      "type": "object",
-      "properties": {
-        "TeamId": {
-          "type": "string"
+    "properties": {
+        "Name": {
+            "description": "Name of the project to create.",
+            "type": "string",
+            "default": ""
         },
-        "RoleNames": {
-          "items": {
-            "$ref": "#/definitions/Roles"
-          },
-          "type": "array",
-          "uniqueItems": true
-        }
-      },
-      "additionalProperties": false
-    },
-    "projectApiKey": {
-      "type": "object",
-      "properties": {
-        "Key": {
-          "type": "string"
+        "OrgId": {
+            "description": "Unique identifier of the organization within which to create the project.",
+            "type": "string",
+            "default": ""
+
         },
-        "RoleNames": {
-          "items": {
-            "$ref": "#/definitions/Roles"
-          },
-          "type": "array",
-          "uniqueItems": true
+        "ProjectOwnerId": {
+            "description": "Unique identifier of the organization within which to create the project.",
+            "type": "string",
+            "default": ""
+
+        },
+        "WithDefaultAlertsSettings": {
+            "description": "Flag that indicates whether to create the project with default alert settings.",
+            "type": "boolean",
+            "default": "false"
+        },
+        "Id": {
+            "description": "The unique identifier of the project.",
+            "type": "string",
+            "default": ""
+        },
+        "Created": {
+            "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
+            "type": "string"
+        },
+        "ClusterCount": {
+            "description": "The number of Atlas clusters deployed in the project.",
+            "type": "integer"
+        },
+        "ProjectSettings": {
+            "$ref": "#/definitions/projectSettings"
+        },
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
+        },
+        "ProjectTeams": {
+            "items": {
+                "$ref": "#/definitions/projectTeam"
+            },
+            "type": "array",
+            "uniqueItems": true
+        },
+        "ProjectApiKeys": {
+            "items": {
+                "$ref": "#/definitions/projectApiKey"
+            },
+            "type": "array",
+            "uniqueItems": true
         }
-      },
-      "additionalProperties": false
     },
-    "Roles": {
-      "type": "string"
+    "additionalProperties": false,
+    "required": [
+        "Name",
+        "OrgId"
+    ],
+    "createOnlyProperties": [
+        "/properties/Name",
+        "/properties/Profile"
+    ],
+    "writeOnlyProperties": [
+        "/properties/ProjectApiKeys"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Created",
+        "/properties/ProjectOwnerId",
+        "/properties/ClusterCount"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id",
+        "/properties/Profile"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
     }
-  },
-  "properties": {
-    "Name": {
-      "description": "Name of the project to create.",
-      "type": "string",
-      "default": ""
-    },
-    "OrgId": {
-      "description": "Unique identifier of the organization within which to create the project.",
-      "type": "string",
-      "default": ""
-    },
-    "ProjectOwnerId": {
-      "description": "Unique identifier of the organization within which to create the project.",
-      "type": "string",
-      "default": ""
-    },
-    "WithDefaultAlertsSettings": {
-      "description": "Flag that indicates whether to create the project with default alert settings.",
-      "type": "boolean",
-      "default": "false"
-    },
-    "Id": {
-      "description": "The unique identifier of the project.",
-      "type": "string",
-      "default": ""
-    },
-    "Created": {
-      "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
-      "type": "string"
-    },
-    "ClusterCount": {
-      "description": "The number of Atlas clusters deployed in the project.",
-      "type": "integer"
-    },
-    "ProjectSettings": {
-      "$ref": "#/definitions/projectSettings"
-    },
-    "Profile": {
-      "type": "string",
-      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-      "default": "default"
-    },
-    "ProjectTeams": {
-      "items": {
-        "$ref": "#/definitions/projectTeam"
-      },
-      "type": "array",
-      "uniqueItems": true
-    },
-    "ProjectApiKeys": {
-      "items": {
-        "$ref": "#/definitions/projectApiKey"
-      },
-      "type": "array",
-      "uniqueItems": true
-    }
-  },
-  "additionalProperties": false,
-  "required": [
-    "Name",
-    "OrgId"
-  ],
-  "createOnlyProperties": [
-    "/properties/Name",
-    "/properties/Profile"
-  ],
-  "writeOnlyProperties": [
-    "/properties/ProjectApiKeys"
-  ],
-  "readOnlyProperties": [
-    "/properties/Id",
-    "/properties/Created",
-    "/properties/ProjectOwnerId",
-    "/properties/ClusterCount"
-  ],
-  "primaryIdentifier": [
-    "/properties/Id",
-    "/properties/Profile"
-  ],
-  "handlers": {
-    "create": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "read": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "update": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "delete": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    }
-  }
 }
+

@@ -8,10 +8,7 @@
       "ProviderName",
       "Region"
     ],
-    "RequiredParams": [
-      "ProviderName",
-      "Region"
-    ]
+    "RequiredParams": ["ProviderName", "Region"]
   },
   "ReadFields": {
     "InputParams": [

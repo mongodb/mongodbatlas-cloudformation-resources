@@ -8,9 +8,7 @@
       "GroupId",
       "GoogleCloudKms"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [

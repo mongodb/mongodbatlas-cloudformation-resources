@@ -15,10 +15,7 @@
       "Created",
       "Id"
     ],
-    "RequiredParams": [
-      "EventTypeName",
-      "Links"
-    ]
+    "RequiredParams": ["EventTypeName", "Links"]
   },
   "ReadFields": {
     "InputParams": [
@@ -42,10 +39,7 @@
       "ItemsPerPage",
       "PageNum"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "AlertConfigId"
-    ]
+    "RequiredParams": ["GroupId", "AlertConfigId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -69,16 +63,10 @@
       "PageNum",
       "AlertConfigId"
     ],
-    "RequiredParams": [
-      "EventTypeName",
-      "Links"
-    ]
+    "RequiredParams": ["EventTypeName", "Links"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "AlertConfigId"
-    ]
+    "RequiredParams": ["GroupId", "AlertConfigId"]
   },
   "ListFields": {}
 }

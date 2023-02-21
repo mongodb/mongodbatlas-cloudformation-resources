@@ -18,9 +18,7 @@
       "GroupId",
       "AutoDeferOnceEnabled"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -31,15 +29,10 @@
       "StartASAP",
       "ApiKeys"
     ],
-    "RequiredParams": [
-      "DayOfWeek",
-      "HourOfDay"
-    ]
+    "RequiredParams": ["DayOfWeek", "HourOfDay"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "ListFields": {}
 }

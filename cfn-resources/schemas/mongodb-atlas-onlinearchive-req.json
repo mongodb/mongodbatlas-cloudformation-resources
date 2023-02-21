@@ -14,9 +14,7 @@
       "ApiKeys",
       "ClusterName"
     ],
-    "RequiredParams": [
-      "Criteria"
-    ]
+    "RequiredParams": ["Criteria"]
   },
   "ReadFields": {
     "InputParams": [
@@ -43,11 +41,7 @@
       "Results",
       "EndDate"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ArchiveId",
-      "ClusterName"
-    ]
+    "RequiredParams": ["GroupId", "ArchiveId", "ClusterName"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -74,15 +68,10 @@
       "ItemsPerPage",
       "StartDate"
     ],
-    "RequiredParams": [
-      "Criteria"
-    ]
+    "RequiredParams": ["Criteria"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "ArchiveId",
-      "ClusterName"
-    ]
+    "RequiredParams": ["ArchiveId", "ClusterName"]
   },
   "ListFields": {}
 }

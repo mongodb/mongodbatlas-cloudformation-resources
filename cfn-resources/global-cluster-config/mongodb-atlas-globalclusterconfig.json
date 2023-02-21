@@ -30,6 +30,7 @@
           "type": "string",
           "description": "Human-readable label of the database to manage for this Global Cluster."
         },
+
         "IsCustomShardKeyHashed": {
           "type": "boolean",
           "description": "Flag that indicates whether someone hashed the custom shard key for the specified collection. If you set this value to `false`, MongoDB Cloud uses ranged sharding."
@@ -41,6 +42,7 @@
       },
       "additionalProperties": false
     },
+
     "apiKeyDefinition": {
       "type": "object",
       "properties": {
@@ -57,18 +59,22 @@
   "description": "Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+
+      ]
     }
   },
-  "primaryIdentifier": [
-    "/properties/ProjectId"
-  ],
+  "primaryIdentifier": ["/properties/ProjectId"],
   "properties": {
     "ApiKeys": {
       "$ref": "#/definitions/apiKeyDefinition"
@@ -89,6 +95,7 @@
         "$ref": "#/definitions/managedNamespace",
         "type": "object"
       }
+
     },
     "RemoveAllZoneMapping": {
       "type": "boolean",
@@ -104,10 +111,7 @@
       }
     }
   },
-  "readOnlyProperties": [
-    "/properties/RemoveAllZoneMapping",
-    "/properties/CustomZoneMappings"
-  ],
+  "readOnlyProperties": ["/properties/RemoveAllZoneMapping","/properties/CustomZoneMappings"],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

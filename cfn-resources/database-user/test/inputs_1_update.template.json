@@ -1,25 +1,22 @@
 {
-  "Username": "DataUser1",
-  "Password": "MongoDB12345%",
-  "ProjectId": "ProjectId",
-  "Profile": "default",
+    "Username" : "DataUser1",
+    "Password" : "MongoDB12345%",
+    "ProjectId" : "ProjectId",
+  "Profile" : "default",
   "DatabaseName": "admin",
-  "Roles": [
-    {
-      "RoleName": "readWrite",
-      "DatabaseName": "testdb",
-      "CollectionName": "col1"
-    },
-    {
-      "RoleName": "read",
-      "DatabaseName": "proddb",
-      "CollectionName": "col1"
-    }
-  ],
-  "Scopes": [
-    {
-      "Type": "CLUSTER",
-      "Name": "testdb"
-    }
-  ]
+    "Roles": [
+        { "RoleName": "readWrite",
+          "DatabaseName": "testdb",
+          "CollectionName": "col1"
+        },
+        { "RoleName": "read",
+          "DatabaseName": "proddb",
+          "CollectionName": "col1"
+        }
+    ],
+    "Scopes": [    
+        { "Type": "CLUSTER",
+          "Name": "testdb"
+        }
+    ]
 }

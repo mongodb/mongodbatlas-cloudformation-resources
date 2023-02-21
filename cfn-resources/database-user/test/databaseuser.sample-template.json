@@ -31,9 +31,9 @@
           }
         ],
         "Profile": {
-          "Ref": "Profile"
+            "Ref": "Profile"
+          }
         }
-      }
     },
     "x509User": {
       "Type": "MongoDB::Atlas::DatabaseUser",

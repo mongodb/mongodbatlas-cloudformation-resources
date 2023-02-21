@@ -61,7 +61,7 @@
     "InviterUsername": {
       "type": "string",
       "description": "Email address of the MongoDB Cloud user who sent the invitation to join the organization.",
-      "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
     },
     "ItemsPerPage": {
       "type": "integer",
@@ -89,16 +89,16 @@
       "items": {
         "type": "string",
         "enum": [
-          "ORG_OWNER",
-          "ORG_MEMBER",
-          "ORG_GROUP_CREATOR",
-          "ORG_BILLING_ADMIN",
-          "ORG_READ_ONLY",
-          "GROUP_CLUSTER_MANAGER",
-          "GROUP_DATA_ACCESS_ADMIN",
-          "GROUP_DATA_ACCESS_READ_ONLY",
-          "GROUP_DATA_ACCESS_READ_WRITE",
-          "GROUP_OWNER",
+          "ORG_OWNER", 
+          "ORG_MEMBER", 
+          "ORG_GROUP_CREATOR", 
+          "ORG_BILLING_ADMIN", 
+          "ORG_READ_ONLY", 
+          "GROUP_CLUSTER_MANAGER", 
+          "GROUP_DATA_ACCESS_ADMIN", 
+          "GROUP_DATA_ACCESS_READ_ONLY", 
+          "GROUP_DATA_ACCESS_READ_WRITE", 
+          "GROUP_OWNER", 
           "GROUP_READ_ONLY"
         ]
       }
@@ -125,7 +125,7 @@
   ],
   "readOnlyProperties": [
     "/properties/ExpiresAt",
-    "/properties/Id",
+    "/properties/Id", 
     "/properties/CreatedAt",
     "/properties/InviterUsername"
   ],

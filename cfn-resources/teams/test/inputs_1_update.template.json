@@ -1,12 +1,13 @@
 {
-  "ApiKeys": {
-    "PrivateKey": "",
-    "PublicKey": ""
-  },
-  "RoleNames": [
-    "GROUP_CLUSTER_MANAGER"
-  ],
-  "OrgId": "",
-  "TeamId": "",
-  "Name": "testTeam1"
+    "ApiKeys": {
+        "PrivateKey": "",
+        "PublicKey": ""
+    },
+    "RoleNames": [
+        "GROUP_CLUSTER_MANAGER"
+    ],
+    "OrgId": "",
+    "TeamId": "",
+    "Name": "testTeam1"
 }
+

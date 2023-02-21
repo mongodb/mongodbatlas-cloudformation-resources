@@ -9,9 +9,7 @@
       "AuditAuthorizationSuccess",
       "AuditFilter"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -22,11 +20,7 @@
       "ConfigurationType",
       "Enabled"
     ],
-    "RequiredParams": [
-      "AuditAuthorizationSuccess",
-      "AuditFilter",
-      "Enabled"
-    ]
+    "RequiredParams": ["AuditAuthorizationSuccess", "AuditFilter", "Enabled"]
   },
   "DeleteFields": {},
   "ListFields": {}

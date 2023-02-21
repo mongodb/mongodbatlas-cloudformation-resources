@@ -4,14 +4,11 @@
     "ApiAtlasDiskBackupReplicaSetView": {
       "type": "object",
       "properties": {
+
         "CloudProvider": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
-          "enum": [
-            "AWS",
-            "AZURE",
-            "GCP"
-          ]
+          "enum": ["AWS", "AZURE", "GCP"]
         },
         "CreatedAt": {
           "type": "string",
@@ -30,12 +27,7 @@
         "FrequencyType": {
           "type": "string",
           "description": "Human-readable label that identifies how often this snapshot triggers.",
-          "enum": [
-            "hourly",
-            "daily",
-            "weekly",
-            "monthly"
-          ]
+          "enum": ["hourly", "daily", "weekly", "monthly"]
         },
         "Id": {
           "type": "string",
@@ -77,20 +69,12 @@
         "SnapshotType": {
           "type": "string",
           "description": "Human-readable label that identifies when this snapshot triggers.",
-          "enum": [
-            "onDemand",
-            "scheduled"
-          ]
+          "enum": ["onDemand", "scheduled"]
         },
         "Status": {
           "type": "string",
           "description": "Human-readable label that indicates the stage of the backup process for this snapshot.",
-          "enum": [
-            "queued",
-            "inProgress",
-            "completed",
-            "failed"
-          ]
+          "enum": ["queued", "inProgress", "completed", "failed"]
         },
         "StorageSizeBytes": {
           "type": "string",
@@ -99,10 +83,7 @@
         "Type": {
           "type": "string",
           "description": "Human-readable label that categorizes the cluster as a replica set or sharded cluster.",
-          "enum": [
-            "REPLICA_SET",
-            "SHARDED_CLUSTER"
-          ]
+          "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
         }
       },
       "additionalProperties": false
@@ -110,14 +91,11 @@
     "ApiAtlasDiskBackupShardedClusterSnapshotMemberView": {
       "type": "object",
       "properties": {
+
         "CloudProvider": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
-          "enum": [
-            "AWS",
-            "AZURE",
-            "GCP"
-          ]
+          "enum": ["AWS", "AZURE", "GCP"]
         },
         "Id": {
           "type": "string",
@@ -136,6 +114,7 @@
     "ApiAtlasDiskBackupShardedClusterSnapshotView": {
       "type": "object",
       "properties": {
+
         "CreatedAt": {
           "type": "string",
           "description": "Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
@@ -153,12 +132,7 @@
         "FrequencyType": {
           "type": "string",
           "description": "Human-readable label that identifies how often this snapshot triggers.",
-          "enum": [
-            "hourly",
-            "daily",
-            "weekly",
-            "monthly"
-          ]
+          "enum": ["hourly", "daily", "weekly", "monthly"]
         },
         "Id": {
           "type": "string",
@@ -213,20 +187,12 @@
         "SnapshotType": {
           "type": "string",
           "description": "Human-readable label that identifies when this snapshot triggers.",
-          "enum": [
-            "onDemand",
-            "scheduled"
-          ]
+          "enum": ["onDemand", "scheduled"]
         },
         "Status": {
           "type": "string",
           "description": "Human-readable label that indicates the stage of the backup process for this snapshot.",
-          "enum": [
-            "queued",
-            "inProgress",
-            "completed",
-            "failed"
-          ]
+          "enum": ["queued", "inProgress", "completed", "failed"]
         },
         "StorageSizeBytes": {
           "type": "string",
@@ -235,10 +201,7 @@
         "Type": {
           "type": "string",
           "description": "Human-readable label that categorizes the cluster as a replica set or sharded cluster.",
-          "enum": [
-            "REPLICA_SET",
-            "SHARDED_CLUSTER"
-          ]
+          "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
         }
       },
       "additionalProperties": false
@@ -246,6 +209,7 @@
     "Link": {
       "type": "object",
       "properties": {
+
         "Href": {
           "type": "string",
           "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
@@ -287,6 +251,7 @@
   },
   "primaryIdentifier": [
     "/properties/SnapshotId"
+
   ],
   "properties": {
     "ApiKeys": {
@@ -295,25 +260,21 @@
     "CloudProvider": {
       "type": "string",
       "description": "Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `\"type\": \"replicaSet\".`",
-      "enum": [
-        "AWS",
-        "AZURE",
-        "GCP"
-      ]
+      "enum": ["AWS", "AZURE", "GCP"]
     },
     "ClusterName": {
       "type": "string",
       "description": "Human-readable label that identifies the cluster.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "InstanceName": {
       "type": "string",
       "description": "Human-readable label that identifies the serverless instance.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "CreatedAt": {
       "type": "string",
@@ -332,12 +293,7 @@
     "FrequencyType": {
       "type": "string",
       "description": "Human-readable label that identifies how often this snapshot triggers.",
-      "enum": [
-        "hourly",
-        "daily",
-        "weekly",
-        "monthly"
-      ]
+      "enum": ["hourly", "daily", "weekly", "monthly"]
     },
     "GroupId": {
       "type": "string",
@@ -435,20 +391,12 @@
     "SnapshotType": {
       "type": "string",
       "description": "Human-readable label that identifies when this snapshot triggers.",
-      "enum": [
-        "onDemand",
-        "scheduled"
-      ]
+      "enum": ["onDemand", "scheduled"]
     },
     "Status": {
       "type": "string",
       "description": "Human-readable label that indicates the stage of the backup process for this snapshot.",
-      "enum": [
-        "queued",
-        "inProgress",
-        "completed",
-        "failed"
-      ]
+      "enum": ["queued", "inProgress", "completed", "failed"]
     },
     "StorageSizeBytes": {
       "type": "string",
@@ -461,10 +409,7 @@
     "Type": {
       "type": "string",
       "description": "Human-readable label that categorizes the cluster as a replica set or sharded cluster.",
-      "enum": [
-        "REPLICA_SET",
-        "SHARDED_CLUSTER"
-      ]
+      "enum": ["REPLICA_SET", "SHARDED_CLUSTER"]
     }
   },
   "readOnlyProperties": [

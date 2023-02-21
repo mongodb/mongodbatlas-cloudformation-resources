@@ -32,9 +32,7 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId"
-  ],
+  "primaryIdentifier": ["/properties/GroupId"],
   "properties": {
     "": {},
     "ApiKeys": {

@@ -19,12 +19,7 @@
       "Port",
       "Request"
     ],
-    "RequiredParams": [
-      "BindUsername",
-      "Hostname",
-      "Links",
-      "Port"
-    ]
+    "RequiredParams": ["BindUsername", "Hostname", "Links", "Port"]
   },
   "ReadFields": {
     "InputParams": [
@@ -46,10 +41,7 @@
       "Port",
       "Request"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "RequestId"
-    ]
+    "RequiredParams": ["GroupId", "RequestId"]
   },
   "UpdateFields": {},
   "DeleteFields": {},

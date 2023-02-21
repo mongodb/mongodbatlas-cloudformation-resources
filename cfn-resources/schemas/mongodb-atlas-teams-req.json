@@ -9,9 +9,7 @@
       "TeamId",
       "ApiKeys"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "ReadFields": {
     "InputParams": [
@@ -26,9 +24,7 @@
       "ItemsPerPage",
       "PageNum"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -43,15 +39,10 @@
       "TotalCount",
       "GroupId"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "TeamId"
-    ]
+    "RequiredParams": ["GroupId", "TeamId"]
   },
   "ListFields": {}
 }

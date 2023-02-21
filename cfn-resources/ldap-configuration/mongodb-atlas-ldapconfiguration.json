@@ -102,9 +102,7 @@
       }
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId"
-  ],
+  "primaryIdentifier": ["/properties/GroupId"],
   "required": [
     "GroupId",
     "BindUsername",

@@ -60,19 +60,11 @@
       "IncludeCount",
       "Cancelled"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "RestoreJobId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "RestoreJobId"]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "RestoreJobId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "RestoreJobId"]
   },
   "ListFields": {}
 }

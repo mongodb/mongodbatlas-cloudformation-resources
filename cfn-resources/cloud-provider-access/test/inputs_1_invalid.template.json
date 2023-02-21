@@ -1,7 +1,7 @@
 {
   "ApiKeys": {
-    "PublicKey": "$ATLAS_PUBLIC_KEY",
-    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+    "PublicKey" : "$ATLAS_PUBLIC_KEY",
+    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
   "ProjectId": "invalid ProjectID"
 }

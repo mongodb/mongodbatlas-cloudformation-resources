@@ -1,16 +1,19 @@
 {
-  "desiredResourceState": {
-    "ProjectId": "ProjectId",
-    "ApiKeys": {
-      "PublicKey": "$ATLAS_PUBLIC_KEY",
-      "PrivateKey": "$ATLAS_PRIVATE_KEY"
+    "desiredResourceState" : {
+
+            "ProjectId" : "ProjectId",
+            "ApiKeys" : {
+                "PublicKey" : "$ATLAS_PUBLIC_KEY",
+                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+            },
+            "AwsKms": {
+                "CustomerMasterKeyID": "$KMS_KEY",
+                "Enabled": "true",
+                "Region": "$region",
+                "RoleID": "$KMS_ROLE"
+            }
+
     },
-    "AwsKms": {
-      "CustomerMasterKeyID": "$KMS_KEY",
-      "Enabled": "true",
-      "Region": "$region",
-      "RoleID": "$KMS_ROLE"
-    }
-  },
-  "previousResourceState": {}
+
+    "previousResourceState": { }
 }

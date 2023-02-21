@@ -8,9 +8,7 @@
       "ApiKeys",
       "GroupId"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "ReadFields": {
     "InputParams": [
@@ -42,19 +40,11 @@
       "StorageSizeBytes",
       "MasterKeyUUID"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "SnapshotId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "SnapshotId"]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "SnapshotId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "SnapshotId"]
   },
   "ListFields": {}
 }

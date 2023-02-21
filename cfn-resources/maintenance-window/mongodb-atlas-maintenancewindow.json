@@ -29,9 +29,7 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId"
-  ],
+  "primaryIdentifier": ["/properties/GroupId"],
   "properties": {
     "ApiKeys": {
       "$ref": "#/definitions/apiKeyDefinition"
@@ -63,10 +61,7 @@
   "readOnlyProperties": [
     "/properties/GroupId"
   ],
-  "required": [
-    "GroupId",
-    "HourOfDay"
-  ],
+  "required": ["GroupId", "HourOfDay"],
   "typeName": "MongoDB::Atlas::MaintenanceWindow",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

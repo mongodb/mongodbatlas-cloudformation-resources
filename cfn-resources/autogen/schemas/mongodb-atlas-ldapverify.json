@@ -21,7 +21,7 @@
         "BindUsername": {
           "type": "string",
           "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.",
-          "pattern": "^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$"
+          "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
         },
         "CaCertificate": {
           "type": "string",
@@ -56,10 +56,7 @@
         "Status": {
           "type": "string",
           "description": "Human-readable string that indicates the result of this verification test.",
-          "enum": [
-            "FAIL",
-            "OK"
-          ]
+          "enum": ["FAIL", "OK"]
         },
         "ValidationType": {
           "type": "string",
@@ -122,10 +119,7 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId",
-    "/properties/RequestId"
-  ],
+  "primaryIdentifier": ["/properties/GroupId", "/properties/RequestId"],
   "properties": {
     "": {},
     "ApiKeys": {
@@ -142,7 +136,7 @@
     "BindUsername": {
       "type": "string",
       "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.",
-      "pattern": "^(?:(?<cn>CN=(?<name>[^,]*)),)?(?:(?<path>(?:(?:CN|OU)=[^,]+,?)+),)?(?<domain>(?:DC=[^,]+,?)+)$"
+      "pattern": "^(?:(?\u003ccn\u003eCN=(?\u003cname\u003e[^,]*)),)?(?:(?\u003cpath\u003e(?:(?:CN|OU)=[^,]+,?)+),)?(?\u003cdomain\u003e(?:DC=[^,]+,?)+)$"
     },
     "CaCertificate": {
       "type": "string",
@@ -179,7 +173,7 @@
     },
     "RequestId": {
       "type": "string",
-      "description": "Unique string that identifies the request to verify an <abbr title=\"Lightweight Directory Access Protocol\">LDAP</abbr> configuration.",
+      "description": "Unique string that identifies the request to verify an \u003cabbr title=\"Lightweight Directory Access Protocol\"\u003eLDAP\u003c/abbr\u003e configuration.",
       "maxLength": 24,
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
@@ -187,11 +181,7 @@
     "Status": {
       "type": "string",
       "description": "Human-readable string that indicates the status of the Lightweight Directory Access Protocol (LDAP) over Transport Layer Security (TLS) configuration.",
-      "enum": [
-        "FAIL",
-        "PENDING",
-        "SUCCESS"
-      ]
+      "enum": ["FAIL", "PENDING", "SUCCESS"]
     },
     "Validations": {
       "type": "array",

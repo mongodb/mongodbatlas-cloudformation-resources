@@ -39,7 +39,7 @@
           "description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^[\\p{L}\\p{N}\\-_.(),:&@+']{1,64}$"
+          "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
         },
         "OrgId": {
           "type": "string",
@@ -163,7 +163,7 @@
       "description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^[\\p{L}\\p{N}\\-_.(),:&@+']{1,64}$"
+      "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
     },
     "OrgId": {
       "type": "string",

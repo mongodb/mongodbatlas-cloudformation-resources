@@ -3,7 +3,8 @@
   "ProjectId": "",
   "ClusterName": "",
   "AutoExportEnabled": "false",
-  "Export": {},
+  "Export": {
+  },
   "Policies": [
     {
       "ID": "",

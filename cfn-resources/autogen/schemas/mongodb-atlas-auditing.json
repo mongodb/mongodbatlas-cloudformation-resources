@@ -32,9 +32,7 @@
       "permissions": []
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId"
-  ],
+  "primaryIdentifier": ["/properties/GroupId"],
   "properties": {
     "": {},
     "ApiKeys": {
@@ -51,11 +49,7 @@
     "ConfigurationType": {
       "type": "string",
       "description": "Human-readable label that displays how to configure the audit filter.",
-      "enum": [
-        "FILTER_BUILDER",
-        "FILTER_JSON",
-        "NONE"
-      ]
+      "enum": ["FILTER_BUILDER", "FILTER_JSON", "NONE"]
     },
     "Enabled": {
       "type": "boolean",
@@ -69,9 +63,7 @@
       "pattern": "^([a-f0-9]{24})$"
     }
   },
-  "readOnlyProperties": [
-    "/properties/ConfigurationType"
-  ],
+  "readOnlyProperties": ["/properties/ConfigurationType"],
   "typeName": "MongoDB::Atlas::Auditing",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

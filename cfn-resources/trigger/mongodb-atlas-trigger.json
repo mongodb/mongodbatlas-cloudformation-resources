@@ -259,11 +259,12 @@
   },
   "typeName": "MongoDB::Atlas::Trigger",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-  "readOnlyProperties": [
-    "/properties/Id"
-  ],
-  "required": [
-    "ProjectId",
-    "AppId"
-  ]
-}
+    "readOnlyProperties": [
+      "/properties/Id"
+    ],
+    "required": [
+      "ProjectId",
+      "AppId"
+    ]
+  }
+

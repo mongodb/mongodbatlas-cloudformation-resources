@@ -8,9 +8,7 @@
       "GroupId",
       "AwsKms"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [

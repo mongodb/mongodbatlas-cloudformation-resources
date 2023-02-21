@@ -15,10 +15,7 @@
       "Matchers",
       "ApiKeys"
     ],
-    "RequiredParams": [
-      "EventTypeName",
-      "Links"
-    ]
+    "RequiredParams": ["EventTypeName", "Links"]
   },
   "ReadFields": {
     "InputParams": [
@@ -42,10 +39,7 @@
       "Threshold",
       "Results"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "AlertConfigId"
-    ]
+    "RequiredParams": ["GroupId", "AlertConfigId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -69,16 +63,10 @@
       "IncludeCount",
       "ItemsPerPage"
     ],
-    "RequiredParams": [
-      "EventTypeName",
-      "Links"
-    ]
+    "RequiredParams": ["EventTypeName", "Links"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "AlertConfigId"
-    ]
+    "RequiredParams": ["GroupId", "AlertConfigId"]
   },
   "ListFields": {}
 }

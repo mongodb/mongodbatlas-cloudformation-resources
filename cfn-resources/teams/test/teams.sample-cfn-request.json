@@ -1,18 +1,18 @@
 {
-  "desiredResourceState": {
-    "TeamId": "",
-    "OrgId": "",
-    "Name": "testTeam",
-    "Usernames": [
-      ""
-    ],
-    "RoleNames": [
-      "GROUP_CLUSTER_MANAGER"
-    ],
-    "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
+    "desiredResourceState": {
+        "TeamId": "",
+        "OrgId": "",
+        "Name": "testTeam",
+        "Usernames": [""],
+        "RoleNames":  [
+            "GROUP_CLUSTER_MANAGER"
+        ],
+        "ApiKeys": {
+            "PublicKey": "",
+            "PrivateKey": ""
+        }
+    },
+    "previousResourceState": {
     }
-  },
-  "previousResourceState": {}
 }
+

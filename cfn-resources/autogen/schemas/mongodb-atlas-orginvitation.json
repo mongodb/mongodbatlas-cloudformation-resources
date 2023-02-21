@@ -42,7 +42,7 @@
         "InviterUsername": {
           "type": "string",
           "description": "Email address of the MongoDB Cloud user who sent the invitation to join the organization.",
-          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "Links": {
           "type": "array",
@@ -62,7 +62,7 @@
         "OrgName": {
           "type": "string",
           "description": "Human-readable label that identifies this organization.",
-          "pattern": "^[\\p{L}\\p{N}\\-_.(),:&@+']{1,64}$"
+          "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
         },
         "Roles": {
           "type": "array",
@@ -94,7 +94,7 @@
         "Username": {
           "type": "string",
           "description": "Email address of the MongoDB Cloud user invited to join the organization.",
-          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         }
       },
       "additionalProperties": false
@@ -172,7 +172,7 @@
     "InviterUsername": {
       "type": "string",
       "description": "Email address of the MongoDB Cloud user who sent the invitation to join the organization.",
-      "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
     },
     "ItemsPerPage": {
       "type": "integer",
@@ -196,7 +196,7 @@
     "OrgName": {
       "type": "string",
       "description": "Human-readable label that identifies this organization.",
-      "pattern": "^[\\p{L}\\p{N}\\-_.(),:&@+']{1,64}$"
+      "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
     },
     "PageNum": {
       "type": "integer",
@@ -244,7 +244,7 @@
     "Username": {
       "type": "string",
       "description": "Email address of the MongoDB Cloud user invited to join the organization.",
-      "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
     }
   },
   "readOnlyProperties": [

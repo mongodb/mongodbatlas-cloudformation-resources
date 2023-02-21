@@ -10,9 +10,7 @@
       "Links",
       "Ldap"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -24,14 +22,10 @@
       "Links",
       "Ldap"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "ListFields": {}
 }

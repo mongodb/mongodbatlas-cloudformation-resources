@@ -8,9 +8,7 @@
       "ClusterName",
       "CustomZoneMappings"
     ],
-    "RequiredParams": [
-      "CustomZoneMappings"
-    ]
+    "RequiredParams": ["CustomZoneMappings"]
   },
   "ReadFields": {
     "InputParams": [
@@ -20,17 +18,11 @@
       "GroupId",
       "ClusterName"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName"]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName"]
   },
   "ListFields": {}
 }

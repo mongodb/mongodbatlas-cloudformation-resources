@@ -1,157 +1,157 @@
 {
-  "additionalProperties": false,
-  "definitions": {
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
+    "additionalProperties": false,
+    "definitions": {
+        "apiKeyDefinition": {
+            "type": "object",
+            "properties": {
+                "PrivateKey": {
+                    "type": "string"
+                },
+                "PublicKey": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
         }
-      },
-      "additionalProperties": false
-    }
-  },
-  "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
-  "handlers": {
-    "create": {
-      "permissions": []
     },
-    "read": {
-      "permissions": []
+    "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        }
     },
-    "list": {
-      "permissions": []
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Type"
+    ],
+    "writeOnlyProperties": [
+        "/properties/Secret",
+        "/properties/Url",
+        "/properties/Password",
+        "/properties/ServiceKey",
+        "/properties/ApiKey",
+        "/properties/Region",
+        "/properties/ApiToken",
+        "/properties/TeamName",
+        "/properties/ChannelName",
+        "/properties/RoutingKey",
+        "/properties/MicrosoftTeamsWebhookUrl",
+        "/properties/UserName",
+        "/properties/ServiceDiscovery",
+        "/properties/Scheme",
+        "/properties/Enabled"
+    ],
+    "properties": {
+        "ApiKeys": {
+            "$ref": "#/definitions/apiKeyDefinition"
+        },
+        "ProjectId": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies your project."
+        },
+        "Type": {
+            "type": "string",
+            "description": "Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the third-party service integration type.",
+            "enum": [
+                "PAGER_DUTY",
+                "MICROSOFT_TEAMS",
+                "SLACK",
+                "DATADOG",
+                "OPS_GENIE",
+                "VICTOR_OPS",
+                "WEBHOOK",
+                "PROMETHEUS"
+            ]
+        },
+        "ApiKey": {
+            "type": "string",
+            "description": "Key that allows MongoDB Cloud to access your Opsgenie/Datadog account."
+        },
+        "Region": {
+            "type": "string",
+            "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie/Datadog API."
+        },
+        "ServiceKey": {
+            "type": "string",
+            "description": "Service key associated with your PagerDuty account."
+        },
+        "ApiToken": {
+            "type": "string",
+            "description": "Key that allows MongoDB Cloud to access your Slack account."
+        },
+        "TeamName": {
+            "type": "string",
+            "description": "Human-readable label that identifies your Slack team. Set this parameter when you configure a legacy Slack integration."
+        },
+        "ChannelName": {
+            "type": "string",
+            "description": "Name of the Slack channel to which MongoDB Cloud sends alert notifications."
+        },
+        "RoutingKey": {
+            "type": "string",
+            "description": "Routing key associated with your Splunk On-Call account."
+        },
+        "Url": {
+            "type": "string",
+            "description": "Endpoint web address to which MongoDB Cloud sends notifications."
+        },
+        "Secret": {
+            "type": "string",
+            "description": "Parameter returned if someone configure this webhook with a secret."
+        },
+        "MicrosoftTeamsWebhookUrl": {
+            "type": "string",
+            "description": "Endpoint web address of the Microsoft Teams webhook to which MongoDB Cloud sends notifications."
+        },
+        "UserName": {
+            "type": "string",
+            "description": "Human-readable label that identifies your Prometheus incoming webhook."
+        },
+        "Password": {
+            "type": "string",
+            "description": "Password required for your integration with Prometheus"
+        },
+        "ServiceDiscovery": {
+            "type": "string",
+            "description": "Desired method to discover the Prometheus service.",
+            "enum": [
+                "http",
+                "file"
+            ]
+        },
+        "Scheme": {
+            "type": "string",
+            "description": "Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.",
+            "enum": [
+                "http",
+                "https"
+            ]
+        },
+        "Enabled": {
+            "type": "boolean",
+            "description": "Flag that indicates whether someone has activated the Prometheus integration."
+        },
+        "ListenAddress": {
+            "type": "string",
+            "description": "Combination of IPv4 address and Internet Assigned Numbers Authority (IANA) port or the IANA port alone to which Prometheus binds to ingest MongoDB metrics.",
+            "default": ":9216"
+        },
+        "TlsPemPath": {
+            "type": "string",
+            "description": "Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (PEM) key and certificate file on the host."
+        }
     },
-    "update": {
-      "permissions": []
-    },
-    "delete": {
-      "permissions": []
-    }
-  },
-  "primaryIdentifier": [
-    "/properties/ProjectId",
-    "/properties/Type"
-  ],
-  "writeOnlyProperties": [
-    "/properties/Secret",
-    "/properties/Url",
-    "/properties/Password",
-    "/properties/ServiceKey",
-    "/properties/ApiKey",
-    "/properties/Region",
-    "/properties/ApiToken",
-    "/properties/TeamName",
-    "/properties/ChannelName",
-    "/properties/RoutingKey",
-    "/properties/MicrosoftTeamsWebhookUrl",
-    "/properties/UserName",
-    "/properties/ServiceDiscovery",
-    "/properties/Scheme",
-    "/properties/Enabled"
-  ],
-  "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
-    },
-    "ProjectId": {
-      "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies your project."
-    },
-    "Type": {
-      "type": "string",
-      "description": "Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the third-party service integration type.",
-      "enum": [
-        "PAGER_DUTY",
-        "MICROSOFT_TEAMS",
-        "SLACK",
-        "DATADOG",
-        "OPS_GENIE",
-        "VICTOR_OPS",
-        "WEBHOOK",
-        "PROMETHEUS"
-      ]
-    },
-    "ApiKey": {
-      "type": "string",
-      "description": "Key that allows MongoDB Cloud to access your Opsgenie/Datadog account."
-    },
-    "Region": {
-      "type": "string",
-      "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie/Datadog API."
-    },
-    "ServiceKey": {
-      "type": "string",
-      "description": "Service key associated with your PagerDuty account."
-    },
-    "ApiToken": {
-      "type": "string",
-      "description": "Key that allows MongoDB Cloud to access your Slack account."
-    },
-    "TeamName": {
-      "type": "string",
-      "description": "Human-readable label that identifies your Slack team. Set this parameter when you configure a legacy Slack integration."
-    },
-    "ChannelName": {
-      "type": "string",
-      "description": "Name of the Slack channel to which MongoDB Cloud sends alert notifications."
-    },
-    "RoutingKey": {
-      "type": "string",
-      "description": "Routing key associated with your Splunk On-Call account."
-    },
-    "Url": {
-      "type": "string",
-      "description": "Endpoint web address to which MongoDB Cloud sends notifications."
-    },
-    "Secret": {
-      "type": "string",
-      "description": "Parameter returned if someone configure this webhook with a secret."
-    },
-    "MicrosoftTeamsWebhookUrl": {
-      "type": "string",
-      "description": "Endpoint web address of the Microsoft Teams webhook to which MongoDB Cloud sends notifications."
-    },
-    "UserName": {
-      "type": "string",
-      "description": "Human-readable label that identifies your Prometheus incoming webhook."
-    },
-    "Password": {
-      "type": "string",
-      "description": "Password required for your integration with Prometheus"
-    },
-    "ServiceDiscovery": {
-      "type": "string",
-      "description": "Desired method to discover the Prometheus service.",
-      "enum": [
-        "http",
-        "file"
-      ]
-    },
-    "Scheme": {
-      "type": "string",
-      "description": "Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.",
-      "enum": [
-        "http",
-        "https"
-      ]
-    },
-    "Enabled": {
-      "type": "boolean",
-      "description": "Flag that indicates whether someone has activated the Prometheus integration."
-    },
-    "ListenAddress": {
-      "type": "string",
-      "description": "Combination of IPv4 address and Internet Assigned Numbers Authority (IANA) port or the IANA port alone to which Prometheus binds to ingest MongoDB metrics.",
-      "default": ":9216"
-    },
-    "TlsPemPath": {
-      "type": "string",
-      "description": "Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (PEM) key and certificate file on the host."
-    }
-  },
-  "typeName": "MongoDB::Atlas::ThirdPartyIntegration"
+    "typeName": "MongoDB::Atlas::ThirdPartyIntegration"
 }

@@ -17,11 +17,7 @@
       "Links",
       "FinishedAt"
     ],
-    "RequiredParams": [
-      "ExportBucketId",
-      "Links",
-      "SnapshotId"
-    ]
+    "RequiredParams": ["ExportBucketId", "Links", "SnapshotId"]
   },
   "ReadFields": {
     "InputParams": [
@@ -45,11 +41,7 @@
       "ApiKeys",
       "DeliveryUrl"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "ExportId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "ExportId"]
   },
   "UpdateFields": {},
   "DeleteFields": {},

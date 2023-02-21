@@ -1,12 +1,6 @@
 {
   "CreateFields": {
-    "InputParams": [
-      "Id",
-      "ProviderName",
-      "Provisioned",
-      "ApiKeys",
-      "GroupId"
-    ]
+    "InputParams": ["Id", "ProviderName", "Provisioned", "ApiKeys", "GroupId"]
   },
   "ReadFields": {
     "InputParams": [
@@ -23,10 +17,7 @@
       "GroupId",
       "Links"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ContainerId"
-    ]
+    "RequiredParams": ["GroupId", "ContainerId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -45,10 +36,7 @@
     ]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ContainerId"
-    ]
+    "RequiredParams": ["GroupId", "ContainerId"]
   },
   "ListFields": {}
 }

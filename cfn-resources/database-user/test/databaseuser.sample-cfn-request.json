@@ -1,26 +1,24 @@
 {
-  "desiredResourceState": {
-    "resourceType": "MongoDB::Atlas::DatabaseUser",
-    "properties": {
-      "Username": "Name",
-      "Password": "Name",
-      "ProjectId": "ProjectId",
-      "Profile": "",
-      "DatabaseName": "admin",
-      "Roles": [
-        {
-          "RoleName": "readWrite",
-          "DatabaseName": "testdb"
+    "desiredResourceState" : {
+        "resourceType" : "MongoDB::Atlas::DatabaseUser",
+        "properties" : {
+            "Username" : "Name",
+            "Password" : "Name",
+            "ProjectId" : "ProjectId",
+            "Profile" : "",
+            "DatabaseName": "admin",
+            "Roles": [
+                { "RoleName": "readWrite",
+                  "DatabaseName": "testdb"
+                }
+            ],
+            "Scopes": [    
+                { "Type": "CLUSTER",
+                  "Name": "testdb"
+                }
+            ]
         }
-      ],
-      "Scopes": [
-        {
-          "Type": "CLUSTER",
-          "Name": "testdb"
-        }
-      ]
-    }
-  },
-  "providerLogGroupName": "mongodb-atlas-databaseuser-logs",
-  "previousResourceState": {}
+    },
+    "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",
+    "previousResourceState": { }
 }

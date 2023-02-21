@@ -33,9 +33,7 @@
       "Id",
       "InviterUsername"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -53,10 +51,7 @@
     ]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "InvitationId"
-    ]
+    "RequiredParams": ["GroupId", "InvitationId"]
   },
   "ListFields": {}
 }

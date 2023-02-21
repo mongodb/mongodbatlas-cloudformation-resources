@@ -8,10 +8,7 @@
       "RoleAssignments",
       "ApiKeys"
     ],
-    "RequiredParams": [
-      "ExternalGroupName",
-      "RoleAssignments"
-    ]
+    "RequiredParams": ["ExternalGroupName", "RoleAssignments"]
   },
   "ReadFields": {
     "InputParams": [
@@ -22,11 +19,7 @@
       "ApiKeys",
       "OrgId"
     ],
-    "RequiredParams": [
-      "FederationSettingsId",
-      "Id",
-      "OrgId"
-    ]
+    "RequiredParams": ["FederationSettingsId", "Id", "OrgId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -37,17 +30,10 @@
       "ApiKeys",
       "OrgId"
     ],
-    "RequiredParams": [
-      "ExternalGroupName",
-      "RoleAssignments"
-    ]
+    "RequiredParams": ["ExternalGroupName", "RoleAssignments"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "FederationSettingsId",
-      "Id",
-      "OrgId"
-    ]
+    "RequiredParams": ["FederationSettingsId", "Id", "OrgId"]
   },
   "ListFields": {}
 }

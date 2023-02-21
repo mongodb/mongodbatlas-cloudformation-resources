@@ -1,9 +1,9 @@
 {
-  "GroupId": "",
-  "IamRoleID": "invalid-role-id",
-  "BucketName": "atlas-snapshot-test",
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  }
+    "GroupId": "",
+    "IamRoleID": "invalid-role-id",
+    "BucketName": "atlas-snapshot-test",
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    }
 }

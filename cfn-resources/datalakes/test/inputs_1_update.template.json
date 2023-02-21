@@ -1,20 +1,22 @@
+
 {
-  "CloudProviderConfig": {
-    "Aws": {
-      "ExternalId": "",
-      "IamAssumedRoleARN": "",
-      "IamUserARN": "",
-      "RoleId": "",
-      "TestS3Bucket": ""
+    "CloudProviderConfig":{
+        "Aws":{
+            "ExternalId":"",
+            "IamAssumedRoleARN":"",
+            "IamUserARN":"",
+            "RoleId":"",
+            "TestS3Bucket":""
+        }
+    },
+    "DataProcessRegion":
+    {
+        "CloudProvider": "AWS",
+        "Region":"MUMBAI_IND"
+    },
+    "GroupId":"",
+    "ApiKeys": {
+        "PublicKey": "$ATLAS_PUBLIC_KEY",
+        "PrivateKey": "$ATLAS_PRIVATE_KEY"
     }
-  },
-  "DataProcessRegion": {
-    "CloudProvider": "AWS",
-    "Region": "MUMBAI_IND"
-  },
-  "GroupId": "",
-  "ApiKeys": {
-    "PublicKey": "$ATLAS_PUBLIC_KEY",
-    "PrivateKey": "$ATLAS_PRIVATE_KEY"
-  }
 }

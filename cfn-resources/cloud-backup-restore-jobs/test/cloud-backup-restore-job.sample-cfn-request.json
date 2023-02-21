@@ -1,11 +1,14 @@
 {
-  "desiredResourceState": {
-    "ProjectId": "$GroupId",
-    "ClusterName": "$ClusterName",
-    "DeliveryType": "download",
-    "SnapshotId": "",
-    "Id": "",
-    "Profile": "default"
-  },
-  "previousResourceState": {}
+    "desiredResourceState": {
+        "ProjectId": "$GroupId",
+        "ClusterName": "$ClusterName",
+        "DeliveryType": "download",
+        "SnapshotId": "",
+        "Id": "",
+        "Profile": "default"
+    },
+        "previousResourceState": {
+        }
+
 }
+

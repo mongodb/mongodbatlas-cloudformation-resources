@@ -11,9 +11,7 @@
       "NotAfter",
       "Username"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "ReadFields": {
     "InputParams": [
@@ -36,9 +34,7 @@
       "CreatedAt",
       "NotAfter"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -61,14 +57,10 @@
       "Results",
       "ItemsPerPage"
     ],
-    "RequiredParams": [
-      "Links"
-    ]
+    "RequiredParams": ["Links"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "ListFields": {}
 }

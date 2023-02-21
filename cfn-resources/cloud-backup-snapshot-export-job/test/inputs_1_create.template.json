@@ -1,12 +1,13 @@
+
 {
-  "GroupId": "",
-  "ClusterName": "",
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
-  "SnapshotId": "",
-  "ExportBucketId": "",
-  "ExportId": "",
-  "TestMode": "true"
+    "GroupId": "",
+    "ClusterName": "",
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    },
+    "SnapshotId": "",
+    "ExportBucketId": "",
+    "ExportId": "",
+    "TestMode": "true"
 }

@@ -38,11 +38,7 @@
         "DeliveryType": {
           "type": "string",
           "description": "Human-readable label that categorizes the restore job to create.",
-          "enum": [
-            "automated",
-            "download",
-            "pointInTime"
-          ]
+          "enum": ["automated", "download", "pointInTime"]
         },
         "DeliveryUrl": {
           "type": "array",
@@ -113,7 +109,7 @@
           "description": "Human-readable label that identifies the target cluster to which the restore job restores the snapshot. The resource returns this parameter when `\"deliveryType\":` `\"automated\"`.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
         },
         "TargetGroupId": {
           "type": "string",
@@ -208,7 +204,7 @@
       "description": "Human-readable label that identifies the cluster.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "Components": {
       "type": "array",
@@ -221,11 +217,7 @@
     "DeliveryType": {
       "type": "string",
       "description": "Human-readable label that categorizes the restore job to create.",
-      "enum": [
-        "automated",
-        "download",
-        "pointInTime"
-      ]
+      "enum": ["automated", "download", "pointInTime"]
     },
     "DeliveryUrl": {
       "type": "array",
@@ -330,7 +322,7 @@
       "description": "Human-readable label that identifies the target cluster to which the restore job restores the snapshot. The resource returns this parameter when `\"deliveryType\":` `\"automated\"`.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "TargetGroupId": {
       "type": "string",

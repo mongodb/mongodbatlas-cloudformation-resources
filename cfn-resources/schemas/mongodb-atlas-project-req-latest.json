@@ -12,11 +12,7 @@
       "Id",
       "Name"
     ],
-    "RequiredParams": [
-      "Links",
-      "Name",
-      "OrgId"
-    ]
+    "RequiredParams": ["Links", "Name", "OrgId"]
   },
   "ReadFields": {
     "InputParams": [
@@ -38,15 +34,11 @@
       "GroupId",
       "Name"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "ListFields": {}
 }

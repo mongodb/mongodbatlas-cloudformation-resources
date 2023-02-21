@@ -19,10 +19,7 @@
           "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Datadog API.",
           "maxLength": 2,
           "minLength": 2,
-          "enum": [
-            "EU",
-            "US"
-          ]
+          "enum": ["EU", "US"]
         }
       },
       "additionalProperties": false
@@ -144,10 +141,7 @@
           "description": "Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie API.",
           "maxLength": 2,
           "minLength": 2,
-          "enum": [
-            "EU",
-            "US"
-          ]
+          "enum": ["EU", "US"]
         }
       },
       "additionalProperties": false
@@ -185,18 +179,12 @@
         "Scheme": {
           "type": "string",
           "description": "Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.",
-          "enum": [
-            "http",
-            "https"
-          ]
+          "enum": ["http", "https"]
         },
         "ServiceDiscovery": {
           "type": "string",
           "description": "Desired method to discover the Prometheus service.",
-          "enum": [
-            "http",
-            "file"
-          ]
+          "enum": ["http", "file"]
         },
         "TlsPemPath": {
           "type": "string",

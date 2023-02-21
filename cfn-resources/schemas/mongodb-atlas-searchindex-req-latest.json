@@ -15,11 +15,7 @@
       "Analyzer",
       "GroupId"
     ],
-    "RequiredParams": [
-      "CollectionName",
-      "Database",
-      "Name"
-    ]
+    "RequiredParams": ["CollectionName", "Database", "Name"]
   },
   "ReadFields": {
     "InputParams": [
@@ -39,11 +35,7 @@
       "DatabaseName",
       "Database"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "IndexId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -63,18 +55,10 @@
       "IndexId",
       "CollectionName"
     ],
-    "RequiredParams": [
-      "CollectionName",
-      "Database",
-      "Name"
-    ]
+    "RequiredParams": ["CollectionName", "Database", "Name"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "IndexId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
   },
   "ListFields": {}
 }

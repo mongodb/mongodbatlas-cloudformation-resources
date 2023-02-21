@@ -18,9 +18,7 @@
       "ApiKeys",
       "GroupId"
     ],
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -31,15 +29,10 @@
       "ApiKeys",
       "GroupId"
     ],
-    "RequiredParams": [
-      "DayOfWeek",
-      "HourOfDay"
-    ]
+    "RequiredParams": ["DayOfWeek", "HourOfDay"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId"
-    ]
+    "RequiredParams": ["GroupId"]
   },
   "ListFields": {}
 }

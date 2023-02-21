@@ -29,17 +29,11 @@
       "GroupId",
       "IncludeCount"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "EntryValue"
-    ]
+    "RequiredParams": ["GroupId", "EntryValue"]
   },
   "UpdateFields": {},
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "EntryValue"
-    ]
+    "RequiredParams": ["GroupId", "EntryValue"]
   },
   "ListFields": {}
 }

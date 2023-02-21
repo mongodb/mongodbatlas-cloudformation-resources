@@ -32,7 +32,7 @@
           "description": "Human-readable label that identifies the project to which you invited the MongoDB Cloud user.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^[\\p{L}\\p{N}\\-_.(),:&@+']{1,64}$"
+          "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
         },
         "Id": {
           "type": "string",
@@ -44,7 +44,7 @@
         "InviterUsername": {
           "type": "string",
           "description": "Email address of the MongoDB Cloud user who sent the invitation.",
-          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "Links": {
           "type": "array",
@@ -72,7 +72,7 @@
         "Username": {
           "type": "string",
           "description": "Email address of the MongoDB Cloud user invited to join the project.",
-          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         }
       },
       "additionalProperties": false
@@ -156,7 +156,7 @@
       "description": "Human-readable label that identifies the project to which you invited the MongoDB Cloud user.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^[\\p{L}\\p{N}\\-_.(),:&@+']{1,64}$"
+      "pattern": "^[\\p{L}\\p{N}\\-_.(),:\u0026@+']{1,64}$"
     },
     "Id": {
       "type": "string",
@@ -179,7 +179,7 @@
     "InviterUsername": {
       "type": "string",
       "description": "Email address of the MongoDB Cloud user who sent the invitation.",
-      "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
     },
     "ItemsPerPage": {
       "type": "integer",
@@ -227,7 +227,7 @@
     "Username": {
       "type": "string",
       "description": "Email address of the user account invited to this project.",
-      "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+      "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
     }
   },
   "readOnlyProperties": [

@@ -15,11 +15,7 @@
       "Database",
       "Synonyms"
     ],
-    "RequiredParams": [
-      "CollectionName",
-      "Database",
-      "Name"
-    ]
+    "RequiredParams": ["CollectionName", "Database", "Name"]
   },
   "ReadFields": {
     "InputParams": [
@@ -39,11 +35,7 @@
       "Database",
       "Synonyms"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "IndexId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -63,18 +55,10 @@
       "IndexID",
       "Mappings"
     ],
-    "RequiredParams": [
-      "CollectionName",
-      "Database",
-      "Name"
-    ]
+    "RequiredParams": ["CollectionName", "Database", "Name"]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "GroupId",
-      "ClusterName",
-      "IndexId"
-    ]
+    "RequiredParams": ["GroupId", "ClusterName", "IndexId"]
   },
   "ListFields": {}
 }

@@ -1,6 +1,6 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters": {
     "ProjectId": {
       "Type": "String",
@@ -23,15 +23,15 @@
       "ConstraintDescription": ""
     }
   },
-  "Mappings": {},
-  "Resources": {
+  "Mappings" : {},
+  "Resources" : {
     "NetworkContainer": {
       "Type": "MongoDB::Atlas::NetworkContainer",
       "Properties": {
         "AtlasCidrBlock": {
           "Ref": "AtlasCidrBlock"
         },
-        "RegionName": "US_WEST_1",
+        "RegionName":  "US_WEST_1",
         "ProjectId": {
           "Ref": "ProjectId"
         },
@@ -46,12 +46,10 @@
       }
     }
   },
-  "Outputs": {
+  "Outputs" : {
     "ContainerId": {
       "Description": "Id of the network container",
-      "Value": {
-        "Ref": "NetworkContainer"
-      }
+      "Value" : { "Ref" : "NetworkContainer" }
     }
   }
 }

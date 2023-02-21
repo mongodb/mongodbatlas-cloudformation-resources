@@ -26,10 +26,7 @@
       "IncludeCount",
       "Type"
     ],
-    "RequiredParams": [
-      "GroupId",
-      "IntegrationType"
-    ]
+    "RequiredParams": ["GroupId", "IntegrationType"]
   },
   "UpdateFields": {
     "InputParams": [
@@ -46,10 +43,7 @@
     ]
   },
   "DeleteFields": {
-    "RequiredParams": [
-      "IntegrationType",
-      "GroupId"
-    ]
+    "RequiredParams": ["IntegrationType", "GroupId"]
   },
   "ListFields": {}
 }

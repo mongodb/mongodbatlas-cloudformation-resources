@@ -1,10 +1,12 @@
 {
-  "GroupId": "",
-  "ClusterName": "",
-  "Description": "snapshot through cloud formation template",
-  "RetentionInDays": 5,
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  }
+
+    "GroupId": "",
+    "ClusterName": "",
+    "Description": "snapshot through cloud formation template",
+    "RetentionInDays": 5,
+
+    "ApiKeys": {
+        "PublicKey": "",
+        "PrivateKey": ""
+    }
 }

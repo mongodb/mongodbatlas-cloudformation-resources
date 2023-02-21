@@ -2,9 +2,9 @@
   "Analyzer": "lucene.standard%invalid",
   "ClusterName": "MongoDB12345",
   "CollectionName": "testcoll",
-  "ApiKeys": {
-    "PublicKey": "$ATLAS_PUBLIC_KEY",
-    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  "ApiKeys" : {
+    "PublicKey" : "$ATLAS_PUBLIC_KEY",
+    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
   "Database": "testdb",
   "Name": "abc-123",

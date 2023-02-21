@@ -17,11 +17,7 @@
         "ReadPreference": {
           "type": "string",
           "description": "Data source node designated for the MongoDB Connector for Business Intelligence on MongoDB Cloud. The MongoDB Connector for Business Intelligence on MongoDB Cloud reads data from the primary, secondary, or analytics node based on your read preferences. Defaults to `ANALYTICS` node, or `SECONDARY` if there are no `ANALYTICS` nodes.",
-          "enum": [
-            "PRIMARY",
-            "SECONDARY",
-            "ANALYTICS"
-          ]
+          "enum": ["PRIMARY", "SECONDARY", "ANALYTICS"]
         }
       },
       "additionalProperties": false
@@ -85,11 +81,7 @@
         "ClusterType": {
           "type": "string",
           "description": "Configuration of nodes that comprise the cluster.",
-          "enum": [
-            "REPLICASET",
-            "SHARDED",
-            "GEOSHARDED"
-          ]
+          "enum": ["REPLICASET", "SHARDED", "GEOSHARDED"]
         },
         "ConnectionStrings": {
           "type": "object",
@@ -108,12 +100,7 @@
         "EncryptionAtRestProvider": {
           "type": "string",
           "description": "Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. To enable customer key management for encryption at rest, the cluster **replicationSpecs[n].regionConfigs[m].{type}Specs.instanceSize** setting must be `M10` or higher and `\"backupEnabled\" : false` or omitted entirely.",
-          "enum": [
-            "AWS",
-            "AZURE",
-            "GCP",
-            "NONE"
-          ]
+          "enum": ["AWS", "AZURE", "GCP", "NONE"]
         },
         "GroupId": {
           "type": "string",
@@ -150,12 +137,7 @@
         "MongoDBMajorVersion": {
           "type": "string",
           "description": "Major MongoDB version of the cluster. MongoDB Cloud deploys the cluster with the latest stable release of the specified version.",
-          "enum": [
-            "4.0",
-            "4.2",
-            "4.4",
-            "5.0"
-          ]
+          "enum": ["4.0", "4.2", "4.4", "5.0"]
         },
         "MongoDBVersion": {
           "type": "string",
@@ -167,7 +149,7 @@
           "description": "Human-readable label that identifies the advanced cluster.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
         },
         "Paused": {
           "type": "boolean",
@@ -188,9 +170,7 @@
         "RootCertType": {
           "type": "string",
           "description": "Root Certificate Authority that MongoDB Cloud cluster uses. MongoDB Cloud supports Internet Security Research Group.",
-          "enum": [
-            "ISRGROOTX1"
-          ]
+          "enum": ["ISRGROOTX1"]
         },
         "StateName": {
           "type": "string",
@@ -207,10 +187,7 @@
         "VersionReleaseSystem": {
           "type": "string",
           "description": "Method by which the cluster maintains the MongoDB versions. If value is `CONTINUOUS`, you must not specify **mongoDBMajorVersion**.",
-          "enum": [
-            "CONTINUOUS",
-            "LTS"
-          ]
+          "enum": ["CONTINUOUS", "LTS"]
         }
       },
       "additionalProperties": false
@@ -315,16 +292,12 @@
       "description": "Human-readable label that identifies the cluster.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "ClusterType": {
       "type": "string",
       "description": "Configuration of nodes that comprise the cluster.",
-      "enum": [
-        "REPLICASET",
-        "SHARDED",
-        "GEOSHARDED"
-      ]
+      "enum": ["REPLICASET", "SHARDED", "GEOSHARDED"]
     },
     "ConnectionStrings": {
       "type": "object",
@@ -343,12 +316,7 @@
     "EncryptionAtRestProvider": {
       "type": "string",
       "description": "Cloud service provider that manages your customer keys to provide an additional layer of encryption at rest for the cluster. To enable customer key management for encryption at rest, the cluster **replicationSpecs[n].regionConfigs[m].{type}Specs.instanceSize** setting must be `M10` or higher and `\"backupEnabled\" : false` or omitted entirely.",
-      "enum": [
-        "AWS",
-        "AZURE",
-        "GCP",
-        "NONE"
-      ]
+      "enum": ["AWS", "AZURE", "GCP", "NONE"]
     },
     "GroupId": {
       "type": "string",
@@ -393,12 +361,7 @@
     "MongoDBMajorVersion": {
       "type": "string",
       "description": "Major MongoDB version of the cluster. MongoDB Cloud deploys the cluster with the latest stable release of the specified version.",
-      "enum": [
-        "4.0",
-        "4.2",
-        "4.4",
-        "5.0"
-      ]
+      "enum": ["4.0", "4.2", "4.4", "5.0"]
     },
     "MongoDBVersion": {
       "type": "string",
@@ -410,7 +373,7 @@
       "description": "Human-readable label that identifies the advanced cluster.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
     },
     "PageNum": {
       "type": "integer",
@@ -443,9 +406,7 @@
     "RootCertType": {
       "type": "string",
       "description": "Root Certificate Authority that MongoDB Cloud cluster uses. MongoDB Cloud supports Internet Security Research Group.",
-      "enum": [
-        "ISRGROOTX1"
-      ]
+      "enum": ["ISRGROOTX1"]
     },
     "StateName": {
       "type": "string",
@@ -466,10 +427,7 @@
     "VersionReleaseSystem": {
       "type": "string",
       "description": "Method by which the cluster maintains the MongoDB versions. If value is `CONTINUOUS`, you must not specify **mongoDBMajorVersion**.",
-      "enum": [
-        "CONTINUOUS",
-        "LTS"
-      ]
+      "enum": ["CONTINUOUS", "LTS"]
     }
   },
   "readOnlyProperties": [

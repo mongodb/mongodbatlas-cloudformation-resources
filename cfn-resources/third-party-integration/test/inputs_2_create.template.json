@@ -1,8 +1,8 @@
 {
   "ProjectId": "$ATLAS_PROJECT_ID",
-  "ApiKeys": {
-    "PublicKey": "$ATLAS_PUBLIC_KEY",
-    "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  "ApiKeys" : {
+    "PublicKey" : "$ATLAS_PUBLIC_KEY",
+    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
   },
   "Type": "PROMETHEUS",
   "Enabled": true,

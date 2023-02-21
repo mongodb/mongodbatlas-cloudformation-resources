@@ -399,7 +399,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 						HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
 					}, nil
 				}
-
 			}
 		}
 	}

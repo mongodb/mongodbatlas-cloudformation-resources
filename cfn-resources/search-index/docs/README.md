@@ -14,11 +14,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#analyzer" title="Analyzer">Analyzer</a>" : <i>String</i>,
         "<a href="#analyzers" title="Analyzers">Analyzers</a>" : <i>[ <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzersViewManual</a>, ... ]</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,  
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#collectionname" title="CollectionName">CollectionName</a>" : <i>String</i>,
         "<a href="#database" title="Database">Database</a>" : <i>String</i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectId" title="GroupId">ProjectId</a>" : <i>String</i>,
         "<a href="#mappings" title="Mappings">Mappings</a>" : <i><a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a></i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>" : <i>String</i>,
@@ -35,11 +35,11 @@ Properties:
     <a href="#analyzer" title="Analyzer">Analyzer</a>: <i>String</i>
     <a href="#analyzers" title="Analyzers">Analyzers</a>: <i>
       - <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzersViewManual</a></i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a> : <i>String</i>,
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#collectionname" title="CollectionName">CollectionName</a>: <i>String</i>
     <a href="#database" title="Database">Database</a>: <i>String</i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectId" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#mappings" title="Mappings">Mappings</a>: <i><a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a></i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>: <i>String</i>
@@ -78,13 +78,14 @@ _Type_: List of <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzers
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ApiKeys
+#### Profile
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ClusterName
 
@@ -122,7 +123,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
 
@@ -196,11 +197,11 @@ Unique 24-hexadecimal digit string that identifies the Atlas Search index. Use t
 
 Condition of the search index when you made this request.
 
-| Status | Index Condition |
- |---|---|
- | IN_PROGRESS | Atlas is building or re-building the index after an edit. |
- | STEADY | You can use this search index. |
- | FAILED | Atlas could not build the index. |
- | MIGRATING | Atlas is upgrading the underlying cluster tier and migrating indexes. |
+    | Status | Index Condition |
+    |---|---|
+    | IN_PROGRESS | Atlas is building or re-building the index after an edit. |
+    | STEADY | You can use this search index. |
+    | FAILED | Atlas could not build the index. |
+    | MIGRATING | Atlas is upgrading the underlying cluster tier and migrating indexes. |
 
 

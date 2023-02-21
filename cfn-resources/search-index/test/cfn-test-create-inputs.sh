@@ -58,9 +58,7 @@ for inputFile in inputs_*; do
 	if [[ ${inputFile} == *"invalid"* ]]; then
 		index_name="invalid_name"
 	fi
-	jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-		--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-		--arg org "$projectId" \
+	jq --arg org "$projectId" \
 		--arg cluster "$cluster_name" \
 		--arg name "$index_name" \
 		--arg db "$db_name" \

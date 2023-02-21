@@ -20,11 +20,11 @@ package resource
 type Model struct {
 	Analyzer       *string                                   `json:",omitempty"`
 	Analyzers      []ApiAtlasFTSAnalyzersViewManual          `json:",omitempty"`
-	ApiKeys        *ApiKeyDefinition                         `json:",omitempty"`
+	Profile        *string                                   `json:",omitempty"`
 	ClusterName    *string                                   `json:",omitempty"`
 	CollectionName *string                                   `json:",omitempty"`
 	Database       *string                                   `json:",omitempty"`
-	GroupId        *string                                   `json:",omitempty"`
+	ProjectId      *string                                   `json:",omitempty"`
 	IndexId        *string                                   `json:",omitempty"`
 	Mappings       *ApiAtlasFTSMappingsViewManual            `json:",omitempty"`
 	Name           *string                                   `json:",omitempty"`

@@ -82,20 +82,30 @@
   "description": "Returns, adds, edits, and removes Atlas Search indexes. Also returns and updates user-defined analyzers.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "primaryIdentifier": [
-    "/properties/IndexId"
+    "/properties/IndexId",
+    "/properties/ProjectId",
+    "/properties/Profile"
   ],
   "properties": {
     "Analyzer": {
@@ -131,7 +141,7 @@
       "type": "string",
       "description": "Human-readable label that identifies the database that contains the collection with one or more Atlas Search indexes."
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,

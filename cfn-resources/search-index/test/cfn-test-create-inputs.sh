@@ -63,7 +63,7 @@ for inputFile in inputs_*; do
 		--arg name "$index_name" \
 		--arg db "$db_name" \
 		--arg coll "$coll_name" \
-		'.CollectionName?|=$coll |.Database?|=$db |.GroupId?|=$org |.ClusterName?|=$cluster |.Name?|=$name' \
+		'.CollectionName?|=$coll |.Database?|=$db |.ProjectId?|=$org |.ClusterName?|=$cluster |.Name?|=$name' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

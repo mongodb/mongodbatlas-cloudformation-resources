@@ -28,7 +28,7 @@ for FILE in ${STAGED_SH_FILES}; do
 	shfmt -l -w "${FILE}"
 done
 
-STAGED_SH_FILES=$(git diff --name-only | grep ".json$")
+STAGED_JSON_FILES=$(git diff --name-only | grep ".json$")
 for FILE in ${STAGED_JSON_FILES}; do
 	prettyFile=$(jq . "${FILE}")
 	echo "${prettyFile}" >"${FILE}"

@@ -43,6 +43,7 @@
       },
       "EncryptionAtRest": {
         "Type": "MongoDB::Atlas::EncryptionAtRest",
+				"Profile": "default",
         "Properties": {
           "ProjectId": { "Ref" : "Project" },
           "AwsKms": {
@@ -50,10 +51,6 @@
             "CustomerMasterKeyID": { "Ref" : "CustomerMasterKeyID" },
             "Enabled": { "Ref" : "Enabled" },
             "Region": { "Ref" : "Region" }
-          },
-          "ApiKeys": {
-            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
           }
         }
       }

@@ -32,6 +32,7 @@ import (
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType}
 var ReadDeleteRequiredFields = []string{constants.ID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -263,6 +264,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 	var err error
+
+	// Validate required fields in the request
+	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
+		return *modelValidation, nil
+	}
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {

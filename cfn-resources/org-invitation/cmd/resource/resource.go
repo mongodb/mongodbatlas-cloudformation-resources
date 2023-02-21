@@ -16,9 +16,11 @@ package resource
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -54,13 +56,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	//if err != nil {
-	//	_, _ = log.Warnf("Create - error: %+v", err)
-	//	return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-	//		cloudformation.HandlerErrorCodeInvalidRequest), nil
-	//}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
@@ -105,12 +100,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	//if err != nil {
-	//	return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-	//		cloudformation.HandlerErrorCodeInvalidRequest), nil
-	//}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
@@ -153,12 +142,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	//if err != nil {
-	//	return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-	//		cloudformation.HandlerErrorCodeInvalidRequest), nil
-	//}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
@@ -199,16 +182,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	//if err != nil {
-	//	_, _ = log.Warnf("Delete - error: %+v", err)
-	//	return handler.ProgressEvent{
-	//		HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-	//		Message:          err.Error(),
-	//		OperationStatus:  handler.Failed,
-	//	}, nil
-	//}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
@@ -243,13 +216,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	//client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	//if err != nil {
-	//	_, _ = log.Warnf("List - error: %+v", err)
-	//	return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-	//		cloudformation.HandlerErrorCodeInvalidRequest), nil
-	//}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(util.DefaultProfile)
 	}

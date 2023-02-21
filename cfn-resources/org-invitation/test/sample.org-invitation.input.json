@@ -1,16 +1,11 @@
 {
-  "desiredResourceState":{
+  "desiredResourceState": {
     "Profile": "default",
     "OrgId": "",
     "Username": "",
-    "Roles": [
-      "ORG_MEMBER"
-    ],
-    "TeamIds": [
-      ""
-    ]
-  }
-,
-  "providerLogGroupName" : "mongodb-atlas-project-logs",
-  "previousResourceState": { }
+    "Roles": ["ORG_MEMBER"],
+    "TeamIds": [""]
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
 }

@@ -25,27 +25,17 @@
 
             },
             "additionalProperties": false
-        },
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
         }
     },
     "properties": {
         "AwsKms": {
             "$ref": "#/definitions/AwsKms"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
-        },
+			 "Profile": {
+						"type": "string",
+						"description": "Profile used to provide credentials information",
+						"default": "default"
+				},
         "ProjectId": {
             "description": "Unique identifier of the Atlas project to which the user belongs.",
             "type": "string"
@@ -64,27 +54,29 @@
         "/properties/Id"
     ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/ProjectId",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "update": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         }
 

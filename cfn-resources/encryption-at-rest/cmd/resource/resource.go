@@ -51,7 +51,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
-		return *handlerError, fmt.Errorf(handlerError.Message)
+		return *handlerError, errors.New(handlerError.Message)
 	}
 
 	// Create Atlas API Request Object

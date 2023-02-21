@@ -5,13 +5,13 @@
       "ProjectId":{
          "Type":"String",
          "Description":"",
-         "Default":"633bf97a5684466a4793c55c",
+         "Default":"",
          "ConstraintDescription":""
       },
       "EmailAddress":{
          "Type":"String",
          "Description":"",
-         "Default":"dharmendran.rajendran@peerislands.io",
+         "Default":"",
          "ConstraintDescription":""
       },
 	  "Enabled":{
@@ -53,10 +53,7 @@
                "Units":"RAW",
                "Mode":"AVERAGE"
             },
-            "ApiKeys":{
-               "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-               "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-            }
+            "Profile": ""
          }
       }
    },

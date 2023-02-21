@@ -34,9 +34,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.EventTypeName, constants.PubKey, constants.PvtKey, constants.GroupID}
-var RequiredFields = []string{constants.ID, constants.PubKey, constants.PvtKey, constants.GroupID}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.EventTypeName, constants.GroupID}
+var RequiredFields = []string{constants.ID, constants.GroupID}
 
 func validateRequest(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -54,12 +53,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	// API Request creation
 	alertConfigRequest := &mongodbatlas.AlertConfiguration{
 		GroupID:         cast.ToString(currentModel.GroupId),
@@ -100,11 +103,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Check if  already exist
@@ -140,11 +146,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Check if  already exist
@@ -202,11 +211,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Check if  already exist
@@ -234,17 +246,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
-
-	validationError := validateRequest(ListRequiredFields, currentModel)
-	if validationError != nil {
-		return *validationError, nil
+	var err error
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	// create request object
 	params := &mongodbatlas.ListOptions{

@@ -3,19 +3,19 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Teams
 Parameters:
   Profile:
-    Description: "Your Secret Manager Profile with the Atlas programmatic keys"
+    Description: "Your Secret Manager Profile with the Atlas programmatic keys."
     Type: String
     Default: "default"
   Name:
-    Description: "Your Team name"
+    Description: "Your Team name."
     Type: String
     Default: ""
   OrgId:
-    Description: "Your MongoDB Cloud OrgId"
+    Description: "Your MongoDB Cloud OrgId."
     Type: String
     Default: ""
   Usernames:
-    Description: "User list assigned to team"
+    Description: "User list assigned to team."
     Type: CommaDelimitedList
 Resources:
   Teams:

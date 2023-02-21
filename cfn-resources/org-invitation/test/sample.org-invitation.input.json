@@ -1,9 +1,6 @@
 {
   "desiredResourceState":{
-    "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
-    },
+    "Profile": "default",
     "OrgId": "",
     "Username": "",
     "Roles": [

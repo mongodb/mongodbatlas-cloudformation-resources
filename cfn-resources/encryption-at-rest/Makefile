@@ -3,18 +3,21 @@ tags=logging callback metrics scheduler
 cgo=0 
 goos=linux
 goarch=amd64
-ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
-ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
+
+DEBUG_FLAGS=all=-N -l
+VERSION?=$(shell git describe --always --tags | cut -d "v" -f 2)
+LINKER_FLAGS=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${VERSION}
+
 
 build:
-	#make -f makebuild  # this runs build steps required by the cfn cli
+	@echo "==> Building handler binary"
 	cfn generate
-	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="-s -w -X '$(ldXflags)'" -tags="$(tags)" -o bin/handler cmd/main.go
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(LINKER_FLAGS)" -tags="$(tags)" -o bin/handler cmd/main.go
 
 debug:
-	#make -f makebuild  # this runs build steps required by the cfn cli
+	@echo "==> Building handler binary for debugging"
 	cfn generate
-	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="-s -w -X '$(ldXflagsD)'" -tags="$(tags)" -o bin/handler cmd/main.go
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -gcflags="$(DEBUG_FLAGS)" -ldflags="$(LINKER_FLAGS)" -tags="$(tags)" -o bin/handler cmd/main.go
 
 
 clean:

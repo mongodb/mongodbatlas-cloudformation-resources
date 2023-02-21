@@ -104,7 +104,6 @@
   },
   "primaryIdentifier": [
     "/properties/IndexId",
-    "/properties/ProjectId",
     "/properties/Profile"
   ],
   "properties": {

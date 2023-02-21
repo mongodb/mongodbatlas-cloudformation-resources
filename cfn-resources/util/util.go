@@ -93,10 +93,6 @@ func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Clien
 		profileInput = *profile
 	}
 
-	print("ANDREA2")
-	print("\n")
-	print(profileInput)
-
 	keys, handlerError := getAPIKeys(req, profileInput)
 	if handlerError != nil {
 		return nil, handlerError

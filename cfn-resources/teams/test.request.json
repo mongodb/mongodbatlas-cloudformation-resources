@@ -9,10 +9,7 @@
     "RoleNames": [
       "GROUP_CLUSTER_MANAGER"
     ],
-    "ApiKeys": {
-      "PublicKey": "rvnbpxkq",
-      "PrivateKey": "c00ddd07-9253-4992-b978-fad2acf8dc1d"
-    }
+    "Profile": "default"
   },
   "previousResourceState": {}
 }

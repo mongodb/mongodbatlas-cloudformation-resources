@@ -2,14 +2,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Teams
 Parameters:
-  PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
+  Profile:
+    Description: "Your Secret Manager Profile with the Atlas programmatic keys"
     Type: String
-    Default: ""
-  PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
-    Type: String
-    Default: ""
+    Default: "default"
   Name:
     Description: "Your Team name"
     Type: String
@@ -25,9 +21,7 @@ Resources:
   Teams:
     Type: MongoDB::Atlas::Teams
     Properties:
-      ApiKeys:
-        PublicKey: !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      Profile: !Ref "Profile"
       OrgId: !Ref "OrgId"
       Name: !Ref "Name"
       Usernames: !Ref "Usernames"

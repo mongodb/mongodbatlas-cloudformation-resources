@@ -1,14 +1,12 @@
 {
-    "ApiKeys": {
-        "PrivateKey": "",
-        "PublicKey": ""
-    },
-    "RoleNames": [
-        "GROUP_CLUSTER_MANAGER"
-    ],
-    "OrgId": "",
-    "TeamId": "",
-    "Name": "testTeam",
-    "Usernames": ["r.dharmendran@gmail.com"]
+  "Profile": "default",
+  "RoleNames": [
+    "GROUP_CLUSTER_MANAGER"
+  ],
+  "OrgId": "",
+  "TeamId": "",
+  "Name": "testTeam",
+  "Usernames": [
+    "r.dharmendran@gmail.com"
+  ]
 }
-

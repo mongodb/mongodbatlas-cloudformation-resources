@@ -50,10 +50,10 @@
         "AwsKms",
         "ProjectId"
     ],
-		"createOnlyProperties": [
-			"/properties/ProjectId",
-			"/properties/Profile"
-		],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Profile"
+    ],
     "readOnlyProperties": [
         "/properties/Id"
     ],

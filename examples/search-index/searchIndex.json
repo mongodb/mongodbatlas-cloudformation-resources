@@ -6,18 +6,10 @@
     "SearchIndex": {
       "Type": "MongoDB::Atlas::SearchIndex",
       "Properties": {
-      }
-    },
-    "SearchIndex": {
-      "Type": "MongoDB::Atlas::SearchIndex",
-      "Properties": {
         "Analyzer": "lucene.standard",
         "ClusterName": "Cluster_name",
         "CollectionName": "testcoll",
-        "ApiKeys": {
-          "PublicKey": "htcxduya",
-          "PrivateKey": "$PRIVATE_KEY"
-        },
+        "Profile": "default",
         "Database": "testdb",
         "Name": "search-322531",
         "GroupId": "$Group_Id",

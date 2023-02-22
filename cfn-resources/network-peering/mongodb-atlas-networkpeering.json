@@ -2,18 +2,6 @@
     "typeName": "MongoDB::Atlas::NetworkPeering",
     "description": "Returns, adds, edits, and removes network peering containers and peering connections.",
     "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        }
     },
     "properties": {
         "ProjectId": {
@@ -56,15 +44,17 @@
             "description": "Unique 24-hexadecimal digit string that identifies the network peering connection that you want to retrieve.",
             "type": "string"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         }
     },
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "VpcId",
-        "ApiKeys"],
+        "ContainerId",
+        "VpcId"],
     "createOnlyProperties": [
         "/properties/AwsAccountId",
         "/properties/VpcId"
@@ -72,30 +62,33 @@
     "readOnlyProperties": [
         "/properties/Id",
         "/properties/StatusName",
-        "/properties/ErrorStateName"
+        "/properties/ErrorStateName",
+        "/properties/ConnectionId"
     ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/ProjectId",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                ""
-            ]
-        },
-        "list": {
-            "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

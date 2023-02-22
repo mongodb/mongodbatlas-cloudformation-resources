@@ -18,8 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#awsaccountid" title="AwsAccountId">AwsAccountId</a>" : <i>String</i>,
         "<a href="#routetablecidrblock" title="RouteTableCIDRBlock">RouteTableCIDRBlock</a>" : <i>String</i>,
         "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
-        "<a href="#connectionid" title="ConnectionId">ConnectionId</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
 </pre>
@@ -35,8 +34,7 @@ Properties:
     <a href="#awsaccountid" title="AwsAccountId">AwsAccountId</a>: <i>String</i>
     <a href="#routetablecidrblock" title="RouteTableCIDRBlock">RouteTableCIDRBlock</a>: <i>String</i>
     <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
-    <a href="#connectionid" title="ConnectionId">ConnectionId</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -55,7 +53,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -95,15 +93,15 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique string that identifies the VPC on Amazon Web Services (AWS) that you want to peer with the MongoDB Cloud VPC.
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### ConnectionId
+#### Profile
 
-Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: No
 
@@ -111,19 +109,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ApiKeys
-
-_Required_: Yes
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
 
 ### Fn::GetAtt
 
@@ -142,4 +128,8 @@ State of the network peering connection at the time you made the request.
 #### ErrorStateName
 
 Type of error that can be returned when requesting an Amazon Web Services (AWS) peering connection. The resource returns null if the request succeeded.
+
+#### ConnectionId
+
+Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
 

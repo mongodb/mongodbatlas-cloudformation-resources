@@ -2,14 +2,6 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
-    "MongoDBAtlasAPIPublicKey": {
-      "Type": "String",
-      "Description" : "MongoDB Atlas Public Access Key"
-    },
-    "MongoDBAtlasAPIPrivateKey": {
-      "Type": "String",
-      "Description" : "MongoDB Atlas Private Access Key"
-    },
     "MongoDBAtlasProjectId": {
       "Type": "String",
       "Description" : "MongoDB project Id"
@@ -34,7 +26,7 @@
   },
   "Mappings" : {},
   "Resources" : {
-    "Project": {
+    "MaintenenceWindow": {
       "Type": "MongoDB::Atlas::MaintenanceWindow",
       "Properties":  {
         "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
@@ -44,5 +36,14 @@
       }
     }
   },
-  "Outputs" : {}
+  "Outputs" : {
+    "GroupId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MaintenenceWindow",
+          "GroupId"
+        ]
+      }
+    }
+  }
 }

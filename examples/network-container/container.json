@@ -20,7 +20,7 @@
       "Type": "MongoDB::Atlas::Project",
       "Properties": {
         "Name": { "Ref" : "ProjectName" },
-        "OrgId": "63350255419cf25e3d511c95"
+        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}"
       }
     },
     "NetworkContainer": {

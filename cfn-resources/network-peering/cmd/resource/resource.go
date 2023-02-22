@@ -16,8 +16,8 @@ package resource
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -27,8 +27,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"log"
-	"net/http"
 )
 
 func setup() {
@@ -81,14 +79,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
-	}
-
-	neConEx, pe := networkContainerExists(*client, *currentModel.ContainerId, *currentModel.ProjectId)
-	if pe != nil {
-		return *pe, nil
-	}
-	if neConEx == false {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error Continer with id: %s", *currentModel.ContainerId), cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -356,61 +346,4 @@ func networkPeeringIsReady(client *mongodbatlas.Client, projectID, peerID, targe
 		}
 	}
 	return peerResponse.StatusName == targetState, peerResponse.StatusName, nil
-}
-
-func networkContainerExists(client mongodbatlas.Client, containerId string, groupId string) (bool, *handler.ProgressEvent) {
-	log.Print("GETTING CONTAINER")
-	_, resp, err := client.Containers.Get(context.Background(), groupId, containerId)
-	if err != nil {
-
-		errCode, err := getErrorCode(resp.Response)
-		log.Print("Test error code" + errCode)
-
-		log.Print("ERROR GETTING CONTAINER")
-		isContNotFound, err := isContainerNotFoundError(resp.Response)
-		if err != nil {
-			pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting container : %s", err.Error()), resp.Response)
-			return false, &pe
-		}
-		if isContNotFound {
-			return false, nil
-		} else {
-			pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed validating if the network container exists : %s", err.Error()), resp.Response)
-			return false, &pe
-		}
-	}
-
-	return true, nil
-}
-
-func isContainerNotFoundError(res *http.Response) (bool, error) {
-	log.Print(res.StatusCode)
-	if res.StatusCode != http.StatusNotFound {
-		log.Print("ERROR IS OTHER THAN NOT FOUND")
-		return false, nil
-	}
-	log.Print("GETTING ERROR CODE")
-	errCode, err := getErrorCode(res)
-	if err != nil {
-		return false, err
-	}
-
-	return errCode == "CLOUD_PROVIDER_CONTAINER_NOT_FOUND", nil
-}
-
-func getErrorCode(res *http.Response) (string, error) {
-	type ContainerErrorResponse struct {
-		ErrorCode string `json:"errorCode"`
-	}
-
-	log.Print("unmarshalling")
-	var result ContainerErrorResponse
-	if err := json.NewDecoder(res.Body).Decode(&result); err != nil { // Parse []byte to go struct pointer
-		log.Print("FUCK UNMARSHAL ERROR NOOO" + err.Error())
-		return "", err
-	}
-
-	log.Print("YEEEEEII WORKED, ERROR CODE IS " + result.ErrorCode)
-
-	return result.ErrorCode, nil
 }

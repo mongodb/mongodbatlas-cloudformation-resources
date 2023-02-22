@@ -31,17 +31,17 @@ echo "Check if a project is created $projectId"
 
 awsId="${2}"
 vpcId="${3}"
+nwkConId="${NETWORK_CONTAINER_ID}"
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-		--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-		--arg projectId "$projectId" \
+	jq --arg projectId "$projectId" \
 		--arg awsId "$awsId" \
 		--arg vpcId "$vpcId" \
-		'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsAccountId?|=$awsId | .VpcId|=$vpcId' \
+		--arg nwkConId "$nwkConId" \
+		'.ProjectId?|=$projectId | .AwsAccountId?|=$awsId | .VpcId|=$vpcId | .ContainerId|=$nwkConId' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

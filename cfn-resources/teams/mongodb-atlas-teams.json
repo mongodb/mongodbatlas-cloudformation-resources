@@ -212,7 +212,8 @@
     "/properties/Users"
   ],
   "primaryIdentifier": [
-    "/properties/TeamId"
+    "/properties/TeamId",
+    "/properties/Profile"
   ],
   "typeName": "MongoDB::Atlas::Teams"
 }

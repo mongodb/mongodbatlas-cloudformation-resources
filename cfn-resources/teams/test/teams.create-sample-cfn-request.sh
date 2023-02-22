@@ -17,10 +17,8 @@ if [[ "$*" == help ]]; then usage; fi
 
 name="${1}"
 userName="${2}"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_ORG_ID" \
+jq --arg org "$ATLAS_ORG_ID" \
 	--arg name "$name" \
 	--arg userName "$userName" \
-	'.desiredResourceState.Usernames?|=[$userName] |.desiredResourceState.OrgId?|=$org | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Name?|=$name' \
+	'.desiredResourceState.Usernames?|=[$userName] |.desiredResourceState.OrgId?|=$org | .desiredResourceState.Name?|=$name' \
 	"$(dirname "$0")/teams.sample-cfn-request.json"

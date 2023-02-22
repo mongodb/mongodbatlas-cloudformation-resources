@@ -1,29 +1,79 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "This template creates a Search Index on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Project Id.",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Cluster name.",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "DatabaseName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Database name",
+      "ConstraintDescription": ""
+    },
+    "CollectionName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Collection name",
+      "ConstraintDescription": ""
+    },
+    "IndexName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Index Name.",
+      "ConstraintDescription": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys.",
+      "ConstraintDescription": ""
+    }
+  },
   "Mappings": {},
   "Resources": {
     "SearchIndex": {
       "Type": "MongoDB::Atlas::SearchIndex",
       "Properties": {
-      }
-    },
-    "SearchIndex": {
-      "Type": "MongoDB::Atlas::SearchIndex",
-      "Properties": {
         "Analyzer": "lucene.standard",
-        "ClusterName": "Cluster_name",
-        "CollectionName": "testcoll",
-        "ApiKeys": {
-          "PublicKey": "htcxduya",
-          "PrivateKey": "$PRIVATE_KEY"
+        "ClusterName": {
+          "Ref": "ClusterName"
         },
-        "Database": "testdb",
-        "Name": "search-322531",
-        "GroupId": "$Group_Id",
+        "CollectionName": {
+          "Ref": "CollectionName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Database": {
+          "Ref": "DatabaseName"
+        },
+        "Name": {
+          "Ref": "IndexName"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
         "Mappings": {
           "Dynamic": "true"
         }
+      }
+    }
+  },
+  "Outputs": {
+    "Teams": {
+      "Description": "Search Index Information",
+      "Value": {
+        "Ref": "SearchIndex"
       }
     }
   }

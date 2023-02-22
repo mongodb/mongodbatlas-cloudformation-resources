@@ -68,5 +68,13 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "Teams": {
+      "Description": "Search Index Information",
+      "Value": {
+        "Ref": "SearchIndex"
+      }
+    }
   }
 }

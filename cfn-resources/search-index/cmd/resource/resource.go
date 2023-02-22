@@ -208,6 +208,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Analyzer = &searchIndex.Analyzer
 	currentModel.Database = &searchIndex.Database
 	currentModel.CollectionName = &searchIndex.CollectionName
+	currentModel.Status = &searchIndex.Status
 	currentModel.Mappings = &ApiAtlasFTSMappingsViewManual{}
 	if searchIndex.Mappings != nil {
 		currentModel.Mappings.Dynamic = &searchIndex.Mappings.Dynamic

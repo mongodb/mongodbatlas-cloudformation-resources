@@ -20,11 +20,7 @@
       "Type": "MongoDB::Atlas::Project",
       "Properties": {
         "Name": { "Ref" : "ProjectName" },
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "OrgId": "63350255419cf25e3d511c95"
       }
     },
     "NetworkContainer": {
@@ -32,22 +28,27 @@
       "Properties": {
         "AtlasCidrBlock": {"Ref": "AtlasCidrBlock"},
         "RegionName": { "Ref" : "RegionName" },
-        "ProjectId": { "Ref" : "Project" },
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "ProjectId": { "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ] }
       }
     }
   },
   "Outputs" : {
     "ProjectId": {
       "Description": "Id of the project",
-      "Value" : { "Ref" : "Project" }
+      "Value" : { "Fn::GetAtt": [
+        "Project",
+        "Id"
+      ] }
     },
     "ContainerId": {
       "Description": "Id of the network container",
-      "Value" : { "Ref" : "NetworkContainer" }
+      "Value" : { "Fn::GetAtt": [
+        "NetworkContainer",
+        "Id"
+      ] }
     }
   }
 }

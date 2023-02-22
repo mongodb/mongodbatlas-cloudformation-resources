@@ -20,7 +20,7 @@
           "Ref": "Profile"
         },
         "ProjectId": {
-          "Ref": "ProjectID"
+          "Ref": "ProjectId"
         },
         "Type": "PROMETHEUS",
         "Enabled": true,

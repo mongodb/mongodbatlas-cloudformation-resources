@@ -13,14 +13,14 @@
     }
   },
   "Resources": {
-    "PrometheusIntegration": {
+    "MicrosoftTeamsIntegration": {
       "Type": "MongoDB::Atlas::ThirdPartyIntegration",
       "Properties": {
         "Profile": {
           "Ref": "Profile"
         },
         "ProjectId": {
-          "Ref": "ProjectID"
+          "Ref": "ProjectId"
         },
         "Type": "MICROSOFT_TEAMS",
         "MicrosoftTeamsWebhookUrl": "https://mongodb0.webhook.office.com/webhookb2/c9c5fafc-d9fe-480b-9773-77d804ea4372@c96563a8-841b-4ef9-af16-33548de0c958/IncomingWebhook/********************************"

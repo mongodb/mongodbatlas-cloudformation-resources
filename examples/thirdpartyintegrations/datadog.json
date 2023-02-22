@@ -13,17 +13,17 @@
     }
   },
   "Resources": {
-    "PrometheusIntegration": {
+    "DatadogIntegration": {
       "Type": "MongoDB::Atlas::ThirdPartyIntegration",
       "Properties": {
         "Profile": {
           "Ref": "Profile"
         },
         "ProjectId": {
-          "Ref": "ProjectID"
+          "Ref": "ProjectId"
         },
         "Type": "DATADOG",
-        "ApiKey": "********************************",
+        "ApiKey": "82f4de077aeb1fdeb36659b2027cc8f7",
         "Region": "US"
       }
     }

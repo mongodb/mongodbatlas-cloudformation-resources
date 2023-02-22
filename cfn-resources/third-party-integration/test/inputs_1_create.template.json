@@ -1,9 +1,6 @@
 {
     "ProjectId": "$ATLAS_PROJECT_ID",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    },
+    "Profile": "default",
     "Type": "WEBHOOK",
-    "Url" : "http://7e9ea9dc.ngrok.io/github-webhook"
+    "Url": "http://7e9ea9dc.ngrok.io/github-webhook"
 }

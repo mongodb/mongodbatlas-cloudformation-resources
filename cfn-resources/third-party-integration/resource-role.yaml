@@ -30,7 +30,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "secretsmanager:GetSecretValue"
+                - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

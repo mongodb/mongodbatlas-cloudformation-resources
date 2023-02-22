@@ -15,4 +15,3 @@ Resources:
       Type: "WEBHOOK"
       Url: "https://www.google.com"
       Secret: "Hello@123"
-

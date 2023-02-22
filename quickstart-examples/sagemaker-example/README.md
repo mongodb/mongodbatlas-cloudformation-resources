@@ -15,8 +15,8 @@ $ cd sagemaker-example/iris_classifier
 $ python3 upload.py
 
 # Output
-ModelDataS3URI: s3://sagemaker-ap-south-1-166187639221/model.tar.gz
-ModelECRImageURI: 720646828776.dkr.ecr.ap-south-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
+ModelDataS3URI: s3://sagemaker-ap-south-1-123456789012/model.tar.gz
+ModelECRImageURI: 123456789034.dkr.ecr.ap-south-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
 ```
 
 ## Build and Push Lambda Functions
@@ -32,7 +32,7 @@ $ ./build.sh
 # Output
 Login Succeeded
 sha256:822e5bf88cabe9dc1cb67258c022f99a3f549458a871b3a4f7b47686b4c20dd5
-The push refers to repository [166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-mdb-change-event]
+The push refers to repository [123456789012.dkr.ecr.ap-south-1.amazonaws.com/process-mdb-change-event]
 5a2a24566d3d: Pushed
 04c86612417d: Pushed
 aa07e8319e17: Pushed
@@ -43,7 +43,7 @@ add489bc36b0: Pushed
 b2c122fc6a0b: Pushed
 latest: digest: sha256:299589ce12e3983177f1b6ab78324f241cbf496ae6adb4fd558db8d81280f2da size: 2002
 
-PullLambdaECRImageURI: 166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-mdb-change-event:latest
+PullLambdaECRImageURI: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/process-mdb-change-event:latest
 ```
 
 ### Push Lambda (Writes Results to MongoDB)
@@ -55,7 +55,7 @@ $ ./build.sh
 # Output
 Login Succeeded
 sha256:04cbd21a8130e9bf4fc5d89c0cb8242dabaa370fba3abde35fc9d1d231340e8e
-The push refers to repository [166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-result]
+The push refers to repository [123456789012.dkr.ecr.ap-south-1.amazonaws.com/process-result]
 a0c1c25f2660: Pushed
 db3a9626d316: Pushed
 aa07e8319e17: Pushed
@@ -66,7 +66,7 @@ add489bc36b0: Pushed
 b2c122fc6a0b: Pushed
 latest: digest: sha256:b8a0060e5358a7713ee18554d5543a68902171b39728ff131a14de9c4ab3f093 size: 2000
 
-PushLambdaECRImageURI: 166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-result:latest
+PushLambdaECRImageURI: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/process-result:latest
 ```
 
 ## Create MongoDB Cluster

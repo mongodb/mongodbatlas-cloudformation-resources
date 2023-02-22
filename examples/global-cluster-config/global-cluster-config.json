@@ -54,11 +54,7 @@
             "Zone":"Zone 2"
           }
         ],
-		"RemoveAllZoneMapping": false,
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+		"RemoveAllZoneMapping": false
       }
     }
   },

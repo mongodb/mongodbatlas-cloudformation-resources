@@ -41,43 +41,32 @@
         }
       },
       "additionalProperties": false
-    },
-
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
     }
   },
   "description": "Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.",
   "handlers": {
     "create": {
       "permissions": [
-
+        "secretsmanager:GetSecretValue"
       ]
     },
     "read": {
       "permissions": [
-
+        "secretsmanager:GetSecretValue"
       ]
     },
     "delete": {
       "permissions": [
-
+        "secretsmanager:GetSecretValue"
       ]
     }
   },
-  "primaryIdentifier": ["/properties/ProjectId"],
+  "primaryIdentifier": ["/properties/ProjectId","/properties/Profile"],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     },
     "ProjectId": {
       "description": "The unique identifier of the project for the Atlas cluster.",

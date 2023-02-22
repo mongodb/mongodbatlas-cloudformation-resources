@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::GlobalClusterConfig",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#managednamespaces" title="ManagedNamespaces">ManagedNamespaces</a>" : <i>[ <a href="managednamespace.md">managedNamespace</a>, ... ]</i>,
@@ -25,7 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::GlobalClusterConfig
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#managednamespaces" title="ManagedNamespaces">ManagedNamespaces</a>: <i>
@@ -34,11 +34,13 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### Profile
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: No
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -75,10 +77,6 @@ _Type_: List of <a href="managednamespace.md">managedNamespace</a>
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ProjectId.
 
 ### Fn::GetAtt
 

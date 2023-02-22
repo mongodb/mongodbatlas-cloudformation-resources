@@ -9,30 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnAuditingProps {
   /**
-   * @schema CfnAuditingProps#ApiKeys
-   */
-  readonly apiKeys: ApiKeyDefinition;
-
-  /**
-   * Flag that indicates whether someone set auditing to track successful authentications. This only applies to the `"atype" : "authCheck"` audit filter. Setting this parameter to `true` degrades cluster performance.
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
    *
-   * @schema CfnAuditingProps#AuditAuthorizationSuccess
+   * @schema CfnAuditingProps#Profile
    */
-  readonly auditAuthorizationSuccess?: boolean;
-
-  /**
-   * JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/.
-   *
-   * @schema CfnAuditingProps#AuditFilter
-   */
-  readonly auditFilter?: string;
-
-  /**
-   * Human-readable label that displays how to configure the audit filter.
-   *
-   * @schema CfnAuditingProps#ConfigurationType
-   */
-  readonly configurationType?: CfnAuditingPropsConfigurationType;
+  readonly profile?: string;
 
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
@@ -50,61 +31,13 @@ export interface CfnAuditingProps {
 export function toJson_CfnAuditingProps(obj: CfnAuditingProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
-    'AuditAuthorizationSuccess': obj.auditAuthorizationSuccess,
-    'AuditFilter': obj.auditFilter,
-    'ConfigurationType': obj.configurationType,
+    'Profile': obj.profile,
     'GroupId': obj.groupId,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
 }
 /* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * Human-readable label that displays how to configure the audit filter.
- *
- * @schema CfnAuditingPropsConfigurationType
- */
-export enum CfnAuditingPropsConfigurationType {
-  /** FILTER_BUILDER */
-  FILTER_BUILDER = 'FILTER_BUILDER',
-  /** FILTER_JSON */
-  FILTER_JSON = 'FILTER_JSON',
-  /** NONE */
-  NONE = 'NONE',
-}
 
 
 /**
@@ -124,6 +57,18 @@ export class CfnAuditing extends cdk.CfnResource {
    */
   public readonly props: CfnAuditingProps;
 
+  /**
+   * Attribute `MongoDB::Atlas::Auditing.AuditFilter`
+   */
+  public readonly attrAuditFilter: string;
+  /**
+   * Attribute `MongoDB::Atlas::Auditing.ConfigurationType`
+   */
+  public readonly attrConfigurationType: string;
+  /**
+   * Attribute `MongoDB::Atlas::Auditing.AuditAuthorizationSuccess`
+   */
+  public readonly attrAuditAuthorizationSuccess: cdk.IResolvable;
 
   /**
    * Create a new `MongoDB::Atlas::Auditing`.
@@ -137,5 +82,8 @@ export class CfnAuditing extends cdk.CfnResource {
 
     this.props = props;
 
+    this.attrAuditFilter = cdk.Token.asString(this.getAtt('AuditFilter'));
+    this.attrConfigurationType = cdk.Token.asString(this.getAtt('ConfigurationType'));
+    this.attrAuditAuthorizationSuccess = this.getAtt('AuditAuthorizationSuccess');
   }
 }

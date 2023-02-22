@@ -14,11 +14,6 @@ export interface CfnClusterProps {
   readonly advancedSettings?: ProcessArgs;
 
   /**
-   * @schema CfnClusterProps#ApiKeys
-   */
-  readonly apiKeys: ApiKeyDefinition;
-
-  /**
    * Flag that indicates whether the cluster can perform backups. If set to true, the cluster can perform backups. You must set this value to true for NVMe clusters. Backup uses Cloud Backups for dedicated clusters and Shared Cluster Backups for tenant clusters. If set to false, the cluster doesn't use backups.
    *
    * @schema CfnClusterProps#BackupEnabled
@@ -59,6 +54,13 @@ export interface CfnClusterProps {
    * @schema CfnClusterProps#EncryptionAtRestProvider
    */
   readonly encryptionAtRestProvider?: CfnClusterPropsEncryptionAtRestProvider;
+
+  /**
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnClusterProps#Profile
+   */
+  readonly profile?: string;
 
   /**
    * Unique identifier of the project the cluster belongs to.
@@ -140,13 +142,13 @@ export function toJson_CfnClusterProps(obj: CfnClusterProps | undefined): Record
   if (obj === undefined) { return undefined; }
   const result = {
     'AdvancedSettings': toJson_ProcessArgs(obj.advancedSettings),
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'BackupEnabled': obj.backupEnabled,
     'BiConnector': toJson_CfnClusterPropsBiConnector(obj.biConnector),
     'ClusterType': obj.clusterType,
     'ConnectionStrings': toJson_ConnectionStrings(obj.connectionStrings),
     'DiskSizeGB': obj.diskSizeGb,
     'EncryptionAtRestProvider': obj.encryptionAtRestProvider,
+    'Profile': obj.profile,
     'ProjectId': obj.projectId,
     'Labels': obj.labels?.map(y => toJson_CfnClusterPropsLabels(y)),
     'MongoDBMajorVersion': obj.mongoDbMajorVersion,
@@ -250,37 +252,6 @@ export function toJson_ProcessArgs(obj: ProcessArgs | undefined): Record<string,
     'OplogSizeMB': obj.oplogSizeMb,
     'SampleSizeBIConnector': obj.sampleSizeBiConnector,
     'SampleRefreshIntervalBIConnector': obj.sampleRefreshIntervalBiConnector,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

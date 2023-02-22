@@ -122,6 +122,7 @@
   ],
   "primaryIdentifier": [
     "/properties/Id",
+    "/properties/OrgId",
     "/properties/Profile"
   ],
   "readOnlyProperties": [

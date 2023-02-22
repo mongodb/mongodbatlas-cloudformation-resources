@@ -68,7 +68,25 @@
   "Outputs" : {
     "InvitationId": {
       "Description": "Id of the Invitation",
-      "Value" : { "Ref" : "OrgInvitation" }
+      "Value": {
+        "Ref": "OrgInvitation"
+      }
+    },
+    "InvitationExpiresAt": {
+      "Value": {
+        "Fn::GetAtt": [
+          "OrgInvitation",
+          "ExpiresAt"
+        ]
+      }
+    },
+    "InviterUsername": {
+      "Value": {
+        "Fn::GetAtt": [
+          "OrgInvitation",
+          "InviterUsername"
+        ]
+      }
     }
   }
 }

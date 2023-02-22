@@ -40,10 +40,6 @@
       "Properties": {
         "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
         "Profile": {
-          "Type": "String",
-          "Default": "default"
-        },
-        "Profile": {
           "Ref": "Profile"
         },
         "Username": {

@@ -38,10 +38,6 @@
       "Type": "MongoDB::Atlas::MaintenanceWindow",
       "Properties":  {
         "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
-        "ApiKeys": {
-          "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
-          "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
-        },
         "DayOfWeek": { "Ref" : "DayOfWeek" },
         "HourOfDay": { "Ref" : "HourOfDay" },
         "AutoDeferOnceEnabled": { "Ref" : "AutoDeferOnceEnabled" }

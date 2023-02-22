@@ -11,6 +11,7 @@
     },
     "Profile": {
       "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
       "Default": "default"
     },
     "Role": {

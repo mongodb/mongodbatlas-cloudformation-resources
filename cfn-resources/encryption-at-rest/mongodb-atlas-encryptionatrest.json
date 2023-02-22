@@ -1,88 +1,86 @@
 {
-    "typeName": "MongoDB::Atlas::EncryptionAtRest",
-    "description": "Returns and edits the Encryption at Rest using Customer Key Management configuration.",
-    "definitions": {
-        "AwsKms": {
-            "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
-            "type": "object",
-            "properties": {
-                 "RoleID": {
-                    "type": "string",
-                    "description": "ID of an AWS IAM role authorized to manage an AWS customer master key."
-                },
-                "CustomerMasterKeyID": {
-                    "type": "string",
-                    "description": "The AWS customer master key used to encrypt and decrypt the MongoDB master keys."
-                },
-                "Enabled": {
-                    "type": "boolean",
-                    "description": "Specifies whether Encryption at Rest is enabled for an Atlas project. To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details."
-                },
-                "Region": {
-                    "type": "string",
-                    "description": "The AWS region in which the AWS customer master key exists."
-                }
-
-            },
-            "additionalProperties": false
+  "typeName": "MongoDB::Atlas::EncryptionAtRest",
+  "description": "Returns and edits the Encryption at Rest using Customer Key Management configuration.",
+  "definitions": {
+    "AwsKms": {
+      "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
+      "type": "object",
+      "properties": {
+        "RoleID": {
+          "type": "string",
+          "description": "ID of an AWS IAM role authorized to manage an AWS customer master key."
+        },
+        "CustomerMasterKeyID": {
+          "type": "string",
+          "description": "The AWS customer master key used to encrypt and decrypt the MongoDB master keys."
+        },
+        "Enabled": {
+          "type": "boolean",
+          "description": "Specifies whether Encryption at Rest is enabled for an Atlas project. To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details."
+        },
+        "Region": {
+          "type": "string",
+          "description": "The AWS region in which the AWS customer master key exists."
         }
-    },
-    "properties": {
-        "AwsKms": {
-            "$ref": "#/definitions/AwsKms"
-        },
-        "Profile": {
-            "type": "string",
-            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
-            "default": "default"
-				},
-        "ProjectId": {
-            "description": "Unique identifier of the Atlas project to which the user belongs.",
-            "type": "string"
-        },
-        "Id": {
-            "description": "Unique identifier .",
-            "type": "string"
-        }
-    },
-    "additionalProperties": false,
-    "required": [
-        "AwsKms",
-        "ProjectId"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/Profile"
-    ],
-    "readOnlyProperties": [
-        "/properties/Id"
-    ],
-    "primaryIdentifier": [
-        "/properties/Id",
-        "/properties/ProjectId",
-        "/properties/Profile"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "update": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        }
-
+      },
+      "additionalProperties": false
     }
+  },
+  "properties": {
+    "AwsKms": {
+      "$ref": "#/definitions/AwsKms"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
+    "ProjectId": {
+      "description": "Unique identifier of the Atlas project to which the user belongs.",
+      "type": "string"
+    },
+    "Id": {
+      "description": "Unique identifier.",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "AwsKms",
+    "ProjectId"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id"
+  ],
+  "primaryIdentifier": [
+    "/properties/Id",
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

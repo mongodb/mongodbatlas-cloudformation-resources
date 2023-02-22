@@ -18,9 +18,7 @@ if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 projectID="${1}"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg projectID "$projectID" \
+jq --arg projectID "$projectID" \
 	--arg KMS_KEY "$KMS_KEY" \
 	--arg KMS_ROLE "$KMS_ROLE" \
 	--arg region "$KMS_REGION" \

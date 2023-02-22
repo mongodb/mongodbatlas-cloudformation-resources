@@ -1,6 +1,6 @@
 # MongoDB::Atlas::MaintenanceWindow
 
-The maintenanceWindow resource provides access to retrieve or update the current Atlas project maintenance window.
+The MaintenanceWindow resource provides access to retrieve or update the current Atlas project maintenance window.
 
 ## Syntax
 

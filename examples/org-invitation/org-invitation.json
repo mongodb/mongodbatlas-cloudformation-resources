@@ -4,7 +4,12 @@
   "Parameters" : {
     "Profile": {
       "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
       "Default": "default"
+    },
+    "OrgId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies the organization to which you want to invite user."
     },
     "Username": {
       "Type": "String",
@@ -38,7 +43,9 @@
     "OrgInvitation": {
       "Type": "MongoDB::Atlas::OrgInvitation",
       "Properties": {
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+        "OrgId": {
+          "Ref": "OrgId"
+        },
         "Profile": {
           "Ref": "Profile"
         },

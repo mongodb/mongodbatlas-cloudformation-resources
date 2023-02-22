@@ -50,10 +50,13 @@
     }
   },
   "Outputs": {
-    "Teams": {
-      "Description": " teams",
+    "Users": {
+      "Description": "Users in the team.",
       "Value": {
-        "Ref": "Teams"
+        "Fn::GetAtt": [
+          "Teams",
+          "TeamId"
+        ]
       }
     }
   }

@@ -104,7 +104,9 @@
   },
   "primaryIdentifier": [
     "/properties/IndexId",
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/ProjectId",
+    "/properties/ClusterName"
   ],
   "properties": {
     "Analyzer": {

@@ -4,19 +4,25 @@
   "Parameters": {
     "Name": {
       "Type": "String",
-      "Description": "",
+      "Description": "Name of the team to create.",
       "Default": ""
     },
     "OrgId": {
       "Type": "String",
-      "Description": "OrgId Id",
+      "Description": "OrgId Id.",
       "Default": "",
       "ConstraintDescription": ""
     },
     "Usernames": {
       "Type": "CommaDelimitedList",
       "Default": "",
-      "Description": "Team Id",
+      "Description": "Team Id.",
+      "ConstraintDescription": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys.",
       "ConstraintDescription": ""
     }
   },
@@ -37,17 +43,18 @@
         "RoleNames": [
           "GROUP_CLUSTER_MANAGER"
         ],
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     }
   },
   "Outputs": {
-    "Teams" : {
+    "Teams": {
       "Description": " teams",
-      "Value" : { "Ref" : "Teams" }
+      "Value": {
+        "Ref": "Teams"
+      }
     }
   }
 }

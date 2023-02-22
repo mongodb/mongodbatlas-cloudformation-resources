@@ -2,14 +2,6 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This templates enables the Auditing property on an atlas project",
   "Parameters" : {
-    "MongoDBAtlasAPIPublicKey": {
-      "Type": "String",
-      "Description" : "MongoDB Atlas Public Access Key"
-    },
-    "MongoDBAtlasAPIPrivateKey": {
-      "Type": "String",
-      "Description" : "MongoDB Atlas Private Access Key"
-    },
     "MongoDBAtlasProjectId": {
       "Type": "String",
       "Description" : "MongoDB project Key"
@@ -17,16 +9,12 @@
   },
   "Mappings" : {},
   "Resources" : {
-    "Project": {
+    "Auditing": {
       "Type": "MongoDB::Atlas::Auditing",
       "Properties":  {
         "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
         "AuditAuthorizationSuccess": "false",
-        "AuditFilter": "{\n  \"$or\": [\n    {\n      \"users\": []\n    },\n    {\n      \"$and\": [\n        {\n          \"$or\": [\n            {\n              \"users\": {\n                \"$elemMatch\": {\n                  \"$or\": [\n                    {\n                      \"db\": \"admin\"\n                    },\n                    {\n                      \"db\": \"$external\"\n                    }\n                  ]\n                }\n              }\n            },\n            {\n              \"roles\": {\n                \"$elemMatch\": {\n                  \"$or\": [\n                    {\n                      \"db\": \"admin\"\n                    }\n                  ]\n                }\n              }\n            }\n          ]\n        },\n        {\n          \"$or\": [\n            {\n              \"atype\": \"authCheck\",\n              \"param.command\": {\n                \"$in\": [\n                  \"aggregate\",\n                  \"count\",\n                  \"distinct\",\n                  \"group\",\n                  \"mapReduce\",\n                  \"geoNear\",\n                  \"geoSearch\",\n                  \"eval\",\n                  \"find\",\n                  \"getLastError\",\n                  \"getMore\",\n                  \"getPrevError\",\n                  \"parallelCollectionScan\",\n                  \"delete\",\n                  \"findAndModify\",\n                  \"insert\",\n                  \"update\",\n                  \"resetError\"\n                ]\n              }\n            },\n            {\n              \"atype\": {\n                \"$in\": [\n                  \"authenticate\",\n                  \"createCollection\",\n                  \"createDatabase\",\n                  \"createIndex\",\n                  \"renameCollection\",\n                  \"dropCollection\",\n                  \"dropDatabase\",\n                  \"dropIndex\",\n                  \"createUser\",\n                  \"dropUser\",\n                  \"dropAllUsersFromDatabase\",\n                  \"updateUser\",\n                  \"grantRolesToUser\",\n                  \"revokeRolesFromUser\",\n                  \"createRole\",\n                  \"updateRole\",\n                  \"dropRole\",\n                  \"dropAllRolesFromDatabase\",\n                  \"grantRolesToRole\",\n                  \"revokeRolesFromRole\",\n                  \"grantPrivilegesToRole\",\n                  \"revokePrivilegesFromRole\",\n                  \"enableSharding\",\n                  \"shardCollection\",\n                  \"addShard\",\n                  \"removeShard\",\n                  \"shutdown\",\n                  \"applicationMessage\"\n                ]\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
-        "ApiKeys": {
-          "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
-          "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
-        }
+        "AuditFilter": "{\n  \"$or\": [\n    {\n      \"users\": []\n    },\n    {\n      \"$and\": [\n        {\n          \"$or\": [\n            {\n              \"users\": {\n                \"$elemMatch\": {\n                  \"$or\": [\n                    {\n                      \"db\": \"admin\"\n                    },\n                    {\n                      \"db\": \"$external\"\n                    }\n                  ]\n                }\n              }\n            },\n            {\n              \"roles\": {\n                \"$elemMatch\": {\n                  \"$or\": [\n                    {\n                      \"db\": \"admin\"\n                    }\n                  ]\n                }\n              }\n            }\n          ]\n        },\n        {\n          \"$or\": [\n            {\n              \"atype\": \"authCheck\",\n              \"param.command\": {\n                \"$in\": [\n                  \"aggregate\",\n                  \"count\",\n                  \"distinct\",\n                  \"group\",\n                  \"mapReduce\",\n                  \"geoNear\",\n                  \"geoSearch\",\n                  \"eval\",\n                  \"find\",\n                  \"getLastError\",\n                  \"getMore\",\n                  \"getPrevError\",\n                  \"parallelCollectionScan\",\n                  \"delete\",\n                  \"findAndModify\",\n                  \"insert\",\n                  \"update\",\n                  \"resetError\"\n                ]\n              }\n            },\n            {\n              \"atype\": {\n                \"$in\": [\n                  \"authenticate\",\n                  \"createCollection\",\n                  \"createDatabase\",\n                  \"createIndex\",\n                  \"renameCollection\",\n                  \"dropCollection\",\n                  \"dropDatabase\",\n                  \"dropIndex\",\n                  \"createUser\",\n                  \"dropUser\",\n                  \"dropAllUsersFromDatabase\",\n                  \"updateUser\",\n                  \"grantRolesToUser\",\n                  \"revokeRolesFromUser\",\n                  \"createRole\",\n                  \"updateRole\",\n                  \"dropRole\",\n                  \"dropAllRolesFromDatabase\",\n                  \"grantRolesToRole\",\n                  \"revokeRolesFromRole\",\n                  \"grantPrivilegesToRole\",\n                  \"revokePrivilegesFromRole\",\n                  \"enableSharding\",\n                  \"shardCollection\",\n                  \"addShard\",\n                  \"removeShard\",\n                  \"shutdown\",\n                  \"applicationMessage\"\n                ]\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}"
       }
     }
   },

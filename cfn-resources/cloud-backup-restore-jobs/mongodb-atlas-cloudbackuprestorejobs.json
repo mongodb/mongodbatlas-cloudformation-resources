@@ -1,20 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::CloudBackUpRestoreJobs",
     "description": "Returns, starts, and cancels Cloud Backup restore jobs.",
-    "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        }
-    },
     "properties": {
         "ProjectId": {
             "description": "The unique identifier of the project for the Atlas cluster.",
@@ -110,14 +96,21 @@
             "description": "Name of the target Atlas cluster to which the restore job restores the snapshot. Only visible if deliveryType is automated.",
             "type": "string"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         }
     },
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "ApiKeys"
+        "ClusterName"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/ClusterName",
+        "/properties/Profile"
     ],
     "readOnlyProperties": [
         "/properties/Id",
@@ -131,27 +124,30 @@
         "/properties/Links"
     ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/ProjectId",
+        "/properties/ClusterName",
+        "/properties/Id",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         },
         "list": {
             "permissions": [
-                ""
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

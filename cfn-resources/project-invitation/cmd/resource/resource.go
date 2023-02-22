@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-
 	"github.com/aws/aws-sdk-go/aws"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"

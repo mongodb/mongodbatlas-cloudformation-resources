@@ -213,6 +213,10 @@
   ],
   "primaryIdentifier": [
     "/properties/TeamId",
+    "/properties/Profile",
+    "/properties/OrgId"
+  ],
+  "createOnlyProperties": [
     "/properties/Profile"
   ],
   "typeName": "MongoDB::Atlas::Teams"

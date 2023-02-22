@@ -12,10 +12,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::Teams",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#rolenames" title="RoleNames">RoleNames</a>" : <i>[ String, ... ]</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#usernames" title="Usernames">Usernames</a>" : <i>[ String, ... ]</i>,
     }
@@ -27,11 +27,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::Teams
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#rolenames" title="RoleNames">RoleNames</a>: <i>
       - String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#usernames" title="Usernames">Usernames</a>: <i>
       - String</i>
@@ -39,11 +39,13 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -65,15 +67,15 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal character string that identifies the project.
 
@@ -104,10 +106,6 @@ _Type_: List of String
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the TeamId.
 
 ### Fn::GetAtt
 

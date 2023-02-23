@@ -18,6 +18,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -25,7 +27,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -94,7 +95,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -144,7 +145,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -180,7 +181,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -211,7 +212,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client

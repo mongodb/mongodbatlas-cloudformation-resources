@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::ProjectIpAccessList
 Parameters:
   Profile:
-    Description: "MongoDB Atlas Proj Profile Name"
+    Description: "Your MongoDB Atlas Profile"
     Type: String
     Default: "default"
   ProjectId:

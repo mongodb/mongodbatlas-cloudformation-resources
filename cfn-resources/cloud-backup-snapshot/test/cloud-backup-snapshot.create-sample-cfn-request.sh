@@ -10,12 +10,10 @@ set -o pipefail
 
 
 function usage {
-    echo "usage:$0 <project_name>"
+    echo "usage:$1 <project_name>"
     echo "usage:$2 <cluster_name>"
 }
 
-if [ "$#" -ne 2 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
 projectId="${1}"
 clusterName="${2}"
 jq --arg profile "$ATLAS_PROFILE" \

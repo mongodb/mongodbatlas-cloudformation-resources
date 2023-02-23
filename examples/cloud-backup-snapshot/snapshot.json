@@ -11,6 +11,12 @@
       "Type" : "String",
       "Description" : "",
       "ConstraintDescription" : ""
+    },
+    "Profile" : {
+      "Type" : "String",
+      "Default" : "default",
+      "Description" : "",
+      "ConstraintDescription" : ""
     }
   },
   "Mappings" : {},
@@ -18,21 +24,31 @@
     "CloudBackupSnapshot": {
       "Type": "MongoDB::Atlas::CloudBackupSnapshot",
       "Properties": {
-        "GroupId": { "Ref" : "ProjectId" },
+        "ProjectId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },
         "Description": "A testing for creating cloud provider snapshots",
-        "RetentionInDays" : 3 ,
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "RetentionInDays" : 3,
+        "Profile": { "Ref" : "Profile"}
       }
     }
   },
   "Outputs" : {
     "SnapshotId": {
-      "Description": "Id of the cloud provider snapshots",
-      "Value" : { "Ref" : "CloudBackupSnapshot" }
+      "Description": "Id of the cloud provider snapshot",
+      "Value" : {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshot",
+          "SnapshotId"
+        ]
+      }
+    },
+    "ReplicasetName": {
+      "Value" : {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshot",
+          "ReplicaSetName"
+        ]
+      }
     }
   }
 }

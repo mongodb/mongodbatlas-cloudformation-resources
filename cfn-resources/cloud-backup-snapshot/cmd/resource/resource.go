@@ -32,10 +32,10 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ClusterName, constants.GroupID}
-var DeleteRequiredFields = []string{constants.ClusterName, constants.GroupID, constants.SnapshotID}
-var ReadRequiredFields = []string{constants.GroupID, constants.SnapshotID}
-var ListRequiredFields = []string{constants.GroupID}
+var CreateRequiredFields = []string{constants.ClusterName, constants.ProjectID}
+var DeleteRequiredFields = []string{constants.ClusterName, constants.ProjectID, constants.SnapshotID}
+var ReadRequiredFields = []string{constants.ProjectID, constants.SnapshotID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -65,7 +65,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create Atlas API Request Object
 	clusterName := cast.ToString(currentModel.ClusterName)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 
 	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID:     projectID,
@@ -131,7 +131,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 
 	if clusterName == "" && instanceName == "" {
 		return handler.ProgressEvent{
@@ -141,7 +141,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}, nil
 	}
 	// Check if  exist
-	if !isSnapshotExist(req, currentModel) {
+	if !isSnapshotExist(client, currentModel) {
 		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -208,7 +208,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// check if exist
-	if !isSnapshotExist(req, currentModel) {
+	if !isSnapshotExist(client, currentModel) {
 		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -218,7 +218,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create Atlas API Request Object
 	clusterName := cast.ToString(currentModel.ClusterName)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 	snapshotID := cast.ToString(currentModel.SnapshotId)
 
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
@@ -240,13 +240,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 // function to check if snapshot already available for the snapshot id
-func isSnapshotExist(req handler.Request, currentModel *Model) bool {
-	client, _ := util.NewMongoDBClient(req, currentModel.Profile)
-
+func isSnapshotExist(client *mongodbatlas.Client, currentModel *Model) bool {
 	// Create Atlas API Request Object
 	clusterName := cast.ToString(currentModel.ClusterName)
 	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID: projectID,
 	}
@@ -291,6 +289,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create MongoDb Atlas Client using keys
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -298,7 +299,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	clusterName := cast.ToString(currentModel.ClusterName)
 	instanceName := cast.ToString(currentModel.InstanceName)
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
@@ -331,6 +332,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	snapshotsList := snapshots.Results
 	for ind := range snapshotsList {
 		var model Model
+		model.ProjectId = currentModel.ProjectId
+		model.Profile = currentModel.Profile
+		model.ClusterName = currentModel.ClusterName
 		models = append(models, convertToUIModel(snapshotsList[ind], &model))
 	}
 
@@ -344,7 +348,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // function to track snapshot creation status
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	snapshotID := *currentModel.SnapshotId
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 	isReady, state, err := snapshotIsReady(client, projectID, snapshotID, clusterName, targetState)
 	if err != nil {

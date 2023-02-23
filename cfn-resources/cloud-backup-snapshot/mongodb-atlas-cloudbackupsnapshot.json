@@ -251,8 +251,7 @@
       "type": "string",
       "description": "Human-readable label that identifies the cluster.",
       "maxLength": 64,
-      "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "minLength": 1
     },
     "InstanceName": {
       "type": "string",
@@ -280,7 +279,7 @@
       "description": "Human-readable label that identifies how often this snapshot triggers.",
       "enum": ["hourly", "daily", "weekly", "monthly"]
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
@@ -412,75 +411,41 @@
       "permissions": [
         "secretsmanager:GetSecretValue"
       ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "readOnlyProperties": [
     "/properties/SnapshotId",
     "/properties/SnapshotIds",
     "/properties/MasterKeyUUID",
-    "/properties/Results",
-    "/properties/ItemsPerPage",
-    "/properties/IncludeCount",
-    "/properties/PageNum",
     "/properties/Type",
-    "/properties/SnapshotType",
-    "/properties/TotalCount",
     "/properties/Members",
     "/properties/ExpiresAt",
     "/properties/StorageSizeBytes",
-    "/properties/PolicyItems",
     "/properties/Id",
     "/properties/CreatedAt",
     "/properties/Links",
     "/properties/CloudProvider",
     "/properties/MongodVersion",
-    "/properties/FrequencyType",
     "/properties/ReplicaSetName",
-    "/properties/Status",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/Type",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/Id",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/CloudProvider",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/Description",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/CreatedAt",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/ExpiresAt",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/MongodVersion",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/StorageSizeBytes",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/ReplicaSetName",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/Status",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/FrequencyType",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/Links",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/PolicyItems",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/SnapshotType",
-    "/definitions/ApiAtlasDiskBackupReplicaSetView/MasterKeyUUID",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/CloudProvider",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/Id",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotMemberView/ReplicaSetName",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Status",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/SnapshotType",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Type",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/PolicyItems",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/CreatedAt",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/ExpiresAt",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Id",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Members",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/MongodVersion",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/SnapshotIds",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/FrequencyType",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/StorageSizeBytes",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/MasterKeyUUID",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Description",
-    "/definitions/ApiAtlasDiskBackupShardedClusterSnapshotView/Links"
+    "/properties/Status"
   ],
   "createOnlyProperties": [
-    "/properties/GroupId",
-    "/properties/SnapshotId",
+    "/properties/ProjectId",
+    "/properties/ClusterName",
     "/properties/Profile"
   ],
   "required": [
-    "properties/GroupId"
+    "ProjectId",
+    "ClusterName"
   ],
   "primaryIdentifier": [
-    "/properties/GroupId",
+    "/properties/ProjectId",
+    "/properties/ClusterName",
     "/properties/SnapshotId",
     "/properties/Profile"
   ],

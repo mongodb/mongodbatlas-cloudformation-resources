@@ -21,5 +21,5 @@ clusterName="${2}"
 jq --arg profile "$ATLAS_PROFILE" \
    --arg projectId "$projectId" \
    --arg clusterName "$clusterName" \
-   '.desiredResourceState.Profile?|=$profile |   .desiredResourceState.ClusterName?|=$clusterName  | .desiredResourceState.GroupId?|=$projectId ' \
+   '.desiredResourceState.Profile?|=$profile |   .desiredResourceState.ClusterName?|=$clusterName  | .desiredResourceState.ProjectId?|=$projectId ' \
    "$(dirname "$0")/cloud-backup-snapshot.sample-cfn-request.json"

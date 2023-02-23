@@ -27,7 +27,7 @@ Resources:
     Type: MongoDB::Atlas::CloudBackupSnapshot
     Properties:
       Profile: !Ref "Profile"
-      GroupId: !Ref "ProjectId"
+      ProjectId: !Ref "ProjectId"
       ClusterName: !Ref "ClusterName"
       Description: !Ref "Description"
       RetentionInDays: !Ref "RetentionInDays"

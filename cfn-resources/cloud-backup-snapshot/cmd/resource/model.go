@@ -12,7 +12,7 @@ type Model struct {
 	Description      *string                                              `json:",omitempty"`
 	ExpiresAt        *string                                              `json:",omitempty"`
 	FrequencyType    *string                                              `json:",omitempty"`
-	GroupId          *string                                              `json:",omitempty"`
+	ProjectId        *string                                              `json:",omitempty"`
 	Id               *string                                              `json:",omitempty"`
 	IncludeCount     *bool                                                `json:",omitempty"`
 	ItemsPerPage     *int                                                 `json:",omitempty"`

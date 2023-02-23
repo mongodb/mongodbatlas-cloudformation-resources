@@ -1,5 +1,5 @@
 {
-    "GroupId": "",
+    "ProjectId": "",
     "ClusterName": "",
     "Description": "snapshotA through cloud formation template",
     "RetentionInDays": "5",

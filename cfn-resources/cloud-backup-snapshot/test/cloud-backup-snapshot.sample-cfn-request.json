@@ -1,6 +1,6 @@
 {
     "desiredResourceState": {
-            "GroupId": "",
+            "ProjectId": "",
             "ClusterName": "",
             "Id": "",
             "Description": "snapshot through cloud formation template",

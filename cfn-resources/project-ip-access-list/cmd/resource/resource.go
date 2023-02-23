@@ -52,7 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
@@ -93,7 +93,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
@@ -143,7 +143,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
@@ -179,7 +179,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
@@ -210,7 +210,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 

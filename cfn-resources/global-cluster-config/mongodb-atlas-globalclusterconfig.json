@@ -65,7 +65,7 @@
   "properties": {
     "Profile": {
       "type": "string",
-      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
       "default": "default"
     },
     "ProjectId": {

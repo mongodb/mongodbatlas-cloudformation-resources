@@ -1,107 +1,110 @@
 {
-   "AWSTemplateFormatVersion":"2010-09-09",
-   "Description":"This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
-   "Parameters":{
-      "ProjectId":{
-         "Type":"String",
-         "Description":"",
-         "Default":"633bf97a5684466a4793c55c",
-         "ConstraintDescription":""
-      },
-      "RoleID":{
-         "Type":"String",
-         "Description":"",
-         "Default":"63469821895e0011e8fc98b8",
-         "ConstraintDescription":""
-      },
-      "IamAssumedRoleARN":{
-         "Type":"String",
-         "Description":"",
-         "Default":"arn:aws:iam::816546967292:role/mongodb_encrypt_at_rest",
-         "ConstraintDescription":""
-      },
-      "IamUserARN":{
-         "Type":"String",
-         "Description":"",
-         "Default":"arn:aws:iam::536727724300:root",
-         "ConstraintDescription":""
-      },
-      "ExternalId":{
-         "Type":"String",
-         "Description":"",
-         "Default":"947e174e-0824-41b3-b91f-1629914e0f51",
-         "ConstraintDescription":""
-      },
-      "TestS3Bucket":{
-         "Type":"String",
-         "Description":"",
-         "Default":"cfndemo",
-         "ConstraintDescription":""
-      },
-      "TenantName":{
-         "Type":"String",
-         "Description":"",
-         "Default":"testcfn",
-         "ConstraintDescription":""
-      },
-      "Region":{
-         "Type":"String",
-         "Description":"",
-         "Default":"MUMBAI_IND",
-         "ConstraintDescription":""
-      }
-   },
-   "Mappings":{
-      
-   },
-   "Resources":{
-      "DataLake":{
-         "Type":"MongoDB::Atlas::DataLakes",
-         "Properties":{
-            "GroupId":{
-               "Ref":"ProjectId"
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "",
+      "Default": "default",
+      "ConstraintDescription": ""
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "RoleID": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "IamAssumedRoleARN": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "IamUserARN": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "ExternalId": {
+      "Type": "String",
+      "Description": "",
+      "Default": "947e174e-0824-41b3-b91f-1629914e0f51",
+      "ConstraintDescription": ""
+    },
+    "TestS3Bucket": {
+      "Type": "String",
+      "Description": "",
+      "Default": "cfndemo",
+      "ConstraintDescription": ""
+    },
+    "TenantName": {
+      "Type": "String",
+      "Description": "",
+      "Default": "testcfn",
+      "ConstraintDescription": ""
+    },
+    "Region": {
+      "Type": "String",
+      "Description": "",
+      "Default": "MUMBAI_IND",
+      "ConstraintDescription": ""
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "DataLake": {
+      "Type": "MongoDB::Atlas::DataLakes",
+      "Properties": {
+        "GroupId": {
+          "Ref": "ProjectId"
+        },
+        "TenantName": {
+          "Ref": "TenantName"
+        },
+        "CloudProviderConfig": {
+          "Aws": {
+            "ExternalId": {
+              "Ref": "ExternalId"
             },
-            "TenantName":{
-               "Ref":"TenantName"
+            "IamAssumedRoleARN": {
+              "Ref": "IamAssumedRoleARN"
             },
-            "CloudProviderConfig":{
-               "Aws":{
-                  "ExternalId":{
-                     "Ref":"ExternalId"
-                  },
-                  "IamAssumedRoleARN":{
-                     "Ref":"IamAssumedRoleARN"
-                  },
-                  "IamUserARN":{
-                     "Ref":"IamUserARN"
-                  },
-                  "RoleId":{
-                     "Ref":"RoleID"
-                  },
-                  "TestS3Bucket":{
-                     "Ref":"TestS3Bucket"
-                  }
-               }
+            "IamUserARN": {
+              "Ref": "IamUserARN"
             },
-            "DataProcessRegion":{
-               "CloudProvider":"AWS",
-               "Region":{
-                  "Ref":"Region"
-               }
+            "RoleId": {
+              "Ref": "RoleID"
             },
-            "ApiKeys": {
-               "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-               "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+            "TestS3Bucket": {
+              "Ref": "TestS3Bucket"
             }
-         }
+          }
+        },
+        "DataProcessRegion": {
+          "CloudProvider": "AWS",
+          "Region": {
+            "Ref": "Region"
+          }
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
       }
-   },
-   "Outputs":{
-      "DataLake":{
-         "Description":"Datalake object",
-         "Value":{
-            "Ref":"DataLake"
-         }
+    }
+  },
+  "Outputs": {
+    "DataLake": {
+      "Description": "Datalake object",
+      "Value": {
+        "Ref": "DataLake"
       }
-   }
+    }
+  }
 }

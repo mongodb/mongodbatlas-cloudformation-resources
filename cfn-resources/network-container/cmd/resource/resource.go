@@ -21,6 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -29,11 +30,11 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.PubKey, constants.PvtKey, constants.AtlasCIDRBlock}
-var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.ID, constants.PubKey, constants.PvtKey}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -46,9 +47,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := currentModel.ProjectId
@@ -106,10 +111,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -140,9 +148,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -179,9 +191,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
@@ -212,9 +228,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -235,6 +255,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range containerResponse {
 		var m Model
 		m.completeByConnection(containerResponse[i])
+		m.ProjectId = currentModel.ProjectId
+		m.Profile = currentModel.Profile
 		mm = append(mm, m)
 	}
 

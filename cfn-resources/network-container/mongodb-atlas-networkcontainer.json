@@ -1,20 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::NetworkContainer",
     "description": "Returns, adds, edits, and removes network peering containers.",
-    "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        }
-    },
     "properties": {
         "ProjectId": {
             "description": "Unique 24-hexadecimal digit string that identifies your project.",
@@ -40,39 +26,56 @@
             "description": "Unique 24-hexadecimal digit string that identifies the network peering container.",
             "type": "string"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+            "default": "default"
         }
     },
     "additionalProperties": false,
     "required": [
         "ProjectId",
         "AtlasCidrBlock",
-        "RegionName",
-        "ApiKeys"],
+        "RegionName"
+    ],
     "readOnlyProperties": [
-        "/properties/Id",
-    "/properties/VpcId",
-        "/properties/Provisioned"],
-    "primaryIdentifier": [
         "/properties/Id"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Profile"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
-            "permissions": []
-        },
-        "delete": {
-            "permissions": []
-        },
-        "list": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "read": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "update": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         }
     }
-    }
+}
 

@@ -37,19 +37,19 @@ if [ -z "$region" ]; then
 fi
 
 region_name_1=$(echo "$region" | tr '[:lower:]' '[:upper:]')
-region_name=$(echo "$region_name_1" | sed 's/-/_/g')
+region_name=$(echo "${region_name_1//-/_}")
 public_key=$ATLAS_PUBLIC_KEY
 private_key=$ATLAS_PRIVATE_KEY
 
 # Generate a random IPv4 address
-IP=10.$(($RANDOM % 256)).$(($RANDOM % 256)).0
+IP=10.$((RANDOM % 256)).$((RANDOM % 256)).0
 CIDR=24
 
 # Generate the CIDR block
 cidr_block="$IP/$CIDR"
 
 response=$(curl --user "$public_key:$private_key" --digest --request POST \
-  --url https://cloud.mongodb.com/api/atlas/v1.0/groups/$projectId/containers \
+  --url https://cloud.mongodb.com/api/atlas/v1.0/groups/"$projectId"/containers \
   --header "Content-Type: application/json" \
   --data '{
     "providerName": "AWS",

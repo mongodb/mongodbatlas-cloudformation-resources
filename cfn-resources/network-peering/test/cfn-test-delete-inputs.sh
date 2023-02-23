@@ -15,7 +15,7 @@ function usage {
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 containerId=$(jq -r '.ContainerId' ./inputs/inputs_1_create.json)
 
-if atlas networking containers delete "$containerId" --projectId $projectId --force; then
+if atlas networking containers delete "$containerId" --projectId "$projectId" --force; then
 	echo "$projectId network container deletion OK"
 else
 	(echo "Failed cleaning project:$projectId" && exit 1)

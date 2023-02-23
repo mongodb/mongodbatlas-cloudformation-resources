@@ -34,14 +34,10 @@ export MCLI_PROJECT_ID=$projectId
 clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${clusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
 	echo "creating cluster.."
-	clusterId=$(atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+	atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+	atlas clusters watch "${clusterName}" --projectId "${projectId}"
+	echo -e "Created Cluster \"${clusterName}\""
 fi
-
-status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
-echo "status: ${status}"
-
-atlas clusters watch "${clusterName}" --projectId "${projectId}"
-echo -e "Created Cluster \"${clusterName}\" with id: ${clusterId}\n"
 
 policyId=$(atlas backups schedule describe "${clusterName}" --projectId "${projectId}" | jq -r '.policies[0].id')
 echo "policyId: ${policyId}"

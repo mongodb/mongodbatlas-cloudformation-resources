@@ -102,31 +102,26 @@
   "handlers": {
     "create": {
       "permissions": [
-        "initech:CreateReport",
         "secretsmanager:GetSecretValue"
       ]
     },
     "read": {
       "permissions": [
-        "initech:DescribeReport",
         "secretsmanager:GetSecretValue"
       ]
     },
     "update": {
       "permissions": [
-        "initech:UpdateReport",
         "secretsmanager:GetSecretValue"
       ]
     },
     "delete": {
       "permissions": [
-        "initech:DeleteReport",
         "secretsmanager:GetSecretValue"
       ]
     },
     "list": {
       "permissions": [
-        "initech:ListReports",
         "secretsmanager:GetSecretValue"
       ]
     }

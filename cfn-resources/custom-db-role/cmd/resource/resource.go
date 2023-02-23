@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -26,8 +27,6 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 )
 
 func setup() {

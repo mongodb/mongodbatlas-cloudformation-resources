@@ -25,20 +25,18 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateAndUpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.RoleID, constants.CustomMasterKey, constants.RoleID, constants.ProjectID}
-var ReadAndDeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
+var CreateAndUpdateRequiredFields = []string{constants.RoleID, constants.CustomMasterKey, constants.RoleID, constants.ProjectID}
+var ReadAndDeleteRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -50,12 +48,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
 	}
 
 	// Create Atlas API Request Object
@@ -73,12 +73,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	deploySecretString, _ := json.Marshal(encryptionAtRest)
 	log.Printf("Response Object: %s", deploySecretString)
 
-	// API call to create
-	_, _, err = client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest)
-	if err != nil {
+	if _, _, err := client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest); err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error - Create Encryption  for Project(%s)- Details: %+v", projectID, err)
 	}
-	currentModel.Id = pointy.String(strconv.FormatInt(randInt64(), 10))
+
+	currentModel.Id = aws.String(strconv.FormatInt(randInt64(), 10))
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -87,23 +86,25 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// ValidateRequest function to validate the request
-func ValidateRequest(requiredFields []string, currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
+// validateRequest function to validate the request
+func validateRequest(req *handler.Request, requiredFields []string, currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
 	// Validate required fields in the request
 	if modelValidation := validateModel(requiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil, errors.New("required field not found")
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil, err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, handlerError := util.NewMongoDBClient(*req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, nil, errors.New(handlerError.Message)
 	}
 
 	// Check if  already exist
-	if !isExist(currentModel) {
+	if !isExist(client, currentModel) {
 		_, _ = logger.Warnf("resource not found %s", *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -119,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	_, _ = logger.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
 
 	// validate the request
-	event, client, err := ValidateRequest(ReadAndDeleteRequiredFields, currentModel)
+	event, client, err := validateRequest(&req, ReadAndDeleteRequiredFields, currentModel)
 	if err != nil {
 		if err.Error() == constants.ResourceNotFound {
 			return event, nil
@@ -154,7 +155,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = logger.Debugf("Update - Encryption for Request() currentModel:%+v", currentModel)
 
 	// validate the request
-	event, client, err := ValidateRequest(CreateAndUpdateRequiredFields, currentModel)
+	event, client, err := validateRequest(&req, CreateAndUpdateRequiredFields, currentModel)
 	if err != nil {
 		if err.Error() == constants.ResourceNotFound {
 			return event, nil
@@ -201,7 +202,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = logger.Debugf("Delete encryption for Request() currentModel:%+v", currentModel)
 
 	// validate the request
-	event, client, err := ValidateRequest(ReadAndDeleteRequiredFields, currentModel)
+	event, client, err := validateRequest(&req, ReadAndDeleteRequiredFields, currentModel)
 	if err != nil {
 		if err.Error() == constants.ResourceNotFound {
 			return event, nil
@@ -220,14 +221,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Delete Complete",
 	}, nil
 }
-func isExist(currentModel *Model) bool {
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return false
-	}
-	setup()
+func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
 	projectID := *currentModel.ProjectId
-
 	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
 	if err != nil {
 		return false

@@ -31,21 +31,21 @@ fi
 name="serverless-cfn-bot"
 
 jq --arg org "$ATLAS_ORG_ID" \
-   --arg name "$name" \
-   --arg project_id "$projectId" \
-   '.ProjectID?|=$project_id | .Name?|=$name ' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+	--arg name "$name" \
+	--arg project_id "$projectId" \
+	'.ProjectID?|=$project_id | .Name?|=$name ' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg org "$ATLAS_ORG_ID" \
-   --arg name "${name}- more B@d chars !@(!(@====*** ;;::" \
-    --arg project_id "$projectId" \
-   '.ProjectID?|=$project_id | .Name?|=$name' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
+	--arg name "${name}- more B@d chars !@(!(@====*** ;;::" \
+	--arg project_id "$projectId" \
+	'.ProjectID?|=$project_id | .Name?|=$name' \
+	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 jq --arg org "$ATLAS_ORG_ID" \
-   --arg name "${name}" \
- --arg project_id "$projectId" \
-   '.ProjectID?|=$project_id | .Name?|=$name '\
-   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
+	--arg name "${name}" \
+	--arg project_id "$projectId" \
+	'.ProjectID?|=$project_id | .Name?|=$name ' \
+	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

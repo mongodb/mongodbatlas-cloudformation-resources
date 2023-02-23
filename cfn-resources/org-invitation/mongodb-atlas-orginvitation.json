@@ -1,37 +1,34 @@
 {
   "additionalProperties": false,
-  "definitions": {
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
+  "definitions": {},
   "description": "Returns, adds, and edits organizational units in MongoDB Cloud.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/ApiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     },
     "CreatedAt": {
       "type": "string",
@@ -89,16 +86,16 @@
       "items": {
         "type": "string",
         "enum": [
-          "ORG_OWNER", 
-          "ORG_MEMBER", 
-          "ORG_GROUP_CREATOR", 
-          "ORG_BILLING_ADMIN", 
-          "ORG_READ_ONLY", 
-          "GROUP_CLUSTER_MANAGER", 
-          "GROUP_DATA_ACCESS_ADMIN", 
-          "GROUP_DATA_ACCESS_READ_ONLY", 
-          "GROUP_DATA_ACCESS_READ_WRITE", 
-          "GROUP_OWNER", 
+          "ORG_OWNER",
+          "ORG_MEMBER",
+          "ORG_GROUP_CREATOR",
+          "ORG_BILLING_ADMIN",
+          "ORG_READ_ONLY",
+          "GROUP_CLUSTER_MANAGER",
+          "GROUP_DATA_ACCESS_ADMIN",
+          "GROUP_DATA_ACCESS_READ_ONLY",
+          "GROUP_DATA_ACCESS_READ_WRITE",
+          "GROUP_OWNER",
           "GROUP_READ_ONLY"
         ]
       }
@@ -120,18 +117,24 @@
       "description": "Email address of the MongoDB Cloud user invited to join the organization."
     }
   },
+  "required": [
+    "Profile"
+  ],
   "primaryIdentifier": [
-    "/properties/Id"
+    "/properties/Id",
+    "/properties/OrgId",
+    "/properties/Profile"
   ],
   "readOnlyProperties": [
     "/properties/ExpiresAt",
-    "/properties/Id", 
+    "/properties/Id",
     "/properties/CreatedAt",
     "/properties/InviterUsername"
   ],
   "createOnlyProperties": [
     "/properties/Username",
-    "/properties/TeamIds"
+    "/properties/TeamIds",
+    "/properties/Profile"
   ],
   "typeName": "MongoDB::Atlas::OrgInvitation",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

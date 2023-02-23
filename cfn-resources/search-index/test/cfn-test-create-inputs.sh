@@ -58,14 +58,12 @@ for inputFile in inputs_*; do
 	if [[ ${inputFile} == *"invalid"* ]]; then
 		index_name="invalid_name"
 	fi
-	jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-		--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-		--arg org "$projectId" \
+	jq --arg org "$projectId" \
 		--arg cluster "$cluster_name" \
 		--arg name "$index_name" \
 		--arg db "$db_name" \
 		--arg coll "$coll_name" \
-		'.CollectionName?|=$coll |.Database?|=$db |.GroupId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |.ClusterName?|=$cluster |.Name?|=$name' \
+		'.CollectionName?|=$coll |.Database?|=$db |.ProjectId?|=$org |.ClusterName?|=$cluster |.Name?|=$name' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

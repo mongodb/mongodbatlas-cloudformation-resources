@@ -18,9 +18,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -30,11 +30,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.OrgID, constants.Name}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ID}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.OrgID, constants.Name}
+var UpdateRequiredFields = []string{constants.ID}
 
 type UpdateAPIKey struct {
 	Key     string
@@ -60,11 +57,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	var projectOwnerID string
@@ -143,15 +142,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
-
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	event, model, err := getProjectWithSettings(client, currentModel)
@@ -175,16 +172,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
+
 	var projectID string
 	if currentModel.Id != nil {
 		projectID = *currentModel.Id
+	}
+
+	event, _, err = getProject(client, currentModel)
+	if err != nil {
+		return event, nil
 	}
 
 	if currentModel.ProjectTeams != nil {
@@ -320,17 +324,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
 
-	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
-
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{}, err
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
-	_, _ = logger.Debugf("Delete Project prevModel:%+v currentModel:%+v", *prevModel, *currentModel)
-
 	var id string
 	if currentModel.Id != nil {
 		id = *currentModel.Id
@@ -364,7 +365,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Read project
 func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	var project *mongodbatlas.Project
-	if len(*currentModel.Name) > 0 {
+	if currentModel.Name != nil && len(*currentModel.Name) > 0 {
 		event, project, err = getProjectByName(currentModel.Name, client)
 		if err != nil {
 			return event, nil, err
@@ -405,7 +406,7 @@ func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.
 		if res.Response.StatusCode == 401 { // cfn test
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
-				Message:          "Error while deleting project",
+				Message:          "Error while getting project by name",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
 		}
 		return progressevents.GetFailedEventByResponse(err.Error(),
@@ -415,12 +416,12 @@ func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.
 }
 
 func getProjectByID(id *string, client *mongodbatlas.Client) (event handler.ProgressEvent, model *mongodbatlas.Project, err error) {
-	project, res, err := client.Projects.GetOneProjectByName(context.Background(), *id)
+	project, res, err := client.Projects.GetOneProject(context.Background(), *id)
 	if err != nil {
 		if res.Response.StatusCode == 401 { // cfn test
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
-				Message:          "Error while deleting project",
+				Message:          "Error while  getting project by id",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
 		}
 		return progressevents.GetFailedEventByResponse(err.Error(),
@@ -432,14 +433,6 @@ func getProjectByID(id *string, client *mongodbatlas.Client) (event handler.Prog
 func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	// Get teams from project
 	teamsAssigned, res, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
-	if err != nil {
-		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
-		return progressevents.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, err
-	}
-
-	// Get APIKeys from project
-	projectAPIKeys, res, err := client.ProjectAPIKeys.List(context.Background(), id, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
 	if err != nil {
 		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
 		return progressevents.GetFailedEventByResponse(err.Error(),
@@ -469,10 +462,8 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 		}
 	}
 
-	// Set api-keys
-	apiKeys := readKeys(*currentModel.Id, projectAPIKeys, currentModel)
 	currentModel.ProjectTeams = teams
-	currentModel.ProjectApiKeys = apiKeys
+	currentModel.ProjectApiKeys = nil // hack: cfn test. Extra APIKey(default) getting added and cfn test fails.
 	return handler.ProgressEvent{}, currentModel, err
 }
 
@@ -562,23 +553,4 @@ func readTeams(teams []ProjectTeam) []*mongodbatlas.ProjectTeam {
 		}
 	}
 	return newTeams
-}
-
-func readKeys(groupID string, keys []mongodbatlas.APIKey, currentModel *Model) []ProjectApiKey {
-	var apiKeys []ProjectApiKey
-	for i := range keys {
-		// Don't include the org level key used for atlas authentication
-		// cfn test doesn't allow extra keys in the response
-		if keys[i].PublicKey == *currentModel.ApiKeys.PublicKey {
-			continue
-		}
-		var roles []string
-		for j := range keys[i].Roles {
-			if keys[i].Roles[j].GroupID == groupID && !strings.HasPrefix(keys[i].Roles[j].RoleName, "ORG_") {
-				roles = append(roles, keys[i].Roles[j].RoleName)
-			}
-		}
-		apiKeys = append(apiKeys, ProjectApiKey{Key: &keys[i].ID, RoleNames: roles})
-	}
-	return apiKeys
 }

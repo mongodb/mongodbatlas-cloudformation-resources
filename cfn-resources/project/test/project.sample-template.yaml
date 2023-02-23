@@ -1,0 +1,26 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::Project
+Parameters:
+  Profile:
+    Description: "Your MongoDB ATLAS Profile Name created in secret manager"
+    Type: String
+    Default: "default"
+  OrgId:
+    Description: "Your MongoDB Cloud OrgId"
+    Type: String
+    Default: ""
+Resources:
+  AtlasProject:
+    Type: MongoDB::Atlas::Project
+    Properties:
+      Profile: !Ref "Profile"
+      OrgId: !Ref "OrgId"
+      Name: !Sub "${AWS::StackName}"
+Outputs:
+  AtlasProject:
+    Description: "Info on your Atlas Project"
+    Value: !Ref AtlasProject
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProject" ] ]
+

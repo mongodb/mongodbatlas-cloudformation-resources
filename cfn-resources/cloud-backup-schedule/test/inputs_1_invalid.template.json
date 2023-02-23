@@ -1,8 +1,5 @@
 {
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
+  "Profile": "",
   "FederationSettingsId": "",
   "OrgId": "",
   "ExternalGroupName": "RM-01",

@@ -21,11 +21,7 @@
         "ProjectId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },
         "Description": "A testing for creating cloud provider snapshot 2",
-        "RetentionInDays" : 3 ,
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "RetentionInDays" : 3
       }
     },
     "CloudProviderSnapshotRestoreJob": {
@@ -36,16 +32,12 @@
         "SnapshotId" : { "Ref" : "CloudProviderSnapshots" },
         "DeliveryType": "download",
         "TargetClusterName" : "",
-        "TargetProjectId" : "",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "TargetProjectId" : ""
       }
     }
   },
   "Outputs" : {
-    "SnappshotId": {
+    "SnapshotId": {
       "Description": "Id of the cloud provider snapshot",
       "Value" : { "Ref" : "CloudProviderSnapshots" }
     },

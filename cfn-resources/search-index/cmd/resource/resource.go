@@ -34,12 +34,10 @@ func setup() {
 	util.SetupLogger("search-index")
 }
 
-var CreateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID, constants.PubKey, constants.PvtKey}
-var DeleteRequiredFields = []string{constants.GroupID, constants.ClusterName, constants.IndexID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Database, constants.CollectionName,
-	constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.IndexID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -51,13 +49,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
+
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
@@ -65,6 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.IndexId = &id
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
+
 	searchIndex, err := ToSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -74,13 +77,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:    currentModel,
 		}, nil
 	}
-	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.GroupId, *currentModel.ClusterName, &searchIndex)
+
+	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &searchIndex)
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  cloudformation.OperationStatusFailed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+
 	currentModel.Status = &newSearchIndex.Status
 	currentModel.IndexId = &newSearchIndex.IndexID
 	return handler.ProgressEvent{
@@ -179,14 +184,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
-	searchIndex, resp, err := client.Search.GetIndex(context.Background(), *currentModel.GroupId, *currentModel.ClusterName, *currentModel.IndexId)
+
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
+	searchIndex, resp, err := client.Search.GetIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId)
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -199,6 +208,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Analyzer = &searchIndex.Analyzer
 	currentModel.Database = &searchIndex.Database
 	currentModel.CollectionName = &searchIndex.CollectionName
+	currentModel.Status = &searchIndex.Status
 	currentModel.Mappings = &ApiAtlasFTSMappingsViewManual{}
 	if searchIndex.Mappings != nil {
 		currentModel.Mappings.Dynamic = &searchIndex.Mappings.Dynamic
@@ -224,13 +234,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
+
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
@@ -247,7 +261,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:    currentModel,
 		}, nil
 	}
-	updatedSearchIndex, res, err := client.Search.UpdateIndex(context.Background(), *currentModel.GroupId, *currentModel.ClusterName,
+	updatedSearchIndex, res, err := client.Search.UpdateIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
 		*currentModel.IndexId, &searchIndex)
 	if err != nil {
 		// Log and handle 404 ok
@@ -291,13 +305,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
+
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
 	ctx := context.Background()
 
 	indexID, iOK := req.CallbackContext["id"]
@@ -307,7 +325,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
 
-	resp, err := client.Search.DeleteIndex(context.Background(), *currentModel.GroupId, *currentModel.ClusterName, *currentModel.IndexId)
+	resp, err := client.Search.DeleteIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId)
 	if err != nil {
 		if resp != nil && (resp.StatusCode == http.StatusInternalServerError || resp.StatusCode == http.StatusNotFound) {
 			return handler.ProgressEvent{
@@ -337,12 +355,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
 	}
 
 	ctx := context.Background()
@@ -351,7 +372,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return validateProgress(ctx, client, currentModel, "IDLE")
 	}
 
-	indices, _, err := client.Search.ListIndexes(context.Background(), *currentModel.GroupId, *currentModel.ClusterName,
+	indices, _, err := client.Search.ListIndexes(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
 		*currentModel.Database, *currentModel.CollectionName, nil)
 	if err != nil {
 		return handler.ProgressEvent{
@@ -409,7 +430,7 @@ func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentM
 }
 
 func SearchIndexExists(ctx context.Context, client *mongodbatlas.Client, currentModel *Model) (*mongodbatlas.SearchIndex, error) {
-	index, resp, err := client.Search.GetIndex(ctx, *currentModel.GroupId, *currentModel.ClusterName, *currentModel.IndexId)
+	index, resp, err := client.Search.GetIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId)
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return &mongodbatlas.SearchIndex{Status: "DELETED"}, nil

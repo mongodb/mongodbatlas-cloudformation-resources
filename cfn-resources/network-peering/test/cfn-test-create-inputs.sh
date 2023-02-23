@@ -37,7 +37,7 @@ if [ -z "$region" ]; then
 fi
 
 region_name_1=$(echo "$region" | tr '[:lower:]' '[:upper:]')
-region_name=$(echo "${region_name_1//-/_}")
+region_name="${region_name_1//-/_}"
 public_key=$ATLAS_PUBLIC_KEY
 private_key=$ATLAS_PRIVATE_KEY
 
@@ -68,7 +68,7 @@ if [[ "$http_status" != "null" ]]; then
   exit 1
 fi
 
-container_id=$(echo $response | jq -r '.id')
+container_id=$(echo "$response" | jq -r '.id')
 
 echo "Container ID: $container_id"
 

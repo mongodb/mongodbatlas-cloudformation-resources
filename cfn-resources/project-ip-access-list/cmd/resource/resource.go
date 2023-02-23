@@ -53,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client

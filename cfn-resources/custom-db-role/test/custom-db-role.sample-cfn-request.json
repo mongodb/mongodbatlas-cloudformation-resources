@@ -13,7 +13,7 @@
       }
     ],
     "RoleName": "testcreate",
-    "Profile": ""
+    "Profile": "default"
   },
   "providerLogGroupName": "mongodb-atlas-project-logs",
   "previousResourceState": {}

@@ -34,7 +34,7 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-custom-db-role")
 }
 
-var CreateRequiredFields = []string{constants.ProjectID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.RoleName}
 var ReadRequiredFields = []string{constants.ProjectID, constants.RoleName}
 var UpdateRequiredFields = []string{constants.ProjectID, constants.RoleName}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.RoleName}

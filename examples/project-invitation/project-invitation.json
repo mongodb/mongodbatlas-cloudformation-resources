@@ -1,7 +1,7 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a invitation at Atlas Organization level",
-  "Parameters" : {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a invitation at Atlas Organization level",
+  "Parameters": {
     "Username": {
       "Type": "String",
       "Description": "Email address of the MongoDB Cloud user invited to join the organization."
@@ -28,8 +28,8 @@
       ]
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "ProjectInvitation": {
       "Type": "MongoDB::Atlas::ProjectInvitation",
       "Properties": {
@@ -50,10 +50,28 @@
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "InvitationId": {
       "Description": "Id of the Invitation",
-      "Value" : { "Ref" : "ProjectInvitation" }
+      "Value": {
+        "Ref": "ProjectInvitation"
+      }
+    },
+    "InvitationExpiresAt": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectInvitation",
+          "ExpiresAt"
+        ]
+      }
+    },
+    "InvitationCreatedAt": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectInvitation",
+          "CreatedAt"
+        ]
+      }
     }
   }
 }

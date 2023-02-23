@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "This template will deploy the MongoDB::Atlas::Project resources into the CloudFormation registry"
+Description: "This template will deploy the MongoDB::Atlas::[RESOURCE-NAME] resources into the CloudFormation registry"
 Resources:
   ExecutionRole:
     Type: AWS::IAM::Role

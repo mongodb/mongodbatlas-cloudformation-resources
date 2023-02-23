@@ -125,18 +125,6 @@
             },
             "additionalProperties": false
         },
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
         "connectionStrings": {
             "type": "object",
             "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
@@ -267,9 +255,6 @@
         "AdvancedSettings": {
             "$ref": "#/definitions/processArgs"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
-        },
         "BackupEnabled": {
             "description": "Flag that indicates whether the cluster can perform backups. If set to true, the cluster can perform backups. You must set this value to true for NVMe clusters. Backup uses Cloud Backups for dedicated clusters and Shared Cluster Backups for tenant clusters. If set to false, the cluster doesn't use backups.",
             "type": "boolean"
@@ -314,6 +299,11 @@
                 "AZURE",
                 "NONE"
             ]
+        },
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "ProjectId": {
             "description": "Unique identifier of the project the cluster belongs to.",
@@ -390,8 +380,7 @@
     "additionalProperties": false,
     "required": [
         "Name",
-        "ProjectId",
-        "ApiKeys"
+        "ProjectId"
     ],
     "readOnlyProperties": [
         "/properties/ConnectionStrings/Standard",
@@ -403,48 +392,35 @@
         "/properties/CreatedDate",
         "/properties/Id"
     ],
+    "createOnlyProperties": [
+        "/properties/Name",
+        "/properties/ProjectId",
+        "/properties/Profile"
+    ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/ProjectId",
+        "/properties/Name",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "update": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecretVersionStage",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:CreateSecretInput"
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

@@ -2,12 +2,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::CloudBackUpRestoreJobs
 Parameters:
-  PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
-    Type: String
-    Default: ""
-  PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
+  Profile:
+    Description: "Your MongoDB Atlas Profile name"
     Type: String
     Default: ""
   ProjectId:
@@ -26,16 +22,14 @@ Resources:
   CloudBackUpRestoreJobs:
     Type: MongoDB::Atlas::CloudBackUpRestoreJobs
     Properties:
-      ApiKeys:
-        PublicKey: !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      Profile: !Ref "Profile"
       ProjectId: !Ref "ProjectId"
       ClusterName: !Ref "ClusterName"
       SnapshotId: !Ref "SnapshotId"
       DeliveryType: "download"
 Outputs:
   CloudBackUpRestoreJobs:
-    Description: "Info on your Atlas Projet"
+    Description: "Info on your Atlas Project"
     Value: !Ref CloudBackUpRestoreJobs
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","CloudBackUpRestoreJobs" ] ]

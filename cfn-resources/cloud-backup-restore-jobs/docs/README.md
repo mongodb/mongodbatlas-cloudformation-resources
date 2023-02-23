@@ -22,7 +22,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Integer</i>,
         "<a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>" : <i>String</i>,
         "<a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
 </pre>
@@ -42,7 +42,7 @@ Properties:
     <a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>: <i>Integer</i>
     <a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>: <i>String</i>
     <a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -55,17 +55,17 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ClusterName
 
 The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### InstanceName
 
@@ -149,19 +149,17 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ApiKeys
+#### Profile
 
-_Required_: Yes
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Required_: No
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
 
 ### Fn::GetAtt
 

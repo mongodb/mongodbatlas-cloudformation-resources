@@ -204,23 +204,27 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
-	response, err := client.Containers.Delete(context.Background(), projectID, containerID)
-
+	response, err := deleteContainer(client, projectID, containerID)
 	if err != nil {
-		if response.StatusCode == 409 { // handling CANNOT_DELETE_RECENTLY_CREATED_CONTAINER error
-			time.Sleep(time.Second * 3)
-			response, err = client.Containers.Delete(context.Background(), projectID, containerID)
-		}
-		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-				response.Response), nil
-		}
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response), nil
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
 	}, nil
+}
+
+func deleteContainer(client *mongodbatlas.Client, projectID string, containerID string) (*mongodbatlas.Response, error) {
+	response, err := client.Containers.Delete(context.Background(), projectID, containerID)
+
+	// handling "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER" error
+	if err != nil && response.StatusCode == 409 {
+		time.Sleep(time.Second * 3)
+		return client.Containers.Delete(context.Background(), projectID, containerID)
+	}
+	return response, err
 }
 
 // List handles the List event from the Cloudformation service.

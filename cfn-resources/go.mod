@@ -13,7 +13,7 @@ require (
 	github.com/rs/xid v1.4.0
 	github.com/spf13/cast v1.5.0
 	github.com/tidwall/pretty v1.2.1
-	go.mongodb.org/atlas v0.21.0
+	go.mongodb.org/atlas v0.23.0
 	go.mongodb.org/realm v0.1.0
 )
 

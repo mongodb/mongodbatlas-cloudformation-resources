@@ -42,7 +42,6 @@ public_key=$ATLAS_PUBLIC_KEY
 private_key=$ATLAS_PRIVATE_KEY
 
 container_id=$(atlas networking containers list --output json | jq --arg REGIONNAME "${region_name}" -r '.[] | select(.regionName==$REGIONNAME) | .id')
-echo $container_id
 if [ -z "$container_id" ]; then
   # Generate a random IPv4 address
   IP=10.$((RANDOM % 256)).$((RANDOM % 256)).0

@@ -41,36 +41,42 @@ region_name="${region_name_1//-/_}"
 public_key=$ATLAS_PUBLIC_KEY
 private_key=$ATLAS_PRIVATE_KEY
 
-# Generate a random IPv4 address
-IP=10.$((RANDOM % 256)).$((RANDOM % 256)).0
-CIDR=24
+container_id=$(atlas networking containers list --output json | jq --arg REGIONNAME "${region_name}" -r '.[] | select(.regionName==$REGIONNAME) | .id')
+echo $container_id
+if [ -z "$container_id" ]; then
+  # Generate a random IPv4 address
+  IP=10.$((RANDOM % 256)).$((RANDOM % 256)).0
+  CIDR=24
 
-# Generate the CIDR block
-cidr_block="$IP/$CIDR"
+  # Generate the CIDR block
+  cidr_block="$IP/$CIDR"
 
-response=$(curl --user "$public_key:$private_key" --digest --request POST \
-  --url https://cloud.mongodb.com/api/atlas/v1.0/groups/"$projectId"/containers \
-  --header "Content-Type: application/json" \
-  --data '{
-    "providerName": "AWS",
-    "atlasCidrBlock": "'"$cidr_block"'",
-    "regionName": "'"$region_name"'"
-  }')
+  response=$(curl --user "$public_key:$private_key" --digest --request POST \
+    --url https://cloud.mongodb.com/api/atlas/v1.0/groups/"$projectId"/containers \
+    --header "Content-Type: application/json" \
+    --data '{
+      "providerName": "AWS",
+      "atlasCidrBlock": "'"$cidr_block"'",
+      "regionName": "'"$region_name"'"
+    }')
 
-http_status=$(echo "$response" | jq -r '.error')
-http_message=$(echo "$response" | jq -r '.errorCode')
+  http_status=$(echo "$response" | jq -r '.error')
+  http_message=$(echo "$response" | jq -r '.errorCode')
 
-echo "result: $response"
-echo "result: $http_status"
+  echo "result: $response"
+  echo "result: $http_status"
 
-if [[ "$http_status" != "null" ]]; then
-	echo "FAIL TO CREATE Container HTTP error: $http_status , message: $http_message"
-  exit 1
+  if [[ "$http_status" != "null" ]]; then
+    echo "FAIL TO CREATE Container HTTP error: $http_status , message: $http_message"
+    exit 1
+  fi
+
+  container_id=$(echo "$response" | jq -r '.id')
+
+  echo "Container ID: $container_id"
+else
+	echo -e "FOUND container \"${container_id}\" \n"
 fi
-
-container_id=$(echo "$response" | jq -r '.id')
-
-echo "Container ID: $container_id"
 
 awsId="${2}"
 vpcId="${3}"

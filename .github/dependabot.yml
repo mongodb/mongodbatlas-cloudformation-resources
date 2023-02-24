@@ -3,12 +3,14 @@ updates:
   - package-ecosystem: gomod
     directory: "/cfn-resources"
     schedule:
-      interval: daily
+      interval: weekly
+      day: tuesday
     reviewers:
       - "mongodb/apix-integrations"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
+      day: tuesday
     reviewers:
       - "mongodb/apix-integrations"

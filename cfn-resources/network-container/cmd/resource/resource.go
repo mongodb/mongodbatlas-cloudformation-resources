@@ -17,6 +17,10 @@ package resource
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -25,9 +29,6 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"log"
-	"net/http"
-	"time"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}

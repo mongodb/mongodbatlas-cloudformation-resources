@@ -1,0 +1,272 @@
+description: |-
+  *Replace this default text with instructions or other information about your document.*  
+
+  ---
+  # CFN-3P-Provider-Register
+  This automation document builds and registers  3rd party resource providers. This automation document can register resources in a single AWS account or in multiple accounts and regions. However, multi-account and regions require a role. Please refer to  the [SSM multi-account ](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation-multiple-accounts-and-regions.html) documentation.
+  ## 
+  This document builds and registers 3rd party resource providers build using the following plugins:   
+  * JAVA [link to another webpage](https://aws.amazon.com/)
+  * Go [link to another webpage](https://aws.amazon.com/)
+  * Python (Coming soon) [link to another webpage](https://aws.amazon.com/)
+
+  In order for CodeBuild to have the permission to build an submit the resource, a role must be created. 
+  ##
+schemaVersion: '0.3'
+assumeRole: '{{ AssumeRole }}'
+outputs:
+  - Default_Version.ARN
+parameters:
+  Repository:
+    type: String
+    description: |-
+      https://github.com/resource
+      The URL of the resource's repository
+  ResourceName:
+    type: String
+    default: null
+    description: the folder name of the resource as per the folder structure in your repo.
+  ProjectName:
+    type: String
+    default: null
+    description: the folder name of the resource as per the folder structure in your repo.
+  OrgID:
+    type: String
+    default: null
+    description: ATLAS OrgID.
+  PubKey:
+    type: String
+    default: null
+    description: ATLAS Public key.
+  PvtKey:
+    type: String
+    default: null
+    description: ATLAS Private key.
+  BranchName:
+    type: String
+    default: null
+    description: git branch name.
+  OtherParams:
+    type: String
+    default: null
+    description: extra parameters that are specific to resource.
+  Path:
+    type: String
+    default: null
+    description: |-
+      provider/
+      The path of the resource in the repository. Example: https://github.com/resource/provider The path to the resource is provider/. If the repository only contains a single resource, the default value of root will look for the resource in the root of the repository.
+  BuilderRole:
+    type: String
+    description: The role that allows CodeBuild to build and submit the resource on your behalf
+  AssumeRole:
+    type: String
+    description: A role this document can assume
+    default: ''
+  LogDeliveryBucket:
+    type: String
+    description: |-
+      The S3 bucket to which CloudFormation delivers the contract test execution logs.
+
+      CloudFormation delivers the logs by the time contract testing has completed and the extension has been assigned a test type status of PASSED or FAILED.
+mainSteps:
+  - name: Get_Region
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: ec2
+      Api: DescribeAvailabilityZones
+    outputs:
+      - Name: RegionName
+        Selector: '$.AvailabilityZones[0].RegionName'
+        Type: String
+  - name: Select_Language
+    action: 'aws:executeScript'
+    inputs:
+      Runtime: python3.6
+      Handler: script_handler
+      Script: |-
+        import urllib
+        import json
+
+        def get_config(url,path,branchname):
+            """
+            Determines the runtime.
+            :param url: A URL
+            :param path: The path to the build directory
+            """
+            try:
+              if path == "root":
+                print('{url}/raw/{branchname}/.rpdk-config'.format(url=url,branchname=branchname))
+                location = '{url}/raw/{branchname}/.rpdk-config'.format(url=url,branchname=branchname)
+              else:
+                print('{url}/raw/{branchname}/{path}.rpdk-config'.format(url=url, path=path,branchname=branchname))
+                location = '{url}/raw/{branchname}/{path}.rpdk-config'.format(url=url, path=path,branchname=branchname)
+              req = urllib.request.Request(location)
+              ##parsing response
+              r = urllib.request.urlopen(req).read()
+              config = json.loads(r.decode('utf-8'))
+              return config
+            except: 
+              print('Resource configuration not found')
+              raise Exception('Resource configuration not found')
+
+        def is_live(url):
+            """
+            Checks that a given URL is reachable.
+            :param url: A URL
+            """
+            request = urllib.request.Request(url)
+            request.get_method = lambda: 'HEAD'
+
+            try:
+                urllib.request.urlopen(request)
+            except urllib.request.HTTPError:
+                print('Repository not found')
+                raise Exception('Repository not found')
+        
+        
+        
+        def script_handler(events, context):
+          is_live(events['url'])
+          print(events['branchname'])
+          print('{url}/raw/{branchname}/{path}.rpdk-config'.format(url=events['url'], path=events['path'],branchname=events['branchname']))
+          config = get_config(url=events['url'], path=events['path'],branchname=events['branchname'])
+          runtime = config['language']
+          typename = config['typeName']
+          if events['path'] == "root":
+            return {'typename': typename, 'runtime': runtime, 'path': '.'}
+          else:
+            return {'typename': typename, 'runtime': runtime, 'path': events['path']}
+
+      InputPayload:
+        url: '{{ Repository }}'
+        path: '{{ Path }}'
+        branchname: '{{ BranchName }}'
+    outputs:
+      - Selector: $.Payload.runtime
+        Type: String
+        Name: runtime
+      - Name: path
+        Selector: $.Payload.path
+        Type: String
+      - Name: resourcename
+        Selector: $.Payload.resourcename
+        Type: String
+      - Name: typename
+        Selector: $.Payload.typename
+        Type: String
+    description: The step reads the .rpdk file and determines what build environment to use.
+  - name: Build_Branch
+    action: 'aws:branch'
+    inputs:
+      Choices:
+        - NextStep: Go_Build_Enviroment
+          Variable: '{{Select_Language.runtime}}'
+          StringEquals: go
+    description: Creates an environment that deploys a 3rd party resource
+    nextStep: Start_Build
+  - name: Go_Build_Enviroment
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: codebuild
+      Api: CreateProject
+      artifacts:
+        type: NO_ARTIFACTS
+      description: This environment builds a 3P resource
+      environment:
+        computeType: BUILD_GENERAL1_SMALL
+        image: 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'
+        type: LINUX_CONTAINER
+        privilegedMode: true
+      name: '{{ProjectName}}'
+      serviceRole: '{{ BuilderRole }}'
+      timeoutInMinutes: 480
+      source:
+        buildspec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.9
+                golang: 1.18
+              commands:
+                - pip install pre-commit
+                - yum update -y
+                - yum install docker -y
+            build:
+              commands:
+                - aws --version
+                - wget "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip"
+                - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
+                - ./sam-installation/install
+                - pip3 install cloudformation-cli cloudformation-cli-go-plugin
+                - curl  https://load-gen-builds-peerislands.s3.amazonaws.com/mongodb-enterprise-6.0.repo > /etc/yum.repos.d/mongodb-enterprise-6.0.repo
+                - sudo yum install -y mongodb-atlas-cli
+                - export ATLAS_ORG_ID={{OrgID}}
+                - export ATLAS_PUBLIC_KEY={{PubKey}}
+                - export ATLAS_PRIVATE_KEY={{PvtKey}}
+                - export MCLI_PUBLIC_API_KEY=$ATLAS_PUBLIC_KEY
+                - export MCLI_PRIVATE_API_KEY=$ATLAS_PRIVATE_KEY
+                - export MCLI_ORG_ID=$ATLAS_ORG_ID
+                - export MCLI_OUTPUT=json
+                - export AWS_DEFAULT_REGION={{Get_Region.RegionName}}
+                - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'
+                - cd provider
+                - cd cfn-resources
+                - echo "Starting cfn-publish.sh"
+                - ./cfn-publish.sh {{ ResourceName }} {{OtherParams}}
+        type: NO_SOURCE
+    description: Creates an environment that deploys a 3rd party resource
+    nextStep: Start_Build
+  - name: Start_Build
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: codebuild
+      Api: start-build
+      projectName: '{{ProjectName}}'
+    outputs:
+      - Selector: build.id
+        Type: String
+        Name: id
+  - name: Build
+    action: 'aws:waitForAwsResourceProperty'
+    inputs:
+      Service: codebuild
+      Api: batch-get-builds
+      ids:
+        - '{{ Start_Build.id }}'
+      PropertySelector: '$.builds[0].buildStatus'
+      DesiredValues:
+        - FAILED
+        - FAULT
+        - STOPPED
+        - SUCCEEDED
+        - TIMED_OUT
+  - name: Describe_Build
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: codebuild
+      Api: batch-get-builds
+      ids:
+        - '{{ Start_Build.id }}'
+    outputs:
+      - Name: status
+        Selector: '$.builds[0].buildStatus'
+        Type: String
+  - name: Clean
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: codebuild
+      Api: delete-project
+      name: '{{ProjectName}}'
+  - name: Default_Version
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: cloudformation
+      Api: DescribeType
+      Type: RESOURCE
+      TypeName: '{{ Select_Language.typename }}'
+    outputs:
+      - Name: ARN
+        Selector: $.Arn
+        Type: String

@@ -105,8 +105,7 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/AccessList/CIDRBlock",
-    "/properties/AccessList/IPAddress",
+    "/properties/AccessList",
     "/properties/AccessList/AwsSecurityGroup"
   ],
   "createOnlyProperties": [

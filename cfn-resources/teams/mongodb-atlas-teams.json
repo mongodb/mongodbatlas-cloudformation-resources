@@ -4,7 +4,6 @@
     "AtlasUser": {
       "type": "object",
       "properties": {
-
         "Country": {
           "type": "string",
           "description": "Two alphabet characters that identifies MongoDB Cloud user's geographic location. This parameter uses the ISO 3166-1a2 code format.",
@@ -13,7 +12,7 @@
         "EmailAddress": {
           "type": "string",
           "description": "Email address that belongs to the MongoDB Cloud user.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "FirstName": {
           "type": "string",
@@ -69,17 +68,15 @@
         "Username": {
           "type": "string",
           "description": "Email address that represents the username of the MongoDB Cloud user.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         }
-
       },
       "additionalProperties": false
     },
     "AtlasRole": {
       "type": "object",
       "properties": {
-
-        "GroupId": {
+        "ProjectId": {
           "type": "string",
           "description": "Unique 24-hexadecimal digit string that identifies the project to which this role belongs. You can set a value for this parameter or **orgId** but not both in the same request.",
           "maxLength": 24,
@@ -116,25 +113,12 @@
     },
     "Link": {
       "description": "One or more links to sub-resources and/or related resources.",
-        "type" : "object",
-        "properties": {
-          "Rel": {
-            "type": "string"
-          },
-          "Href": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-
-    },
-    "apiKeyDefinition": {
       "type": "object",
       "properties": {
-        "PrivateKey": {
+        "Rel": {
           "type": "string"
         },
-        "PublicKey": {
+        "Href": {
           "type": "string"
         }
       },
@@ -145,31 +129,31 @@
   "handlers": {
     "create": {
       "permissions": [
-       ""
+        "secretsmanager:GetSecretValue"
       ]
     },
     "read": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     },
     "update": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     },
     "delete": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     }
   },
-  "primaryIdentifier": ["/properties/TeamId"],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
-
     "RoleNames": {
       "type": "array",
       "insertionOrder": false,
@@ -193,28 +177,24 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the project."
-
     },
     "TeamId": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the team."
-
     },
-	    "Name": {
+    "Name": {
       "type": "string",
       "description": "Unique 24-hexadecimal character string that identifies the team."
-
     },
-	    "Usernames": {
-          "insertionOrder": false,
+    "Usernames": {
+      "insertionOrder": false,
       "type": "array",
       "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
       "items": {
         "type": "string"
-
       }
     },
     "Users": {
@@ -231,6 +211,13 @@
     "/properties/TeamId",
     "/properties/Users"
   ],
+  "primaryIdentifier": [
+    "/properties/TeamId",
+    "/properties/Profile",
+    "/properties/OrgId"
+  ],
+  "createOnlyProperties": [
+    "/properties/Profile"
+  ],
   "typeName": "MongoDB::Atlas::Teams"
-
 }

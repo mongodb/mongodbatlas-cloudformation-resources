@@ -1,7 +1,4 @@
 {
-    "GroupId": "",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    }
+  "GroupId": "",
+  "Profile": "default"
 }

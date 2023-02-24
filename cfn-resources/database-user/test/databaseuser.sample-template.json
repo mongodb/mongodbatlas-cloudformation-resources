@@ -7,12 +7,7 @@
       "Description": "",
       "ConstraintDescription": ""
     },
-    "PublicKey": {
-      "Type": "String",
-      "Description": "",
-      "ConstraintDescription": ""
-    },
-    "Privatekey": {
+    "Profile": {
       "Type": "String",
       "Description": "",
       "ConstraintDescription": ""
@@ -35,13 +30,8 @@
             "DatabaseName": "admin"
           }
         ],
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     },
@@ -53,13 +43,8 @@
         "ProjectId": {
           "Ref": "ProjectId"
         },
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
+        "Profile": {
+          "Ref": "Profile"
         },
         "DatabaseName": "$external",
         "Roles": [
@@ -91,13 +76,8 @@
             "DatabaseName": "admin"
           }
         ],
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     },
@@ -116,13 +96,8 @@
             "DatabaseName": "admin"
           }
         ],
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     }

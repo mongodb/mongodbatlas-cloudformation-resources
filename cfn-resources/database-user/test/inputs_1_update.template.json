@@ -1,27 +1,25 @@
 {
-    "Username" : "DataUser1",
-    "Password" : "MongoDB12345%",
-    "ProjectId" : "ProjectId",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+  "Username": "DataUser1",
+  "Password": "MongoDB12345%",
+  "ProjectId": "ProjectId",
+  "Profile": "default",
+  "DatabaseName": "admin",
+  "Roles": [
+    {
+      "RoleName": "readWrite",
+      "DatabaseName": "testdb",
+      "CollectionName": "col1"
     },
-    "DatabaseName": "admin",
-    "Roles": [
-        { "RoleName": "readWrite",
-          "DatabaseName": "testdb",
-          "CollectionName": "col1"
-        },
-        { "RoleName": "read",
-          "DatabaseName": "proddb",
-          "CollectionName": "col1"
-        }
-    ],
-    "Scopes": [    
-        { "Type": "CLUSTER",
-          "Name": "testdb"
-        }
-    ]
-
-
+    {
+      "RoleName": "read",
+      "DatabaseName": "proddb",
+      "CollectionName": "col1"
+    }
+  ],
+  "Scopes": [
+    {
+      "Type": "CLUSTER",
+      "Name": "testdb"
+    }
+  ]
 }

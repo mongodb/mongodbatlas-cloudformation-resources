@@ -9,10 +9,9 @@ set -o nounset
 set -o pipefail
 set -x
 
-
 function usage {
-    echo "usage:$0 <project_name>"
-    echo "Creates a new project and an Cluster for testing"
+	echo "usage:$0 <project_name>"
+	echo "Creates a new project and an Cluster for testing"
 }
 
 if [ "$#" -ne 2 ]; then usage; fi
@@ -27,33 +26,14 @@ echo "Came inside create inputs to test"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-    echo -e "Cant find project \"${projectName}\"\n"
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	echo -e "Cant find project \"${projectName}\"\n"
 fi
 export MCLI_PROJECT_ID=$projectId
 
-clusterId=$(atlas clusters list --projectId "${projectId}"  --output json | jq --arg NAME "${clusterName}" -r '.results[]? | select(.name==$NAME) | .id')
-if [ -z "$clusterId" ]; then
-  echo "creating cluster.."
-  clusterId=$(atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-fi
-
-status=""
-while [[ "${status}" != "IDLE" ]]; do
-        sleep 30
-        status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}"  --output=json | jq -r '.stateName')
-        if [ -z "$status" ]; then
-          status="timeout"
-        fi
-        echo "status: ${status}"
-done
-
-echo -e "Created Cluster \"${clusterName}\" with id: ${clusterId}\n"
-
-if [ -z "$clusterId" ]; then
-    echo -e "Error Can't find Cluster \"${clusterName}\""
-    exit 1
-fi
+atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+atlas clusters watch "${clusterName}" --projectId "${projectId}"
+echo -e "Created Cluster \"${clusterName}\""
 
 rm -rf inputs
 mkdir inputs

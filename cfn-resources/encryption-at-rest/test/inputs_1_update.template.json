@@ -1,13 +1,10 @@
 {
-    "ProjectId" : "ProjectId",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    },
-    "AwsKms": {
-        "CustomerMasterKeyID": "$KMS_KEY",
-        "Enabled": "true",
-        "Region": "$region",
-        "RoleID": "$KMS_ROLE"
-    }
+  "ProjectId": "ProjectId",
+  "Profile": "default",
+  "AwsKms": {
+    "CustomerMasterKeyID": "$KMS_KEY",
+    "Enabled": "true",
+    "Region": "$region",
+    "RoleID": "$KMS_ROLE"
+  }
 }

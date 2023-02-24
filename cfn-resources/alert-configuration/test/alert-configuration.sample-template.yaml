@@ -2,12 +2,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::AlertConfiguration
 Parameters:
-  PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
-    Type: String
-    Default: ""
-  PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
+  Profile:
+    Description: "Your MongoDB ATLAS Profile name"
     Type: String
     Default: ""
   ProjectId:
@@ -26,9 +22,7 @@ Resources:
   AlertConfiguration:
     Type: MongoDB::Atlas::AlertConfiguration
     Properties:
-      ApiKeys:
-        PublicKey: !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      Profile: !Ref "Profile"
       Notifications:
         - TypeName: "EMAIL"
           DelayMin: "0"

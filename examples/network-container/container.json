@@ -1,53 +1,66 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "ProjectName" : {
-      "Type" : "String"
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String"
     },
-    "RegionName" : {
-      "Type" : "String",
+    "RegionName": {
+      "Type": "String",
       "Default": "US_EAST_1"
     },
-    "AtlasCidrBlock" : {
-      "Type" : "String",
+    "AtlasCidrBlock": {
+      "Type": "String",
       "Default": "10.8.2.0/24"
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "Project": {
       "Type": "MongoDB::Atlas::Project",
       "Properties": {
-        "Name": { "Ref" : "ProjectName" },
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "Name": {
+          "Ref": "ProjectName"
+        },
+        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}"
       }
     },
     "NetworkContainer": {
       "Type": "MongoDB::Atlas::NetworkContainer",
       "Properties": {
-        "AtlasCidrBlock": {"Ref": "AtlasCidrBlock"},
-        "RegionName": { "Ref" : "RegionName" },
-        "ProjectId": { "Ref" : "Project" },
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        "AtlasCidrBlock": {
+          "Ref": "AtlasCidrBlock"
+        },
+        "RegionName": {
+          "Ref": "RegionName"
+        },
+        "ProjectId": {
+          "Fn::GetAtt": [
+            "Project",
+            "Id"
+          ]
         }
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "ProjectId": {
       "Description": "Id of the project",
-      "Value" : { "Ref" : "Project" }
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ]
+      }
     },
     "ContainerId": {
       "Description": "Id of the network container",
-      "Value" : { "Ref" : "NetworkContainer" }
+      "Value": {
+        "Fn::GetAtt": [
+          "NetworkContainer",
+          "Id"
+        ]
+      }
     }
   }
 }

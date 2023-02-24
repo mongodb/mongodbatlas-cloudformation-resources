@@ -1,9 +1,6 @@
 {
   "desiredResourceState": {
-    "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
-    },
+    "Profile": "default",
     "ProjectId": "",
     "ClusterName": "cfn-test-bot-280649-cloud-backup-schedule",
     "AutoExportEnabled": "False",
@@ -26,6 +23,6 @@
     "RestoreWindowDays": "1",
     "UseOrgAndGroupNamesInExportPrefix": "true"
   },
-  "providerLogGroupName" : "mongodb-atlas-cloud-backup-schedule-logs",
-  "previousResourceState": { }
+  "providerLogGroupName": "mongodb-atlas-cloud-backup-schedule-logs",
+  "previousResourceState": {}
 }

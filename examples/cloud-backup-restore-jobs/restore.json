@@ -1,57 +1,63 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "ProjectId" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "ClusterName" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "ClusterName": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "CloudProviderSnapshots": {
       "Type": "MongoDB::Atlas::CloudProviderSnapshots",
       "Properties": {
-        "ProjectId": { "Ref" : "ProjectId" },
-        "ClusterName": { "Ref" : "ClusterName" },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
         "Description": "A testing for creating cloud provider snapshot 2",
-        "RetentionInDays" : 3 ,
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "RetentionInDays": 3
       }
     },
     "CloudProviderSnapshotRestoreJob": {
       "Type": "MongoDB::Atlas::CloudBackUpRestoreJobs",
       "Properties": {
-        "ProjectId": { "Ref" : "ProjectId" },
-        "ClusterName": { "Ref" : "ClusterName" },
-        "SnapshotId" : { "Ref" : "CloudProviderSnapshots" },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "SnapshotId": {
+          "Ref": "CloudProviderSnapshots"
+        },
         "DeliveryType": "download",
-        "TargetClusterName" : "",
-        "TargetProjectId" : "",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "TargetClusterName": "",
+        "TargetProjectId": ""
       }
     }
   },
-  "Outputs" : {
-    "SnappshotId": {
+  "Outputs": {
+    "SnapshotId": {
       "Description": "Id of the cloud provider snapshot",
-      "Value" : { "Ref" : "CloudProviderSnapshots" }
+      "Value": {
+        "Ref": "CloudProviderSnapshots"
+      }
     },
     "RestoreJobId": {
       "Description": "Id of the cloud provider snapshot restore job",
-      "Value" : { "Ref" : "CloudProviderSnapshotRestoreJob" }
+      "Value": {
+        "Ref": "CloudProviderSnapshotRestoreJob"
+      }
     }
   }
 }

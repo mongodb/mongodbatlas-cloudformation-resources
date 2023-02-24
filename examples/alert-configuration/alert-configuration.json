@@ -1,71 +1,66 @@
 {
-   "AWSTemplateFormatVersion":"2010-09-09",
-   "Description":"This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
-   "Parameters":{
-      "ProjectId":{
-         "Type":"String",
-         "Description":"",
-         "Default":"633bf97a5684466a4793c55c",
-         "ConstraintDescription":""
-      },
-      "EmailAddress":{
-         "Type":"String",
-         "Description":"",
-         "Default":"dharmendran.rajendran@peerislands.io",
-         "ConstraintDescription":""
-      },
-	  "Enabled":{
-         "Type":"String",
-         "Description":"",
-         "Default":"true",
-         "ConstraintDescription":""
-      }
-   },
-   "Mappings":{
-      
-   },
-   "Resources":{
-      "AlertConfiguration":{
-         "Type":"MongoDB::Atlas::AlertConfiguration",
-         "Properties":{
-            "GroupId":{
-               "Ref":"ProjectId"
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "EmailAddress": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "Enabled": {
+      "Type": "String",
+      "Description": "",
+      "Default": "true",
+      "ConstraintDescription": ""
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "AlertConfiguration": {
+      "Type": "MongoDB::Atlas::AlertConfiguration",
+      "Properties": {
+        "GroupId": {
+          "Ref": "ProjectId"
+        },
+        "Enabled": {
+          "Ref": "Enabled"
+        },
+        "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
+        "Notifications": [
+          {
+            "TypeName": "EMAIL",
+            "DelayMin": "0",
+            "EmailAddress": {
+              "Ref": "EmailAddress"
             },
-            "Enabled": {
-				"Ref":"Enabled"
-			},
-            "EventTypeName":"OUTSIDE_METRIC_THRESHOLD",
-            "Notifications":[
-               {
-                  "TypeName":"EMAIL",
-                  "DelayMin":"0",
-                  "EmailAddress": {
-					  "Ref":"EmailAddress"
-				  },
-                  "EmailEnabled":true,
-                  "IntervalMin":"15"
-               }
-            ],
-            "MetricThreshold":{
-               "MetricName":"NORMALIZED_SYSTEM_CPU_USER",
-               "Operator":"GREATER_THAN",
-               "Threshold":5,
-               "Units":"RAW",
-               "Mode":"AVERAGE"
-            },
-            "ApiKeys":{
-               "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-               "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-            }
-         }
+            "EmailEnabled": true,
+            "IntervalMin": "15"
+          }
+        ],
+        "MetricThreshold": {
+          "MetricName": "NORMALIZED_SYSTEM_CPU_USER",
+          "Operator": "GREATER_THAN",
+          "Threshold": 5,
+          "Units": "RAW",
+          "Mode": "AVERAGE"
+        },
+        "Profile": ""
       }
-   },
-   "Outputs":{
-      "AlertConfiguration":{
-         "Description":"AlertConfiguration object",
-         "Value":{
-            "Ref":"AlertConfiguration"
-         }
+    }
+  },
+  "Outputs": {
+    "AlertConfiguration": {
+      "Description": "AlertConfiguration object",
+      "Value": {
+        "Ref": "AlertConfiguration"
       }
-   }
+    }
+  }
 }

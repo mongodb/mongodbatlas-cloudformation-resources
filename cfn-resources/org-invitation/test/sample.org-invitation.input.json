@@ -1,9 +1,6 @@
 {
-  "desiredResourceState":{
-    "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
-    },
+  "desiredResourceState": {
+    "Profile": "default",
     "OrgId": "",
     "Username": "",
     "Roles": [
@@ -12,8 +9,7 @@
     "TeamIds": [
       ""
     ]
-  }
-,
-  "providerLogGroupName" : "mongodb-atlas-project-logs",
-  "previousResourceState": { }
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
 }

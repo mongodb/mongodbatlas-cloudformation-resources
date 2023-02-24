@@ -1,0 +1,32 @@
+{
+  "desiredResourceState": {
+    "Name": "cfn-test-bot-a1e5f5-projec",
+    "OrgId": "",
+    "Profile": "default",
+    "ProjectSettings": {
+      "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+      "IsDataExplorerEnabled": "false",
+      "IsPerformanceAdvisorEnabled": "false",
+      "IsRealtimePerformancePanelEnabled": "false",
+      "IsSchemaAdvisorEnabled": "true"
+    },
+    "ProjectApiKeys": [
+      {
+        "Key": "",
+        "RoleNames": [
+          "GROUP_CLUSTER_MANAGER"
+        ]
+      }
+    ],
+    "ProjectTeams": [
+      {
+        "TeamId": "",
+        "RoleNames": [
+          "GROUP_OWNER"
+        ]
+      }
+    ]
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
+}

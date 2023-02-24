@@ -1,71 +1,73 @@
 {
-    "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description" : "This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
-    "Parameters" : {
-      "ProjectName" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "RoleID" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "CustomerMasterKeyID" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "Enabled" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      },
-      "Region" : {
-        "Type" : "String",
-        "Description" : "",
-        "ConstraintDescription" : ""
-      }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id."
     },
-    "Mappings" : {},
-    "Resources" : {
-      "Project": {
-        "Type": "MongoDB::Atlas::Project",
-        "Properties": {
-          "Name": { "Ref" : "ProjectName" },
-          "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-          "ApiKeys": {
-            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-          }
-        }
-      },
-      "EncryptionAtRest": {
-        "Type": "MongoDB::Atlas::EncryptionAtRest",
-        "Properties": {
-          "ProjectId": { "Ref" : "Project" },
-          "AwsKms": {
-            "RoleID": { "Ref" : "RoleID" },
-            "CustomerMasterKeyID": { "Ref" : "CustomerMasterKeyID" },
-            "Enabled": { "Ref" : "Enabled" },
-            "Region": { "Ref" : "Region" }
+    "RoleID": {
+      "Type": "String",
+      "Description": "ID of an AWS IAM role authorized to manage an AWS customer master key. To find the ID for an existing IAM role, send a GET request to the cloudProviderAccess API endpoint."
+    },
+    "CustomerMasterKeyID": {
+      "Type": "String",
+      "Description": "AWS customer master key used to encrypt and decrypt the MongoDB master keys."
+    },
+    "Enabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether Encryption at Rest using Customer Key Management is enabled for an Atlas project. To disable Encryption at Rest using Customer Key Management, pass only this parameter with a value of false. When you disable Encryption at Rest using Customer Key Management, Atlas removes the configuration details."
+    },
+    "Region": {
+      "Type": "String",
+      "Description": "AWS region in which the AWS customer master key exists."
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "EncryptionAtRest": {
+      "Type": "MongoDB::Atlas::EncryptionAtRest",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "AwsKms": {
+          "RoleID": {
+            "Ref": "RoleID"
           },
-          "ApiKeys": {
-            "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-            "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+          "CustomerMasterKeyID": {
+            "Ref": "CustomerMasterKeyID"
+          },
+          "Enabled": {
+            "Ref": "Enabled"
+          },
+          "Region": {
+            "Ref": "Region"
           }
         }
       }
+    }
+  },
+  "Outputs": {
+    "ProjectId": {
+      "Description": "Id of the project",
+      "Value": {
+        "Ref": "ProjectId"
+      }
     },
-    "Outputs" : {
-      "ProjectId" : {
-        "Description": "Id of the project",
-        "Value" : { "Ref" : "Project" }
-      },
-      "Id" : {
-        "Description": "Id of the encryption at rest",
-        "Value" : { "Ref" : "EncryptionAtRest" }
+    "Id": {
+      "Description": "encryption at rest identifier",
+      "Value": {
+        "Ref": "EncryptionAtRest"
       }
     }
   }
+}

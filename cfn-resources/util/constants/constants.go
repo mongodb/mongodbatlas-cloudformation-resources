@@ -120,4 +120,7 @@ const (
 	ExportBucketID             = "ExportBucketId"
 	ExportID                   = "ExportId"
 	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
+
+	ExternalGroupName = "ExternalGroupName"
+	RoleAssignments   = "RoleAssignments"
 )

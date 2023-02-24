@@ -17,10 +17,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"log"
-	"net/http"
-	"time"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -29,6 +25,9 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"log"
+	"net/http"
+	"time"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
@@ -208,8 +207,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	response, err := client.Containers.Delete(context.Background(), projectID, containerID)
 
 	if err != nil {
-		time.Sleep(time.Second * 3)
-		response, err = client.Containers.Delete(context.Background(), projectID, containerID)
+		if response.StatusCode == 409 { // handling CANNOT_DELETE_RECENTLY_CREATED_CONTAINER error
+			time.Sleep(time.Second * 3)
+			response, err = client.Containers.Delete(context.Background(), projectID, containerID)
+		}
 		if err != nil {
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 				response.Response), nil

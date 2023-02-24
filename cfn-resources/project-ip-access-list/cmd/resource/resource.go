@@ -53,6 +53,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
+	if len(currentModel.AccessList) == 0 {
+		return progressevents.GetFailedEventByCode("AccessList must not be empty", cloudformation.HandlerErrorCodeInvalidRequest), nil
+	}
+
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(util.DefaultProfile)
 	}

@@ -82,9 +82,7 @@
       "items": {
         "$ref": "#/definitions/accessListDefinition"
       },
-      "minItems": 1,
       "type": "array",
-      "uniqueItems": true,
       "insertionOrder": false
     },
     "ProjectId": {
@@ -113,8 +111,7 @@
     "/properties/Profile"
   ],
   "required": [
-    "ProjectId",
-    "AccessList"
+    "ProjectId"
   ],
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "typeName": "MongoDB::Atlas::ProjectIpAccessList"

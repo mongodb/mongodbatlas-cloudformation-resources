@@ -1,62 +1,70 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Federated Settings Org Role Mapping on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "PublicKey": {
-      "Type": "String"
-    },
-    "PrivateKey": {
-      "Type": "String"
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Federated Settings Org Role Mapping on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default"
     },
     "FederationSettingsId": {
       "Type": "String",
-   "Default": "63875a930d379520633ed4e8"
+      "Default": "63875a930d379520633ed4e8"
     },
     "OrgId": {
       "Type": "String",
-   "Default": "6387590e54d177787a239b4c"
+      "Default": "6387590e54d177787a239b4c"
     },
     "ExternalGroupName": {
       "Type": "String",
-   "Default": "RMGroup-01"
+      "Default": "RMGroup-01"
     },
     "GroupRole": {
       "Type": "String",
-   "Default": "GROUP_DATA_ACCESS_READ_WRITE"
+      "Default": "GROUP_DATA_ACCESS_READ_WRITE"
     },
- "OrgRole": {
+    "OrgRole": {
       "Type": "String",
-   "Default": "ORG_MEMBER"
+      "Default": "ORG_MEMBER"
     },
-    "GroupId": {
+    "ProjectId": {
       "Type": "String",
-   "Default": "638a46aef75a91632ce26596"
+      "Default": "638a46aef75a91632ce26596"
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "FederatedSettingsOrgRoleMapping": {
       "Type": "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
-      "Properties":  {
-        "FederationSettingsId": { "Ref" : "FederationSettingsId" },
-  "OrgId": { "Ref" : "OrgId" },
-  "ExternalGroupName": { "Ref" : "ExternalGroupName" },
-  "RoleAssignments": [
-           {
-              "Role": { "Ref" : "GroupRole" },
-              "GroupId": { "Ref" : "GroupId" },
-           },
-      {
-              "Role": { "Ref" : "OrgRole" },
-              "OrgId": { "Ref" : "OrgId" },
-           }
-        ],
-        "ApiKeys": {
-          "PublicKey": { "Ref" : "PublicKey" },
-          "PrivateKey": { "Ref" : "PrivateKey" },
-        }
+      "Properties": {
+        "FederationSettingsId": {
+          "Ref": "FederationSettingsId"
+        },
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "ExternalGroupName": {
+          "Ref": "ExternalGroupName"
+        },
+        "RoleAssignments": [
+          {
+            "Role": {
+              "Ref": "GroupRole"
+            },
+            "GroupId": {
+              "Ref": "GroupId"
+            }
+          },
+          {
+            "Role": {
+              "Ref": "OrgRole"
+            },
+            "OrgId": {
+              "Ref": "OrgId"
+            }
+          }
+        ]
       }
     }
   },
-  "Outputs" : {}
+  "Outputs": {}
 }

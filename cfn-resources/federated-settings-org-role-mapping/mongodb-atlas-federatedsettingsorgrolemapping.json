@@ -6,7 +6,7 @@
     "RoleAssignment": {
       "type": "object",
       "properties": {
-        "GroupId": {
+        "ProjectId": {
           "type": "string",
           "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.\n\nThis parameter returns an empty object if no custom zones exist."
         },
@@ -15,65 +15,6 @@
           "description": "List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.\n\nThis parameter returns an empty object if no custom zones exist."
         },
         "Role": {
-          "type": "string",
-          "enum": [
-            "GLOBAL_AUTOMATION_ADMIN", 
-            "GLOBAL_BACKUP_ADMIN", 
-            "GLOBAL_METERING_USER", 
-            "GLOBAL_METRICS_INTERNAL_USER", 
-            "GLOBAL_MONITORING_ADMIN", 
-            "GLOBAL_OWNER", 
-            "GLOBAL_READ_ONLY", 
-            "GLOBAL_USER_ADMIN", 
-            "GLOBAL_USER_READ_ONLY", 
-            "GLOBAL_ACCOUNT_SUSPENSION_ADMIN", 
-            "GLOBAL_BILLING_ADMIN", 
-            "GLOBAL_LEGAL_ADMIN", 
-            "GLOBAL_FEATURE_FLAG_ADMIN", 
-            "GLOBAL_ATLAS_TSE", 
-            "GLOBAL_ATLAS_OPERATOR", 
-            "GLOBAL_ATLAS_ADMIN", 
-            "GLOBAL_STITCH_ADMIN", 
-            "GLOBAL_CHARTS_ADMIN", 
-            "GLOBAL_EXPERIMENT_ASSIGNMENT_USER", 
-            "GLOBAL_STITCH_INTERNAL_ADMIN", 
-            "GLOBAL_SECURITY_ADMIN", 
-            "GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN", 
-            "GLOBAL_PROACTIVE_SUPPORT_ADMIN", 
-            "GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN", 
-            "GLOBAL_SALESFORCE_ADMIN", 
-            "GLOBAL_SALESFORCE_READ_ONLY", 
-            "GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS", 
-            "ORG_MEMBER", 
-            "ORG_READ_ONLY", 
-            "ORG_BILLING_ADMIN", 
-            "ORG_GROUP_CREATOR", 
-            "ORG_OWNER", 
-            "GROUP_AUTOMATION_ADMIN", 
-            "GROUP_BACKUP_ADMIN", 
-            "GROUP_MONITORING_ADMIN", 
-            "GROUP_OWNER", 
-            "GROUP_READ_ONLY", 
-            "GROUP_USER_ADMIN", 
-            "GROUP_BILLING_ADMIN", 
-            "GROUP_DATA_ACCESS_ADMIN", 
-            "GROUP_DATA_ACCESS_READ_ONLY", 
-            "GROUP_DATA_ACCESS_READ_WRITE", 
-            "GROUP_CHARTS_ADMIN", 
-            "GROUP_CLUSTER_MANAGER", 
-            "GROUP_SEARCH_INDEX_EDITOR"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
           "type": "string"
         }
       },
@@ -81,8 +22,10 @@
     }
   },
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "ExternalGroupName": {
       "type": "string",
@@ -122,31 +65,47 @@
     }
   },
   "additionalProperties": false,
+  "createOnlyProperties": [
+    "/properties/RoleAssignment/ProjectId",
+    "/properties/RoleAssignment/OrgId"
+  ],
   "readOnlyProperties": [
-    "/definitions/RoleAssignment/GroupId",
-    "/definitions/RoleAssignment/OrgId",
     "/properties/Id"
   ],
   "required": [
     "FederationSettingsId",
-    "OrgId",
-    "ApiKeys"
+    "OrgId"
   ],
   "primaryIdentifier": [
-    "/properties/Id"
+    "/properties/Id",
+    "/properties/OrgId",
+    "/properties/Profile"
   ],
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   }
 }

@@ -62,7 +62,7 @@
     "DataLake": {
       "Type": "MongoDB::Atlas::DataLakes",
       "Properties": {
-        "GroupId": {
+        "ProjectId": {
           "Ref": "ProjectId"
         },
         "TenantName": {
@@ -103,7 +103,10 @@
     "DataLake": {
       "Description": "Datalake object",
       "Value": {
-        "Ref": "DataLake"
+        "Fn::GetAtt": [
+          "DataLake",
+          "Hostnames"
+        ]
       }
     }
   }

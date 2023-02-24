@@ -11,12 +11,7 @@ export interface CfnProjectIpAccessListProps {
   /**
    * @schema CfnProjectIpAccessListProps#AccessList
    */
-  readonly accessList: AccessListDefinition[];
-
-  /**
-   * @schema CfnProjectIpAccessListProps#ApiKeys
-   */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly accessList?: AccessListDefinition[];
 
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
@@ -26,6 +21,11 @@ export interface CfnProjectIpAccessListProps {
   readonly projectId: string;
 
   /**
+   * @schema CfnProjectIpAccessListProps#ListOptions
+   */
+  readonly listOptions?: ListOptions;
+
+  /**
    * Number of documents returned in this response.
    *
    * @schema CfnProjectIpAccessListProps#TotalCount
@@ -33,9 +33,11 @@ export interface CfnProjectIpAccessListProps {
   readonly totalCount?: number;
 
   /**
-   * @schema CfnProjectIpAccessListProps#ListOptions
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnProjectIpAccessListProps#Profile
    */
-  readonly listOptions?: ListOptions;
+  readonly profile?: string;
 
 }
 
@@ -47,10 +49,10 @@ export function toJson_CfnProjectIpAccessListProps(obj: CfnProjectIpAccessListPr
   if (obj === undefined) { return undefined; }
   const result = {
     'AccessList': obj.accessList?.map(y => toJson_AccessListDefinition(y)),
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'ProjectId': obj.projectId,
-    'TotalCount': obj.totalCount,
     'ListOptions': toJson_ListOptions(obj.listOptions),
+    'TotalCount': obj.totalCount,
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -125,37 +127,6 @@ export function toJson_AccessListDefinition(obj: AccessListDefinition | undefine
 /* eslint-enable max-len, quote-props */
 
 /**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
  * @schema listOptions
  */
 export interface ListOptions {
@@ -216,10 +187,6 @@ export class CfnProjectIpAccessList extends cdk.CfnResource {
    */
   public readonly props: CfnProjectIpAccessListProps;
 
-  /**
-   * Attribute `MongoDB::Atlas::ProjectIpAccessList.Id`
-   */
-  public readonly attrId: string;
 
   /**
    * Create a new `MongoDB::Atlas::ProjectIpAccessList`.
@@ -233,6 +200,5 @@ export class CfnProjectIpAccessList extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrId = cdk.Token.asString(this.getAtt('Id'));
   }
 }

@@ -7,12 +7,7 @@
       "Description": "",
       "ConstraintDescription": ""
     },
-    "PublicKey": {
-      "Type": "String",
-      "Description": "",
-      "ConstraintDescription": ""
-    },
-    "PrivateKey": {
+    "Profile": {
       "Type": "String",
       "Description": "",
       "ConstraintDescription": ""
@@ -35,14 +30,7 @@
         "ProjectId": {
           "Ref": "ProjectId"
         },
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
-        }
+        "Profile": {"Ref": "Profile"}
       }
     }
   },

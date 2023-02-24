@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::OrgInvitation",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
         "<a href="#invitationid" title="InvitationId">InvitationId</a>" : <i>String</i>,
         "<a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>" : <i>Integer</i>,
@@ -32,7 +32,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::OrgInvitation
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>
     <a href="#invitationid" title="InvitationId">InvitationId</a>: <i>String</i>
     <a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>: <i>Integer</i>
@@ -49,13 +49,15 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### Profile
 
-_Required_: No
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
-_Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
+_Required_: Yes
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### IncludeCount
 
@@ -95,9 +97,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
@@ -165,10 +167,6 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 ## Return Values
 
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
-
 ### Fn::GetAtt
 
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
@@ -190,4 +188,3 @@ Date and time when MongoDB Cloud sent the invitation. MongoDB Cloud represents t
 #### InviterUsername
 
 Email address of the MongoDB Cloud user who sent the invitation to join the organization.
-

@@ -1,22 +1,21 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a invitation at Atlas Organization level",
-  "Parameters" : {
-    "Username" : {
-      "Type" : "String",
-      "Description" : "Email address of the MongoDB Cloud user invited to join the organization."
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a invitation at Atlas Organization level",
+  "Parameters": {
+    "Username": {
+      "Type": "String",
+      "Description": "Email address of the MongoDB Cloud user invited to join the organization."
     },
-    "ProjectId" : {
-      "Type" : "String"
+    "ProjectId": {
+      "Type": "String"
     },
-    "PublicKey" : {
-      "Type" : "String"
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+      "Default": "default"
     },
-    "PrivateKey" : {
-      "Type" : "String"
-    },
-    "Role" : {
-      "Type" : "String",
+    "Role": {
+      "Type": "String",
       "Description": "Organization or project level roles to assign to the MongoDB Cloud user.",
       "Default": "GROUP_READ_ONLY",
       "AllowedValues": [
@@ -29,27 +28,50 @@
       ]
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "ProjectInvitation": {
       "Type": "MongoDB::Atlas::ProjectInvitation",
       "Properties": {
-        "ProjectId": {"Ref":"ProjectId"},
-        "ApiKeys": {
-          "PublicKey": {"Ref": "PublicKey"},
-          "PrivateKey": {"Ref": "PrivateKey"}
+        "ProjectId": {
+          "Ref": "ProjectId"
         },
-        "Username": {"Ref": "Username"},
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Username": {
+          "Ref": "Username"
+        },
         "Roles": [
-          {"Ref": "Role"}
+          {
+            "Ref": "Role"
+          }
         ]
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "InvitationId": {
       "Description": "Id of the Invitation",
-      "Value" : { "Ref" : "ProjectInvitation" }
+      "Value": {
+        "Ref": "ProjectInvitation"
+      }
+    },
+    "InvitationExpiresAt": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectInvitation",
+          "ExpiresAt"
+        ]
+      }
+    },
+    "InvitationCreatedAt": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectInvitation",
+          "CreatedAt"
+        ]
+      }
     }
   }
 }

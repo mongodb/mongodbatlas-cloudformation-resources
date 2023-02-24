@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+# Copyright 2023 MongoDB Inc
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # project-invitation.create-sample-cfn-request.sh
 #
 # This tool generates text for a `cfn invoke` request json message.
@@ -10,9 +24,7 @@ set -o pipefail
 
 username="testing@mongodb.com"
 
-jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
-	--arg pvtkey "$MCLI_PRIVATE_API_KEY" \
-	--arg ProjectId "$MCLI_PROJECT_ID" \
+jq --arg ProjectId "$ATLAS_PROJECT_ID" \
 	--arg username "$username" \
-	'.desiredResourceState.ProjectId?|=$ProjectId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
+	'.desiredResourceState.ProjectId?|=$ProjectId' \
 	"$(dirname "$0")/project-invitation.sample-cfn-request.json"

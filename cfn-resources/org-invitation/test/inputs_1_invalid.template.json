@@ -1,12 +1,7 @@
 {
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    },
-    "OrgId": "",
-    "Username": "",
-    "Roles": [
-        "ORG_MEMBER"
-    ],
-    "TeamIds": [""]
+  "Profile": "default",
+  "OrgId": "",
+  "Username": "",
+  "Roles": ["ORG_MEMBER"],
+  "TeamIds": [""]
 }

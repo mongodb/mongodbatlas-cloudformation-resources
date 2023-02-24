@@ -1,40 +1,43 @@
 {
     "additionalProperties": false,
-    "definitions": {
-        "apiKeyDefinition": {
-            "type": "object",
-            "properties": {
-                "PrivateKey": {
-                    "type": "string"
-                },
-                "PublicKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        }
-    },
+    "definitions": {},
     "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
     "handlers": {
         "create": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "read": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "list": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "update": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "delete": {
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         }
     },
     "primaryIdentifier": [
         "/properties/ProjectId",
-        "/properties/Type"
+        "/properties/Type",
+        "/properties/Profile"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Type",
+        "/properties/Profile"
     ],
     "writeOnlyProperties": [
         "/properties/Secret",
@@ -54,12 +57,14 @@
         "/properties/Enabled"
     ],
     "properties": {
-        "ApiKeys": {
-            "$ref": "#/definitions/apiKeyDefinition"
-        },
         "ProjectId": {
             "type": "string",
             "description": "Unique 24-hexadecimal digit string that identifies your project."
+        },
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+            "default": "default"
         },
         "Type": {
             "type": "string",

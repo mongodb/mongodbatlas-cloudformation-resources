@@ -94,6 +94,8 @@ The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-
 3. Ensure your activated 3rd party public extension matches name exactly to MONGODB::ATLAS::[RESOURCE-NAME] (you may need to delete private extension if this namespace is already occupied)
 4. Ensure your MongoDB Atlas Programmatic API Keys (PAKs) being used with CloudFormation have sufficiently strong permissions (Organization Project Creator or Organization Owner)
 5. Ensure your MongoDB Atlas PAKs have correct IP Address / CIDR range access. For testing purposes with caution you can open keys to all access by adding “0.0.0.0/1” and “128.0.0.0/1” (do not use for production workloads). 
+6. How to determine which IP address AWS CloudFormation uses to deploy MongoDB Atlas resouces with my Atlas Programmatic API Keys (PAK)?
+  When you deploy MongoDB Atlas using CloudFormation with your Atlas PAK, CloudFormation will default to use the IP address of the machine from which you are making the API call. The "machine" however making the API call to 3rd party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. Review additional details at https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html and contact AWS Support directly who can help confirm CIDR range to be used in your Atlas PAK IP Whitelist.  
 
 ## Autoclose stale issues and PRs
 

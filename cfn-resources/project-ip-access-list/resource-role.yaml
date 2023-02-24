@@ -23,14 +23,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                - "secretsmanager:CreateSecret"
-                - "secretsmanager:CreateSecretInput"
-                - "secretsmanager:DescribeSecret"
                 - "secretsmanager:GetSecretValue"
-                - "secretsmanager:PutSecretValue"
-                - "secretsmanager:UpdateSecretVersionStage"
-                - "ec2:CreateVpcEndpoint"
-                - "ec2:DeleteVpcEndpoints"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

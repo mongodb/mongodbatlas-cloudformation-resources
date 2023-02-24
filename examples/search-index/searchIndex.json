@@ -75,6 +75,14 @@
       "Value": {
         "Ref": "SearchIndex"
       }
+    },
+    "SearchIndexStatus": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchIndex",
+          "Status"
+        ]
+      }
     }
   }
 }

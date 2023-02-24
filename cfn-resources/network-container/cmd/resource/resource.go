@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -207,6 +209,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	response, err := client.Containers.Delete(context.Background(), projectID, containerID)
 
 	if err != nil {
+		if response.StatusCode == 409 && strings.Contains(err.Error(), "try again") {
+			time.Sleep(time.Second * 3)
+			response, err = client.Containers.Delete(context.Background(), projectID, containerID)
+		}
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}

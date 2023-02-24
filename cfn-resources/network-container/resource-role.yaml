@@ -23,7 +23,28 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                - "secretsmanager:CreateSecret"
+                - "secretsmanager:CreateSecretInput"
+                - "secretsmanager:DescribeSecret"
                 - "secretsmanager:GetSecretValue"
+                - "secretsmanager:PutSecretValue"
+                - "secretsmanager:UpdateSecretVersionStage"
+                - "ec2:CreateVpcEndpoint"
+                - "ec2:DeleteVpcEndpoints"
+                - "cloudformation:CreateResource"
+                - "cloudformation:DeleteResource"
+                - "cloudformation:GetResource"
+                - "cloudformation:GetResourceRequestStatus"
+                - "cloudformation:ListResources"
+                - "cloudformation:UpdateResource"
+                - "iam:AttachRolePolicy"
+                - "iam:CreateRole"
+                - "iam:DeleteRole"
+                - "iam:GetRole"
+                - "iam:GetRolePolicy"
+                - "iam:ListAttachedRolePolicies"
+                - "iam:ListRolePolicies"
+                - "iam:PutRolePolicy"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

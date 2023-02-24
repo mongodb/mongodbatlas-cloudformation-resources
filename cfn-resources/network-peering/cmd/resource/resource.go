@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -25,7 +26,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -71,8 +71,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -122,8 +122,8 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -177,7 +177,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	projectID := *currentModel.ProjectId
-	if currentModel.Id == nil {
+	if currentModel.Id == nil || *currentModel.Profile == "" {
 		return handler.ProgressEvent{
 			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
 			OperationStatus:  handler.Failed,
@@ -227,8 +227,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -267,8 +267,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	// Create atlas client

@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"net/http"
 	"strings"
 
@@ -26,6 +25,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
@@ -36,7 +36,7 @@ var CreateRequiredFields = []string{constants.FederationSettingsID, constants.Or
 var ReadRequiredFields = []string{constants.FederationSettingsID, constants.ID, constants.OrgID}
 var UpdateRequiredFields = []string{constants.FederationSettingsID, constants.OrgID, constants.ID, constants.ExternalGroupName, constants.RoleAssignments}
 var DeleteRequiredFields = []string{constants.FederationSettingsID, constants.OrgID}
-var ListRequiredFields = []string{"ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var ListRequiredFields = []string{constants.FederationSettingsID, constants.OrgID}
 
 const (
 	RoleAssignementShouldBeSet = "error creating federated settings org role mapping: RoleAssignments should be set when `Export` is set"

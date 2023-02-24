@@ -16,7 +16,7 @@ package resource
 
 import (
 	"context"
-	"fmt"
+
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -31,11 +31,11 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.ProjectID, constants.ArchiveID, constants.ClusterName, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.ArchiveID, constants.ClusterName, constants.Criteria, constants.PubKey, constants.PvtKey}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ArchiveID, constants.ClusterName, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.ClusterName}
+var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ArchiveID, constants.ClusterName}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ArchiveID, constants.ClusterName, constants.Criteria}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ArchiveID, constants.ClusterName}
+var ListRequiredFields = []string{constants.ProjectID}
 
 var requiredCriteriaType = map[string][]string{
 	"DATE":   {"DateField", "ExpireAfterDays"},
@@ -56,10 +56,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	ctx := context.Background()
@@ -83,6 +88,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.ArchiveId = &outputRequest.ID
 	currentModel.Criteria.ExpireAfterDays = aws.Int(int(aws.Float64Value(outputRequest.Criteria.ExpireAfterDays)))
 	currentModel.State = &outputRequest.State
+	currentModel.TotalCount = aws.Float64(1)
 	return handler.ProgressEvent{
 		OperationStatus: handler.InProgress,
 		Message:         "Create Complete",
@@ -141,11 +147,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
+
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
+
 	var res *mongodbatlas.Response
 	olArchive, res, err := client.OnlineArchives.Get(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
 		*currentModel.ArchiveId)
@@ -154,6 +166,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.ArchiveId = &olArchive.ID
+	currentModel.State = &olArchive.State
+	currentModel.ProjectId = &olArchive.GroupID
+	currentModel.TotalCount = aws.Float64(1)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -173,10 +188,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 	inputRequest, errHandler := mapToArchivePayload(currentModel)
 	if errHandler != nil {
@@ -194,6 +214,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.ArchiveId = &outputRequest.ID
+	currentModel.Criteria.ExpireAfterDays = aws.Int(int(aws.Float64Value(outputRequest.Criteria.ExpireAfterDays)))
+	currentModel.State = &outputRequest.State
+	currentModel.TotalCount = aws.Float64(1)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -207,10 +230,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 	ctx := context.Background()
 	archiveID, iOK := req.CallbackContext["id"]
@@ -249,10 +277,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 	archives, res, err := client.OnlineArchives.List(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
 		&mongodbatlas.ListOptions{
@@ -267,13 +300,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	resources := make([]any, 0, len(archives.Results))
 	for _, v := range archives.Results {
 		resources = append(resources, Model{
-			ArchiveId:      &v.ID,
-			ClusterName:    currentModel.ClusterName,
-			CollName:       currentModel.CollName,
-			CollectionType: currentModel.CollectionType,
-			DbName:         currentModel.DbName,
-			ProjectId:      currentModel.ProjectId,
-			TotalCount:     aws.Float64(float64(archives.TotalCount)),
+			ArchiveId:  &v.ID,
+			ProjectId:  currentModel.ProjectId,
+			TotalCount: aws.Float64(float64(archives.TotalCount)),
+			State:      &v.State,
 		})
 	}
 	return handler.ProgressEvent{

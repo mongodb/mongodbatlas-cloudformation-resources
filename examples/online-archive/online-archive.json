@@ -2,24 +2,34 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Returns, adds, edits, or removes an online archive, this will be billed to your Atlas account.",
   "Mappings": {},
+  "Parameters":{
+    "ProjectId": {
+      "Type": "String"
+    },
+    "ClusterName": {
+      "Type": "String"
+    },
+    "DBName": {
+      "Type": "String"
+    },
+    "CollName": {
+      "Type": "String"
+    }
+  },
   "Resources": {
     "OnlineArchive": {
       "Type": "MongoDB::Atlas::OnlineArchive",
       "Properties": {
-        "ApiKeys": {
-          "PublicKey": "htcxduya",
-          "PrivateKey": "<redact>"
-        },
-        "ClusterName": "CFNTest-Cluster-001",
-        "CollName": "rombo-bongo",
+        "ClusterName":  { "Ref" : "ClusterName" },
+        "CollName":  { "Ref" : "CollName" },
         "Criteria": {
           "Type": "DATE",
           "DateField": "created",
           "DateFormat": "ISODATE",
           "ExpireAfterDays": "5"
         },
-        "DbName": "testdb",
-        "ProjectId": "<redact>",
+        "DbName":  { "Ref" : "DBName" },
+        "ProjectId": { "Ref" : "ProjectId" },
         "PartitionFields": [
           {
             "FieldName": "firstName",
@@ -32,6 +42,14 @@
             "FieldType": "string"
           }
         ]
+      }
+    }
+  },
+
+  "Outputs": {
+    "ArchiveId": {
+      "Value": {
+        "Ref": "OnlineArchive"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
     "DayOfWeek": "4",
     "HourOfDay": "15",
-    "GroupId" : "$GroupId"
+    "ProjectId" : "$ProjectId"
 }

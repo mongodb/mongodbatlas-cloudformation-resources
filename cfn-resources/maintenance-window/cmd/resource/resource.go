@@ -29,7 +29,7 @@ import (
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.GroupID}
+var RequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-maintenance-window")
@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.GroupId, &atlasModel)
+	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.ProjectId, &atlasModel)
 	if err != nil {
 		_, _ = logger.Warnf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -113,7 +113,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.MaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, res, err := client.MaintenanceWindows.Get(context.Background(), *currentModel.GroupId)
+	maintenanceWindow, res, err := client.MaintenanceWindows.Get(context.Background(), *currentModel.ProjectId)
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
 		ev := progress_events.GetFailedEventByResponse(err.Error(), res.Response)
@@ -161,7 +161,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.GroupId, &atlasModel)
+	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.ProjectId, &atlasModel)
 	if err != nil {
 		_, _ = logger.Warnf("Update - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -198,7 +198,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *mongodbatlas.Response
-	res, err := client.MaintenanceWindows.Reset(context.Background(), *currentModel.GroupId)
+	res, err := client.MaintenanceWindows.Reset(context.Background(), *currentModel.ProjectId)
 
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)

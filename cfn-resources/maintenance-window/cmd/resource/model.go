@@ -7,7 +7,7 @@ type Model struct {
 	Profile              *string `json:",omitempty"`
 	AutoDeferOnceEnabled *bool   `json:",omitempty"`
 	DayOfWeek            *int    `json:",omitempty"`
-	GroupId              *string `json:",omitempty"`
+	ProjectId            *string `json:",omitempty"`
 	HourOfDay            *int    `json:",omitempty"`
 	StartASAP            *bool   `json:",omitempty"`
 }

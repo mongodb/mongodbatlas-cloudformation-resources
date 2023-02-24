@@ -2,7 +2,7 @@
   "desiredResourceState":{
     "DayOfWeek": "4",
     "HourOfDay": "15",
-    "GroupId" : "$GroupId"
+    "ProjectId" : "$ProjectId"
   },
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }

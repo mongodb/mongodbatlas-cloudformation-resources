@@ -228,7 +228,7 @@ mainSteps:
       - Selector: build.id
         Type: String
         Name: id
-  - name: Build
+  - name: Await_Build_Status
     action: 'aws:waitForAwsResourceProperty'
     inputs:
       Service: codebuild
@@ -237,22 +237,22 @@ mainSteps:
         - '{{ Start_Build.id }}'
       PropertySelector: '$.builds[0].buildStatus'
       DesiredValues:
+        - SUCCEEDED
         - FAILED
         - FAULT
         - STOPPED
-        - SUCCEEDED
         - TIMED_OUT
-  - name: Describe_Build
-    action: 'aws:executeAwsApi'
+  - name: Check_Build_Status
+    action: 'aws:assertAwsResourceProperty'
     inputs:
       Service: codebuild
       Api: batch-get-builds
+      PropertySelector: '$.builds[0].buildStatus'
+      DesiredValues:
+        - SUCCEEDED
       ids:
         - '{{ Start_Build.id }}'
-    outputs:
-      - Name: status
-        Selector: '$.builds[0].buildStatus'
-        Type: String
+    description: 'Proceed with next steps only if build succeeded, otherwise mark automation as Failed.'
   - name: Clean
     action: 'aws:executeAwsApi'
     inputs:

@@ -29,7 +29,7 @@ parameters:
   ProjectName:
     type: String
     default: null
-    description: the folder name of the resource as per the folder structure in your repo.
+    description: the name of the Build Project created in CodeBuild when automation is run.
   OrgID:
     type: String
     default: null

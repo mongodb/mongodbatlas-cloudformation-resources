@@ -25,7 +25,9 @@ This document builds and registers 3rd party resource providers build using the 
 To update the script in AWS you will need to create a new version of the document. We aim to keep a version in source control at all times which matches the currently deployed version. Please follow
 below instructions:
 
-1. Create a new test document in AWS account with your updated script and test your changes.
+1. Create
+   a [new test document](https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-document-builder.html)
+   in AWS account with your updated script and test your changes.
 2. Upon successful testing, raise a PR with your changes in this repo.
 3. Go to AWS publishing account -> Systems Manager -> Shared Resources in left menu -> Documents.
    Then locate `CFN-MongoDB-Atlas-Resource-Register` document under

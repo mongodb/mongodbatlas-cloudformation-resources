@@ -32,7 +32,7 @@ const (
 type Profile struct {
 	PublicKey  string `json:"PublicKey"`
 	PrivateKey string `json:"PrivateKey"`
-	BaseURL    string `json:"BaseUrl"`
+	BaseURL    string `json:"BaseUrl,omitempty"`
 }
 
 func NewProfile(req *handler.Request, profileName *string) (*Profile, error) {

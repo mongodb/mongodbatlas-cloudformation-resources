@@ -213,7 +213,6 @@ mainSteps:
                 - cd cfn-resources
                 - echo "Installing mongodb-atlas-cli"
                 - ./cfn-install-mongo-cli.sh
-                - sudo yum install -y mongodb-atlas-cli
                 - echo "Starting cfn-publish.sh"
                 - ./cfn-publish.sh {{ ResourceName }} {{OtherParams}}
         type: NO_SOURCE

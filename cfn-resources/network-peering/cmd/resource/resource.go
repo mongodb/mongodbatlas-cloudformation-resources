@@ -17,7 +17,8 @@ package resource
 import (
 	"context"
 	"fmt"
-	"os"
+
+	"github.com/aws/aws-sdk-go/aws"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -48,15 +49,15 @@ var (
 	DefaultRouteTableCIDRBlock = "10.0.0.0/24"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PubKey, constants.ProjectID,
+var CreateRequiredFields = []string{constants.ProjectID, constants.ContainerID,
 	constants.AccepterRegionName, constants.AwsAccountID, constants.RouteTableCIDRBlock, constants.VPCID}
 
-var ReadRequiredFields = []string{constants.PubKey, constants.PubKey, constants.ProjectID, constants.ID}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PubKey, constants.ProjectID, constants.AccepterRegionName,
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.AccepterRegionName,
 	constants.AwsAccountID, constants.RouteTableCIDRBlock}
 
-var DeleteRequiredFields = []string{constants.PubKey, constants.PubKey, constants.ProjectID, constants.ID}
-var ListRequiredFields = []string{constants.PubKey, constants.PubKey, constants.ProjectID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // validateModel to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -71,48 +72,31 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
-	_, _ = logger.Debugf("Create - currentModel:%+v", currentModel)
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	projectID := *currentModel.ProjectId
-	container, err := validateOrCreateNetworkContainer(prevModel, currentModel)
-
-	if err != nil {
-		_, _ = logger.Warnf("error network container mgmt: %v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-	}
-	_, _ = logger.Debugf("Found valid container:%+v", container)
-
-	peerRequest := mongodbatlas.Peer{
-		ContainerID:  container.ID,
-		VpcID:        *currentModel.VpcId,
-		ProviderName: constants.AWS,
-	}
-
-	region := currentModel.AccepterRegionName
-	// Setting defaults
-	if region == nil || *region == "" {
-		region = &req.RequestContext.Region
-		_, _ = logger.Debugf("AccepterRegionName was not set, default to req.RequestContext.Region:%v", region)
-	}
 	awsAccountID := currentModel.AwsAccountId
 	if awsAccountID == nil || *awsAccountID == "" {
 		awsAccountID = &req.RequestContext.AccountID
 		_, _ = logger.Debugf("AwsAccountIdwas not set, default to req.RequestContext.AccountID:%v", awsAccountID)
 	}
 
-	rtCIDR := currentModel.RouteTableCIDRBlock
-	peerRequest.AccepterRegionName = *region
-	peerRequest.AWSAccountID = *awsAccountID
-	peerRequest.RouteTableCIDRBlock = *rtCIDR
+	peerRequest := mongodbatlas.Peer{
+		ContainerID:         *currentModel.ContainerId,
+		VpcID:               *currentModel.VpcId,
+		AccepterRegionName:  *currentModel.AccepterRegionName,
+		AWSAccountID:        *awsAccountID,
+		RouteTableCIDRBlock: *currentModel.RouteTableCIDRBlock,
+		ProviderName:        constants.AWS,
+	}
 
 	_, _ = logger.Debugf("peerRequest:%+v", peerRequest)
 	peerResponse, resp, err := client.Peers.Create(context.Background(), projectID, &peerRequest)
@@ -139,21 +123,17 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
-	_, _ = logger.Debugf("Read - currentModel:%+v", currentModel)
-	projectID := *currentModel.ProjectId
-	if currentModel.Id == nil {
-		return handler.ProgressEvent{
-			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
+
+	projectID := *currentModel.ProjectId
 	peerID := *currentModel.Id
 
 	peerResponse, resp, err := client.Peers.Get(context.Background(), projectID, peerID)
@@ -161,7 +141,6 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
 	}
-	_, _ = logger.Debugf("Read: peerResponse:%+v", peerResponse)
 
 	currentModel.AwsAccountId = &peerResponse.AWSAccountID
 	currentModel.RouteTableCIDRBlock = &peerResponse.RouteTableCIDRBlock
@@ -188,19 +167,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
 
-	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
-	if currentModel.Id == nil {
+	if currentModel.Id == nil || *currentModel.Profile == "" {
 		return handler.ProgressEvent{
 			Message:          fmt.Sprintf("No Id found in model:%+v for Update", currentModel),
 			OperationStatus:  handler.Failed,
@@ -249,11 +227,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
@@ -286,11 +268,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %s", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -362,92 +347,4 @@ func networkPeeringIsReady(client *mongodbatlas.Client, projectID, peerID, targe
 		}
 	}
 	return peerResponse.StatusName == targetState, peerResponse.StatusName, nil
-}
-
-func findContainer(projectID, region string, currentModel *Model) (bool, *mongodbatlas.Container, error) {
-	var container mongodbatlas.Container
-	_, _ = logger.Debugf("findContainer projectId:%+v, region:%+v", projectID, region)
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return false, &container, err
-	}
-	opt := &mongodbatlas.ContainersListOptions{ProviderName: constants.AWS}
-	_, _ = logger.Debugf("Looking for any AWS containers for this project:%s. opt:%+v", projectID, opt)
-	containers, _, err := client.Containers.List(context.TODO(), projectID, opt)
-	if err != nil {
-		return false, &container, err
-	}
-	_, _ = logger.Debugf("found AWS containers for project:%+v", containers)
-	for i := range containers {
-		_, _ = logger.Debugf("RegionName:%s, region:%s", containers[i].RegionName, region)
-		if containers[i].RegionName == region {
-			_, _ = logger.Debugf("Found AWS container for region:%v, %v", region, containers[i])
-			return true, &containers[i], nil
-		}
-	}
-	return false, &container, nil
-}
-
-func validateOrCreateNetworkContainer(prevModel, currentModel *Model) (container *mongodbatlas.Container, err error) {
-	_, _ = logger.Debugf("validateOrCreateNetworkContainer prevModel:%+v, currentModel:%+v", prevModel, currentModel)
-
-	if currentModel.ApiKeys == nil {
-		return container, fmt.Errorf("no ApiKeys found in currentModel:%+v", currentModel)
-	}
-	if currentModel.ProjectId == nil {
-		return container, fmt.Errorf("ProjectId was not set! currentModel:%+v", currentModel)
-	}
-
-	var ar string
-	if currentModel.AccepterRegionName == nil { // use lambda default
-		r := os.Getenv("AWS_REGION")
-		_, _ = logger.Debugf("AccepterRegionName was nil, found AWS_REGION region:%v", r)
-		ar = util.EnsureAtlasRegion(r)
-	} else {
-		r := *currentModel.AccepterRegionName
-		_, _ = logger.Debugf("AccepterRegionName was SET to:%v", r)
-		ar = util.EnsureAtlasRegion(r)
-	}
-	_, _ = logger.Debugf("converted to atlas region :%v", ar)
-
-	projectID := *currentModel.ProjectId
-	region := &ar
-	// Check if have AWS container for this group,
-	// if so return it -
-	// if passed a ContainerId and it does not match, then
-	// return an ERROR, explain to remove the ContainerId parameter
-	found, c, err := findContainer(projectID, *region, currentModel)
-	if err != nil {
-		return container, err
-	}
-	if found {
-		return c, nil
-	}
-	// Didn't find one for this AWS region, need to create
-	_, _ = logger.Debugf("projectId:%v, region:%v, cidr:%+v", projectID, region, &DefaultAWSCIDR)
-	containerRequest := &mongodbatlas.Container{}
-	containerRequest.RegionName = *region
-	containerRequest.ProviderName = constants.AWS
-	containerRequest.AtlasCIDRBlock = DefaultAWSCIDR
-	_, _ = logger.Debugf("containerRequest:%+v", containerRequest)
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return container, err
-	}
-	containerResponse, resp, err := client.Containers.Create(context.TODO(), *currentModel.ProjectId, containerRequest)
-
-	if resp != nil && resp.StatusCode == 409 {
-		_, _ = logger.Warnf("Container already exists, looking for it: resp:%+v", resp)
-		found, c, err = findContainer(projectID, *region, currentModel)
-		if err != nil {
-			return c, err
-		}
-		if found {
-			return c, nil
-		}
-	} else if err != nil {
-		return container, err
-	}
-	_, _ = logger.Debugf("created container response:%v", containerResponse)
-	return containerResponse, nil
 }

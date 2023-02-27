@@ -34,6 +34,7 @@ const (
 	Region              = "Region"
 	HostName            = "HostName"
 	Port                = "Port"
+	ContainerID         = "ContainerId"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"

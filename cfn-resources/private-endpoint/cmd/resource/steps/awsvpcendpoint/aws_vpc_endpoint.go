@@ -54,7 +54,7 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 			subnetIdsIn[i] = &(pe.SubnetIDs[i])
 		}
 
-		connection := ec2.AcceptVpcPeeringConnectionInput{
+		connection := ec2.CreateVpcEndpointInput{
 			VpcId:           &pe.VpcID,
 			ServiceName:     &endpointServiceName,
 			VpcEndpointType: &vcpType,

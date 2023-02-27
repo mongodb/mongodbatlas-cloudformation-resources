@@ -18,8 +18,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
 	"net/http"
+
+	"github.com/aws/aws-sdk-go/aws"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
 
@@ -213,7 +214,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		*currentModel.GroupId, providerName, *currentModel.Id)
 
 	if isDeleting(req) {
-
 		if response.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
@@ -238,7 +238,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	privateEndpoint := *privateEndpointResponse
 
 	if hasInterfaceEndpoints(privateEndpoint) {
-
 		epr := privateendpoint.Delete(mongodbClient, *currentModel.GroupId, *currentModel.Id,
 			privateEndpoint.InterfaceEndpoints)
 
@@ -339,13 +338,7 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.ErrorMessage = &c.ErrorMessage
 	m.Status = &c.Status
 
-	interfaceEndpoints := make([]string, len(c.InterfaceEndpoints))
-	for i, _ := range c.InterfaceEndpoints {
-		interfaceEndpoints[i] = c.InterfaceEndpoints[i]
-	}
-
-	m.InterfaceEndpoints = interfaceEndpoints
-
+	copy(m.InterfaceEndpoints, c.InterfaceEndpoints)
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {

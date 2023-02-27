@@ -25,5 +25,5 @@ Resources:
         Variables: 
           MODE: Test
           LOG_LEVEL: debug
-          MONGODB_ATLAS_OPS_MANAGER_URL:
+          MONGODB_ATLAS_BASE_URL:
 

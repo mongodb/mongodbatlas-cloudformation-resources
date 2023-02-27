@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/openlyinc/pointy"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -54,6 +56,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
+	}
+
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
 	// Create atlas client

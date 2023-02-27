@@ -46,6 +46,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -115,6 +119,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -189,7 +197,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
-
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -277,6 +288,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
+	// Create MongoDb Atlas Client using keys
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)

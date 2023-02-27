@@ -50,6 +50,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
@@ -181,6 +185,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
@@ -225,6 +233,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
@@ -294,6 +306,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
@@ -338,6 +354,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)

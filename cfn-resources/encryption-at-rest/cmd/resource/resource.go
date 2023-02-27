@@ -48,6 +48,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
+	}
+
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
@@ -87,6 +91,10 @@ func validateRequest(req *handler.Request, requiredFields []string, currentModel
 	// Validate required fields in the request
 	if modelValidation := validateModel(requiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil, errors.New("required field not found")
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(util.DefaultProfile)
 	}
 
 	client, handlerError := util.NewMongoDBClient(*req, currentModel.Profile)

@@ -45,6 +45,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
+	}
+
 	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
@@ -113,6 +117,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	modelValidation := validateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
+	}
+
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -194,6 +202,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
+	}
+
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(util.DefaultProfile)
 	}
 
 	// Create atlas client

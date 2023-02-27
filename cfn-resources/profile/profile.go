@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	defaultProfile    = "default"
+	DefaultProfile    = "default"
 	profileNamePrefix = "cfn/atlas/profile"
 )
 

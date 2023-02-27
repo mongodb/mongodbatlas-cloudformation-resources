@@ -46,7 +46,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -120,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -205,7 +205,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client

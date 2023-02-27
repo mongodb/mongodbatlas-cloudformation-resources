@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -143,7 +143,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -173,7 +173,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -325,7 +325,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	setup()
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {

@@ -49,7 +49,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
@@ -94,7 +94,7 @@ func validateRequest(req *handler.Request, requiredFields []string, currentModel
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, handlerError := util.NewMongoDBClient(*req, currentModel.Profile)

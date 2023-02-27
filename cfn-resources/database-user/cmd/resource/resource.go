@@ -55,7 +55,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
@@ -93,7 +93,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Create atlas client
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
@@ -205,7 +205,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
@@ -240,7 +240,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Create atlas client
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = pointy.String(profile.DefaultProfile)
 	}
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {

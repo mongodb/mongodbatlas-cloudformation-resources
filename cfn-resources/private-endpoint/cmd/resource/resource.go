@@ -47,7 +47,7 @@ func setup() {
 }
 
 var CreateRequiredFields = []string{constants.GroupID, constants.Region}
-var ReadRequiredFields = []string{constants.GroupID, constants.ID}
+var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.GroupID, constants.ID}
 var ListRequiredFields = []string{constants.GroupID}
@@ -182,18 +182,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.completeByConnection(*privateEndpointResponse)
 
-	if len(currentModel.PrivateEndpoints) == 0 {
-		interfaceEndpoints := make([]PrivateEndpoint, len(privateEndpointResponse.InterfaceEndpoints))
-		for i, _ := range privateEndpointResponse.InterfaceEndpoints {
-			pe := PrivateEndpoint{
-				InterfaceEndpointId: aws.String(privateEndpointResponse.InterfaceEndpoints[i]),
-			}
-
-			interfaceEndpoints[0] = pe
-		}
-		currentModel.PrivateEndpoints = interfaceEndpoints
-	}
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Get successful",
@@ -319,6 +307,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range privateEndpointResponse {
 		var m Model
 		m.completeByConnection(privateEndpointResponse[i])
+		m.Region = currentModel.Region
+		m.Profile = currentModel.Profile
+		m.GroupId = currentModel.GroupId
 		mm = append(mm, m)
 	}
 
@@ -347,6 +338,14 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.EndpointServiceName = &c.EndpointServiceName
 	m.ErrorMessage = &c.ErrorMessage
 	m.Status = &c.Status
+
+	interfaceEndpoints := make([]string, len(c.InterfaceEndpoints))
+	for i, _ := range c.InterfaceEndpoints {
+		interfaceEndpoints[i] = c.InterfaceEndpoints[i]
+	}
+
+	m.InterfaceEndpoints = interfaceEndpoints
+
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {

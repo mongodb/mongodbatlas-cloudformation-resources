@@ -18,6 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
+        "<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>" : <i>[ <a href="privateendpoint.md">PrivateEndpoint</a>, ... ]</i>,
     }
 }
 </pre>
@@ -33,6 +34,8 @@ Properties:
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
+    <a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>: <i>
+      - <a href="privateendpoint.md">PrivateEndpoint</a></i>
 </pre>
 
 ## Properties
@@ -45,7 +48,7 @@ _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### EndpointServiceName
 
@@ -89,7 +92,7 @@ _Type_: String
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Region
 
@@ -98,6 +101,16 @@ Aws Region
 _Required_: Yes
 
 _Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### PrivateEndpoints
+
+List of private endpoint associated to the service
+
+_Required_: No
+
+_Type_: List of <a href="privateendpoint.md">PrivateEndpoint</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -113,11 +126,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 The unique identifier of the private endpoint service.
 
-#### PrivateEndpoints
+#### InterfaceEndpoints
 
-List of private endpoint associated to the service
-
-#### InterfaceEndpointId
-
-Returns the <code>InterfaceEndpointId</code> value.
+List of interface endpoint ids associated to the service
 

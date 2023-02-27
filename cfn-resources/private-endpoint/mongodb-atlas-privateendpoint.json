@@ -70,41 +70,56 @@
             "items": {
                 "$ref": "#/definitions/PrivateEndpoint"
             }
+        },
+        "InterfaceEndpoints": {
+            "type": "array",
+            "description": "List of interface endpoint ids associated to the service",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "additionalProperties": false,
     "required": [
         "GroupId",
-        "Region",
-        "ApiKeys"
+        "Region"
     ],
     "readOnlyProperties": [
         "/properties/Id",
-        "/properties/PrivateEndpoints",
-        "/properties/InterfaceEndpointId"
+        "/properties/InterfaceEndpoints"
+    ],
+    "createOnlyProperties": [
+        "/properties/GroupId",
+        "/properties/Region",
+        "/properties/Profile"
     ],
     "primaryIdentifier": [
         "/properties/Id",
         "/properties/GroupId",
-        "/properties/Region"
+        "/properties/Region",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "ec2:CreateVpcEndpoint"
+                "ec2:CreateVpcEndpoint",
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                "ec2:DeleteVpcEndpoints"
+                "ec2:DeleteVpcEndpoints",
+                "secretsmanager:GetSecretValue"
             ]
         },
         "list": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

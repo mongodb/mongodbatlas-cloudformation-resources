@@ -62,9 +62,9 @@ func (p *Profile) NewPrivateKey() string {
 		return k
 	}
 
-	return p.PublicKey
+	return p.PrivateKey
 }
 
 func (p *Profile) AreKeysAvailable() bool {
-	return p.NewPublicKey() != "" && p.PrivateKey != ""
+	return p.NewPublicKey() == "" || p.PrivateKey == ""
 }

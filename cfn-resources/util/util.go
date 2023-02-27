@@ -126,12 +126,8 @@ func newHttpClient(p *profile.Profile) (*http.Client, error) {
 		return nil, errors.New("PublicKey and PrivateKey cannot be empty")
 	}
 
-	t := &digest.Transport{
-		Username: p.NewPublicKey(),
-		Password: p.NewPrivateKey(),
-	}
-
-	return &http.Client{Transport: t}, nil
+	t := digest.NewTransport(p.NewPublicKey(), p.NewPrivateKey())
+	return t.Client()
 }
 
 // defaultLogLevel can be set during compile time with an ld flag to enable

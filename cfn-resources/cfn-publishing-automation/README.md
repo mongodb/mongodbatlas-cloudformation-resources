@@ -22,7 +22,7 @@ This document builds and registers 3rd party resource providers build using the 
 - The .yaml script is a copy of "CFN-MongoDB-Atlas-Resource-Register" automation document that can
   be found in AWS Systems Manager (please reach out to team for access)
 
-To update the script in AWS you will need to create a new version of the document. Please follow
+To update the script in AWS you will need to create a new version of the document. We aim to keep a version in source control at all times which matches the currently deployed version. Please follow
 below instructions:
 
 1. Create a new test document in AWS account with your updated script and test your changes.

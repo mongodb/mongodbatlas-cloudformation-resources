@@ -61,7 +61,6 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 			SubnetIds:       subnetIdsIn,
 		}
 
-		ec2.New()
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
 		if err != nil {
 			fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),

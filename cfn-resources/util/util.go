@@ -93,10 +93,9 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
-
 	}
 
-	client, err := newHttpClient(p)
+	client, err := newHTTPClient(p)
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -115,13 +114,12 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-
 	}
 
 	return mongodbClient, nil
 }
 
-func newHttpClient(p *profile.Profile) (*http.Client, error) {
+func newHTTPClient(p *profile.Profile) (*http.Client, error) {
 	if p.AreKeysAvailable() {
 		return nil, errors.New("PublicKey and PrivateKey cannot be empty")
 	}

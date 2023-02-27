@@ -16,9 +16,9 @@ const (
 )
 
 type Profile struct {
-	PublicKey     string `json:"PublicKey"`
-	PrivateKey    string `json:"PrivateKey"`
-	OpsManagerUrl string `json:"BaseUrl"`
+	PublicKey  string `json:"PublicKey"`
+	PrivateKey string `json:"PrivateKey"`
+	BaseURL    string `json:"BaseUrl"`
 }
 
 func NewProfile(req *handler.Request, profileName *string) (*Profile, error) {
@@ -46,7 +46,7 @@ func (p *Profile) NewBaseURL() string {
 		return baseURL
 	}
 
-	return p.OpsManagerUrl
+	return p.BaseURL
 }
 
 func (p *Profile) NewPublicKey() string {

@@ -29,7 +29,7 @@ below instructions:
 2. Upon successful testing, raise a PR with your changes in this repo.
 3. Go to AWS publishing account -> Systems Manager -> Shared Resources in left menu -> Documents.
    Then locate `CFN-MongoDB-Atlas-Resource-Register` document under
-   and notice the current latest version of the document in the dropdown.
+   and note the current latest version of the document in the dropdown. You will use the version in the next steps
 4. On PR approval please ensure to use the following format for commit message when _(squash &)_
    merging your PR:
    `AWS automation update: v<newVersion#> [<brief message about changes>]`.

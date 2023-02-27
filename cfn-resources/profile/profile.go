@@ -37,7 +37,7 @@ type Profile struct {
 
 func NewProfile(req *handler.Request, profileName *string) (*Profile, error) {
 	if profileName == nil || *profileName == "" {
-		profileName = aws.String(defaultProfile)
+		profileName = aws.String(DefaultProfile)
 	}
 
 	secretsManagerClient := secretsmanager.New(req.Session)

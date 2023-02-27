@@ -200,15 +200,6 @@ mainSteps:
                 - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
                 - ./sam-installation/install
                 - pip3 install cloudformation-cli cloudformation-cli-go-plugin
-cat <<EOT >> /etc/yum.repos.d/mongodb-enterprise-6.0.repo
-[mongodb-org-6.0]
-name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/amazon/2/mongodb-org/6.0/x86_64/
-gpgcheck=1
-enabled=1
-gpgkey=https://pgp.mongodb.com/server-6.0.asc
-EOT
-                - sudo yum install -y mongodb-atlas-cli
                 - export ATLAS_ORG_ID={{OrgID}}
                 - export ATLAS_PUBLIC_KEY={{PubKey}}
                 - export ATLAS_PRIVATE_KEY={{PvtKey}}
@@ -220,6 +211,9 @@ EOT
                 - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'
                 - cd provider
                 - cd cfn-resources
+                - echo "Installing mongodb-atlas-cli"
+                - ./cfn-install-mongo-cli.sh
+                - sudo yum install -y mongodb-atlas-cli
                 - echo "Starting cfn-publish.sh"
                 - ./cfn-publish.sh {{ ResourceName }} {{OtherParams}}
         type: NO_SOURCE

@@ -35,6 +35,7 @@ Resources:
                 - "initech:DescribeReport"
                 - "initech:ListReports"
                 - "initech:UpdateReport"
+                - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

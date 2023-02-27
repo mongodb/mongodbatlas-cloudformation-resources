@@ -37,7 +37,7 @@ ClusterName="${projectName}"
 clusterId=$(atlas clusters list --output json | jq --arg NAME ${ClusterName} -r '.results[] | select(.name==$NAME) | .name')
 if [ -z "$clusterId" ]; then
 	clusterId=$(atlas cluster create ${ClusterName} --projectId "${projectId}" --provider AWS --region US_EAST_1 --members 3 --backup --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.name')
-	sleep 900
+	atlas clusters watch "${ClusterName}" --projectId "${projectId}"
 	echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
 else
 	echo -e "FOUND Cluster \"${ClusterName}\" with id: ${clusterId}\n"

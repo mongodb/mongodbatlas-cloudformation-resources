@@ -117,6 +117,7 @@ const (
 
 	FederationSettingsID = "FederationSettingsId"
 
-	ExportBucketID = "ExportBucketId"
-	ExportID       = "ExportId"
+	ExportBucketID             = "ExportBucketId"
+	ExportID                   = "ExportId"
+	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
 )

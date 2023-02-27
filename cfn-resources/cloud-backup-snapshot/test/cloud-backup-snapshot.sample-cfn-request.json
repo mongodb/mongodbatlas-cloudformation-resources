@@ -1,17 +1,11 @@
 {
-    "desiredResourceState": {
-            "GroupId": "",
-            "ClusterName": "",
-            "Id": "",
-            "Description": "snapshot through cloud formation template",
-            "RetentionInDays": "5",
-            "ApiKeys": {
-                "PublicKey": "",
-                "PrivateKey": ""
-            }
-
-    },
-    "previousResourceState": {
-    }
+  "desiredResourceState": {
+    "ProjectId": "",
+    "ClusterName": "",
+    "Id": "",
+    "Description": "snapshot through cloud formation template",
+    "RetentionInDays": "5",
+    "Profile": ""
+  },
+  "previousResourceState": {}
 }
-

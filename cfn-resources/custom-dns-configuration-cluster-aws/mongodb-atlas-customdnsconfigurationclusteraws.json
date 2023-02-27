@@ -1,60 +1,51 @@
 {
-    "typeName": "MongoDB::Atlas::CustomDnsConfigurationClusterAws",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-    "definitions": {
-        "ApiKey": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        }
+  "typeName": "MongoDB::Atlas::CustomDnsConfigurationClusterAws",
+  "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "properties": {
+    "Enabled": {
+      "description": "Flag that indicates whether the project's clusters deployed to Amazon Web Services (AWS) use a custom Domain Name System (DNS)",
+      "type": "boolean"
     },
-    "properties": {
-        "Enabled": {
-            "description": "Flag that indicates whether the project's clusters deployed to Amazon Web Services (AWS) use a custom Domain Name System (DNS)",
-            "type": "boolean"
-        },
-        "ProjectId": {
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
-        },
-        "ApiKeys": {
-            "$ref": "#/definitions/ApiKey"
-        }
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string",
+      "pattern": "^([a-f0-9]{24})$"
     },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId"
-    ],
-    "readOnlyProperties": [
-        "/properties/Enabled"
-    ],
-    "primaryIdentifier": [
-        "/properties/ProjectId"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-            ]
-        },
-        "read": {
-            "permissions": [
-            ]
-        },
-        "delete": {
-            "permissions": [
-            ]
-        }
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Enabled"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Profile",
+    "/properties/Enabled"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

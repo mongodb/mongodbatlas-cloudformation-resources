@@ -1,9 +1,6 @@
 {
   "ProjectId": "$ATLAS_PROJECT_ID",
-  "ApiKeys" : {
-    "PublicKey" : "$ATLAS_PUBLIC_KEY",
-    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-  },
+  "Profile": "default",
   "Type": "OPS_GENIE_Invalid",
   "ApiKey": "ff06b053-e9b2-49ad-8901-f5310227386d",
   "Region": "US"

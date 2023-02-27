@@ -1,19 +1,16 @@
 {
-    "GroupId": "",
-    "Actions": [
+  "ProjectId": "",
+  "Actions": [
+    {
+      "Action": "FIND",
+      "Resources": [
         {
-            "Action": "FIND",
-            "Resources": [
-                {
-                    "Collection": "listingsAndReviews",
-                    "DB": "sample_airbnb"
-                }
-            ]
+          "Collection": "listingsAndReviews",
+          "DB": "sample_airbnb"
         }
-    ],
-    "RoleName": "testcreate",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+      ]
     }
+  ],
+  "RoleName": "testcreate",
+  "Profile": "default"
 }

@@ -2,14 +2,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::EncryptionAtRest
 Parameters:
-  PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
+  Profile:
+    Description: "Your MongoDB Atlas Profile"
     Type: String
-    Default: ""
-  PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
-    Type: String
-    Default: ""
+    Default: "default"
   ProjectName:
     Description: "Your MongoDB Cloud Project ID"
     Type: String
@@ -34,9 +30,7 @@ Resources:
     Type: MongoDB::Atlas::EncryptionAtRest
     Properties:
       ProjectId:  !Ref "ProjectName"
-      ApiKeys:
-        PublicKey:  !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+      Profile:    !Ref "Profile"
       AwsKms:
         CustomerMasterKeyID: !Ref "CustomerMasterKeyID"
         Enabled: !Ref "Enabled"

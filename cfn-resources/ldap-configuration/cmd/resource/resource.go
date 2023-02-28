@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"errors"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -36,12 +37,12 @@ const (
 	Port         = "Port"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID,
+var CreateRequiredFields = []string{constants.GroupID,
 	BindUsername, BindPassword, Hostname, Port}
-var ReadRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
-var DeleteRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey}
+var ReadRequiredFields = []string{constants.GroupID}
+var UpdateRequiredFields = []string{constants.GroupID}
+var DeleteRequiredFields = []string{constants.GroupID}
+var ListRequiredFields []string
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-ldap-configuration")
@@ -118,10 +119,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	enabled := true
@@ -156,11 +161,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	ldapConf, errPe := Get(client, *currentModel.GroupId)
@@ -208,10 +216,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Validate if resource exists
@@ -251,10 +263,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Validate if resource exists

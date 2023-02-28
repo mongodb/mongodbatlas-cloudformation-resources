@@ -22,18 +22,6 @@
       },
       "additionalProperties": false
     },
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
     "Link": {
       "type": "object",
       "properties": {
@@ -50,6 +38,11 @@
     }
   },
   "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
     "BindUsername": {
       "type": "string",
       "description": "Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253."
@@ -61,9 +54,6 @@
     "Hostname": {
       "type": "string",
       "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster."
-    },
-    "ApiKeys": {
-      "$ref": "#/definitions/ApiKeyDefinition"
     },
     "AuthenticationEnabled": {
       "type": "boolean",
@@ -102,30 +92,38 @@
       }
     }
   },
-  "primaryIdentifier": ["/properties/GroupId"],
+  "primaryIdentifier": ["/properties/GroupId", "/properties/Profile"],
   "required": [
     "GroupId",
     "BindUsername",
     "BindPassword",
     "Hostname",
-    "Port",
-    "ApiKeys"
+    "Port"
   ],
-  "readOnlyProperties": [
-    "/properties/GroupId"
+  "createOnlyProperties": [
+    "/properties/GroupId",
+    "/properties/Profile"
   ],
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   }
 }

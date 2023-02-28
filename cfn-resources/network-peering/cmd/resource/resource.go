@@ -18,10 +18,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -73,7 +73,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -124,7 +124,7 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -168,7 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -229,7 +229,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -269,7 +269,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client

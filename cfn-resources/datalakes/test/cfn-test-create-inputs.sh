@@ -58,8 +58,8 @@ echo "--------------------------------create key and key policy document starts 
 
 echo "--------------------------------create aws bucket document starts ----------------------------"\n
 bucketName="cfntest-demo-test123-${keyRegion}"
-aws s3 rb s3://${bucketName} --force
-aws s3 mb s3://${bucketName} --output json
+aws s3 rb "s3://${bucketName}" --force
+aws s3 mb "s3://${bucketName}" --output json
 
 echo "--------------------------------create aws bucket document  ends ----------------------------"\n
 
@@ -82,12 +82,12 @@ echo "--------------------------------AWS Role creation ends -------------------
 
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
-    awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+    awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
     echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
     aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
     aws iam delete-role --role-name "${roleName}"
- awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document file://$(dirname "$0")/add-policy.json | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+ awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
     echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"\n
@@ -95,7 +95,7 @@ echo "--------------------------------AWS Role creation ends -------------------
 
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
 
-aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document file://$(dirname "$0")/policy.json
+aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document "file://$(dirname "$0")/policy.json"
 echo "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------"\n
 
 echo "--------------------------------Role Id ----------------------------"\n"${roleID}"
@@ -104,7 +104,7 @@ awsArne=$(echo "${awsArn}" | sed 's/"//g')
 #TODO Needs change to while loop using get operation
 sleep 65
 
-atlas cloudProviders accessRoles aws authorize ${roleID} --iamAssumedRoleArn ${awsArne}
+atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn ${awsArne}
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"\n
 
 jq --arg org "$ATLAS_ORG_ID" \

@@ -119,7 +119,6 @@ for res in ${resources}; do
 	echo ""
 done
 
-exit 0
 if [[ "${_CLOUD_PUBLISH}" == "true" ]]; then
 	echo "generated inputs..."
 	exit 0

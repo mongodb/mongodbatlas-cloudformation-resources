@@ -16,13 +16,12 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-groupId="${1}"
+projectId="${1}"
 iamRoleID="${2}"
 bucketName="${3}"
 
-jq --arg profile "$ATLAS_PROFILE" \
-   --arg groupId "$groupId" \
+jq --arg projectId "$projectId" \
    --arg iamRoleID "$iamRoleID" \
    --arg bucketName "$bucketName" \
-   '.desiredResourceState.Profile?|=$profile | .desiredResourceState.GroupId?|=$groupId | .desiredResourceState.IamRoleID?|=$iamRoleID | .desiredResourceState.BucketName?|=$bucketName ' \
+   '.desiredResourceState.ProjectId?|=$projectId | .desiredResourceState.IamRoleID?|=$iamRoleID | .desiredResourceState.BucketName?|=$bucketName ' \
    "$(dirname "$0")/cloud-backup-snapshot-export-bucket.sample-cfn-request.json"

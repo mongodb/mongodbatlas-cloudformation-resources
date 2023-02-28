@@ -35,19 +35,19 @@
     "ExternalId": {
       "Type": "String",
       "Description": "",
-      "Default": "947e174e-0824-41b3-b91f-1629914e0f51",
+      "Default": "",
       "ConstraintDescription": ""
     },
     "TestS3Bucket": {
       "Type": "String",
       "Description": "",
-      "Default": "cfndemo",
+      "Default": "",
       "ConstraintDescription": ""
     },
     "TenantName": {
       "Type": "String",
       "Description": "",
-      "Default": "testcfn",
+      "Default": "",
       "ConstraintDescription": ""
     },
     "Region": {
@@ -103,9 +103,14 @@
     "DataLake": {
       "Description": "Datalake object",
       "Value": {
-        "Fn::GetAtt": [
-          "DataLake",
-          "Hostnames"
+        "Fn::Select": [
+          0,
+          {
+            "Fn::GetAtt": [
+              "DataLake",
+              "Hostnames"
+            ]
+          }
         ]
       }
     }

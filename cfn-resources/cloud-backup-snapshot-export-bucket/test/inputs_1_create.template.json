@@ -1,9 +1,6 @@
 {
-    "GroupId": "",
-    "IamRoleID": "invalid-role-id",
-    "BucketName": "atlas-snapshot-test",
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    }
+  "ProjectId": "",
+  "IamRoleID": "",
+  "BucketName": "",
+  "Profile": "default"
 }

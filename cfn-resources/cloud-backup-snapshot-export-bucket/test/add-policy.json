@@ -4,12 +4,12 @@
     {
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::536727724300:root"
+        "AWS": ""
       },
       "Action": "sts:AssumeRole",
       "Condition": {
         "StringEquals": {
-          "sts:ExternalId": "6fb95014-fb21-42ed-a2c1-628862460b6a"
+          "sts:ExternalId": ""
         }
       }
     }

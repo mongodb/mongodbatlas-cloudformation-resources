@@ -1,9 +1,9 @@
 {
   "desiredResourceState": {
-    "GroupId": "",
+    "ProjectId": "",
     "IamRoleID": "",
     "BucketName": "",
-    "Profile": ""
+    "Profile": "default"
   },
   "providerLogGroupName": "mongodb-atlas-private-endpoint-logs",
   "previousResourceState": {}

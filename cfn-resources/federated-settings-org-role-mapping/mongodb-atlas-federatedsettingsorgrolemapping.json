@@ -66,8 +66,9 @@
   },
   "additionalProperties": false,
   "createOnlyProperties": [
-    "/properties/RoleAssignment/ProjectId",
-    "/properties/RoleAssignment/OrgId"
+    "/properties/OrgId",
+    "/properties/FederationSettingsId",
+    "/properties/Profile"
   ],
   "readOnlyProperties": [
     "/properties/Id"
@@ -78,6 +79,7 @@
   ],
   "primaryIdentifier": [
     "/properties/Id",
+    "/properties/FederationSettingsId",
     "/properties/OrgId",
     "/properties/Profile"
   ],

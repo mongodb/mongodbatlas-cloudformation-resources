@@ -34,12 +34,12 @@ fi
 echo "Check if a project is created $projectId"
 export MCLI_PROJECT_ID=$projectId
 
+
 clusterName="${projectName}"
 
 atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
-
 
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then

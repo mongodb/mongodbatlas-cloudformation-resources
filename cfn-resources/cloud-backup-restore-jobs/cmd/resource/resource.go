@@ -320,6 +320,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	restoreJobsList := restoreJobs.Results
 	for ind := range restoreJobsList {
 		var model Model
+		model.ProjectId = currentModel.ProjectId
+		model.ClusterName = currentModel.ClusterName
+		model.Profile = currentModel.Profile
 		if !restoreJobsList[ind].Cancelled && !restoreJobsList[ind].Expired {
 			models = append(models, *convertToUIModel(restoreJobsList[ind], &model))
 		}

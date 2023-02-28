@@ -31,7 +31,7 @@ const ADMIN_DB= 'admin';
 const ROLE_NAME = 'atlasAdmin';
 const PWD = 'test';
 
-test('AtlasEncryptionAtRest construct should contain default properties', () => {
+test('AtlasBasis construct should contain default properties', () => {
   const mockApp = new App();
   const stack = new Stack(mockApp);
 

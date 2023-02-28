@@ -18,11 +18,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/openlyinc/pointy"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -37,10 +37,10 @@ const (
 	RequestID    = "RequestId"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port, constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.GroupID, RequestID, constants.PvtKey, constants.PubKey}
+var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port}
+var ReadRequiredFields = []string{constants.GroupID, RequestID}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey, RequestID}
+var DeleteRequiredFields = []string{constants.GroupID, RequestID}
 var ListRequiredFields []string
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -60,12 +60,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
 	}
 
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
 	if req.CallbackContext != nil {
 		return validateProgress(client, currentModel, req), nil
 	}
@@ -102,9 +105,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	var res *mongodbatlas.Response
 
@@ -136,10 +145,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.GroupId, *currentModel.RequestId)
@@ -205,6 +218,7 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 	}
 
 	m.Validations = mapping
+	m.Status = &resp.Status
 }
 
 func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Request) handler.ProgressEvent {

@@ -2,13 +2,11 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This template creates resources from the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
-    "MongoDBAtlasAPIPublicKey": {
+    "Profile": {
       "Type": "String",
-      "Description" : "MongoDB Atlas Public Access Key"
-    },
-    "MongoDBAtlasAPIPrivateKey": {
-      "Type": "String",
-      "Description" : "MongoDB Atlas Private Access Key"
+      "Description": "MongoDB Atlas Proj Profile name",
+      "Default" : "default",
+      "ConstraintDescription": ""
     },
     "MongoDBAtlasProjectId": {
       "Type": "String",
@@ -41,19 +39,30 @@
           "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
           "BindPassword": { "Ref" : "BindPassword" },
           "BindUsername": { "Ref" : "BindUsername" },
-          "Hostname": { "Ref" : "Hostname" },
+          "HostName": { "Ref" : "Hostname" },
           "Port": { "Ref" : "Port" },
-          "ApiKeys": {
-            "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
-            "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
-          }
+          "Profile": { "Ref" : "Profile" }
         }
     }
   },
   "Outputs" : {
-    "InstanceId" : {
+    "ResourceId" : {
       "Value" : { "Ref" : "LdapVerify" },
       "Description" : "Ldap Id"
+    },
+    "RequestId" : {
+      "Value" : { "Fn::GetAtt": [
+        "LdapVerify",
+        "RequestId"
+      ]},
+      "Description" : "Ldap Verify Request Id"
+    },
+    "Status" : {
+      "Value" : { "Fn::GetAtt": [
+        "LdapVerify",
+        "Status"
+      ]},
+      "Description" : "Ldap Verify Status"
     }
   }
 }

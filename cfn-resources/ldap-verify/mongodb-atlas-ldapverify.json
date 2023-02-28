@@ -4,18 +4,6 @@
   "description": "Requests a verification of an LDAP configuration over TLS for an Atlas project. Pass the requestId in the response object to the Verify |ldap| Configuration endpoint to get the status of a verification request. Atlas retains only the most recent request for each project.",
   "additionalProperties": false,
   "definitions": {
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
     "Validation": {
       "type": "object",
       "properties": {
@@ -30,13 +18,19 @@
     }
   },
   "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
     "Validations": {
       "type": "array",
       "description": "List of validation messages related to the verification of the provided LDAP over TLS configuration details. The array contains a document for each test that Atlas runs. Atlas stops running tests after the first failure.",
       "items": {
         "$ref": "#/definitions/Validation",
         "type": "object"
-      }
+      },
+      "insertionOrder": false
     },
     "BindUsername": {
       "type": "string",
@@ -54,9 +48,6 @@
       "type": "string",
       "description": "Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.",
       "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}|([0-9a-f]{1,4}\\:){7}([0-9a-f]{1,4})|(([a-z0-9]+\\.){1,10}[a-z]+)?$"
-    },
-    "ApiKeys": {
-      "$ref": "#/definitions/ApiKeyDefinition"
     },
     "CaCertificate": {
       "type": "string",
@@ -82,25 +73,31 @@
       "description": "Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
     }
   },
-  "primaryIdentifier": ["/properties/RequestId"],
-  "readOnlyProperties": ["/properties/RequestId"],
+  "primaryIdentifier": ["/properties/RequestId","/properties/GroupId", "/properties/Profile"],
+  "readOnlyProperties": ["/properties/RequestId", "/properties/Status"],
+  "createOnlyProperties": ["/properties/GroupId", "/properties/Profile"],
   "required": [
     "GroupId",
     "BindUsername",
     "BindPassword",
     "HostName",
-    "Port",
-    "ApiKeys"
+    "Port"
   ],
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   }
 }

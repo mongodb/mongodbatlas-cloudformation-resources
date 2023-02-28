@@ -40,5 +40,14 @@
       }
     }
   },
-  "Outputs": {}
+  "Outputs": {
+    "SnapshotExportBucketId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshotExportBucket",
+          "Id"
+        ]
+      }
+    }
+  }
 }

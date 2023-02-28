@@ -61,7 +61,6 @@
       ]
     }
   },
-  "primaryIdentifier": ["/properties/ProjectId","/properties/Profile"],
   "properties": {
     "Profile": {
       "type": "string",
@@ -84,7 +83,6 @@
         "$ref": "#/definitions/managedNamespace",
         "type": "object"
       }
-
     },
     "RemoveAllZoneMapping": {
       "type": "boolean",
@@ -100,7 +98,14 @@
       }
     }
   },
-  "readOnlyProperties": ["/properties/RemoveAllZoneMapping","/properties/CustomZoneMappings"],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "readOnlyProperties": [
+    "/properties/RemoveAllZoneMapping",
+    "/properties/CustomZoneMappings"
+  ],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

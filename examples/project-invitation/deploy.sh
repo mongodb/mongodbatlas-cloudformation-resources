@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# Copyright 2023 MongoDB Inc
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 username="testing@mongodb.com"
 role="GROUP_CLUSTER_MANAGER"
 
@@ -8,5 +22,5 @@ aws cloudformation deploy \
 	--stack-name project-invitation-test \
 	--template-file project-invitation.json \
 	--no-fail-on-empty-changeset \
-	--parameter-overrides Role="$role" Username="$username" PrivateKey="${ATLAS_PRIVATE_KEY}" PublicKey="${ATLAS_PUBLIC_KEY}" ProjectId="${ATLAS_GROUP_ID}" \
+	--parameter-overrides Role="$role" Username="$username" ProjectId="${ATLAS_GROUP_ID}" \
 	"$@"

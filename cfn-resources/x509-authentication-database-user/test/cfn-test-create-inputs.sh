@@ -27,19 +27,9 @@ echo "Created project \"${projectName}\" with id: ${projectId}"
 
 rm -rf inputs
 mkdir inputs
-name="${1}"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
-	'.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+jq --arg group_id "$projectId" \
+	'.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-name="${name}- more B@d chars !@(!(@====*** ;;::"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
-	'.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs

@@ -30,5 +30,13 @@ for FILE in ${STAGED_SH_FILES}; do
 	git add "${FILE}"
 done
 
+echo "==> Formatting changed JSON files..."
+STAGED_JSON_FILES=$(git diff --cached --name-only | grep ".json$")
+for FILE in ${STAGED_JSON_FILES}; do
+  prettyFile=$(jq . "${FILE}")
+	echo "${prettyFile}" > "${FILE}"
+	git add "${FILE}"
+done
+
 echo "==> Done..."
 

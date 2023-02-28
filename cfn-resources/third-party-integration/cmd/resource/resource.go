@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//         http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,9 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -29,11 +31,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var ReadRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var UpdateRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var DeleteRequiredFields = []string{constants.IntegrationType, constants.PubKey, constants.PvtKey, constants.ProjectID}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
+var RequiredFields = []string{constants.IntegrationType, constants.ProjectID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // Custom validation only for ThirdPartyIntegrations
 var requiredPerType = map[string][]string{
@@ -62,19 +61,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = log.Warnf("Create() currentModel:%+v", currentModel)
 
 	// Validation
-	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	ProjectID := currentModel.ProjectId
@@ -115,19 +113,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
 	// Validation
-	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	ProjectID := currentModel.ProjectId
@@ -154,19 +151,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = log.Debugf("Update() currentModel:%+v", currentModel)
 
 	// Validation
-	if modelValidation := validateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	ProjectID := currentModel.ProjectId
@@ -251,21 +247,22 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
 
 	// Validation
-	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	var res *mongodbatlas.Response
+	var err error
 
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
@@ -296,15 +293,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("List - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	var res *mongodbatlas.Response
 	ProjectID := currentModel.ProjectId
 	integrations, res, err := client.Integrations.List(context.Background(), *ProjectID)
@@ -396,8 +393,8 @@ func integrationToModel(currentModel Model, integration *mongodbatlas.ThirdParty
 	*/
 	out := Model{
 		Type:      &integration.Type,
-		ApiKeys:   currentModel.ApiKeys,
 		ProjectId: currentModel.ProjectId,
+		Profile:   currentModel.Profile,
 	}
 
 	if !enabled {

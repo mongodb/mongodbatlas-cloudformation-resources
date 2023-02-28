@@ -18,20 +18,21 @@ import (
 	"context"
 	"fmt"
 
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.TenantName}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
+var RequiredFields = []string{constants.ProjectID, constants.TenantName}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -42,22 +43,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// progress callback setup
 	if _, ok := req.CallbackContext["status"]; ok {
 		sid := req.CallbackContext["project_id"].(string)
-		currentModel.GroupId = &sid
+		currentModel.ProjectId = &sid
 		return validateProgress(client, currentModel, "ACTIVE")
 	}
 
 	// Create Atlas API Request Object
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	dataLakeReq := &mongodbatlas.DataLakeCreateRequest{
 		CloudProviderConfig: expandCloudProviderConfig(currentModel),
 		Name:                *currentModel.TenantName,
@@ -68,9 +71,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
-	currentModel.GroupId = &dataLake.GroupID
+	currentModel.ProjectId = &dataLake.GroupID
 
-	_, _ = logger.Debugf("Created Successfully - (%s)", *currentModel.GroupId)
+	_, _ = logger.Debugf("Created Successfully - (%s)", *currentModel.ProjectId)
 
 	// track progress
 	event := handler.ProgressEvent{
@@ -80,7 +83,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{
 			"status":     dataLake.State,
-			"project_id": currentModel.GroupId,
+			"project_id": currentModel.ProjectId,
 		},
 	}
 	return event, nil
@@ -94,13 +97,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	if !isExist(currentModel, client) {
@@ -112,14 +115,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// API call to get
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	dataLake, resp, err := client.DataLakes.Get(context.Background(), projectID, *currentModel.TenantName)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
-	readModel := convertToModel(dataLake)
-
+	readModel := convertToModel(dataLake, currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
@@ -136,14 +138,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	if !isExist(currentModel, client) {
@@ -155,7 +156,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// create request object
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	dataLakeReq := &mongodbatlas.DataLakeUpdateRequest{
 		CloudProviderConfig: expandCloudProviderConfig(currentModel),
 		DataProcessRegion:   expandDataLakeDataProcessRegion(currentModel.DataProcessRegion),
@@ -166,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
-	currentModel.GroupId = &dataLake.GroupID
+	currentModel.ProjectId = &dataLake.GroupID
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -184,13 +185,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	if !isExist(currentModel, client) {
@@ -202,7 +203,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// API call to delete
-	resp, err := client.DataLakes.Delete(context.Background(), *currentModel.GroupId, *currentModel.TenantName)
+	resp, err := client.DataLakes.Delete(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
@@ -222,25 +223,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("create - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// API call to list
-	result, resp, err := client.DataLakes.List(context.Background(), *currentModel.GroupId)
+	result, resp, err := client.DataLakes.List(context.Background(), *currentModel.ProjectId)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
 	var models []interface{}
 	for ind := range result {
-		models = append(models, convertToModel(&result[ind]))
+		models = append(models, convertToModel(&result[ind], currentModel))
 	}
 
 	return handler.ProgressEvent{
@@ -249,16 +249,16 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  models,
 	}, nil
 }
-func flattenAWSBlock(aws *mongodbatlas.CloudProviderConfig) *DataLakeAWSCloudProviderConfigView {
-	if aws == nil {
+func flattenAWSBlock(awsConfig *mongodbatlas.CloudProviderConfig) *DataLakeAWSCloudProviderConfigView {
+	if awsConfig == nil {
 		return nil
 	}
 	return &DataLakeAWSCloudProviderConfigView{
-		RoleId:            &aws.AWSConfig.RoleID,
-		IamAssumedRoleARN: &aws.AWSConfig.IAMAssumedRoleARN,
-		IamUserARN:        &aws.AWSConfig.IAMUserARN,
-		ExternalId:        &aws.AWSConfig.ExternalID,
-		TestS3Bucket:      &aws.AWSConfig.TestS3Bucket,
+		RoleId:            &awsConfig.AWSConfig.RoleID,
+		IamAssumedRoleARN: &awsConfig.AWSConfig.IAMAssumedRoleARN,
+		IamUserARN:        &awsConfig.AWSConfig.IAMUserARN,
+		ExternalId:        &awsConfig.AWSConfig.ExternalID,
+		TestS3Bucket:      &awsConfig.AWSConfig.TestS3Bucket,
 	}
 }
 
@@ -342,15 +342,15 @@ func flattenDataLakeStorageStores(stores []mongodbatlas.DataLakeStore) []StoreDe
 }
 
 func expandDataLakeAwsBlock(cloudProviderConfig DataLakeCloudProviderConfigView) mongodbatlas.AwsCloudProviderConfig {
-	aws := mongodbatlas.AwsCloudProviderConfig{}
+	awsConfig := mongodbatlas.AwsCloudProviderConfig{}
 	if cloudProviderConfig.Aws != nil {
-		aws.ExternalID = cast.ToString(cloudProviderConfig.Aws.ExternalId)
-		aws.IAMAssumedRoleARN = cast.ToString(cloudProviderConfig.Aws.IamAssumedRoleARN)
-		aws.IAMUserARN = cast.ToString(cloudProviderConfig.Aws.IamUserARN)
-		aws.RoleID = cast.ToString(cloudProviderConfig.Aws.RoleId)
-		aws.TestS3Bucket = cast.ToString(cloudProviderConfig.Aws.TestS3Bucket)
+		awsConfig.ExternalID = cast.ToString(cloudProviderConfig.Aws.ExternalId)
+		awsConfig.IAMAssumedRoleARN = cast.ToString(cloudProviderConfig.Aws.IamAssumedRoleARN)
+		awsConfig.IAMUserARN = cast.ToString(cloudProviderConfig.Aws.IamUserARN)
+		awsConfig.RoleID = cast.ToString(cloudProviderConfig.Aws.RoleId)
+		awsConfig.TestS3Bucket = cast.ToString(cloudProviderConfig.Aws.TestS3Bucket)
 	}
-	return aws
+	return awsConfig
 }
 func expandCloudProviderConfig(currentModel *Model) *mongodbatlas.CloudProviderConfig {
 	if currentModel.CloudProviderConfig != nil {
@@ -383,7 +383,7 @@ func validateRequest(fields []string, model *Model) *handler.ProgressEvent {
 
 // function to track snapshot creation status
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	tenantName := *currentModel.TenantName
 	isReady, state, err := dataLakeIsReady(client, projectID, tenantName, targetState)
 	if err != nil {
@@ -398,7 +398,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 		p.Message = "Pending"
 		p.CallbackContext = map[string]interface{}{
 			"status":     state,
-			"project_id": *currentModel.GroupId,
+			"project_id": *currentModel.ProjectId,
 		}
 		return p, nil
 	}
@@ -412,7 +412,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 
 // function to check if record already exist
 func isExist(currentModel *Model, client *mongodbatlas.Client) bool {
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	tenantName := *currentModel.TenantName
 	dataLake, _, err := client.DataLakes.Get(context.Background(), projectID, tenantName)
 	if err != nil {
@@ -443,12 +443,13 @@ func dataLakeIsReady(client *mongodbatlas.Client, projectID, name, targetState s
 	return dataLake.State == targetState, dataLake.State, nil
 }
 
-func convertToModel(dataLake *mongodbatlas.DataLake) *Model {
+func convertToModel(dataLake *mongodbatlas.DataLake, currentModel *Model) *Model {
 	var result = new(Model)
 
+	result.Profile = currentModel.Profile // cfn test
 	result.TenantName = &dataLake.Name
 	result.State = &dataLake.State
-	result.GroupId = &dataLake.GroupID
+	result.ProjectId = &dataLake.GroupID
 	result.CloudProviderConfig = &DataLakeCloudProviderConfigView{
 		Aws: flattenAWSBlock(&dataLake.CloudProviderConfig),
 	}

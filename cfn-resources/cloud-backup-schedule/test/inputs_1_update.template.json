@@ -1,8 +1,5 @@
 {
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
+  "Profile": "default",
   "ProjectId": "",
   "ClusterName": "",
   "AutoExportEnabled": "false",

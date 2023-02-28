@@ -48,82 +48,70 @@
         }
       },
       "type": "object"
-    },
-    "apiKeyDefinition": {
-      "additionalProperties": false,
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "type": "object"
     }
   },
   "description": "Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.",
   "handlers": {
     "create": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     },
     "delete": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     },
     "read": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     },
     "update": {
       "permissions": [
-        ""
+        "secretsmanager:GetSecretValue"
       ]
     }
   },
   "primaryIdentifier": [
-    "/properties/Id"
+    "/properties/ProjectId",
+    "/properties/Profile"
   ],
   "properties": {
     "AccessList": {
       "items": {
         "$ref": "#/definitions/accessListDefinition"
       },
-      "minItems": 1,
       "type": "array",
-      "uniqueItems": true
-    },
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
-    },
-    "Id": {
-      "description": "The unique identifier for the Project API ip access list rules.",
-      "type": "string"
+      "insertionOrder": false
     },
     "ProjectId": {
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "type": "string"
     },
+    "ListOptions": {
+      "$ref": "#/definitions/listOptions"
+    },
     "TotalCount": {
       "description": "Number of documents returned in this response.",
       "type": "integer"
     },
-    "ListOptions": {
-      "$ref": "#/definitions/listOptions"
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     }
   },
   "readOnlyProperties": [
-    "/properties/Id",
-    "/properties/TotalCount"
+    "/properties/AccessList",
+    "/properties/AccessList/AwsSecurityGroup"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
   ],
   "required": [
-    "ProjectId",
-    "AccessList",
-    "ApiKeys"
+    "ProjectId"
   ],
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "typeName": "MongoDB::Atlas::ProjectIpAccessList"

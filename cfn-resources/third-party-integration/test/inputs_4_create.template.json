@@ -1,9 +1,6 @@
 {
   "ProjectId": "$ATLAS_PROJECT_ID",
-  "ApiKeys" : {
-    "PublicKey" : "$ATLAS_PUBLIC_KEY",
-    "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-  },
+  "Profile": "default",
   "Type": "DATADOG",
   "ApiKey": "f3687bbb969f722c1e9afbf62d2ee1ab",
   "Region": "US"

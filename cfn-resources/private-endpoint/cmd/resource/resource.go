@@ -20,21 +20,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpointservice"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpointservice"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -83,7 +80,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -167,7 +164,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -203,7 +200,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
@@ -280,7 +277,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {

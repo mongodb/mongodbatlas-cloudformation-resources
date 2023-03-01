@@ -606,10 +606,10 @@
   resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/database-user/-/database-user-1.1.0.tgz#1ef978170536b6de6b9a3275049ed7a81c13c3af"
   integrity sha512-M5IR++bt2xzBNPW7iZCl0r/KynRYnYqsHtuLC5cjr1yMxK9kHByo1TEZXiaDb++VwNrnb6sA1rZ/1IJrN7ryVA==
 
-"@mongodbatlas-awscdk/private-endpoint@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/private-endpoint/-/private-endpoint-1.0.1.tgz#4d5b38337da8c2219d56e968df67b49b831eac1a"
-  integrity sha512-hmMFpRJHXViTOo7ftjm3ACvTz+7s+3ngDdlJL5oEvZIqCJTBObDOJsohUnLphZ6HnrYghshQtxFE0OvFWWWRKA==
+"@mongodbatlas-awscdk/private-endpoint@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/private-endpoint/-/private-endpoint-1.1.0.tgz#ff0019b909578fed3b29f93289a566e450e27a3e"
+  integrity sha512-GTgPS7SiuR/ZcxrIf6QL+EooYsAFHY6Ah5fd+PCmwvpzbtFL7WjbafVJEfw/xyHhjgptMZnzei32jjngWYyvPg==
 
 "@mongodbatlas-awscdk/project-ip-access-list@1.1.0":
   version "1.1.0"
@@ -4336,9 +4336,9 @@ lru-cache@^6.0.0:
     yallist "^4.0.0"
 
 lru-cache@^7.4.4, lru-cache@^7.5.1, lru-cache@^7.7.1:
-  version "7.18.0"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.0.tgz#c420f068ace992e8c52377418aec2cb08f86d362"
-  integrity sha512-zB4mTJNwserMxerHY0evAuBe/5wnyeznwZ6h19vTV3B9lbqm2c7pWlExjjXgBx8E2J64JF4siGBqKksl2cHTgg==
+  version "7.18.1"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.1.tgz#4716408dec51d5d0104732647f584d1f6738b109"
+  integrity sha512-8/HcIENyQnfUTCDizRu9rrDyG6XG/21M4X7/YEGZeD76ZJilFPAUVb/2zysFf7VVO1LEjCDFyHp8pMMvozIrvg==
 
 make-dir@^3.0.0:
   version "3.1.0"

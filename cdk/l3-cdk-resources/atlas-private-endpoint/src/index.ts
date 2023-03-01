@@ -48,6 +48,7 @@ export class AtlasBasicPrivateEndpoint extends Construct {
         // Validation for atlas basic would be delegated to the library
         this.atlasBasic = new AtlasBasic(this, 'atlas-basic-'.concat(id),
             {
+                profile : props.profile,
                 ...props.atlasBasicProps,
             });
         this.privateEndpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),

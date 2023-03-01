@@ -17,12 +17,11 @@ package resource
 import (
 	"context"
 	"errors"
-	"fmt"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -31,8 +30,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.PvtKey, constants.EndpointID}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
+var RequiredFields = []string{constants.ProjectID, constants.EndpointID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // function to validate inputs to all actions
 func validateAndDefaultRequest(fields []string, model *Model) *handler.ProgressEvent {
@@ -56,12 +55,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if validationError != nil {
 		return *validationError, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Warnf("error in creating mongodb client %v", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	ctx := context.Background()
 	cm := mongodbatlas.PrivateLinkEndpointDataLake{
 		Provider:   *currentModel.Provider,
@@ -69,7 +73,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		EndpointID: *currentModel.EndpointId,
 		Comment:    aws.StringValue(currentModel.Comment),
 	}
-	_, resp, err := client.DataLakes.CreatePrivateLinkEndpoint(ctx, *currentModel.GroupId, &cm)
+	_, resp, err := client.DataLakes.CreatePrivateLinkEndpoint(ctx, *currentModel.ProjectId, &cm)
 	if err != nil {
 		_, _ = log.Warnf("error in creating data-lake private link %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
@@ -94,14 +98,19 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if validationError != nil {
 		return *validationError, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Warnf("error in creating mongodb client %v", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	ctx := context.Background()
-	dlEndpoint, resp, err := client.DataLakes.GetPrivateLinkEndpoint(ctx, *currentModel.GroupId, *currentModel.EndpointId)
+	dlEndpoint, resp, err := client.DataLakes.GetPrivateLinkEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId)
 	if err != nil {
 		_, _ = log.Warnf("error in getting data-lake private link details %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
@@ -130,14 +139,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if validationError != nil {
 		return *validationError, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Warnf("error in creating mongodb client %v", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	ctx := context.Background()
-	resp, err := client.DataLakes.DeletePrivateLinkEndpoint(ctx, *currentModel.GroupId, *currentModel.EndpointId)
+	resp, err := client.DataLakes.DeletePrivateLinkEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId)
 	if err != nil {
 		_, _ = log.Warnf("error in deleting private endpoint adl %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
@@ -156,14 +170,19 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if validationError != nil {
 		return *validationError, nil
 	}
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Warnf("error in creating mongodb client %v", err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	ctx := context.Background()
-	list, resp, err := client.DataLakes.ListPrivateLinkEndpoint(ctx, *currentModel.GroupId)
+	list, resp, err := client.DataLakes.ListPrivateLinkEndpoint(ctx, *currentModel.ProjectId)
 	if err != nil {
 		_, _ = log.Warnf("error in listing private endpoint adl %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
@@ -171,8 +190,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	models := make([]any, 0, len(list.Results))
 	for _, v := range list.Results {
 		models = append(models, &Model{
-			GroupId:    currentModel.GroupId,
-			ApiKeys:    currentModel.ApiKeys,
+			ProjectId:  currentModel.ProjectId,
+			Profile:    currentModel.Profile,
 			Comment:    &v.Comment,
 			EndpointId: &v.EndpointID,
 			Provider:   &v.Provider,

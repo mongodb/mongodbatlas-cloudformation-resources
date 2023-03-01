@@ -29,7 +29,7 @@
     "MaintenenceWindow": {
       "Type": "MongoDB::Atlas::MaintenanceWindow",
       "Properties":  {
-        "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
+        "ProjectId": { "Ref" : "MongoDBAtlasProjectId" },
         "DayOfWeek": { "Ref" : "DayOfWeek" },
         "HourOfDay": { "Ref" : "HourOfDay" },
         "AutoDeferOnceEnabled": { "Ref" : "AutoDeferOnceEnabled" }
@@ -37,11 +37,11 @@
     }
   },
   "Outputs" : {
-    "GroupId": {
+    "ProjectId": {
       "Value": {
         "Fn::GetAtt": [
           "MaintenenceWindow",
-          "GroupId"
+          "ProjectId"
         ]
       }
     }

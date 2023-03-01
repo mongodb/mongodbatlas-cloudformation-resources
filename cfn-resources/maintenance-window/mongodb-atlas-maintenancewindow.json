@@ -55,7 +55,8 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/ProjectId"
+    "/properties/ProjectId",
+    "/properties/AutoDeferOnceEnabled"
   ],
   "required": ["HourOfDay"],
   "typeName": "MongoDB::Atlas::MaintenanceWindow",

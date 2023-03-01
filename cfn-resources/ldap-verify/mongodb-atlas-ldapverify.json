@@ -61,7 +61,7 @@
       "type": "string",
       "description": "Password that MongoDB Cloud uses to authenticate the **bindUsername**."
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
@@ -73,11 +73,11 @@
       "description": "Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
     }
   },
-  "primaryIdentifier": ["/properties/RequestId","/properties/GroupId", "/properties/Profile"],
+  "primaryIdentifier": ["/properties/RequestId","/properties/ProjectId", "/properties/Profile"],
   "readOnlyProperties": ["/properties/RequestId", "/properties/Status"],
-  "createOnlyProperties": ["/properties/GroupId", "/properties/Profile"],
+  "createOnlyProperties": ["/properties/ProjectId", "/properties/Profile"],
   "required": [
-    "GroupId",
+    "ProjectId",
     "BindUsername",
     "BindPassword",
     "HostName",

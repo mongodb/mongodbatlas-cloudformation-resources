@@ -13,7 +13,7 @@ type Model struct {
 	CaCertificate      *string      `json:",omitempty"`
 	AuthzQueryTemplate *string      `json:",omitempty"`
 	BindPassword       *string      `json:",omitempty"`
-	GroupId            *string      `json:",omitempty"`
+	ProjectId          *string      `json:",omitempty"`
 	Port               *int         `json:",omitempty"`
 }
 

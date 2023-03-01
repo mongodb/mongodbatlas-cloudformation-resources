@@ -38,10 +38,10 @@ const (
 	RequestID    = "RequestId"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port}
-var ReadRequiredFields = []string{constants.GroupID, RequestID}
+var CreateRequiredFields = []string{constants.ProjectID, BindUsername, BindPassword, constants.HostName, constants.Port}
+var ReadRequiredFields = []string{constants.ProjectID, RequestID}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.GroupID, RequestID}
+var DeleteRequiredFields = []string{constants.ProjectID, RequestID}
 var ListRequiredFields []string
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -118,7 +118,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	var res *mongodbatlas.Response
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.GroupId, *currentModel.RequestId)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -156,7 +156,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.GroupId, *currentModel.RequestId)
+	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
 			res.Response), nil
@@ -169,7 +169,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		BindUsername: pointy.String("-"),
 	}
 
-	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
+	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Delete - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -225,7 +225,7 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Request) handler.ProgressEvent {
 	requestID := req.CallbackContext["RequestId"].(string)
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.GroupId, requestID)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.ProjectId, requestID)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response)

@@ -35,11 +35,31 @@ else
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-jq --arg group_id "$projectId" \
+#An active cluster is needed to test the LDAP verify
+ClusterName="${projectName}"
+clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
+if [ -z "$clusterId" ]; then
+	echo "creating cluster.."
+	clusterId=$(atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+fi
+
+status=$(atlas clusters describe "${ClusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+echo "status: ${status}"
+
+while [[ "${status}" != "IDLE" ]]; do
+	sleep 30
+	status=$(atlas clusters describe "${ClusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+	if [ -z "$status" ]; then
+		status="timeout"
+	fi
+	echo "status: ${status}"
+done
+
+jq --arg projectId "$projectId" \
 	--arg bindPassword "$bindPassword" \
 	--arg bindUsername "$bindUsername" \
 	--arg hostname "$hostname" \
-	'.GroupId?|=$group_id | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
+	'.ProjectId?|=$projectId | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 ls -l inputs

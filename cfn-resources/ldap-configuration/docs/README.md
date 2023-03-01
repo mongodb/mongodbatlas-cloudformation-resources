@@ -21,7 +21,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#cacertificate" title="CaCertificate">CaCertificate</a>" : <i>String</i>,
         "<a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>" : <i>String</i>,
         "<a href="#bindpassword" title="BindPassword">BindPassword</a>" : <i>String</i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#port" title="Port">Port</a>" : <i>Integer</i>,
         "<a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>" : <i>[ <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a>, ... ]</i>
     }
@@ -42,7 +42,7 @@ Properties:
     <a href="#cacertificate" title="CaCertificate">CaCertificate</a>: <i>String</i>
     <a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>: <i>String</i>
     <a href="#bindpassword" title="BindPassword">BindPassword</a>: <i>String</i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#port" title="Port">Port</a>: <i>Integer</i>
     <a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>: <i>
       - <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a></i>
@@ -140,7 +140,7 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
 

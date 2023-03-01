@@ -38,11 +38,11 @@ const (
 	Port         = "Port"
 )
 
-var CreateRequiredFields = []string{constants.GroupID,
+var CreateRequiredFields = []string{constants.ProjectID,
 	BindUsername, BindPassword, Hostname, Port}
-var ReadRequiredFields = []string{constants.GroupID}
-var UpdateRequiredFields = []string{constants.GroupID}
-var DeleteRequiredFields = []string{constants.GroupID}
+var ReadRequiredFields = []string{constants.ProjectID}
+var UpdateRequiredFields = []string{constants.ProjectID}
+var DeleteRequiredFields = []string{constants.ProjectID}
 var ListRequiredFields []string
 
 func setup() {
@@ -130,13 +130,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), *currentModel.ProjectId)
+	if err != nil {
+		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if isResourceEnabled(*ldapConf) {
+		return progressEvents.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
+	}
+
 	enabled := true
 
 	currentModel.AuthenticationEnabled = &enabled
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -172,7 +181,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	ldapConf, errPe := Get(client, *currentModel.GroupId)
+	ldapConf, errPe := Get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
@@ -228,14 +237,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Validate if resource exists
-	_, errPe := Get(client, *currentModel.GroupId)
+	_, errPe := Get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -275,7 +284,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Validate if resource exists
-	_, errPe := Get(client, *currentModel.GroupId)
+	_, errPe := Get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
@@ -284,7 +293,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ldapReq.LDAP.AuthorizationEnabled = pointy.Bool(false)
 	ldapReq.LDAP.AuthenticationEnabled = pointy.Bool(false)
 
-	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil

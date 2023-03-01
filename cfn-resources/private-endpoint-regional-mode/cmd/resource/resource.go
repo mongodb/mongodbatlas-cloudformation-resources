@@ -18,12 +18,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
-	"github.com/openlyinc/pointy"
+	"github.com/aws/aws-sdk-go/aws"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -49,6 +48,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
 	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -71,8 +75,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
@@ -112,8 +116,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client

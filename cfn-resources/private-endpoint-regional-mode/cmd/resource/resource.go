@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+	"github.com/openlyinc/pointy"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -29,11 +31,11 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.ProjectID}
+var ReadRequiredFields = []string{constants.ProjectID}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
+var DeleteRequiredFields = []string{constants.ProjectID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint-regional-mode")
@@ -46,15 +48,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	if isRegModeSettingExists(currentModel, mongodbClient) {
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Regionalized Setting for Private Endpoint already enabled for : %s", *currentModel.ProjectId),
 			cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
+
 	enabled := true
 	currentModel.Enabled = &enabled
 	// API call to Add Regional Mode for Private Endpoint
@@ -70,10 +72,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	}
+
+	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	regPrivateEndpointSetting, response, err := mongodbClient.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
 	if err != nil {
@@ -108,11 +113,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
 	}
+
+	// Create atlas client
+	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	if isRegModeSettingExists(currentModel, mongodbClient) {
 		enabled := false
 		currentModel.Enabled = &enabled
@@ -168,9 +178,9 @@ func isRegModeSettingExists(currentModel *Model, client *mongodbatlas.Client) bo
 
 func regionalPrivateEndpointToModel(currentModel Model, regPrivateMode *mongodbatlas.RegionalizedPrivateEndpointSetting) *Model {
 	out := &Model{
-		ApiKeys:   currentModel.ApiKeys,
 		Enabled:   &regPrivateMode.Enabled,
 		ProjectId: currentModel.ProjectId,
+		Profile:   currentModel.Profile,
 	}
 	return out
 }

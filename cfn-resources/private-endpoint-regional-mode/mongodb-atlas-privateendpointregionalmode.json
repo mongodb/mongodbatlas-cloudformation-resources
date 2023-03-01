@@ -3,18 +3,6 @@
     "description": "An example resource schema demonstrating some basic constructs and validation rules.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
-        "ApiKey": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        }
     },
     "properties": {
         "Enabled": {
@@ -26,8 +14,10 @@
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/ApiKey"
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         }
     },
     "additionalProperties": false,
@@ -35,25 +25,30 @@
         "ProjectId"
     ],
     "createOnlyProperties": [
-        "/properties/ProjectId"
+        "/properties/ProjectId",
+        "/properties/Profile"
     ],
     "readOnlyProperties": [
         "/properties/Enabled"
     ],
     "primaryIdentifier": [
-        "/properties/ProjectId"
+        "/properties/ProjectId",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

@@ -57,10 +57,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
-	enabled := true
-	currentModel.Enabled = &enabled
 	// API call to Add Regional Mode for Private Endpoint
-	return resourcePrivateEndpointRegionalModeUpdate(req, prevModel, currentModel, mongodbClient)
+	return resourcePrivateEndpointRegionalModeUpdate(currentModel, mongodbClient, true)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -124,9 +122,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if isRegModeSettingExists(currentModel, mongodbClient) {
-		enabled := false
-		currentModel.Enabled = &enabled
-		events, err := resourcePrivateEndpointRegionalModeUpdate(req, prevModel, currentModel, mongodbClient)
+		events, err := resourcePrivateEndpointRegionalModeUpdate(currentModel, mongodbClient, false)
 		if err != nil {
 			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
 				events.HandlerErrorCode), nil
@@ -148,14 +144,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func resourcePrivateEndpointRegionalModeUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-	regionalizedPrivateEndpointSetting, response, err := client.PrivateEndpoints.UpdateRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId, *currentModel.Enabled)
+func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *mongodbatlas.Client, enabled bool) (handler.ProgressEvent, error) {
+	regionalizedPrivateEndpointSetting, response, err := client.PrivateEndpoints.UpdateRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId, enabled)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(
 			fmt.Sprintf("Error in enabling regionalized settings : %s", err.Error()),
 			response.Response), nil
 	}
-	currentModel.Enabled = &regionalizedPrivateEndpointSetting.Enabled
+
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -178,7 +174,6 @@ func isRegModeSettingExists(currentModel *Model, client *mongodbatlas.Client) bo
 
 func regionalPrivateEndpointToModel(currentModel Model, regPrivateMode *mongodbatlas.RegionalizedPrivateEndpointSetting) *Model {
 	out := &Model{
-		Enabled:   &regPrivateMode.Enabled,
 		ProjectId: currentModel.ProjectId,
 		Profile:   currentModel.Profile,
 	}

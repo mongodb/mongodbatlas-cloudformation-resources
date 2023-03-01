@@ -5,10 +5,6 @@
     "definitions": {
     },
     "properties": {
-        "Enabled": {
-            "description": "Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project",
-            "type": "boolean"
-        },
         "ProjectId": {
             "description": "Unique 24-hexadecimal digit string that identifies your project.",
             "type": "string",
@@ -27,9 +23,6 @@
     "createOnlyProperties": [
         "/properties/ProjectId",
         "/properties/Profile"
-    ],
-    "readOnlyProperties": [
-        "/properties/Enabled"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",

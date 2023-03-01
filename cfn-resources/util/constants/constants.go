@@ -34,6 +34,7 @@ const (
 	Region              = "Region"
 	HostName            = "HostName"
 	Port                = "Port"
+	ContainerID         = "ContainerId"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -117,6 +118,7 @@ const (
 
 	FederationSettingsID = "FederationSettingsId"
 
-	ExportBucketID = "ExportBucketId"
-	ExportID       = "ExportId"
+	ExportBucketID             = "ExportBucketId"
+	ExportID                   = "ExportId"
+	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
 )

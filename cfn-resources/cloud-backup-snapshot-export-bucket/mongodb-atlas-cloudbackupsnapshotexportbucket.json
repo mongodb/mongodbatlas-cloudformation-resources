@@ -2,29 +2,17 @@
   "typeName": "MongoDB::Atlas::CloudBackupSnapshotExportBucket",
   "description": "The exportBuckets resource allows you to grant Atlas access to the specified bucket for exporting backup snapshots.",
   "additionalProperties": false,
-  "definitions": {
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "BucketName": {
       "type": "string",
       "description": "Human-readable label that identifies the AWS bucket that the role is authorized to access."
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
@@ -47,29 +35,42 @@
     }
   },
   "required": [
-    "GroupId",
+    "ProjectId",
     "IamRoleID",
-    "BucketName",
-    "ApiKeys"
+    "BucketName"
   ],
   "readOnlyProperties": [
     "/properties/Id"
   ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
   "primaryIdentifier": [
-    "/properties/Id"
+    "/properties/ProjectId",
+    "/properties/Id",
+    "/properties/Profile"
   ],
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
-    },
-    "list": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   }
 }

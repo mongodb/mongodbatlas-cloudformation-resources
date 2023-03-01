@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# cfn-test-create-inputs.sh
-#
-# This tool generates json files in the inputs/ for `cfn test`.
-#
 
 set -o errexit
 set -o nounset
@@ -27,29 +23,23 @@ team_id=$(atlas teams create "${team_name}" --username "${user_name}" --orgId "$
 
 username="cfntest@mongodb.com"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg orgID "$ATLAS_ORG_ID" \
+jq --arg orgID "$ATLAS_ORG_ID" \
 	--arg team_id "$team_id" \
 	--arg username "$username" \
-	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 #inputs_1_update.json
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg orgID "$ATLAS_ORG_ID" \
+jq --arg orgID "$ATLAS_ORG_ID" \
 	--arg team_id "$team_id" \
 	--arg username "$username" \
-	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 #inputs_1_invalid.json
 username="(*&)(*&*&)(*&(*&"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg orgID "$ATLAS_ORG_ID" \
+jq --arg orgID "$ATLAS_ORG_ID" \
 	--arg team_id "$team_id" \
 	--arg username "$username" \
-	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"

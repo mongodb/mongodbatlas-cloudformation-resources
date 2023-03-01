@@ -24,7 +24,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#restorewindowdays" title="RestoreWindowDays">RestoreWindowDays</a>" : <i>Integer</i>,
         "<a href="#updatesnapshots" title="UpdateSnapshots">UpdateSnapshots</a>" : <i>Boolean</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>
     }
 }
 </pre>
@@ -49,8 +48,6 @@ Properties:
     <a href="#restorewindowdays" title="RestoreWindowDays">RestoreWindowDays</a>: <i>Integer</i>
     <a href="#updatesnapshots" title="UpdateSnapshots">UpdateSnapshots</a>: <i>Boolean</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
-    <a href="#links" title="Links">Links</a>: <i>
-      - <a href="link.md">Link</a></i>
 </pre>
 
 ## Properties
@@ -173,16 +170,6 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### Links
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
-_Required_: No
-
-_Type_: List of <a href="link.md">Link</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 ## Return Values
 
 ### Fn::GetAtt
@@ -213,5 +200,5 @@ The name of the Atlas cluster that contains the snapshots you want to retrieve.
 
 #### Links
 
-Returns the <code>Links</code> value.
+List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
 

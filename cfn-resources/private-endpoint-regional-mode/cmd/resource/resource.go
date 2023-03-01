@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/openlyinc/pointy"
 

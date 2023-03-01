@@ -38,4 +38,12 @@ new AtlasBasic(stack, 'atlas-basic', {
   projectProps: {
     orgId: orgId,
   },
+   ipAccessListProps: {
+    accessList: [
+      {
+        ipAddress: '10.10.0.0/24',
+        comment: 'open ip subnet',
+      },
+    ],
+  }
 });

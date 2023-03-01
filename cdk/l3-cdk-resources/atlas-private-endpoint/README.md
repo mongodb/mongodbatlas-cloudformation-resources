@@ -51,31 +51,7 @@ aws cloudformation activate-type \
   --type RESOURCE \
   --execution-role-arn ROLE-ARN
 ```
-Alternatively:
 
-```sh
-aws cloudformation activate-type \
-  --public-type-arn arn:aws:cloudformation:us-east-1::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Cluster \
-  --execution-role-arn ROLE-ARN
-
-aws cloudformation activate-type \
-  --public-type-arn arn:aws:cloudformation:us-east-1::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Project \
-  --execution-role-arn ROLE-ARN  
-
-aws cloudformation activate-type \
-  --public-type-arn arn:aws:cloudformation:us-east-1::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DatabaseUser \
-  --execution-role-arn ROLE-ARN
-
-aws cloudformation activate-type \
-  --public-type-arn arn:aws:cloudformation:us-east-1::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ProjectIpAccessList \
-  --execution-role-arn ROLE-ARN
-
-aws cloudformation activate-type \
-  --public-type-arn arn:aws:cloudformation:us-east-1::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndpoint \
-  --execution-role-arn ROLE-ARN  
-  
-    
-```
 
 ### Minimal configuration to use this construct
 
@@ -90,10 +66,6 @@ const stack = new cdk.Stack(app, 'atlas-basic-default', {
     env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 
-const apiKeys = {
-    privateKey: stack.node.tryGetContext('MONGODB_ATLAS_PRIVATE_KEY') || process.env.MONGODB_ATLAS_PRIVATE_KEY,
-    publicKey: stack.node.tryGetContext('MONGODB_ATLAS_PUBLIC_KEY') || process.env.MONGODB_ATLAS_PUBLIC_KEY,
-};
 
 const orgId = stack.node.tryGetContext('MONGODB_ATLAS_ORG_ID') || process.env.MONGODB_ATLAS_ORG_ID;
 const vpcId = stack.node.tryGetContext('AWS_VPC_ID') || process.env.AWS_VPC_ID;
@@ -123,7 +95,6 @@ const replicationSpecs = [
 ];
 
 const atlasBasicProps : AtlasBasicProps = {
-    apiKeys: apiKeys,
     clusterProps: {
         replicationSpecs: replicationSpecs,
     },
@@ -155,15 +126,6 @@ The library also defines some default values for individual L1s.
 const projectDefaults = {
         projectName: 'atlas-project-{random_num}',
     };
-
-const ipAccessDefaults = {
-    accessList: [
-        {
-            ipAddress: '0.0.0.0/1',
-            comment: 'Testing open all ips',
-        },
-    ],
-}
 
 const dbDefaults = {
     dbName: 'admin',

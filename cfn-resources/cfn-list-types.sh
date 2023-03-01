@@ -11,7 +11,7 @@ for resource in ${resources}; do
 		# shellcheck disable=SC2001
 		jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
 		type_name=$(jq -r '.typeName' "${jsonschema}")
-		type_info=$(aws cloudformation --region "${region}" --profile mdb list-types --visibility PUBLIC --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
+		type_info=$(aws cloudformation --region "${region}" list-types --visibility PUBLIC --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
 		if [ -z "${type_info}" ]; then
 			echo "*********** ${resource} type NOT found in region : ${region} *******************"
 		else

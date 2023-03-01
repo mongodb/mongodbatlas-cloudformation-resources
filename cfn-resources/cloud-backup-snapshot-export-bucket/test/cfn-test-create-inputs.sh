@@ -65,6 +65,7 @@ else
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
+# Role Arn not returning immediately
 sleep 60
 
 #------------ get Role arn-------------------

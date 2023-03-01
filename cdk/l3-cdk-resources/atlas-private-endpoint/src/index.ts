@@ -54,7 +54,7 @@ export class AtlasBasicPrivateEndpoint extends Construct {
         this.privateEndpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),
             {
                 profile: props.profile,
-                groupId: this.atlasBasic.mProject.ref,
+                groupId: this.atlasBasic.mProject.attrId,
                 region: props.region || privateEndpointDefaults.region,
                 ...props.privateEndpointProps
             });

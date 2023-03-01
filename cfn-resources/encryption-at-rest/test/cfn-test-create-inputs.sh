@@ -109,33 +109,24 @@ sleep 65
 atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}"
 echo "--------------------------------authorize mongodb  Role ends ----------------------------"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg projectId "$projectId" \
+jq --arg projectId "$projectId" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
-	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
+	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg KMS_KEY "$cleanedKeyID" \
+jq --arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg projectId "$projectId" \
 	--arg region "$keyRegion" \
-	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region' \
+	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg projectId "$projectId" \
+jq --arg projectId "$projectId" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
-	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
+	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 ls -l inputs
-#mongocli iam projects delete "${projectId}" --force
-
-#mongocli atlas cloudProviders accessRoles aws authorize 63721b924ad9a46eeef105ae --iamAssumedRoleArn "arn:aws:iam::816546967292:role/mongodb-test-enc-role"

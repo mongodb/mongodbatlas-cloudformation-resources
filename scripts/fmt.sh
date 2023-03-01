@@ -25,7 +25,14 @@ done
 echo "==> Formatting changed sh files..."
 STAGED_SH_FILES=$(git diff --name-only | grep ".sh$")
 for FILE in ${STAGED_SH_FILES}; do
-    shfmt -l -w "${FILE}"
+	shfmt -l -w "${FILE}"
+done
+
+STAGED_JSON_FILES=$(git diff --name-only | grep ".json$")
+for FILE in ${STAGED_JSON_FILES}; do
+	prettyFile=$(jq . "${FILE}")
+	echo "${prettyFile}" >"${FILE}"
+	git add "${FILE}"
 done
 
 echo "==> Done..."

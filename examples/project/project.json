@@ -91,10 +91,6 @@
           "Ref": "Name"
         },
         "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        },
         "ProjectSettings": {
           "IsCollectDatabaseSpecificsStatisticsEnabled": {
             "Ref": "IsCollectDatabaseSpecificsStatisticsEnabled"
@@ -111,6 +107,9 @@
           "IsSchemaAdvisorEnabled": {
             "Ref": "IsSchemaAdvisorEnabled"
           }
+        },
+        "WithDefaultAlertsSettings": {
+          "Ref": "WithDefaultAlertsSettings"
         },
         "ProjectApiKeys": [
           {
@@ -135,5 +134,22 @@
       }
     }
   },
-  "Outputs" : {}
+  "Outputs" : {
+    "ProjectID": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ]
+      }
+    },
+    "ClusterCount": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "ClusterCount"
+        ]
+      }
+    }
+  }
 }

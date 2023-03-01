@@ -1,8 +1,5 @@
 {
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    },
+    "Profile":"default",
     "GroupId":"",
     "Id": "",
     "Enabled": true,

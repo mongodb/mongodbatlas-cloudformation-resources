@@ -1,9 +1,6 @@
 {
   "desiredResourceState":{
-    "ApiKeys":{
-      "PublicKey":"",
-      "PrivateKey":""
-    },
+    "Profile":"default",
     "Id":"",
     "GroupId":"",
     "Enabled":true,
@@ -26,6 +23,5 @@
     ]
   },
   "previousResourceState":{
-
   }
 }

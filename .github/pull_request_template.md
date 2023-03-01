@@ -17,6 +17,7 @@ Link to any related issue(s):
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have added any necessary documentation (if appropriate)
 - [ ] I have run `make fmt` and formatted my code
+- [ ] For CFN Resources: I have released by changes in the private registry and proved by change works in Atlas
 
 ## Further comments
 

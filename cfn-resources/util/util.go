@@ -16,16 +16,21 @@ package util
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"runtime"
 	"strings"
 
 	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -59,6 +64,9 @@ func EnsureAWSRegion(region string) string {
 	return r
 }
 
+// CreateMongoDBClient creates a new Client using apikeys
+//
+// Deprecated: In the future this function will be private, the NewMongoDBClient should be used instead.
 func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
 	// setup a transport to handle digest
 	log.Printf("CreateMongoDBClient--- publicKey:%s", publicKey)
@@ -71,11 +79,53 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	}
 
 	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
-	if baseURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL"); baseURL != "" {
+	if baseURL := os.Getenv("MONGODB_ATLAS_BASE_URL"); baseURL != "" {
 		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
 	}
 
 	return mongodbatlas.New(client, opts...)
+}
+
+func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
+	p, err := profile.NewProfile(&req, profileName)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+	}
+
+	client, err := newHTTPClient(p)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if baseURL := p.NewBaseURL(); baseURL != "" {
+		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
+	}
+
+	mongodbClient, err := mongodbatlas.New(client, opts...)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	return mongodbClient, nil
+}
+
+func newHTTPClient(p *profile.Profile) (*http.Client, error) {
+	if p.AreKeysAvailable() {
+		return nil, errors.New("PublicKey and PrivateKey cannot be empty")
+	}
+
+	t := digest.NewTransport(p.NewPublicKey(), p.NewPrivateKey())
+	return t.Client()
 }
 
 // defaultLogLevel can be set during compile time with an ld flag to enable

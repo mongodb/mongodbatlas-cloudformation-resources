@@ -24,7 +24,9 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -41,11 +43,11 @@ const (
 
 var defaultLabel = mongodbatlas.Label{Key: "Infrastructure Tool", Value: "MongoDB Atlas Terraform Provider"}
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var ReadRequiredFields = []string{constants.ID}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.Name}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.Name}
+var ReadRequiredFields = []string{constants.Name}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.Name}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+var ListRequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-cluster")
@@ -69,6 +71,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+
 	_, _ = log.Debugf("Create cluster model : %+v", currentModel)
 
 	modelValidation := validateModel(CreateRequiredFields, currentModel)
@@ -76,45 +79,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s ", *currentModel.ProjectId, *currentModel.Name)
 
 	// Callback
-	if id, idExists := req.CallbackContext[constants.ID]; idExists {
-		idStr := fmt.Sprint(id)
-		currentModel.Id = &idStr
+	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 
-	// AWS
-	// This is the initial call to Create, so inject a deployment
-	// secret for this resource in order to lookup progress properly
-	projectResID := &util.ResourceIdentifier{
-		ResourceType: "Project",
-		ResourceID:   *currentModel.ProjectId,
-	}
-	_, _ = log.Debugf("Created projectResID:%s", projectResID)
-	resourceID := util.NewResourceIdentifier("Cluster", *currentModel.Name, projectResID)
-	_, _ = log.Debugf("Created resourceID:%s", resourceID)
-	resourceProps := map[string]string{
-		"ClusterName": *currentModel.Name,
-	}
-	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, resourceProps)
-	if err != nil {
-		_, _ = log.Warnf("Create - CreateDeploymentSecret - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-	}
-
-	_, _ = log.Warnf("Created new deployment secret for cluster. Secret Name = Cluster Id:%s", *secretName)
-	currentModel.Id = secretName
+	var err error
 	var none = "NONE"
 	if currentModel.EncryptionAtRestProvider == nil {
 		currentModel.EncryptionAtRestProvider = &none
@@ -127,13 +109,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create Cluster
-	cluster, _, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
+	cluster, res, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
 	if err != nil {
 		_, _ = log.Warnf("Create - Cluster.Create() - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.Duplicate) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+		}
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.StateName = &cluster.StateName
@@ -145,7 +130,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.StateName: cluster.StateName,
-			constants.ID:        *currentModel.Id,
 		},
 	}, nil
 }
@@ -155,45 +139,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
-	if currentModel.Id == nil {
-		err := errors.New("no Id found in currentModel")
-		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	secretName := *currentModel.Id
-	_, _ = log.Warnf("Read for Cluster Id/SecretName:%s", secretName)
-	key, err := util.GetAPIKeyFromDeploymentSecret(&req, secretName)
-	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	_, _ = log.Debugf("key:%+v", key)
 
-	// key.ResourceID should == *currentModel.Id
-	id, err := util.ParseResourceIdentifier(*currentModel.Id)
-	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	_, _ = log.Debugf("Parsed resource identifier: id:%+v", id)
-
-	currentModel.ProjectId = &id.Parent.ResourceID
-	currentModel.Name = &id.ResourceID
-
-	// Create Client
-	client, err := util.CreateMongoDBClient(key.PublicKey, key.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Read call
@@ -229,11 +182,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Update callback
@@ -294,11 +250,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	ctx := context.Background()
 
@@ -322,8 +281,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-	mm := fmt.Sprintf("%s-Deleting", *currentModel.Id)
-	currentModel.Id = &mm
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -345,11 +302,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create Client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	listOptions := &mongodbatlas.ListOptions{ItemsPerPage: 100, PageNum: 1}
@@ -1027,7 +987,6 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 		p.Message = constants.Pending
 		p.CallbackContext = map[string]interface{}{
 			constants.StateName: state,
-			constants.ID:        currentModel.Id,
 		}
 		return p, nil
 	}
@@ -1041,6 +1000,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 		currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
 		p.ResourceModel = currentModel
 	}
+
 	return p, nil
 }
 

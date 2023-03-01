@@ -4,15 +4,12 @@
     "OrgId": "6177d6c90e0c7f15f342a05d",
     "Name": "YourTeamName",
     "Usernames": [
-      "r.dharmendran@gmail.com"
+      "test@mongodb.com"
     ],
     "RoleNames": [
       "GROUP_CLUSTER_MANAGER"
     ],
-    "ApiKeys": {
-      "PublicKey": "rvnbpxkq",
-      "PrivateKey": "c00ddd07-9253-4992-b978-fad2acf8dc1d"
-    }
+    "Profile": "default"
   },
   "previousResourceState": {}
 }

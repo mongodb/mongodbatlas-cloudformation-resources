@@ -1,12 +1,9 @@
 {
   "desiredResourceState":{
-    "ProjectId": "$ATLAS_PROJECT_ID",
-    "ApiKeys" : {
-      "PublicKey" : "$ATLAS_PUBLIC_KEY",
-      "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    },
+    "Profile": "default",
+    "ProjectId": "63f4e256f76e3b1eea718307",
     "Type": "WEBHOOK",
-    "Url" : "https://www.google.com",
+    "Url": "https://www.google.com",
     "Secret": "Hello@123"
   },
   "providerLogGroupName" : "mongodb-atlas-project-logs",

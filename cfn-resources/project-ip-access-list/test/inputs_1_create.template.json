@@ -1,9 +1,6 @@
 {
     "ProjectId" : "ProjectId",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    },
+    "Profile": "default",
     "AccessList" : [
         { "CIDRBlock": "0.0.0.0/1",
           "Comment": "Testing open all ips" },

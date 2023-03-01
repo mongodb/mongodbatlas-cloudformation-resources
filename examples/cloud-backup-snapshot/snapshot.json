@@ -1,38 +1,60 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "Returns, takes, and removes Cloud Backup snapshots, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "ProjectId" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Returns, takes, and removes Cloud Backup snapshots, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "ClusterName" : {
-      "Type" : "String",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "ClusterName": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "",
+      "ConstraintDescription": ""
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "CloudBackupSnapshot": {
       "Type": "MongoDB::Atlas::CloudBackupSnapshot",
       "Properties": {
-        "GroupId": { "Ref" : "ProjectId" },
-        "ClusterName": { "Ref" : "ClusterName" },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
         "Description": "A testing for creating cloud provider snapshots",
-        "RetentionInDays" : 3 ,
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+        "RetentionInDays": 3,
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "SnapshotId": {
-      "Description": "Id of the cloud provider snapshots",
-      "Value" : { "Ref" : "CloudBackupSnapshot" }
+      "Description": "Id of the cloud provider snapshot",
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshot",
+          "SnapshotId"
+        ]
+      }
+    },
+    "ReplicasetName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshot",
+          "ReplicaSetName"
+        ]
+      }
     }
   }
 }

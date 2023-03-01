@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/aws/aws-sdk-go/aws"
 	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -27,7 +28,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
+
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -70,7 +71,7 @@ func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
 
 	ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: pointy.Bool(true),
+		AuthenticationEnabled: aws.Bool(true),
 		Hostname:              m.Hostname,
 		Port:                  m.Port,
 		BindUsername:          m.BindUsername,
@@ -120,8 +121,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -171,8 +172,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -226,8 +227,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -273,8 +274,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -290,8 +291,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
-	ldapReq.LDAP.AuthorizationEnabled = pointy.Bool(false)
-	ldapReq.LDAP.AuthenticationEnabled = pointy.Bool(false)
+	ldapReq.LDAP.AuthorizationEnabled = aws.Bool(false)
+	ldapReq.LDAP.AuthenticationEnabled = aws.Bool(false)
 
 	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {

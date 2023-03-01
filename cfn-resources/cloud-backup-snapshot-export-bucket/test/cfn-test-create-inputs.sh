@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+# cfn-test-create-inputs.sh
+#
+# This tool generates json files in the inputs/ for `cfn test`.
+#
+#set -o errexit
 #set -o nounset
 #set -o pipefail
 
@@ -35,7 +41,7 @@ fi
 
 #------------ CREATING AtlAS ROLE -------------------
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
-echo "--------------------------------Mongo CLI Role creation ends ----------------------------"
+echo -e "--------------------------------Mongo CLI Role creation ends ----------------------------\n"
 
 #------------ Get role information-------------------
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
@@ -56,10 +62,10 @@ else
  awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
     echo -e "FOUND id: ${awsRoleID}\n"
 fi
-echo "--------------------------------AWS Role creation ends ----------------------------"
+echo -e "--------------------------------AWS Role creation ends ----------------------------\n"
 
 # Role Arn not returning immediately
-sleep 60
+sleep 30
 
 #------------ get Role arn-------------------
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')

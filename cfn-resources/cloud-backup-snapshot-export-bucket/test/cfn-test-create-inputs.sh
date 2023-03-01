@@ -65,6 +65,8 @@ else
 fi
 echo "--------------------------------AWS Role creation ends ----------------------------"
 
+sleep 60
+
 #------------ get Role arn-------------------
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
 
@@ -82,9 +84,8 @@ echo "--------------------------------authorize mongodb  Role ends -------------
 
 #create the s3 bucket
 
-bucketName="cloud-backup-snapshot-test123-"${awsRegion}
+bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
 
-aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
 
 if [ "$#" -ne 2 ]; then usage; fi

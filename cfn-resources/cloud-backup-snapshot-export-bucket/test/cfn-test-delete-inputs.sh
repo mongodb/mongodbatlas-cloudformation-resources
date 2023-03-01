@@ -42,7 +42,7 @@ aws iam delete-role-policy --role-name "$roleName" --policy-name "$policyName"
 aws iam delete-role --role-name "$roleName"
 echo "--------------------------------delete role ends ----------------------------"
 
-bucketName="cloud-backup-snapshot-test-"${awsRegion}
+bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
 
 aws s3 rb s3://"${bucketName}" --force
 echo "--------------------------------delete bucket ends ----------------------------"

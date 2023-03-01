@@ -39,26 +39,20 @@ clusterName=${ClusterName}
 collName="${2:-listingsAndReviews}"
 dbName="${3:-sample_airbnb}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg cluster_name "$clusterName" \
+jq --arg cluster_name "$clusterName" \
 	--arg coll_name "$collName" \
 	--arg db_name "$dbName" \
 	--arg project_id "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey
-   | .ClusterName?|=$cluster_name
+	'.ClusterName?|=$cluster_name
    | .ProjectId?|=$project_id
    | .DbName?|=$db_name | .CollName?|=$coll_name' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg cluster_name "$clusterName" \
+jq --arg cluster_name "$clusterName" \
 	--arg coll_name "$collName" \
 	--arg db_name "$dbName" \
 	--arg project_id "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey
-    | .ClusterName?|=$cluster_name
+	'.ClusterName?|=$cluster_name
     | .ProjectId?|=$project_id
     | .DbName?|=$db_name | .CollName?|=$coll_name' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
@@ -66,8 +60,6 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
 #SET INVALID NAME
 clusterName="^%LKJ)(*J_ {+_+O_)"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg clusterName "$clusterName" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .ClusterName?|=$clusterName ' \
+jq --arg clusterName "$clusterName" \
+	'.ClusterName?|=$clusterName ' \
 	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"

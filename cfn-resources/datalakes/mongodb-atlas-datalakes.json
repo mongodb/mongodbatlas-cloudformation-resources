@@ -22,7 +22,6 @@
           "type": "string",
           "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
         },
-
         "TestS3Bucket": {
           "type": "string",
           "description": "Name of the S3 data bucket that the provided role ID is authorized to access.Required if specifying cloudProviderConfig."
@@ -47,7 +46,13 @@
         "CloudProvider": {
           "type": "string",
           "description": "Name of the cloud service that hosts the data lake's data stores.",
-          "enum": ["AWS", "GCP", "AZURE", "TENANT", "SERVERLESS"]
+          "enum": [
+            "AWS",
+            "GCP",
+            "AZURE",
+            "TENANT",
+            "SERVERLESS"
+          ]
         },
         "Region": {
           "type": "string",
@@ -194,55 +199,48 @@
       },
       "additionalProperties": false
     },
-    "StoreDetail":{
-      "type":"object",
+    "StoreDetail": {
+      "type": "object",
       "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
-      "properties":{
-        "Name":{
+      "properties": {
+        "Name": {
           "description": "Human-readable label that identifies the data store.",
-          "type":"string"
+          "type": "string"
         },
-        "Provider":{
+        "Provider": {
           "description": "Human-readable label that identifies the Federated Database to update.",
-          "type":"string"
+          "type": "string"
         },
         "Region": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "Bucket": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "Prefix": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "Delimiter": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "string"
-
         },
         "IncludeTags": {
           "description": "Human-readable label that identifies the Federated Database to update.",
           "type": "boolean"
-
         },
         "AdditionalStorageClasses": {
-          "type":"array",
+          "type": "array",
           "insertionOrder": false,
           "description": "Human-readable label that identifies the Federated Database to update.",
-          "items":
-          {
+          "items": {
             "type": "string"
-
           }
         }
       },
-      "additionalProperties":false
+      "additionalProperties": false
     },
     "DataLakeViewView": {
       "type": "object",
@@ -293,7 +291,14 @@
         "CloudProvider": {
           "type": "string",
           "description": "Name of the cloud service that hosts the data lake's data stores.",
-          "enum": ["NONE", "AWS", "GCP", "AZURE", "FREE", "SERVERLESS"]
+          "enum": [
+            "NONE",
+            "AWS",
+            "GCP",
+            "AZURE",
+            "FREE",
+            "SERVERLESS"
+          ]
         },
         "Region": {
           "type": "string",
@@ -470,42 +475,32 @@
         }
       },
       "additionalProperties": false
-    },
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
     }
   },
   "description": "Returns, adds, edits, and removes Federated Database Instances.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
-  "primaryIdentifier": [
-    "/properties/GroupId"
-  ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
-    },
     "CloudProviderConfig": {
       "type": "object",
       "description": "Cloud provider linked to this data lake.",
@@ -520,12 +515,17 @@
       "type": "number",
       "description": "Timestamp that specifies the end point for the range of log messages to download.  MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch."
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "SkipRoleValidation": {
       "type": "boolean",
@@ -544,38 +544,34 @@
       "type": "string",
       "description": "Human-readable label that identifies the Federated Database to remove."
     },
-    "Hostnames":{
-      "type":"array",
+    "Hostnames": {
+      "type": "array",
       "insertionOrder": false,
       "description": "Human-readable label that identifies the Federated Database to update.",
-      "items":{
-        "type":"string"
+      "items": {
+        "type": "string"
       }
     },
-    "State":{
-      "type":"string",
+    "State": {
+      "type": "string",
       "description": "Human-readable label that identifies the Federated Database to update."
     }
-
   },
-  "readOnlyProperties": [
-    "/properties/GroupId",
-    "/properties/DataProcessRegion",
+  "primaryIdentifier": [
+    "/properties/ProjectId",
     "/properties/TenantName",
+    "/properties/Profile"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/TenantName"
+  ],
+  "readOnlyProperties": [
     "/properties/Storage",
-    "/properties/SkipRoleValidation",
     "/properties/StartDate",
     "/properties/Hostnames",
     "/properties/State",
-    "/properties/EndDate",
-    "/properties/CloudProviderConfig/Aws/TestS3Bucket",
-    "/properties/NDSDataLakeDatabaseCollectionView",
-    "/properties/DataLakeDatabaseDataSourceView",
-    "/properties/DataLakeDatabaseView",
-    "/properties/NDSDataLakeDatabaseView",
-    "/properties/DataLakeAWSCloudProviderConfigView",
-    "/properties/DataLakeStorageView",
-    "/properties/ApiKeys"
+    "/properties/CloudProviderConfig/Aws/TestS3Bucket"
   ],
   "typeName": "MongoDB::Atlas::DataLakes",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

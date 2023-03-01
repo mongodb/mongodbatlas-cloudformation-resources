@@ -12,7 +12,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::OnlineArchive",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
+        "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#collname" title="CollName">CollName</a>" : <i>String</i>,
         "<a href="#collectiontype" title="CollectionType">CollectionType</a>" : <i>String</i>,
         "<a href="#criteria" title="Criteria">Criteria</a>" : <i><a href="criteriaview.md">CriteriaView</a></i>,
@@ -31,7 +32,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::OnlineArchive
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
+    <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#collname" title="CollName">CollName</a>: <i>String</i>
     <a href="#collectiontype" title="CollectionType">CollectionType</a>: <i>String</i>
     <a href="#criteria" title="Criteria">Criteria</a>: <i><a href="criteriaview.md">CriteriaView</a></i>
@@ -46,11 +48,29 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
 
-_Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### ClusterName
+
+Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.
+
+_Required_: Yes
+
+_Type_: String
+
+_Minimum Length_: <code>1</code>
+
+_Maximum Length_: <code>64</code>
+
+_Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -80,7 +100,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Criteria
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="criteriaview.md">CriteriaView</a>
 
@@ -146,10 +166,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 ## Return Values
 
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ArchiveId.
-
 ### Fn::GetAtt
 
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
@@ -174,21 +190,9 @@ Phase of the process to create this online archive when you made this request.
 
 Number of documents returned in this response.
 
-#### Id
-
-Returns the <code>Id</code> value.
-
 #### ArchiveId
 
 Unique 24-hexadecimal digit string that identifies the online archive to delete.
-
-#### Results
-
-Returns the <code>Results</code> value.
-
-#### ClusterName
-
-Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.
 
 #### ProjectId
 
@@ -207,8 +211,4 @@ Phase of the process to create this online archive when you made this request.
 | `PAUSED`    | MongoDB Cloud has stopped archiving. Archived documents can be queried. The specified archiving operation on the active cluster cannot archive additional documents. You can resume archiving for paused archives at any time. |
 | `ORPHANED`  | Someone has deleted the collection associated with an active or paused archive. MongoDB Cloud doesn't delete the archived data. You must manually delete the online archives associated with the deleted collection. |
 | `DELETED`   | Someone has deleted the archive was deleted. When someone deletes an online archive, MongoDB Cloud removes all associated archived documents from the cloud object storage. |
-
-#### FieldType
-
-Returns the <code>FieldType</code> value.
 

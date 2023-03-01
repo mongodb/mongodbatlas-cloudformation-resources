@@ -87,6 +87,7 @@ echo "--------------------------------authorize mongodb  Role ends -------------
 
 bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
 
+aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
 
 if [ "$#" -ne 2 ]; then usage; fi

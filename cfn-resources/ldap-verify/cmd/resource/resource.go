@@ -19,9 +19,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
 	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
-
-	"github.com/openlyinc/pointy"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -61,8 +60,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -107,8 +106,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Create atlas client
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -146,8 +145,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(userprofile.DefaultProfile)
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -163,10 +162,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	ldapReq := &mongodbatlas.LDAP{
-		Hostname:     pointy.String("-"),
-		Port:         pointy.Int(1111),
-		BindPassword: pointy.String("-"),
-		BindUsername: pointy.String("-"),
+		Hostname:     aws.String("-"),
+		Port:         aws.Int(1111),
+		BindPassword: aws.String("-"),
+		BindUsername: aws.String("-"),
 	}
 
 	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)

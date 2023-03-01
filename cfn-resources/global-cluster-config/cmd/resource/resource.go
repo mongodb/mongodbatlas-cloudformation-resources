@@ -20,21 +20,21 @@ import (
 	"fmt"
 	"net/http"
 
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
-	"github.com/spf13/cast"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/openlyinc/pointy"
+	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ClusterName, constants.ProjectID}
+var RequiredFields = []string{constants.ClusterName, constants.ProjectID}
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
@@ -45,11 +45,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	// Create Atlas API Request Object
@@ -63,7 +65,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	customZoneMappings := modelToCustomZoneMappings(currentModel.CustomZoneMappings)
 
 	// API call to create
-	_, _, err = client.GlobalClusters.AddCustomZoneMappings(context.Background(), projectID, clusterName, &mongodbatlas.CustomZoneMappingsRequest{
+	_, _, err := client.GlobalClusters.AddCustomZoneMappings(context.Background(), projectID, clusterName, &mongodbatlas.CustomZoneMappingsRequest{
 		CustomZoneMappings: customZoneMappings,
 	})
 	if err != nil {
@@ -91,11 +93,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	// Check if  already exist
@@ -151,7 +155,7 @@ func newModel(globalCluster *mongodbatlas.GlobalCluster, currentModel *Model) *M
 	zones := customZoneToModelMappings(globalCluster.CustomZoneMapping)
 	readModel.CustomZoneMappings = zones
 	readModel.ManagedNamespaces = maps
-	readModel.ApiKeys = currentModel.ApiKeys
+	readModel.Profile = currentModel.Profile
 	readModel.RemoveAllZoneMapping = currentModel.RemoveAllZoneMapping
 	return readModel
 }
@@ -188,13 +192,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
 	// Check if  already exist
 	if !isExist(*client, currentModel) {
 		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil

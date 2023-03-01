@@ -23,11 +23,6 @@ const stack = new cdk.Stack(app, 'atlas-basic-default', {
     env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 
-const apiKeys = {
-    privateKey: stack.node.tryGetContext('MONGODB_ATLAS_PRIVATE_KEY') || process.env.MONGODB_ATLAS_PRIVATE_KEY,
-    publicKey: stack.node.tryGetContext('MONGODB_ATLAS_PUBLIC_KEY') || process.env.MONGODB_ATLAS_PUBLIC_KEY,
-};
-
 const orgId = stack.node.tryGetContext('MONGODB_ATLAS_ORG_ID') || process.env.MONGODB_ATLAS_ORG_ID;
 const vpcId = stack.node.tryGetContext('AWS_VPC_ID') || process.env.AWS_VPC_ID;
 const subnetId = stack.node.tryGetContext('AWS_SUBNET_ID') || process.env.AWS_SUBNET_ID;
@@ -56,7 +51,6 @@ const replicationSpecs = [
 ];
 
 const atlasBasicProps : AtlasBasicProps = {
-    apiKeys: apiKeys,
     clusterProps: {
         replicationSpecs: replicationSpecs,
     },
@@ -73,7 +67,6 @@ const privateEndpointProps : PrivateEndpointProps = {
 }
 
 const props   = {
-    apiKeys: apiKeys,
     atlasBasicProps: atlasBasicProps,
     privateEndpointProps: privateEndpointProps,
     region: awsRegion

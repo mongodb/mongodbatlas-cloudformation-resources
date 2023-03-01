@@ -52,7 +52,7 @@ export class AtlasBasicPrivateEndpoint extends Construct {
             });
         this.privateEndpoint = new CfnPrivateEndpoint(this, 'private-endpoint-'.concat(id),
             {
-                apiKeys: props.apiKeys,
+                profile: props.profile,
                 groupId: this.atlasBasic.mProject.ref,
                 region: props.region || privateEndpointDefaults.region,
                 ...props.privateEndpointProps
@@ -62,10 +62,6 @@ export class AtlasBasicPrivateEndpoint extends Construct {
 
 const validate = (props: AtlasPrivateEndpointProps) => {
     if (!props.atlasBasicProps.projectProps.orgId) {throw Error('Validation error: orgId is not defined');}
-
-    if (!props.apiKeys.publicKey) {throw Error('Validation error: publicKey is not defined');}
-
-    if (!props.apiKeys.privateKey) {throw Error('Validation error: privateKey is not defined');}
 };
 
 
@@ -76,7 +72,7 @@ const validate = (props: AtlasPrivateEndpointProps) => {
  */
 export interface AtlasPrivateEndpointProps {
 
-    readonly apiKeys: ApiKeys;
+    readonly profile?: string;
 
     /**
      * @description
@@ -97,21 +93,6 @@ export interface AtlasPrivateEndpointProps {
      * @memberof AtlasPrivateEndpointProps
      */
     readonly privateEndpointProps: PrivateEndpointProps;
-}
-
-export interface ApiKeys {
-    /**
-     * @description
-     * @type {string}
-     * @memberof AtlasPrivateEndpointProps
-     */
-    readonly privateKey: string;
-    /**
-     * @description
-     * @type {string}
-     * @memberof AtlasPrivateEndpointProps
-     */
-    readonly publicKey: string;
 }
 
 /**

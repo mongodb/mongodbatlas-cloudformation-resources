@@ -2,9 +2,8 @@
 
 ## Description
 This resource allows you to create, read, update and delete a network peering.
-The NetworkPeering resource will automatically manage the corresponding MongoDB::Atlas::NetworkContainer for the given Project and AWS Region specified. 
 
-The peering resource will either return an existing Atlas network container for a given (ProjectID, AWS Region) pair, or create a new one on the fly and use that for the new peering resource. This means that users of VPC Peering should not normally need to ever directly use network container resource.
+Network peering is expecting a network container.
 
 ## Attributes & Parameters
 

@@ -23,7 +23,7 @@
           "Ref": "ProjectId"
         },
         "Type": "DATADOG",
-        "ApiKey": "82f4de077aeb1fdeb36659b2027cc8f7",
+        "ApiKey": "********************************",
         "Region": "US"
       }
     }

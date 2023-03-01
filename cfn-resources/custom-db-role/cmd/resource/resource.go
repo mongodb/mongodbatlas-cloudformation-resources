@@ -19,26 +19,26 @@ import (
 	"fmt"
 	"net/http"
 
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 )
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-custom-db-role")
 }
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.RoleName}
-var UpdateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.RoleName}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.RoleName}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.RoleName}
+var ReadRequiredFields = []string{constants.ProjectID, constants.RoleName}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.RoleName}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.RoleName}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -49,15 +49,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	atlasCustomDBRole := currentModel.ToCustomDBRole()
 
-	customDBRole, response, err := mongodbClient.CustomDBRoles.Create(context.Background(), *currentModel.GroupId, &atlasCustomDBRole)
+	customDBRole, response, err := client.CustomDBRoles.Create(context.Background(), *currentModel.ProjectId, &atlasCustomDBRole)
 	if err != nil {
 		if response.Response.StatusCode == http.StatusConflict {
 			return progress_events.GetFailedEventByCode("Resource already exists",
@@ -84,13 +88,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlasCustomDdRole, response, err := mongodbClient.CustomDBRoles.Get(context.Background(), *currentModel.GroupId, *currentModel.RoleName)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	atlasCustomDdRole, response, err := client.CustomDBRoles.Get(context.Background(), *currentModel.ProjectId, *currentModel.RoleName)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
@@ -113,10 +121,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	var actions []mongodbatlas.Action
@@ -134,7 +146,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		InheritedRoles: inheritedRoles,
 	}
 
-	atlasCustomDdRole, response, err := mongodbClient.CustomDBRoles.Update(context.Background(), *currentModel.GroupId,
+	atlasCustomDdRole, response, err := client.CustomDBRoles.Update(context.Background(), *currentModel.ProjectId,
 		*currentModel.RoleName, &inputCustomDBRole)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
@@ -158,13 +170,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	response, err := mongodbClient.CustomDBRoles.Delete(context.Background(), *currentModel.GroupId, *currentModel.RoleName)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	response, err := client.CustomDBRoles.Delete(context.Background(), *currentModel.ProjectId, *currentModel.RoleName)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
 			response.Response), nil
@@ -179,19 +195,23 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(ListRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	// Create atlas client
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	customDBRoleResponse, response, err := mongodbClient.CustomDBRoles.List(context.Background(),
-		*currentModel.GroupId,
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	customDBRoleResponse, response, err := client.CustomDBRoles.List(context.Background(),
+		*currentModel.ProjectId,
 		nil)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
@@ -202,6 +222,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for _, customDBRole := range *customDBRoleResponse {
 		var m Model
 		m.completeByAtlasRole(customDBRole)
+		m.ProjectId = currentModel.ProjectId
+		m.Profile = currentModel.Profile
 		mm = append(mm, m)
 	}
 

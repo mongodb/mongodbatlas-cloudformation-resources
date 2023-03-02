@@ -14,7 +14,7 @@ if [ -n "${otherParams}" ]; then
 		paramKey="${param}="
 		paramValue=$(echo "$otherParams" | jq -c -r --arg key "$param" '.[$key]')
 		exportString="$paramKey$paramValue"
-		export "$exportString"
+		export "${exportString}"
 		echo
 	done
 fi

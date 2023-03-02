@@ -8,11 +8,11 @@
     },
     "FederationSettingsId": {
       "Type": "String",
-      "Default": "63875a930d379520633ed4e8"
+      "Default": ""
     },
     "OrgId": {
       "Type": "String",
-      "Default": "6387590e54d177787a239b4c"
+      "Default": ""
     },
     "ExternalGroupName": {
       "Type": "String",
@@ -28,7 +28,7 @@
     },
     "ProjectId": {
       "Type": "String",
-      "Default": "638a46aef75a91632ce26596"
+      "Default": ""
     }
   },
   "Mappings": {},
@@ -36,6 +36,7 @@
     "FederatedSettingsOrgRoleMapping": {
       "Type": "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
       "Properties": {
+        "Profile": { "Ref": "Profile"  },
         "FederationSettingsId": {
           "Ref": "FederationSettingsId"
         },
@@ -50,8 +51,8 @@
             "Role": {
               "Ref": "GroupRole"
             },
-            "GroupId": {
-              "Ref": "GroupId"
+            "ProjectId": {
+              "Ref": "ProjectId"
             }
           },
           {

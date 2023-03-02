@@ -20,19 +20,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpointservice"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpointservice"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -45,11 +44,11 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint")
 }
 
-var CreateRequiredFields = []string{constants.GroupID, constants.Region, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.GroupID, constants.Region}
+var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.GroupID, constants.ID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
+var DeleteRequiredFields = []string{constants.GroupID, constants.ID}
+var ListRequiredFields = []string{constants.GroupID}
 
 func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpointInput {
 	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
@@ -80,10 +79,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	status, pe := getProcessStatus(req)
@@ -161,10 +163,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id)
@@ -194,13 +199,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeNotFound), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-
+	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(),
 		*currentModel.GroupId, providerName, *currentModel.Id)
 
@@ -216,7 +222,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				map[string]interface{}{"stateName": "DELETING"}, currentModel, 20), nil
 		}
 	}
-
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
@@ -232,6 +237,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if hasInterfaceEndpoints(privateEndpoint) {
 		epr := privateendpoint.Delete(mongodbClient, *currentModel.GroupId, *currentModel.Id,
 			privateEndpoint.InterfaceEndpoints)
+
 		if epr != nil {
 			return *epr, nil
 		}
@@ -270,10 +276,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	params := &mongodbatlas.ListOptions{
@@ -294,6 +303,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range privateEndpointResponse {
 		var m Model
 		m.completeByConnection(privateEndpointResponse[i])
+		m.Region = currentModel.Region
+		m.Profile = currentModel.Profile
+		m.GroupId = currentModel.GroupId
 		mm = append(mm, m)
 	}
 
@@ -322,6 +334,8 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.EndpointServiceName = &c.EndpointServiceName
 	m.ErrorMessage = &c.ErrorMessage
 	m.Status = &c.Status
+
+	copy(m.InterfaceEndpoints, c.InterfaceEndpoints)
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {

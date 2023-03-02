@@ -1,18 +1,14 @@
-
 {
-    "CloudProviderConfig":{
-        "Aws":{
-            "ExternalId":"",
-            "IamAssumedRoleARN":"",
-            "IamUserARN":"",
-            "RoleId":"",
-            "TestS3Bucket":""
-        }
-    },
-    "GroupId":"",
-    "TenantName":"cfndemo",
-    "ApiKeys": {
-        "PublicKey": "$ATLAS_PUBLIC_KEY",
-        "PrivateKey": "$ATLAS_PRIVATE_KEY"
+  "CloudProviderConfig": {
+    "Aws": {
+      "ExternalId": "",
+      "IamAssumedRoleARN": "",
+      "IamUserARN": "",
+      "RoleId": "",
+      "TestS3Bucket": ""
     }
+  },
+  "ProjectId": "",
+  "TenantName": "cfndemo",
+  "Profile": "default"
 }

@@ -10,9 +10,6 @@ set -o pipefail
 
 set -x
 
-echo "$ATLAS_PUBLIC_KEY"
-echo "$ATLAS_PRIVATE_KEY"
-
 function usage {
 	echo "Creates a new private endpoint role for the test"
 }
@@ -43,22 +40,11 @@ fi
 
 echo "Created project \"${projectName}\" with id: ${projectId}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg groupId "$projectId" \
+jq --arg groupId "$projectId" \
 	--arg region "$region" \
 	--arg vpcId "$vpcId" \
 	--arg subnetId "$subnetId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetIds[0]?|=$subnetId' \
+	'.GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetIds[0]?|=$subnetId' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg groupId "dsafasdgsdhsdfh" \
-	--arg region "$region" \
-	--arg vpcId "$vpcId" \
-	--arg subnetId "$subnetId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetIds[0]?|=$subnetId' \
-	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

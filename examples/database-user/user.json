@@ -7,15 +7,11 @@
       "Description": "",
       "ConstraintDescription": ""
     },
-    "PublicKey": {
+    "Profile": {
       "Type": "String",
       "Description": "",
-      "ConstraintDescription": ""
-    },
-    "PrivateKey": {
-      "Type": "String",
-      "Description": "",
-      "ConstraintDescription": ""
+      "ConstraintDescription": "",
+      "Default": "default"
     }
   },
   "Mappings": {},
@@ -34,15 +30,7 @@
             "RoleName": "atlasAdmin",
             "DatabaseName": "admin"
           }
-        ],
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
-        }
+        ]
       }
     },
     "x509User": {
@@ -52,14 +40,6 @@
         "X509Type": "MANAGED",
         "ProjectId": {
           "Ref": "ProjectId"
-        },
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
         },
         "DatabaseName": "$external",
         "Roles": [
@@ -90,21 +70,13 @@
             "RoleName": "atlasAdmin",
             "DatabaseName": "admin"
           }
-        ],
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
-        }
+        ]
       }
     },
     "awsIamUser": {
       "Type": "MongoDB::Atlas::DatabaseUser",
       "Properties": {
-        "Username": "arn:aws:iam::111111967292:role/cfn-admin",
+        "Username": "arn:aws:iam::9831489223:role/cfn-admin",
         "AWSIAMType": "ROLE",
         "ProjectId": {
           "Ref": "ProjectId"
@@ -115,15 +87,7 @@
             "RoleName": "atlasAdmin",
             "DatabaseName": "admin"
           }
-        ],
-        "ApiKeys": {
-          "PublicKey": {
-            "Ref": "PublicKey"
-          },
-          "PrivateKey": {
-            "Ref": "Privatekey"
-          }
-        }
+        ]
       }
     }
   },

@@ -47,18 +47,6 @@
       },
       "additionalProperties": false
     },
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
     "CriteriaView": {
       "type": "object",
       "properties": {
@@ -111,24 +99,35 @@
   "description": "Returns, adds, edits, or removes an online archive.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "primaryIdentifier": [
-    "/properties/ArchiveId"
+    "/properties/ArchiveId",
+    "/properties/Profile"
   ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/ApiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "ArchiveId": {
       "type": "string",
@@ -215,14 +214,15 @@
   },
   "readOnlyProperties": [
     "/properties/State", 
-    "/properties/TotalCount", 
-    "/properties/Id",
+    "/properties/TotalCount",
     "/properties/ArchiveId",
-    "/properties/Results",
-    "/properties/ClusterName",
     "/properties/ProjectId",
-    "/properties/State",
-    "/definitions/PartitionFieldView/FieldType"
+    "/properties/State"
+  ],
+
+  "required": ["ClusterName", "Criteria"],
+  "createOnlyProperties": [
+    "/properties/Profile"
   ],
   "typeName": "MongoDB::Atlas::OnlineArchive",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

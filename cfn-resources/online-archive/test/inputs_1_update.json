@@ -1,8 +1,4 @@
 {
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": "<>"
-  },
   "ClusterName": "",
   "Criteria": {
     "Type": "DATE",
@@ -10,5 +6,6 @@
     "DateFormat": "ISODATE",
     "ExpireAfterDays": "6"
   },
-  "ProjectId": ""
+  "ProjectId": "",
+  "Profile": "default"
 }

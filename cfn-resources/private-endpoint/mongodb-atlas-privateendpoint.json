@@ -2,18 +2,6 @@
     "typeName": "MongoDB::Atlas::PrivateEndpoint",
     "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
     "definitions": {
-        "ApiKey": {
-            "type": "object",
-            "properties": {
-                "PublicKey": {
-                    "type": "string"
-                },
-                "PrivateKey": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
         "PrivateEndpoint": {
             "type": "object",
             "properties": {
@@ -45,6 +33,11 @@
         }
     },
     "properties": {
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)",
+            "default": "default"
+        },
         "Id": {
             "description": "The unique identifier of the private endpoint service.",
             "type": "string"
@@ -67,9 +60,6 @@
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "ApiKeys": {
-            "$ref": "#/definitions/ApiKey"
-        },
         "Region": {
             "description": "Aws Region",
             "type": "string"
@@ -80,37 +70,56 @@
             "items": {
                 "$ref": "#/definitions/PrivateEndpoint"
             }
+        },
+        "InterfaceEndpoints": {
+            "type": "array",
+            "description": "List of interface endpoint ids associated to the service",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "additionalProperties": false,
     "required": [
         "GroupId",
-        "Region",
-        "ApiKeys"
+        "Region"
     ],
     "readOnlyProperties": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/InterfaceEndpoints"
+    ],
+    "createOnlyProperties": [
+        "/properties/GroupId",
+        "/properties/Region",
+        "/properties/Profile"
     ],
     "primaryIdentifier": [
-        "/properties/Id"
+        "/properties/Id",
+        "/properties/GroupId",
+        "/properties/Region",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "ec2:CreateVpcEndpoint"
+                "ec2:CreateVpcEndpoint",
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                "ec2:DeleteVpcEndpoints"
+                "ec2:DeleteVpcEndpoints",
+                "secretsmanager:GetSecretValue"
             ]
         },
         "list": {
             "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

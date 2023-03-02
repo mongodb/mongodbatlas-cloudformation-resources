@@ -12,15 +12,14 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::LDAPVerify",
     "Properties" : {
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#validations" title="Validations">Validations</a>" : <i>[ <a href="validation.md">Validation</a>, ... ]</i>,
         "<a href="#bindusername" title="BindUsername">BindUsername</a>" : <i>String</i>,
-        "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#hostname" title="HostName">HostName</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#cacertificate" title="CaCertificate">CaCertificate</a>" : <i>String</i>,
         "<a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>" : <i>String</i>,
         "<a href="#bindpassword" title="BindPassword">BindPassword</a>" : <i>String</i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#port" title="Port">Port</a>" : <i>Integer</i>
     }
 }
@@ -31,20 +30,29 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::LDAPVerify
 Properties:
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#validations" title="Validations">Validations</a>: <i>
       - <a href="validation.md">Validation</a></i>
     <a href="#bindusername" title="BindUsername">BindUsername</a>: <i>String</i>
-    <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#hostname" title="HostName">HostName</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#cacertificate" title="CaCertificate">CaCertificate</a>: <i>String</i>
     <a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>: <i>String</i>
     <a href="#bindpassword" title="BindPassword">BindPassword</a>: <i>String</i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#port" title="Port">Port</a>: <i>Integer</i>
 </pre>
 
 ## Properties
+
+#### Profile
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Validations
 
@@ -66,16 +74,6 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Status
-
-The current status of the LDAP over TLS/SSL configuration.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### HostName
 
 Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.
@@ -85,14 +83,6 @@ _Required_: Yes
 _Type_: String
 
 _Pattern_: <code>^([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-f]{1,4}\:){7}([0-9a-f]{1,4})|(([a-z0-9]+\.){1,10}[a-z]+)?$</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ApiKeys
-
-_Required_: Yes
-
-_Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -126,11 +116,11 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -140,7 +130,7 @@ _Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Port
 
@@ -154,10 +144,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 ## Return Values
 
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the RequestId.
-
 ### Fn::GetAtt
 
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
@@ -167,4 +153,8 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### RequestId
 
 Unique 24-hexadecimal digit string that represents the request to verify the LDAP over TLS configuration.
+
+#### Status
+
+The current status of the LDAP over TLS/SSL configuration.
 

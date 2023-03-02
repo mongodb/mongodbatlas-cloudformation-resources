@@ -35,6 +35,7 @@ else
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
+#An active cluster is needed to test the LDAP verify
 ClusterName="${projectName}"
 clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
@@ -54,22 +55,11 @@ while [[ "${status}" != "IDLE" ]]; do
 	echo "status: ${status}"
 done
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
+jq --arg projectId "$projectId" \
 	--arg bindPassword "$bindPassword" \
 	--arg bindUsername "$bindUsername" \
 	--arg hostname "$hostname" \
-	'.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
+	'.ProjectId?|=$projectId | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
-	--arg bindPassword "$bindPassword" \
-	--arg bindUsername "$bindUsername" \
-	--arg hostname "$hostname" \
-	'.GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .BindPassword?|=$bindPassword | .BindUsername?|=$bindUsername | .HostName?|=$hostname' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

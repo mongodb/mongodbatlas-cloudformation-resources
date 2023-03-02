@@ -101,6 +101,14 @@ const atlasBasicProps : AtlasBasicProps = {
     projectProps: {
         orgId: orgId,
     },
+    ipAccessListProps : {
+        accessList: [
+            {
+                ipAddress: '10.10.0.0/24',
+                comment: 'Open Subnets',
+            },
+        ],
+    }
 }
 
 const privateEndpointProps : PrivateEndpointProps = {

@@ -19,7 +19,7 @@ import {AtlasBasicPrivateEndpoint, PrivateEndpointProps} from "./index";
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'atlas-basic-default', {
+const stack = new cdk.Stack(app, 'atlas-basic-private-endpoint', {
     env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 

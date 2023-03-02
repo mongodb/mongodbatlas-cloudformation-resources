@@ -591,10 +591,10 @@
   dependencies:
     ajv "^8.12.0"
 
-"@mongodbatlas-awscdk/atlas-basic@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/atlas-basic/-/atlas-basic-0.1.2.tgz#229a3ac7526c45598aae02a4ec67fc75afec9311"
-  integrity sha512-YsizW0VNyNqPRol2PRiq7wvEBNY6NrKCJ9Aa4JZnTJ3qmV8GBafyQcKqCCTzOv+teEGDdyeXiV9gaMXyPLzOMg==
+"@mongodbatlas-awscdk/atlas-basic@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@mongodbatlas-awscdk/atlas-basic/-/atlas-basic-1.1.0.tgz#01d87827ee5311be55273aebecaad20fe45d69e6"
+  integrity sha512-jxsydR1Igwmtl0f6nN5u9H7edA0sOz680dDIjOt2zkZp2Fkljix9Y3p8uDtSqelMk7DLidx7Efmv7JiYOjPTtQ==
 
 "@mongodbatlas-awscdk/cluster@1.1.0":
   version "1.1.0"
@@ -2161,9 +2161,9 @@ eastasianwidth@^0.2.0:
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
 electron-to-chromium@^1.4.284:
-  version "1.4.314"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.314.tgz#33e4ad7a2ca2ddbe2e113874cc0c0e2a00cb46bf"
-  integrity sha512-+3RmNVx9hZLlc0gW//4yep0K5SYKmIvB5DXg1Yg6varsuAHlHwTeqeygfS8DWwLCsNOWrgj+p9qgM5WYjw1lXQ==
+  version "1.4.315"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.315.tgz#b60a6676b3a1db332cfc8919118344aa06b9ac99"
+  integrity sha512-ndBQYz3Eyy3rASjjQ9poMJGoAlsZ/aZnq6GBsGL4w/4sWIAwiUHVSsMuADbxa8WJw7pZ0oxLpGbtoDt4vRTdCg==
 
 emittery@^0.8.1:
   version "0.8.1"
@@ -2462,9 +2462,9 @@ esprima@^4.0.0, esprima@^4.0.1:
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
 
 esquery@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.4.2.tgz#c6d3fee05dd665808e2ad870631f221f5617b1d1"
-  integrity sha512-JVSoLdTlTDkmjFmab7H/9SL9qGSyjElT3myyKp7krqjVFQCDLmj1QFaCLRFBszBKI0XVZaiiXvuPIX3ZwHe1Ng==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.5.0.tgz#6ce17738de8577694edd7361c57182ac8cb0db0b"
+  integrity sha512-YQLXUplAwJgCydQ78IMJywZCceoqk1oH01OERdSAJc/7U2AylwjhSCLDEtqwg811idIS/9fIU5GjG73IgjKMVg==
   dependencies:
     estraverse "^5.1.0"
 
@@ -4018,10 +4018,10 @@ jsii-diff@^1.76.0:
     log4js "^6.7.1"
     yargs "^16.2.0"
 
-jsii-docgen@^7.1.12:
-  version "7.1.12"
-  resolved "https://registry.yarnpkg.com/jsii-docgen/-/jsii-docgen-7.1.12.tgz#c76205025a78ec9272da43d711fce09342f86b0b"
-  integrity sha512-mEoIFnk4+mpilND7EatTVjxKJyGZZx0rvF0gHdiOe0OfuydXDkO0XtKqY+ft+HtAIek4ikhVKRG7mly6DtP+Bg==
+jsii-docgen@^7.1.13:
+  version "7.1.13"
+  resolved "https://registry.yarnpkg.com/jsii-docgen/-/jsii-docgen-7.1.13.tgz#c43b877835ef72d50a15de5482cb68e849e0cb32"
+  integrity sha512-z7tMi+zvWdKyFh0jwgMf08YbESQvjmQghc1vLVm1wGiJk3A5b+4SvtEIM6XC89l9b1wJQt5Cne3qmtIqneo1CQ==
   dependencies:
     "@jsii/spec" "^1.76.0"
     case "^1.6.3"
@@ -4506,9 +4506,9 @@ minimatch@^6.1.0, minimatch@^6.1.6:
     brace-expansion "^2.0.1"
 
 minimatch@^7.0.1:
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-7.4.1.tgz#166705f9417985ba5149f2dbf2fa50c29832913b"
-  integrity sha512-Oz1iPEP+MGl7KS3SciLsLLcuZ7VsBfb7Qrz/jYt/s/sYAv272P26HSLz2f77Y6hzTKXiBi6g765fqpEDNc5fJw==
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-7.4.2.tgz#157e847d79ca671054253b840656720cb733f10f"
+  integrity sha512-xy4q7wou3vUoC9k1xGTXc+awNdGaGVHtFUaey8tiX4H1QRc04DZ/rmDFwNm2EBsuYEhAZ6SgMmYf3InGY6OauA==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -5158,10 +5158,10 @@ progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.67.69:
-  version "0.67.69"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.69.tgz#ec666e340395a3b429581a91733b6856d0602e86"
-  integrity sha512-F28eW4CZFQwsb93omeVfzAoK9hEajqrzBzKZCwIfKaEupAjqJ8KJkc29FW4MnI7tbZ0DzHg75u0yzzNtotaEXg==
+projen@^0.67.70:
+  version "0.67.70"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.67.70.tgz#e12361c8610db95e27205df31c0c1395b3526a2b"
+  integrity sha512-ruQZAQK2ROXS4UEXhM6j4uLvbvPkmI2EpQBMl2rcJcPkrCr4rmOzcdS8HgNVK8HblKfhzNZuJBuWN6DET8wyBg==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
@@ -5490,9 +5490,9 @@ rimraf@^3.0.0, rimraf@^3.0.2:
     glob "^7.1.3"
 
 rimraf@^4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-4.1.2.tgz#20dfbc98083bdfaa28b01183162885ef213dbf7c"
-  integrity sha512-BlIbgFryTbw3Dz6hyoWFhKk+unCcHMSkZGrTFVAx2WmttdBSonsdtRlwiuTbDqTKr+UlXIUqJVS4QT5tUzGENQ==
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-4.1.3.tgz#e8ace19d5f009b4fa6108deeaffe39ef68bba194"
+  integrity sha512-iyzalDLo3l5FZxxaIGUY7xI4Bf90Xt7pCipc1Mr7RsdU7H3538z+M0tlsUDrz0aHeGS9uNqiKHUJyTewwRP91Q==
 
 run-parallel@^1.1.9:
   version "1.2.0"

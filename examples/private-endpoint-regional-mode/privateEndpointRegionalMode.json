@@ -2,13 +2,9 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This template creates a Private Endpoint Regional Mode on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
-    "PublicKey": {
+    "Profile": {
       "Type": "String",
-      "Default": ""
-    },
-    "PrivateKey": {
-      "Type": "String",
-      "Default": ""
+      "Default": "default"
     },
     "ProjectId": {
       "Type": "String",
@@ -21,10 +17,7 @@
       "Type": "MongoDB::Atlas::PrivateEndPointRegionalMode",
       "Properties":  {
         "ProjectId": { "Ref" : "ProjectId" },
-        "ApiKeys": {
-          "PublicKey": { "Ref" : "PublicKey" },
-          "PrivateKey": { "Ref" : "PrivateKey" }
-        }
+        "Profile": { "Ref" : "Profile" }
       }
     }
   },

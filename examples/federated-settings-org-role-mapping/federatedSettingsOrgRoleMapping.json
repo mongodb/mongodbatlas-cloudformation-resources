@@ -66,5 +66,14 @@
       }
     }
   },
-  "Outputs": {}
+  "Outputs": {
+    "RoleMappingID": {
+      "Value": {
+        "Fn::GetAtt": [
+          "FederatedSettingsOrgRoleMapping",
+          "Id"
+        ]
+      }
+    }
+  }
 }

@@ -257,17 +257,22 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp.Response), nil
 	}
 
-	models := make([]*Model, federatedSettingsOrganizationRoleMappings.TotalCount)
+	models := make([]interface{}, 0) // cfn test
 	for i := range federatedSettingsOrganizationRoleMappings.Results {
-		model := &Model{}
-		roleMappingToModel(*model, federatedSettingsOrganizationRoleMappings.Results[i])
+		model := Model{}
+		model.Profile = currentModel.Profile
+		model.OrgId = currentModel.OrgId
+		model.FederationSettingsId = currentModel.FederationSettingsId
+		model.Id = &federatedSettingsOrganizationRoleMappings.Results[i].ID
+		model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings.Results[i].ExternalGroupName
+		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings.Results[i].RoleAssignments)
 		models = append(models, model)
 	}
 	return handler.ProgressEvent{
-		OperationStatus:  handler.Success,
-		Message:          "List",
-		ResourceModel:    models,
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		OperationStatus: handler.Success,
+		Message:         "List",
+		ResourceModels:  models,
+	}, nil
 }
 
 func modelToRoleMappingRequest(currentModel *Model) (*mongodbatlas.FederatedSettingsOrganizationRoleMapping, handler.ProgressEvent, error) {

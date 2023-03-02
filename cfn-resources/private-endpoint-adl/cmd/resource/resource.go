@@ -17,8 +17,9 @@ package resource
 import (
 	"context"
 	"errors"
-	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"net/http"
+
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"

@@ -18,6 +18,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/aws/aws-sdk-go/aws"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -25,7 +28,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
+
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -36,12 +39,12 @@ const (
 	Port         = "Port"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID,
+var CreateRequiredFields = []string{constants.ProjectID,
 	BindUsername, BindPassword, Hostname, Port}
-var ReadRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
-var UpdateRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
-var DeleteRequiredFields = []string{constants.GroupID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey}
+var ReadRequiredFields = []string{constants.ProjectID}
+var UpdateRequiredFields = []string{constants.ProjectID}
+var DeleteRequiredFields = []string{constants.ProjectID}
+var ListRequiredFields []string
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-ldap-configuration")
@@ -68,7 +71,7 @@ func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
 
 	ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: pointy.Bool(true),
+		AuthenticationEnabled: aws.Bool(true),
 		Hostname:              m.Hostname,
 		Port:                  m.Port,
 		BindUsername:          m.BindUsername,
@@ -118,10 +121,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), *currentModel.ProjectId)
 	if err != nil {
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if isResourceEnabled(*ldapConf) {
+		return progressEvents.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
 	enabled := true
@@ -130,7 +146,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -156,14 +172,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
-	ldapConf, errPe := Get(client, *currentModel.GroupId)
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	ldapConf, errPe := Get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
@@ -208,21 +227,25 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Validate if resource exists
-	_, errPe := Get(client, *currentModel.GroupId)
+	_, errPe := Get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -251,23 +274,27 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progressEvents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Validate if resource exists
-	_, errPe := Get(client, *currentModel.GroupId)
+	_, errPe := Get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
-	ldapReq.LDAP.AuthorizationEnabled = pointy.Bool(false)
-	ldapReq.LDAP.AuthenticationEnabled = pointy.Bool(false)
+	ldapReq.LDAP.AuthorizationEnabled = aws.Bool(false)
+	ldapReq.LDAP.AuthenticationEnabled = aws.Bool(false)
 
-	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.GroupId, ldapReq)
+	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Update - error: %+v", err)
 		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil

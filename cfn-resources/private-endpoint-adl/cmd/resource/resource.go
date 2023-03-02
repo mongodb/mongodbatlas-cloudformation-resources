@@ -19,6 +19,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -67,7 +69,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	alreadyExists, pe := resourceAlreadyExists(*client, *currentModel)
+	if pe != nil {
+		return *pe, nil
+	}
+	if alreadyExists {
+		return progressevents.GetFailedEventByCode("resource Already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
+	}
+
 	ctx := context.Background()
+
 	cm := mongodbatlas.PrivateLinkEndpointDataLake{
 		Provider:   *currentModel.Provider,
 		Type:       *currentModel.Type,
@@ -85,6 +96,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   currentModel,
 	}
 	return event, nil
+}
+
+func resourceAlreadyExists(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent) {
+	_, resp, err := client.DataLakes.GetPrivateLinkEndpoint(context.Background(), *currentModel.ProjectId, *currentModel.EndpointId)
+	if err != nil {
+		if resp.Response.StatusCode == http.StatusNotFound {
+			return false, nil
+		}
+		pe := progressevents.GetFailedEventByResponse(err.Error(), resp.Response)
+		return false, &pe
+	}
+
+	return true, nil
 }
 
 // Read handles the Read event from the Cloudformation service.

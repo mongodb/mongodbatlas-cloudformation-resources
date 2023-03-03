@@ -1,6 +1,6 @@
 {
     "desiredResourceState": {
-        "GroupId": "",
+        "ProjectId": "",
         "ClusterName": "",
         "Profile": "",
         "SnapshotId": "",

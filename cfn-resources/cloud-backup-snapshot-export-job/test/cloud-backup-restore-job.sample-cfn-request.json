@@ -2,10 +2,7 @@
     "desiredResourceState": {
         "GroupId": "",
         "ClusterName": "",
-        "ApiKeys": {
-            "PublicKey": "",
-            "PrivateKey": ""
-        },
+        "Profile": "",
         "SnapshotId": "",
         "ExportBucketId": "",
         "ExportId": "",

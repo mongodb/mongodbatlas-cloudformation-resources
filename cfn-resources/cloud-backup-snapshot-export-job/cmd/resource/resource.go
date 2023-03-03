@@ -19,23 +19,22 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-
-	"github.com/spf13/cast"
-
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ExportBucketID, constants.SnapshotID}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ExportID, constants.ClusterName}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.GroupID, constants.ClusterName}
+var CreateRequiredFields = []string{constants.ProjectID, constants.ExportBucketID, constants.SnapshotID}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ExportID, constants.ClusterName}
+var ListRequiredFields = []string{constants.ProjectID, constants.ClusterName}
 
 const (
 	ErrorExportJobCreate = "error creating Export Job for the project(%s) : %s"
@@ -58,19 +57,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// create API request object
 	clusterName := cast.ToString(currentModel.ClusterName)
 	snapshotID := cast.ToString(currentModel.SnapshotId)
 	bucketID := cast.ToString(currentModel.ExportBucketId)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 	request := &mongodbatlas.CloudProviderSnapshotExportJob{
 		SnapshotID:     snapshotID,
 		ExportBucketID: bucketID,
@@ -95,7 +95,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// logic included for CFN Test starts-a workaround for missing delete handler
 	if currentModel.TestMode != nil {
-		_, _ = util.DeleteKey(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session)
+		_, _ = util.DeleteKey(*currentModel.ProjectId, cast.ToString(currentModel.ExportId), req.Session)
 	}
 	// logic included for CFN Test ends
 
@@ -130,17 +130,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	exportJobID := cast.ToString(currentModel.ExportId)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 
 	// API call to read export job
 	exportJob, resp, err := client.CloudProviderSnapshotExportJobs.Get(context.Background(), projectID, clusterName, exportJobID)
@@ -165,10 +166,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// No OP .
 
 	// logic included for CFN Test starts-a workaround for missing delete handler
-	if currentModel.TestMode != nil && util.Get(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session) != "" {
+	if currentModel.TestMode != nil && util.Get(*currentModel.ProjectId, cast.ToString(currentModel.ExportId), req.Session) != "" {
 		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	_, _ = util.PutKey(*currentModel.GroupId, "deleted", cast.ToString(currentModel.ExportId), req.Session)
+	_, _ = util.PutKey(*currentModel.ProjectId, "deleted", cast.ToString(currentModel.ExportId), req.Session)
 	// logic included for CFN Test ends
 
 	return handler.ProgressEvent{
@@ -191,16 +192,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Create Atlas API Request Object
 	clusterName := cast.ToString(currentModel.ClusterName)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 
 	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
@@ -230,7 +233,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	clusterName := cast.ToString(currentModel.ClusterName)
 	exportJobID := cast.ToString(currentModel.ExportId)
-	projectID := cast.ToString(currentModel.GroupId)
+	projectID := cast.ToString(currentModel.ProjectId)
 	isReady, state, err := isJobInTargetState(client, projectID, exportJobID, clusterName, targetState)
 	if err != nil || state == "Cancelled" {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("error occurred while export job ,Details : %v", err),
@@ -356,7 +359,7 @@ func flattenExportComponent(components []*mongodbatlas.CloudProviderSnapshotExpo
 }
 
 func getDeleteStatus(req handler.Request, currentModel *Model) bool {
-	return currentModel.TestMode != nil && util.Get(*currentModel.GroupId, cast.ToString(currentModel.ExportId), req.Session) == "deleted"
+	return currentModel.TestMode != nil && util.Get(*currentModel.ProjectId, cast.ToString(currentModel.ExportId), req.Session) == "deleted"
 }
 
 func handleCFNTestList(req handler.Request, currentModel *Model) (handler.ProgressEvent, error) {

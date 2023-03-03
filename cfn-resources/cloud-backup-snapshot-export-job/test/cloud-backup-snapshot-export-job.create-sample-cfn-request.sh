@@ -24,7 +24,7 @@ jq --arg profile "$ATLAS_PROFILE" \
    --arg org "$ATLAS_ORG_ID" \
    --arg ClusterName "$ClusterName" \
    --arg group_id "$projectId" \
-   --arg SnapshotId "$SnapshotId" \
+   --arg snapshotId "$SnapshotId" \
     --arg ExportBucketId "$ExportBucketId" \
    '.desiredResourceState.ExportBucketId?|=$ExportBucketId |.desiredResourceState.SnapshotId?|=$SnapshotId | .desiredResourceState.GroupId?|=$group_id | .desiredResourceState.Profile?|=$profile | .desiredResourceState.ClusterName?|=$ClusterName' \
   "$(dirname "$0")/cloud-backup-restore-job.sample-cfn-request.json"

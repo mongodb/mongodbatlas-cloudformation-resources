@@ -22,7 +22,7 @@ Resources:
   CloudBackUp:
     "Type": "MongoDB::Atlas::BackupSnapshot",
     Properties:
-      GroupId: !Ref "ProjectId"
+      ProjectId: !Ref "ProjectId"
       ClusterName: !Ref  "ClusterName"
       Description: "A testing for creating cloud provider snapshot 2",
       RetentionInDays: 3 ,

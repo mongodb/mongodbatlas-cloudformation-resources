@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == ""{
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	// Create atlas client
@@ -130,7 +130,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == ""{
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	// Create atlas client
@@ -192,7 +192,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == ""{
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	// Create atlas client

@@ -20,7 +20,7 @@ export interface CfnNetworkPeeringProps {
    *
    * @schema CfnNetworkPeeringProps#ContainerId
    */
-  readonly containerId?: string;
+  readonly containerId: string;
 
   /**
    * Amazon Web Services (AWS) region where the Virtual Peering Connection (VPC) that you peered with the MongoDB Cloud VPC resides. The resource returns null if your VPC and the MongoDB Cloud VPC reside in the same region.
@@ -51,16 +51,11 @@ export interface CfnNetworkPeeringProps {
   readonly vpcId: string;
 
   /**
-   * Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
    *
-   * @schema CfnNetworkPeeringProps#ConnectionId
+   * @schema CfnNetworkPeeringProps#Profile
    */
-  readonly connectionId?: string;
-
-  /**
-   * @schema CfnNetworkPeeringProps#ApiKeys
-   */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile?: string;
 
 }
 
@@ -77,39 +72,7 @@ export function toJson_CfnNetworkPeeringProps(obj: CfnNetworkPeeringProps | unde
     'AwsAccountId': obj.awsAccountId,
     'RouteTableCIDRBlock': obj.routeTableCidrBlock,
     'VpcId': obj.vpcId,
-    'ConnectionId': obj.connectionId,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -146,6 +109,10 @@ export class CfnNetworkPeering extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::NetworkPeering.ErrorStateName`
    */
   public readonly attrErrorStateName: string;
+  /**
+   * Attribute `MongoDB::Atlas::NetworkPeering.ConnectionId`
+   */
+  public readonly attrConnectionId: string;
 
   /**
    * Create a new `MongoDB::Atlas::NetworkPeering`.
@@ -162,5 +129,6 @@ export class CfnNetworkPeering extends cdk.CfnResource {
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
     this.attrStatusName = cdk.Token.asString(this.getAtt('StatusName'));
     this.attrErrorStateName = cdk.Token.asString(this.getAtt('ErrorStateName'));
+    this.attrConnectionId = cdk.Token.asString(this.getAtt('ConnectionId'));
   }
 }

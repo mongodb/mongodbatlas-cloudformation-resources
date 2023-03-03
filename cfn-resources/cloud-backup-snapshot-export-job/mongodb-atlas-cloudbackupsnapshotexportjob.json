@@ -41,49 +41,34 @@
         }
       },
       "additionalProperties": false
-    },
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
     }
   },
   "description": "Returns and adds Cloud Backup export jobs.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     },
     "read": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     },
     "list": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     },
     "delete": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     }
   },
-  "primaryIdentifier": [
-    "/properties/ExportId"
-
-  ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "ClusterName": {
       "type": "string",
       "description": "Human-readable label that identifies the cluster.",
       "maxLength": 64,
-      "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "minLength": 1
     },
     "Components": {
       "type": "array",
@@ -142,7 +127,7 @@
     "TestMode": {
       "type": "string"
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
@@ -176,6 +161,17 @@
       "enum": ["Cancelled", "Failed", "InProgress", "Queued", "Successful"]
     }
   },
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/ExportId",
+    "/properties/Profile"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Profile"
+  ],
   "readOnlyProperties": [
     "/properties/ExportId",
     "/properties/TestMode",

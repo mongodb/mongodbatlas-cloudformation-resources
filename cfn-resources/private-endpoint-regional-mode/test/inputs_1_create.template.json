@@ -1,7 +1,4 @@
 {
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    },
+    "Profile": "default",
     "ProjectId": ""
 }

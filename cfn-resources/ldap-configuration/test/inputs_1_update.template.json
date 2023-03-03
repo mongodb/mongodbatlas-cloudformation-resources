@@ -1,12 +1,9 @@
 {
-    "GroupId": "",
+    "ProjectId": "",
     "BindPassword": "",
     "BindUsername": "",
     "Hostname": "",
     "Port": "636",
     "AuthorizationEnabled": "true",
-    "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-    }
+    "Profile": "default"
 }

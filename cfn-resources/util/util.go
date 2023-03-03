@@ -24,12 +24,12 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/mongodb-forks/digest"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"

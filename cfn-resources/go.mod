@@ -3,11 +3,11 @@ module github.com/mongodb/mongodbatlas-cloudformation-resources
 go 1.19
 
 require (
-	github.com/Sectorbob/mlab-ns2 v0.0.0-20171030222938-d3aa0c295a8a
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
 	github.com/aws/aws-sdk-go v1.44.210
 	github.com/dave/jennifer v1.6.0
 	github.com/getkin/kin-openapi v0.114.0
+	github.com/mongodb-forks/digest v1.0.4
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/openlyinc/pointy v1.2.0
 	github.com/rs/xid v1.4.0

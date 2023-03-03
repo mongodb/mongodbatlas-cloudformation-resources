@@ -12,7 +12,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::FederatedSettingsIdentityProvider",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#ssodebugenabled" title="SsoDebugEnabled">SsoDebugEnabled</a>" : <i>Boolean</i>,
         "<a href="#associateddomains" title="AssociatedDomains">AssociatedDomains</a>" : <i>[ String, ... ]</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
@@ -30,7 +29,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::FederatedSettingsIdentityProvider
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#ssodebugenabled" title="SsoDebugEnabled">SsoDebugEnabled</a>: <i>Boolean</i>
     <a href="#associateddomains" title="AssociatedDomains">AssociatedDomains</a>: <i>
       - String</i>
@@ -43,14 +41,6 @@ Properties:
 </pre>
 
 ## Properties
-
-#### ApiKeys
-
-_Required_: No
-
-_Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### SsoDebugEnabled
 
@@ -147,4 +137,8 @@ Unique 24-hexadecimal digit string that identifies your federation.
 #### OktaIdpId
 
 Unique 20-hexadecimal digit string that identifies the identity provider.
+
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 

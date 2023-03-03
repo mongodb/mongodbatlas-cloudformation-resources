@@ -9,8 +9,5 @@
     "RequestBinding": "",
     "ResponseSignatureAlgorithm": "",
     "SsoUrl": "",
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    }
+    "Profile": "federation"
 }

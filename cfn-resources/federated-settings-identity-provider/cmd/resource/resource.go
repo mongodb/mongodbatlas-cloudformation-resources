@@ -18,7 +18,8 @@ import (
 	"context"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -31,11 +32,9 @@ const (
 	OktaIdpID = "OktaIdpId"
 )
 
-var CreateRequiredFields = []string{constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.FederationSettingsID, OktaIdpID, constants.PvtKey, constants.PubKey}
-var UpdateRequiredFields = []string{constants.FederationSettingsID, OktaIdpID, constants.PvtKey, constants.PubKey}
-var DeleteRequiredFields = []string{constants.PvtKey, constants.PubKey}
-var ListRequiredFields = []string{constants.PvtKey, constants.PubKey, constants.FederationSettingsID}
+var ReadRequiredFields = []string{constants.FederationSettingsID, OktaIdpID}
+var UpdateRequiredFields = []string{constants.FederationSettingsID, OktaIdpID}
+var ListRequiredFields = []string{constants.FederationSettingsID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -73,15 +72,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Debugf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	// Create MongoDb Atlas Client using keys
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	federatedSettingsIdentityProvider, resp, err := client.FederatedSettings.GetIdentityProvider(context.Background(), *currentModel.FederationSettingsId, *currentModel.OktaIdpId)
@@ -108,15 +106,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Debugf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	// Create MongoDb Atlas Client using keys
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	federatedSettingsIdentityProviderUpdate, resp, err := client.FederatedSettings.GetIdentityProvider(context.Background(), *currentModel.FederationSettingsId, *currentModel.OktaIdpId)
@@ -182,15 +179,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Debugf("List - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	// Create MongoDb Atlas Client using keys
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	federatedSettingsIdentityProviders, resp, err := client.FederatedSettings.ListIdentityProviders(context.Background(), *currentModel.FederationSettingsId, nil)

@@ -23,25 +23,11 @@ export interface CfnProjectProps {
   readonly orgId: string;
 
   /**
-   * Unique identifier of the organization within which to create the project.
-   *
-   * @schema CfnProjectProps#ProjectOwnerId
-   */
-  readonly projectOwnerId?: string;
-
-  /**
-   * Unique identifier of the organization within which to create the project.
+   * Flag that indicates whether to create the project with default alert settings.
    *
    * @schema CfnProjectProps#WithDefaultAlertsSettings
    */
   readonly withDefaultAlertsSettings?: boolean;
-
-  /**
-   * The number of Atlas clusters deployed in the project.
-   *
-   * @schema CfnProjectProps#ClusterCount
-   */
-  readonly clusterCount?: number;
 
   /**
    * @schema CfnProjectProps#ProjectSettings
@@ -49,9 +35,11 @@ export interface CfnProjectProps {
   readonly projectSettings?: ProjectSettings;
 
   /**
-   * @schema CfnProjectProps#ApiKeys
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnProjectProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * @schema CfnProjectProps#ProjectTeams
@@ -74,11 +62,9 @@ export function toJson_CfnProjectProps(obj: CfnProjectProps | undefined): Record
   const result = {
     'Name': obj.name,
     'OrgId': obj.orgId,
-    'ProjectOwnerId': obj.projectOwnerId,
     'WithDefaultAlertsSettings': obj.withDefaultAlertsSettings,
-    'ClusterCount': obj.clusterCount,
     'ProjectSettings': toJson_ProjectSettings(obj.projectSettings),
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ProjectTeams': obj.projectTeams?.map(y => toJson_ProjectTeam(y)),
     'ProjectApiKeys': obj.projectApiKeys?.map(y => toJson_ProjectApiKey(y)),
   };
@@ -130,37 +116,6 @@ export function toJson_ProjectSettings(obj: ProjectSettings | undefined): Record
     'IsPerformanceAdvisorEnabled': obj.isPerformanceAdvisorEnabled,
     'IsRealtimePerformancePanelEnabled': obj.isRealtimePerformancePanelEnabled,
     'IsSchemaAdvisorEnabled': obj.isSchemaAdvisorEnabled,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -240,7 +195,7 @@ export class CfnProject extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::Project';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::Project";
 
   /**
    * Resource props.
@@ -255,6 +210,14 @@ export class CfnProject extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::Project.Created`
    */
   public readonly attrCreated: string;
+  /**
+   * Attribute `MongoDB::Atlas::Project.ProjectOwnerId`
+   */
+  public readonly attrProjectOwnerId: string;
+  /**
+   * Attribute `MongoDB::Atlas::Project.ClusterCount`
+   */
+  public readonly attrClusterCount: number;
 
   /**
    * Create a new `MongoDB::Atlas::Project`.
@@ -270,5 +233,7 @@ export class CfnProject extends cdk.CfnResource {
 
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
     this.attrCreated = cdk.Token.asString(this.getAtt('Created'));
+    this.attrProjectOwnerId = cdk.Token.asString(this.getAtt('ProjectOwnerId'));
+    this.attrClusterCount = cdk.Token.asNumber(this.getAtt('ClusterCount'));
   }
 }

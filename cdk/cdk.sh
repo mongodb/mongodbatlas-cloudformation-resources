@@ -19,8 +19,8 @@
 #
 # How to use it:
 #   1. CDK L1:  ./cdk.sh "<RESOURCE NAME>" l1
-#   2. CDK L2:  ./cdk/sh "<RESOURCE NAME>" l2
-#   4. CDK L3:  ./cdk/sh "<RESOURCE NAME>" l3
+#   2. CDK L2:  ./cdk.sh "<RESOURCE NAME>" l2
+#   4. CDK L3:  ./cdk.sh "<RESOURCE NAME>" l3
 
 set -euo pipefail
 

@@ -405,7 +405,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrCreateDate">attrCreateDate</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::ServerlessInstance.CreateDate`. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::ServerlessInstance.Id`. |
-| <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrLinks">attrLinks</a></code> | <code>any[]</code> | Attribute `MongoDB::Atlas::ServerlessInstance.Links`. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrMongoDBVersion">attrMongoDBVersion</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::ServerlessInstance.MongoDBVersion`. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrStateName">attrStateName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::ServerlessInstance.StateName`. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrTotalCount">attrTotalCount</a></code> | <code>number</code> | Attribute `MongoDB::Atlas::ServerlessInstance.TotalCount`. |
@@ -529,18 +528,6 @@ Attribute `MongoDB::Atlas::ServerlessInstance.Id`.
 
 ---
 
-##### `attrLinks`<sup>Required</sup> <a name="attrLinks" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrLinks"></a>
-
-```typescript
-public readonly attrLinks: any[];
-```
-
-- *Type:* any[]
-
-Attribute `MongoDB::Atlas::ServerlessInstance.Links`.
-
----
-
 ##### `attrMongoDBVersion`<sup>Required</sup> <a name="attrMongoDBVersion" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstance.property.attrMongoDBVersion"></a>
 
 ```typescript
@@ -611,45 +598,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/serverless-instance'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnServerlessInstanceProps <a name="CfnServerlessInstanceProps" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps"></a>
 
 Returns, adds, edits, and removes serverless instances.
@@ -666,26 +614,17 @@ const cfnServerlessInstanceProps: CfnServerlessInstanceProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.connectionStrings">connectionStrings</a></code> | <code><a href="#@mongodbatlas-awscdk/serverless-instance.ServerlessInstanceConnectionStrings">ServerlessInstanceConnectionStrings</a></code> | Collection of Uniform Resource Locators that point to the MongoDB database. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.continuousBackupEnabled">continuousBackupEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the serverless instances uses Serverless Continuous Backup. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.includeCount">includeCount</a></code> | <code>boolean</code> | Flag that indicates whether the response returns the total number of items (**totalCount**) in the response. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.itemsPerPage">itemsPerPage</a></code> | <code>number</code> | Number of items that the response returns per page. |
+| <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.links">links</a></code> | <code><a href="#@mongodbatlas-awscdk/serverless-instance.Link">Link</a>[]</code> | List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.name">name</a></code> | <code>string</code> | Human-readable label that identifies the serverless instance. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.pageNum">pageNum</a></code> | <code>number</code> | Number of the page that displays the current set of the total objects that the response returns. |
+| <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.providerSettings">providerSettings</a></code> | <code><a href="#@mongodbatlas-awscdk/serverless-instance.ServerlessInstanceProviderSettings">ServerlessInstanceProviderSettings</a></code> | Group of settings that configure the provisioned MongoDB serverless instance. |
 | <code><a href="#@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.terminationProtectionEnabled">terminationProtectionEnabled</a></code> | <code>boolean</code> | Flag that indicates whether termination protection is enabled on the serverless instance. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/serverless-instance.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -739,6 +678,20 @@ Number of items that the response returns per page.
 
 ---
 
+##### `links`<sup>Optional</sup> <a name="links" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.links"></a>
+
+```typescript
+public readonly links: Link[];
+```
+
+- *Type:* <a href="#@mongodbatlas-awscdk/serverless-instance.Link">Link</a>[]
+
+List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both.
+
+RFC 5988 outlines these relationships.
+
+---
+
 ##### `name`<sup>Optional</sup> <a name="name" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.name"></a>
 
 ```typescript
@@ -760,6 +713,18 @@ public readonly pageNum: number;
 - *Type:* number
 
 Number of the page that displays the current set of the total objects that the response returns.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/serverless-instance.CfnServerlessInstanceProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 
@@ -800,6 +765,53 @@ public readonly terminationProtectionEnabled: boolean;
 Flag that indicates whether termination protection is enabled on the serverless instance.
 
 If set to true, MongoDB Cloud won't delete the serverless instance. If set to false, MongoDB cloud will delete the serverless instance."
+
+---
+
+### Link <a name="Link" id="@mongodbatlas-awscdk/serverless-instance.Link"></a>
+
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/serverless-instance.Link.Initializer"></a>
+
+```typescript
+import { Link } from '@mongodbatlas-awscdk/serverless-instance'
+
+const link: Link = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@mongodbatlas-awscdk/serverless-instance.Link.property.href">href</a></code> | <code>string</code> | Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. |
+| <code><a href="#@mongodbatlas-awscdk/serverless-instance.Link.property.rel">rel</a></code> | <code>string</code> | Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. |
+
+---
+
+##### `href`<sup>Optional</sup> <a name="href" id="@mongodbatlas-awscdk/serverless-instance.Link.property.href"></a>
+
+```typescript
+public readonly href: string;
+```
+
+- *Type:* string
+
+Uniform Resource Locator (URL) that points another API resource to which this response has some relationship.
+
+This URL often begins with `https://mms.mongodb.com`.
+
+---
+
+##### `rel`<sup>Optional</sup> <a name="rel" id="@mongodbatlas-awscdk/serverless-instance.Link.property.rel"></a>
+
+```typescript
+public readonly rel: string;
+```
+
+- *Type:* string
+
+Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource.
+
+This URL often begins with `https://mms.mongodb.com`.
 
 ---
 

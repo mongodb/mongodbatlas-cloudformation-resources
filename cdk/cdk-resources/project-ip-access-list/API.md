@@ -403,7 +403,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::ProjectIpAccessList.Id`. |
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps">CfnProjectIpAccessListProps</a></code> | Resource props. |
 
 ---
@@ -497,18 +496,6 @@ public readonly cfnResourceType: string;
 - *Type:* string
 
 AWS resource type.
-
----
-
-##### `attrId`<sup>Required</sup> <a name="attrId" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList.property.attrId"></a>
-
-```typescript
-public readonly attrId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::ProjectIpAccessList.Id`.
 
 ---
 
@@ -649,45 +636,6 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/project-ip-access-list'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnProjectIpAccessListProps <a name="CfnProjectIpAccessListProps" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps"></a>
 
 Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.
@@ -704,31 +652,11 @@ const cfnProjectIpAccessListProps: CfnProjectIpAccessListProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.accessList">accessList</a></code> | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.AccessListDefinition">AccessListDefinition</a>[]</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.accessList">accessList</a></code> | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.AccessListDefinition">AccessListDefinition</a>[]</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.listOptions">listOptions</a></code> | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.ListOptions">ListOptions</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.totalCount">totalCount</a></code> | <code>number</code> | Number of documents returned in this response. |
-
----
-
-##### `accessList`<sup>Required</sup> <a name="accessList" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.accessList"></a>
-
-```typescript
-public readonly accessList: AccessListDefinition[];
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/project-ip-access-list.AccessListDefinition">AccessListDefinition</a>[]
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/project-ip-access-list.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -744,6 +672,16 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
+##### `accessList`<sup>Optional</sup> <a name="accessList" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.accessList"></a>
+
+```typescript
+public readonly accessList: AccessListDefinition[];
+```
+
+- *Type:* <a href="#@mongodbatlas-awscdk/project-ip-access-list.AccessListDefinition">AccessListDefinition</a>[]
+
+---
+
 ##### `listOptions`<sup>Optional</sup> <a name="listOptions" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.listOptions"></a>
 
 ```typescript
@@ -751,6 +689,18 @@ public readonly listOptions: ListOptions;
 ```
 
 - *Type:* <a href="#@mongodbatlas-awscdk/project-ip-access-list.ListOptions">ListOptions</a>
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessListProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

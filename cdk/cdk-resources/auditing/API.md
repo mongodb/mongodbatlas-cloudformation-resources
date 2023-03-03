@@ -403,6 +403,9 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
+| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.attrAuditAuthorizationSuccess">attrAuditAuthorizationSuccess</a></code> | <code>aws-cdk-lib.IResolvable</code> | Attribute `MongoDB::Atlas::Auditing.AuditAuthorizationSuccess`. |
+| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.attrAuditFilter">attrAuditFilter</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Auditing.AuditFilter`. |
+| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.attrConfigurationType">attrConfigurationType</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Auditing.ConfigurationType`. |
 | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditing.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps">CfnAuditingProps</a></code> | Resource props. |
 
 ---
@@ -499,6 +502,42 @@ AWS resource type.
 
 ---
 
+##### `attrAuditAuthorizationSuccess`<sup>Required</sup> <a name="attrAuditAuthorizationSuccess" id="@mongodbatlas-awscdk/auditing.CfnAuditing.property.attrAuditAuthorizationSuccess"></a>
+
+```typescript
+public readonly attrAuditAuthorizationSuccess: IResolvable;
+```
+
+- *Type:* aws-cdk-lib.IResolvable
+
+Attribute `MongoDB::Atlas::Auditing.AuditAuthorizationSuccess`.
+
+---
+
+##### `attrAuditFilter`<sup>Required</sup> <a name="attrAuditFilter" id="@mongodbatlas-awscdk/auditing.CfnAuditing.property.attrAuditFilter"></a>
+
+```typescript
+public readonly attrAuditFilter: string;
+```
+
+- *Type:* string
+
+Attribute `MongoDB::Atlas::Auditing.AuditFilter`.
+
+---
+
+##### `attrConfigurationType`<sup>Required</sup> <a name="attrConfigurationType" id="@mongodbatlas-awscdk/auditing.CfnAuditing.property.attrConfigurationType"></a>
+
+```typescript
+public readonly attrConfigurationType: string;
+```
+
+- *Type:* string
+
+Attribute `MongoDB::Atlas::Auditing.ConfigurationType`.
+
+---
+
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/auditing.CfnAuditing.property.props"></a>
 
 ```typescript
@@ -533,45 +572,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/auditing.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/auditing.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/auditing'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/auditing.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/auditing.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/auditing.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/auditing.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnAuditingProps <a name="CfnAuditingProps" id="@mongodbatlas-awscdk/auditing.CfnAuditingProps"></a>
 
 Returns and edits database auditing settings for MongoDB Cloud projects.
@@ -588,21 +588,8 @@ const cfnAuditingProps: CfnAuditingProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/auditing.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.auditAuthorizationSuccess">auditAuthorizationSuccess</a></code> | <code>boolean</code> | Flag that indicates whether someone set auditing to track successful authentications. |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.auditFilter">auditFilter</a></code> | <code>string</code> | JSON document that specifies which events to record. |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.configurationType">configurationType</a></code> | <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType">CfnAuditingPropsConfigurationType</a></code> | Human-readable label that displays how to configure the audit filter. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/auditing.ApiKeyDefinition">ApiKeyDefinition</a>
+| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 
 ---
 
@@ -618,81 +605,17 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
-##### `auditAuthorizationSuccess`<sup>Optional</sup> <a name="auditAuthorizationSuccess" id="@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.auditAuthorizationSuccess"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.profile"></a>
 
 ```typescript
-public readonly auditAuthorizationSuccess: boolean;
-```
-
-- *Type:* boolean
-
-Flag that indicates whether someone set auditing to track successful authentications.
-
-This only applies to the `"atype" : "authCheck"` audit filter. Setting this parameter to `true` degrades cluster performance.
-
----
-
-##### `auditFilter`<sup>Optional</sup> <a name="auditFilter" id="@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.auditFilter"></a>
-
-```typescript
-public readonly auditFilter: string;
+public readonly profile: string;
 ```
 
 - *Type:* string
 
-JSON document that specifies which events to record.
-
-Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/.
-
----
-
-##### `configurationType`<sup>Optional</sup> <a name="configurationType" id="@mongodbatlas-awscdk/auditing.CfnAuditingProps.property.configurationType"></a>
-
-```typescript
-public readonly configurationType: CfnAuditingPropsConfigurationType;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType">CfnAuditingPropsConfigurationType</a>
-
-Human-readable label that displays how to configure the audit filter.
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 
 
-
-## Enums <a name="Enums" id="Enums"></a>
-
-### CfnAuditingPropsConfigurationType <a name="CfnAuditingPropsConfigurationType" id="@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType"></a>
-
-Human-readable label that displays how to configure the audit filter.
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType.FILTER_BUILDER">FILTER_BUILDER</a></code> | FILTER_BUILDER. |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType.FILTER_JSON">FILTER_JSON</a></code> | FILTER_JSON. |
-| <code><a href="#@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType.NONE">NONE</a></code> | NONE. |
-
----
-
-##### `FILTER_BUILDER` <a name="FILTER_BUILDER" id="@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType.FILTER_BUILDER"></a>
-
-FILTER_BUILDER.
-
----
-
-
-##### `FILTER_JSON` <a name="FILTER_JSON" id="@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType.FILTER_JSON"></a>
-
-FILTER_JSON.
-
----
-
-
-##### `NONE` <a name="NONE" id="@mongodbatlas-awscdk/auditing.CfnAuditingPropsConfigurationType.NONE"></a>
-
-NONE.
-
----
 

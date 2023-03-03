@@ -1,15 +1,12 @@
 {
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  },
+  "Profile": "",
   "FederationSettingsId": "",
   "OrgId": "",
   "ExternalGroupName": "RM-01",
   "RoleAssignments": [
     {
-      "Role": "GROUP_DATA_ACCESS_READ_WRITE",
-      "GroupId": ""
+      "Role": "GROUP_DATA_ACCESS_READ_ONLY",
+      "ProjectId": ""
     }
   ]
 }

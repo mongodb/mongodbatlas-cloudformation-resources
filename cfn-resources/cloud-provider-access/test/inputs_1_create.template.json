@@ -1,7 +1,4 @@
 {
-        "ApiKeys": {
-            "PublicKey" : "$ATLAS_PUBLIC_KEY",
-            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-        },
-        "ProjectId": "<ReplacedBy-cfn-test-create-inputs.sh>"
+  "Profile": "default",
+  "ProjectId": "<ReplacedBy-cfn-test-create-inputs.sh>"
 }

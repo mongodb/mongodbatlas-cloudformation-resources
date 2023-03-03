@@ -31,6 +31,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudcontrolapi"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -45,10 +46,10 @@ func setup() {
 
 var awsRoleARNRegex = regexp.MustCompile(`arn:[a-z-]+:iam::(\d{12}):role/(.*)`)
 
-var CreateRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
-var ReadRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.CloudProviderAccessRoleID}
-var ListRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID}
-var DeleteRequiredFields = []string{constants.PubKey, constants.PvtKey, constants.ProjectID, constants.CloudProviderAccessRoleID}
+var CreateRequiredFields = []string{constants.ProjectID}
+var ReadRequiredFields = []string{constants.ProjectID, constants.CloudProviderAccessRoleID}
+var ListRequiredFields = []string{constants.ProjectID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.CloudProviderAccessRoleID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -82,14 +83,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	if req.CallbackContext != nil {
@@ -101,6 +101,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	cloudProviderAccessRequest := &mongodbatlas.CloudProviderAccessRoleRequest{
 		ProviderName: constants.AWS,
 	}
+	var err error
 	// Step 1
 	roleResponse, res, err = client.CloudProviderAccess.CreateRole(context.Background(), *currentModel.ProjectId, cloudProviderAccessRequest)
 	if err != nil {
@@ -136,17 +137,16 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
-
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+	var err error
 	var res *mongodbatlas.Response
 	var roles *mongodbatlas.CloudProviderAccessRoles
 	roles, res, err = client.CloudProviderAccess.ListRoles(context.Background(), *currentModel.ProjectId)
@@ -211,14 +211,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	_, _ = log.Warnf("Model validated Delete")
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	_, _ = log.Warnf("Client created Delete")
@@ -227,7 +226,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *mongodbatlas.Response
-
+	var err error
 	_, errRead := Read(req, prevModel, currentModel)
 	if errRead != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -269,16 +268,16 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = log.Debugf("List - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	var err error
 	var res *mongodbatlas.Response
 	var roles *mongodbatlas.CloudProviderAccessRoles
 	roles, res, err = client.CloudProviderAccess.ListRoles(context.Background(), *currentModel.ProjectId)
@@ -293,6 +292,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		role := &(roles.AWSIAMRoles[i])
 		if role.ProviderName == constants.AWS {
 			m.completeByConnection(role)
+			m.Profile = currentModel.Profile
+			m.ProjectId = currentModel.ProjectId
 			mm = append(mm, m)
 		}
 	}

@@ -1,9 +1,6 @@
 {
   "desiredResourceState": {
-    "ApiKeys": {
-      "PublicKey": "$ATLAS_PUBLIC_KEY",
-      "PrivateKey": "$ATLAS_PRIVATE_KEY"
-    },
+    "Profile": "default",
     "ProjectId": "<ReplacedBy-cfn-test-create-inputs.sh>"
   },
   "providerLogGroupName": "mongodb-atlas-cloudprovideraccess-logs",

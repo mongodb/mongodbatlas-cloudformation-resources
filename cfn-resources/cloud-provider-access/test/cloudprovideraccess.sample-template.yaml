@@ -34,16 +34,4 @@ Outputs:
   AtlasCluster:
     Description: "Info on your Atlas Cluster"
     Value: !Ref AtlasCluster
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasCluster" ] ]
-  ClusterState:
-    Description: "Cluster State"
-    Value: !GetAtt "AtlasCluster.StateName"
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","ClusterState" ] ]
-  ClusterSrvAddress:
-    Description: "Hostname for mongodb+srv:// connection string"
-    Value: !GetAtt "AtlasCluster.SrvAddress"
-    Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","ClusterSrvAddress" ] ]
 

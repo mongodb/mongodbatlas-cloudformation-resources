@@ -56,6 +56,17 @@ Note that if you don't provide a profile, the resource will use a default profil
 
 Once you've provided the profile, you can deploy the CloudFormation stack using the AWS Console or the AWS CLI. Refer to the AWS documentation for instructions on how to deploy CloudFormation stacks.
 
+IMPORTANT: when specifying the profile in your cloud formation template, you must specify the Profile Name, NOT the Secret Name
+
+Right:
+```
+  "Profile" : "ProfileName"
+```
+Wrong:
+```
+  "Profile" : "cfn/atlas/profile/ProfileName"
+```
+
 # Logging 
 
 Logging for AWS CloudFormation Public extensions is currently disabled. AWS is evaluating if logging is useful for consumers of third party extensions, if this is something you need or would like to request please open a ticket directly with AWS Support. 

@@ -9,6 +9,13 @@ import * as constructs from 'constructs';
  */
 export interface CfnLdapVerifyProps {
   /**
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnLdapVerifyProps#Profile
+   */
+  readonly profile?: string;
+
+  /**
    * List of validation messages related to the verification of the provided LDAP over TLS configuration details. The array contains a document for each test that Atlas runs. Atlas stops running tests after the first failure.
    *
    * @schema CfnLdapVerifyProps#Validations
@@ -23,23 +30,11 @@ export interface CfnLdapVerifyProps {
   readonly bindUsername: string;
 
   /**
-   * The current status of the LDAP over TLS/SSL configuration.
-   *
-   * @schema CfnLdapVerifyProps#Status
-   */
-  readonly status?: string;
-
-  /**
    * Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. This host must have access to the internet or have a Virtual Private Cloud (VPC) peering connection to your cluster.
    *
    * @schema CfnLdapVerifyProps#HostName
    */
   readonly hostName: string;
-
-  /**
-   * @schema CfnLdapVerifyProps#ApiKeys
-   */
-  readonly apiKeys: ApiKeyDefinition;
 
   /**
    * Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass an empty string: `"caCertificate": ""`
@@ -65,9 +60,9 @@ export interface CfnLdapVerifyProps {
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
-   * @schema CfnLdapVerifyProps#GroupId
+   * @schema CfnLdapVerifyProps#ProjectId
    */
-  readonly groupId?: string;
+  readonly projectId: string;
 
   /**
    * Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections.
@@ -85,15 +80,14 @@ export interface CfnLdapVerifyProps {
 export function toJson_CfnLdapVerifyProps(obj: CfnLdapVerifyProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
+    'Profile': obj.profile,
     'Validations': obj.validations?.map(y => toJson_Validation(y)),
     'BindUsername': obj.bindUsername,
-    'Status': obj.status,
     'HostName': obj.hostName,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'CaCertificate': obj.caCertificate,
     'AuthzQueryTemplate': obj.authzQueryTemplate,
     'BindPassword': obj.bindPassword,
-    'GroupId': obj.groupId,
+    'ProjectId': obj.projectId,
     'Port': obj.port,
   };
   // filter undefined values
@@ -132,37 +126,6 @@ export function toJson_Validation(obj: Validation | undefined): Record<string, a
 }
 /* eslint-enable max-len, quote-props */
 
-/**
- * @schema ApiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema ApiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema ApiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
 
 /**
  * A CloudFormation `MongoDB::Atlas::LDAPVerify`
@@ -174,7 +137,7 @@ export class CfnLdapVerify extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::LDAPVerify';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::LDAPVerify";
 
   /**
    * Resource props.
@@ -185,6 +148,10 @@ export class CfnLdapVerify extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::LDAPVerify.RequestId`
    */
   public readonly attrRequestId: string;
+  /**
+   * Attribute `MongoDB::Atlas::LDAPVerify.Status`
+   */
+  public readonly attrStatus: string;
 
   /**
    * Create a new `MongoDB::Atlas::LDAPVerify`.
@@ -199,5 +166,6 @@ export class CfnLdapVerify extends cdk.CfnResource {
     this.props = props;
 
     this.attrRequestId = cdk.Token.asString(this.getAtt('RequestId'));
+    this.attrStatus = cdk.Token.asString(this.getAtt('Status'));
   }
 }

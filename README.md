@@ -48,7 +48,7 @@ Here are some examples of how to use this template:
   SecretValue = {PublicKey: zzzzzzzzzz , PrivateKey:jjjjjjjjj}
 ```
 
-## 3 Provide the profile to your Cloud Formation template
+## 3. Provide the profile to your CloudFormation template
 
 All Atlas CloudFormation resources include a "Profile" property that specifies which profile to use. You'll need to provide the profile you created in the previous step to the CloudFormation template.
 

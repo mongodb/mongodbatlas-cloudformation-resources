@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//         http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
 package util
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -23,6 +24,9 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	realmAuth "go.mongodb.org/realm/auth"
+	"go.mongodb.org/realm/realm"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
@@ -43,9 +47,10 @@ const (
 )
 
 var (
-	toolName        = cfn
-	defaultLogLevel = "warning"
-	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+	toolName           = cfn
+	defaultLogLevel    = "warning"
+	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
@@ -62,6 +67,31 @@ func EnsureAWSRegion(region string) string {
 	r := strings.ToLower(strings.ReplaceAll(region, "_", "-"))
 	log.Printf("EnsureAWSRegion--- region:%s r:%s", region, r)
 	return r
+}
+
+func GetRealmClient(ctx context.Context, req handler.Request, profileName *string) (*realm.Client, error) {
+	p, err := profile.NewProfile(&req, profileName)
+	if err != nil {
+		return nil, err
+	}
+
+	optsRealm := []realm.ClientOpt{realm.SetUserAgent(terraformUserAgent)}
+	//if c.BaseURL != nil && c.RealmBaseURL != nil {
+	// optsRealm = append(optsRealm, realm.SetBaseURL("https://realm.mongodb.com/api/admin/v3.0/"))
+	//}
+	authConfig := realmAuth.NewConfig(nil)
+	token, err := authConfig.NewTokenFromCredentials(ctx, p.PublicKey, p.PrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	clientRealm := realmAuth.NewClient(realmAuth.BasicTokenSource(token))
+	realmClient, err := realm.New(clientRealm, optsRealm...)
+	if err != nil {
+		return nil, err
+	}
+
+	return realmClient, nil
 }
 
 // CreateMongoDBClient creates a new Client using apikeys

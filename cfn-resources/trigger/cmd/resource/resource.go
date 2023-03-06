@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//         http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -29,7 +31,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
 )
 
@@ -39,14 +40,13 @@ const (
 	DATABASE       TriggerType = "DATABASE"
 	SCHEDULED      TriggerType = "SCHEDULE"
 	AUTHENTICATION TriggerType = "AUTHENTICATION"
-	ua                         = "terraform-provider-mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.AppID, constants.RealmPubKey, constants.RealmPvtKey}
-var ReadRequiredFields = []string{constants.ProjectID, constants.AppID, constants.ID, constants.RealmPubKey, constants.RealmPvtKey}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.AppID, constants.RealmPubKey, constants.RealmPvtKey}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.AppID, constants.ID, constants.RealmPubKey, constants.RealmPvtKey}
-var ListRequiredFields = []string{constants.ProjectID, constants.AppID, constants.RealmPubKey, constants.RealmPvtKey}
+var CreateRequiredFields = []string{constants.ProjectID, constants.AppID}
+var ReadRequiredFields = []string{constants.ProjectID, constants.AppID, constants.ID}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.AppID, constants.ID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.AppID, constants.ID}
+var ListRequiredFields = []string{constants.ProjectID, constants.AppID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -61,12 +61,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
+	setProfileIfAbsent(currentModel)
+
 	ctx := context.Background()
-	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
+	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	eventTrigger, err := newEventTrigger(currentModel)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating event trigger request : %s", err.Error()),
@@ -78,6 +81,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	currentModel.Id = &et.ID
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -87,26 +91,28 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		return progressevents.GetFailedEventByCode(err.Error(),
+			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
+	setProfileIfAbsent(currentModel)
+
 	ctx := context.Background()
-	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
+	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	trigger, resp, err := client.EventTriggers.Get(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
 	if err != nil {
 		_, _ = logger.Warnf("error in getting event trigger %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 	currentModel.Id = &trigger.ID
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -116,20 +122,21 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		return progressevents.GetFailedEventByCode(err.Error(),
+			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
+	setProfileIfAbsent(currentModel)
+
 	ctx := context.Background()
-	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
+	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	eventTrigger, err := newEventTrigger(currentModel)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating trigger request : %s", err.Error()),
@@ -140,6 +147,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("error in updating event trigger %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -149,26 +157,27 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if currentModel.Id == nil {
 		err := errors.New("no Id found in currentModel")
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		return progressevents.GetFailedEventByCode(err.Error(),
+			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
+	setProfileIfAbsent(currentModel)
 
 	ctx := context.Background()
-	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
+	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	resp, err := client.EventTriggers.Delete(ctx, *currentModel.ProjectId, *currentModel.AppId, *currentModel.Id)
 	if err != nil {
 		_, _ = logger.Warnf("error in deleting event trigger %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 	}, nil
@@ -178,39 +187,31 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
+	setProfileIfAbsent(currentModel)
+
 	ctx := context.Background()
-	client, err := GetRealmClient(ctx, currentModel.RealmConfig)
+	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
+
 	triggers, resp, err := client.EventTriggers.List(ctx, *currentModel.ProjectId, *currentModel.AppId)
 	if err != nil {
 		_, _ = logger.Warnf("error in listing event trigger %v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   triggers,
 	}, nil
 }
 
-func GetRealmClient(ctx context.Context, c *RealmConfig) (*realm.Client, error) {
-	optsRealm := []realm.ClientOpt{realm.SetUserAgent(ua)}
-	if c.BaseURL != nil && c.RealmBaseURL != nil {
-		optsRealm = append(optsRealm, realm.SetBaseURL(*c.RealmBaseURL))
+func setProfileIfAbsent(model *Model) {
+	if model.Profile == nil || *model.Profile == "" {
+		model.Profile = aws.String(profile.DefaultProfile)
 	}
-	authConfig := realmAuth.NewConfig(nil)
-	token, err := authConfig.NewTokenFromCredentials(ctx, *c.PublicKey, *c.PrivateKey)
-	if err != nil {
-		return nil, err
-	}
-	clientRealm := realmAuth.NewClient(realmAuth.BasicTokenSource(token))
-	realmClient, err := realm.New(clientRealm, optsRealm...)
-	if err != nil {
-		return nil, err
-	}
-	return realmClient, nil
 }
 
 func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {

@@ -1,24 +1,6 @@
 {
   "additionalProperties": false,
   "definitions": {
-    "RealmConfig": {
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        },
-        "BaseURL": {
-          "type": "string"
-        },
-        "RealmBaseURL": {
-          "type": "string"
-        }
-      }
-    },
     "AuthConfig": {
       "type": "object",
       "additionalProperties": false,
@@ -184,24 +166,37 @@
   "description": "View and manage your application's [triggers](https://www.mongodb.com/docs/atlas/app-services/triggers/overview/).",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "primaryIdentifier": [
-    "/properties/Id"
+    "/properties/Id",
+    "/properties/Profile",
+    "/properties/ProjectId",
+    "/properties/AppId"
   ],
   "properties": {
-    "RealmConfig": {
-      "$ref": "#/definitions/RealmConfig"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "DatabaseTrigger": {
       "additionalProperties": false,
@@ -259,12 +254,16 @@
   },
   "typeName": "MongoDB::Atlas::Trigger",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-    "readOnlyProperties": [
-      "/properties/Id"
-    ],
-    "required": [
-      "ProjectId",
-      "AppId"
-    ]
-  }
-
+  "readOnlyProperties": [
+    "/properties/Id"
+  ],
+  "createOnlyProperties": [
+    "/properties/Profile",
+    "/properties/ProjectId",
+    "/properties/AppId"
+  ],
+  "required": [
+    "ProjectId",
+    "AppId"
+  ]
+}

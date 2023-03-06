@@ -23,7 +23,7 @@ You'll need to generate an API key pair (public and private keys) for your Atlas
 Refer to the [Atlas documentation](https://www.mongodb.com/docs/atlas/configure-api-access/#manage-programmatic-access-to-an-organization) for detailed instructions.
 
 ## 2. Configure your Profile
-To use Atlas CloudFormation resources, you must configure a "profile" with your API keys using AWS Secrets Manager.
+To use Atlas CloudFormation resources, you must configure a "profile" with your API keys using [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
 
 The secret should follow this format:
 ```

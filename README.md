@@ -56,7 +56,7 @@ Note that if you don't provide a profile, the resource will use a default profil
 
 Once you've provided the profile, you can deploy the CloudFormation stack using the AWS Console or the AWS CLI. Refer to the AWS documentation for instructions on how to deploy CloudFormation stacks.
 
-IMPORTANT: when specifying the profile in your cloud formation template, you must specify the Profile Name, NOT the Secret Name
+IMPORTANT: when specifying the profile in your CloudFormation template, you must specify the Profile Name, NOT the Secret Name
 
 Right:
 ```

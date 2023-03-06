@@ -2,10 +2,7 @@
   "Comment": "materializeMonthlyProductSales1000",
   "Provider": "AWS",
   "Type": "DATA_LAKE",
-  "GroupId": "<grp_id>",
+  "ProjectId": "<grp_id>",
   "EndpointId": "vpce-0cd1f01dbd6a3047d",
-  "ApiKeys": {
-    "PublicKey": "htcxduya",
-    "PrivateKey": "<private key>"
-  }
+  "Profile": "default"
 }

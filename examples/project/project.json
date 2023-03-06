@@ -7,6 +7,16 @@
       "Description": "Human-readable label that identifies the project included in the MongoDB Cloud organization.",
       "ConstraintDescription": "Required, 1 to 64 characters length"
     },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
+    },
+    "OrgId": {
+      "Type": "String",
+      "Description": "MongoDB cloud organization ID.",
+      "Default": ""
+    },
     "WithDefaultAlertsSettings": {
       "Type": "String",
       "Description": "Setting alerts for project",
@@ -90,7 +100,12 @@
         "Name": {
           "Ref": "Name"
         },
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
         "ProjectSettings": {
           "IsCollectDatabaseSpecificsStatisticsEnabled": {
             "Ref": "IsCollectDatabaseSpecificsStatisticsEnabled"
@@ -134,7 +149,7 @@
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "ProjectID": {
       "Value": {
         "Fn::GetAtt": [

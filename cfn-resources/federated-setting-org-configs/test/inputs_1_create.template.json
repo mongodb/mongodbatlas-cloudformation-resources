@@ -6,9 +6,5 @@
   "DomainAllowList": [
     "gmail.com"
   ],
-  "TestMode": "true",
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": ""
-  }
+  "TestMode": "true"
 }

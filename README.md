@@ -14,7 +14,7 @@ Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mon
 
 Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. In addition, support questions submitted under the Issues section of this repo are also being monitored. Bugs should be filed under the Issues section of this repo.
 
-# Atlas API Keys Credential Management
+# MongoDB Atlas API Keys Credential Management
 Atlas API keys Configuration are required for both CloudFormation and CDK resources, and this Atlas API key pair are provided as input by the use of a Profile
 
 to configure the API keys and a secret profile follow the next steps:

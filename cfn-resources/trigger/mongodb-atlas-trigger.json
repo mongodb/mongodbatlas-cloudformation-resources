@@ -190,7 +190,8 @@
     "/properties/Id",
     "/properties/Profile",
     "/properties/ProjectId",
-    "/properties/AppId"
+    "/properties/AppId",
+    "/properties/Name"
   ],
   "properties": {
     "Profile": {

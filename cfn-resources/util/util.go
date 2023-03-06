@@ -76,9 +76,6 @@ func GetRealmClient(ctx context.Context, req handler.Request, profileName *strin
 	}
 
 	optsRealm := []realm.ClientOpt{realm.SetUserAgent(terraformUserAgent)}
-	//if c.BaseURL != nil && c.RealmBaseURL != nil {
-	// optsRealm = append(optsRealm, realm.SetBaseURL("https://realm.mongodb.com/api/admin/v3.0/"))
-	//}
 	authConfig := realmAuth.NewConfig(nil)
 	token, err := authConfig.NewTokenFromCredentials(ctx, p.PublicKey, p.PrivateKey)
 	if err != nil {

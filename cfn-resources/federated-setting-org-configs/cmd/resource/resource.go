@@ -16,22 +16,21 @@ package resource
 
 import (
 	"context"
-	"fmt"
-
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var ListRequiredFields = []string{constants.FederationSettingsID, constants.PvtKey, constants.PubKey}
-var RequiredFields = []string{constants.FederationSettingsID, constants.OrgID, constants.PvtKey, constants.PubKey}
+var ListRequiredFields = []string{constants.FederationSettingsID}
+var RequiredFields = []string{constants.FederationSettingsID, constants.OrgID}
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -65,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 // Read handles the Read event from the Cloudformation service.
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Read(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
 	// logic included for CFN Test starts
@@ -80,12 +79,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Check if  already exist
@@ -110,7 +111,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // Update handles the Update event from the Cloudformation service.
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Update(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
 	// logic included for CFN Test starts
@@ -125,12 +126,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Check if  already exist
@@ -154,7 +156,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 // Delete handles the Delete event from the Cloudformation service.
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Delete(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
 	// logic included for CFN Test starts
@@ -176,12 +178,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), err
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	// Check if  already exist
@@ -193,7 +197,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	var res mongodbatlas.Response
 	federationSettingsID := *currentModel.FederationSettingsId
 	orgID := *currentModel.OrgId
-	_, err = client.FederatedSettings.DeleteConnectedOrg(context.Background(), federationSettingsID, orgID)
+	_, err := client.FederatedSettings.DeleteConnectedOrg(context.Background(), federationSettingsID, orgID)
 
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -205,7 +209,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func List(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
 	// Validate required fields in the request
@@ -213,11 +217,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf(constants.ErrorCreateMongoClient, err)
-		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	federationSettingsID := *currentModel.FederationSettingsId
@@ -265,6 +271,7 @@ func convertToUIModel(responseModel *mongodbatlas.FederatedSettingsConnectedOrga
 
 	return currentModel
 }
+
 func convertToRequestModel(currentModel *Model) *mongodbatlas.FederatedSettingsConnectedOrganization {
 	federatedSettingsOrgUpdate := &mongodbatlas.FederatedSettingsConnectedOrganization{
 		OrgID: *currentModel.OrgId,
@@ -286,6 +293,7 @@ func convertToRequestModel(currentModel *Model) *mongodbatlas.FederatedSettingsC
 	}
 	return federatedSettingsOrgUpdate
 }
+
 func createRoleMappings(roleMappings []RoleMappingView) []*mongodbatlas.RoleMappings {
 	results := make([]*mongodbatlas.RoleMappings, 0)
 	for k := range roleMappings {
@@ -301,9 +309,9 @@ func createRoleMappings(roleMappings []RoleMappingView) []*mongodbatlas.RoleMapp
 func createRoleAssignment(roleAssignments []RoleAssignment) []*mongodbatlas.RoleAssignments {
 	results := make([]*mongodbatlas.RoleAssignments, len(roleAssignments))
 	for k, roleMapping := range roleAssignments {
-		if roleMapping.GroupId != nil {
+		if roleMapping.ProjectId != nil {
 			results[k] = &mongodbatlas.RoleAssignments{
-				GroupID: cast.ToString(roleMapping.GroupId),
+				GroupID: cast.ToString(roleMapping.ProjectId),
 				Role:    cast.ToString(roleMapping.Role),
 			}
 		} else {
@@ -332,9 +340,9 @@ func flattenRoleAssignment(roleAssignments []*mongodbatlas.RoleAssignments) []Ro
 	results := make([]RoleAssignment, 0)
 	for k := range roleAssignments {
 		resultRoleAssignment := RoleAssignment{
-			OrgId:   &roleAssignments[k].OrgID,
-			GroupId: &roleAssignments[k].GroupID,
-			Role:    &roleAssignments[k].Role,
+			OrgId:     &roleAssignments[k].OrgID,
+			ProjectId: &roleAssignments[k].GroupID,
+			Role:      &roleAssignments[k].Role,
 		}
 		results = append(results, resultRoleAssignment)
 	}

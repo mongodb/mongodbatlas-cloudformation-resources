@@ -69,7 +69,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 }
 
 // Create handles the Create event from the Cloudformation service.
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Create(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
 	_, _ = log.Debugf("Create cluster model : %+v", currentModel)

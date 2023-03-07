@@ -10,25 +10,14 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_CONNECTED_ORG_ID" \
+jq --arg org "$ATLAS_CONNECTED_ORG_ID" \
 	--arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
-	'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
+	'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_CONNECTED_ORG_ID" \
+jq --arg org "$ATLAS_CONNECTED_ORG_ID" \
 	--arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
-	'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_CONNECTED_ORG_ID" \
-	--arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
-	'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
+	'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

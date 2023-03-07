@@ -8,7 +8,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
     "<a href="#emailaddress" title="EmailAddress">EmailAddress</a>" : <i>String</i>,
     "<a href="#federationsettingsid" title="FederationSettingsId">FederationSettingsId</a>" : <i>String</i>,
     "<a href="#firstname" title="FirstName">FirstName</a>" : <i>String</i>,
@@ -19,7 +18,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
 <a href="#emailaddress" title="EmailAddress">EmailAddress</a>: <i>String</i>
 <a href="#federationsettingsid" title="FederationSettingsId">FederationSettingsId</a>: <i>String</i>
 <a href="#firstname" title="FirstName">FirstName</a>: <i>String</i>
@@ -27,14 +25,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 </pre>
 
 ## Properties
-
-#### ApiKeys
-
-_Required_: No
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### EmailAddress
 
@@ -56,9 +46,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 

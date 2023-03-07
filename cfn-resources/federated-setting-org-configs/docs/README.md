@@ -12,10 +12,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::FederatedSettingOrgConfigs",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#domainallowlist" title="DomainAllowList">DomainAllowList</a>" : <i>[ String, ... ]</i>,
         "<a href="#domainrestrictionenabled" title="DomainRestrictionEnabled">DomainRestrictionEnabled</a>" : <i>Boolean</i>,
         "<a href="#identityproviderid" title="IdentityProviderId">IdentityProviderId</a>" : <i>String</i>,
+        "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#postauthrolegrants" title="PostAuthRoleGrants">PostAuthRoleGrants</a>" : <i>[ String, ... ]</i>,
         "<a href="#rolemappings" title="RoleMappings">RoleMappings</a>" : <i>[ <a href="rolemappingview.md">RoleMappingView</a>, ... ]</i>,
         "<a href="#userconflicts" title="UserConflicts">UserConflicts</a>" : <i>[ <a href="federateduserview.md">FederatedUserView</a>, ... ]</i>
@@ -28,11 +29,12 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::FederatedSettingOrgConfigs
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#domainallowlist" title="DomainAllowList">DomainAllowList</a>: <i>
       - String</i>
     <a href="#domainrestrictionenabled" title="DomainRestrictionEnabled">DomainRestrictionEnabled</a>: <i>Boolean</i>
     <a href="#identityproviderid" title="IdentityProviderId">IdentityProviderId</a>: <i>String</i>
+    <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#postauthrolegrants" title="PostAuthRoleGrants">PostAuthRoleGrants</a>: <i>
       - String</i>
     <a href="#rolemappings" title="RoleMappings">RoleMappings</a>: <i>
@@ -43,13 +45,15 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### DomainAllowList
 
@@ -79,11 +83,27 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>20</code>
+_Minimum Length_: <code>20</code>
 
-_Maximum_: <code>20</code>
+_Maximum Length_: <code>20</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### OrgId
+
+Unique 24-hexadecimal digit string that identifies the connected organization configuration to remove.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### PostAuthRoleGrants
 
@@ -127,10 +147,6 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Returns the <code>OrgId</code> value.
 
-#### OrgId
-
-Unique 24-hexadecimal digit string that identifies the connected organization configuration to remove.
-
 #### TestMode
 
 Returns the <code>TestMode</code> value.
@@ -139,9 +155,9 @@ Returns the <code>TestMode</code> value.
 
 Unique 24-hexadecimal digit string that identifies your federation.
 
-#### GroupId
+#### ProjectId
 
-Returns the <code>GroupId</code> value.
+Returns the <code>ProjectId</code> value.
 
 #### Id
 

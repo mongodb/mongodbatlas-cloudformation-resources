@@ -36,15 +36,15 @@ ATLAS_ORG_ID
 
 ## Security - Setup
 
-Step 1) Create and note your MongoDB Atlas API Key.
-Step 2) Create and note your AWS Access Key and AWS Secret Key ID.
-Step 3) Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
+1. Create and note your MongoDB Atlas API Key.
+2. Create and note your AWS Access Key and AWS Secret Key ID.
+3. Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
 
 ## Requirements
 
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli)
 - (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) > v1.0
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) > v1.14
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) v1.19
 
 
 ## Using the MongoDB Atlas CFN Resources

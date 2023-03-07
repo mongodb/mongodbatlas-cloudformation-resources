@@ -9,11 +9,6 @@ import * as constructs from 'constructs';
  */
 export interface CfnDataLakesProps {
   /**
-   * @schema CfnDataLakesProps#ApiKeys
-   */
-  readonly apiKeys?: ApiKeyDefinition;
-
-  /**
    * Cloud provider linked to this data lake.
    *
    * @schema CfnDataLakesProps#CloudProviderConfig
@@ -26,6 +21,27 @@ export interface CfnDataLakesProps {
    * @schema CfnDataLakesProps#DataProcessRegion
    */
   readonly dataProcessRegion?: DataLakeDataProcessRegionView;
+
+  /**
+   * Timestamp that specifies the end point for the range of log messages to download.  MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch.
+   *
+   * @schema CfnDataLakesProps#EndDate
+   */
+  readonly endDate?: number;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnDataLakesProps#ProjectId
+   */
+  readonly projectId?: string;
+
+  /**
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnDataLakesProps#Profile
+   */
+  readonly profile?: string;
 
   /**
    * Flag that indicates whether this request should check if the requesting IAM role can read from the S3 bucket. AWS checks if the role can list the objects in the bucket before writing to it. Some IAM roles only need write permissions. This flag allows you to skip that check.
@@ -41,6 +57,13 @@ export interface CfnDataLakesProps {
    */
   readonly storage?: DataLakeStorageView;
 
+  /**
+   * Human-readable label that identifies the Federated Database to remove.
+   *
+   * @schema CfnDataLakesProps#TenantName
+   */
+  readonly tenantName?: string;
+
 }
 
 /**
@@ -50,42 +73,14 @@ export interface CfnDataLakesProps {
 export function toJson_CfnDataLakesProps(obj: CfnDataLakesProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'CloudProviderConfig': toJson_DataLakeCloudProviderConfigView(obj.cloudProviderConfig),
     'DataProcessRegion': toJson_DataLakeDataProcessRegionView(obj.dataProcessRegion),
+    'EndDate': obj.endDate,
+    'ProjectId': obj.projectId,
+    'Profile': obj.profile,
     'SkipRoleValidation': obj.skipRoleValidation,
     'Storage': toJson_DataLakeStorageView(obj.storage),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
+    'TenantName': obj.tenantName,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -632,14 +627,6 @@ export class CfnDataLakes extends cdk.CfnResource {
   public readonly props: CfnDataLakesProps;
 
   /**
-   * Attribute `MongoDB::Atlas::DataLakes.GroupId`
-   */
-  public readonly attrGroupId: string;
-  /**
-   * Attribute `MongoDB::Atlas::DataLakes.TenantName`
-   */
-  public readonly attrTenantName: string;
-  /**
    * Attribute `MongoDB::Atlas::DataLakes.StartDate`
    */
   public readonly attrStartDate: number;
@@ -651,10 +638,6 @@ export class CfnDataLakes extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::DataLakes.State`
    */
   public readonly attrState: string;
-  /**
-   * Attribute `MongoDB::Atlas::DataLakes.EndDate`
-   */
-  public readonly attrEndDate: number;
 
   /**
    * Create a new `MongoDB::Atlas::DataLakes`.
@@ -668,11 +651,8 @@ export class CfnDataLakes extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrGroupId = cdk.Token.asString(this.getAtt('GroupId'));
-    this.attrTenantName = cdk.Token.asString(this.getAtt('TenantName'));
     this.attrStartDate = cdk.Token.asNumber(this.getAtt('StartDate'));
     this.attrHostnames = cdk.Token.asList(this.getAtt('Hostnames'));
     this.attrState = cdk.Token.asString(this.getAtt('State'));
-    this.attrEndDate = cdk.Token.asNumber(this.getAtt('EndDate'));
   }
 }

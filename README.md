@@ -4,8 +4,10 @@ Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/a
 
 Partner Solutions (formally AWS Quick Starts) are automated reference deployments built by Amazon Web Services (AWS) solutions architects and AWS Partners. Partner Solutions help you deploy popular technologies to AWS according to AWS best practices. The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Partner Solution Deployment directly from the AWS Management Console.
 
-# Prerequisites
+# Getting Started
+See the [examples](examples/README.md) for how to setup prerequisites & get started with your first cluster, using our sample CloudFormation Stack templates.
 
+# Prerequisites
 To use CloudFormation MongoDB Atlas public extensions (AWS Third Party), you have to activate the Public extension from your AWS console. You have to do this in each AWS Account and in each AWS Region. To activate Public extension, we have to create an execution role and pass the ARN of the role as an input. Use [this template](examples/execution-role.yaml) to create execution role.
 
 # Support, Bugs, Feature Requests
@@ -149,4 +151,3 @@ The naming scheme  for a MongoDB Atlas resource on the AWS CloudFormation Third-
 - After 30 days of no activity (no comments or commits are on an issue or PR) we automatically tag it as “stale” and add a message: "This issue has gone 30 days without any activity and meets the project’s definition of ‘stale’. This will be auto-closed if there is no new activity over the next 30 days. If the issue is still relevant and active, you can simply comment with a “bump” to keep it open, or add the “[Status] Not Stale” label. Thanks for keeping our repository healthy!"
 
 - After 30 more days of no activity we automatically close the issue / PR.
-

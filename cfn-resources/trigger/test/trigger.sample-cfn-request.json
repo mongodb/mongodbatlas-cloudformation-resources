@@ -1,0 +1,34 @@
+{
+  "desiredResourceState": {
+    "Name": "salestrigger-29646",
+    "Type": "DATABASE",
+    "Profile": "default-cfn-maastha",
+    "DatabaseTrigger": {
+      "OperationTypes": [
+        "INSERT"
+      ],
+      "Database": "sample_mflix",
+      "Collection": "comments",
+      "ServiceId": "64020111d61a66df7ea2c732",
+      "FullDocument": "true",
+      "FullDocumentBeforeChange": "false",
+      "Unordered": "false",
+      "SkipCatchupEvents": "false"
+    },
+    "Disabled": "false",
+    "EventProcessors": {
+      "FUNCTION": {
+        "FuncConfig": {
+          "FunctionName": "myFuncInTrigger",
+          "FunctionId": "64020cfc5ef00ef0be9584e4"
+        }
+      },
+      "AWSEVENTBRIDGE": {
+        "AWSConfig": {}
+      }
+    },
+    "AppId": "64020111d61a66df7ea2c72b",
+    "ProjectId": "63f4df9e1c744217893c19f7"
+  },
+  "previousResourceState": {}
+}

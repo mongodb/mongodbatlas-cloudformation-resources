@@ -6,34 +6,36 @@
     "EventTrigger": {
       "Type": "MongoDB::Atlas::Trigger",
       "Properties": {
-        "Name": "materializeMonthlyProductSales",
+        "Name": "cfn-trigger-example",
         "Type": "DATABASE",
-        "Trigger": {
+        "DatabaseTrigger": {
           "OperationTypes": [
             "INSERT"
           ],
-          "Database": "store",
-          "Collection": "sales",
-          "ServiceId": "6387aee08659af5254b0a51e"
+          "Database": "sample_mflix",
+          "Collection": "comments",
+          "ServiceId": "64020111d61a66df7ea2c732"
         },
         "EventProcessors": {
           "FUNCTION": {
             "FuncConfig": {
-              "FunctionName": "cfn_func",
-              "FunctionId": "63862553ac0702272aa701ba"
+              "FunctionName": "myFuncInTrigger",
+              "FunctionId": "64020cfc5ef00ef0be9584e4"
             }
           }
         },
-        "AppId": "638624a5167f5659feb75971",
-        "ProjectId": "625454459c4e6108393d650d",
-        "RealmConfig": {
-          "PublicKey": "htcxduya",
-          "PrivateKey": "<Prv_Key>",
-          "BaseURL": "https://cloud.mongodb.com/api/atlas/v1.0/",
-          "RealmBaseURL": "https://realm.mongodb.com/api/admin/v3.0/"
-        }
+        "AppId": "64020111d61a66df7ea2c72b",
+        "ProjectId": "63f4df9e1c744217893c19f7",
+        "Profile": "default"
+      }
+    }
+  },
+  "Outputs": {
+    "Id": {
+      "Description": "Id of the trigger",
+      "Value": {
+        "Ref": "EventTrigger"
       }
     }
   }
 }
-

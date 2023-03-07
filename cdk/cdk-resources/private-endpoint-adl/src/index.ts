@@ -82,7 +82,7 @@ export class CfnPrivateEndpointAdl extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::PrivateEndpointADL";
+  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::PrivateEndpointADL';
 
   /**
    * Resource props.

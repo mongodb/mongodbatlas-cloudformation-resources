@@ -1,6 +1,5 @@
-Contributing
----------------------------
-## Workflow
+# Contributing
+
 MongoDB welcomes community contributions! If you’re interested in making a contribution, please follow the steps below before you start writing any code:
 
 1. Reach out by filing an [issue](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues) to discuss your proposed contribution, be it a bug fix or feature/other improvements.
@@ -17,7 +16,12 @@ After the above 2 steps are completed and we've agreed on a path forward:
 - After 30 days of no activity (no comments or commits are on an issue or PR) we automatically tag it as “stale” and add a message: "This issue has gone 30 days without any activity and meets the project’s definition of ‘stale’. This will be auto-closed if there is no new activity over the next 30 days. If the issue is still relevant and active, you can simply comment with a “bump” to keep it open, or add the “[Status] Not Stale” label. Thanks for keeping our repository healthy!"
 - After 30 more days of no activity we automatically close the issue / PR.
 
-# Testing the Provider
+## Prerequisites
+- [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli)
+- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) > v1.0
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) v1.19
+
+## Testing the Provider
 Please see README for each resource for details on unit and integrated AWS testing.
 
 ## Securing your Deployment
@@ -39,13 +43,6 @@ ATLAS_ORG_ID
 1. Create and note your MongoDB Atlas API Key.
 2. Create and note your AWS Access Key and AWS Secret Key ID.
 3. Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
-
-## Requirements
-
-- [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli)
-- (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) > v1.0
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) v1.19
-
 
 ## Using the MongoDB Atlas CFN Resources
 

@@ -21,9 +21,12 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# export PROJECT_ID=5555555 APP_ID=44444444 DB_NAME=testDB COLLECTION_NAME=collection FUNC_NAME=funcn2 FUNC_ID=2222222 SERVICE_ID=111111
+
 function usage {
-	echo "usage: cfn-test-create-inputs.sh <projectId> <endpoint>"
-	echo "Creates a new Search Index"
+	echo "usage: cfn-test-create-inputs.sh <projectId> <db_name> <coll_name> <trigger_name> <func_name> <func_id> <service_id> <app_id>"
+	echo "or using environment variables to set params: 'export PROJECT_ID=5555555 APP_ID=44444444 DB_NAME=testDB COLLECTION_NAME=collection FUNC_NAME=funcn2 FUNC_ID=2222222 SERVICE_ID=111111'"
+	echo "Creates a new DatabaseTrigger in given AppId within Project"
 }
 
 if [ "$#" -ne 1 ]; then usage; fi
@@ -32,14 +35,14 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-project_Id="${2:-63f4df9e1c744217893c19f7}"
-db_name="${3:-sample_mflix}"
-coll_name="${4:-comments}"
-trigger_name="salestrigger-${RANDOM}"
-func_name="${5:-myFuncInTrigger}"
-func_id="${6:-64020cfc5ef00ef0be9584e4}"
-service_id="${7:-64020111d61a66df7ea2c732}"
-app_id="${7:-64020111d61a66df7ea2c72b}"
+project_Id="${1:-$PROJECT_ID}"
+db_name="${2:-$DB_NAME}"
+coll_name="${3:-$COLLECTION_NAME}"
+trigger_name="cfn-test-trigger-${RANDOM}"
+func_name="${4:-$FUNC_NAME}"
+func_id="${5:-$FUNC_ID}"
+service_id="${6:-$SERVICE_ID}"
+app_id="${7:-$APP_ID}"
 
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

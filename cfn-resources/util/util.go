@@ -25,9 +25,6 @@ import (
 	"runtime"
 	"strings"
 
-	realmAuth "go.mongodb.org/realm/auth"
-	"go.mongodb.org/realm/realm"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -38,6 +35,8 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"go.mongodb.org/atlas/mongodbatlas"
+	realmAuth "go.mongodb.org/realm/auth"
+	"go.mongodb.org/realm/realm"
 )
 
 const (

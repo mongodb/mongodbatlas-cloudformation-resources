@@ -32,7 +32,9 @@
         "OrgId": {
           "Ref": "OrgId"
         },
-        "Profile": "default"
+        "Profile": {
+          "Ref": "Profile"
+        }
       }
     },
     "AtlasCluster": {

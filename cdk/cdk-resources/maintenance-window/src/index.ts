@@ -9,16 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnMaintenanceWindowProps {
   /**
-   * @schema CfnMaintenanceWindowProps#ApiKeys
-   */
-  readonly apiKeys?: ApiKeyDefinition;
-
-  /**
-   * Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them.
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
    *
-   * @schema CfnMaintenanceWindowProps#AutoDeferOnceEnabled
+   * @schema CfnMaintenanceWindowProps#Profile
    */
-  readonly autoDeferOnceEnabled?: boolean;
+  readonly profile?: string;
 
   /**
    * One-based integer that represents the day of the week that the maintenance window starts.
@@ -61,42 +56,10 @@ export interface CfnMaintenanceWindowProps {
 export function toJson_CfnMaintenanceWindowProps(obj: CfnMaintenanceWindowProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
-    'AutoDeferOnceEnabled': obj.autoDeferOnceEnabled,
+    'Profile': obj.profile,
     'DayOfWeek': obj.dayOfWeek,
     'HourOfDay': obj.hourOfDay,
     'StartASAP': obj.startAsap,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -122,9 +85,13 @@ export class CfnMaintenanceWindow extends cdk.CfnResource {
   public readonly props: CfnMaintenanceWindowProps;
 
   /**
-   * Attribute `MongoDB::Atlas::MaintenanceWindow.GroupId`
+   * Attribute `MongoDB::Atlas::MaintenanceWindow.ProjectId`
    */
-  public readonly attrGroupId: string;
+  public readonly attrProjectId: string;
+  /**
+   * Attribute `MongoDB::Atlas::MaintenanceWindow.AutoDeferOnceEnabled`
+   */
+  public readonly attrAutoDeferOnceEnabled: cdk.IResolvable;
 
   /**
    * Create a new `MongoDB::Atlas::MaintenanceWindow`.
@@ -138,6 +105,7 @@ export class CfnMaintenanceWindow extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrGroupId = cdk.Token.asString(this.getAtt('GroupId'));
+    this.attrProjectId = cdk.Token.asString(this.getAtt('ProjectId'));
+    this.attrAutoDeferOnceEnabled = this.getAtt('AutoDeferOnceEnabled');
   }
 }

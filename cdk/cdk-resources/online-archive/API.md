@@ -404,7 +404,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrArchiveId">attrArchiveId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::OnlineArchive.ArchiveId`. |
-| <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrClusterName">attrClusterName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::OnlineArchive.ClusterName`. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrProjectId">attrProjectId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::OnlineArchive.ProjectId`. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrState">attrState</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::OnlineArchive.State`. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrTotalCount">attrTotalCount</a></code> | <code>number</code> | Attribute `MongoDB::Atlas::OnlineArchive.TotalCount`. |
@@ -516,18 +515,6 @@ Attribute `MongoDB::Atlas::OnlineArchive.ArchiveId`.
 
 ---
 
-##### `attrClusterName`<sup>Required</sup> <a name="attrClusterName" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrClusterName"></a>
-
-```typescript
-public readonly attrClusterName: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::OnlineArchive.ClusterName`.
-
----
-
 ##### `attrProjectId`<sup>Required</sup> <a name="attrProjectId" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchive.property.attrProjectId"></a>
 
 ```typescript
@@ -598,45 +585,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/online-archive.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/online-archive.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/online-archive'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/online-archive.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/online-archive.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/online-archive.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/online-archive.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnOnlineArchiveProps <a name="CfnOnlineArchiveProps" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps"></a>
 
 Returns, adds, edits, or removes an online archive.
@@ -653,26 +601,45 @@ const cfnOnlineArchiveProps: CfnOnlineArchiveProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/online-archive.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.clusterName">clusterName</a></code> | <code>string</code> | Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive. |
+| <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.criteria">criteria</a></code> | <code><a href="#@mongodbatlas-awscdk/online-archive.CriteriaView">CriteriaView</a></code> | Rules by which MongoDB MongoDB Cloud archives data. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.collectionType">collectionType</a></code> | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchivePropsCollectionType">CfnOnlineArchivePropsCollectionType</a></code> | Classification of MongoDB database collection that you want to return. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.collName">collName</a></code> | <code>string</code> | Human-readable label that identifies the collection for which you created the online archive. |
-| <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.criteria">criteria</a></code> | <code><a href="#@mongodbatlas-awscdk/online-archive.CriteriaView">CriteriaView</a></code> | Rules by which MongoDB MongoDB Cloud archives data. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.dbName">dbName</a></code> | <code>string</code> | Human-readable label of the database that contains the collection that contains the online archive. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.includeCount">includeCount</a></code> | <code>boolean</code> | Flag that indicates whether the response returns the total number of items (**totalCount**) in the response. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.itemsPerPage">itemsPerPage</a></code> | <code>number</code> | Number of items that the response returns per page. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.pageNum">pageNum</a></code> | <code>number</code> | Number of the page that displays the current set of the total objects that the response returns. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.partitionFields">partitionFields</a></code> | <code><a href="#@mongodbatlas-awscdk/online-archive.PartitionFieldView">PartitionFieldView</a>[]</code> | List that contains document parameters to use to logically divide data within a collection. |
+| <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.schedule">schedule</a></code> | <code><a href="#@mongodbatlas-awscdk/online-archive.ScheduleView">ScheduleView</a></code> | Regular frequency and duration when archiving process occurs. |
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.apiKeys"></a>
+##### `clusterName`<sup>Required</sup> <a name="clusterName" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.clusterName"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly clusterName: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/online-archive.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
+
+Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.
+
+---
+
+##### `criteria`<sup>Required</sup> <a name="criteria" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.criteria"></a>
+
+```typescript
+public readonly criteria: CriteriaView;
+```
+
+- *Type:* <a href="#@mongodbatlas-awscdk/online-archive.CriteriaView">CriteriaView</a>
+
+Rules by which MongoDB MongoDB Cloud archives data.
+
+Use the **criteria.type** field to choose how MongoDB Cloud selects data to archive. Choose data using the age of the data or a MongoDB query.
+**"criteria.type": "DATE"** selects documents to archive based on a date.
+**"criteria.type": "CUSTOM"** selects documents to archive based on a custom JSON query. MongoDB Cloud doesn't support **"criteria.type": "CUSTOM"** when **"collectionType": "TIMESERIES"**.
 
 ---
 
@@ -699,22 +666,6 @@ public readonly collName: string;
 - *Type:* string
 
 Human-readable label that identifies the collection for which you created the online archive.
-
----
-
-##### `criteria`<sup>Optional</sup> <a name="criteria" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.criteria"></a>
-
-```typescript
-public readonly criteria: CriteriaView;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/online-archive.CriteriaView">CriteriaView</a>
-
-Rules by which MongoDB MongoDB Cloud archives data.
-
-Use the **criteria.type** field to choose how MongoDB Cloud selects data to archive. Choose data using the age of the data or a MongoDB query.
-**"criteria.type": "DATE"** selects documents to archive based on a date.
-**"criteria.type": "CUSTOM"** selects documents to archive based on a custom JSON query. MongoDB Cloud doesn't support **"criteria.type": "CUSTOM"** when **"collectionType": "TIMESERIES"**.
 
 ---
 
@@ -777,6 +728,20 @@ public readonly partitionFields: PartitionFieldView[];
 List that contains document parameters to use to logically divide data within a collection.
 
 Partitions provide a coarse level of filtering of the underlying collection data. To divide your data, specify up to two parameters that you frequently query. Any queries that don't use these parameters result in a full collection scan of all archived documents. This takes more time and increase your costs.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/online-archive.CfnOnlineArchiveProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

@@ -50,29 +50,16 @@ func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
 }
 
 // Create handles the Create event from the Cloudformation service.
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// logic included for CFN Test starts
-	if currentModel.TestMode != nil {
-		_, err := util.PutKey(*currentModel.OrgId, "created", "x509", req.Session)
-		if err != nil {
-			return handler.ProgressEvent{}, err
-		}
-	}
-	// logic included for CFN Test ends
-
-	return Update(req, prevModel, currentModel)
+func Create(_ handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	// logic included for CFN Test starts
-	if currentModel.TestMode != nil && util.Get(*currentModel.OrgId, "x509", req.Session) == "" {
-		return progressevents.GetFailedEventByCode("Resource Not Found",
-			cloudformation.HandlerErrorCodeNotFound), nil
-	}
-	// logic included for CFN Test ends
 
 	// Validate required fields in the request
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
@@ -114,13 +101,6 @@ func Read(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressE
 func Update(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
-	// logic included for CFN Test starts
-	if currentModel.TestMode != nil && util.Get(*currentModel.OrgId, "x509", req.Session) == "" {
-		return progressevents.GetFailedEventByCode("Resource Not Found",
-			cloudformation.HandlerErrorCodeNotFound), nil
-	}
-	// logic included for CFN Test ends
-
 	// Validate required fields in the request
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
@@ -157,21 +137,7 @@ func Update(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-
-	// logic included for CFN Test starts
-	if currentModel.TestMode != nil {
-		params := util.Get(*currentModel.OrgId, "x509", req.Session)
-		if params == "" {
-			return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
-		}
-		_, _ = util.DeleteKey(*currentModel.OrgId, "x509", req.Session)
-		return handler.ProgressEvent{
-			Message:         "Delete Complete",
-			OperationStatus: handler.Success,
-		}, nil
-	}
-	// logic included for CFN Test ends
+	setup()
 
 	// Validate required fields in the request
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {

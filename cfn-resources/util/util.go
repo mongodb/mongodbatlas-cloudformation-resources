@@ -216,6 +216,9 @@ func Get(keyID, prefix string, curSession *session.Session) string {
 	if err != nil {
 		return ""
 	}
+	print("ANDREA util.get\n")
+	print(*getParamOutput.Parameter.Value)
+	print("\n")
 	return *getParamOutput.Parameter.Value
 }
 func buildKey(keyID, storePrefix string) string {

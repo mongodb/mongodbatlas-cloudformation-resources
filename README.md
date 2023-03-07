@@ -14,14 +14,61 @@ Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mon
 
 Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. In addition, support questions submitted under the Issues section of this repo are also being monitored. Bugs should be filed under the Issues section of this repo.
 
-# MongoDB Atlas Programmatic API Key
-It's necessary to generate and configure an API key for your organization for the acceptance test to succeed. To grant programmatic access to an organization or project using only the API you need to know:
+# MongoDB Atlas API Keys Credential Management
+Atlas API keys Configuration are required for both CloudFormation and CDK resources, and this Atlas API key pair are provided as input by the use of a Profile
 
-The programmatic API key has two parts: a Public Key and a Private Key. To see more details on how to create a programmatic API key visit https://docs.atlas.mongodb.com/configure-api-access/#programmatic-api-keys.
+AWS CloudFormation limits Third Parties from using non-AWS API Keys as either hardcoded secrets in CloudFormation templates or via CDK, hence we now require all the users store MongoDB Atlas API Keys via [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).   
 
-The programmatic API key must be granted roles sufficient for the acceptance test to succeed. The Organization Owner and Project Owner roles should be sufficient. You can see the available roles at https://docs.atlas.mongodb.com/reference/user-roles.
+`NOTE: the process for configuring the PROFILE is the same and is required both for CloudFormation and CDK`
 
-You must configure Atlas API Access for your programmatic API key. You should allow API access for the IP address from which the acceptance test runs.
+## 1. Configure your MongoDB Atlas API Keys 
+You'll need to generate an API key pair (public and private keys) for your Atlas organization and configure them to grant CloudFormation access to your Atlas project.
+Refer to the [Atlas documentation](https://www.mongodb.com/docs/atlas/configure-api-access/#manage-programmatic-access-to-an-organization) for detailed instructions.
+
+## 2. Configure your Profile
+To use Atlas CloudFormation resources, you must configure a "profile" with your API keys using [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+
+The secret should follow this format:
+```
+SecretName: cfn/atlas/profile/{ProfileName}
+SecretValue: {PublicKey: {YourPublicKey}, PrivateKey: {YourPrivateKey}}
+```
+
+To create a new secret for a default profile, use the [PROFILE SECRET TEMPLATE](/examples/profile-secret.yaml) file provided in this repository.
+
+Here are some examples of how to use this template:
+
+### example 1:
+```
+  ProfileName: default
+  SecretName: cfn/atlas/profile/default
+  SecretValue = {PublicKey: xxxxxxx , PrivateKey: yyyyyyyy}
+```
+### example 2:
+```
+  ProfileName: tetProfile1
+  SecretName: cfn/atlas/profile/tetProfile1
+  SecretValue = {PublicKey: zzzzzzzzzz , PrivateKey:jjjjjjjjj}
+```
+
+## 3. Provide the profile to your CloudFormation template
+
+All Atlas CloudFormation resources include a "Profile" property that specifies which profile to use. You'll need to provide the profile you created in the previous step to the CloudFormation template.
+
+Note that if you don't provide a profile, the resource will use a default profile (will try to get a secret named cfn/atlas/profile/default). We recommend always specifying the profile to avoid any unexpected behavior.
+
+Once you've provided the profile, you can deploy the CloudFormation stack using the AWS Console or the AWS CLI. Refer to the AWS documentation for instructions on how to deploy CloudFormation stacks.
+
+IMPORTANT: when specifying the profile in your CloudFormation template, you must specify the Profile Name, NOT the Secret Name
+
+Right:
+```
+  "Profile" : "ProfileName"
+```
+Wrong:
+```
+  "Profile" : "cfn/atlas/profile/ProfileName"
+```
 
 # Logging 
 

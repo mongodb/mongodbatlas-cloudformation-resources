@@ -1,7 +1,7 @@
 # MongoDB Atlas CloudFormation templates
 MongoDB Atlas CloudFormation simplifies provisioning and management of Atlas features on AWS. You can create templates for the service or application architectures you want and have AWS CloudFormation use those templates for quick and reliable provisioning of the services or applications (called “stacks”). You can also easily update or replicate the stacks as needed.
 
-This collection of sample templates will help you get started with MongoDB Atlas CloudFormation and quickly build your own templates
+This collection of sample templates will help you get started with MongoDB Atlas CloudFormation and quickly build your own templates.
 
 ## Prerequisites
 ### MongoDB Atlas

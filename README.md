@@ -4,7 +4,11 @@ Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/a
 Partner Solutions (formally AWS Quick Starts) are automated reference deployments built by Amazon Web Services (AWS) solutions architects and AWS Partners. Partner Solutions help you deploy popular technologies to AWS according to AWS best practices. The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Partner Solution Deployment directly from the AWS Management Console.
 
 ## Getting Started
-See the [examples](examples/README.md) for how to setup prerequisites & get started with your first cluster, using our sample CloudFormation Stack templates.
+### MongoDB Atlas CloudFormation
+See the [cfn examples](examples/README.md) for how to setup prerequisites & get started with your first cluster, using our sample CloudFormation Stack templates.
+
+### MongoDB Atlas AWS CDK
+See the [cdk examples](cdk/examples/README.md) for how to setup prerequisites & get started with your first cluster, using our AWS CDK sample code.
 
 ## Support, Bugs, Feature Requests
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.

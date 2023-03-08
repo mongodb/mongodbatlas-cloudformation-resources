@@ -46,7 +46,7 @@ ATLAS_ORG_ID
 
 ## Using the MongoDB Atlas CFN Resources
 
-The fastest way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://github.com/aws-quickstart/quickstart-mongodb-atlas) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
+The fastest way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://aws.amazon.com/solutions/partners/mongodb-atlas/) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
 
 There are two main parts of this project:
 

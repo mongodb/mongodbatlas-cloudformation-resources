@@ -20,7 +20,7 @@ export interface CfnCloudBackUpRestoreJobsProps {
    *
    * @schema CfnCloudBackUpRestoreJobsProps#ClusterName
    */
-  readonly clusterName?: string;
+  readonly clusterName: string;
 
   /**
    * The instance name of the Serverless cluster whose snapshot you want to restore or you want to retrieve restore jobs.
@@ -93,9 +93,11 @@ export interface CfnCloudBackUpRestoreJobsProps {
   readonly targetClusterName?: string;
 
   /**
-   * @schema CfnCloudBackUpRestoreJobsProps#ApiKeys
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnCloudBackUpRestoreJobsProps#Profile
    */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile?: string;
 
 }
 
@@ -118,7 +120,7 @@ export function toJson_CfnCloudBackUpRestoreJobsProps(obj: CfnCloudBackUpRestore
     'PointInTimeUtcSeconds': obj.pointInTimeUtcSeconds,
     'TargetProjectId': obj.targetProjectId,
     'TargetClusterName': obj.targetClusterName,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -139,37 +141,6 @@ export enum CfnCloudBackUpRestoreJobsPropsDeliveryType {
   POINT_IN_TIME = 'pointInTime',
 }
 
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
 
 /**
  * A CloudFormation `MongoDB::Atlas::CloudBackUpRestoreJobs`
@@ -181,7 +152,7 @@ export class CfnCloudBackUpRestoreJobs extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::CloudBackUpRestoreJobs';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::CloudBackUpRestoreJobs";
 
   /**
    * Resource props.
@@ -235,6 +206,6 @@ export class CfnCloudBackUpRestoreJobs extends cdk.CfnResource {
     this.attrExpiresAt = cdk.Token.asString(this.getAtt('ExpiresAt'));
     this.attrFinishedAt = cdk.Token.asString(this.getAtt('FinishedAt'));
     this.attrTimestamp = cdk.Token.asString(this.getAtt('Timestamp'));
-    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
+    this.attrLinks = this.getAtt('Links');
   }
 }

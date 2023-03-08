@@ -32,9 +32,11 @@ export interface CfnSearchIndexProps {
   readonly analyzers?: ApiAtlasFtsAnalyzersViewManual[];
 
   /**
-   * @schema CfnSearchIndexProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnSearchIndexProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Name of the cluster that contains the database and collection with one or more Application Search indexes.
@@ -60,9 +62,9 @@ export interface CfnSearchIndexProps {
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
-   * @schema CfnSearchIndexProps#GroupId
+   * @schema CfnSearchIndexProps#ProjectId
    */
-  readonly groupId?: string;
+  readonly projectId?: string;
 
   /**
    * Index specifications for the collection's fields.
@@ -103,11 +105,11 @@ export function toJson_CfnSearchIndexProps(obj: CfnSearchIndexProps | undefined)
   const result = {
     'Analyzer': obj.analyzer,
     'Analyzers': obj.analyzers?.map(y => toJson_ApiAtlasFtsAnalyzersViewManual(y)),
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ClusterName': obj.clusterName,
     'CollectionName': obj.collectionName,
     'Database': obj.database,
-    'GroupId': obj.groupId,
+    'ProjectId': obj.projectId,
     'Mappings': toJson_ApiAtlasFtsMappingsViewManual(obj.mappings),
     'Name': obj.name,
     'SearchAnalyzer': obj.searchAnalyzer,
@@ -170,37 +172,6 @@ export function toJson_ApiAtlasFtsAnalyzersViewManual(obj: ApiAtlasFtsAnalyzersV
     'Name': obj.name,
     'TokenFilters': obj.tokenFilters?.map(y => y),
     'Tokenizer': obj.tokenizer,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -323,7 +294,7 @@ export class CfnSearchIndex extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::SearchIndex';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::SearchIndex";
 
   /**
    * Resource props.

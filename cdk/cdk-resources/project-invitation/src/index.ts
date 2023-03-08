@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnProjectInvitationProps {
   /**
-   * @schema CfnProjectInvitationProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnProjectInvitationProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
@@ -64,44 +66,13 @@ export interface CfnProjectInvitationProps {
 export function toJson_CfnProjectInvitationProps(obj: CfnProjectInvitationProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ProjectId': obj.projectId,
     'TotalCount': obj.totalCount,
     'PageNum': obj.pageNum,
     'InvitationId': obj.invitationId,
     'Roles': obj.roles?.map(y => y),
     'Username': obj.username,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -137,7 +108,7 @@ export class CfnProjectInvitation extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::ProjectInvitation';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::ProjectInvitation";
 
   /**
    * Resource props.

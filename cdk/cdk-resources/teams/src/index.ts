@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnTeamsProps {
   /**
-   * @schema CfnTeamsProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnTeamsProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * One or more organization- or project-level roles to assign to the MongoDB Cloud user.
@@ -30,9 +32,9 @@ export interface CfnTeamsProps {
   /**
    * Unique 24-hexadecimal character string that identifies the project.
    *
-   * @schema CfnTeamsProps#GroupId
+   * @schema CfnTeamsProps#ProjectId
    */
-  readonly groupId?: string;
+  readonly projectId?: string;
 
   /**
    * Unique 24-hexadecimal character string that identifies the team.
@@ -57,43 +59,12 @@ export interface CfnTeamsProps {
 export function toJson_CfnTeamsProps(obj: CfnTeamsProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'RoleNames': obj.roleNames?.map(y => y),
     'OrgId': obj.orgId,
-    'GroupId': obj.groupId,
+    'ProjectId': obj.projectId,
     'Name': obj.name,
     'Usernames': obj.usernames?.map(y => y),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -129,7 +100,7 @@ export class CfnTeams extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::Teams';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::Teams";
 
   /**
    * Resource props.
@@ -158,6 +129,6 @@ export class CfnTeams extends cdk.CfnResource {
     this.props = props;
 
     this.attrTeamId = cdk.Token.asString(this.getAtt('TeamId'));
-    this.attrUsers = cdk.Token.asList(this.getAtt('Users'));
+    this.attrUsers = this.getAtt('Users');
   }
 }

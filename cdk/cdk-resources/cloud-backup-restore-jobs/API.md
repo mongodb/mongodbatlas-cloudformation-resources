@@ -408,7 +408,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrExpiresAt">attrExpiresAt</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.ExpiresAt`. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrFinishedAt">attrFinishedAt</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.FinishedAt`. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Id`. |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrLinks">attrLinks</a></code> | <code>any[]</code> | Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Links`. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrTimestamp">attrTimestamp</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Timestamp`. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps">CfnCloudBackUpRestoreJobsProps</a></code> | Resource props. |
 
@@ -566,18 +565,6 @@ Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Id`.
 
 ---
 
-##### `attrLinks`<sup>Required</sup> <a name="attrLinks" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrLinks"></a>
-
-```typescript
-public readonly attrLinks: any[];
-```
-
-- *Type:* any[]
-
-Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Links`.
-
----
-
 ##### `attrTimestamp`<sup>Required</sup> <a name="attrTimestamp" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobs.property.attrTimestamp"></a>
 
 ```typescript
@@ -624,45 +611,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/cloud-backup-restore-jobs'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnCloudBackUpRestoreJobsProps <a name="CfnCloudBackUpRestoreJobsProps" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps"></a>
 
 Returns, starts, and cancels Cloud Backup restore jobs.
@@ -679,29 +627,31 @@ const cfnCloudBackUpRestoreJobsProps: CfnCloudBackUpRestoreJobsProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.clusterName">clusterName</a></code> | <code>string</code> | The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.projectId">projectId</a></code> | <code>string</code> | The unique identifier of the project for the Atlas cluster. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.cancelled">cancelled</a></code> | <code>boolean</code> | Indicates whether the restore job was canceled. |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.clusterName">clusterName</a></code> | <code>string</code> | The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.deliveryType">deliveryType</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsPropsDeliveryType">CfnCloudBackUpRestoreJobsPropsDeliveryType</a></code> | Type of restore job to create.The value can be any one of download,automated or point_in_time. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.expired">expired</a></code> | <code>boolean</code> | Indicates whether the restore job expired. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.instanceName">instanceName</a></code> | <code>string</code> | The instance name of the Serverless cluster whose snapshot you want to restore or you want to retrieve restore jobs. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.opLogInc">opLogInc</a></code> | <code>string</code> | Oplog operation number from which to you want to restore this snapshot. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.opLogTs">opLogTs</a></code> | <code>string</code> | Timestamp in the number of seconds that have elapsed since the UNIX epoch from which to you want to restore this snapshot. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.pointInTimeUtcSeconds">pointInTimeUtcSeconds</a></code> | <code>number</code> | If you performed a Point-in-Time restores at a time specified by a Unix time in seconds since epoch, pointInTimeUTCSeconds indicates the Unix time used. |
+| <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.snapshotId">snapshotId</a></code> | <code>string</code> | Unique identifier of the source snapshot ID of the restore job. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.targetClusterName">targetClusterName</a></code> | <code>string</code> | Name of the target Atlas cluster to which the restore job restores the snapshot. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.targetProjectId">targetProjectId</a></code> | <code>string</code> | Name of the target Atlas project of the restore job. |
 
 ---
 
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.apiKeys"></a>
+##### `clusterName`<sup>Required</sup> <a name="clusterName" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.clusterName"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly clusterName: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/cloud-backup-restore-jobs.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
+
+The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.
 
 ---
 
@@ -726,18 +676,6 @@ public readonly cancelled: boolean;
 - *Type:* boolean
 
 Indicates whether the restore job was canceled.
-
----
-
-##### `clusterName`<sup>Optional</sup> <a name="clusterName" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.clusterName"></a>
-
-```typescript
-public readonly clusterName: string;
-```
-
-- *Type:* string
-
-The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.
 
 ---
 
@@ -814,6 +752,18 @@ public readonly pointInTimeUtcSeconds: number;
 - *Type:* number
 
 If you performed a Point-in-Time restores at a time specified by a Unix time in seconds since epoch, pointInTimeUTCSeconds indicates the Unix time used.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/cloud-backup-restore-jobs.CfnCloudBackUpRestoreJobsProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

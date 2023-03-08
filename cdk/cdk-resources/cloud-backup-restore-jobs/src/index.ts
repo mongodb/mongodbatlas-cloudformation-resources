@@ -152,7 +152,7 @@ export class CfnCloudBackUpRestoreJobs extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::CloudBackUpRestoreJobs";
+  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::CloudBackUpRestoreJobs';
 
   /**
    * Resource props.
@@ -183,10 +183,6 @@ export class CfnCloudBackUpRestoreJobs extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Timestamp`
    */
   public readonly attrTimestamp: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackUpRestoreJobs.Links`
-   */
-  public readonly attrLinks: any[];
 
   /**
    * Create a new `MongoDB::Atlas::CloudBackUpRestoreJobs`.
@@ -206,6 +202,6 @@ export class CfnCloudBackUpRestoreJobs extends cdk.CfnResource {
     this.attrExpiresAt = cdk.Token.asString(this.getAtt('ExpiresAt'));
     this.attrFinishedAt = cdk.Token.asString(this.getAtt('FinishedAt'));
     this.attrTimestamp = cdk.Token.asString(this.getAtt('Timestamp'));
-    this.attrLinks = this.getAtt('Links');
+
   }
 }

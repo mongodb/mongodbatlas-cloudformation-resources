@@ -744,45 +744,6 @@ Data set that stores the mapping one or more words map to one or more synonyms o
 
 ---
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/search-index.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/search-index.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/search-index'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/search-index.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/search-index.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/search-index.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/search-index.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnSearchIndexProps <a name="CfnSearchIndexProps" id="@mongodbatlas-awscdk/search-index.CfnSearchIndexProps"></a>
 
 Returns, adds, edits, and removes Atlas Search indexes.
@@ -807,9 +768,9 @@ const cfnSearchIndexProps: CfnSearchIndexProps = { ... }
 | <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.mappings">mappings</a></code> | <code><a href="#@mongodbatlas-awscdk/search-index.ApiAtlasFtsMappingsViewManual">ApiAtlasFtsMappingsViewManual</a></code> | Index specifications for the collection's fields. |
 | <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.analyzer">analyzer</a></code> | <code>string</code> | Specific pre-defined method chosen to convert database field text into searchable words. |
 | <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.analyzers">analyzers</a></code> | <code><a href="#@mongodbatlas-awscdk/search-index.ApiAtlasFtsAnalyzersViewManual">ApiAtlasFtsAnalyzersViewManual</a>[]</code> | List of user-defined methods to convert database field text into searchable words. |
-| <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/search-index.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.name">name</a></code> | <code>string</code> | Human-readable label that identifies this index. |
+| <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
+| <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.searchAnalyzer">searchAnalyzer</a></code> | <code>string</code> | Method applied to identify words when searching this index. |
 | <code><a href="#@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.synonyms">synonyms</a></code> | <code><a href="#@mongodbatlas-awscdk/search-index.ApiAtlasFtsSynonymMappingDefinitionView">ApiAtlasFtsSynonymMappingDefinitionView</a>[]</code> | Rule sets that map words to their synonyms in this index. |
 
@@ -898,28 +859,6 @@ List of user-defined methods to convert database field text into searchable word
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/search-index.ApiKeyDefinition">ApiKeyDefinition</a>
-
----
-
-##### `groupId`<sup>Optional</sup> <a name="groupId" id="@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.groupId"></a>
-
-```typescript
-public readonly groupId: string;
-```
-
-- *Type:* string
-
-Unique 24-hexadecimal digit string that identifies your project.
-
----
-
 ##### `name`<sup>Optional</sup> <a name="name" id="@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.name"></a>
 
 ```typescript
@@ -931,6 +870,32 @@ public readonly name: string;
 Human-readable label that identifies this index.
 
 Within each namespace, names of all indexes in the namespace must be unique.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+---
+
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/search-index.CfnSearchIndexProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 

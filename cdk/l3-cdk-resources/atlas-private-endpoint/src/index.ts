@@ -39,10 +39,10 @@ export class AtlasBasicPrivateEndpoint extends Construct {
      * Creates an instance of AtlasBasicPrivateEndpoint.
      * @param {Construct} scope
      * @param {string} id
-     * @param {AtlasPrivateEndpointProps} props
+     * @param {AtlasBasicPrivateEndpointProps} props
      * @memberof AtlasBasicPrivateEndpoint
      */
-    constructor(scope: Construct, id: string, props: AtlasPrivateEndpointProps) {
+    constructor(scope: Construct, id: string, props: AtlasBasicPrivateEndpointProps) {
         super(scope, id);
         validate(props)
         // Validation for atlas basic would be delegated to the library
@@ -61,7 +61,7 @@ export class AtlasBasicPrivateEndpoint extends Construct {
     }
 }
 
-const validate = (props: AtlasPrivateEndpointProps) => {
+const validate = (props: AtlasBasicPrivateEndpointProps) => {
     if (!props.atlasBasicProps.projectProps.orgId) {throw Error('Validation error: orgId is not defined');}
 };
 
@@ -69,9 +69,9 @@ const validate = (props: AtlasPrivateEndpointProps) => {
 /**
  * @description
  * @export
- * @interface AtlasPrivateEndpointProps
+ * @interface AtlasBasicPrivateEndpointProps
  */
-export interface AtlasPrivateEndpointProps {
+export interface AtlasBasicPrivateEndpointProps {
 
     readonly profile?: string;
 

@@ -40,7 +40,7 @@ ATLAS_ORG_ID
 
 ## Security - Setup
 
-1. Create and note your MongoDB Atlas API Key.
+1. Create and note your [MongoDB Atlas API Key](https://www.mongodb.com/docs/atlas/configure-api-access/#std-label-atlas-admin-api-access).
 2. Create and note your AWS Access Key and AWS Secret Key ID.
 3. Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
 

@@ -12,7 +12,6 @@ const customerMasterKeyId = stack.node.tryGetContext('CUSTOMER_MASTER_KEY_ID') |
 const roleID = stack.node.tryGetContext('ROLE_ID') || process.env.ROLE_ID;
 
 new CfnEncryptionAtRest(stack, 'encryptionAtRest', {
-  profile: 'federation',
   projectId: projectId,
   awsKms: {
     roleId: roleID,

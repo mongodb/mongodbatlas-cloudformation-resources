@@ -559,45 +559,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/x509-authentication-database-user'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnX509AuthenticationDatabaseUserProps <a name="CfnX509AuthenticationDatabaseUserProps" id="@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps"></a>
 
 Generates one X.509 certificate for the specified MongoDB user. Atlas manages the certificate and MongoDB user that belong to one project. To use this resource, the requesting API Key must have the Project Atlas Admin role. This resource doesn't require the API Key to have an Access List.
@@ -618,22 +579,12 @@ const cfnX509AuthenticationDatabaseUserProps: CfnX509AuthenticationDatabaseUserP
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.customerX509">customerX509</a></code> | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CustomerX509">CustomerX509</a></code> | CustomerX509 represents Customer-managed X.509 configuration for an Atlas project. |
 | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.monthsUntilExpiration">monthsUntilExpiration</a></code> | <code>number</code> | A number of months that the created certificate is valid for before expiry, up to 24 months.default 3. |
+| <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.projectId">projectId</a></code> | <code>string</code> | The unique identifier for the project . |
 | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.totalCount">totalCount</a></code> | <code>number</code> | Total number of unexpired certificates returned in this response. |
 | <code><a href="#@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.userName">userName</a></code> | <code>string</code> | Username of the database user to create a certificate for. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/x509-authentication-database-user.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -658,6 +609,18 @@ public readonly monthsUntilExpiration: number;
 - *Type:* number
 
 A number of months that the created certificate is valid for before expiry, up to 24 months.default 3.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/x509-authentication-database-user.CfnX509AuthenticationDatabaseUserProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

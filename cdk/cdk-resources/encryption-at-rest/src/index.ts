@@ -11,12 +11,14 @@ export interface CfnEncryptionAtRestProps {
   /**
    * @schema CfnEncryptionAtRestProps#AwsKms
    */
-  readonly awsKms: AwsKmsConfiguration;
+  readonly awsKms: AwsKms;
 
   /**
-   * @schema CfnEncryptionAtRestProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnEncryptionAtRestProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Unique identifier of the Atlas project to which the user belongs.
@@ -35,7 +37,7 @@ export function toJson_CfnEncryptionAtRestProps(obj: CfnEncryptionAtRestProps | 
   if (obj === undefined) { return undefined; }
   const result = {
     'AwsKms': toJson_AwsKms(obj.awsKms),
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ProjectId': obj.projectId,
   };
   // filter undefined values
@@ -48,7 +50,7 @@ export function toJson_CfnEncryptionAtRestProps(obj: CfnEncryptionAtRestProps | 
  *
  * @schema AwsKms
  */
-export interface AwsKmsConfiguration {
+export interface AwsKms {
   /**
    * ID of an AWS IAM role authorized to manage an AWS customer master key.
    *
@@ -83,44 +85,13 @@ export interface AwsKmsConfiguration {
  * Converts an object of type 'AwsKms' to JSON representation.
  */
 /* eslint-disable max-len, quote-props */
-export function toJson_AwsKms(obj: AwsKmsConfiguration | undefined): Record<string, any> | undefined {
+export function toJson_AwsKms(obj: AwsKms | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
     'RoleID': obj.roleId,
     'CustomerMasterKeyID': obj.customerMasterKeyId,
     'Enabled': obj.enabled,
     'Region': obj.region,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -138,7 +109,7 @@ export class CfnEncryptionAtRest extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::EncryptionAtRest';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::EncryptionAtRest";
 
   /**
    * Resource props.

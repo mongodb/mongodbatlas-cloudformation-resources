@@ -27,13 +27,13 @@ test('Trigger construct should contain default properties', () => {
 
   new CfnTrigger(stack, 'testing-stack', {
     projectId: PROJECT_ID,
-    appId: APPID
+    appId: APPID,
   });
 
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties(RESOURCE_NAME, {
     ProjectId: PROJECT_ID,
-    AppId : APPID
+    AppId: APPID,
   });
 });

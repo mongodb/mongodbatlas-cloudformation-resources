@@ -25,12 +25,12 @@ test('X509AuthenticationDatabaseUser construct should contain default properties
   const stack = new Stack(mockApp);
 
   new CfnX509AuthenticationDatabaseUser(stack, 'testing-stack', {
-    projectId: PROJECT_ID
+    projectId: PROJECT_ID,
   });
 
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties(RESOURCE_NAME, {
-    ProjectId: PROJECT_ID
+    ProjectId: PROJECT_ID,
   });
 });

@@ -47,7 +47,7 @@ Here are some examples of how to use this template:
 ```
 #### example 2:
 ```
-  ProfileName: tetProfile1
+  ProfileName: testProfile1
   SecretName: cfn/atlas/profile/tetProfile1
   SecretValue = {PublicKey: zzzzzzzzzz , PrivateKey:jjjjjjjjj}
 ```

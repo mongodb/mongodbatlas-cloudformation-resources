@@ -1,0 +1,65 @@
+{
+  "Resources": {
+    "federatedSettingsOrgRoleMapping": {
+      "Type": "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
+      "Properties": {
+        "Profile": "federation",
+        "ExternalGroupName": "RG-01",
+        "FederationSettingsId": "6287a663c660f52b1c441c6c",
+        "OrgId": "627a9683eafda674de306f14",
+        "RoleAssignments": [
+          {
+            "ProjectId": "6400dcaedc73544ccb1752bb",
+            "Role": "GROUP_DATA_ACCESS_READ_WRITE"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "atlas-fedOrgRoleMapping-default/federatedSettingsOrgRoleMapping"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSM9QzUEwsL9ZNTsnWzclM0qsOLklMztZxTssLSi3OLy1KTq3VyctPSdXLKtYvM7TUMweqzyrOzNQtKs0rycxN1QuC0ADMzQ4MSgAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "atlas-fedOrgRoleMapping-default/CDKMetadata/Default"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.5"
+        }
+      },
+      "atlas-fedOrgRoleMapping-default": {
+        "id": "atlas-fedOrgRoleMapping-default",
+        "path": "atlas-fedOrgRoleMapping-default",
+        "children": {
+          "federatedSettingsOrgRoleMapping": {
+            "id": "federatedSettingsOrgRoleMapping",
+            "path": "atlas-fedOrgRoleMapping-default/federatedSettingsOrgRoleMapping",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnResource",
+              "version": "2.1.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "atlas-fedOrgRoleMapping-default/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "atlas-fedOrgRoleMapping-default/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.1.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.1.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.1.0"
+    }
+  }
+}

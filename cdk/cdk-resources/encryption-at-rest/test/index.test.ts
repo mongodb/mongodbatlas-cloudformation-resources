@@ -37,13 +37,12 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
       enabled: true,
       region: REGION,
     },
-
   });
 
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties(RESOURCE_NAME, {
-    profile: PROFILE,
+    Profile: PROFILE,
     ProjectId: PROJECT_ID,
     AwsKms: {
       RoleID: ROLE_ID,

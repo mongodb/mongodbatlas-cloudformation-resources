@@ -14,9 +14,11 @@ export interface CfnEncryptionAtRestProps {
   readonly awsKms: AwsKmsConfiguration;
 
   /**
-   * @schema CfnEncryptionAtRestProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnEncryptionAtRestProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Unique identifier of the Atlas project to which the user belongs.
@@ -35,7 +37,7 @@ export function toJson_CfnEncryptionAtRestProps(obj: CfnEncryptionAtRestProps | 
   if (obj === undefined) { return undefined; }
   const result = {
     'AwsKms': toJson_AwsKms(obj.awsKms),
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ProjectId': obj.projectId,
   };
   // filter undefined values
@@ -90,37 +92,6 @@ export function toJson_AwsKms(obj: AwsKmsConfiguration | undefined): Record<stri
     'CustomerMasterKeyID': obj.customerMasterKeyId,
     'Enabled': obj.enabled,
     'Region': obj.region,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

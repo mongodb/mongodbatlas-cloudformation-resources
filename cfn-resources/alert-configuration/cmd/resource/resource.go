@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -29,7 +30,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -55,7 +55,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
@@ -105,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
@@ -148,7 +148,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
@@ -186,8 +186,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
-	if reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: pointy.Bool(true)}) ||
-		reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: pointy.Bool(false)}) {
+	if reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.Bool(true)}) ||
+		reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.Bool(false)}) {
 		alertModel, res, err = client.AlertConfigurations.EnableAnAlertConfig(context.Background(), projectID, id, alertReq.Enabled)
 	} else {
 		alertModel, res, err = client.AlertConfigurations.Update(context.Background(), projectID, id, alertReq)
@@ -213,7 +213,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
@@ -249,7 +249,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var err error
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
@@ -443,12 +443,12 @@ func flattenNotifications(notifications []mongodbatlas.Notification) []Notificat
 			ChannelName:         &notifications[ind].ChannelName,
 			DatadogApiKey:       &notifications[ind].DatadogAPIKey,
 			DatadogRegion:       &notifications[ind].DatadogRegion,
-			DelayMin:            pointy.Float64(cast.ToFloat64(notifications[ind].DelayMin)),
+			DelayMin:            aws.Float64(cast.ToFloat64(notifications[ind].DelayMin)),
 			EmailAddress:        &notifications[ind].EmailAddress,
 			EmailEnabled:        notifications[ind].EmailEnabled,
 			FlowdockApiToken:    &notifications[ind].FlowdockAPIToken,
 			FlowName:            &notifications[ind].FlowName,
-			IntervalMin:         pointy.Float64(cast.ToFloat64(notifications[ind].IntervalMin)),
+			IntervalMin:         aws.Float64(cast.ToFloat64(notifications[ind].IntervalMin)),
 			MobileNumber:        &notifications[ind].MobileNumber,
 			OpsGenieApiKey:      &notifications[ind].OpsGenieAPIKey,
 			OpsGenieRegion:      &notifications[ind].OpsGenieRegion,

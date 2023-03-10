@@ -16,6 +16,20 @@ export interface CfnCloudBackupScheduleProps {
   readonly id?: string;
 
   /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnCloudBackupScheduleProps#ProjectId
+   */
+  readonly projectId: string;
+
+  /**
+   * The name of the Atlas cluster that contains the snapshots you want to retrieve.
+   *
+   * @schema CfnCloudBackupScheduleProps#ClusterName
+   */
+  readonly clusterName: string;
+
+  /**
    * Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled.
    *
    * @schema CfnCloudBackupScheduleProps#AutoExportEnabled
@@ -109,6 +123,8 @@ export function toJson_CfnCloudBackupScheduleProps(obj: CfnCloudBackupSchedulePr
   if (obj === undefined) { return undefined; }
   const result = {
     'Id': obj.id,
+    'ProjectId': obj.projectId,
+    'ClusterName': obj.clusterName,
     'AutoExportEnabled': obj.autoExportEnabled,
     'UseOrgAndGroupNamesInExportPrefix': obj.useOrgAndGroupNamesInExportPrefix,
     'Export': toJson_Export(obj.export),
@@ -415,14 +431,6 @@ export class CfnCloudBackupSchedule extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::CloudBackupSchedule.NextSnapshot`
    */
   public readonly attrNextSnapshot: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSchedule.ProjectId`
-   */
-  public readonly attrProjectId: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSchedule.ClusterName`
-   */
-  public readonly attrClusterName: string;
 
   /**
    * Create a new `MongoDB::Atlas::CloudBackupSchedule`.
@@ -438,7 +446,5 @@ export class CfnCloudBackupSchedule extends cdk.CfnResource {
 
     this.attrClusterId = cdk.Token.asString(this.getAtt('ClusterId'));
     this.attrNextSnapshot = cdk.Token.asString(this.getAtt('NextSnapshot'));
-    this.attrProjectId = cdk.Token.asString(this.getAtt('ProjectId'));
-    this.attrClusterName = cdk.Token.asString(this.getAtt('ClusterName'));
   }
 }

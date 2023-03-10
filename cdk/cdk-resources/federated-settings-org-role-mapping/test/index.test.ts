@@ -45,14 +45,14 @@ test('AtlasFederatedSettingsOrgRoleMapping construct should contain default prop
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties(RESOURCE_NAME, {
-    profile: PROFILE,
-    externalGroupName: EXTERNAL_GROUP_NAME,
-    orgId: ORG_ID,
-    federationSettingsId: FEDERATION_SETTINGS_ID,
-    roleAssignments: [
+    Profile: PROFILE,
+    ExternalGroupName: EXTERNAL_GROUP_NAME,
+    OrgId: ORG_ID,
+    FederationSettingsId: FEDERATION_SETTINGS_ID,
+    RoleAssignments: [
       {
-        role: ROLE,
-        projectId: PROJECT_ID,
+        Role: ROLE,
+        ProjectId: PROJECT_ID,
       },
     ],
   });

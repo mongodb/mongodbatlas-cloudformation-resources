@@ -29,7 +29,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -255,8 +254,8 @@ func removeManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, rem
 			Db:             cast.ToString(m.Db),
 			CustomShardKey: cast.ToString(m.CustomShardKey),
 		}
-		addManagedNamespace.IsCustomShardKeyHashed = pointy.Bool(*m.IsCustomShardKeyHashed)
-		addManagedNamespace.IsShardKeyUnique = pointy.Bool(*m.IsShardKeyUnique)
+		addManagedNamespace.IsCustomShardKeyHashed = aws.String(*m.IsCustomShardKeyHashed)
+		addManagedNamespace.IsShardKeyUnique = aws.String(*m.IsShardKeyUnique)
 		_, _, err := conn.GlobalClusters.DeleteManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
 		if err != nil {
 			_, _ = logger.Warnf("error while removing namespace:%+v", err)

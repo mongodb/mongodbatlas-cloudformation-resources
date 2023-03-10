@@ -254,8 +254,8 @@ func removeManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, rem
 			Db:             cast.ToString(m.Db),
 			CustomShardKey: cast.ToString(m.CustomShardKey),
 		}
-		addManagedNamespace.IsCustomShardKeyHashed = aws.String(*m.IsCustomShardKeyHashed)
-		addManagedNamespace.IsShardKeyUnique = aws.String(*m.IsShardKeyUnique)
+		addManagedNamespace.IsCustomShardKeyHashed = aws.Bool(*m.IsCustomShardKeyHashed)
+		addManagedNamespace.IsShardKeyUnique = aws.Bool(*m.IsShardKeyUnique)
 		_, _, err := conn.GlobalClusters.DeleteManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
 		if err != nil {
 			_, _ = logger.Warnf("error while removing namespace:%+v", err)

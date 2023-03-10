@@ -9,9 +9,18 @@ import * as constructs from 'constructs';
  */
 export interface CfnOnlineArchiveProps {
   /**
-   * @schema CfnOnlineArchiveProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnOnlineArchiveProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
+
+  /**
+   * Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.
+   *
+   * @schema CfnOnlineArchiveProps#ClusterName
+   */
+  readonly clusterName: string;
 
   /**
    * Human-readable label that identifies the collection for which you created the online archive.
@@ -38,7 +47,7 @@ export interface CfnOnlineArchiveProps {
    *
    * @schema CfnOnlineArchiveProps#Criteria
    */
-  readonly criteria?: CriteriaView;
+  readonly criteria: CriteriaView;
 
   /**
    * Human-readable label of the database that contains the collection that contains the online archive.
@@ -91,7 +100,8 @@ export interface CfnOnlineArchiveProps {
 export function toJson_CfnOnlineArchiveProps(obj: CfnOnlineArchiveProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
+    'ClusterName': obj.clusterName,
     'CollName': obj.collName,
     'CollectionType': obj.collectionType,
     'Criteria': toJson_CriteriaView(obj.criteria),
@@ -101,37 +111,6 @@ export function toJson_CfnOnlineArchiveProps(obj: CfnOnlineArchiveProps | undefi
     'PageNum': obj.pageNum,
     'PartitionFields': obj.partitionFields?.map(y => toJson_PartitionFieldView(y)),
     'Schedule': toJson_ScheduleView(obj.schedule),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema ApiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema ApiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -424,10 +403,6 @@ export class CfnOnlineArchive extends cdk.CfnResource {
    */
   public readonly attrArchiveId: string;
   /**
-   * Attribute `MongoDB::Atlas::OnlineArchive.ClusterName`
-   */
-  public readonly attrClusterName: string;
-  /**
    * Attribute `MongoDB::Atlas::OnlineArchive.ProjectId`
    */
   public readonly attrProjectId: string;
@@ -447,8 +422,6 @@ export class CfnOnlineArchive extends cdk.CfnResource {
     this.attrState = cdk.Token.asString(this.getAtt('State'));
     this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
     this.attrArchiveId = cdk.Token.asString(this.getAtt('ArchiveId'));
-    this.attrClusterName = cdk.Token.asString(this.getAtt('ClusterName'));
     this.attrProjectId = cdk.Token.asString(this.getAtt('ProjectId'));
-    this.attrState = cdk.Token.asString(this.getAtt('State'));
   }
 }

@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnOrgInvitationProps {
   /**
-   * @schema CfnOrgInvitationProps#ApiKeys
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnOrgInvitationProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile: string;
 
   /**
    * Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
@@ -92,7 +94,7 @@ export interface CfnOrgInvitationProps {
 export function toJson_CfnOrgInvitationProps(obj: CfnOrgInvitationProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'IncludeCount': obj.includeCount,
     'InvitationId': obj.invitationId,
     'ItemsPerPage': obj.itemsPerPage,
@@ -103,37 +105,6 @@ export function toJson_CfnOrgInvitationProps(obj: CfnOrgInvitationProps | undefi
     'TeamIds': obj.teamIds?.map(y => y),
     'TotalCount': obj.totalCount,
     'Username': obj.username,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema ApiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema ApiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

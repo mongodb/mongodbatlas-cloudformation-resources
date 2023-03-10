@@ -13,9 +13,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnX509AuthenticationDatabaseUserProps {
   /**
-   * @schema CfnX509AuthenticationDatabaseUserProps#ApiKeys
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnX509AuthenticationDatabaseUserProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Total number of unexpired certificates returned in this response.
@@ -61,43 +63,12 @@ export interface CfnX509AuthenticationDatabaseUserProps {
 export function toJson_CfnX509AuthenticationDatabaseUserProps(obj: CfnX509AuthenticationDatabaseUserProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'TotalCount': obj.totalCount,
     'CustomerX509': toJson_CustomerX509(obj.customerX509),
     'UserName': obj.userName,
     'MonthsUntilExpiration': obj.monthsUntilExpiration,
     'ProjectId': obj.projectId,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

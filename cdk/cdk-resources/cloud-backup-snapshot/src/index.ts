@@ -9,16 +9,18 @@ import * as constructs from 'constructs';
  */
 export interface CfnCloudBackupSnapshotProps {
   /**
-   * @schema CfnCloudBackupSnapshotProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnCloudBackupSnapshotProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Human-readable label that identifies the cluster.
    *
    * @schema CfnCloudBackupSnapshotProps#ClusterName
    */
-  readonly clusterName?: string;
+  readonly clusterName: string;
 
   /**
    * Human-readable label that identifies the serverless instance.
@@ -35,11 +37,18 @@ export interface CfnCloudBackupSnapshotProps {
   readonly description?: string;
 
   /**
+   * Human-readable label that identifies how often this snapshot triggers.
+   *
+   * @schema CfnCloudBackupSnapshotProps#FrequencyType
+   */
+  readonly frequencyType?: CfnCloudBackupSnapshotPropsFrequencyType;
+
+  /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
-   * @schema CfnCloudBackupSnapshotProps#GroupId
+   * @schema CfnCloudBackupSnapshotProps#ProjectId
    */
-  readonly groupId?: string;
+  readonly projectId: string;
 
   /**
    * Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
@@ -56,6 +65,20 @@ export interface CfnCloudBackupSnapshotProps {
   readonly itemsPerPage?: number;
 
   /**
+   * List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
+   *
+   * @schema CfnCloudBackupSnapshotProps#Links
+   */
+  readonly links?: Link[];
+
+  /**
+   * List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `"type" : "SHARDED_CLUSTER"`.
+   *
+   * @schema CfnCloudBackupSnapshotProps#Members
+   */
+  readonly members?: ApiAtlasDiskBackupShardedClusterSnapshotMemberView[];
+
+  /**
    * Number of the page that displays the current set of the total objects that the response returns.
    *
    * @schema CfnCloudBackupSnapshotProps#PageNum
@@ -63,11 +86,39 @@ export interface CfnCloudBackupSnapshotProps {
   readonly pageNum?: number;
 
   /**
+   * List that contains unique identifiers for the policy items.
+   *
+   * @schema CfnCloudBackupSnapshotProps#PolicyItems
+   */
+  readonly policyItems?: string[];
+
+  /**
+   * List of returned documents that MongoDB Cloud provides when completing this request.
+   *
+   * @schema CfnCloudBackupSnapshotProps#Results
+   */
+  readonly results?: ApiAtlasDiskBackupShardedClusterSnapshotView[];
+
+  /**
    * Number of days that MongoDB Cloud should retain the on-demand snapshot. Must be at least **1**
    *
    * @schema CfnCloudBackupSnapshotProps#RetentionInDays
    */
   readonly retentionInDays?: number;
+
+  /**
+   * Human-readable label that identifies when this snapshot triggers.
+   *
+   * @schema CfnCloudBackupSnapshotProps#SnapshotType
+   */
+  readonly snapshotType?: CfnCloudBackupSnapshotPropsSnapshotType;
+
+  /**
+   * Number of documents returned in this response.
+   *
+   * @schema CfnCloudBackupSnapshotProps#TotalCount
+   */
+  readonly totalCount?: number;
 
 }
 
@@ -78,15 +129,22 @@ export interface CfnCloudBackupSnapshotProps {
 export function toJson_CfnCloudBackupSnapshotProps(obj: CfnCloudBackupSnapshotProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ClusterName': obj.clusterName,
     'InstanceName': obj.instanceName,
     'Description': obj.description,
-    'GroupId': obj.groupId,
+    'FrequencyType': obj.frequencyType,
+    'ProjectId': obj.projectId,
     'IncludeCount': obj.includeCount,
     'ItemsPerPage': obj.itemsPerPage,
+    'Links': obj.links?.map(y => toJson_Link(y)),
+    'Members': obj.members?.map(y => toJson_ApiAtlasDiskBackupShardedClusterSnapshotMemberView(y)),
     'PageNum': obj.pageNum,
+    'PolicyItems': obj.policyItems?.map(y => y),
+    'Results': obj.results?.map(y => toJson_ApiAtlasDiskBackupShardedClusterSnapshotView(y)),
     'RetentionInDays': obj.retentionInDays,
+    'SnapshotType': obj.snapshotType,
+    'TotalCount': obj.totalCount,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -94,35 +152,319 @@ export function toJson_CfnCloudBackupSnapshotProps(obj: CfnCloudBackupSnapshotPr
 /* eslint-enable max-len, quote-props */
 
 /**
- * @schema apiKeyDefinition
+ * Human-readable label that identifies how often this snapshot triggers.
+ *
+ * @schema CfnCloudBackupSnapshotPropsFrequencyType
  */
-export interface ApiKeyDefinition {
+export enum CfnCloudBackupSnapshotPropsFrequencyType {
+  /** hourly */
+  HOURLY = 'hourly',
+  /** daily */
+  DAILY = 'daily',
+  /** weekly */
+  WEEKLY = 'weekly',
+  /** monthly */
+  MONTHLY = 'monthly',
+}
+
+/**
+ * @schema Link
+ */
+export interface Link {
   /**
-   * @schema apiKeyDefinition#PrivateKey
+   * Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`.
+   *
+   * @schema Link#Href
    */
-  readonly privateKey?: string;
+  readonly href?: string;
 
   /**
-   * @schema apiKeyDefinition#PublicKey
+   * Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`.
+   *
+   * @schema Link#Rel
    */
-  readonly publicKey?: string;
+  readonly rel?: string;
 
 }
 
 /**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
+ * Converts an object of type 'Link' to JSON representation.
  */
 /* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
+export function toJson_Link(obj: Link | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
+    'Href': obj.href,
+    'Rel': obj.rel,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
 }
 /* eslint-enable max-len, quote-props */
+
+/**
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotMemberView
+ */
+export interface ApiAtlasDiskBackupShardedClusterSnapshotMemberView {
+  /**
+   * Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `"type": "replicaSet".`
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotMemberView#CloudProvider
+   */
+  readonly cloudProvider?: ApiAtlasDiskBackupShardedClusterSnapshotMemberViewCloudProvider;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies the snapshot.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotMemberView#Id
+   */
+  readonly id?: string;
+
+  /**
+   * Human-readable label that identifies the shard or config host from which MongoDB Cloud took this snapshot.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotMemberView#ReplicaSetName
+   */
+  readonly replicaSetName?: string;
+
+}
+
+/**
+ * Converts an object of type 'ApiAtlasDiskBackupShardedClusterSnapshotMemberView' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_ApiAtlasDiskBackupShardedClusterSnapshotMemberView(obj: ApiAtlasDiskBackupShardedClusterSnapshotMemberView | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'CloudProvider': obj.cloudProvider,
+    'Id': obj.id,
+    'ReplicaSetName': obj.replicaSetName,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotView
+ */
+export interface ApiAtlasDiskBackupShardedClusterSnapshotView {
+  /**
+   * Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#CreatedAt
+   */
+  readonly createdAt?: string;
+
+  /**
+   * Human-readable phrase or sentence that explains the purpose of the snapshot. The resource returns this parameter when `"status": "onDemand"`.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#Description
+   */
+  readonly description?: string;
+
+  /**
+   * Date and time when MongoDB Cloud deletes the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#ExpiresAt
+   */
+  readonly expiresAt?: string;
+
+  /**
+   * Human-readable label that identifies how often this snapshot triggers.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#FrequencyType
+   */
+  readonly frequencyType?: ApiAtlasDiskBackupShardedClusterSnapshotViewFrequencyType;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies the snapshot.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#Id
+   */
+  readonly id?: string;
+
+  /**
+   * List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#Links
+   */
+  readonly links?: Link[];
+
+  /**
+   * Unique string that identifies the Amazon Web Services (AWS) Key Management Service (KMS) Customer Master Key (CMK) used to encrypt the snapshot. The resource returns this value when `"encryptionEnabled" : true`.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#MasterKeyUUID
+   */
+  readonly masterKeyUuid?: string;
+
+  /**
+   * List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `"type" : "SHARDED_CLUSTER"`.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#Members
+   */
+  readonly members?: ApiAtlasDiskBackupShardedClusterSnapshotMemberView[];
+
+  /**
+   * Version of the MongoDB host that this snapshot backs up.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#MongodVersion
+   */
+  readonly mongodVersion?: string;
+
+  /**
+   * List that contains unique identifiers for the policy items.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#PolicyItems
+   */
+  readonly policyItems?: string[];
+
+  /**
+   * List that contains the unique identifiers of the snapshots created for the shards and config host for a sharded cluster. The resource returns this parameter when `"type": "SHARDED_CLUSTER"`. These identifiers should match the ones specified in the **members[n].id** parameters. This allows you to map a snapshot to its shard or config host name.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#SnapshotIds
+   */
+  readonly snapshotIds?: string[];
+
+  /**
+   * Human-readable label that identifies when this snapshot triggers.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#SnapshotType
+   */
+  readonly snapshotType?: ApiAtlasDiskBackupShardedClusterSnapshotViewSnapshotType;
+
+  /**
+   * Human-readable label that indicates the stage of the backup process for this snapshot.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#Status
+   */
+  readonly status?: ApiAtlasDiskBackupShardedClusterSnapshotViewStatus;
+
+  /**
+   * Number of bytes taken to store the backup snapshot.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#StorageSizeBytes
+   */
+  readonly storageSizeBytes?: string;
+
+  /**
+   * Human-readable label that categorizes the cluster as a replica set or sharded cluster.
+   *
+   * @schema ApiAtlasDiskBackupShardedClusterSnapshotView#Type
+   */
+  readonly type?: ApiAtlasDiskBackupShardedClusterSnapshotViewType;
+
+}
+
+/**
+ * Converts an object of type 'ApiAtlasDiskBackupShardedClusterSnapshotView' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_ApiAtlasDiskBackupShardedClusterSnapshotView(obj: ApiAtlasDiskBackupShardedClusterSnapshotView | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'CreatedAt': obj.createdAt,
+    'Description': obj.description,
+    'ExpiresAt': obj.expiresAt,
+    'FrequencyType': obj.frequencyType,
+    'Id': obj.id,
+    'Links': obj.links?.map(y => toJson_Link(y)),
+    'MasterKeyUUID': obj.masterKeyUuid,
+    'Members': obj.members?.map(y => toJson_ApiAtlasDiskBackupShardedClusterSnapshotMemberView(y)),
+    'MongodVersion': obj.mongodVersion,
+    'PolicyItems': obj.policyItems?.map(y => y),
+    'SnapshotIds': obj.snapshotIds?.map(y => y),
+    'SnapshotType': obj.snapshotType,
+    'Status': obj.status,
+    'StorageSizeBytes': obj.storageSizeBytes,
+    'Type': obj.type,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
+ * Human-readable label that identifies when this snapshot triggers.
+ *
+ * @schema CfnCloudBackupSnapshotPropsSnapshotType
+ */
+export enum CfnCloudBackupSnapshotPropsSnapshotType {
+  /** onDemand */
+  ON_DEMAND = 'onDemand',
+  /** scheduled */
+  SCHEDULED = 'scheduled',
+}
+
+/**
+ * Human-readable label that identifies the cloud provider that stores this snapshot. The resource returns this parameter when `"type": "replicaSet".`
+ *
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotMemberViewCloudProvider
+ */
+export enum ApiAtlasDiskBackupShardedClusterSnapshotMemberViewCloudProvider {
+  /** AWS */
+  AWS = 'AWS',
+  /** AZURE */
+  AZURE = 'AZURE',
+  /** GCP */
+  GCP = 'GCP',
+}
+
+/**
+ * Human-readable label that identifies how often this snapshot triggers.
+ *
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotViewFrequencyType
+ */
+export enum ApiAtlasDiskBackupShardedClusterSnapshotViewFrequencyType {
+  /** hourly */
+  HOURLY = 'hourly',
+  /** daily */
+  DAILY = 'daily',
+  /** weekly */
+  WEEKLY = 'weekly',
+  /** monthly */
+  MONTHLY = 'monthly',
+}
+
+/**
+ * Human-readable label that identifies when this snapshot triggers.
+ *
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotViewSnapshotType
+ */
+export enum ApiAtlasDiskBackupShardedClusterSnapshotViewSnapshotType {
+  /** onDemand */
+  ON_DEMAND = 'onDemand',
+  /** scheduled */
+  SCHEDULED = 'scheduled',
+}
+
+/**
+ * Human-readable label that indicates the stage of the backup process for this snapshot.
+ *
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotViewStatus
+ */
+export enum ApiAtlasDiskBackupShardedClusterSnapshotViewStatus {
+  /** queued */
+  QUEUED = 'queued',
+  /** inProgress */
+  IN_PROGRESS = 'inProgress',
+  /** completed */
+  COMPLETED = 'completed',
+  /** failed */
+  FAILED = 'failed',
+}
+
+/**
+ * Human-readable label that categorizes the cluster as a replica set or sharded cluster.
+ *
+ * @schema ApiAtlasDiskBackupShardedClusterSnapshotViewType
+ */
+export enum ApiAtlasDiskBackupShardedClusterSnapshotViewType {
+  /** REPLICA_SET */
+  REPLICA_SET = 'REPLICA_SET',
+  /** SHARDED_CLUSTER */
+  SHARDED_CLUSTER = 'SHARDED_CLUSTER',
+}
 
 
 /**
@@ -155,25 +497,9 @@ export class CfnCloudBackupSnapshot extends cdk.CfnResource {
    */
   public readonly attrMasterKeyUUID: string;
   /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.Results`
-   */
-  public readonly attrResults: any[];
-  /**
    * Attribute `MongoDB::Atlas::CloudBackupSnapshot.Type`
    */
   public readonly attrType: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.SnapshotType`
-   */
-  public readonly attrSnapshotType: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.TotalCount`
-   */
-  public readonly attrTotalCount: number;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.Members`
-   */
-  public readonly attrMembers: any[];
   /**
    * Attribute `MongoDB::Atlas::CloudBackupSnapshot.ExpiresAt`
    */
@@ -183,10 +509,6 @@ export class CfnCloudBackupSnapshot extends cdk.CfnResource {
    */
   public readonly attrStorageSizeBytes: string;
   /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.PolicyItems`
-   */
-  public readonly attrPolicyItems: string[];
-  /**
    * Attribute `MongoDB::Atlas::CloudBackupSnapshot.Id`
    */
   public readonly attrId: string;
@@ -195,10 +517,6 @@ export class CfnCloudBackupSnapshot extends cdk.CfnResource {
    */
   public readonly attrCreatedAt: string;
   /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.Links`
-   */
-  public readonly attrLinks: any[];
-  /**
    * Attribute `MongoDB::Atlas::CloudBackupSnapshot.CloudProvider`
    */
   public readonly attrCloudProvider: string;
@@ -206,10 +524,6 @@ export class CfnCloudBackupSnapshot extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::CloudBackupSnapshot.MongodVersion`
    */
   public readonly attrMongodVersion: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSnapshot.FrequencyType`
-   */
-  public readonly attrFrequencyType: string;
   /**
    * Attribute `MongoDB::Atlas::CloudBackupSnapshot.ReplicaSetName`
    */
@@ -234,20 +548,13 @@ export class CfnCloudBackupSnapshot extends cdk.CfnResource {
     this.attrSnapshotId = cdk.Token.asString(this.getAtt('SnapshotId'));
     this.attrSnapshotIds = cdk.Token.asList(this.getAtt('SnapshotIds'));
     this.attrMasterKeyUUID = cdk.Token.asString(this.getAtt('MasterKeyUUID'));
-    this.attrResults = cdk.Token.asList(this.getAtt('Results'));
     this.attrType = cdk.Token.asString(this.getAtt('Type'));
-    this.attrSnapshotType = cdk.Token.asString(this.getAtt('SnapshotType'));
-    this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
-    this.attrMembers = cdk.Token.asList(this.getAtt('Members'));
     this.attrExpiresAt = cdk.Token.asString(this.getAtt('ExpiresAt'));
     this.attrStorageSizeBytes = cdk.Token.asString(this.getAtt('StorageSizeBytes'));
-    this.attrPolicyItems = cdk.Token.asList(this.getAtt('PolicyItems'));
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
     this.attrCreatedAt = cdk.Token.asString(this.getAtt('CreatedAt'));
-    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
     this.attrCloudProvider = cdk.Token.asString(this.getAtt('CloudProvider'));
     this.attrMongodVersion = cdk.Token.asString(this.getAtt('MongodVersion'));
-    this.attrFrequencyType = cdk.Token.asString(this.getAtt('FrequencyType'));
     this.attrReplicaSetName = cdk.Token.asString(this.getAtt('ReplicaSetName'));
     this.attrStatus = cdk.Token.asString(this.getAtt('Status'));
   }

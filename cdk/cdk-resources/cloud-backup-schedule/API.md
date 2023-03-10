@@ -723,45 +723,6 @@ Unique 24-hexadecimal digit string that identifies the replication object for a 
 
 ---
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/cloud-backup-schedule'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### ApiPolicyItemView <a name="ApiPolicyItemView" id="@mongodbatlas-awscdk/cloud-backup-schedule.ApiPolicyItemView"></a>
 
 #### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cloud-backup-schedule.ApiPolicyItemView.Initializer"></a>
@@ -903,7 +864,7 @@ const cfnCloudBackupScheduleProps: CfnCloudBackupScheduleProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.autoExportEnabled">autoExportEnabled</a></code> | <code>boolean</code> | Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.copySettings">copySettings</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiAtlasDiskBackupCopySettingView">ApiAtlasDiskBackupCopySettingView</a>[]</code> | List that contains a document for each copy setting item in the desired backup policy. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.deleteCopiedBackups">deleteCopiedBackups</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiDeleteCopiedBackupsView">ApiDeleteCopiedBackupsView</a>[]</code> | List that contains a document for each deleted copy setting whose backup copies you want to delete. |
@@ -919,13 +880,15 @@ const cfnCloudBackupScheduleProps: CfnCloudBackupScheduleProps = { ... }
 
 ---
 
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.apiKeys"></a>
+##### `profile`<sup>Required</sup> <a name="profile" id="@mongodbatlas-awscdk/cloud-backup-schedule.CfnCloudBackupScheduleProps.property.profile"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly profile: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 
@@ -1136,19 +1099,8 @@ const link: Link = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.Link.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.Link.property.href">href</a></code> | <code>string</code> | Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-schedule.Link.property.rel">rel</a></code> | <code>string</code> | Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/cloud-backup-schedule.Link.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/cloud-backup-schedule.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 

@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnCloudBackupSnapshotExportBucketProps {
   /**
-   * @schema CfnCloudBackupSnapshotExportBucketProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnCloudBackupSnapshotExportBucketProps#Profile
    */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Human-readable label that identifies the AWS bucket that the role is authorized to access.
@@ -23,9 +25,9 @@ export interface CfnCloudBackupSnapshotExportBucketProps {
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
-   * @schema CfnCloudBackupSnapshotExportBucketProps#GroupId
+   * @schema CfnCloudBackupSnapshotExportBucketProps#ProjectId
    */
-  readonly groupId: string;
+  readonly projectId: string;
 
   /**
    * Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.
@@ -43,41 +45,10 @@ export interface CfnCloudBackupSnapshotExportBucketProps {
 export function toJson_CfnCloudBackupSnapshotExportBucketProps(obj: CfnCloudBackupSnapshotExportBucketProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'BucketName': obj.bucketName,
-    'GroupId': obj.groupId,
+    'ProjectId': obj.projectId,
     'IamRoleID': obj.iamRoleId,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

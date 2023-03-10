@@ -11,7 +11,7 @@ export interface CfnEncryptionAtRestProps {
   /**
    * @schema CfnEncryptionAtRestProps#AwsKms
    */
-  readonly awsKms: AwsKmsConfiguration;
+  readonly awsKms: AwsKms;
 
   /**
    * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
@@ -50,7 +50,7 @@ export function toJson_CfnEncryptionAtRestProps(obj: CfnEncryptionAtRestProps | 
  *
  * @schema AwsKms
  */
-export interface AwsKmsConfiguration {
+export interface AwsKms {
   /**
    * ID of an AWS IAM role authorized to manage an AWS customer master key.
    *
@@ -85,7 +85,7 @@ export interface AwsKmsConfiguration {
  * Converts an object of type 'AwsKms' to JSON representation.
  */
 /* eslint-disable max-len, quote-props */
-export function toJson_AwsKms(obj: AwsKmsConfiguration | undefined): Record<string, any> | undefined {
+export function toJson_AwsKms(obj: AwsKms | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
     'RoleID': obj.roleId,
@@ -109,7 +109,7 @@ export class CfnEncryptionAtRest extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::EncryptionAtRest';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::EncryptionAtRest";
 
   /**
    * Resource props.

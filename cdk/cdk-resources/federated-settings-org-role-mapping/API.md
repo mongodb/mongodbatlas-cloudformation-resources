@@ -546,45 +546,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/federated-settings-org-role-mapping'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnFederatedSettingsOrgRoleMappingProps <a name="CfnFederatedSettingsOrgRoleMappingProps" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps"></a>
 
 Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.
@@ -601,21 +562,11 @@ const cfnFederatedSettingsOrgRoleMappingProps: CfnFederatedSettingsOrgRoleMappin
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.federationSettingsId">federationSettingsId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your federation. |
 | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.orgId">orgId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the organization that contains your projects. |
 | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.externalGroupName">externalGroupName</a></code> | <code>string</code> | Unique human-readable label that identifies the identity provider group to whichthis role mapping applies. |
+| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.roleAssignments">roleAssignments</a></code> | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment">RoleAssignment</a>[]</code> | Atlas roles and the unique identifiers of the groups and organizations associated with each role. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -655,6 +606,20 @@ Unique human-readable label that identifies the identity provider group to which
 
 ---
 
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+---
+
 ##### `roleAssignments`<sup>Optional</sup> <a name="roleAssignments" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.CfnFederatedSettingsOrgRoleMappingProps.property.roleAssignments"></a>
 
 ```typescript
@@ -681,25 +646,9 @@ const roleAssignment: RoleAssignment = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.groupId">groupId</a></code> | <code>string</code> | List that contains comma-separated key value pairs to map zones to geographic regions. |
 | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.orgId">orgId</a></code> | <code>string</code> | List that contains comma-separated key value pairs to map zones to geographic regions. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.role">role</a></code> | <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole">RoleAssignmentRole</a></code> | *No description.* |
-
----
-
-##### `groupId`<sup>Optional</sup> <a name="groupId" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.groupId"></a>
-
-```typescript
-public readonly groupId: string;
-```
-
-- *Type:* string
-
-List that contains comma-separated key value pairs to map zones to geographic regions.
-
-These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.
-
-This parameter returns an empty object if no custom zones exist.
+| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.projectId">projectId</a></code> | <code>string</code> | List that contains comma-separated key value pairs to map zones to geographic regions. |
+| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.role">role</a></code> | <code>string</code> | *No description.* |
 
 ---
 
@@ -719,385 +668,31 @@ This parameter returns an empty object if no custom zones exist.
 
 ---
 
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+List that contains comma-separated key value pairs to map zones to geographic regions.
+
+These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.
+
+This parameter returns an empty object if no custom zones exist.
+
+---
+
 ##### `role`<sup>Optional</sup> <a name="role" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignment.property.role"></a>
 
 ```typescript
-public readonly role: RoleAssignmentRole;
+public readonly role: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole">RoleAssignmentRole</a>
+- *Type:* string
 
 ---
 
 
-
-## Enums <a name="Enums" id="Enums"></a>
-
-### RoleAssignmentRole <a name="RoleAssignmentRole" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole"></a>
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_AUTOMATION_ADMIN">GLOBAL_AUTOMATION_ADMIN</a></code> | GLOBAL_AUTOMATION_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_BACKUP_ADMIN">GLOBAL_BACKUP_ADMIN</a></code> | GLOBAL_BACKUP_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_METERING_USER">GLOBAL_METERING_USER</a></code> | GLOBAL_METERING_USER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_METRICS_INTERNAL_USER">GLOBAL_METRICS_INTERNAL_USER</a></code> | GLOBAL_METRICS_INTERNAL_USER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_MONITORING_ADMIN">GLOBAL_MONITORING_ADMIN</a></code> | GLOBAL_MONITORING_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_OWNER">GLOBAL_OWNER</a></code> | GLOBAL_OWNER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_READ_ONLY">GLOBAL_READ_ONLY</a></code> | GLOBAL_READ_ONLY. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_USER_ADMIN">GLOBAL_USER_ADMIN</a></code> | GLOBAL_USER_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_USER_READ_ONLY">GLOBAL_USER_READ_ONLY</a></code> | GLOBAL_USER_READ_ONLY. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ACCOUNT_SUSPENSION_ADMIN">GLOBAL_ACCOUNT_SUSPENSION_ADMIN</a></code> | GLOBAL_ACCOUNT_SUSPENSION_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_BILLING_ADMIN">GLOBAL_BILLING_ADMIN</a></code> | GLOBAL_BILLING_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_LEGAL_ADMIN">GLOBAL_LEGAL_ADMIN</a></code> | GLOBAL_LEGAL_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_FEATURE_FLAG_ADMIN">GLOBAL_FEATURE_FLAG_ADMIN</a></code> | GLOBAL_FEATURE_FLAG_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ATLAS_TSE">GLOBAL_ATLAS_TSE</a></code> | GLOBAL_ATLAS_TSE. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ATLAS_OPERATOR">GLOBAL_ATLAS_OPERATOR</a></code> | GLOBAL_ATLAS_OPERATOR. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ATLAS_ADMIN">GLOBAL_ATLAS_ADMIN</a></code> | GLOBAL_ATLAS_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_STITCH_ADMIN">GLOBAL_STITCH_ADMIN</a></code> | GLOBAL_STITCH_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_CHARTS_ADMIN">GLOBAL_CHARTS_ADMIN</a></code> | GLOBAL_CHARTS_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_EXPERIMENT_ASSIGNMENT_USER">GLOBAL_EXPERIMENT_ASSIGNMENT_USER</a></code> | GLOBAL_EXPERIMENT_ASSIGNMENT_USER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_STITCH_INTERNAL_ADMIN">GLOBAL_STITCH_INTERNAL_ADMIN</a></code> | GLOBAL_STITCH_INTERNAL_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_SECURITY_ADMIN">GLOBAL_SECURITY_ADMIN</a></code> | GLOBAL_SECURITY_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN">GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN</a></code> | GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_PROACTIVE_SUPPORT_ADMIN">GLOBAL_PROACTIVE_SUPPORT_ADMIN</a></code> | GLOBAL_PROACTIVE_SUPPORT_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN">GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN</a></code> | GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_SALESFORCE_ADMIN">GLOBAL_SALESFORCE_ADMIN</a></code> | GLOBAL_SALESFORCE_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_SALESFORCE_READ_ONLY">GLOBAL_SALESFORCE_READ_ONLY</a></code> | GLOBAL_SALESFORCE_READ_ONLY. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS">GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS</a></code> | GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_MEMBER">ORG_MEMBER</a></code> | ORG_MEMBER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_READ_ONLY">ORG_READ_ONLY</a></code> | ORG_READ_ONLY. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_BILLING_ADMIN">ORG_BILLING_ADMIN</a></code> | ORG_BILLING_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_GROUP_CREATOR">ORG_GROUP_CREATOR</a></code> | ORG_GROUP_CREATOR. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_OWNER">ORG_OWNER</a></code> | ORG_OWNER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_AUTOMATION_ADMIN">GROUP_AUTOMATION_ADMIN</a></code> | GROUP_AUTOMATION_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_BACKUP_ADMIN">GROUP_BACKUP_ADMIN</a></code> | GROUP_BACKUP_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_MONITORING_ADMIN">GROUP_MONITORING_ADMIN</a></code> | GROUP_MONITORING_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_OWNER">GROUP_OWNER</a></code> | GROUP_OWNER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_READ_ONLY">GROUP_READ_ONLY</a></code> | GROUP_READ_ONLY. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_USER_ADMIN">GROUP_USER_ADMIN</a></code> | GROUP_USER_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_BILLING_ADMIN">GROUP_BILLING_ADMIN</a></code> | GROUP_BILLING_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_DATA_ACCESS_ADMIN">GROUP_DATA_ACCESS_ADMIN</a></code> | GROUP_DATA_ACCESS_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_DATA_ACCESS_READ_ONLY">GROUP_DATA_ACCESS_READ_ONLY</a></code> | GROUP_DATA_ACCESS_READ_ONLY. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_DATA_ACCESS_READ_WRITE">GROUP_DATA_ACCESS_READ_WRITE</a></code> | GROUP_DATA_ACCESS_READ_WRITE. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_CHARTS_ADMIN">GROUP_CHARTS_ADMIN</a></code> | GROUP_CHARTS_ADMIN. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_CLUSTER_MANAGER">GROUP_CLUSTER_MANAGER</a></code> | GROUP_CLUSTER_MANAGER. |
-| <code><a href="#@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_SEARCH_INDEX_EDITOR">GROUP_SEARCH_INDEX_EDITOR</a></code> | GROUP_SEARCH_INDEX_EDITOR. |
-
----
-
-##### `GLOBAL_AUTOMATION_ADMIN` <a name="GLOBAL_AUTOMATION_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_AUTOMATION_ADMIN"></a>
-
-GLOBAL_AUTOMATION_ADMIN.
-
----
-
-
-##### `GLOBAL_BACKUP_ADMIN` <a name="GLOBAL_BACKUP_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_BACKUP_ADMIN"></a>
-
-GLOBAL_BACKUP_ADMIN.
-
----
-
-
-##### `GLOBAL_METERING_USER` <a name="GLOBAL_METERING_USER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_METERING_USER"></a>
-
-GLOBAL_METERING_USER.
-
----
-
-
-##### `GLOBAL_METRICS_INTERNAL_USER` <a name="GLOBAL_METRICS_INTERNAL_USER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_METRICS_INTERNAL_USER"></a>
-
-GLOBAL_METRICS_INTERNAL_USER.
-
----
-
-
-##### `GLOBAL_MONITORING_ADMIN` <a name="GLOBAL_MONITORING_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_MONITORING_ADMIN"></a>
-
-GLOBAL_MONITORING_ADMIN.
-
----
-
-
-##### `GLOBAL_OWNER` <a name="GLOBAL_OWNER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_OWNER"></a>
-
-GLOBAL_OWNER.
-
----
-
-
-##### `GLOBAL_READ_ONLY` <a name="GLOBAL_READ_ONLY" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_READ_ONLY"></a>
-
-GLOBAL_READ_ONLY.
-
----
-
-
-##### `GLOBAL_USER_ADMIN` <a name="GLOBAL_USER_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_USER_ADMIN"></a>
-
-GLOBAL_USER_ADMIN.
-
----
-
-
-##### `GLOBAL_USER_READ_ONLY` <a name="GLOBAL_USER_READ_ONLY" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_USER_READ_ONLY"></a>
-
-GLOBAL_USER_READ_ONLY.
-
----
-
-
-##### `GLOBAL_ACCOUNT_SUSPENSION_ADMIN` <a name="GLOBAL_ACCOUNT_SUSPENSION_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ACCOUNT_SUSPENSION_ADMIN"></a>
-
-GLOBAL_ACCOUNT_SUSPENSION_ADMIN.
-
----
-
-
-##### `GLOBAL_BILLING_ADMIN` <a name="GLOBAL_BILLING_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_BILLING_ADMIN"></a>
-
-GLOBAL_BILLING_ADMIN.
-
----
-
-
-##### `GLOBAL_LEGAL_ADMIN` <a name="GLOBAL_LEGAL_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_LEGAL_ADMIN"></a>
-
-GLOBAL_LEGAL_ADMIN.
-
----
-
-
-##### `GLOBAL_FEATURE_FLAG_ADMIN` <a name="GLOBAL_FEATURE_FLAG_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_FEATURE_FLAG_ADMIN"></a>
-
-GLOBAL_FEATURE_FLAG_ADMIN.
-
----
-
-
-##### `GLOBAL_ATLAS_TSE` <a name="GLOBAL_ATLAS_TSE" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ATLAS_TSE"></a>
-
-GLOBAL_ATLAS_TSE.
-
----
-
-
-##### `GLOBAL_ATLAS_OPERATOR` <a name="GLOBAL_ATLAS_OPERATOR" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ATLAS_OPERATOR"></a>
-
-GLOBAL_ATLAS_OPERATOR.
-
----
-
-
-##### `GLOBAL_ATLAS_ADMIN` <a name="GLOBAL_ATLAS_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_ATLAS_ADMIN"></a>
-
-GLOBAL_ATLAS_ADMIN.
-
----
-
-
-##### `GLOBAL_STITCH_ADMIN` <a name="GLOBAL_STITCH_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_STITCH_ADMIN"></a>
-
-GLOBAL_STITCH_ADMIN.
-
----
-
-
-##### `GLOBAL_CHARTS_ADMIN` <a name="GLOBAL_CHARTS_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_CHARTS_ADMIN"></a>
-
-GLOBAL_CHARTS_ADMIN.
-
----
-
-
-##### `GLOBAL_EXPERIMENT_ASSIGNMENT_USER` <a name="GLOBAL_EXPERIMENT_ASSIGNMENT_USER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_EXPERIMENT_ASSIGNMENT_USER"></a>
-
-GLOBAL_EXPERIMENT_ASSIGNMENT_USER.
-
----
-
-
-##### `GLOBAL_STITCH_INTERNAL_ADMIN` <a name="GLOBAL_STITCH_INTERNAL_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_STITCH_INTERNAL_ADMIN"></a>
-
-GLOBAL_STITCH_INTERNAL_ADMIN.
-
----
-
-
-##### `GLOBAL_SECURITY_ADMIN` <a name="GLOBAL_SECURITY_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_SECURITY_ADMIN"></a>
-
-GLOBAL_SECURITY_ADMIN.
-
----
-
-
-##### `GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN` <a name="GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN"></a>
-
-GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN.
-
----
-
-
-##### `GLOBAL_PROACTIVE_SUPPORT_ADMIN` <a name="GLOBAL_PROACTIVE_SUPPORT_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_PROACTIVE_SUPPORT_ADMIN"></a>
-
-GLOBAL_PROACTIVE_SUPPORT_ADMIN.
-
----
-
-
-##### `GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN` <a name="GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN"></a>
-
-GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN.
-
----
-
-
-##### `GLOBAL_SALESFORCE_ADMIN` <a name="GLOBAL_SALESFORCE_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_SALESFORCE_ADMIN"></a>
-
-GLOBAL_SALESFORCE_ADMIN.
-
----
-
-
-##### `GLOBAL_SALESFORCE_READ_ONLY` <a name="GLOBAL_SALESFORCE_READ_ONLY" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_SALESFORCE_READ_ONLY"></a>
-
-GLOBAL_SALESFORCE_READ_ONLY.
-
----
-
-
-##### `GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS` <a name="GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS"></a>
-
-GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS.
-
----
-
-
-##### `ORG_MEMBER` <a name="ORG_MEMBER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_MEMBER"></a>
-
-ORG_MEMBER.
-
----
-
-
-##### `ORG_READ_ONLY` <a name="ORG_READ_ONLY" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_READ_ONLY"></a>
-
-ORG_READ_ONLY.
-
----
-
-
-##### `ORG_BILLING_ADMIN` <a name="ORG_BILLING_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_BILLING_ADMIN"></a>
-
-ORG_BILLING_ADMIN.
-
----
-
-
-##### `ORG_GROUP_CREATOR` <a name="ORG_GROUP_CREATOR" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_GROUP_CREATOR"></a>
-
-ORG_GROUP_CREATOR.
-
----
-
-
-##### `ORG_OWNER` <a name="ORG_OWNER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.ORG_OWNER"></a>
-
-ORG_OWNER.
-
----
-
-
-##### `GROUP_AUTOMATION_ADMIN` <a name="GROUP_AUTOMATION_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_AUTOMATION_ADMIN"></a>
-
-GROUP_AUTOMATION_ADMIN.
-
----
-
-
-##### `GROUP_BACKUP_ADMIN` <a name="GROUP_BACKUP_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_BACKUP_ADMIN"></a>
-
-GROUP_BACKUP_ADMIN.
-
----
-
-
-##### `GROUP_MONITORING_ADMIN` <a name="GROUP_MONITORING_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_MONITORING_ADMIN"></a>
-
-GROUP_MONITORING_ADMIN.
-
----
-
-
-##### `GROUP_OWNER` <a name="GROUP_OWNER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_OWNER"></a>
-
-GROUP_OWNER.
-
----
-
-
-##### `GROUP_READ_ONLY` <a name="GROUP_READ_ONLY" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_READ_ONLY"></a>
-
-GROUP_READ_ONLY.
-
----
-
-
-##### `GROUP_USER_ADMIN` <a name="GROUP_USER_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_USER_ADMIN"></a>
-
-GROUP_USER_ADMIN.
-
----
-
-
-##### `GROUP_BILLING_ADMIN` <a name="GROUP_BILLING_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_BILLING_ADMIN"></a>
-
-GROUP_BILLING_ADMIN.
-
----
-
-
-##### `GROUP_DATA_ACCESS_ADMIN` <a name="GROUP_DATA_ACCESS_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_DATA_ACCESS_ADMIN"></a>
-
-GROUP_DATA_ACCESS_ADMIN.
-
----
-
-
-##### `GROUP_DATA_ACCESS_READ_ONLY` <a name="GROUP_DATA_ACCESS_READ_ONLY" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_DATA_ACCESS_READ_ONLY"></a>
-
-GROUP_DATA_ACCESS_READ_ONLY.
-
----
-
-
-##### `GROUP_DATA_ACCESS_READ_WRITE` <a name="GROUP_DATA_ACCESS_READ_WRITE" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_DATA_ACCESS_READ_WRITE"></a>
-
-GROUP_DATA_ACCESS_READ_WRITE.
-
----
-
-
-##### `GROUP_CHARTS_ADMIN` <a name="GROUP_CHARTS_ADMIN" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_CHARTS_ADMIN"></a>
-
-GROUP_CHARTS_ADMIN.
-
----
-
-
-##### `GROUP_CLUSTER_MANAGER` <a name="GROUP_CLUSTER_MANAGER" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_CLUSTER_MANAGER"></a>
-
-GROUP_CLUSTER_MANAGER.
-
----
-
-
-##### `GROUP_SEARCH_INDEX_EDITOR` <a name="GROUP_SEARCH_INDEX_EDITOR" id="@mongodbatlas-awscdk/federated-settings-org-role-mapping.RoleAssignmentRole.GROUP_SEARCH_INDEX_EDITOR"></a>
-
-GROUP_SEARCH_INDEX_EDITOR.
-
----
 

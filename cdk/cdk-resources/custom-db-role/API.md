@@ -576,45 +576,6 @@ List of resources on which you grant the action.
 
 ---
 
-### ApiKey <a name="ApiKey" id="@mongodbatlas-awscdk/custom-db-role.ApiKey"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/custom-db-role.ApiKey.Initializer"></a>
-
-```typescript
-import { ApiKey } from '@mongodbatlas-awscdk/custom-db-role'
-
-const apiKey: ApiKey = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/custom-db-role.ApiKey.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/custom-db-role.ApiKey.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/custom-db-role.ApiKey.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/custom-db-role.ApiKey.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnCustomDbRoleProps <a name="CfnCustomDbRoleProps" id="@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps"></a>
 
 Returns, adds, edits, and removes custom database user privilege roles.
@@ -631,11 +592,23 @@ const cfnCustomDbRoleProps: CfnCustomDbRoleProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.roleName">roleName</a></code> | <code>string</code> | Human-readable label that identifies the role for the request. |
 | <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.actions">actions</a></code> | <code><a href="#@mongodbatlas-awscdk/custom-db-role.Action">Action</a>[]</code> | List of the individual privilege actions that the role grants. |
-| <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/custom-db-role.ApiKey">ApiKey</a></code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.inheritedRoles">inheritedRoles</a></code> | <code><a href="#@mongodbatlas-awscdk/custom-db-role.InheritedRole">InheritedRole</a>[]</code> | List of the built-in roles that this custom role inherits. |
+| <code><a href="#@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
+
+---
+
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
@@ -665,28 +638,6 @@ List of the individual privilege actions that the role grants.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKey;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/custom-db-role.ApiKey">ApiKey</a>
-
----
-
-##### `groupId`<sup>Optional</sup> <a name="groupId" id="@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.groupId"></a>
-
-```typescript
-public readonly groupId: string;
-```
-
-- *Type:* string
-
-Unique 24-hexadecimal digit string that identifies your project.
-
----
-
 ##### `inheritedRoles`<sup>Optional</sup> <a name="inheritedRoles" id="@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.inheritedRoles"></a>
 
 ```typescript
@@ -696,6 +647,20 @@ public readonly inheritedRoles: InheritedRole[];
 - *Type:* <a href="#@mongodbatlas-awscdk/custom-db-role.InheritedRole">InheritedRole</a>[]
 
 List of the built-in roles that this custom role inherits.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/custom-db-role.CfnCustomDbRoleProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

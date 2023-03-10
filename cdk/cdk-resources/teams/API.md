@@ -559,45 +559,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/teams.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/teams.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/teams'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/teams.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/teams.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/teams.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/teams.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnTeamsProps <a name="CfnTeamsProps" id="@mongodbatlas-awscdk/teams.CfnTeamsProps"></a>
 
 Adds one team to the specified project.
@@ -616,34 +577,12 @@ const cfnTeamsProps: CfnTeamsProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/teams.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal character string that identifies the project. |
 | <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.name">name</a></code> | <code>string</code> | Unique 24-hexadecimal character string that identifies the team. |
 | <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.orgId">orgId</a></code> | <code>string</code> | Unique 24-hexadecimal character string that identifies the team. |
+| <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
+| <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal character string that identifies the project. |
 | <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.roleNames">roleNames</a></code> | <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsPropsRoleNames">CfnTeamsPropsRoleNames</a>[]</code> | One or more organization- or project-level roles to assign to the MongoDB Cloud user. |
 | <code><a href="#@mongodbatlas-awscdk/teams.CfnTeamsProps.property.usernames">usernames</a></code> | <code>string[]</code> | One or more organization- or project-level roles to assign to the MongoDB Cloud user. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/teams.CfnTeamsProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/teams.ApiKeyDefinition">ApiKeyDefinition</a>
-
----
-
-##### `groupId`<sup>Optional</sup> <a name="groupId" id="@mongodbatlas-awscdk/teams.CfnTeamsProps.property.groupId"></a>
-
-```typescript
-public readonly groupId: string;
-```
-
-- *Type:* string
-
-Unique 24-hexadecimal character string that identifies the project.
 
 ---
 
@@ -668,6 +607,32 @@ public readonly orgId: string;
 - *Type:* string
 
 Unique 24-hexadecimal character string that identifies the team.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/teams.CfnTeamsProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+---
+
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/teams.CfnTeamsProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal character string that identifies the project.
 
 ---
 

@@ -585,45 +585,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/project-invitation'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnProjectInvitationProps <a name="CfnProjectInvitationProps" id="@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps"></a>
 
 Returns, adds, and edits collections of clusters and users in MongoDB Cloud.
@@ -640,23 +601,13 @@ const cfnProjectInvitationProps: CfnProjectInvitationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.invitationId">invitationId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the invitation. |
 | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.pageNum">pageNum</a></code> | <code>number</code> | Number of the page that displays the current set of the total objects that the response returns. |
+| <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.roles">roles</a></code> | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationPropsRoles">CfnProjectInvitationPropsRoles</a>[]</code> | One or more organization or project level roles to assign to the MongoDB Cloud user. |
 | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.totalCount">totalCount</a></code> | <code>number</code> | Number of documents returned in this response. |
 | <code><a href="#@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.username">username</a></code> | <code>string</code> | Email address of the user account invited to this project. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/project-invitation.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -681,6 +632,20 @@ public readonly pageNum: number;
 - *Type:* number
 
 Number of the page that displays the current set of the total objects that the response returns.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/project-invitation.CfnProjectInvitationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

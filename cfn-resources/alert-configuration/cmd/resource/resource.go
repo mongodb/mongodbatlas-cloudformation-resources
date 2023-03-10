@@ -186,8 +186,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
-	if reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.String(true)}) ||
-		reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.String(false)}) {
+	if reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.Bool(true)}) ||
+		reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.Bool(false)}) {
 		alertModel, res, err = client.AlertConfigurations.EnableAnAlertConfig(context.Background(), projectID, id, alertReq.Enabled)
 	} else {
 		alertModel, res, err = client.AlertConfigurations.Update(context.Background(), projectID, id, alertReq)
@@ -443,12 +443,12 @@ func flattenNotifications(notifications []mongodbatlas.Notification) []Notificat
 			ChannelName:         &notifications[ind].ChannelName,
 			DatadogApiKey:       &notifications[ind].DatadogAPIKey,
 			DatadogRegion:       &notifications[ind].DatadogRegion,
-			DelayMin:            aws.String(cast.ToFloat64(notifications[ind].DelayMin)),
+			DelayMin:            aws.Float64(cast.ToFloat64(notifications[ind].DelayMin)),
 			EmailAddress:        &notifications[ind].EmailAddress,
 			EmailEnabled:        notifications[ind].EmailEnabled,
 			FlowdockApiToken:    &notifications[ind].FlowdockAPIToken,
 			FlowName:            &notifications[ind].FlowName,
-			IntervalMin:         aws.String(cast.ToFloat64(notifications[ind].IntervalMin)),
+			IntervalMin:         aws.Float64(cast.ToFloat64(notifications[ind].IntervalMin)),
 			MobileNumber:        &notifications[ind].MobileNumber,
 			OpsGenieApiKey:      &notifications[ind].OpsGenieAPIKey,
 			OpsGenieRegion:      &notifications[ind].OpsGenieRegion,

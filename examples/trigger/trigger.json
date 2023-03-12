@@ -34,7 +34,10 @@
     "Id": {
       "Description": "Id of the trigger",
       "Value": {
-        "Ref": "EventTrigger"
+        "Fn::GetAtt": [
+          "EventTrigger",
+          "Id"
+        ]
       }
     }
   }

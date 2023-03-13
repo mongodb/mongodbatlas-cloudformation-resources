@@ -58,7 +58,7 @@ func main() {
 		return
 	}
 
-	mappingFile, openApiDoc, err := readConfig(compare)
+	mappingFile, openAPIDoc, err := readConfig(compare)
 	if err != nil {
 		fmt.Printf("read config err:%v", err)
 		os.Exit(1)
@@ -78,7 +78,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cfnSchema := make(chan CfnSchema, len(openApiDoc.Components.Schemas))
+	cfnSchema := make(chan CfnSchema, len(openAPIDoc.Components.Schemas))
 	reqFieldsChan := make(chan RequiredParams)
 
 	done := make(chan bool)
@@ -103,17 +103,17 @@ func main() {
 		typeName = capitalize(res.TypeName)
 
 		for _, path := range res.OpenAPIPaths {
-			pathItem := openApiDoc.Paths.Find(path)
+			pathItem := openAPIDoc.Paths.Find(path)
 			if pathItem == nil {
 				continue
 			}
 
 			if method := pathItem.Post; method != nil {
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openApiDoc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openApiDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 				// Read from query params
 				queryParams := readQueryParams(method)
 				for _, reqSchemaKey := range reqSchemaKeys {
@@ -142,11 +142,11 @@ func main() {
 					continue
 				}
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openApiDoc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
 				createReqParams = reqParams
 
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openApiDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -170,14 +170,14 @@ func main() {
 			}
 			if method := pathItem.Get; method != nil {
 				if description == "" {
-					description = readDescription(method.Tags[0], openApiDoc)
+					description = readDescription(method.Tags[0], openAPIDoc)
 				}
 
 				// Read from Req params
-				_, _, _, reqParams := readRequestBody(method, openApiDoc)
+				_, _, _, reqParams := readRequestBody(method, openAPIDoc)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openApiDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -201,7 +201,7 @@ func main() {
 			}
 			if method := pathItem.Delete; method != nil {
 				if description == "" {
-					description = readDescription(method.Tags[0], openApiDoc)
+					description = readDescription(method.Tags[0], openAPIDoc)
 				}
 				// Read from query params
 				for i := range method.Parameters {
@@ -221,7 +221,6 @@ func main() {
 			}
 		}
 		if allMethodProps[key] != nil {
-
 			sort.Strings(createReqParams)
 			sort.Strings(readOnly)
 			sort.Strings(ids)
@@ -395,28 +394,28 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 	return schemaKeys, reqSchema, definitions, requiredParams
 }
 
-func readResponseBody(method *openapi3.Operation, openApiDoc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
+func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
 	if methodResponseHasSchema(method, "200") {
-		return readResponseBodyWithResponseCode(openApiDoc, method, "200")
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "200")
 	}
 
 	if methodResponseHasSchema(method, "201") {
-		return readResponseBodyWithResponseCode(openApiDoc, method, "201")
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "201")
 	}
 
 	return "", nil, nil
 }
 
-func readResponseBodyWithResponseCode(openApiDoc *openapi3.T, method *openapi3.Operation, responseCode string) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
+func readResponseBodyWithResponseCode(openApiDoc *openapi3.T, method *openapi3.Operation, responseCode string) (string, map[string]map[string]Property, map[string]Definitions) {
 	resSchemaKey := filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
 	// Read from Request body
 	if openApiDoc.Components.Schemas[filepath.Base(resSchemaKey)] != nil {
 		value := *openApiDoc.Components.Schemas[filepath.Base(resSchemaKey)]
-		resSchema, definitions = processSchema(resSchemaKey, &value, openApiDoc.Components.Schemas)
+		resSchema, definitions := processSchema(resSchemaKey, &value, openApiDoc.Components.Schemas)
+		return resSchemaKey, resSchema, definitions
 	}
 
-	return capitalize(resSchemaKey), resSchema, definitions
-
+	return capitalize(resSchemaKey), nil, nil
 }
 
 func methodResponseHasSchema(method *openapi3.Operation, responseCode string) bool {

@@ -406,12 +406,12 @@ func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schem
 	return "", nil, nil
 }
 
-func readResponseBodyWithResponseCode(openApiDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
+func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
 	key = filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
 	// Read from Request body
-	if openApiDoc.Components.Schemas[filepath.Base(key)] != nil {
-		value := *openApiDoc.Components.Schemas[filepath.Base(key)]
-		resSchema, definitions := processSchema(key, &value, openApiDoc.Components.Schemas)
+	if openAPIDoc.Components.Schemas[filepath.Base(key)] != nil {
+		value := *openAPIDoc.Components.Schemas[filepath.Base(key)]
+		resSchema, definitions := processSchema(key, &value, openAPIDoc.Components.Schemas)
 		return capitalize(key), resSchema, definitions
 	}
 

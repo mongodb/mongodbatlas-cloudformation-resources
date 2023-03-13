@@ -406,16 +406,16 @@ func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schem
 	return "", nil, nil
 }
 
-func readResponseBodyWithResponseCode(openApiDoc *openapi3.T, method *openapi3.Operation, responseCode string) (string, map[string]map[string]Property, map[string]Definitions) {
-	resSchemaKey := filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
+func readResponseBodyWithResponseCode(openApiDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
+	key = filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
 	// Read from Request body
-	if openApiDoc.Components.Schemas[filepath.Base(resSchemaKey)] != nil {
-		value := *openApiDoc.Components.Schemas[filepath.Base(resSchemaKey)]
-		resSchema, definitions := processSchema(resSchemaKey, &value, openApiDoc.Components.Schemas)
-		return resSchemaKey, resSchema, definitions
+	if openApiDoc.Components.Schemas[filepath.Base(key)] != nil {
+		value := *openApiDoc.Components.Schemas[filepath.Base(key)]
+		resSchema, definitions := processSchema(key, &value, openApiDoc.Components.Schemas)
+		return capitalize(key), resSchema, definitions
 	}
 
-	return capitalize(resSchemaKey), nil, nil
+	return capitalize(key), nil, nil
 }
 
 func methodResponseHasSchema(method *openapi3.Operation, responseCode string) bool {

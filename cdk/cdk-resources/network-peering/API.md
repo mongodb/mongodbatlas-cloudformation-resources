@@ -403,6 +403,7 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
+| <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.attrConnectionId">attrConnectionId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::NetworkPeering.ConnectionId`. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.attrErrorStateName">attrErrorStateName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::NetworkPeering.ErrorStateName`. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::NetworkPeering.Id`. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.attrStatusName">attrStatusName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::NetworkPeering.StatusName`. |
@@ -502,6 +503,18 @@ AWS resource type.
 
 ---
 
+##### `attrConnectionId`<sup>Required</sup> <a name="attrConnectionId" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.attrConnectionId"></a>
+
+```typescript
+public readonly attrConnectionId: string;
+```
+
+- *Type:* string
+
+Attribute `MongoDB::Atlas::NetworkPeering.ConnectionId`.
+
+---
+
 ##### `attrErrorStateName`<sup>Required</sup> <a name="attrErrorStateName" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeering.property.attrErrorStateName"></a>
 
 ```typescript
@@ -572,45 +585,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/network-peering.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/network-peering.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/network-peering'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/network-peering.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/network-peering.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/network-peering.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/network-peering.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnNetworkPeeringProps <a name="CfnNetworkPeeringProps" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps"></a>
 
 Returns, adds, edits, and removes network peering containers and peering connections.
@@ -627,24 +601,25 @@ const cfnNetworkPeeringProps: CfnNetworkPeeringProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/network-peering.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.containerId">containerId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.vpcId">vpcId</a></code> | <code>string</code> | Unique string that identifies the VPC on Amazon Web Services (AWS) that you want to peer with the MongoDB Cloud VPC. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.accepterRegionName">accepterRegionName</a></code> | <code>string</code> | Amazon Web Services (AWS) region where the Virtual Peering Connection (VPC) that you peered with the MongoDB Cloud VPC resides. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.awsAccountId">awsAccountId</a></code> | <code>string</code> | Unique twelve-digit string that identifies the Amazon Web Services (AWS) account that owns the VPC that you peered with the MongoDB Cloud VPC. |
-| <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.connectionId">connectionId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection. |
-| <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.containerId">containerId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection. |
+| <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.routeTableCidrBlock">routeTableCidrBlock</a></code> | <code>string</code> | Internet Protocol (IP) addresses expressed in Classless Inter-Domain Routing (CIDR) notation of the VPC's subnet that you want to peer with the MongoDB Cloud VPC. |
 
 ---
 
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.apiKeys"></a>
+##### `containerId`<sup>Required</sup> <a name="containerId" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.containerId"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly containerId: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/network-peering.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
 
 ---
 
@@ -698,27 +673,17 @@ Unique twelve-digit string that identifies the Amazon Web Services (AWS) account
 
 ---
 
-##### `connectionId`<sup>Optional</sup> <a name="connectionId" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.connectionId"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.profile"></a>
 
 ```typescript
-public readonly connectionId: string;
+public readonly profile: string;
 ```
 
 - *Type:* string
 
-Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
+The profile is defined in AWS Secret manager.
 
----
-
-##### `containerId`<sup>Optional</sup> <a name="containerId" id="@mongodbatlas-awscdk/network-peering.CfnNetworkPeeringProps.property.containerId"></a>
-
-```typescript
-public readonly containerId: string;
-```
-
-- *Type:* string
-
-Unique 24-hexadecimal digit string that identifies the MongoDB Cloud network container that contains the specified network peering connection.
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

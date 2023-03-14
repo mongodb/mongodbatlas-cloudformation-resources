@@ -19,16 +19,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/openlyinc/pointy"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	progressevent "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
@@ -59,7 +59,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(util.DefaultProfile)
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -90,7 +90,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				Message:          err.Error(),
 				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 		}
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -122,7 +122,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	cluster, res, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	// Read Instance
 	model := readServerlessInstance(cluster, currentModel.Profile)
@@ -158,7 +158,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, res, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
 	if err != nil {
 		_, _ = log.Warnf("Read in Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	serverlessInstanceRequest := &mongodbatlas.ServerlessUpdateRequestParams{
@@ -169,7 +169,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	serverless, res, err := client.ServerlessInstances.Update(context.Background(), *currentModel.ProjectID, *currentModel.Name, serverlessInstanceRequest)
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	// Response
 	return handler.ProgressEvent{
@@ -207,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	res, err := client.ServerlessInstances.Delete(context.Background(), *currentModel.ProjectID, *currentModel.Name)
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	// Response
@@ -244,7 +244,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	clustersResp, res, err := client.ServerlessInstances.List(context.Background(), *currentModel.ProjectID, listOptions)
 	if err != nil {
 		_, _ = log.Warnf("List - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	instances := []interface{}{} // cfn test needs empty array instead nil, when items entries found
@@ -363,7 +363,7 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 			}, nil
 		}
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
 	currentModel.Id = &serverless.ID

@@ -546,45 +546,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnCloudBackupSnapshotExportBucketProps <a name="CfnCloudBackupSnapshotExportBucketProps" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps"></a>
 
 The exportBuckets resource allows you to grant Atlas access to the specified bucket for exporting backup snapshots.
@@ -601,20 +562,10 @@ const cfnCloudBackupSnapshotExportBucketProps: CfnCloudBackupSnapshotExportBucke
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.bucketName">bucketName</a></code> | <code>string</code> | Human-readable label that identifies the AWS bucket that the role is authorized to access. |
-| <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.iamRoleId">iamRoleId</a></code> | <code>string</code> | Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.ApiKeyDefinition">ApiKeyDefinition</a>
+| <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 
 ---
 
@@ -630,18 +581,6 @@ Human-readable label that identifies the AWS bucket that the role is authorized 
 
 ---
 
-##### `groupId`<sup>Required</sup> <a name="groupId" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.groupId"></a>
-
-```typescript
-public readonly groupId: string;
-```
-
-- *Type:* string
-
-Unique 24-hexadecimal digit string that identifies your project.
-
----
-
 ##### `iamRoleId`<sup>Required</sup> <a name="iamRoleId" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.iamRoleId"></a>
 
 ```typescript
@@ -651,6 +590,32 @@ public readonly iamRoleId: string;
 - *Type:* string
 
 Unique 24-hexadecimal character string that identifies the AWS IAM role that MongoDB Cloud uses to access the AWS S3 bucket.
+
+---
+
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/cloud-backup-snapshot-export-bucket.CfnCloudBackupSnapshotExportBucketProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

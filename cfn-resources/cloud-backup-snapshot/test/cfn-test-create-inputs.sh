@@ -21,7 +21,7 @@ rm -rf inputs
 mkdir inputs
 
 projectName="${1}"
-ClusterName=$projectName
+clusterName=$projectName
 echo "Came inside create inputs to test"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -31,31 +31,22 @@ if [ -z "$projectId" ]; then
 fi
 export MCLI_PROJECT_ID=$projectId
 
-clusterId=$(atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-sleep 900
-echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-
-if [ -z "$clusterId" ]; then
-	echo -e "Error Can't find Cluster \"${ClusterName}\""
-	exit 1
-fi
+atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+atlas clusters watch "${clusterName}" --projectId "${projectId}"
+echo -e "Created Cluster \"${clusterName}\""
 
 rm -rf inputs
 mkdir inputs
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
-	--arg clusterName "$ClusterName" \
-	'.ClusterName?|=$clusterName |.GroupId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
-	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
+jq --arg group_id "$projectId" \
+   --arg clusterName "$clusterName" \
+   '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
+   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
-ClusterName="${ClusterName}- more B@d chars !@(!(@====*** ;;::"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
-	--arg clusterName "$ClusterName" \
-	'.ClusterName?|=$clusterName |.GroupId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
+clusterName="${clusterName}- more B@d chars !@(!(@====*** ;;::"
+jq --arg group_id "$projectId" \
+   --arg clusterName "$clusterName" \
+   '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
+   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs

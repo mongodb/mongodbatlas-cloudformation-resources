@@ -403,8 +403,10 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
+| <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.attrClusterCount">attrClusterCount</a></code> | <code>number</code> | Attribute `MongoDB::Atlas::Project.ClusterCount`. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.attrCreated">attrCreated</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Project.Created`. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Project.Id`. |
+| <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.attrProjectOwnerId">attrProjectOwnerId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::Project.ProjectOwnerId`. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProject.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps">CfnProjectProps</a></code> | Resource props. |
 
 ---
@@ -501,6 +503,18 @@ AWS resource type.
 
 ---
 
+##### `attrClusterCount`<sup>Required</sup> <a name="attrClusterCount" id="@mongodbatlas-awscdk/project.CfnProject.property.attrClusterCount"></a>
+
+```typescript
+public readonly attrClusterCount: number;
+```
+
+- *Type:* number
+
+Attribute `MongoDB::Atlas::Project.ClusterCount`.
+
+---
+
 ##### `attrCreated`<sup>Required</sup> <a name="attrCreated" id="@mongodbatlas-awscdk/project.CfnProject.property.attrCreated"></a>
 
 ```typescript
@@ -522,6 +536,18 @@ public readonly attrId: string;
 - *Type:* string
 
 Attribute `MongoDB::Atlas::Project.Id`.
+
+---
+
+##### `attrProjectOwnerId`<sup>Required</sup> <a name="attrProjectOwnerId" id="@mongodbatlas-awscdk/project.CfnProject.property.attrProjectOwnerId"></a>
+
+```typescript
+public readonly attrProjectOwnerId: string;
+```
+
+- *Type:* string
+
+Attribute `MongoDB::Atlas::Project.ProjectOwnerId`.
 
 ---
 
@@ -559,45 +585,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/project.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/project.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/project'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/project.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/project.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/project.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnProjectProps <a name="CfnProjectProps" id="@mongodbatlas-awscdk/project.CfnProjectProps"></a>
 
 Retrieves or creates projects in any given Atlas organization.
@@ -616,13 +603,11 @@ const cfnProjectProps: CfnProjectProps = { ... }
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.name">name</a></code> | <code>string</code> | Name of the project to create. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.orgId">orgId</a></code> | <code>string</code> | Unique identifier of the organization within which to create the project. |
-| <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/project.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.clusterCount">clusterCount</a></code> | <code>number</code> | The number of Atlas clusters deployed in the project. |
+| <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.projectApiKeys">projectApiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/project.ProjectApiKey">ProjectApiKey</a>[]</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.projectOwnerId">projectOwnerId</a></code> | <code>string</code> | Unique identifier of the organization within which to create the project. |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.projectSettings">projectSettings</a></code> | <code><a href="#@mongodbatlas-awscdk/project.ProjectSettings">ProjectSettings</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.projectTeams">projectTeams</a></code> | <code><a href="#@mongodbatlas-awscdk/project.ProjectTeam">ProjectTeam</a>[]</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.withDefaultAlertsSettings">withDefaultAlertsSettings</a></code> | <code>boolean</code> | Unique identifier of the organization within which to create the project. |
+| <code><a href="#@mongodbatlas-awscdk/project.CfnProjectProps.property.withDefaultAlertsSettings">withDefaultAlertsSettings</a></code> | <code>boolean</code> | Flag that indicates whether to create the project with default alert settings. |
 
 ---
 
@@ -650,25 +635,15 @@ Unique identifier of the organization within which to create the project.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/project.CfnProjectProps.property.apiKeys"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/project.CfnProjectProps.property.profile"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly profile: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/project.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
 
----
-
-##### `clusterCount`<sup>Optional</sup> <a name="clusterCount" id="@mongodbatlas-awscdk/project.CfnProjectProps.property.clusterCount"></a>
-
-```typescript
-public readonly clusterCount: number;
-```
-
-- *Type:* number
-
-The number of Atlas clusters deployed in the project.
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 
@@ -679,18 +654,6 @@ public readonly projectApiKeys: ProjectApiKey[];
 ```
 
 - *Type:* <a href="#@mongodbatlas-awscdk/project.ProjectApiKey">ProjectApiKey</a>[]
-
----
-
-##### `projectOwnerId`<sup>Optional</sup> <a name="projectOwnerId" id="@mongodbatlas-awscdk/project.CfnProjectProps.property.projectOwnerId"></a>
-
-```typescript
-public readonly projectOwnerId: string;
-```
-
-- *Type:* string
-
-Unique identifier of the organization within which to create the project.
 
 ---
 
@@ -722,7 +685,7 @@ public readonly withDefaultAlertsSettings: boolean;
 
 - *Type:* boolean
 
-Unique identifier of the organization within which to create the project.
+Flag that indicates whether to create the project with default alert settings.
 
 ---
 

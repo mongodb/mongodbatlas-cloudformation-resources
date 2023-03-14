@@ -23,11 +23,6 @@ export interface CfnDatabaseUserProps {
   readonly awsiamType?: CfnDatabaseUserPropsAwsiamType;
 
   /**
-   * @schema CfnDatabaseUserProps#ApiKeys
-   */
-  readonly apiKeys?: ApiKeyDefinition;
-
-  /**
    * MongoDB database against which the MongoDB database user authenticates. MongoDB database users must provide both a username and authentication database to log into MongoDB.
    *
    * @schema CfnDatabaseUserProps#DatabaseName
@@ -90,6 +85,13 @@ export interface CfnDatabaseUserProps {
    */
   readonly username: string;
 
+  /**
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnDatabaseUserProps#Profile
+   */
+  readonly profile?: string;
+
 }
 
 /**
@@ -101,7 +103,6 @@ export function toJson_CfnDatabaseUserProps(obj: CfnDatabaseUserProps | undefine
   const result = {
     'DeleteAfterDate': obj.deleteAfterDate,
     'AWSIAMType': obj.awsiamType,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'DatabaseName': obj.databaseName,
     'Labels': obj.labels?.map(y => toJson_LabelDefinition(y)),
     'LdapAuthType': obj.ldapAuthType,
@@ -111,6 +112,7 @@ export function toJson_CfnDatabaseUserProps(obj: CfnDatabaseUserProps | undefine
     'Roles': obj.roles?.map(y => toJson_RoleDefinition(y)),
     'Scopes': obj.scopes?.map(y => toJson_ScopeDefinition(y)),
     'Username': obj.username,
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -130,37 +132,6 @@ export enum CfnDatabaseUserPropsAwsiamType {
   /** ROLE */
   ROLE = 'ROLE',
 }
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
 
 /**
  * @schema labelDefinition

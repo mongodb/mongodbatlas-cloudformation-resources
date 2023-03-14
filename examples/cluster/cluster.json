@@ -1,113 +1,143 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
-    "Parameters": {
-        "ProjectName": {
-            "Type": "String"
-        },
-        "ClusterName": {
-            "Type": "String"
-        }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String"
     },
-    "Mappings": {},
-    "Resources": {
-        "Project": {
-            "Type": "MongoDB::Atlas::Project",
-            "Properties": {
-                "Name": {
-                    "Ref": "ProjectName"
-                },
-                "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}",
-                "ApiKeys": {
-                    "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-                    "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-                }
-            }
-        },
-        "AtlasCluster": {
-            "Type": "MongoDB::Atlas::Cluster",
-            "Properties": {
-                "ProjectId": {
-                    "Ref": "Project"
-                },
-                "Name": {
-                    "Ref": "ClusterName"
-                },
-                "ApiKeys": {
-                    "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-                    "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-                },
-                "AdvancedSettings": {
-                    "DefaultReadConcern": "available",
-                    "DefaultWriteConcern": "1",
-                    "JavascriptEnabled": "true",
-                    "MinimumEnabledTLSProtocol": "TLS1_2",
-                    "NoTableScan": "false",
-                    "OplogSizeMB": "2000",
-                    "SampleSizeBIConnector": "110",
-                    "SampleRefreshIntervalBIConnector": "310"
-                },
-                "BackupEnabled": "true",
-                "ClusterType": "REPLICASET",
-                "Paused": "false",
-                "PitEnabled": "false",
-                "BiConnector": {
-                    "ReadPreference": "secondary",
-                    "Enabled": "false"
-                },
-                "ReplicationSpecs": [
-                    {
-                        "NumShards": "1",
-                        "AdvancedRegionConfigs": [
-                            {
-                                "AutoScaling": {
-                                    "DiskGB": {
-                                        "Enabled": "true"
-                                    },
-                                    "Compute": {
-                                        "Enabled": "false",
-                                        "ScaleDownEnabled": "false"
-                                    }
-                                },
-                                "AnalyticsSpecs": {
-                                    "EbsVolumeType": "STANDARD",
-                                    "InstanceSize": "M10",
-                                    "NodeCount": "3"
-                                },
-                                "ElectableSpecs": {
-                                    "EbsVolumeType": "STANDARD",
-                                    "InstanceSize": "M10",
-                                    "NodeCount": "3"
-                                },
-                                "ReadOnlySpecs": {
-                                    "EbsVolumeType": "STANDARD",
-                                    "InstanceSize": "M10",
-                                    "NodeCount": "3"
-                                },
-                                "Priority": "7",
-                                "RegionName": "US_EAST_1"
-                            }
-                        ]
-                    }
-                ]
-
-            }
-        }
+    "ClusterName": {
+      "Type": "String"
     },
-    "Outputs": {
-        "MongoDBAtlasConnectionStrings": {
-            "Description": "Cluster connection strings",
-            "Export": {
-                "Name": {
-                    "Fn::Sub": "${AWS::StackName}-ConnectionStrings"
-                }
-            },
-            "Value": {
-                "Fn::GetAtt": [
-                    "AtlasCluster",
-                    "ConnectionStrings.Standard"
-                ]
-            }
-        }
+    "Profile": {
+      "Type": "String",
+      "Default": "default"
+    },
+    "OrgId": {
+      "Type": "String",
+      "Default": ""
+    },
+    "PitEnabled": {
+      "Type": "String",
+      "Default": "true"
     }
+  },
+  "Mappings": {},
+  "Resources": {
+    "Project": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": {
+          "Ref": "ProjectName"
+        },
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    },
+    "AtlasCluster": {
+      "Type": "MongoDB::Atlas::Cluster",
+      "Properties": {
+        "ProjectId": {
+          "Fn::GetAtt": [
+            "Project",
+            "Id"
+          ]
+        },
+        "Name": {
+          "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "AdvancedSettings": {
+          "DefaultReadConcern": "available",
+          "DefaultWriteConcern": "1",
+          "JavascriptEnabled": "true",
+          "MinimumEnabledTLSProtocol": "TLS1_2",
+          "NoTableScan": "false",
+          "OplogSizeMB": "2000",
+          "SampleSizeBIConnector": "110",
+          "SampleRefreshIntervalBIConnector": "310"
+        },
+        "BackupEnabled": "true",
+        "ClusterType": "REPLICASET",
+        "Paused": "false",
+        "PitEnabled": {
+          "Ref": "PitEnabled"
+        },
+        "BiConnector": {
+          "ReadPreference": "secondary",
+          "Enabled": "false"
+        },
+        "ReplicationSpecs": [
+          {
+            "NumShards": "1",
+            "AdvancedRegionConfigs": [
+              {
+                "AutoScaling": {
+                  "DiskGB": {
+                    "Enabled": "true"
+                  },
+                  "Compute": {
+                    "Enabled": "false",
+                    "ScaleDownEnabled": "false"
+                  }
+                },
+                "AnalyticsSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "3"
+                },
+                "ElectableSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "3"
+                },
+                "ReadOnlySpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "3"
+                },
+                "Priority": "7",
+                "RegionName": "US_EAST_1"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBAtlasConnectionStrings": {
+      "Description": "Cluster connection strings",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ConnectionStrings"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasCluster",
+          "ConnectionStrings.Standard"
+        ]
+      }
+    },
+    "MongoDBAtlasClusterID": {
+      "Description": "Cluster Id",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ID"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasCluster",
+          "Id"
+        ]
+      }
+    }
+  }
 }

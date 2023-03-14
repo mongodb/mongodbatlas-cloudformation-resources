@@ -9,16 +9,18 @@ import * as constructs from 'constructs';
  */
 export interface CfnThirdPartyIntegrationProps {
   /**
-   * @schema CfnThirdPartyIntegrationProps#ApiKeys
-   */
-  readonly apiKeys?: ApiKeyDefinition;
-
-  /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
    * @schema CfnThirdPartyIntegrationProps#ProjectId
    */
   readonly projectId?: string;
+
+  /**
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnThirdPartyIntegrationProps#Profile
+   */
+  readonly profile?: string;
 
   /**
    * Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the third-party service integration type.
@@ -155,8 +157,8 @@ export interface CfnThirdPartyIntegrationProps {
 export function toJson_CfnThirdPartyIntegrationProps(obj: CfnThirdPartyIntegrationProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'ProjectId': obj.projectId,
+    'Profile': obj.profile,
     'Type': obj.type,
     'ApiKey': obj.apiKey,
     'Region': obj.region,
@@ -175,37 +177,6 @@ export function toJson_CfnThirdPartyIntegrationProps(obj: CfnThirdPartyIntegrati
     'Enabled': obj.enabled,
     'ListenAddress': obj.listenAddress,
     'TlsPemPath': obj.tlsPemPath,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

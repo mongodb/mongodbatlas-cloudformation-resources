@@ -11,9 +11,9 @@ export interface CfnCustomDbRoleProps {
   /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
-   * @schema CfnCustomDbRoleProps#GroupId
+   * @schema CfnCustomDbRoleProps#ProjectId
    */
-  readonly groupId?: string;
+  readonly projectId: string;
 
   /**
    * List of the individual privilege actions that the role grants.
@@ -37,9 +37,11 @@ export interface CfnCustomDbRoleProps {
   readonly roleName: string;
 
   /**
-   * @schema CfnCustomDbRoleProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnCustomDbRoleProps#Profile
    */
-  readonly apiKeys?: ApiKey;
+  readonly profile?: string;
 
 }
 
@@ -50,11 +52,11 @@ export interface CfnCustomDbRoleProps {
 export function toJson_CfnCustomDbRoleProps(obj: CfnCustomDbRoleProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'GroupId': obj.groupId,
+    'ProjectId': obj.projectId,
     'Actions': obj.actions?.map(y => toJson_Action(y)),
     'InheritedRoles': obj.inheritedRoles?.map(y => toJson_InheritedRole(y)),
     'RoleName': obj.roleName,
-    'ApiKeys': toJson_ApiKey(obj.apiKeys),
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -121,37 +123,6 @@ export function toJson_InheritedRole(obj: InheritedRole | undefined): Record<str
   const result = {
     'Db': obj.db,
     'Role': obj.role,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKey
- */
-export interface ApiKey {
-  /**
-   * @schema ApiKey#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema ApiKey#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKey' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKey(obj: ApiKey | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

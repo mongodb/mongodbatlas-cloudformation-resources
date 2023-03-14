@@ -54,7 +54,9 @@
         "Type": {
           "type": "string",
           "description": "MongoDB process type to which your application connects.\n",
-          "enum": ["MONGOS"]
+          "enum": [
+            "MONGOS"
+          ]
         }
       },
       "additionalProperties": false
@@ -83,7 +85,9 @@
         "ProviderName": {
           "type": "string",
           "description": "Human-readable label that identifies the cloud service provider.",
-          "enum": ["SERVERLESS"]
+          "enum": [
+            "SERVERLESS"
+          ]
         },
         "RegionName": {
           "type": "string",
@@ -146,7 +150,7 @@
       "description": "Human-readable label that identifies the serverless instance.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]*$"
     },
     "PageNum": {
       "type": "integer",
@@ -168,11 +172,11 @@
       "type": "string",
       "description": "Human-readable label that indicates the current operating condition of the serverless instance.",
       "enum": [
-        "CREATING", 
-        "DELETED", 
-        "DELETING", 
-        "IDLE", 
-        "REPAIRING", 
+        "CREATING",
+        "DELETED",
+        "DELETING",
+        "IDLE",
+        "REPAIRING",
         "UPDATING"
       ]
     },
@@ -193,10 +197,10 @@
   "readOnlyProperties": [
     "/properties/CreateDate",
     "/properties/Id",
-    "/properties/TotalCount", 
-    "/properties/ConnectionStrings", 
+    "/properties/TotalCount",
+    "/properties/ConnectionStrings",
     "/properties/Links",
-    "/properties/StateName", 
+    "/properties/StateName",
     "/properties/MongoDBVersion",
     "/properties/ConnectionStrings/StandardSrv",
     "/properties/ConnectionStrings/PrivateEndpoint",

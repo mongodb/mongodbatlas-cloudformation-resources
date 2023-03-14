@@ -1,36 +1,31 @@
 {
-    "Name": "materializeMonthlyProductSales46",
-    "Type": "DATABASE",
-    "DatabaseTrigger": {
-        "OperationTypes": [
-            "INSERT"
-        ],
-        "Database": "store",
-        "Collection": "sales",
-        "ServiceId": "6387aee08659af5254b0a51e",
-        "FullDocument": "true",
-        "FullDocumentBeforeChange": "false",
-        "Unordered": "false",
-        "SkipCatchupEvents": "false"
+  "Name": "materializeMonthlyProductSales46",
+  "Type": "DATABASE",
+  "Profile": "default",
+  "DatabaseTrigger": {
+    "OperationTypes": [
+      "INSERT"
+    ],
+    "Database": "store",
+    "Collection": "sales",
+    "ServiceId": "6387aee08659af5254b0a51e",
+    "FullDocument": "true",
+    "FullDocumentBeforeChange": "false",
+    "Unordered": "false",
+    "SkipCatchupEvents": "false"
+  },
+  "Disabled": "false",
+  "EventProcessors": {
+    "FUNCTION": {
+      "FuncConfig": {
+        "FunctionName": "cfn_func",
+        "FunctionId": "63862553ac0702272aa701ba"
+      }
     },
-    "Disabled": "false",
-    "EventProcessors": {
-        "FUNCTION": {
-            "FuncConfig": {
-                "FunctionName": "cfn_func",
-                "FunctionId": "63862553ac0702272aa701ba"
-            }
-        },
-        "AWSEVENTBRIDGE": {
-            "AWSConfig": {}
-        }
-    },
-    "AppId": "638624a5167f5659feb75971",
-    "ProjectId": "625454459c4e6108393d650d",
-    "RealmConfig": {
-        "PublicKey": "gajlppic",
-        "PrivateKey": "<redacted>",
-        "BaseURL": "https://cloud.mongodb.com/api/atlas/v1.0/",
-        "RealmBaseURL": "https://realm.mongodb.com/api/admin/v3.0/"
+    "AWSEVENTBRIDGE": {
+      "AWSConfig": {}
     }
+  },
+  "AppId": "638624a5167f5659feb75971",
+  "ProjectId": "625454459c4e6108393d650d"
 }

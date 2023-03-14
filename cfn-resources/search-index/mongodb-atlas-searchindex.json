@@ -77,37 +77,36 @@
         }
       },
       "additionalProperties": false
-    },
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
     }
   },
   "description": "Returns, adds, edits, and removes Atlas Search indexes. Also returns and updates user-defined analyzers.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "primaryIdentifier": [
-    "/properties/IndexId"
+    "/properties/IndexId",
+    "/properties/Profile",
+    "/properties/ProjectId",
+    "/properties/ClusterName"
   ],
   "properties": {
     "Analyzer": {
@@ -123,15 +122,17 @@
         "type": "object"
       }
     },
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "ClusterName": {
       "type": "string",
       "description": "Name of the cluster that contains the database and collection with one or more Application Search indexes.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
     },
     "CollectionName": {
       "type": "string",
@@ -141,7 +142,7 @@
       "type": "string",
       "description": "Human-readable label that identifies the database that contains the collection with one or more Atlas Search indexes."
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
@@ -171,7 +172,12 @@
     "Status": {
       "type": "string",
       "description": "Condition of the search index when you made this request.\n\n| Status | Index Condition |\n |---|---|\n | IN_PROGRESS | Atlas is building or re-building the index after an edit. |\n | STEADY | You can use this search index. |\n | FAILED | Atlas could not build the index. |\n | MIGRATING | Atlas is upgrading the underlying cluster tier and migrating indexes. |\n",
-      "enum": ["FAILED", "IN_PROGRESS", "MIGRATING", "STEADY"]
+      "enum": [
+        "FAILED",
+        "IN_PROGRESS",
+        "MIGRATING",
+        "STEADY"
+      ]
     },
     "Synonyms": {
       "type": "array",
@@ -183,7 +189,14 @@
       }
     }
   },
-  "readOnlyProperties": ["/properties/IndexId", "/properties/Status"],
+  "readOnlyProperties": [
+    "/properties/IndexId",
+    "/properties/Status"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
   "typeName": "MongoDB::Atlas::SearchIndex",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

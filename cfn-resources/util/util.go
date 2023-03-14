@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//         http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,38 +15,41 @@
 package util
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"runtime"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
-	"github.com/Sectorbob/mlab-ns2/gae/ns/digest"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/mongodb-forks/digest"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	"go.mongodb.org/atlas/mongodbatlas"
+	realmAuth "go.mongodb.org/realm/auth"
+	"go.mongodb.org/realm/realm"
 )
 
 const (
-	cfn            = "mongodbatlas-cloudformation-resources"
-	DefaultProfile = "default"
-	envLogLevel    = "LOG_LEVEL"
-	debug          = "debug"
-	profileName    = "cfn/atlas/profile/%s"
+	cfn         = "mongodbatlas-cloudformation-resources"
+	envLogLevel = "LOG_LEVEL"
+	debug       = "debug"
 )
 
 var (
-	toolName        = cfn
-	defaultLogLevel = "warning"
-	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+	toolName           = cfn
+	defaultLogLevel    = "warning"
+	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
@@ -65,6 +68,28 @@ func EnsureAWSRegion(region string) string {
 	return r
 }
 
+func GetRealmClient(ctx context.Context, req handler.Request, profileName *string) (*realm.Client, error) {
+	p, err := profile.NewProfile(&req, profileName)
+	if err != nil {
+		return nil, err
+	}
+
+	optsRealm := []realm.ClientOpt{realm.SetUserAgent(terraformUserAgent)}
+	authConfig := realmAuth.NewConfig(nil)
+	token, err := authConfig.NewTokenFromCredentials(ctx, p.PublicKey, p.PrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	clientRealm := realmAuth.NewClient(realmAuth.BasicTokenSource(token))
+	realmClient, err := realm.New(clientRealm, optsRealm...)
+	if err != nil {
+		return nil, err
+	}
+
+	return realmClient, nil
+}
+
 // CreateMongoDBClient creates a new Client using apikeys
 //
 // Deprecated: In the future this function will be private, the NewMongoDBClient should be used instead.
@@ -80,50 +105,53 @@ func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, er
 	}
 
 	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
-	if baseURL := os.Getenv("MONGODB_ATLAS_OPS_MANAGER_URL"); baseURL != "" {
+	if baseURL := os.Getenv("MONGODB_ATLAS_BASE_URL"); baseURL != "" {
 		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
 	}
 
 	return mongodbatlas.New(client, opts...)
 }
 
-func NewMongoDBClient(req handler.Request, profile *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
-	profileInput := DefaultProfile
-	if profile != nil {
-		profileInput = *profile
-	}
-
-	keys, handlerError := getAPIKeys(req, profileInput)
-	if handlerError != nil {
-		return nil, handlerError
-	}
-
-	// Create atlas client
-	client, err := CreateMongoDBClient(keys.PublicKey, keys.PrivateKey)
+func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
+	p, err := profile.NewProfile(&req, profileName)
 	if err != nil {
-		_, _ = logger.Warnf("Create - error: %+v", err)
-		peErr := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest)
-		return nil, &peErr
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
 	}
 
-	return client, nil
+	client, err := newHTTPClient(p)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if baseURL := p.NewBaseURL(); baseURL != "" {
+		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
+	}
+
+	mongodbClient, err := mongodbatlas.New(client, opts...)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	return mongodbClient, nil
 }
 
-func getAPIKeys(req handler.Request, profile string) (*DeploymentSecret, *handler.ProgressEvent) {
-	key, err := GetAPIKeyFromDeploymentSecret(&req, fmt.Sprintf(profileName, profile))
-	if err != nil {
-		_, _ = logger.Warnf("Read - error: %+v", err)
-		pe := handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message: fmt.Sprintf("Error getting API-key, API-key needs to be provided using an AWS secret,"+
-				"  Ensure a secret named 'cfn/atlas/profile/%s' is created with the 'PublicKey' and 'PrivateKey' properties, error: %s",
-				profile, err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
-		return nil, &pe
+func newHTTPClient(p *profile.Profile) (*http.Client, error) {
+	if p.AreKeysAvailable() {
+		return nil, errors.New("PublicKey and PrivateKey cannot be empty")
 	}
 
-	return &key, nil
+	t := digest.NewTransport(p.NewPublicKey(), p.NewPrivateKey())
+	return t.Client()
 }
 
 // defaultLogLevel can be set during compile time with an ld flag to enable
@@ -214,6 +242,9 @@ func Get(keyID, prefix string, curSession *session.Session) string {
 	if err != nil {
 		return ""
 	}
+	print("ANDREA util.get\n")
+	print(*getParamOutput.Parameter.Value)
+	print("\n")
 	return *getParamOutput.Parameter.Value
 }
 func buildKey(keyID, storePrefix string) string {

@@ -12,8 +12,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::ThirdPartyIntegration",
     "Properties" : {
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#apikey" title="ApiKey">ApiKey</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
@@ -41,8 +41,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::ThirdPartyIntegration
 Properties:
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#apikey" title="ApiKey">ApiKey</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
@@ -65,14 +65,6 @@ Properties:
 
 ## Properties
 
-#### ApiKeys
-
-_Required_: No
-
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
@@ -81,7 +73,17 @@ _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Type
 
@@ -93,7 +95,7 @@ _Type_: String
 
 _Allowed Values_: <code>PAGER_DUTY</code> | <code>MICROSOFT_TEAMS</code> | <code>SLACK</code> | <code>DATADOG</code> | <code>OPS_GENIE</code> | <code>VICTOR_OPS</code> | <code>WEBHOOK</code> | <code>PROMETHEUS</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ApiKey
 
@@ -269,8 +271,3 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Type.

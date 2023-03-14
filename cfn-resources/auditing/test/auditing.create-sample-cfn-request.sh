@@ -8,8 +8,16 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg groupID "$PROJECT_ID" \
-	'.desiredResourceState.GroupId?|=$groupID | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
-	"$(dirname "$0")/auditing.sample-cfn-request.json"
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+
+    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
+
+jq --arg groupID "$projectId" \
+   '.desiredResourceState.GroupId?|=$groupID' \
+   "$(dirname "$0")/auditing.sample-cfn-request.json"

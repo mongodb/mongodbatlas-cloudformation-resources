@@ -9,6 +9,13 @@ import * as constructs from 'constructs';
  */
 export interface CfnLdapConfigurationProps {
   /**
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnLdapConfigurationProps#Profile
+   */
+  readonly profile?: string;
+
+  /**
    * Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. LDAP distinguished names must be formatted according to RFC 2253.
    *
    * @schema CfnLdapConfigurationProps#BindUsername
@@ -28,11 +35,6 @@ export interface CfnLdapConfigurationProps {
    * @schema CfnLdapConfigurationProps#Hostname
    */
   readonly hostname: string;
-
-  /**
-   * @schema CfnLdapConfigurationProps#ApiKeys
-   */
-  readonly apiKeys: ApiKeyDefinition;
 
   /**
    * Flag that indicates whether users can authenticate using an Lightweight Directory Access Protocol (LDAP) host.
@@ -70,6 +72,13 @@ export interface CfnLdapConfigurationProps {
   readonly bindPassword: string;
 
   /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnLdapConfigurationProps#ProjectId
+   */
+  readonly projectId: string;
+
+  /**
    * Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections.
    *
    * @schema CfnLdapConfigurationProps#Port
@@ -92,48 +101,18 @@ export interface CfnLdapConfigurationProps {
 export function toJson_CfnLdapConfigurationProps(obj: CfnLdapConfigurationProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
+    'Profile': obj.profile,
     'BindUsername': obj.bindUsername,
     'Status': obj.status,
     'Hostname': obj.hostname,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'AuthenticationEnabled': obj.authenticationEnabled,
     'AuthorizationEnabled': obj.authorizationEnabled,
     'CaCertificate': obj.caCertificate,
     'AuthzQueryTemplate': obj.authzQueryTemplate,
     'BindPassword': obj.bindPassword,
+    'ProjectId': obj.projectId,
     'Port': obj.port,
     'UserToDNMapping': obj.userToDnMapping?.map(y => toJson_ApiAtlasNdsUserToDnMappingView(y)),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema ApiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema ApiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -201,10 +180,6 @@ export class CfnLdapConfiguration extends cdk.CfnResource {
    */
   public readonly props: CfnLdapConfigurationProps;
 
-  /**
-   * Attribute `MongoDB::Atlas::LDAPConfiguration.GroupId`
-   */
-  public readonly attrGroupId: string;
 
   /**
    * Create a new `MongoDB::Atlas::LDAPConfiguration`.
@@ -218,6 +193,5 @@ export class CfnLdapConfiguration extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrGroupId = cdk.Token.asString(this.getAtt('GroupId'));
   }
 }

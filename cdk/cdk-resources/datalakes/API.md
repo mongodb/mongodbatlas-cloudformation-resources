@@ -403,12 +403,9 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrEndDate">attrEndDate</a></code> | <code>number</code> | Attribute `MongoDB::Atlas::DataLakes.EndDate`. |
-| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrGroupId">attrGroupId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::DataLakes.GroupId`. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrHostnames">attrHostnames</a></code> | <code>string[]</code> | Attribute `MongoDB::Atlas::DataLakes.Hostnames`. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrStartDate">attrStartDate</a></code> | <code>number</code> | Attribute `MongoDB::Atlas::DataLakes.StartDate`. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrState">attrState</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::DataLakes.State`. |
-| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrTenantName">attrTenantName</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::DataLakes.TenantName`. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps">CfnDataLakesProps</a></code> | Resource props. |
 
 ---
@@ -505,30 +502,6 @@ AWS resource type.
 
 ---
 
-##### `attrEndDate`<sup>Required</sup> <a name="attrEndDate" id="@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrEndDate"></a>
-
-```typescript
-public readonly attrEndDate: number;
-```
-
-- *Type:* number
-
-Attribute `MongoDB::Atlas::DataLakes.EndDate`.
-
----
-
-##### `attrGroupId`<sup>Required</sup> <a name="attrGroupId" id="@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrGroupId"></a>
-
-```typescript
-public readonly attrGroupId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::DataLakes.GroupId`.
-
----
-
 ##### `attrHostnames`<sup>Required</sup> <a name="attrHostnames" id="@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrHostnames"></a>
 
 ```typescript
@@ -562,18 +535,6 @@ public readonly attrState: string;
 - *Type:* string
 
 Attribute `MongoDB::Atlas::DataLakes.State`.
-
----
-
-##### `attrTenantName`<sup>Required</sup> <a name="attrTenantName" id="@mongodbatlas-awscdk/datalakes.CfnDataLakes.property.attrTenantName"></a>
-
-```typescript
-public readonly attrTenantName: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::DataLakes.TenantName`.
 
 ---
 
@@ -611,45 +572,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/datalakes.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/datalakes.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/datalakes'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/datalakes.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/datalakes.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/datalakes.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/datalakes.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnDataLakesProps <a name="CfnDataLakesProps" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps"></a>
 
 Returns, adds, edits, and removes Federated Database Instances.
@@ -666,21 +588,14 @@ const cfnDataLakesProps: CfnDataLakesProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/datalakes.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.cloudProviderConfig">cloudProviderConfig</a></code> | <code><a href="#@mongodbatlas-awscdk/datalakes.DataLakeCloudProviderConfigView">DataLakeCloudProviderConfigView</a></code> | Cloud provider linked to this data lake. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.dataProcessRegion">dataProcessRegion</a></code> | <code><a href="#@mongodbatlas-awscdk/datalakes.DataLakeDataProcessRegionView">DataLakeDataProcessRegionView</a></code> | Information about the cloud provider region to which the data lake routes client connections. |
+| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.endDate">endDate</a></code> | <code>number</code> | Timestamp that specifies the end point for the range of log messages to download. |
+| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
+| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.skipRoleValidation">skipRoleValidation</a></code> | <code>boolean</code> | Flag that indicates whether this request should check if the requesting IAM role can read from the S3 bucket. |
 | <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.storage">storage</a></code> | <code><a href="#@mongodbatlas-awscdk/datalakes.DataLakeStorageView">DataLakeStorageView</a></code> | Configuration information for each data store and its mapping to MongoDB Cloud databases. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/datalakes.ApiKeyDefinition">ApiKeyDefinition</a>
+| <code><a href="#@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.tenantName">tenantName</a></code> | <code>string</code> | Human-readable label that identifies the Federated Database to remove. |
 
 ---
 
@@ -710,6 +625,46 @@ MongoDB Cloud supports AWS only.
 
 ---
 
+##### `endDate`<sup>Optional</sup> <a name="endDate" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.endDate"></a>
+
+```typescript
+public readonly endDate: number;
+```
+
+- *Type:* number
+
+Timestamp that specifies the end point for the range of log messages to download.
+
+MongoDB Cloud expresses this timestamp in the number of seconds that have elapsed since the UNIX epoch.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+---
+
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
 ##### `skipRoleValidation`<sup>Optional</sup> <a name="skipRoleValidation" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.skipRoleValidation"></a>
 
 ```typescript
@@ -733,6 +688,18 @@ public readonly storage: DataLakeStorageView;
 - *Type:* <a href="#@mongodbatlas-awscdk/datalakes.DataLakeStorageView">DataLakeStorageView</a>
 
 Configuration information for each data store and its mapping to MongoDB Cloud databases.
+
+---
+
+##### `tenantName`<sup>Optional</sup> <a name="tenantName" id="@mongodbatlas-awscdk/datalakes.CfnDataLakesProps.property.tenantName"></a>
+
+```typescript
+public readonly tenantName: string;
+```
+
+- *Type:* string
+
+Human-readable label that identifies the Federated Database to remove.
 
 ---
 

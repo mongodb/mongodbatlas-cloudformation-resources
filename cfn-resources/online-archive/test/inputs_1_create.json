@@ -1,8 +1,5 @@
 {
-  "ApiKeys": {
-    "PublicKey": "",
-    "PrivateKey": "<>"
-  },
+  "Profile": "default",
   "ClusterName": "",
   "CollName":"rombo-bongo",
   "Criteria": {

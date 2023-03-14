@@ -9,13 +9,6 @@ import * as constructs from 'constructs';
  */
 export interface CfnPrivateEndPointRegionalModeProps {
   /**
-   * Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project
-   *
-   * @schema CfnPrivateEndPointRegionalModeProps#Enabled
-   */
-  readonly enabled?: boolean;
-
-  /**
    * Unique 24-hexadecimal digit string that identifies your project.
    *
    * @schema CfnPrivateEndPointRegionalModeProps#ProjectId
@@ -23,9 +16,11 @@ export interface CfnPrivateEndPointRegionalModeProps {
   readonly projectId: string;
 
   /**
-   * @schema CfnPrivateEndPointRegionalModeProps#ApiKeys
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnPrivateEndPointRegionalModeProps#Profile
    */
-  readonly apiKeys?: ApiKey;
+  readonly profile?: string;
 
 }
 
@@ -36,40 +31,8 @@ export interface CfnPrivateEndPointRegionalModeProps {
 export function toJson_CfnPrivateEndPointRegionalModeProps(obj: CfnPrivateEndPointRegionalModeProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'Enabled': obj.enabled,
     'ProjectId': obj.projectId,
-    'ApiKeys': toJson_ApiKey(obj.apiKeys),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKey
- */
-export interface ApiKey {
-  /**
-   * @schema ApiKey#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema ApiKey#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKey' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKey(obj: ApiKey | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

@@ -12,11 +12,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::CustomDBRole",
     "Properties" : {
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#actions" title="Actions">Actions</a>" : <i>[ <a href="action.md">Action</a>, ... ]</i>,
         "<a href="#inheritedroles" title="InheritedRoles">InheritedRoles</a>" : <i>[ <a href="inheritedrole.md">InheritedRole</a>, ... ]</i>,
         "<a href="#rolename" title="RoleName">RoleName</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikey.md">ApiKey</a></i>
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
 </pre>
@@ -26,28 +26,28 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::CustomDBRole
 Properties:
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#actions" title="Actions">Actions</a>: <i>
       - <a href="action.md">Action</a></i>
     <a href="#inheritedroles" title="InheritedRoles">InheritedRoles</a>: <i>
       - <a href="inheritedrole.md">InheritedRole</a></i>
     <a href="#rolename" title="RoleName">RoleName</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikey.md">ApiKey</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Actions
 
@@ -79,16 +79,13 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### ApiKeys
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
 
-_Type_: <a href="apikey.md">ApiKey</a>
+_Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the RoleName.

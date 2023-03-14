@@ -1,19 +1,16 @@
 {
   "desiredResourceState": {
-    "ApiKeys": {
-      "PublicKey": "",
-      "PrivateKey": ""
-    },
+    "Profile": "",
     "FederationSettingsId": "",
     "OrgId": "",
     "ExternalGroupName": "",
     "RoleAssignments": [
       {
         "Role": "",
-        "GroupId": ""
+        "ProjectId": ""
       }
     ]
   },
-  "providerLogGroupName" : "mongodb-atlas-federated-settings-org-role-mapping-logs",
-  "previousResourceState": { }
+  "providerLogGroupName": "mongodb-atlas-federated-settings-org-role-mapping-logs",
+  "previousResourceState": {}
 }

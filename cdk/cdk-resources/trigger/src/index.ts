@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnTriggerProps {
   /**
-   * @schema CfnTriggerProps#RealmConfig
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnTriggerProps#Profile
    */
-  readonly realmConfig?: RealmConfig;
+  readonly profile?: string;
 
   /**
    * @schema CfnTriggerProps#DatabaseTrigger
@@ -110,7 +112,7 @@ export interface CfnTriggerProps {
 export function toJson_CfnTriggerProps(obj: CfnTriggerProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'RealmConfig': toJson_RealmConfig(obj.realmConfig),
+    'Profile': obj.profile,
     'DatabaseTrigger': toJson_DatabaseConfig(obj.databaseTrigger),
     'AuthTrigger': toJson_AuthConfig(obj.authTrigger),
     'ScheduleTrigger': toJson_ScheduleConfig(obj.scheduleTrigger),
@@ -122,49 +124,6 @@ export function toJson_CfnTriggerProps(obj: CfnTriggerProps | undefined): Record
     'EventProcessors': toJson_Event(obj.eventProcessors),
     'AppId': obj.appId,
     'ProjectId': obj.projectId,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema RealmConfig
- */
-export interface RealmConfig {
-  /**
-   * @schema RealmConfig#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema RealmConfig#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema RealmConfig#BaseURL
-   */
-  readonly baseUrl?: string;
-
-  /**
-   * @schema RealmConfig#RealmBaseURL
-   */
-  readonly realmBaseUrl?: string;
-
-}
-
-/**
- * Converts an object of type 'RealmConfig' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_RealmConfig(obj: RealmConfig | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
-    'BaseURL': obj.baseUrl,
-    'RealmBaseURL': obj.realmBaseUrl,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

@@ -29,14 +29,9 @@ export MCLI_PROJECT_ID=$projectId
 ClusterName="${projectName}"
 
 # shellcheck disable=SC2086
-clusterId=$(atlas clusters create "${ClusterName}" --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-sleep 600
-echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-
-if [ -z "$clusterId" ]; then
-	echo -e "Error Can't find Cluster \"${ClusterName}\""
-	exit 1
-fi
+atlas clusters create "${ClusterName}" --projectId ${projectId} --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+atlas clusters watch "${ClusterName}" --projectId "${projectId}"
+echo -e "Created Cluster \"${ClusterName}\""
 
 atlas clusters loadSampleData "${ClusterName}" --projectId "${projectId}"
 
@@ -44,26 +39,20 @@ clusterName=${ClusterName}
 collName="${2:-listingsAndReviews}"
 dbName="${3:-sample_airbnb}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg cluster_name "$clusterName" \
+jq --arg cluster_name "$clusterName" \
 	--arg coll_name "$collName" \
 	--arg db_name "$dbName" \
 	--arg project_id "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey
-   | .ClusterName?|=$cluster_name
+	'.ClusterName?|=$cluster_name
    | .ProjectId?|=$project_id
    | .DbName?|=$db_name | .CollName?|=$coll_name' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg cluster_name "$clusterName" \
+jq --arg cluster_name "$clusterName" \
 	--arg coll_name "$collName" \
 	--arg db_name "$dbName" \
 	--arg project_id "$projectId" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey
-    | .ClusterName?|=$cluster_name
+	'.ClusterName?|=$cluster_name
     | .ProjectId?|=$project_id
     | .DbName?|=$db_name | .CollName?|=$coll_name' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
@@ -71,8 +60,6 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
 #SET INVALID NAME
 clusterName="^%LKJ)(*J_ {+_+O_)"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg clusterName "$clusterName" \
-	'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .ClusterName?|=$clusterName ' \
+jq --arg clusterName "$clusterName" \
+	'.ClusterName?|=$clusterName ' \
 	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"

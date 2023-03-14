@@ -20,11 +20,9 @@ projectId="${1}"
 bindPassword="$LDAP_BIND_PASSWORD"
 bindUsername="$LDAP_BIND_USER_NAME"
 hostname="$LDAP_HOST_NAME"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg groupID "$projectId" \
+jq --arg projectId "$projectId" \
 	--arg bindPassword "$bindPassword" \
 	--arg bindUsername "$bindUsername" \
 	--arg hostname "$hostname" \
-	'.desiredResourceState.GroupId?|=$groupID | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.BindPassword?|=$bindPassword | .desiredResourceState.BindUsername?|=$bindUsername | .desiredResourceState.Hostname?|=$hostname' \
+	'.desiredResourceState.ProjectId?|=$projectId | .desiredResourceState.BindPassword?|=$bindPassword | .desiredResourceState.BindUsername?|=$bindUsername | .desiredResourceState.Hostname?|=$hostname' \
 	"$(dirname "$0")/Ldap-Config.sample-cfn-request.json"

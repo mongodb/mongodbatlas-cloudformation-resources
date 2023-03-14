@@ -585,45 +585,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/org-invitation'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnOrgInvitationProps <a name="CfnOrgInvitationProps" id="@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps"></a>
 
 Returns, adds, and edits organizational units in MongoDB Cloud.
@@ -640,7 +601,7 @@ const cfnOrgInvitationProps: CfnOrgInvitationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.includeCount">includeCount</a></code> | <code>boolean</code> | Flag that indicates whether the response returns the total number of items (**totalCount**) in the response. |
 | <code><a href="#@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.invitationId">invitationId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies the invitation. |
 | <code><a href="#@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.itemsPerPage">itemsPerPage</a></code> | <code>number</code> | Number of items that the response returns per page. |
@@ -654,13 +615,15 @@ const cfnOrgInvitationProps: CfnOrgInvitationProps = { ... }
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.apiKeys"></a>
+##### `profile`<sup>Required</sup> <a name="profile" id="@mongodbatlas-awscdk/org-invitation.CfnOrgInvitationProps.property.profile"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly profile: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/org-invitation.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

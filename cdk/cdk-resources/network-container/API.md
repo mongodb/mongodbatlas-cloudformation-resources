@@ -404,7 +404,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::NetworkContainer.Id`. |
-| <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.attrVpcId">attrVpcId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::NetworkContainer.VpcId`. |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps">CfnNetworkContainerProps</a></code> | Resource props. |
 
 ---
@@ -513,18 +512,6 @@ Attribute `MongoDB::Atlas::NetworkContainer.Id`.
 
 ---
 
-##### `attrVpcId`<sup>Required</sup> <a name="attrVpcId" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.attrVpcId"></a>
-
-```typescript
-public readonly attrVpcId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::NetworkContainer.VpcId`.
-
----
-
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainer.property.props"></a>
 
 ```typescript
@@ -559,45 +546,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/network-container.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/network-container.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/network-container'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/network-container.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/network-container.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/network-container.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/network-container.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnNetworkContainerProps <a name="CfnNetworkContainerProps" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps"></a>
 
 Returns, adds, edits, and removes network peering containers.
@@ -614,21 +562,12 @@ const cfnNetworkContainerProps: CfnNetworkContainerProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/network-container.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.atlasCidrBlock">atlasCidrBlock</a></code> | <code>string</code> | IP addresses expressed in Classless Inter-Domain Routing (CIDR) notation that MongoDB Cloud uses for the network peering containers in your project. |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.regionName">regionName</a></code> | <code>string</code> | Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container. |
+| <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.provisioned">provisioned</a></code> | <code>boolean</code> | Boolean flag that indicates whether MongoDB Cloud clusters exist in the specified network peering container. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/network-container.ApiKeyDefinition">ApiKeyDefinition</a>
+| <code><a href="#@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.vpcId">vpcId</a></code> | <code>string</code> | Unique string that identifies the MongoDB Cloud VPC on AWS. |
 
 ---
 
@@ -676,6 +615,20 @@ Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud de
 
 ---
 
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+---
+
 ##### `provisioned`<sup>Optional</sup> <a name="provisioned" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.provisioned"></a>
 
 ```typescript
@@ -685,6 +638,18 @@ public readonly provisioned: boolean;
 - *Type:* boolean
 
 Boolean flag that indicates whether MongoDB Cloud clusters exist in the specified network peering container.
+
+---
+
+##### `vpcId`<sup>Optional</sup> <a name="vpcId" id="@mongodbatlas-awscdk/network-container.CfnNetworkContainerProps.property.vpcId"></a>
+
+```typescript
+public readonly vpcId: string;
+```
+
+- *Type:* string
+
+Unique string that identifies the MongoDB Cloud VPC on AWS.
 
 ---
 

@@ -8,7 +8,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+    "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
     "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
     "<a href="#rolename" title="RoleName">RoleName</a>" : <i>String</i>
 }
@@ -17,14 +17,14 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+<a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
 <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
 <a href="#rolename" title="RoleName">RoleName</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies the project to which this role belongs. You can set a value for this parameter or **orgId** but not both in the same request.
 
@@ -32,9 +32,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
@@ -48,9 +48,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 

@@ -404,6 +404,7 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.attrRequestId">attrRequestId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::LDAPVerify.RequestId`. |
+| <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.attrStatus">attrStatus</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::LDAPVerify.Status`. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps">CfnLdapVerifyProps</a></code> | Resource props. |
 
 ---
@@ -512,6 +513,18 @@ Attribute `MongoDB::Atlas::LDAPVerify.RequestId`.
 
 ---
 
+##### `attrStatus`<sup>Required</sup> <a name="attrStatus" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.attrStatus"></a>
+
+```typescript
+public readonly attrStatus: string;
+```
+
+- *Type:* string
+
+Attribute `MongoDB::Atlas::LDAPVerify.Status`.
+
+---
+
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerify.property.props"></a>
 
 ```typescript
@@ -546,45 +559,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/ldap-verify'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnLdapVerifyProps <a name="CfnLdapVerifyProps" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps"></a>
 
 Requests a verification of an LDAP configuration over TLS for an Atlas project.
@@ -603,26 +577,15 @@ const cfnLdapVerifyProps: CfnLdapVerifyProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.bindPassword">bindPassword</a></code> | <code>string</code> | Password that MongoDB Cloud uses to authenticate the **bindUsername**. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.bindUsername">bindUsername</a></code> | <code>string</code> | Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.hostName">hostName</a></code> | <code>string</code> | Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.port">port</a></code> | <code>number</code> | Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections. |
+| <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.authzQueryTemplate">authzQueryTemplate</a></code> | <code>string</code> | Lightweight Directory Access Protocol (LDAP) query template that MongoDB Cloud runs to obtain the LDAP groups associated with the authenticated user. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.caCertificate">caCertificate</a></code> | <code>string</code> | Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. |
-| <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
-| <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.status">status</a></code> | <code>string</code> | The current status of the LDAP over TLS/SSL configuration. |
+| <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.validations">validations</a></code> | <code><a href="#@mongodbatlas-awscdk/ldap-verify.Validation">Validation</a>[]</code> | List of validation messages related to the verification of the provided LDAP over TLS configuration details. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/ldap-verify.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -678,6 +641,18 @@ Port to which the Lightweight Directory Access Protocol (LDAP) host listens for 
 
 ---
 
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
 ##### `authzQueryTemplate`<sup>Optional</sup> <a name="authzQueryTemplate" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.authzQueryTemplate"></a>
 
 ```typescript
@@ -706,27 +681,15 @@ MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass
 
 ---
 
-##### `groupId`<sup>Optional</sup> <a name="groupId" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.groupId"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.profile"></a>
 
 ```typescript
-public readonly groupId: string;
+public readonly profile: string;
 ```
 
 - *Type:* string
 
-Unique 24-hexadecimal digit string that identifies your project.
-
----
-
-##### `status`<sup>Optional</sup> <a name="status" id="@mongodbatlas-awscdk/ldap-verify.CfnLdapVerifyProps.property.status"></a>
-
-```typescript
-public readonly status: string;
-```
-
-- *Type:* string
-
-The current status of the LDAP over TLS/SSL configuration.
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

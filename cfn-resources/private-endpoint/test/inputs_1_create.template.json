@@ -7,8 +7,5 @@
             "SubnetIds": [""]
         }
     ],
-    "ApiKeys" : {
-        "PublicKey" : "",
-        "PrivateKey" : ""
-    }
+    "Profile": "default"
 }

@@ -2,19 +2,35 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "This template creates Private Endpoint ADL on the MongoDB Cluster, this will be billed to your Atlas account.",
   "Mappings": {},
+  "Parameters" : {
+    "Profile": {
+      "Type": "String",
+      "Description" : "Atlas Profile name",
+      "Default" : "default"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description" : "MongoDB project Key"
+    },
+    "EndpointId": {
+      "Type": "String",
+      "Description" : "Aws endpoint Id"
+    },
+    "Comment": {
+      "Type": "String"
+    }
+  },
   "Resources": {
     "OnlineArchive": {
       "Type": "MongoDB::Atlas::PrivateEndpointADL",
+      "DeletionPolicy" : "Retain",
       "Properties": {
-        "Comment": "materializeMonthlyProductSales1000",
+        "Comment": { "Ref" : "Comment" },
         "Provider": "AWS",
         "Type": "DATA_LAKE",
-        "GroupId": "625454459c4e6108393d650d",
-        "EndpointId": "vpce-0fd8766b1e97c4d90",
-        "ApiKeys": {
-          "PublicKey": "htcxduya",
-          "PrivateKey": "<p_key>"
-        }
+        "ProjectId": { "Ref" : "MongoDBAtlasProjectId" },
+        "EndpointId":  { "Ref" : "EndpointId" },
+        "Profile": { "Ref" : "Profile" }
       }
     }
   }

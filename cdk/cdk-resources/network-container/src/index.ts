@@ -30,6 +30,13 @@ export interface CfnNetworkContainerProps {
   readonly provisioned?: boolean;
 
   /**
+   * Unique string that identifies the MongoDB Cloud VPC on AWS.
+   *
+   * @schema CfnNetworkContainerProps#VpcId
+   */
+  readonly vpcId?: string;
+
+  /**
    * IP addresses expressed in Classless Inter-Domain Routing (CIDR) notation that MongoDB Cloud uses for the network peering containers in your project. MongoDB Cloud assigns all of the project's clusters deployed to this cloud provider an IP address from this range. MongoDB Cloud locks this value if an M10 or greater cluster or a network peering connection exists in this project.
    * These CIDR blocks must fall within the ranges reserved per RFC 1918. AWS further limits the block to between the /24 and /21 ranges.
    * To modify the CIDR block, the target project cannot have:
@@ -43,9 +50,11 @@ export interface CfnNetworkContainerProps {
   readonly atlasCidrBlock: string;
 
   /**
-   * @schema CfnNetworkContainerProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnNetworkContainerProps#Profile
    */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile?: string;
 
 }
 
@@ -59,39 +68,9 @@ export function toJson_CfnNetworkContainerProps(obj: CfnNetworkContainerProps | 
     'ProjectId': obj.projectId,
     'RegionName': obj.regionName,
     'Provisioned': obj.provisioned,
+    'VpcId': obj.vpcId,
     'AtlasCidrBlock': obj.atlasCidrBlock,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -120,10 +99,6 @@ export class CfnNetworkContainer extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::NetworkContainer.Id`
    */
   public readonly attrId: string;
-  /**
-   * Attribute `MongoDB::Atlas::NetworkContainer.VpcId`
-   */
-  public readonly attrVpcId: string;
 
   /**
    * Create a new `MongoDB::Atlas::NetworkContainer`.
@@ -138,6 +113,5 @@ export class CfnNetworkContainer extends cdk.CfnResource {
     this.props = props;
 
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
-    this.attrVpcId = cdk.Token.asString(this.getAtt('VpcId'));
   }
 }

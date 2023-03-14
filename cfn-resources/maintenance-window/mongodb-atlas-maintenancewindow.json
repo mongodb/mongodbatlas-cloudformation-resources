@@ -1,38 +1,34 @@
 {
   "additionalProperties": false,
-  "definitions": {
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
   "description": "The maintenanceWindow resource provides access to retrieve or update the current Atlas project maintenance window.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
-  "primaryIdentifier": ["/properties/GroupId"],
+  "primaryIdentifier": ["/properties/ProjectId"],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)",
+      "default": "default"
     },
     "AutoDeferOnceEnabled": {
       "type": "boolean",
@@ -42,7 +38,7 @@
       "type": "integer",
       "description": "One-based integer that represents the day of the week that the maintenance window starts.\n\n| Value | Day of Week |\n|---|---|\n| `1` | Sunday |\n| `2` | Monday |\n| `3` | Tuesday |\n| `4` | Wednesday |\n| `5` | Thursday |\n| `6` | Friday |\n| `7` | Saturday |\n"
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
@@ -59,9 +55,10 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/GroupId"
+    "/properties/ProjectId",
+    "/properties/AutoDeferOnceEnabled"
   ],
-  "required": ["GroupId", "HourOfDay"],
+  "required": ["HourOfDay"],
   "typeName": "MongoDB::Atlas::MaintenanceWindow",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

@@ -14,8 +14,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#regionname" title="RegionName">RegionName</a>" : <i>String</i>,
+        "<a href="#provisioned" title="Provisioned">Provisioned</a>" : <i>Boolean</i>,
+        "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
         "<a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
 </pre>
@@ -27,8 +29,10 @@ Type: MongoDB::Atlas::NetworkContainer
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#regionname" title="RegionName">RegionName</a>: <i>String</i>
+    <a href="#provisioned" title="Provisioned">Provisioned</a>: <i>Boolean</i>
+    <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
     <a href="#atlascidrblock" title="AtlasCidrBlock">AtlasCidrBlock</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -41,13 +45,33 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### RegionName
 
 Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container.
 
 _Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Provisioned
+
+Boolean flag that indicates whether MongoDB Cloud clusters exist in the specified network peering container.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### VpcId
+
+Unique string that identifies the MongoDB Cloud VPC on AWS.
+
+_Required_: No
 
 _Type_: String
 
@@ -69,19 +93,17 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### ApiKeys
+#### Profile
 
-_Required_: Yes
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
-_Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
+_Required_: No
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
 
 ### Fn::GetAtt
 
@@ -92,12 +114,4 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
 Unique 24-hexadecimal digit string that identifies the network peering container.
-
-#### VpcId
-
-Unique string that identifies the MongoDB Cloud VPC on AWS.
-
-#### Provisioned
-
-Boolean flag that indicates whether MongoDB Cloud clusters exist in the specified network peering container.
 

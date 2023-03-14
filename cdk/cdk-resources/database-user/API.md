@@ -546,45 +546,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/database-user.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/database-user.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/database-user'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/database-user.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/database-user.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/database-user.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/database-user.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnDatabaseUserProps <a name="CfnDatabaseUserProps" id="@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps"></a>
 
 Returns, adds, edits, and removes database users.
@@ -605,12 +566,12 @@ const cfnDatabaseUserProps: CfnDatabaseUserProps = { ... }
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the Atlas project to which the user belongs. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.roles">roles</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.RoleDefinition">RoleDefinition</a>[]</code> | List that provides the pairings of one role with one applicable database. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.username">username</a></code> | <code>string</code> | Human-readable label that represents the user that authenticates to MongoDB. |
-| <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.awsiamType">awsiamType</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserPropsAwsiamType">CfnDatabaseUserPropsAwsiamType</a></code> | Human-readable label that indicates whether the new database user authenticates with the Amazon Web Services (AWS) Identity and Access Management (IAM) credentials associated with the user or the user's role. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.deleteAfterDate">deleteAfterDate</a></code> | <code>string</code> | Date and time when MongoDB Cloud deletes the user. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.labels">labels</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.LabelDefinition">LabelDefinition</a>[]</code> | List that contains the key-value pairs for tagging and categorizing the MongoDB database user. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.ldapAuthType">ldapAuthType</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserPropsLdapAuthType">CfnDatabaseUserPropsLdapAuthType</a></code> | Method by which the provided username is authenticated. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.password">password</a></code> | <code>string</code> | The user’s password. |
+| <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.scopes">scopes</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.ScopeDefinition">ScopeDefinition</a>[]</code> | List that contains clusters and MongoDB Atlas Data Lakes that this database user can access. |
 | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.x509Type">x509Type</a></code> | <code><a href="#@mongodbatlas-awscdk/database-user.CfnDatabaseUserPropsX509Type">CfnDatabaseUserPropsX509Type</a></code> | Method that briefs who owns the certificate provided. |
 
@@ -663,16 +624,6 @@ public readonly username: string;
 - *Type:* string
 
 Human-readable label that represents the user that authenticates to MongoDB.
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/database-user.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -741,6 +692,18 @@ public readonly password: string;
 The user’s password.
 
 This field is not included in the entity returned from the server.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/database-user.CfnDatabaseUserProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

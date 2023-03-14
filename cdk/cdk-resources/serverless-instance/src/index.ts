@@ -9,11 +9,6 @@ import * as constructs from 'constructs';
  */
 export interface CfnServerlessInstanceProps {
   /**
-   * @schema CfnServerlessInstanceProps#ApiKeys
-   */
-  readonly apiKeys?: ApiKeyDefinition;
-
-  /**
    * Collection of Uniform Resource Locators that point to the MongoDB database.
    *
    * @schema CfnServerlessInstanceProps#ConnectionStrings
@@ -40,6 +35,13 @@ export interface CfnServerlessInstanceProps {
    * @schema CfnServerlessInstanceProps#ItemsPerPage
    */
   readonly itemsPerPage?: number;
+
+  /**
+   * List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
+   *
+   * @schema CfnServerlessInstanceProps#Links
+   */
+  readonly links?: Link[];
 
   /**
    * Human-readable label that identifies the serverless instance.
@@ -76,6 +78,13 @@ export interface CfnServerlessInstanceProps {
    */
   readonly terminationProtectionEnabled?: boolean;
 
+  /**
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnServerlessInstanceProps#Profile
+   */
+  readonly profile?: string;
+
 }
 
 /**
@@ -85,47 +94,17 @@ export interface CfnServerlessInstanceProps {
 export function toJson_CfnServerlessInstanceProps(obj: CfnServerlessInstanceProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'ConnectionStrings': toJson_ServerlessInstanceConnectionStrings(obj.connectionStrings),
     'ContinuousBackupEnabled': obj.continuousBackupEnabled,
     'IncludeCount': obj.includeCount,
     'ItemsPerPage': obj.itemsPerPage,
+    'Links': obj.links?.map(y => toJson_Link(y)),
     'Name': obj.name,
     'PageNum': obj.pageNum,
     'ProjectID': obj.projectId,
     'ProviderSettings': toJson_ServerlessInstanceProviderSettings(obj.providerSettings),
     'TerminationProtectionEnabled': obj.terminationProtectionEnabled,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema ApiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema ApiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
+    'Profile': obj.profile,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -161,6 +140,41 @@ export function toJson_ServerlessInstanceConnectionStrings(obj: ServerlessInstan
   const result = {
     'PrivateEndpoint': obj.privateEndpoint?.map(y => toJson_ServerlessInstancePrivateEndpoint(y)),
     'StandardSrv': obj.standardSrv,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
+ * @schema Link
+ */
+export interface Link {
+  /**
+   * Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`.
+   *
+   * @schema Link#Href
+   */
+  readonly href?: string;
+
+  /**
+   * Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`.
+   *
+   * @schema Link#Rel
+   */
+  readonly rel?: string;
+
+}
+
+/**
+ * Converts an object of type 'Link' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_Link(obj: Link | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'Href': obj.href,
+    'Rel': obj.rel,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -344,10 +358,6 @@ export class CfnServerlessInstance extends cdk.CfnResource {
    */
   public readonly attrTotalCount: number;
   /**
-   * Attribute `MongoDB::Atlas::ServerlessInstance.Links`
-   */
-  public readonly attrLinks: any[];
-  /**
    * Attribute `MongoDB::Atlas::ServerlessInstance.StateName`
    */
   public readonly attrStateName: string;
@@ -371,7 +381,6 @@ export class CfnServerlessInstance extends cdk.CfnResource {
     this.attrCreateDate = cdk.Token.asString(this.getAtt('CreateDate'));
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
     this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
-    this.attrLinks = cdk.Token.asList(this.getAtt('Links'));
     this.attrStateName = cdk.Token.asString(this.getAtt('StateName'));
     this.attrMongoDBVersion = cdk.Token.asString(this.getAtt('MongoDBVersion'));
   }

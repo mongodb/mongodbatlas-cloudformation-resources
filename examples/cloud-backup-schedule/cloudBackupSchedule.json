@@ -2,11 +2,9 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "This template creates a cloud backup policy for snapshot on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters": {
-    "PublicKey": {
-      "Type": "String"
-    },
-    "PrivateKey": {
-      "Type": "String"
+    "Profile": {
+      "Type": "String",
+      "Default": "default"
     },
     "ProjectId": {
       "Type": "String",
@@ -38,21 +36,21 @@
     },
     "FrequencyInterval": {
       "Type": "String",
-   "Default": "1"
+      "Default": "1"
     },
     "FrequencyType": {
       "Type": "String",
-   "Default": "daily"
+    "Default": "daily"
     },
     "RetentionUnit": {
       "Type": "String",
-   "Default": "days"
+    "Default": "days"
     },
     "RetentionValue": {
       "Type": "String",
-   "Default": "1"
+    "Default": "1"
     },
- "DeleteCloudProvider": {
+  "DeleteCloudProvider": {
       "Type": "String",
    "Default": "AWS"
     },
@@ -60,10 +58,10 @@
       "Type": "String",
    "Default": "US_EAST_2"
     },
- "DeleteReplicationSpecId": {
+    "DeleteReplicationSpecId": {
       "Type": "String",
-   "Default": "639db3eb42882a4bb573db75"
-    },
+      "Default": ""
+    }
   },
   "Mappings": {},
   "Resources": {
@@ -113,9 +111,8 @@
         "RestoreWindowDays": "1",
         "UpdateSnapshots": "true",
         "UseOrgAndGroupNamesInExportPrefix": "true",
-        "ApiKeys": {
-          "PublicKey": { "Ref" : "PublicKey" },
-          "PrivateKey": { "Ref" : "PrivateKey" }
+        "Profile": {
+          "Ref": "Profile"
         }
       }
     }

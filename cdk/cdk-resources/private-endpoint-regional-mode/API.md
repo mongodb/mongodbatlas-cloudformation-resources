@@ -533,45 +533,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKey <a name="ApiKey" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.Initializer"></a>
-
-```typescript
-import { ApiKey } from '@mongodbatlas-awscdk/private-endpoint-regional-mode'
-
-const apiKey: ApiKey = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnPrivateEndPointRegionalModeProps <a name="CfnPrivateEndPointRegionalModeProps" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps"></a>
 
 An example resource schema demonstrating some basic constructs and validation rules.
@@ -589,8 +550,7 @@ const cfnPrivateEndPointRegionalModeProps: CfnPrivateEndPointRegionalModeProps =
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey">ApiKey</a></code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 
 ---
 
@@ -606,25 +566,15 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.apiKeys"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.profile"></a>
 
 ```typescript
-public readonly apiKeys: ApiKey;
+public readonly profile: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/private-endpoint-regional-mode.ApiKey">ApiKey</a>
+- *Type:* string
 
----
-
-##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/private-endpoint-regional-mode.CfnPrivateEndPointRegionalModeProps.property.enabled"></a>
-
-```typescript
-public readonly enabled: boolean;
-```
-
-- *Type:* boolean
-
-Flag that indicates whether someone enabled the regionalized private endpoint setting for the specified project.
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

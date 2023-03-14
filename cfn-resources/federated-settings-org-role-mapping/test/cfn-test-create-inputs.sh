@@ -33,12 +33,10 @@ mkdir inputs
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-		--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-		--arg org "$ATLAS_ORG_ID" \
+	jq --arg org "$ATLAS_ORG_ID" \
 		--arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
-		--arg group_id "$projectId" \
-		'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .RoleAssignments[0].GroupId?|=$group_id | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey ' \
+		--arg projectId "$projectId" \
+		'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .RoleAssignments[0].ProjectId?|=$projectId' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

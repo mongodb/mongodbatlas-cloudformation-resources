@@ -3,6 +3,8 @@
 
 ## Description
 Returns, edit, and remove federation features - connected organization configurations.
+**This resource is unstable and cannot be tested as the create operation is not available.**
+
 
 ## Attributes & Parameters
 

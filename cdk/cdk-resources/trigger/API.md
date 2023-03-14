@@ -614,7 +614,7 @@ const cfnTriggerProps: CfnTriggerProps = { ... }
 | <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.functionId">functionId</a></code> | <code>string</code> | The ID of the function that the trigger calls when it fires. |
 | <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.functionName">functionName</a></code> | <code>string</code> | The name of the function that the trigger calls when it fires, i.e. the function described by `function_id`. |
 | <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.name">name</a></code> | <code>string</code> | The trigger's name. |
-| <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.realmConfig">realmConfig</a></code> | <code><a href="#@mongodbatlas-awscdk/trigger.RealmConfig">RealmConfig</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.scheduleTrigger">scheduleTrigger</a></code> | <code><a href="#@mongodbatlas-awscdk/trigger.ScheduleConfig">ScheduleConfig</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.type">type</a></code> | <code>string</code> | The trigger's type. |
 
@@ -740,13 +740,17 @@ The trigger's name.
 
 ---
 
-##### `realmConfig`<sup>Optional</sup> <a name="realmConfig" id="@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.realmConfig"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/trigger.CfnTriggerProps.property.profile"></a>
 
 ```typescript
-public readonly realmConfig: RealmConfig;
+public readonly profile: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/trigger.RealmConfig">RealmConfig</a>
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 
@@ -1138,67 +1142,6 @@ You can either define the value here or in `function_name`.
 The App Services backend duplicates the value to the configuration location where you did not define it.
 
 For example, if you define `event_processors.FUNCTION.function_name`, the backend duplicates it to `function_name`.
-
----
-
-### RealmConfig <a name="RealmConfig" id="@mongodbatlas-awscdk/trigger.RealmConfig"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/trigger.RealmConfig.Initializer"></a>
-
-```typescript
-import { RealmConfig } from '@mongodbatlas-awscdk/trigger'
-
-const realmConfig: RealmConfig = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/trigger.RealmConfig.property.baseUrl">baseUrl</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/trigger.RealmConfig.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/trigger.RealmConfig.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/trigger.RealmConfig.property.realmBaseUrl">realmBaseUrl</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `baseUrl`<sup>Optional</sup> <a name="baseUrl" id="@mongodbatlas-awscdk/trigger.RealmConfig.property.baseUrl"></a>
-
-```typescript
-public readonly baseUrl: string;
-```
-
-- *Type:* string
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/trigger.RealmConfig.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/trigger.RealmConfig.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `realmBaseUrl`<sup>Optional</sup> <a name="realmBaseUrl" id="@mongodbatlas-awscdk/trigger.RealmConfig.property.realmBaseUrl"></a>
-
-```typescript
-public readonly realmBaseUrl: string;
-```
-
-- *Type:* string
 
 ---
 

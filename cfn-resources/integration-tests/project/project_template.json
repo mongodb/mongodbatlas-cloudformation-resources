@@ -1,0 +1,48 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "Project": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": "DevProjITest",
+        "OrgId": "63bec56c014da65b8f73c05e",
+        "Profile": "maastha-cloud-dev",
+        "ProjectSettings": {
+          "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+          "IsDataExplorerEnabled": "false",
+          "IsPerformanceAdvisorEnabled": "false",
+          "IsRealtimePerformancePanelEnabled": "false",
+          "IsSchemaAdvisorEnabled": "false"
+        },
+        "ProjectTeams": [
+          {
+            "TeamId": "640f244f6a167c050b0cd207",
+            "RoleNames": [
+              "GROUP_OWNER"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ProjectId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ]
+      }
+    },
+    "ClusterCount": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "ClusterCount"
+        ]
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
 	github.com/aws/aws-sdk-go v1.44.215
 	github.com/dave/jennifer v1.6.0
-	github.com/getkin/kin-openapi v0.114.0
+	github.com/getkin/kin-openapi v0.115.0
 	github.com/mongodb-forks/digest v1.0.4
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/rs/xid v1.4.0

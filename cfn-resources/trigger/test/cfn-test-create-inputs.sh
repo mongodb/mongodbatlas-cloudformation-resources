@@ -35,14 +35,15 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-project_Id="${1:-$PROJECT_ID}"
-db_name="${2:-$DB_NAME}"
-coll_name="${3:-$COLLECTION_NAME}"
+# params start from #2 because cfn-testing-helper.sh calls these scripts with PROJECT_NAME as a param
+project_Id="${2:-$PROJECT_ID}"
+db_name="${3:-$DB_NAME}"
+coll_name="${4:-$COLLECTION_NAME}"
 trigger_name="cfn-test-trigger-${RANDOM}"
-func_name="${4:-$FUNC_NAME}"
-func_id="${5:-$FUNC_ID}"
-service_id="${6:-$SERVICE_ID}"
-app_id="${7:-$APP_ID}"
+func_name="${5:-$FUNC_NAME}"
+func_id="${6:-$FUNC_ID}"
+service_id="${7:-$SERVICE_ID}"
+app_id="${8:-$APP_ID}"
 
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

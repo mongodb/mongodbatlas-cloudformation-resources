@@ -403,7 +403,7 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.attrCustomZoneMappings">attrCustomZoneMappings</a></code> | <code>any[]</code> | Attribute `MongoDB::Atlas::GlobalClusterConfig.CustomZoneMappings`. |
+| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.attrRemoveAllZoneMapping">attrRemoveAllZoneMapping</a></code> | <code>aws-cdk-lib.IResolvable</code> | Attribute `MongoDB::Atlas::GlobalClusterConfig.RemoveAllZoneMapping`. |
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps">CfnGlobalClusterConfigProps</a></code> | Resource props. |
 
 ---
@@ -500,15 +500,15 @@ AWS resource type.
 
 ---
 
-##### `attrCustomZoneMappings`<sup>Required</sup> <a name="attrCustomZoneMappings" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.attrCustomZoneMappings"></a>
+##### `attrRemoveAllZoneMapping`<sup>Required</sup> <a name="attrRemoveAllZoneMapping" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfig.property.attrRemoveAllZoneMapping"></a>
 
 ```typescript
-public readonly attrCustomZoneMappings: any[];
+public readonly attrRemoveAllZoneMapping: IResolvable;
 ```
 
-- *Type:* any[]
+- *Type:* aws-cdk-lib.IResolvable
 
-Attribute `MongoDB::Atlas::GlobalClusterConfig.CustomZoneMappings`.
+Attribute `MongoDB::Atlas::GlobalClusterConfig.RemoveAllZoneMapping`.
 
 ---
 
@@ -546,45 +546,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/global-cluster-config'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnGlobalClusterConfigProps <a name="CfnGlobalClusterConfigProps" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps"></a>
 
 Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.
@@ -601,21 +562,11 @@ const cfnGlobalClusterConfigProps: CfnGlobalClusterConfigProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.clusterName">clusterName</a></code> | <code>string</code> | The name of the Atlas cluster that contains the snapshots you want to retrieve. |
+| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.customZoneMappings">customZoneMappings</a></code> | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ZoneMapping">ZoneMapping</a>[]</code> | List that contains comma-separated key value pairs to map zones to geographic regions. |
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.managedNamespaces">managedNamespaces</a></code> | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ManagedNamespace">ManagedNamespace</a>[]</code> | List that contains comma-separated key value pairs to map zones to geographic regions. |
+| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.projectId">projectId</a></code> | <code>string</code> | The unique identifier of the project for the Atlas cluster. |
-| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.removeAllZoneMapping">removeAllZoneMapping</a></code> | <code>boolean</code> | Flag that indicates whether all custom zone mapping to be deleted during delete. |
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/global-cluster-config.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -628,6 +579,22 @@ public readonly clusterName: string;
 - *Type:* string
 
 The name of the Atlas cluster that contains the snapshots you want to retrieve.
+
+---
+
+##### `customZoneMappings`<sup>Optional</sup> <a name="customZoneMappings" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.customZoneMappings"></a>
+
+```typescript
+public readonly customZoneMappings: ZoneMapping[];
+```
+
+- *Type:* <a href="#@mongodbatlas-awscdk/global-cluster-config.ZoneMapping">ZoneMapping</a>[]
+
+List that contains comma-separated key value pairs to map zones to geographic regions.
+
+These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to the human-readable label for the desired custom zone. MongoDB Cloud maps the ISO 3166-1a2 code to the nearest geographical zone by default. Include this parameter to override the default mappings.
+
+This parameter returns an empty object if no custom zones exist.
 
 ---
 
@@ -647,6 +614,20 @@ This parameter returns an empty object if no custom zones exist.
 
 ---
 
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+---
+
 ##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.projectId"></a>
 
 ```typescript
@@ -656,18 +637,6 @@ public readonly projectId: string;
 - *Type:* string
 
 The unique identifier of the project for the Atlas cluster.
-
----
-
-##### `removeAllZoneMapping`<sup>Optional</sup> <a name="removeAllZoneMapping" id="@mongodbatlas-awscdk/global-cluster-config.CfnGlobalClusterConfigProps.property.removeAllZoneMapping"></a>
-
-```typescript
-public readonly removeAllZoneMapping: boolean;
-```
-
-- *Type:* boolean
-
-Flag that indicates whether all custom zone mapping to be deleted during delete.
 
 ---
 
@@ -754,6 +723,53 @@ public readonly isShardKeyUnique: boolean;
 - *Type:* boolean
 
 Flag that indicates whether someone [hashed](https://www.mongodb.com/docs/manual/reference/method/sh.shardCollection/#hashed-shard-keys) the custom shard key. If this parameter returns `false`, this cluster uses [ranged sharding](https://www.mongodb.com/docs/manual/core/ranged-sharding/).
+
+---
+
+### ZoneMapping <a name="ZoneMapping" id="@mongodbatlas-awscdk/global-cluster-config.ZoneMapping"></a>
+
+#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/global-cluster-config.ZoneMapping.Initializer"></a>
+
+```typescript
+import { ZoneMapping } from '@mongodbatlas-awscdk/global-cluster-config'
+
+const zoneMapping: ZoneMapping = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ZoneMapping.property.location">location</a></code> | <code>string</code> | Code that represents a location that maps to a zone in your global cluster. |
+| <code><a href="#@mongodbatlas-awscdk/global-cluster-config.ZoneMapping.property.zone">zone</a></code> | <code>string</code> | Human-readable label that identifies the zone in your global cluster. |
+
+---
+
+##### `location`<sup>Optional</sup> <a name="location" id="@mongodbatlas-awscdk/global-cluster-config.ZoneMapping.property.location"></a>
+
+```typescript
+public readonly location: string;
+```
+
+- *Type:* string
+
+Code that represents a location that maps to a zone in your global cluster.
+
+MongoDB Cloud represents this location with a ISO 3166-2 location and subdivision codes when possible.
+
+---
+
+##### `zone`<sup>Optional</sup> <a name="zone" id="@mongodbatlas-awscdk/global-cluster-config.ZoneMapping.property.zone"></a>
+
+```typescript
+public readonly zone: string;
+```
+
+- *Type:* string
+
+Human-readable label that identifies the zone in your global cluster.
+
+This zone maps to a location code.
 
 ---
 

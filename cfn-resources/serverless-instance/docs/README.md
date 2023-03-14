@@ -95,7 +95,7 @@ _Minimum Length_: <code>1</code>
 
 _Maximum Length_: <code>64</code>
 
-_Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
+_Pattern_: <code>^[a-zA-Z0-9][a-zA-Z0-9-]*$</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
@@ -189,9 +189,13 @@ Human-readable label that indicates the current operating condition of the serve
 
 Version of MongoDB that the serverless instance runs.
 
-#### Endpoints
+#### StandardSrv
 
-Returns the <code>Endpoints</code> value.
+Returns the <code>StandardSrv</code> value.
+
+#### PrivateEndpoint
+
+Returns the <code>PrivateEndpoint</code> value.
 
 #### SrvConnectionString
 
@@ -200,14 +204,6 @@ Returns the <code>SrvConnectionString</code> value.
 #### Type
 
 Returns the <code>Type</code> value.
-
-#### PrivateEndpoint
-
-Returns the <code>PrivateEndpoint</code> value.
-
-#### StandardSrv
-
-Returns the <code>StandardSrv</code> value.
 
 #### EndpointId
 

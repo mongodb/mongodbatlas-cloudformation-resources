@@ -21,13 +21,13 @@ import (
 	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/openlyinc/pointy"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -46,7 +46,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -86,7 +86,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		if res != nil {
 			currentModel.CustomerX509 = &CustomerX509{
-				Cas: pointy.String(res.Certificate),
+				Cas: aws.String(res.Certificate),
 			}
 		}
 	} else { // save customer provided certificate
@@ -120,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -205,7 +205,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.Profile == nil {
-		currentModel.Profile = pointy.String(profile.DefaultProfile)
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	// Create atlas client
@@ -273,16 +273,16 @@ func flattenCertificates(userCertificates []mongodbatlas.UserCertificate, curren
 		certificates := make([]Certificate, 0)
 		for _, v := range userCertificates {
 			role := Certificate{
-				Id:        pointy.String(cast.ToString(v.ID)),
-				CreatedAt: pointy.String(v.CreatedAt),
-				GroupId:   pointy.String(v.GroupID),
-				NotAfter:  pointy.String(v.NotAfter),
-				Subject:   pointy.String(v.Subject),
+				Id:        aws.String(cast.ToString(v.ID)),
+				CreatedAt: aws.String(v.CreatedAt),
+				GroupId:   aws.String(v.GroupID),
+				NotAfter:  aws.String(v.NotAfter),
+				Subject:   aws.String(v.Subject),
 			}
 			certificates = append(certificates, role)
 		}
 		currentModel.Results = certificates
-		currentModel.TotalCount = pointy.Int(len(userCertificates))
+		currentModel.TotalCount = aws.Int(len(userCertificates))
 	}
 	return currentModel
 }

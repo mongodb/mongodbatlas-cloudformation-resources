@@ -533,45 +533,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/third-party-integration'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnThirdPartyIntegrationProps <a name="CfnThirdPartyIntegrationProps" id="@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps"></a>
 
 Returns, adds, edits, and removes third-party service integration configurations.
@@ -591,13 +552,13 @@ const cfnThirdPartyIntegrationProps: CfnThirdPartyIntegrationProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.apiKey">apiKey</a></code> | <code>string</code> | Key that allows MongoDB Cloud to access your Opsgenie/Datadog account. |
-| <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.apiToken">apiToken</a></code> | <code>string</code> | Key that allows MongoDB Cloud to access your Slack account. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.channelName">channelName</a></code> | <code>string</code> | Name of the Slack channel to which MongoDB Cloud sends alert notifications. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether someone has activated the Prometheus integration. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.listenAddress">listenAddress</a></code> | <code>string</code> | Combination of IPv4 address and Internet Assigned Numbers Authority (IANA) port or the IANA port alone to which Prometheus binds to ingest MongoDB metrics. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.microsoftTeamsWebhookUrl">microsoftTeamsWebhookUrl</a></code> | <code>string</code> | Endpoint web address of the Microsoft Teams webhook to which MongoDB Cloud sends notifications. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.password">password</a></code> | <code>string</code> | Password required for your integration with Prometheus. |
+| <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.region">region</a></code> | <code>string</code> | Two-letter code that indicates which regional URL MongoDB uses to access the Opsgenie/Datadog API. |
 | <code><a href="#@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.routingKey">routingKey</a></code> | <code>string</code> | Routing key associated with your Splunk On-Call account. |
@@ -622,16 +583,6 @@ public readonly apiKey: string;
 - *Type:* string
 
 Key that allows MongoDB Cloud to access your Opsgenie/Datadog account.
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/third-party-integration.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -704,6 +655,20 @@ public readonly password: string;
 - *Type:* string
 
 Password required for your integration with Prometheus.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/third-party-integration.CfnThirdPartyIntegrationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

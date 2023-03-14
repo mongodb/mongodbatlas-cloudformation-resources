@@ -403,7 +403,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.attrEndpointId">attrEndpointId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::PrivateEndpointADL.EndpointId`. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps">CfnPrivateEndpointAdlProps</a></code> | Resource props. |
 
 ---
@@ -500,18 +499,6 @@ AWS resource type.
 
 ---
 
-##### `attrEndpointId`<sup>Required</sup> <a name="attrEndpointId" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.attrEndpointId"></a>
-
-```typescript
-public readonly attrEndpointId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::PrivateEndpointADL.EndpointId`.
-
----
-
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdl.property.props"></a>
 
 ```typescript
@@ -546,45 +533,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/private-endpoint-adl'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnPrivateEndpointAdlProps <a name="CfnPrivateEndpointAdlProps" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps"></a>
 
 Adds one private endpoint for Federated Database Instances and Online Archives to the specified projects.
@@ -603,18 +551,19 @@ const cfnPrivateEndpointAdlProps: CfnPrivateEndpointAdlProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.provider">provider</a></code> | <code>string</code> | Human-readable label that identifies the cloud service provider. |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.comment">comment</a></code> | <code>string</code> | Human-readable string to associate with this private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.endpointId">endpointId</a></code> | <code>string</code> | Unique 22-character alphanumeric string that identifies the private endpoint. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.type">type</a></code> | <code>string</code> | Human-readable label that identifies the resource type associated with this private endpoint. |
 
 ---
 
-##### `groupId`<sup>Required</sup> <a name="groupId" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.groupId"></a>
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.projectId"></a>
 
 ```typescript
-public readonly groupId: string;
+public readonly projectId: string;
 ```
 
 - *Type:* string
@@ -637,16 +586,6 @@ Atlas Data Lake supports Amazon Web Services only.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/private-endpoint-adl.ApiKeyDefinition">ApiKeyDefinition</a>
-
----
-
 ##### `comment`<sup>Optional</sup> <a name="comment" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.comment"></a>
 
 ```typescript
@@ -656,6 +595,30 @@ public readonly comment: string;
 - *Type:* string
 
 Human-readable string to associate with this private endpoint.
+
+---
+
+##### `endpointId`<sup>Optional</sup> <a name="endpointId" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.endpointId"></a>
+
+```typescript
+public readonly endpointId: string;
+```
+
+- *Type:* string
+
+Unique 22-character alphanumeric string that identifies the private endpoint.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/private-endpoint-adl.CfnPrivateEndpointAdlProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

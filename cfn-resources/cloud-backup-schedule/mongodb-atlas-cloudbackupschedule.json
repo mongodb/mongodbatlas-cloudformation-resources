@@ -226,12 +226,12 @@
     "/properties/ClusterId",
     "/properties/NextSnapshot",
     "/properties/Policies/*/PolicyItems/*/ID",
-    "/properties/ProjectId",
     "/properties/ClusterName",
     "/properties/Links"
   ],
   "createOnlyProperties": [
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/ProjectId"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

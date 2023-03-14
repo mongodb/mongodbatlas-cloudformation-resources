@@ -533,45 +533,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKey <a name="ApiKey" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey.Initializer"></a>
-
-```typescript
-import { ApiKey } from '@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws'
-
-const apiKey: ApiKey = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnCustomDnsConfigurationClusterAwsProps <a name="CfnCustomDnsConfigurationClusterAwsProps" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps"></a>
 
 An example resource schema demonstrating some basic constructs and validation rules.
@@ -589,8 +550,8 @@ const cfnCustomDnsConfigurationClusterAwsProps: CfnCustomDnsConfigurationCluster
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
-| <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey">ApiKey</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.enabled">enabled</a></code> | <code>boolean</code> | Flag that indicates whether the project's clusters deployed to Amazon Web Services (AWS) use a custom Domain Name System (DNS). |
+| <code><a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 
 ---
 
@@ -606,16 +567,6 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKey;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.ApiKey">ApiKey</a>
-
----
-
 ##### `enabled`<sup>Optional</sup> <a name="enabled" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.enabled"></a>
 
 ```typescript
@@ -625,6 +576,20 @@ public readonly enabled: boolean;
 - *Type:* boolean
 
 Flag that indicates whether the project's clusters deployed to Amazon Web Services (AWS) use a custom Domain Name System (DNS).
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws.CfnCustomDnsConfigurationClusterAwsProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

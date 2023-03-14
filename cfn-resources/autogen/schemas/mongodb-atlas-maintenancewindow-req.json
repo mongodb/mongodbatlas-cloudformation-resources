@@ -1,0 +1,45 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "HourOfDay",
+      "StartASAP",
+      "ApiKeys",
+      "GroupId",
+      "AutoDeferOnceEnabled",
+      "DayOfWeek"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "AutoDeferOnceEnabled",
+      "DayOfWeek",
+      "HourOfDay",
+      "StartASAP",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "GroupId"
+    ]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "ApiKeys",
+      "GroupId",
+      "AutoDeferOnceEnabled",
+      "DayOfWeek",
+      "HourOfDay",
+      "StartASAP"
+    ],
+    "RequiredParams": [
+      "DayOfWeek",
+      "HourOfDay"
+    ]
+  },
+  "DeleteFields": {
+    "RequiredParams": [
+      "GroupId"
+    ]
+  },
+  "ListFields": {}
+}

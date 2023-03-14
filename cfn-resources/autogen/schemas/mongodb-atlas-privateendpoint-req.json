@@ -1,0 +1,43 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "CloudProvider",
+      "EndpointServiceId",
+      "ProviderName",
+      "Region",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "ProviderName",
+      "Region"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "CloudProvider",
+      "EndpointServiceId",
+      "EndpointId",
+      "ProviderName",
+      "Region",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "GroupId",
+      "CloudProvider",
+      "EndpointId",
+      "EndpointServiceId"
+    ]
+  },
+  "UpdateFields": {},
+  "DeleteFields": {
+    "RequiredParams": [
+      "GroupId",
+      "CloudProvider",
+      "EndpointId",
+      "EndpointServiceId"
+    ]
+  },
+  "ListFields": {}
+}

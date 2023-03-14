@@ -1,0 +1,25 @@
+{
+  "CreateFields": {},
+  "ReadFields": {
+    "InputParams": [
+      "Enabled",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "GroupId"
+    ]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "Enabled",
+      "ApiKeys",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "Enabled"
+    ]
+  },
+  "DeleteFields": {},
+  "ListFields": {}
+}

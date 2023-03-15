@@ -39,7 +39,7 @@ To create a new secret for a default profile, use the [PROFILE SECRET TEMPLATE](
 
 Here are some examples of how to use this template:
 
-#### example 1:
+#### Example 1
 ```
   ProfileName: default
   SecretName: cfn/atlas/profile/default

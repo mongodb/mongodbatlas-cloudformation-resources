@@ -1,46 +1,21 @@
 import * as cdk from 'aws-cdk-lib';
-import { AtlasBasic, ApiKeyDefinition } from './index';
+import { AtlasEncryptionAtRestExpress } from './index';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'atlas-basic-default', {
+const stack = new cdk.Stack(app, 'atlas-encryption-at-rest-express', {
   env: { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT },
 });
 
-const apiKeys: ApiKeyDefinition = {
-  privateKey: stack.node.tryGetContext('MONGODB_ATLAS_PRIVATE_KEY') || process.env.MONGODB_ATLAS_PRIVATE_KEY,
-  publicKey: stack.node.tryGetContext('MONGODB_ATLAS_PUBLIC_KEY') || process.env.MONGODB_ATLAS_PUBLIC_KEY,
-};
 
-const orgId = stack.node.tryGetContext('MONGODB_ATLAS_ORG_ID') || process.env.MONGODB_ATLAS_ORG_ID;
+const PROJECT_ID = stack.node.tryGetContext('MONGODB_ATLAS_PROJECT_ID') || process.env.MONGODB_ATLAS_PROJECT_ID;
+const ROLE_ID = stack.node.tryGetContext('MONGODB_ATLAS_ROLE_ID') || process.env.MONGODB_ATLAS_ROLE_ID;
+const MASTER_KEY_ID = stack.node.tryGetContext('MONGODB_ATLAS_MASTER_KEY_ID') || process.env.MONGODB_ATLAS_MASTER_KEY_ID;
 
-const replicationSpecs = [
-  {
-    numShards: 1,
-    advancedRegionConfigs: [
-      {
-        analyticsSpecs: {
-          ebsVolumeType: 'STANDARD',
-          instanceSize: 'M10',
-          nodeCount: 1,
-        },
-        electableSpecs: {
-          ebsVolumeType: 'STANDARD',
-          instanceSize: 'M10',
-          nodeCount: 3,
-        },
-        priority: 7,
-        regionName: 'US_EAST_1',
-      },
-    ],
-  },
-];
+export const integrationDefault = new AtlasEncryptionAtRestExpress(stack, 'atlas-encryption-at-rest-express', {
+  projectId: PROJECT_ID,
 
-new AtlasBasic(stack, 'atlas-basic', {
-  apiKeys: apiKeys,
-  clusterProps: {
-    replicationSpecs: replicationSpecs,
-  },
-  projectProps: {
-    orgId: orgId,
+  encryptionAtRest: {
+    roleId: ROLE_ID,
+    customerMasterKeyId: MASTER_KEY_ID,
   },
 });

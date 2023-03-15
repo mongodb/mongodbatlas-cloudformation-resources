@@ -4,7 +4,7 @@ MongoDB welcomes community contributions! If you’re interested in making a con
 1. Reach out by filing an [issue](https://github.com/mongodb/mongodbatlas-cloudformation-resources/issues) to discuss your proposed contribution, be it a bug fix or feature/other improvements.
 1. Sign the [contributor's agreement](http://www.mongodb.com/contributor). This will allow us to review and accept contributions.
 
-After the above 2 steps are completed and we've agreed on a path forward:
+After the above steps are completed and we've agreed on a path forward:
 1. Fork the repository on GitHub
 2. Create a branch with a name that briefly describes your submission
 3. Add comments around your new code that explain what's happening

@@ -5,10 +5,10 @@ Partner Solutions (formally AWS Quick Starts) are automated reference deployment
 
 ## Getting Started
 ### MongoDB Atlas CloudFormation
-See the [cfn examples](examples/README.md) for how to setup prerequisites & get started with your first cluster, using our sample CloudFormation Stack templates.
+See the [`cfn` examples](examples/README.md) for how to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates.
 
 ### MongoDB Atlas AWS CDK
-See the [cdk examples](cdk/examples/README.md) for how to setup prerequisites & get started with your first cluster, using our AWS CDK sample code.
+See the [cdk examples](cdk/examples/README.md) for how to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
 
 ## Support, Bugs, Feature Requests
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
@@ -39,13 +39,13 @@ To create a new secret for a default profile, use the [PROFILE SECRET TEMPLATE](
 
 Here are some examples of how to use this template:
 
-#### example 1:
+#### Example 1
 ```
   ProfileName: default
   SecretName: cfn/atlas/profile/default
   SecretValue = {PublicKey: xxxxxxx , PrivateKey: yyyyyyyy}
 ```
-#### example 2:
+#### Example 2
 ```
   ProfileName: testProfile1
   SecretName: cfn/atlas/profile/tetProfile1
@@ -92,5 +92,5 @@ The following are common issues encountered when using AWS CloudFormation/CDK wi
    * For testing purposes with caution you can open keys to all access by adding “0.0.0.0/1” and “128.0.0.0/1” (do not use for production workloads). 
 6. How to determine which IP address AWS CloudFormation uses to deploy MongoDB Atlas resouces with my Atlas Programmatic API Keys (PAK)?
    * When you deploy MongoDB Atlas using CloudFormation with your Atlas PAK, CloudFormation will default to use the IP address of the machine from which you are making the API call. 
-   * The "machine" however making the API call to 3rd party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
+   * The machine making the API call to 3rd party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
    * Review additional details at https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html and contact AWS Support directly who can help confirm CIDR range to be used in your Atlas PAK IP Whitelist.

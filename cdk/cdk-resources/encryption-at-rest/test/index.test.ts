@@ -18,6 +18,7 @@ import { CfnEncryptionAtRest } from '../src/index';
 
 
 const RESOURCE_NAME = 'MongoDB::Atlas::EncryptionAtRest';
+const PROFILE= 'default';
 const PROJECT_ID= 'testProjectId';
 const ROLE_ID = 'roleId';
 const REGION = 'US_EAST_1';
@@ -28,6 +29,7 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
   const stack = new Stack(mockApp);
 
   new CfnEncryptionAtRest(stack, 'testing-stack', {
+    profile: PROFILE,
     projectId: PROJECT_ID,
     awsKms: {
       roleId: ROLE_ID,
@@ -35,12 +37,12 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
       enabled: true,
       region: REGION,
     },
-
   });
 
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties(RESOURCE_NAME, {
+    Profile: PROFILE,
     ProjectId: PROJECT_ID,
     AwsKms: {
       RoleID: ROLE_ID,

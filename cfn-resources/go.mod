@@ -4,12 +4,11 @@ go 1.19
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
-	github.com/aws/aws-sdk-go v1.44.215
+	github.com/aws/aws-sdk-go v1.44.220
 	github.com/dave/jennifer v1.6.0
-	github.com/getkin/kin-openapi v0.114.0
+	github.com/getkin/kin-openapi v0.115.0
 	github.com/mongodb-forks/digest v1.0.4
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
-	github.com/openlyinc/pointy v1.2.0
 	github.com/rs/xid v1.4.0
 	github.com/spf13/cast v1.5.0
 	github.com/tidwall/pretty v1.2.1
@@ -27,6 +26,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/openlyinc/pointy v1.2.0 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	gopkg.in/validator.v2 v2.0.1 // indirect

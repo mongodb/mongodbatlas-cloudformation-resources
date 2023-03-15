@@ -75,7 +75,8 @@
   ],
   "required": [
     "FederationSettingsId",
-    "OrgId"
+    "OrgId",
+    "ExternalGroupName"
   ],
   "primaryIdentifier": [
     "/properties/Id",

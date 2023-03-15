@@ -546,45 +546,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/encryption-at-rest'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### AwsKmsConfiguration <a name="AwsKmsConfiguration" id="@mongodbatlas-awscdk/encryption-at-rest.AwsKmsConfiguration"></a>
 
 Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.
@@ -676,7 +637,7 @@ const cfnEncryptionAtRestProps: CfnEncryptionAtRestProps = { ... }
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.CfnEncryptionAtRestProps.property.awsKms">awsKms</a></code> | <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.AwsKmsConfiguration">AwsKmsConfiguration</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.CfnEncryptionAtRestProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the Atlas project to which the user belongs. |
-| <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.CfnEncryptionAtRestProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/encryption-at-rest.CfnEncryptionAtRestProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 
 ---
 
@@ -702,13 +663,17 @@ Unique identifier of the Atlas project to which the user belongs.
 
 ---
 
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/encryption-at-rest.CfnEncryptionAtRestProps.property.apiKeys"></a>
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/encryption-at-rest.CfnEncryptionAtRestProps.property.profile"></a>
 
 ```typescript
-public readonly apiKeys: ApiKeyDefinition;
+public readonly profile: string;
 ```
 
-- *Type:* <a href="#@mongodbatlas-awscdk/encryption-at-rest.ApiKeyDefinition">ApiKeyDefinition</a>
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

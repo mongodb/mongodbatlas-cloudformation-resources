@@ -403,7 +403,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfiguration.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfiguration.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfiguration.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfiguration.property.attrGroupId">attrGroupId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::LDAPConfiguration.GroupId`. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfiguration.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps">CfnLdapConfigurationProps</a></code> | Resource props. |
 
 ---
@@ -497,18 +496,6 @@ public readonly cfnResourceType: string;
 - *Type:* string
 
 AWS resource type.
-
----
-
-##### `attrGroupId`<sup>Required</sup> <a name="attrGroupId" id="@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfiguration.property.attrGroupId"></a>
-
-```typescript
-public readonly attrGroupId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::LDAPConfiguration.GroupId`.
 
 ---
 
@@ -606,45 +593,6 @@ Lightweight Directory Access Protocol (LDAP) Distinguished Name (DN) template th
 
 ---
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/ldap-configuration'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnLdapConfigurationProps <a name="CfnLdapConfigurationProps" id="@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps"></a>
 
 Returns, edits, verifies, and removes LDAP configurations.
@@ -661,27 +609,18 @@ const cfnLdapConfigurationProps: CfnLdapConfigurationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.bindPassword">bindPassword</a></code> | <code>string</code> | Password that MongoDB Cloud uses to authenticate the **bindUsername**. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.bindUsername">bindUsername</a></code> | <code>string</code> | Full Distinguished Name (DN) of the Lightweight Directory Access Protocol (LDAP) user that MongoDB Cloud uses to connect to the LDAP host. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.hostname">hostname</a></code> | <code>string</code> | Human-readable label that identifies the hostname or Internet Protocol (IP) address of the Lightweight Directory Access Protocol (LDAP) host. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.port">port</a></code> | <code>number</code> | Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections. |
+| <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.authenticationEnabled">authenticationEnabled</a></code> | <code>boolean</code> | Flag that indicates whether users can authenticate using an Lightweight Directory Access Protocol (LDAP) host. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.authorizationEnabled">authorizationEnabled</a></code> | <code>boolean</code> | Flag that indicates whether users can authorize access to MongoDB Cloud resources using an Lightweight Directory Access Protocol (LDAP) host. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.authzQueryTemplate">authzQueryTemplate</a></code> | <code>string</code> | Lightweight Directory Access Protocol (LDAP) query template that MongoDB Cloud runs to obtain the LDAP groups associated with the authenticated user. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.caCertificate">caCertificate</a></code> | <code>string</code> | Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host. |
+| <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.status">status</a></code> | <code>string</code> | The current status of the LDAP over TLS/SSL configuration. |
 | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.userToDnMapping">userToDnMapping</a></code> | <code><a href="#@mongodbatlas-awscdk/ldap-configuration.ApiAtlasNdsUserToDnMappingView">ApiAtlasNdsUserToDnMappingView</a>[]</code> | User-to-Distinguished Name (DN) map that MongoDB Cloud uses to transform a Lightweight Directory Access Protocol (LDAP) username into an LDAP DN. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/ldap-configuration.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -737,6 +676,18 @@ Port to which the Lightweight Directory Access Protocol (LDAP) host listens for 
 
 ---
 
+##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
 ##### `authenticationEnabled`<sup>Optional</sup> <a name="authenticationEnabled" id="@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.authenticationEnabled"></a>
 
 ```typescript
@@ -786,6 +737,18 @@ public readonly caCertificate: string;
 Certificate Authority (CA) certificate that MongoDB Cloud uses to verify the identity of the Lightweight Directory Access Protocol (LDAP) host.
 
 MongoDB Cloud allows self-signed certificates. To delete an assigned value, pass an empty string: `"caCertificate": ""`
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/ldap-configuration.CfnLdapConfigurationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

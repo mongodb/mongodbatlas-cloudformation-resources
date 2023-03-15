@@ -62,3 +62,6 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/
 ```
 
 For more information see: MongoDB Atlas API Endpoint [Federated Setting Org Role Mapping](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication) Documentation.
+
+
+Note: This resource has to be published in one region at a time.

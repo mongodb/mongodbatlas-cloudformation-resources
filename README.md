@@ -5,7 +5,7 @@ Partner Solutions (formally AWS Quick Starts) are automated reference deployment
 
 ## Getting Started
 ### MongoDB Atlas CloudFormation
-See the [cfn examples](examples/README.md) for how to setup prerequisites & get started with your first cluster, using our sample CloudFormation Stack templates.
+See the [`cfn` examples](examples/README.md) for how to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates.
 
 ### MongoDB Atlas AWS CDK
 See the [cdk examples](cdk/examples/README.md) for how to setup prerequisites & get started with your first cluster, using our AWS CDK sample code.

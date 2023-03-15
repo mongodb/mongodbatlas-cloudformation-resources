@@ -45,7 +45,7 @@ Here are some examples of how to use this template:
   SecretName: cfn/atlas/profile/default
   SecretValue = {PublicKey: xxxxxxx , PrivateKey: yyyyyyyy}
 ```
-#### example 2:
+#### Example 2
 ```
   ProfileName: testProfile1
   SecretName: cfn/atlas/profile/tetProfile1

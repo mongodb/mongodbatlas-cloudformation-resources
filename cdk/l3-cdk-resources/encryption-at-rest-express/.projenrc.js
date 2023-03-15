@@ -5,7 +5,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.64.0',
   defaultReleaseBranch: 'master',
-  description: 'Creates a project, cluster, dbuser, ipaccess list and set encryption-at-rest in MongoDB Atlas',
+  description: 'Creates a cluster, dbuser, ipaccess list and set encryption-at-rest in MongoDB Atlas',
   docgen: true,
   keywords: ['cdk',
     'awscdk',

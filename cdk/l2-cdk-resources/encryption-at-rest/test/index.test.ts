@@ -18,8 +18,7 @@ import { AtlasEncryptionAtRest } from '../src/index';
 
 
 const RESOURCE_NAME = 'MongoDB::Atlas::EncryptionAtRest';
-const PRIVATE_KEY = 'testPrivateKey';
-const PUBLIC_KEY = 'testPublicKey';
+const PROFILE = 'cfn/atlas/profile/testProfile';
 const PROJECT_ID= 'testProjectId';
 const ROLE_ID = 'roleId';
 const REGION = 'region';
@@ -30,8 +29,6 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
   const stack = new Stack(mockApp);
 
   new AtlasEncryptionAtRest(stack, 'testing-stack', {
-    privateKey: PRIVATE_KEY,
-    publicKey: PUBLIC_KEY,
     projectId: PROJECT_ID,
     roleId: ROLE_ID,
     customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
@@ -41,10 +38,7 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
 
   template.hasResourceProperties(RESOURCE_NAME, {
     ProjectId: PROJECT_ID,
-    ApiKeys: {
-      PublicKey: PUBLIC_KEY,
-      PrivateKey: PRIVATE_KEY,
-    },
+    Profile: 'cfn/atlas/profile/default',
     AwsKms: {
       RoleID: ROLE_ID,
       CustomerMasterKeyID: CUSTOMER_MASTER_KEY_ID,
@@ -59,8 +53,7 @@ test('AtlasEncryptionAtRest construct should contain all the properties', () => 
   const stack = new Stack(mockApp);
 
   new AtlasEncryptionAtRest(stack, 'testing-stack', {
-    privateKey: PRIVATE_KEY,
-    publicKey: PUBLIC_KEY,
+    profile: PROFILE,
     projectId: PROJECT_ID,
     roleId: ROLE_ID,
     customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
@@ -72,10 +65,7 @@ test('AtlasEncryptionAtRest construct should contain all the properties', () => 
 
   template.hasResourceProperties(RESOURCE_NAME, {
     ProjectId: PROJECT_ID,
-    ApiKeys: {
-      PublicKey: PUBLIC_KEY,
-      PrivateKey: PRIVATE_KEY,
-    },
+    Profile: PROFILE,
     AwsKms: {
       RoleID: ROLE_ID,
       CustomerMasterKeyID: CUSTOMER_MASTER_KEY_ID,
@@ -90,33 +80,19 @@ test('AtlasEncryptionAtRest construct should thorow exceptions when required par
   const stack = new Stack(mockApp);
 
   expect(() => {
-    new AtlasEncryptionAtRest(stack, 'testing-stack-no-public-key', {
-      privateKey: PRIVATE_KEY,
-      publicKey: '',
+    new AtlasEncryptionAtRest(stack, 'testing-stack-no-profile', {
+      profile: '',
       projectId: PROJECT_ID,
       roleId: ROLE_ID,
       customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
       region: REGION,
       enabled: false,
     });
-  }).toThrow('Validation error: publicKey is not defined');
-
-  expect(() => {
-    new AtlasEncryptionAtRest(stack, 'testing-stack-no-private-key', {
-      privateKey: '',
-      publicKey: PUBLIC_KEY,
-      projectId: PROJECT_ID,
-      roleId: ROLE_ID,
-      customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
-      region: REGION,
-      enabled: false,
-    });
-  }).toThrow('Validation error: privateKey is not defined');
+  }).toThrow('Validation error: profile is not defined');
 
   expect(() => {
     new AtlasEncryptionAtRest(stack, 'testing-stack-no-project-id', {
-      privateKey: PRIVATE_KEY,
-      publicKey: PUBLIC_KEY,
+      profile: PROFILE,
       projectId: '',
       roleId: ROLE_ID,
       customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
@@ -127,8 +103,7 @@ test('AtlasEncryptionAtRest construct should thorow exceptions when required par
 
   expect(() => {
     new AtlasEncryptionAtRest(stack, 'testing-stack-no-role-id', {
-      privateKey: PRIVATE_KEY,
-      publicKey: PUBLIC_KEY,
+      profile: PROFILE,
       projectId: PROJECT_ID,
       roleId: '',
       customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
@@ -139,8 +114,7 @@ test('AtlasEncryptionAtRest construct should thorow exceptions when required par
 
   expect(() => {
     new AtlasEncryptionAtRest(stack, 'testing-stack-no-customer-master-key-id', {
-      privateKey: PRIVATE_KEY,
-      publicKey: PUBLIC_KEY,
+      profile: PROFILE,
       projectId: PROJECT_ID,
       roleId: ROLE_ID,
       customerMasterKeyId: '',

@@ -17,7 +17,7 @@ import {
 } from '@mongodbatlas-awscdk/encryption-at-rest';
 import { Construct } from 'constructs';
 
-const US_EAST_1='US_EAST_1';
+const US_EAST_1 = 'US_EAST_1';
 
 
 export interface AtlasEncryptionAtRestProps {
@@ -54,14 +54,12 @@ export interface AtlasEncryptionAtRestProps {
   readonly projectId: string;
 
   /**
-     * @schema apiKeyDefinition#PublicKey
-     */
-  readonly publicKey: string;
-
-  /**
-      * @schema apiKeyDefinition#PrivateKey
-    */
-  readonly privateKey: string;
+   * The profile is defined in AWS Secret manager.
+   * See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnEncryptionAtRestProps#Profile
+   */
+  readonly profile?: string;
 }
 
 
@@ -70,15 +68,13 @@ export interface AtlasEncryptionAtRestProps {
  * @param {AtlasEncryptionAtRestProps} props - AtlasEncryptionAtRestProps
  */
 const validate = (props: AtlasEncryptionAtRestProps) => {
-  if (!props.projectId) {throw Error('Validation error: projectId is not defined');}
+  if (!props.projectId) { throw Error('Validation error: projectId is not defined'); }
 
-  if (!props.publicKey) {throw Error('Validation error: publicKey is not defined');}
+  if (!props.profile) { throw Error('Validation error: profile is not defined'); }
 
-  if (!props.privateKey) {throw Error('Validation error: privateKey is not defined');}
+  if (!props.customerMasterKeyId) { throw Error('Validation error: customerMasterKeyId is not defined'); }
 
-  if (!props.customerMasterKeyId) {throw Error('Validation error: customerMasterKeyId is not defined');}
-
-  if (!props.roleId) {throw Error('Validation error: roleId is not defined');}
+  if (!props.roleId) { throw Error('Validation error: roleId is not defined'); }
 };
 
 /**
@@ -105,18 +101,13 @@ export class AtlasEncryptionAtRest extends Construct {
     this.cfnEncryptionAtRest = new CfnEncryptionAtRest(this,
       'AtlasEncryptionAtRest',
       {
-        apiKeys: {
-          publicKey: props.publicKey,
-          privateKey: props.privateKey,
-        },
-
         awsKms: {
-          enabled: props.enabled == undefined ? true: props.enabled,
+          enabled: props.enabled == undefined ? true : props.enabled,
           region: !props.region ? US_EAST_1 : props.region,
           roleId: props.roleId,
           customerMasterKeyId: props.customerMasterKeyId,
         },
-
+        profile: props.profile,
         projectId: props.projectId,
       });
   }

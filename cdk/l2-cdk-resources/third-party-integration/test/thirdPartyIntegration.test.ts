@@ -26,10 +26,6 @@ test('MicrosoftTeamsIntegration construct should be configured with properties',
   const stack = new Stack(mockApp);
 
   new MicrosoftTeamsIntegration(stack, 'testing-stack', {
-    apiKeys: {
-      privateKey: constants.TEST_PRIVATE_KEY,
-      publicKey: constants.TEST_PUBLIC_KEY,
-    },
     projectId: constants.TEST_PROJECT_ID,
     microsoftTeamsWebhookUrl: constants.TEST_WEBHOOK_URL,
   });
@@ -48,10 +44,6 @@ test('DatadogIntegration construct should be configured with properties', () => 
   const stack = new Stack(mockApp);
 
   new DatadogIntegration(stack, 'testing-stack', {
-    apiKeys: {
-      privateKey: constants.TEST_PRIVATE_KEY,
-      publicKey: constants.TEST_PUBLIC_KEY,
-    },
     projectId: constants.TEST_PROJECT_ID,
     apiKey: constants.TEST_KEY,
     region: DatadogRegion.US,
@@ -72,10 +64,6 @@ test('PagerDutyIntegration construct should be configured with properties', () =
   const stack = new Stack(mockApp);
 
   new PagerDutyIntegration(stack, 'testing-stack', {
-    apiKeys: {
-      privateKey: constants.TEST_PRIVATE_KEY,
-      publicKey: constants.TEST_PUBLIC_KEY,
-    },
     projectId: constants.TEST_PROJECT_ID,
     serviceKey: constants.TEST_KEY,
     region: PagerDutyRegion.EU,
@@ -95,35 +83,7 @@ test('PagerDutyIntegration construct should throw exceptions when required param
   const stack = new Stack(mockApp);
 
   expect(() => {
-    new PagerDutyIntegration(stack, 'testing-stack-no-public-key', {
-      apiKeys: {
-        privateKey: constants.TEST_PRIVATE_KEY,
-        publicKey: '',
-      },
-      projectId: constants.TEST_PROJECT_ID,
-      serviceKey: constants.TEST_KEY,
-      region: PagerDutyRegion.EU,
-    });
-  }).toThrow(util.getPropUndefinedMsg('publicKey'));
-
-  expect(() => {
-    new PagerDutyIntegration(stack, 'testing-stack-no-private-key', {
-      apiKeys: {
-        privateKey: '',
-        publicKey: constants.TEST_PUBLIC_KEY,
-      },
-      projectId: constants.TEST_PROJECT_ID,
-      serviceKey: constants.TEST_KEY,
-      region: PagerDutyRegion.EU,
-    });
-  }).toThrow(util.getPropUndefinedMsg('privateKey'));
-
-  expect(() => {
     new PagerDutyIntegration(stack, 'testing-stack-no-project-id', {
-      apiKeys: {
-        privateKey: constants.TEST_PRIVATE_KEY,
-        publicKey: constants.TEST_PUBLIC_KEY,
-      },
       projectId: '',
       serviceKey: constants.TEST_KEY,
       region: PagerDutyRegion.EU,
@@ -132,10 +92,6 @@ test('PagerDutyIntegration construct should throw exceptions when required param
 
   expect(() => {
     new PagerDutyIntegration(stack, 'testing-stack-no-service-key', {
-      apiKeys: {
-        privateKey: constants.TEST_PRIVATE_KEY,
-        publicKey: constants.TEST_PUBLIC_KEY,
-      },
       projectId: constants.TEST_PROJECT_ID,
       serviceKey: '',
       region: PagerDutyRegion.EU,
@@ -149,10 +105,6 @@ test('MicrosoftTeamsIntegration construct should throw exceptions when required 
 
   expect(() => {
     new MicrosoftTeamsIntegration(stack, 'testing-stack-no-microsoftTeamsWebhookUrl', {
-      apiKeys: {
-        privateKey: constants.TEST_PRIVATE_KEY,
-        publicKey: constants.TEST_PUBLIC_KEY,
-      },
       projectId: constants.TEST_PROJECT_ID,
       microsoftTeamsWebhookUrl: '',
     });
@@ -165,10 +117,6 @@ test('DatadogIntegration construct should throw exceptions when required params 
 
   expect(() => {
     new DatadogIntegration(stack, 'testing-stack-no-apiKey', {
-      apiKeys: {
-        privateKey: constants.TEST_PRIVATE_KEY,
-        publicKey: constants.TEST_PUBLIC_KEY,
-      },
       projectId: constants.TEST_PROJECT_ID,
       apiKey: '',
       region: DatadogRegion.EU,

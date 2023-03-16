@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ApiKeyDefinition, ThirdPartyIntegrationProps } from './thirdPartyIntegrationBase';
+import { ThirdPartyIntegrationProps } from './thirdPartyIntegrationBase';
 
 /**
  * This method validates that all required properties are present.
@@ -22,19 +22,8 @@ export const validate = (props: ThirdPartyIntegrationProps) => {
   if (!props.projectId) {
     throw Error(getPropUndefinedMsg('projectId'));
   }
-  validateAtlasApiKeys(props.apiKeys);
 };
 
 export const getPropUndefinedMsg = (prop: string) => {
   return 'Validation error: ' + prop + ' is not defined';
-};
-
-const validateAtlasApiKeys = (apiKey: ApiKeyDefinition) => {
-  if (!apiKey.publicKey) {
-    throw Error(getPropUndefinedMsg('publicKey'));
-  }
-
-  if (!apiKey.privateKey) {
-    throw Error(getPropUndefinedMsg('privateKey'));
-  }
 };

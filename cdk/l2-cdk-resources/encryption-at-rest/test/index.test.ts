@@ -18,7 +18,7 @@ import { AtlasEncryptionAtRest } from '../src/index';
 
 
 const RESOURCE_NAME = 'MongoDB::Atlas::EncryptionAtRest';
-const PROFILE = 'cfn/atlas/profile/testProfile';
+const PROFILE = 'testProfile';
 const PROJECT_ID= 'testProjectId';
 const ROLE_ID = 'roleId';
 const REGION = 'region';
@@ -32,13 +32,14 @@ test('AtlasEncryptionAtRest construct should contain default properties', () => 
     projectId: PROJECT_ID,
     roleId: ROLE_ID,
     customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
+    profile: PROFILE,
   });
 
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties(RESOURCE_NAME, {
     ProjectId: PROJECT_ID,
-    Profile: 'cfn/atlas/profile/default',
+    Profile: PROFILE,
     AwsKms: {
       RoleID: ROLE_ID,
       CustomerMasterKeyID: CUSTOMER_MASTER_KEY_ID,
@@ -78,17 +79,6 @@ test('AtlasEncryptionAtRest construct should contain all the properties', () => 
 test('AtlasEncryptionAtRest construct should thorow exceptions when required params are not provided', () => {
   const mockApp = new App();
   const stack = new Stack(mockApp);
-
-  expect(() => {
-    new AtlasEncryptionAtRest(stack, 'testing-stack-no-profile', {
-      profile: '',
-      projectId: PROJECT_ID,
-      roleId: ROLE_ID,
-      customerMasterKeyId: CUSTOMER_MASTER_KEY_ID,
-      region: REGION,
-      enabled: false,
-    });
-  }).toThrow('Validation error: profile is not defined');
 
   expect(() => {
     new AtlasEncryptionAtRest(stack, 'testing-stack-no-project-id', {

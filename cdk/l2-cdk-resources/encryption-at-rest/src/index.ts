@@ -70,8 +70,6 @@ export interface AtlasEncryptionAtRestProps {
 const validate = (props: AtlasEncryptionAtRestProps) => {
   if (!props.projectId) { throw Error('Validation error: projectId is not defined'); }
 
-  if (!props.profile) { throw Error('Validation error: profile is not defined'); }
-
   if (!props.customerMasterKeyId) { throw Error('Validation error: customerMasterKeyId is not defined'); }
 
   if (!props.roleId) { throw Error('Validation error: roleId is not defined'); }

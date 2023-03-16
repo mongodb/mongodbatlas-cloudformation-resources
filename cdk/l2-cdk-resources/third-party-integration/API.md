@@ -334,49 +334,6 @@ public readonly cfnThirdPartyIntegration: CfnThirdPartyIntegration;
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/atlas-integrations'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | Atlas private API key. |
-| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | Atlas public API key. |
-
----
-
-##### `privateKey`<sup>Required</sup> <a name="privateKey" id="@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
-Atlas private API key.
-
----
-
-##### `publicKey`<sup>Required</sup> <a name="publicKey" id="@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
-Atlas public API key.
-
----
-
 ### DatadogIntegrationProps <a name="DatadogIntegrationProps" id="@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps"></a>
 
 #### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.Initializer"></a>
@@ -391,22 +348,10 @@ const datadogIntegrationProps: DatadogIntegrationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a></code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.profile">profile</a></code> | <code>string</code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.apiKey">apiKey</a></code> | <code>string</code> | Key that allows MongoDB Cloud to access your Datadog account. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.region">region</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.DatadogRegion">DatadogRegion</a></code> | Two-letter code that indicates which regional URL MongoDB uses to access the Datadog API. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a>
-
-Atlas API keys.
 
 ---
 
@@ -419,6 +364,18 @@ public readonly projectId: string;
 - *Type:* string
 
 Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/atlas-integrations.DatadogIntegrationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Atlas API keys.
 
 ---
 
@@ -460,21 +417,9 @@ const microsoftTeamsIntegrationProps: MicrosoftTeamsIntegrationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.MicrosoftTeamsIntegrationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a></code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.MicrosoftTeamsIntegrationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.MicrosoftTeamsIntegrationProps.property.profile">profile</a></code> | <code>string</code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.MicrosoftTeamsIntegrationProps.property.microsoftTeamsWebhookUrl">microsoftTeamsWebhookUrl</a></code> | <code>string</code> | Endpoint web address of the Microsoft Teams webhook to which MongoDB Cloud sends notifications. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/atlas-integrations.MicrosoftTeamsIntegrationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a>
-
-Atlas API keys.
 
 ---
 
@@ -487,6 +432,18 @@ public readonly projectId: string;
 - *Type:* string
 
 Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/atlas-integrations.MicrosoftTeamsIntegrationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Atlas API keys.
 
 ---
 
@@ -516,22 +473,10 @@ const pagerDutyIntegrationProps: PagerDutyIntegrationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a></code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.profile">profile</a></code> | <code>string</code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.region">region</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.PagerDutyRegion">PagerDutyRegion</a></code> | PagerDuty region that indicates the API Uniform Resource Locator (URL) to use. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.serviceKey">serviceKey</a></code> | <code>string</code> | Service key associated with your PagerDuty account. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a>
-
-Atlas API keys.
 
 ---
 
@@ -544,6 +489,18 @@ public readonly projectId: string;
 - *Type:* string
 
 Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/atlas-integrations.PagerDutyIntegrationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Atlas API keys.
 
 ---
 
@@ -585,20 +542,8 @@ const thirdPartyIntegrationProps: ThirdPartyIntegrationProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ThirdPartyIntegrationProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a></code> | Atlas API keys. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ThirdPartyIntegrationProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/atlas-integrations.ThirdPartyIntegrationProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/atlas-integrations.ApiKeyDefinition">ApiKeyDefinition</a>
-
-Atlas API keys.
+| <code><a href="#@mongodbatlas-awscdk/atlas-integrations.ThirdPartyIntegrationProps.property.profile">profile</a></code> | <code>string</code> | Atlas API keys. |
 
 ---
 
@@ -611,6 +556,18 @@ public readonly projectId: string;
 - *Type:* string
 
 Unique 24-hexadecimal digit string that identifies your project.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/atlas-integrations.ThirdPartyIntegrationProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Atlas API keys.
 
 ---
 

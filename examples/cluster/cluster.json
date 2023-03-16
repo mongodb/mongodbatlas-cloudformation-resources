@@ -9,8 +9,7 @@
       "Type": "String"
     },
     "Profile": {
-      "Type": "String",
-      "Default": "default"
+      "Type": "String"
     },
     "OrgId": {
       "Type": "String",
@@ -21,7 +20,6 @@
       "Default": "true"
     }
   },
-  "Mappings": {},
   "Resources": {
     "Project": {
       "Type": "MongoDB::Atlas::Project",

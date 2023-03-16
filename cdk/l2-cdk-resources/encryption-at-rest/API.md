@@ -129,11 +129,10 @@ const atlasEncryptionAtRestProps: AtlasEncryptionAtRestProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.customerMasterKeyId">customerMasterKeyId</a></code> | <code>string</code> | The AWS customer master key used to encrypt and decrypt the MongoDB master keys. |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the Atlas project to which the user belongs. |
-| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.roleId">roleId</a></code> | <code>string</code> | ID of an AWS IAM role authorized to manage an AWS customer master key. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.enabled">enabled</a></code> | <code>boolean</code> | Specifies whether Encryption at Rest is enabled for an Atlas project. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.region">region</a></code> | <code>string</code> | The AWS region in which the AWS customer master key exists. |
 
 ---
@@ -150,16 +149,6 @@ The AWS customer master key used to encrypt and decrypt the MongoDB master keys.
 
 ---
 
-##### `privateKey`<sup>Required</sup> <a name="privateKey" id="@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
 ##### `projectId`<sup>Required</sup> <a name="projectId" id="@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.projectId"></a>
 
 ```typescript
@@ -169,16 +158,6 @@ public readonly projectId: string;
 - *Type:* string
 
 Unique identifier of the Atlas project to which the user belongs.
-
----
-
-##### `publicKey`<sup>Required</sup> <a name="publicKey" id="@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
 
 ---
 
@@ -206,6 +185,20 @@ Specifies whether Encryption at Rest is enabled for an Atlas project.
 
 To disable Encryption at Rest, pass only this parameter with a value of false. When you disable Encryption at Rest, Atlas also removes the configuration details.
 Default Value: true
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/atlas-encryption-at-rest.AtlasEncryptionAtRestProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 ---
 

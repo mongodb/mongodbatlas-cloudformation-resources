@@ -15,7 +15,7 @@ Link to any related issue(s):
 ## Manual QA performed:
 
 - [ ] cfn invoke for each of CRUDL/cfn test
-- [ ] Updated resource in ../example
+- [ ] Updated resource in  [example](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/examples)
 - [ ] Published to AWS private registry
 - [ ] Created and updated resource in AWS
 - [ ] Deleted stack to ensure resources are deleted

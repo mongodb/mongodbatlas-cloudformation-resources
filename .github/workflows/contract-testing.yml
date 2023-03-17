@@ -13,19 +13,27 @@ jobs:
       with:
        public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       org-id: ${{ vars.CLOUD_DEV_ORG_ID }}
-
+       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
     - uses: actions/checkout@v3
-    
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
-#
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-#
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install cloudformation-cli cloudformation-cli-java-plugin cloudformation-cli-go-plugin cloudformation-cli-python-plugin cloudformation-cli-typescript-plugin
+
     - name: Run the Contract test
       shell: bash
+      env:
+       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
       run: |
        ls -al
        pushd cfn-resources/project

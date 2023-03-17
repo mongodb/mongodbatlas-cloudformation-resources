@@ -27,6 +27,7 @@ jobs:
     - name: Run the Contract test
       shell: bash
       run: |
+       ls -al
        pushd cfn-resources/project
        make create-test-resources
      

@@ -22,15 +22,15 @@ jobs:
 #    - name: Set up Docker Buildx
 #      uses: docker/setup-buildx-action@v2
 #
-#    - uses: actions/setup-python@v4
-#      with:
-#        python-version: '3.9'
-#        cache: 'pip' # caching pip dependencies
-#    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
     - name: Install Homebrew
       run: |
         ls -al
-        ./.github/scripts/install-brew.sh
+        .github/scripts/install-brew.sh
       shell: bash
     - name: Install Atlas CLI
       run: brew install mongodb-atlas-cli

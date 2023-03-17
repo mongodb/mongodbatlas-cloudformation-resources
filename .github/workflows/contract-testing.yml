@@ -8,12 +8,12 @@ jobs:
   project:
     runs-on: ubuntu-latest
     steps:
-#    - name: Set Up Atlas CLI
-#      uses: andreaangiolillo/atlas-cli-github-action@main
-#      with:
-#       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-#       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-#       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+    - name: Set Up Atlas CLI
+      uses: andreaangiolillo/atlas-cli-github-action@main
+      with:
+       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
     - uses: actions/checkout@v3
     - uses: aws-actions/setup-sam@v2
       with:
@@ -27,11 +27,11 @@ jobs:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
     - run: pip install cloudformation-cli cloudformation-cli-go-plugin
-    - name: Install Homebrew
-      run: |
-        ls -al
-        .github/scripts/install-brew.sh
-      shell: bash
+#    - name: Install Homebrew
+#      run: |
+#        ls -al
+#        .github/scripts/install-brew.sh
+#      shell: bash
 #    - name: Install Atlas CLI
 #      run: brew install mongodb-atlas-cli
 #      shell: bash

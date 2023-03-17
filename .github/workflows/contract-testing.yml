@@ -18,7 +18,11 @@ jobs:
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
-
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
 #    - name: Set up Docker Buildx
 #      uses: docker/setup-buildx-action@v2
 #
@@ -27,14 +31,6 @@ jobs:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
     - run: pip install cloudformation-cli cloudformation-cli-go-plugin
-#    - name: Install Homebrew
-#      run: |
-#        ls -al
-#        .github/scripts/install-brew.sh
-#      shell: bash
-#    - name: Install Atlas CLI
-#      run: brew install mongodb-atlas-cli
-#      shell: bash
     - name: Run the Contract test
       shell: bash
       env:

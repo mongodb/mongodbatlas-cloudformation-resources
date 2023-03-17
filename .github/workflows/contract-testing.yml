@@ -22,7 +22,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-2
+        aws-region: eu-west-1
 #    - name: Set up Docker Buildx
 #      uses: docker/setup-buildx-action@v2
 #
@@ -38,6 +38,7 @@ jobs:
        MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
        MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
+       MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev:mongodb:com/
       run: |
        pushd cfn-resources/project
        make create-test-resources

@@ -31,6 +31,7 @@ fi
 
 org_id="${MONGODB_ATLAS_ORG_ID}"
 team_id="${MONGODB_ATLAS_TEAM_ID}"
+profile="${MONGODB_ATLAS_PROFILE}"
 
 project_name="Project-$((1 + RANDOM % 10000))"
 
@@ -39,18 +40,18 @@ api_key_id=$(atlas organizations apikeys create --desc "Created as part of the c
 
 rm -rf "inputs" && mkdir "inputs"
 
-pwd
-
 jq --arg org "${org_id}" \
-	--arg name "project_name" \
+	--arg name "${project_name}" \
+	--arg profile "${profile}" \
 	--arg key_id "${api_key_id}" \
 	--arg team_id "${team_id}" \
-	'.OrgId?|=$org |.Name?|=$name | .ProjectApiKeys[0].Key?|=$key_id | .ProjectTeams[0].TeamId?|=$team_id' \
+	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile | .ProjectApiKeys[0].Key?|=$key_id | .ProjectTeams[0].TeamId?|=$team_id' \
 	"test/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg org "${org_id}" \
 	--arg name "${project_name}" \
+	--arg profile "${profile}" \
 	--arg key_id "$api_key_id" \
 	--arg team_id "$team_id" \
-	'.OrgId?|=$org | .Name?|=$name | .ProjectApiKeys[0].Key?|=$key_id | .ProjectTeams[0].TeamId?|=$team_id' \
+	'.OrgId?|=$org | .Name?|=$name |.Profile?|=$profile | .ProjectApiKeys[0].Key?|=$key_id | .ProjectTeams[0].TeamId?|=$team_id' \
 	"test/inputs_1_update.template.json" >"inputs/inputs_1_update.json"

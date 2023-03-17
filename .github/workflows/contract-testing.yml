@@ -6,7 +6,7 @@ on:
   pull_request:
 jobs:
   project:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
 #    - name: Set Up Atlas CLI
 #      uses: andreaangiolillo/atlas-cli-github-action@main

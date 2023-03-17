@@ -8,20 +8,20 @@ jobs:
   project:
     runs-on: ubuntu-latest
     steps:
-    - name: Set Up Atlas CLI
+    - uses: actions/checkout@v3
+    - name: setup Atlas CLI
       uses: andreaangiolillo/atlas-cli-github-action@main
       with:
        public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-    - uses: actions/checkout@v3
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}
         aws-region: eu-west-1
 #    - name: Set up Docker Buildx
 #      uses: docker/setup-buildx-action@v2

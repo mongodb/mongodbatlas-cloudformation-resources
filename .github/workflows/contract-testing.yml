@@ -8,8 +8,6 @@ jobs:
   project:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
     - name: Set Up Atlas CLI
       uses: andreaangiolillo/atlas-cli-github-action@main
       with:
@@ -17,6 +15,8 @@ jobs:
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ vars.CLOUD_DEV_ORG_ID }}
 
+    - uses: actions/checkout@v3
+    
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true

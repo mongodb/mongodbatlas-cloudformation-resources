@@ -35,7 +35,7 @@ jobs:
        MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
        MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-       MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev:mongodb:com/
+       MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
        MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
       run: |
        pushd cfn-resources/project

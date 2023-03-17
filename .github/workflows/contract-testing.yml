@@ -8,12 +8,12 @@ jobs:
   project:
     runs-on: ubuntu-latest
     steps:
-    - name: Set Up Atlas CLI
-      uses: andreaangiolillo/atlas-cli-github-action@main
-      with:
-       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+#    - name: Set Up Atlas CLI
+#      uses: andreaangiolillo/atlas-cli-github-action@main
+#      with:
+#       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+#       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+#       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
     - uses: actions/checkout@v3
     - uses: aws-actions/setup-sam@v2
       with:
@@ -27,7 +27,7 @@ jobs:
         python-version: '3.9'
         cache: 'pip' # caching pip dependencies
     - run: pip install cloudformation-cli cloudformation-cli-go-plugin
-
+    - run: brew install mongodb-atlas-cli
     - name: Run the Contract test
       shell: bash
       env:
@@ -36,7 +36,6 @@ jobs:
        MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
        MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
       run: |
-       ls -al
        pushd cfn-resources/project
        make create-test-resources
        make run-contract-testing

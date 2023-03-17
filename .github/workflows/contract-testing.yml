@@ -46,5 +46,3 @@ jobs:
        
        make run-contract-testing
        make delete-test-resources
-     
-  

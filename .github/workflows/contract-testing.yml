@@ -32,9 +32,9 @@ jobs:
         ls -al
         .github/scripts/install-brew.sh
       shell: bash
-    - name: Install Atlas CLI
-      run: brew install mongodb-atlas-cli
-      shell: bash
+#    - name: Install Atlas CLI
+#      run: brew install mongodb-atlas-cli
+#      shell: bash
     - name: Run the Contract test
       shell: bash
       env:

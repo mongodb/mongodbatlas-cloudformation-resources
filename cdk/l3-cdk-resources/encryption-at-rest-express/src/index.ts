@@ -3,7 +3,7 @@ import * as cluster from '@mongodbatlas-awscdk/cluster';
 import * as databaseUser from '@mongodbatlas-awscdk/database-user';
 import * as encryption from '@mongodbatlas-awscdk/encryption-at-rest';
 import * as accessList from '@mongodbatlas-awscdk/project-ip-access-list';
-import { Construct } from 'constructs';
+import {Construct} from 'constructs';
 
 
 const NODE_COUNT = 3;
@@ -11,7 +11,7 @@ const NODE_COUNT_ANALYTICS = 1;
 const BACKUP_ENABLED = true;
 const INSTANCE_SIZE = 'M30';
 const MONGODB_VERSION = '5.0';
-const ENCRYPTIN_AT_REST_PROVIDER = cluster.CfnClusterPropsEncryptionAtRestProvider.AWS;
+const ENCRYPTION_AT_REST_PROVIDER = cluster.CfnClusterPropsEncryptionAtRestProvider.AWS;
 const REGION = 'US_EAST_1';
 const EBS_VOLUME_TYPE = 'STANDARD';
 const ENABLE_ENCRYPTION_AT_REST = true;
@@ -31,7 +31,7 @@ function randomNumber() {
 }
 
 function getClusterProps(inputClusterProps: atlas.ClusterProps): cluster.CfnClusterProps {
-  const clusterProps: cluster.CfnClusterProps = {
+  return {
     name: inputClusterProps.name || 'atlas-cluster-'.concat(String(randomNumber())),
     mongoDbMajorVersion: inputClusterProps.mongoDbMajorVersion || MONGODB_VERSION,
     backupEnabled: inputClusterProps.backupEnabled || BACKUP_ENABLED,
@@ -39,7 +39,7 @@ function getClusterProps(inputClusterProps: atlas.ClusterProps): cluster.CfnClus
     clusterType: inputClusterProps.clusterType || CLUSTER_TYPE,
     biConnector: inputClusterProps.biConnector,
     connectionStrings: inputClusterProps.connectionStrings,
-    encryptionAtRestProvider: inputClusterProps.encryptionAtRestProvider || ENCRYPTIN_AT_REST_PROVIDER,
+    encryptionAtRestProvider: inputClusterProps.encryptionAtRestProvider || ENCRYPTION_AT_REST_PROVIDER,
     labels: inputClusterProps.labels,
     paused: inputClusterProps.paused,
     pitEnabled: inputClusterProps.pitEnabled,
@@ -50,13 +50,10 @@ function getClusterProps(inputClusterProps: atlas.ClusterProps): cluster.CfnClus
     replicationSpecs: inputClusterProps.replicationSpecs || getDefaultClusterReplicationSpec(),
     projectId: '',
   };
-
-  return clusterProps;
 }
 
 function getDefaultClusterReplicationSpec(): cluster.AdvancedReplicationSpec[] {
-
-  const replicationSpecs: cluster.AdvancedReplicationSpec[] = [
+  return [
     {
       numShards: 1,
       advancedRegionConfigs: [
@@ -78,8 +75,6 @@ function getDefaultClusterReplicationSpec(): cluster.AdvancedReplicationSpec[] {
     },
   ];
 
-  return replicationSpecs;
-
 }
 
 export interface AtlasEncryptionAtRestProps{
@@ -100,30 +95,30 @@ export interface AtlasEncryptionAtRestProps{
       * Default Value: true
       * @schema AwsKms#Enabled
       */
-  readonly enabledEncryptionAtRest?: boolean;
+  readonly enabledEncryptionAtRest ?: boolean;
 
   /**
      * The AWS region in which the AWS customer master key exists.
      *
      * @schema AwsKms#Region
      */
-  readonly region?: string;
+  readonly region ?: string;
 }
 
 export interface AtlasEncryptionAtRestExpressProps {
   readonly cluster ?: atlas.ClusterProps;
   readonly accessList ?: atlas.IpAccessListProps;
   readonly encryptionAtRest: AtlasEncryptionAtRestProps;
-  readonly databaseUser?: atlas.DatabaseUserProps;
-  readonly profile?: string;
-  readonly projectId : string;
+  readonly databaseUser ?: atlas.DatabaseUserProps;
+  readonly profile ?: string;
+  readonly projectId: string;
 }
 
 export class AtlasEncryptionAtRestExpress extends Construct {
   readonly encryptionAtRest: encryption.CfnEncryptionAtRest;
-  readonly cluster?: cluster.CfnCluster;
-  readonly accessList?: accessList.CfnProjectIpAccessList;
-  readonly databaseUser?: databaseUser.CfnDatabaseUser;
+  readonly cluster ?: cluster.CfnCluster;
+  readonly accessList ?: accessList.CfnProjectIpAccessList;
+  readonly databaseUser ?: databaseUser.CfnDatabaseUser;
 
   constructor(scope: Construct, id: string, props: AtlasEncryptionAtRestExpressProps) {
     super(scope, id);
@@ -132,8 +127,8 @@ export class AtlasEncryptionAtRestExpress extends Construct {
       awsKms: {
         customerMasterKeyId: props.encryptionAtRest.customerMasterKeyId,
         roleId: props.encryptionAtRest.roleId,
-        enabled: props.encryptionAtRest.enabledEncryptionAtRest ? props.encryptionAtRest.enabledEncryptionAtRest : ENABLE_ENCRYPTION_AT_REST,
-        region: props.encryptionAtRest.region ? props.encryptionAtRest.region : REGION,
+        enabled: props.encryptionAtRest.enabledEncryptionAtRest || ENABLE_ENCRYPTION_AT_REST,
+        region: props.encryptionAtRest.region || REGION,
       },
       projectId: props.projectId,
       profile: props.profile,

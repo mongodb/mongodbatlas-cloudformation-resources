@@ -156,7 +156,8 @@ The constructor will deploy the following resources using default values:
     - provider: AWS
     - region: us-east-1
     - cluster type: replica-set 
-    - elegible nodes: 3
+    - mongogb version: 5.0
+    - eligible nodes: 3
     - instance size: M30
     - analytics node: 1
     - analytics instance size: M30

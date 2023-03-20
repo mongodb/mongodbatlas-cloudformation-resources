@@ -30,7 +30,7 @@ new AtlasEncryptionAtRestExpress(stack, 'atlas-encryption-at-rest-express', {
         numShards: 1,
         advancedRegionConfigs: [
           {
-            regionName: "US_WEAST_1",
+            regionName: "US_WEST_1",
             electableSpecs: {
               instanceSize: "M10",
               nodeCount: 3,

@@ -11,8 +11,8 @@ jobs:
      pull-requests: read
      repository-projects: read
    outputs:
-     backend: ${{ steps.filter.outputs.project }}
-     frontend: ${{ steps.filter.outputs.teams }}
+     project: ${{ steps.filter.outputs.project }}
+     teams: ${{ steps.filter.outputs.teams }}
    steps:
    - uses: dorny/paths-filter@v2
      id: filter

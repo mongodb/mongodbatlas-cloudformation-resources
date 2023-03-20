@@ -7,6 +7,10 @@ const datalakes = new awscdk.AwsCdkConstructLibrary
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'master',
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-datalakes',
+    module: 'mongodb_cdk_mongodb_datalakes',
+  },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),

@@ -7,6 +7,10 @@ const legacy_cluster = new awscdk.AwsCdkConstructLibrary
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'INTMDB-548',
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-legacy-cluster',
+    module: 'mongodb_cdk_mongodb_legacy-cluster',
+  },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),

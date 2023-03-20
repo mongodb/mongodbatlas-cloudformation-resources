@@ -7,6 +7,10 @@ const network_container = new awscdk.AwsCdkConstructLibrary
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'master',
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-network-container',
+    module: 'mongodb_cdk_mongodb_network_container',
+  },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),

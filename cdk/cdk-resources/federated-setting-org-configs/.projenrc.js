@@ -7,6 +7,10 @@ const federated_setting_org_configs = new awscdk.AwsCdkConstructLibrary
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'master',
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-federated-setting-org-configs',
+    module: 'mongodb_cdk_mongodb_federated_setting_org_configs',
+  },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),

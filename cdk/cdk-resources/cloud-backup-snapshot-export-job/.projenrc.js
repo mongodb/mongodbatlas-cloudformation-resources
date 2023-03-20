@@ -7,6 +7,10 @@ const cloud_backup_snapshot_export_job = new awscdk.AwsCdkConstructLibrary
     authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
     defaultReleaseBranch: 'master',
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-cloud-backup-snapshot-export-job',
+    module: 'mongodb_cdk_mongodb_cloud_backup_snapshot_export_job',
+  },
     majorVersion: 1,
     releaseToNpm: true,
     releaseTrigger: ReleaseTrigger.manual(),

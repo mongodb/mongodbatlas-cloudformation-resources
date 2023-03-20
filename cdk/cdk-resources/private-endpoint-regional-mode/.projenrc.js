@@ -7,6 +7,10 @@ const private_endpoint_regional_mode = new awscdk.AwsCdkConstructLibrary
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'master',
+  publishToPypi: {
+    distName: 'mongodb-cdk-mongodb-private-endpoint-regional-mode',
+    module: 'mongodb_cdk_mongodb_private_endpoint_regional_mode',
+  },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),

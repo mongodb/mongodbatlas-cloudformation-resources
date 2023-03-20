@@ -95,30 +95,30 @@ export interface AtlasEncryptionAtRestProps{
       * Default Value: true
       * @schema AwsKms#Enabled
       */
-  readonly enabledEncryptionAtRest ?: boolean;
+  readonly enabledEncryptionAtRest?: boolean;
 
   /**
      * The AWS region in which the AWS customer master key exists.
      *
      * @schema AwsKms#Region
      */
-  readonly region ?: string;
+  readonly region?: string;
 }
 
 export interface AtlasEncryptionAtRestExpressProps {
-  readonly cluster ?: atlas.ClusterProps;
-  readonly accessList ?: atlas.IpAccessListProps;
+  readonly cluster?: atlas.ClusterProps;
+  readonly accessList?: atlas.IpAccessListProps;
   readonly encryptionAtRest: AtlasEncryptionAtRestProps;
-  readonly databaseUser ?: atlas.DatabaseUserProps;
-  readonly profile ?: string;
+  readonly databaseUser?: atlas.DatabaseUserProps;
+  readonly profile?: string;
   readonly projectId: string;
 }
 
 export class AtlasEncryptionAtRestExpress extends Construct {
   readonly encryptionAtRest: encryption.CfnEncryptionAtRest;
-  readonly cluster ?: cluster.CfnCluster;
-  readonly accessList ?: accessList.CfnProjectIpAccessList;
-  readonly databaseUser ?: databaseUser.CfnDatabaseUser;
+  readonly cluster?: cluster.CfnCluster;
+  readonly accessList?: accessList.CfnProjectIpAccessList;
+  readonly databaseUser?: databaseUser.CfnDatabaseUser;
 
   constructor(scope: Construct, id: string, props: AtlasEncryptionAtRestExpressProps) {
     super(scope, id);

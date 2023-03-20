@@ -26,5 +26,5 @@ release:
 	make build && cfn submit --set-default
 
 e2e-test:
-	@echo "==> Run E2E test for the Project Resource"
+	@echo "==> Run E2E test"
 	./test/e2e/run-e2e-test.sh

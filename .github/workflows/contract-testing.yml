@@ -6,6 +6,7 @@ on:
   pull_request:
 jobs:
   change-detection:
+   runs-on: ubuntu-latest
    permissions:
      pull-requests: read
      repository-projects: read

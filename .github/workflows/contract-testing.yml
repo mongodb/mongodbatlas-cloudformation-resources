@@ -5,7 +5,24 @@ on:
       - master
   pull_request:
 jobs:
+  change-detection:
+   runs-on: ubuntu-latest
+   permissions:
+     pull-requests: read
+     repository-projects: read
+   outputs:
+     project: ${{ steps.filter.outputs.project }}
+     teams: ${{ steps.filter.outputs.teams }}
+   steps:
+   - uses: dorny/paths-filter@v2
+     id: filter
+     with:
+      filters: |
+        project:
+          - 'cfn-resources/project/**'
   project:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - name: setup Atlas CLI
@@ -18,7 +35,7 @@ jobs:
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@v1
+    - uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}

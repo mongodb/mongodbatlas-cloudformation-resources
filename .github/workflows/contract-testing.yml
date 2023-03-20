@@ -6,21 +6,21 @@ on:
   pull_request:
 jobs:
   change-detection:
-  permissions:
-    pull-requests: read
-    repository-projects: read
-  outputs:
-    backend: ${{ steps.filter.outputs.project }}
-    frontend: ${{ steps.filter.outputs.teams }}
-  steps:
-  - uses: dorny/paths-filter@v2
-    id: filter
-    with:
-     filters: |
-       project:
-         - 'cfn-resources/project/**'
-       teams:
-         - 'cfn-resources/teams/**'
+   permissions:
+     pull-requests: read
+     repository-projects: read
+   outputs:
+     backend: ${{ steps.filter.outputs.project }}
+     frontend: ${{ steps.filter.outputs.teams }}
+   steps:
+   - uses: dorny/paths-filter@v2
+     id: filter
+     with:
+      filters: |
+        project:
+          - 'cfn-resources/project/**'
+        teams:
+          - 'cfn-resources/teams/**'
   project:
     needs: change-detection
     if: ${{ needs.changes.outputs.project == 'true' }}

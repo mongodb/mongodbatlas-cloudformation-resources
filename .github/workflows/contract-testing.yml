@@ -12,7 +12,6 @@ jobs:
      repository-projects: read
    outputs:
      project: ${{ steps.filter.outputs.project }}
-     teams: ${{ steps.filter.outputs.teams }}
    steps:
    - uses: dorny/paths-filter@v2
      id: filter

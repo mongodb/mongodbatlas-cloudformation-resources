@@ -26,7 +26,7 @@
 # 4) Updates the template used by the e2e test with the typename generated at step 1
 # 5) Runs the e2e test
 # 6) Cleanings: Updates the files changed in the previous steps to the correct typename
-#
+# 7) Deactivate the CFN resource used as part of the e2e test
 
 set -eu
 

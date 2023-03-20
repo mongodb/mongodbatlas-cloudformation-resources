@@ -1,4 +1,3 @@
-.PHONY: build test clean
 tags=logging callback metrics scheduler
 cgo=0 
 goos=linux
@@ -21,3 +20,11 @@ debug:
 
 clean:
 	rm -rf bin
+
+release:
+	@echo "==> Release the CFN resource to the Private Registry"
+	make build && cfn submit --set-default
+
+e2e-test:
+	@echo "==> Run E2E test for the Project Resource"
+	./test/e2e/run-e2e-test.sh

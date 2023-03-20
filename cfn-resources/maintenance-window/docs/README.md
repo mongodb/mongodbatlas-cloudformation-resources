@@ -13,7 +13,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::MaintenanceWindow",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
+        "<a href="#autodeferonceenabled" title="AutoDeferOnceEnabled">AutoDeferOnceEnabled</a>" : <i>Boolean</i>,
         "<a href="#dayofweek" title="DayOfWeek">DayOfWeek</a>" : <i>Integer</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#hourofday" title="HourOfDay">HourOfDay</a>" : <i>Integer</i>,
         "<a href="#startasap" title="StartASAP">StartASAP</a>" : <i>Boolean</i>
     }
@@ -26,7 +28,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::MaintenanceWindow
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
+    <a href="#autodeferonceenabled" title="AutoDeferOnceEnabled">AutoDeferOnceEnabled</a>: <i>Boolean</i>
     <a href="#dayofweek" title="DayOfWeek">DayOfWeek</a>: <i>Integer</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#hourofday" title="HourOfDay">HourOfDay</a>: <i>Integer</i>
     <a href="#startasap" title="StartASAP">StartASAP</a>: <i>Boolean</i>
 </pre>
@@ -40,6 +44,16 @@ The profile is defined in AWS Secret manager. See [Secret Manager Profile setup]
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### AutoDeferOnceEnabled
+
+Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them.
+
+_Required_: No
+
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -64,6 +78,22 @@ _Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### ProjectId
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### HourOfDay
 
 Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use `0` for midnight and `12` for noon.
@@ -83,24 +113,4 @@ _Required_: No
 _Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ProjectId.
-
-### Fn::GetAtt
-
-The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
-
-For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
-
-#### ProjectId
-
-Unique 24-hexadecimal digit string that identifies your project.
-
-#### AutoDeferOnceEnabled
-
-Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them.
 

@@ -5,7 +5,7 @@ const thirdPartyIntegration = new awscdk.AwsCdkConstructLibrary({
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'INTMDB-548',
+  defaultReleaseBranch: 'main',
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
@@ -28,8 +28,8 @@ const thirdPartyIntegration = new awscdk.AwsCdkConstructLibrary({
     'third-party-integration'],
   description: 'Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure. Currently supporting MicrosoftTeams, Datadog and PagerDuty for a given Atlas project',
   stability: 'experimental',
-  deps: ['@mongodbatlas-awscdk/third-party-integration@1.0.1'],
-  devDeps: ['@mongodbatlas-awscdk/third-party-integration@1.0.1'],
-  peerDeps: ['@mongodbatlas-awscdk/third-party-integration@1.0.1'],
+  deps: ['@mongodbatlas-awscdk/third-party-integration@1.1.0'],
+  devDeps: ['@mongodbatlas-awscdk/third-party-integration@1.1.0'],
+  peerDeps: ['@mongodbatlas-awscdk/third-party-integration@1.1.0'],
 });
 thirdPartyIntegration.synth();

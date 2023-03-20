@@ -19,7 +19,14 @@
 # Run this script with the Makefile
 # make e2e-test
 #
-# This tool generates json files in the inputs/ for `cfn test`.
+# This script runs the e2e test for the project resource:
+# 1) Generates the resource typename to use for the e2e test. Note: we cannot use the default typeName as it will affect other cfn stacks/tests
+# using that resource
+# 2) Updates .rpdk-config to use the typename generated at step 1
+# 3) Updates the resource schema to use the typename generated at the step 1
+# 4) Updates the template used by the e2e test with the typename generated at step 1
+# 5) Runs the e2e test
+# 6) Cleanings: Updates the files changed in the previous steps to the correct typename
 #
 
 set -eu

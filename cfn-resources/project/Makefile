@@ -31,7 +31,7 @@ delete-test-resources:
 	./test/contract-testing/cfn-test-delete-inputs.sh
 
 run-contract-testing:
-	@echo "==> Run contracting testing"
+	@echo "==> Run contract testing"
 	make build
 	sam local start-lambda &
 	cfn test --function-name TestEntrypoint --verbose

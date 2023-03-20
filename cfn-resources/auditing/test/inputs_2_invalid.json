@@ -1,9 +1,6 @@
 {
     "GroupId": "",
-    "ApiKeys" : {
-        "PublicKey" : "",
-        "PrivateKey" : ""
-    },
+    "Profile" : "",
     "AuditAuthorizationSuccess": "false",
     "AuditFilter": 123124235
 }

@@ -33,11 +33,9 @@ WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-		--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-		--arg org "$projectId" \
+	jq --arg proj "$projectId" \
 		--arg endpoint_id "$endpoint" \
-		'.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |.GroupId?|=$org |.EndpointId?|=$endpoint_id' \
+		'.ProjectId?|=$proj |.EndpointId?|=$endpoint_id' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

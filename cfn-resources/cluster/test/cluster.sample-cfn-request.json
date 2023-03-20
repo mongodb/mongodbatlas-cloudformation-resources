@@ -2,10 +2,7 @@
     "desiredResourceState" : {
       "ProjectId": "",
       "Name": "cfn-test-bot-cluster",
-      "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-      },
+      "Profile": "default",
       "AdvancedSettings": {
         "DefaultReadConcern": "available",
         "DefaultWriteConcern": "1",

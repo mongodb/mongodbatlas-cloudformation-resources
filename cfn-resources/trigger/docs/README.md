@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::Trigger",
     "Properties" : {
-        "<a href="#realmconfig" title="RealmConfig">RealmConfig</a>" : <i><a href="realmconfig.md">RealmConfig</a></i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#databasetrigger" title="DatabaseTrigger">DatabaseTrigger</a>" : <i><a href="databaseconfig.md">DatabaseConfig</a></i>,
         "<a href="#authtrigger" title="AuthTrigger">AuthTrigger</a>" : <i><a href="authconfig.md">AuthConfig</a></i>,
         "<a href="#scheduletrigger" title="ScheduleTrigger">ScheduleTrigger</a>" : <i><a href="scheduleconfig.md">ScheduleConfig</a></i>,
@@ -33,7 +33,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::Trigger
 Properties:
-    <a href="#realmconfig" title="RealmConfig">RealmConfig</a>: <i><a href="realmconfig.md">RealmConfig</a></i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#databasetrigger" title="DatabaseTrigger">DatabaseTrigger</a>: <i><a href="databaseconfig.md">DatabaseConfig</a></i>
     <a href="#authtrigger" title="AuthTrigger">AuthTrigger</a>: <i><a href="authconfig.md">AuthConfig</a></i>
     <a href="#scheduletrigger" title="ScheduleTrigger">ScheduleTrigger</a>: <i><a href="scheduleconfig.md">ScheduleConfig</a></i>
@@ -49,13 +49,15 @@ Properties:
 
 ## Properties
 
-#### RealmConfig
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
 
 _Required_: No
 
-_Type_: <a href="realmconfig.md">RealmConfig</a>
+_Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### DatabaseTrigger
 
@@ -160,7 +162,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ProjectId
 
@@ -170,13 +172,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the Id.
 
 ### Fn::GetAtt
 

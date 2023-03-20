@@ -9,6 +9,13 @@ import * as constructs from 'constructs';
  */
 export interface CfnPrivateEndpointProps {
   /**
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)
+   *
+   * @schema CfnPrivateEndpointProps#Profile
+   */
+  readonly profile?: string;
+
+  /**
    * Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.
    *
    * @schema CfnPrivateEndpointProps#EndpointServiceName
@@ -37,11 +44,6 @@ export interface CfnPrivateEndpointProps {
   readonly groupId: string;
 
   /**
-   * @schema CfnPrivateEndpointProps#ApiKeys
-   */
-  readonly apiKeys: ApiKey;
-
-  /**
    * Aws Region
    *
    * @schema CfnPrivateEndpointProps#Region
@@ -64,44 +66,13 @@ export interface CfnPrivateEndpointProps {
 export function toJson_CfnPrivateEndpointProps(obj: CfnPrivateEndpointProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
+    'Profile': obj.profile,
     'EndpointServiceName': obj.endpointServiceName,
     'ErrorMessage': obj.errorMessage,
     'Status': obj.status,
     'GroupId': obj.groupId,
-    'ApiKeys': toJson_ApiKey(obj.apiKeys),
     'Region': obj.region,
     'PrivateEndpoints': obj.privateEndpoints?.map(y => toJson_PrivateEndpoint(y)),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema ApiKey
- */
-export interface ApiKey {
-  /**
-   * @schema ApiKey#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema ApiKey#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKey' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKey(obj: ApiKey | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -178,7 +149,7 @@ export class CfnPrivateEndpoint extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::PrivateEndpoint";
+  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::PrivateEndpoint';
 
   /**
    * Resource props.
@@ -189,6 +160,10 @@ export class CfnPrivateEndpoint extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::PrivateEndpoint.Id`
    */
   public readonly attrId: string;
+  /**
+   * Attribute `MongoDB::Atlas::PrivateEndpoint.InterfaceEndpoints`
+   */
+  public readonly attrInterfaceEndpoints: string[];
 
   /**
    * Create a new `MongoDB::Atlas::PrivateEndpoint`.
@@ -203,5 +178,6 @@ export class CfnPrivateEndpoint extends cdk.CfnResource {
     this.props = props;
 
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
+    this.attrInterfaceEndpoints = cdk.Token.asList(this.getAtt('InterfaceEndpoints'));
   }
 }

@@ -32,10 +32,8 @@ echo "Check if a project is created $projectId"
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-		--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-		--arg ProjectId "$projectId" \
-		'.ProjectId?|=$ProjectId | .ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	jq --arg ProjectId "$projectId" \
+		'.ProjectId?|=$ProjectId' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

@@ -2,13 +2,11 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This template creates resources from the MongoDB Atlas Admin API, this will be billed to your Atlas account.",
   "Parameters" : {
-    "MongoDBAtlasAPIPublicKey": {
+    "Profile": {
       "Type": "String",
-      "Description" : "MongoDB Atlas Public Access Key"
-    },
-    "MongoDBAtlasAPIPrivateKey": {
-      "Type": "String",
-      "Description" : "MongoDB Atlas Private Access Key"
+      "Description": "MongoDB Atlas Proj Profile Id",
+      "Default" : "default",
+      "ConstraintDescription": ""
     },
     "MongoDBAtlasProjectId": {
       "Type": "String",
@@ -47,19 +45,14 @@
       "Type": "MongoDB::Atlas::LDAPConfiguration",
       "Properties":
         {
-          "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
+          "ProjectId": { "Ref" : "MongoDBAtlasProjectId" },
           "BindPassword": { "Ref" : "BindPassword" },
           "BindUsername": { "Ref" : "BindUsername" },
           "Hostname": { "Ref" : "Hostname" },
           "Port": { "Ref" : "Port" },
-          "ApiKeys": {
-            "PublicKey": { "Ref" : "MongoDBAtlasAPIPublicKey" },
-            "PrivateKey": { "Ref" : "MongoDBAtlasAPIPrivateKey" }
-          },
-          "AuthorizationEnabled": { "Ref" : "AuthorizationEnabled" }
+          "AuthorizationEnabled": { "Ref" : "AuthorizationEnabled" },
+          "Profile": { "Ref" : "Profile" }
         }
     }
-  },
-  "Outputs" : {
   }
 }

@@ -813,45 +813,6 @@ Provide this value only if "clusterType" : "GEOSHARDED".
 
 ---
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/cluster'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/cluster.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnClusterProps <a name="CfnClusterProps" id="@mongodbatlas-awscdk/cluster.CfnClusterProps"></a>
 
 The cluster resource provides access to your cluster configurations.
@@ -870,7 +831,6 @@ const cfnClusterProps: CfnClusterProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.name">name</a></code> | <code>string</code> | Human-readable label that identifies the advanced cluster. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.projectId">projectId</a></code> | <code>string</code> | Unique identifier of the project the cluster belongs to. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.advancedSettings">advancedSettings</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.ProcessArgs">ProcessArgs</a></code> | *No description.* |
@@ -884,20 +844,11 @@ const cfnClusterProps: CfnClusterProps = { ... }
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.mongoDbMajorVersion">mongoDbMajorVersion</a></code> | <code>string</code> | Major MongoDB version of the cluster. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.paused">paused</a></code> | <code>boolean</code> | Flag that indicates whether the cluster is paused or not. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.pitEnabled">pitEnabled</a></code> | <code>boolean</code> | Flag that indicates whether the cluster uses continuous cloud backups. |
+| <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.profile">profile</a></code> | <code>string</code> | Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.replicationSpecs">replicationSpecs</a></code> | <code><a href="#@mongodbatlas-awscdk/cluster.AdvancedReplicationSpec">AdvancedReplicationSpec</a>[]</code> | List of settings that configure your cluster regions. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.rootCertType">rootCertType</a></code> | <code>string</code> | Root Certificate Authority that MongoDB Cloud cluster uses. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.terminationProtectionEnabled">terminationProtectionEnabled</a></code> | <code>boolean</code> | Flag that indicates whether termination protection is enabled on the cluster. |
 | <code><a href="#@mongodbatlas-awscdk/cluster.CfnClusterProps.property.versionReleaseSystem">versionReleaseSystem</a></code> | <code>string</code> | Method by which the cluster maintains the MongoDB versions. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/cluster.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -1064,6 +1015,18 @@ public readonly pitEnabled: boolean;
 - *Type:* boolean
 
 Flag that indicates whether the cluster uses continuous cloud backups.
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/cluster.CfnClusterProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used.
 
 ---
 

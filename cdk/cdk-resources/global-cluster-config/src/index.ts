@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnGlobalClusterConfigProps {
   /**
-   * @schema CfnGlobalClusterConfigProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnGlobalClusterConfigProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * The unique identifier of the project for the Atlas cluster.
@@ -37,11 +39,13 @@ export interface CfnGlobalClusterConfigProps {
   readonly managedNamespaces?: ManagedNamespace[];
 
   /**
-   * Flag that indicates whether all custom zone mapping to be deleted during delete.
+   * List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to the human-readable label for the desired custom zone. MongoDB Cloud maps the ISO 3166-1a2 code to the nearest geographical zone by default. Include this parameter to override the default mappings.
    *
-   * @schema CfnGlobalClusterConfigProps#RemoveAllZoneMapping
+   * This parameter returns an empty object if no custom zones exist.
+   *
+   * @schema CfnGlobalClusterConfigProps#CustomZoneMappings
    */
-  readonly removeAllZoneMapping?: boolean;
+  readonly customZoneMappings?: ZoneMapping[];
 
 }
 
@@ -52,42 +56,11 @@ export interface CfnGlobalClusterConfigProps {
 export function toJson_CfnGlobalClusterConfigProps(obj: CfnGlobalClusterConfigProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ProjectId': obj.projectId,
     'ClusterName': obj.clusterName,
     'ManagedNamespaces': obj.managedNamespaces?.map(y => toJson_ManagedNamespace(y)),
-    'RemoveAllZoneMapping': obj.removeAllZoneMapping,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
+    'CustomZoneMappings': obj.customZoneMappings?.map(y => toJson_ZoneMapping(y)),
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -153,6 +126,41 @@ export function toJson_ManagedNamespace(obj: ManagedNamespace | undefined): Reco
 }
 /* eslint-enable max-len, quote-props */
 
+/**
+ * @schema zoneMapping
+ */
+export interface ZoneMapping {
+  /**
+   * Code that represents a location that maps to a zone in your global cluster. MongoDB Cloud represents this location with a ISO 3166-2 location and subdivision codes when possible.
+   *
+   * @schema zoneMapping#Location
+   */
+  readonly location?: string;
+
+  /**
+   * Human-readable label that identifies the zone in your global cluster. This zone maps to a location code.
+   *
+   * @schema zoneMapping#Zone
+   */
+  readonly zone?: string;
+
+}
+
+/**
+ * Converts an object of type 'ZoneMapping' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_ZoneMapping(obj: ZoneMapping | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'Location': obj.location,
+    'Zone': obj.zone,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
 
 /**
  * A CloudFormation `MongoDB::Atlas::GlobalClusterConfig`
@@ -172,9 +180,9 @@ export class CfnGlobalClusterConfig extends cdk.CfnResource {
   public readonly props: CfnGlobalClusterConfigProps;
 
   /**
-   * Attribute `MongoDB::Atlas::GlobalClusterConfig.CustomZoneMappings`
+   * Attribute `MongoDB::Atlas::GlobalClusterConfig.RemoveAllZoneMapping`
    */
-  public readonly attrCustomZoneMappings: any[];
+  public readonly attrRemoveAllZoneMapping: cdk.IResolvable;
 
   /**
    * Create a new `MongoDB::Atlas::GlobalClusterConfig`.
@@ -188,6 +196,6 @@ export class CfnGlobalClusterConfig extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrCustomZoneMappings = cdk.Token.asList(this.getAtt('CustomZoneMappings'));
+    this.attrRemoveAllZoneMapping = this.getAtt('RemoveAllZoneMapping');
   }
 }

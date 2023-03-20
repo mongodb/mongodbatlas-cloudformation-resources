@@ -403,7 +403,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.attrGroupId">attrGroupId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::MaintenanceWindow.GroupId`. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps">CfnMaintenanceWindowProps</a></code> | Resource props. |
 
 ---
@@ -500,18 +499,6 @@ AWS resource type.
 
 ---
 
-##### `attrGroupId`<sup>Required</sup> <a name="attrGroupId" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.attrGroupId"></a>
-
-```typescript
-public readonly attrGroupId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::MaintenanceWindow.GroupId`.
-
----
-
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.props"></a>
 
 ```typescript
@@ -546,45 +533,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/maintenance-window'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnMaintenanceWindowProps <a name="CfnMaintenanceWindowProps" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps"></a>
 
 The maintenanceWindow resource provides access to retrieve or update the current Atlas project maintenance window.
@@ -602,9 +550,10 @@ const cfnMaintenanceWindowProps: CfnMaintenanceWindowProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.hourOfDay">hourOfDay</a></code> | <code>number</code> | Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. |
-| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.autoDeferOnceEnabled">autoDeferOnceEnabled</a></code> | <code>boolean</code> | Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.dayOfWeek">dayOfWeek</a></code> | <code>number</code> | One-based integer that represents the day of the week that the maintenance window starts. |
+| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
+| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.startAsap">startAsap</a></code> | <code>boolean</code> | Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. |
 
 ---
@@ -620,16 +569,6 @@ public readonly hourOfDay: number;
 Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock.
 
 Use `0` for midnight and `12` for noon.
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/maintenance-window.ApiKeyDefinition">ApiKeyDefinition</a>
 
 ---
 
@@ -664,6 +603,32 @@ One-based integer that represents the day of the week that the maintenance windo
 | `5` | Thursday |
 | `6` | Friday |
 | `7` | Saturday |
+
+---
+
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
+
+---
+
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 

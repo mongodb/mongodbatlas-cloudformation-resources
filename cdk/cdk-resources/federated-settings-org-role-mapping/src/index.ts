@@ -9,16 +9,18 @@ import * as constructs from 'constructs';
  */
 export interface CfnFederatedSettingsOrgRoleMappingProps {
   /**
-   * @schema CfnFederatedSettingsOrgRoleMappingProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+   *
+   * @schema CfnFederatedSettingsOrgRoleMappingProps#Profile
    */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Unique human-readable label that identifies the identity provider group to whichthis role mapping applies.
    *
    * @schema CfnFederatedSettingsOrgRoleMappingProps#ExternalGroupName
    */
-  readonly externalGroupName?: string;
+  readonly externalGroupName: string;
 
   /**
    * Unique 24-hexadecimal digit string that identifies your federation.
@@ -39,7 +41,7 @@ export interface CfnFederatedSettingsOrgRoleMappingProps {
    *
    * @schema CfnFederatedSettingsOrgRoleMappingProps#RoleAssignments
    */
-  readonly roleAssignments?: RoleAssignment[];
+  readonly roleAssignments: RoleAssignment[];
 
 }
 
@@ -50,42 +52,11 @@ export interface CfnFederatedSettingsOrgRoleMappingProps {
 export function toJson_CfnFederatedSettingsOrgRoleMappingProps(obj: CfnFederatedSettingsOrgRoleMappingProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'ExternalGroupName': obj.externalGroupName,
     'FederationSettingsId': obj.federationSettingsId,
     'OrgId': obj.orgId,
     'RoleAssignments': obj.roleAssignments?.map(y => toJson_RoleAssignment(y)),
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -101,9 +72,9 @@ export interface RoleAssignment {
    *
    * This parameter returns an empty object if no custom zones exist.
    *
-   * @schema RoleAssignment#GroupId
+   * @schema RoleAssignment#ProjectId
    */
-  readonly groupId?: string;
+  readonly projectId?: string;
 
   /**
    * List that contains comma-separated key value pairs to map zones to geographic regions. These pairs map an ISO 3166-1a2 location code, with an ISO 3166-2 subdivision code when possible, to a unique 24-hexadecimal string that identifies the custom zone.
@@ -117,7 +88,7 @@ export interface RoleAssignment {
   /**
    * @schema RoleAssignment#Role
    */
-  readonly role?: RoleAssignmentRole;
+  readonly role?: string;
 
 }
 
@@ -128,7 +99,7 @@ export interface RoleAssignment {
 export function toJson_RoleAssignment(obj: RoleAssignment | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'GroupId': obj.groupId,
+    'ProjectId': obj.projectId,
     'OrgId': obj.orgId,
     'Role': obj.role,
   };
@@ -136,102 +107,6 @@ export function toJson_RoleAssignment(obj: RoleAssignment | undefined): Record<s
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
 }
 /* eslint-enable max-len, quote-props */
-
-/**
- * @schema RoleAssignmentRole
- */
-export enum RoleAssignmentRole {
-  /** GLOBAL_AUTOMATION_ADMIN */
-  GLOBAL_AUTOMATION_ADMIN = 'GLOBAL_AUTOMATION_ADMIN',
-  /** GLOBAL_BACKUP_ADMIN */
-  GLOBAL_BACKUP_ADMIN = 'GLOBAL_BACKUP_ADMIN',
-  /** GLOBAL_METERING_USER */
-  GLOBAL_METERING_USER = 'GLOBAL_METERING_USER',
-  /** GLOBAL_METRICS_INTERNAL_USER */
-  GLOBAL_METRICS_INTERNAL_USER = 'GLOBAL_METRICS_INTERNAL_USER',
-  /** GLOBAL_MONITORING_ADMIN */
-  GLOBAL_MONITORING_ADMIN = 'GLOBAL_MONITORING_ADMIN',
-  /** GLOBAL_OWNER */
-  GLOBAL_OWNER = 'GLOBAL_OWNER',
-  /** GLOBAL_READ_ONLY */
-  GLOBAL_READ_ONLY = 'GLOBAL_READ_ONLY',
-  /** GLOBAL_USER_ADMIN */
-  GLOBAL_USER_ADMIN = 'GLOBAL_USER_ADMIN',
-  /** GLOBAL_USER_READ_ONLY */
-  GLOBAL_USER_READ_ONLY = 'GLOBAL_USER_READ_ONLY',
-  /** GLOBAL_ACCOUNT_SUSPENSION_ADMIN */
-  GLOBAL_ACCOUNT_SUSPENSION_ADMIN = 'GLOBAL_ACCOUNT_SUSPENSION_ADMIN',
-  /** GLOBAL_BILLING_ADMIN */
-  GLOBAL_BILLING_ADMIN = 'GLOBAL_BILLING_ADMIN',
-  /** GLOBAL_LEGAL_ADMIN */
-  GLOBAL_LEGAL_ADMIN = 'GLOBAL_LEGAL_ADMIN',
-  /** GLOBAL_FEATURE_FLAG_ADMIN */
-  GLOBAL_FEATURE_FLAG_ADMIN = 'GLOBAL_FEATURE_FLAG_ADMIN',
-  /** GLOBAL_ATLAS_TSE */
-  GLOBAL_ATLAS_TSE = 'GLOBAL_ATLAS_TSE',
-  /** GLOBAL_ATLAS_OPERATOR */
-  GLOBAL_ATLAS_OPERATOR = 'GLOBAL_ATLAS_OPERATOR',
-  /** GLOBAL_ATLAS_ADMIN */
-  GLOBAL_ATLAS_ADMIN = 'GLOBAL_ATLAS_ADMIN',
-  /** GLOBAL_STITCH_ADMIN */
-  GLOBAL_STITCH_ADMIN = 'GLOBAL_STITCH_ADMIN',
-  /** GLOBAL_CHARTS_ADMIN */
-  GLOBAL_CHARTS_ADMIN = 'GLOBAL_CHARTS_ADMIN',
-  /** GLOBAL_EXPERIMENT_ASSIGNMENT_USER */
-  GLOBAL_EXPERIMENT_ASSIGNMENT_USER = 'GLOBAL_EXPERIMENT_ASSIGNMENT_USER',
-  /** GLOBAL_STITCH_INTERNAL_ADMIN */
-  GLOBAL_STITCH_INTERNAL_ADMIN = 'GLOBAL_STITCH_INTERNAL_ADMIN',
-  /** GLOBAL_SECURITY_ADMIN */
-  GLOBAL_SECURITY_ADMIN = 'GLOBAL_SECURITY_ADMIN',
-  /** GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN */
-  GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN = 'GLOBAL_QUERY_ENGINE_INTERNAL_ADMIN',
-  /** GLOBAL_PROACTIVE_SUPPORT_ADMIN */
-  GLOBAL_PROACTIVE_SUPPORT_ADMIN = 'GLOBAL_PROACTIVE_SUPPORT_ADMIN',
-  /** GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN */
-  GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN = 'GLOBAL_INFRASTRUCTURE_INTERNAL_ADMIN',
-  /** GLOBAL_SALESFORCE_ADMIN */
-  GLOBAL_SALESFORCE_ADMIN = 'GLOBAL_SALESFORCE_ADMIN',
-  /** GLOBAL_SALESFORCE_READ_ONLY */
-  GLOBAL_SALESFORCE_READ_ONLY = 'GLOBAL_SALESFORCE_READ_ONLY',
-  /** GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS */
-  GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS = 'GLOBAL_APP_SERVICES_CLUSTER_DEBUG_DATA_ACCESS',
-  /** ORG_MEMBER */
-  ORG_MEMBER = 'ORG_MEMBER',
-  /** ORG_READ_ONLY */
-  ORG_READ_ONLY = 'ORG_READ_ONLY',
-  /** ORG_BILLING_ADMIN */
-  ORG_BILLING_ADMIN = 'ORG_BILLING_ADMIN',
-  /** ORG_GROUP_CREATOR */
-  ORG_GROUP_CREATOR = 'ORG_GROUP_CREATOR',
-  /** ORG_OWNER */
-  ORG_OWNER = 'ORG_OWNER',
-  /** GROUP_AUTOMATION_ADMIN */
-  GROUP_AUTOMATION_ADMIN = 'GROUP_AUTOMATION_ADMIN',
-  /** GROUP_BACKUP_ADMIN */
-  GROUP_BACKUP_ADMIN = 'GROUP_BACKUP_ADMIN',
-  /** GROUP_MONITORING_ADMIN */
-  GROUP_MONITORING_ADMIN = 'GROUP_MONITORING_ADMIN',
-  /** GROUP_OWNER */
-  GROUP_OWNER = 'GROUP_OWNER',
-  /** GROUP_READ_ONLY */
-  GROUP_READ_ONLY = 'GROUP_READ_ONLY',
-  /** GROUP_USER_ADMIN */
-  GROUP_USER_ADMIN = 'GROUP_USER_ADMIN',
-  /** GROUP_BILLING_ADMIN */
-  GROUP_BILLING_ADMIN = 'GROUP_BILLING_ADMIN',
-  /** GROUP_DATA_ACCESS_ADMIN */
-  GROUP_DATA_ACCESS_ADMIN = 'GROUP_DATA_ACCESS_ADMIN',
-  /** GROUP_DATA_ACCESS_READ_ONLY */
-  GROUP_DATA_ACCESS_READ_ONLY = 'GROUP_DATA_ACCESS_READ_ONLY',
-  /** GROUP_DATA_ACCESS_READ_WRITE */
-  GROUP_DATA_ACCESS_READ_WRITE = 'GROUP_DATA_ACCESS_READ_WRITE',
-  /** GROUP_CHARTS_ADMIN */
-  GROUP_CHARTS_ADMIN = 'GROUP_CHARTS_ADMIN',
-  /** GROUP_CLUSTER_MANAGER */
-  GROUP_CLUSTER_MANAGER = 'GROUP_CLUSTER_MANAGER',
-  /** GROUP_SEARCH_INDEX_EDITOR */
-  GROUP_SEARCH_INDEX_EDITOR = 'GROUP_SEARCH_INDEX_EDITOR',
-}
 
 
 /**

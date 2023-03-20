@@ -4,11 +4,13 @@
   "Parameters" : {
     "VpcId" : {
       "Type" : "String",
+      "Default" : "",
       "Description" : "",
       "ConstraintDescription" : ""
     },
     "AwsAccountId" : {
       "Type" : "String",
+      "Default" : "",
       "Description" : "",
       "ConstraintDescription" : ""
     },
@@ -20,16 +22,25 @@
     },
     "RouteTableCidrBlock" : {
       "Type" : "String",
+      "Default" : "",
       "Description" : "",
       "ConstraintDescription" : ""
     },
     "ProjectId" : {
       "Type" : "String",
+      "Default" : "",
       "Description" : "",
       "ConstraintDescription" : ""
     },
     "ContainerId" : {
       "Type" : "String",
+      "Default" : "",
+      "Description" : "",
+      "ConstraintDescription" : ""
+    },
+    "Profile" : {
+      "Type" : "String",
+      "Default" : "default",
       "Description" : "",
       "ConstraintDescription" : ""
     }
@@ -45,10 +56,7 @@
         "AwsAccountId": { "Ref" : "AwsAccountId" },
         "RouteTableCIDRBlock": { "Ref" : "RouteTableCidrBlock" },
         "VpcId": { "Ref" : "VpcId" },
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "Profile": { "Ref" : "Profile" }
       }
     }
   },
@@ -56,6 +64,15 @@
     "PeerId": {
       "Description": "Id of the network peer",
       "Value" : { "Ref" : "NetworkPeering" }
+    },
+    "ConnId": {
+      "Description": "Connection Id",
+      "Value": {
+        "Fn::GetAtt": [
+          "NetworkPeering",
+          "ConnectionId"
+        ]
+      }
     }
   }
 }

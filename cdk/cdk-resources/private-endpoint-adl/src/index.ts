@@ -9,16 +9,18 @@ import * as constructs from 'constructs';
  */
 export interface CfnPrivateEndpointAdlProps {
   /**
-   * Unique 24-hexadecimal digit string that identifies your project.
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
    *
-   * @schema CfnPrivateEndpointAdlProps#GroupId
+   * @schema CfnPrivateEndpointAdlProps#Profile
    */
-  readonly groupId: string;
+  readonly profile?: string;
 
   /**
-   * @schema CfnPrivateEndpointAdlProps#ApiKeys
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnPrivateEndpointAdlProps#ProjectId
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly projectId: string;
 
   /**
    * Human-readable string to associate with this private endpoint.
@@ -26,6 +28,13 @@ export interface CfnPrivateEndpointAdlProps {
    * @schema CfnPrivateEndpointAdlProps#Comment
    */
   readonly comment?: string;
+
+  /**
+   * Unique 22-character alphanumeric string that identifies the private endpoint.
+   *
+   * @schema CfnPrivateEndpointAdlProps#EndpointId
+   */
+  readonly endpointId?: string;
 
   /**
    * Human-readable label that identifies the cloud service provider. Atlas Data Lake supports Amazon Web Services only.
@@ -50,42 +59,12 @@ export interface CfnPrivateEndpointAdlProps {
 export function toJson_CfnPrivateEndpointAdlProps(obj: CfnPrivateEndpointAdlProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'GroupId': obj.groupId,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
+    'ProjectId': obj.projectId,
     'Comment': obj.comment,
+    'EndpointId': obj.endpointId,
     'Provider': obj.provider,
     'Type': obj.type,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -110,10 +89,6 @@ export class CfnPrivateEndpointAdl extends cdk.CfnResource {
    */
   public readonly props: CfnPrivateEndpointAdlProps;
 
-  /**
-   * Attribute `MongoDB::Atlas::PrivateEndpointADL.EndpointId`
-   */
-  public readonly attrEndpointId: string;
 
   /**
    * Create a new `MongoDB::Atlas::PrivateEndpointADL`.
@@ -127,6 +102,5 @@ export class CfnPrivateEndpointAdl extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrEndpointId = cdk.Token.asString(this.getAtt('EndpointId'));
   }
 }

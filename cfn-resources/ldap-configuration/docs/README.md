@@ -12,15 +12,16 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::LDAPConfiguration",
     "Properties" : {
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#bindusername" title="BindUsername">BindUsername</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#hostname" title="Hostname">Hostname</a>" : <i>String</i>,
-        "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#authenticationenabled" title="AuthenticationEnabled">AuthenticationEnabled</a>" : <i>Boolean</i>,
         "<a href="#authorizationenabled" title="AuthorizationEnabled">AuthorizationEnabled</a>" : <i>Boolean</i>,
         "<a href="#cacertificate" title="CaCertificate">CaCertificate</a>" : <i>String</i>,
         "<a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>" : <i>String</i>,
         "<a href="#bindpassword" title="BindPassword">BindPassword</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#port" title="Port">Port</a>" : <i>Integer</i>,
         "<a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>" : <i>[ <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a>, ... ]</i>
     }
@@ -32,21 +33,32 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::LDAPConfiguration
 Properties:
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#bindusername" title="BindUsername">BindUsername</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#hostname" title="Hostname">Hostname</a>: <i>String</i>
-    <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#authenticationenabled" title="AuthenticationEnabled">AuthenticationEnabled</a>: <i>Boolean</i>
     <a href="#authorizationenabled" title="AuthorizationEnabled">AuthorizationEnabled</a>: <i>Boolean</i>
     <a href="#cacertificate" title="CaCertificate">CaCertificate</a>: <i>String</i>
     <a href="#authzquerytemplate" title="AuthzQueryTemplate">AuthzQueryTemplate</a>: <i>String</i>
     <a href="#bindpassword" title="BindPassword">BindPassword</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#port" title="Port">Port</a>: <i>Integer</i>
     <a href="#usertodnmapping" title="UserToDNMapping">UserToDNMapping</a>: <i>
       - <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a></i>
 </pre>
 
 ## Properties
+
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### BindUsername
 
@@ -75,14 +87,6 @@ Human-readable label that identifies the hostname or Internet Protocol (IP) addr
 _Required_: Yes
 
 _Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ApiKeys
-
-_Required_: Yes
-
-_Type_: <a href="apikeydefinition.md">ApiKeyDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -136,6 +140,16 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### ProjectId
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+_Required_: Yes
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### Port
 
 Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections.
@@ -155,20 +169,4 @@ _Required_: No
 _Type_: List of <a href="apiatlasndsusertodnmappingview.md">ApiAtlasNDSUserToDNMappingView</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the GroupId.
-
-### Fn::GetAtt
-
-The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
-
-For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
-
-#### GroupId
-
-Unique 24-hexadecimal digit string that identifies your project.
 

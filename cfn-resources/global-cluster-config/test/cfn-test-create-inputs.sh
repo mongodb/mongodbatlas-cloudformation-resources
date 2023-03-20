@@ -34,33 +34,24 @@ export MCLI_PROJECT_ID=$projectId
 
 ClusterName="${projectName}"
 
-clusterId=$(atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
-sleep 1200
-echo -e "Created Cluster \"${ClusterName}\" with id: ${clusterId}\n"
-
-if [ -z "$clusterId" ]; then
-	echo -e "Error Can't find Cluster \"${ClusterName}\""
-	exit 1
-fi
+atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+atlas clusters watch "${ClusterName}" --projectId "${projectId}"
+echo -e "Created Cluster \"${ClusterName}\""
 
 atlas clusters loadSampleData "${ClusterName}" --projectId "${projectId}"
 
 rm -rf inputs
 mkdir inputs
 name="${1}"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
+jq --arg group_id "$projectId" \
 	--arg clusterName "$ClusterName" \
-	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 name="${name}- more B@d chars !@(!(@====*** ;;::"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
+jq --arg group_id "$projectId" \
 	--arg clusterName "$ClusterName" \
-	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

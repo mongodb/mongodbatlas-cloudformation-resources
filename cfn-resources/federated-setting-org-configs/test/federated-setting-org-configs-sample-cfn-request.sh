@@ -19,9 +19,7 @@ if [[ "$*" == help ]]; then usage; fi
 federationSettingsId="${1}"
 connectedOrganizationId="${2}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$connectedOrganizationId" \
+jq --arg org "$connectedOrganizationId" \
 	--arg FederationSettingsId "$federationSettingsId" \
-	'.desiredResourceState.FederationSettingsId?|=$FederationSettingsId | .desiredResourceState.OrgId?|=$org | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey ' \
+	'.desiredResourceState.FederationSettingsId?|=$FederationSettingsId | .desiredResourceState.OrgId?|=$org ' \
 	"$(dirname "$0")/federated-setting-org-configs.sample-cfn-request.json"

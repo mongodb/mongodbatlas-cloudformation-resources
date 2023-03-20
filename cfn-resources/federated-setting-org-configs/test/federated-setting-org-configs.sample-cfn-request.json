@@ -1,17 +1,12 @@
 {
-    "desiredResourceState" : {
-
-      "FederationSettingsId": "",
-      "OrgId": "",
-      "DomainRestrictionEnabled": "false",
-      "DomainAllowList":["gmail.com"],
-      "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-      }
-
-
-    },
-
-    "previousResourceState": { }
+  "desiredResourceState": {
+    "FederationSettingsId": "",
+    "OrgId": "",
+    "DomainRestrictionEnabled": "false",
+    "DomainAllowList": [
+      "gmail.com"
+    ],
+    "Profile": ""
+  },
+  "previousResourceState": {}
 }

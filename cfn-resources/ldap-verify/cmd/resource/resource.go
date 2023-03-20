@@ -19,10 +19,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/openlyinc/pointy"
+	"github.com/aws/aws-sdk-go/aws"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -37,10 +37,10 @@ const (
 	RequestID    = "RequestId"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, BindUsername, BindPassword, constants.HostName, constants.Port, constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.GroupID, RequestID, constants.PvtKey, constants.PubKey}
+var CreateRequiredFields = []string{constants.ProjectID, BindUsername, BindPassword, constants.HostName, constants.Port}
+var ReadRequiredFields = []string{constants.ProjectID, RequestID}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey, RequestID}
+var DeleteRequiredFields = []string{constants.ProjectID, RequestID}
 var ListRequiredFields []string
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -60,19 +60,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
 	if req.CallbackContext != nil {
 		return validateProgress(client, currentModel, req), nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -102,13 +105,19 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	var res *mongodbatlas.Response
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.GroupId, *currentModel.RequestId)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -136,26 +145,30 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
 
-	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.GroupId, *currentModel.RequestId)
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
 			res.Response), nil
 	}
 
 	ldapReq := &mongodbatlas.LDAP{
-		Hostname:     pointy.String("-"),
-		Port:         pointy.Int(1111),
-		BindPassword: pointy.String("-"),
-		BindUsername: pointy.String("-"),
+		Hostname:     aws.String("-"),
+		Port:         aws.Int(1111),
+		BindPassword: aws.String("-"),
+		BindUsername: aws.String("-"),
 	}
 
-	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.GroupId, ldapReq)
+	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
 		_, _ = log.Debugf("Delete - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -205,12 +218,13 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 	}
 
 	m.Validations = mapping
+	m.Status = &resp.Status
 }
 
 func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Request) handler.ProgressEvent {
 	requestID := req.CallbackContext["RequestId"].(string)
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.GroupId, requestID)
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.ProjectId, requestID)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response)

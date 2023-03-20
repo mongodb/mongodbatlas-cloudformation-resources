@@ -20,7 +20,9 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -29,11 +31,11 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var ReadRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
+var CreateRequiredFields = []string{constants.ProjectID}
+var ReadRequiredFields = []string{constants.ProjectID}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
-var ListRequiredFields = []string{constants.ProjectID, constants.PubKey, constants.PvtKey}
+var DeleteRequiredFields = []string{constants.ProjectID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint-regional-mode")
@@ -46,19 +48,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
+	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	if isRegModeSettingExists(currentModel, mongodbClient) {
 		return progress_events.GetFailedEventByCode(fmt.Sprintf("Regionalized Setting for Private Endpoint already enabled for : %s", *currentModel.ProjectId),
 			cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
-	enabled := true
-	currentModel.Enabled = &enabled
+
 	// API call to Add Regional Mode for Private Endpoint
-	return resourcePrivateEndpointRegionalModeUpdate(req, prevModel, currentModel, mongodbClient)
+	return resourcePrivateEndpointRegionalModeUpdate(currentModel, mongodbClient, true)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -70,10 +75,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
+	}
+
+	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 	regPrivateEndpointSetting, response, err := mongodbClient.PrivateEndpoints.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId)
 	if err != nil {
@@ -108,15 +116,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	mongodbClient, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(userprofile.DefaultProfile)
 	}
+
+	// Create atlas client
+	mongodbClient, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
 	if isRegModeSettingExists(currentModel, mongodbClient) {
-		enabled := false
-		currentModel.Enabled = &enabled
-		events, err := resourcePrivateEndpointRegionalModeUpdate(req, prevModel, currentModel, mongodbClient)
+		events, err := resourcePrivateEndpointRegionalModeUpdate(currentModel, mongodbClient, false)
 		if err != nil {
 			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
 				events.HandlerErrorCode), nil
@@ -138,14 +149,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func resourcePrivateEndpointRegionalModeUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-	regionalizedPrivateEndpointSetting, response, err := client.PrivateEndpoints.UpdateRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId, *currentModel.Enabled)
+func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *mongodbatlas.Client, enabled bool) (handler.ProgressEvent, error) {
+	regionalizedPrivateEndpointSetting, response, err := client.PrivateEndpoints.UpdateRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId, enabled)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(
 			fmt.Sprintf("Error in enabling regionalized settings : %s", err.Error()),
 			response.Response), nil
 	}
-	currentModel.Enabled = &regionalizedPrivateEndpointSetting.Enabled
+
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -168,9 +179,8 @@ func isRegModeSettingExists(currentModel *Model, client *mongodbatlas.Client) bo
 
 func regionalPrivateEndpointToModel(currentModel Model, regPrivateMode *mongodbatlas.RegionalizedPrivateEndpointSetting) *Model {
 	out := &Model{
-		ApiKeys:   currentModel.ApiKeys,
-		Enabled:   &regPrivateMode.Enabled,
 		ProjectId: currentModel.ProjectId,
+		Profile:   currentModel.Profile,
 	}
 	return out
 }

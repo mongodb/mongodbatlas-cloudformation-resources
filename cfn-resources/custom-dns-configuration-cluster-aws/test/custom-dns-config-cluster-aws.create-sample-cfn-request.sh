@@ -6,8 +6,18 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-jq --arg pubkey "$MCLI_PUBLIC_API_KEY" \
-	--arg pvtkey "$MCLI_PRIVATE_API_KEY" \
-	--arg ProjectId "$MCLI_PROJECT_ID" \
-	'.desiredResourceState.ProjectId?|=$ProjectId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey' \
-	"$(dirname "$0")/custom-dns-config-cluster-aws.sample-cfn-request.json"
+
+
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
+
+jq --arg ProjectId "$projectId" \
+     '.desiredResourceState.ProjectId?|=$ProjectId' \
+    "$(dirname "$0")/custom-dns-config-cluster-aws.sample-cfn-request.json"

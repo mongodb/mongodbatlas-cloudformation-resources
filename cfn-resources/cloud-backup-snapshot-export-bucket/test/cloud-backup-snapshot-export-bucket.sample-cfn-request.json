@@ -1,13 +1,10 @@
 {
-    "desiredResourceState" : {
-        "GroupId": "",
-        "IamRoleID": "",
-        "BucketName": "",
-        "ApiKeys": {
-            "PublicKey": "",
-            "PrivateKey": ""
-        }
-    },
-    "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
-    "previousResourceState": { }
+  "desiredResourceState": {
+    "ProjectId": "",
+    "IamRoleID": "",
+    "BucketName": "",
+    "Profile": "default"
+  },
+  "providerLogGroupName": "mongodb-atlas-private-endpoint-logs",
+  "previousResourceState": {}
 }

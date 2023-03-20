@@ -1,11 +1,8 @@
 
 {
-    "GroupId": "",
+    "ProjectId": "",
     "ClusterName": "",
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    },
+    "Profile": "default",
     "SnapshotId": "",
     "ExportBucketId": "",
     "ExportId": "",

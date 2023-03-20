@@ -16,6 +16,20 @@ export interface CfnCloudBackupScheduleProps {
   readonly id?: string;
 
   /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnCloudBackupScheduleProps#ProjectId
+   */
+  readonly projectId: string;
+
+  /**
+   * The name of the Atlas cluster that contains the snapshots you want to retrieve.
+   *
+   * @schema CfnCloudBackupScheduleProps#ClusterName
+   */
+  readonly clusterName: string;
+
+  /**
    * Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled.
    *
    * @schema CfnCloudBackupScheduleProps#AutoExportEnabled
@@ -86,9 +100,11 @@ export interface CfnCloudBackupScheduleProps {
   readonly updateSnapshots?: boolean;
 
   /**
-   * @schema CfnCloudBackupScheduleProps#ApiKeys
+   * Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+   *
+   * @schema CfnCloudBackupScheduleProps#Profile
    */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile: string;
 
   /**
    * List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
@@ -107,6 +123,8 @@ export function toJson_CfnCloudBackupScheduleProps(obj: CfnCloudBackupSchedulePr
   if (obj === undefined) { return undefined; }
   const result = {
     'Id': obj.id,
+    'ProjectId': obj.projectId,
+    'ClusterName': obj.clusterName,
     'AutoExportEnabled': obj.autoExportEnabled,
     'UseOrgAndGroupNamesInExportPrefix': obj.useOrgAndGroupNamesInExportPrefix,
     'Export': toJson_Export(obj.export),
@@ -117,7 +135,7 @@ export function toJson_CfnCloudBackupScheduleProps(obj: CfnCloudBackupSchedulePr
     'ReferenceMinuteOfHour': obj.referenceMinuteOfHour,
     'RestoreWindowDays': obj.restoreWindowDays,
     'UpdateSnapshots': obj.updateSnapshots,
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'Links': obj.links?.map(y => toJson_Link(y)),
   };
   // filter undefined values
@@ -294,45 +312,9 @@ export function toJson_ApiPolicyView(obj: ApiPolicyView | undefined): Record<str
 /* eslint-enable max-len, quote-props */
 
 /**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PublicKey': obj.publicKey,
-    'PrivateKey': obj.privateKey,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
  * @schema Link
  */
 export interface Link {
-  /**
-   * @schema Link#ApiKeys
-   */
-  readonly apiKeys?: ApiKeyDefinition;
-
   /**
    * Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`.
    *
@@ -356,7 +338,6 @@ export interface Link {
 export function toJson_Link(obj: Link | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
     'Href': obj.href,
     'Rel': obj.rel,
   };
@@ -450,14 +431,6 @@ export class CfnCloudBackupSchedule extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::CloudBackupSchedule.NextSnapshot`
    */
   public readonly attrNextSnapshot: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSchedule.ProjectId`
-   */
-  public readonly attrProjectId: string;
-  /**
-   * Attribute `MongoDB::Atlas::CloudBackupSchedule.ClusterName`
-   */
-  public readonly attrClusterName: string;
 
   /**
    * Create a new `MongoDB::Atlas::CloudBackupSchedule`.
@@ -473,7 +446,5 @@ export class CfnCloudBackupSchedule extends cdk.CfnResource {
 
     this.attrClusterId = cdk.Token.asString(this.getAtt('ClusterId'));
     this.attrNextSnapshot = cdk.Token.asString(this.getAtt('NextSnapshot'));
-    this.attrProjectId = cdk.Token.asString(this.getAtt('ProjectId'));
-    this.attrClusterName = cdk.Token.asString(this.getAtt('ClusterName'));
   }
 }

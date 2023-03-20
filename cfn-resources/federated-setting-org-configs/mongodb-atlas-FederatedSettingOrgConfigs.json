@@ -1,16 +1,16 @@
 {
+  "typeName": "MongoDB::Atlas::FederatedSettingOrgConfigs",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
   "additionalProperties": false,
   "definitions": {
     "FederatedUserView": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        },
         "EmailAddress": {
           "type": "string",
           "description": "Email address of the MongoDB Cloud user linked to the federated organization.",
-          "pattern": "^[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%\u0026'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+          "pattern": "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
         },
         "FederationSettingsId": {
           "type": "string",
@@ -37,20 +37,10 @@
       },
       "additionalProperties": false
     },
-    "ObjectId": {
-      "type": "object",
-      "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/apiKeyDefinition"
-        }
-      },
-      "additionalProperties": false
-    },
     "RoleAssignment": {
       "type": "object",
       "properties": {
-
-        "GroupId": {
+        "ProjectId": {
           "type": "string"
         },
         "OrgId": {
@@ -68,8 +58,6 @@
             "GLOBAL_READ_ONLY",
             "ORG_OWNER",
             "ORG_MEMBER"
-
-
           ]
         }
       },
@@ -78,7 +66,6 @@
     "RoleMappingView": {
       "type": "object",
       "properties": {
-
         "ExternalGroupName": {
           "type": "string",
           "description": "Unique human-readable label that identifies the identity provider group to whichthis role mapping applies.",
@@ -103,42 +90,13 @@
         }
       },
       "additionalProperties": false
-    },
-    "apiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
     }
   },
-  "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
-  "handlers": {
-    "create": {
-      "permissions": []
-    },
-    "read": {
-      "permissions": []
-    },
-    "update": {
-      "permissions": []
-    },
-    "delete": {
-      "permissions": []
-    }
-  },
-  "primaryIdentifier": [
-    "/properties/FederationSettingsId",
-    "/properties/OrgId"
-  ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/apiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "DomainAllowList": {
       "type": "array",
@@ -175,7 +133,6 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-
     "PostAuthRoleGrants": {
       "type": "array",
       "insertionOrder": false,
@@ -191,7 +148,6 @@
           "GLOBAL_OWNER",
           "ORG_OWNER",
           "ORG_MEMBER"
-
         ]
       }
     },
@@ -216,13 +172,41 @@
   },
   "readOnlyProperties": [
     "/properties/RoleAssignment/OrgId",
-    "/properties/OrgId",
     "/properties/TestMode",
     "/properties/FederationSettingsId",
-    "/properties/RoleAssignment/GroupId",
+    "/properties/RoleAssignment/ProjectId",
     "/properties/RoleMappingView/Id",
     "/properties/FederatedUserView/UserId"
   ],
-  "typeName": "MongoDB::Atlas::FederatedSettingOrgConfigs",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "primaryIdentifier": [
+    "/properties/FederationSettingsId",
+    "/properties/OrgId",
+    "/properties/Profile"
+  ],
+  "createOnlyProperties": [
+    "/properties/OrgId",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

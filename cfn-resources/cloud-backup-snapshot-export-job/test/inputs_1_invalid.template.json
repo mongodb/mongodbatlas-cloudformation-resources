@@ -1,10 +1,7 @@
 {
-    "GroupId": "",
+    "ProjectId": "",
     "ClusterName": "",
-    "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-    },
+    "Profile": "default",
     "ExportBucketId": "",
     "ExportId": ""
 }

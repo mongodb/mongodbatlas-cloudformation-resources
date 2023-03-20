@@ -85,6 +85,10 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.ipAccessList">ipAccessList</a></code> | <code>@mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mCluster">mCluster</a></code> | <code>@mongodbatlas-awscdk/cluster.CfnCluster</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mDBUser">mDBUser</a></code> | <code>@mongodbatlas-awscdk/database-user.CfnDatabaseUser</code> | *No description.* |
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mProject">mProject</a></code> | <code>@mongodbatlas-awscdk/project.CfnProject</code> | *No description.* |
 
 ---
 
@@ -100,47 +104,48 @@ The tree node.
 
 ---
 
+##### `ipAccessList`<sup>Required</sup> <a name="ipAccessList" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.ipAccessList"></a>
+
+```typescript
+public readonly ipAccessList: CfnProjectIpAccessList;
+```
+
+- *Type:* @mongodbatlas-awscdk/project-ip-access-list.CfnProjectIpAccessList
+
+---
+
+##### `mCluster`<sup>Required</sup> <a name="mCluster" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mCluster"></a>
+
+```typescript
+public readonly mCluster: CfnCluster;
+```
+
+- *Type:* @mongodbatlas-awscdk/cluster.CfnCluster
+
+---
+
+##### `mDBUser`<sup>Required</sup> <a name="mDBUser" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mDBUser"></a>
+
+```typescript
+public readonly mDBUser: CfnDatabaseUser;
+```
+
+- *Type:* @mongodbatlas-awscdk/database-user.CfnDatabaseUser
+
+---
+
+##### `mProject`<sup>Required</sup> <a name="mProject" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasic.property.mProject"></a>
+
+```typescript
+public readonly mProject: CfnProject;
+```
+
+- *Type:* @mongodbatlas-awscdk/project.CfnProject
+
+---
+
 
 ## Structs <a name="Structs" id="Structs"></a>
-
-### ApiKeyDefinition <a name="ApiKeyDefinition" id="@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition.Initializer"></a>
-
-```typescript
-import { ApiKeyDefinition } from '@mongodbatlas-awscdk/atlas-basic'
-
-const apiKeyDefinition: ApiKeyDefinition = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
 
 ### AtlasBasicProps <a name="AtlasBasicProps" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps"></a>
 
@@ -156,21 +161,11 @@ const atlasBasicProps: AtlasBasicProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition">ApiKeyDefinition</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.clusterProps">clusterProps</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ClusterProps">ClusterProps</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.projectProps">projectProps</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ProjectProps">ProjectProps</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.dbUserProps">dbUserProps</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-basic.DatabaseUserProps">DatabaseUserProps</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.ipAccessListProps">ipAccessListProps</a></code> | <code><a href="#@mongodbatlas-awscdk/atlas-basic.IpAccessListProps">IpAccessListProps</a></code> | *No description.* |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/atlas-basic.ApiKeyDefinition">ApiKeyDefinition</a>
+| <code><a href="#@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.profile">profile</a></code> | <code>string</code> | *No description.* |
 
 ---
 
@@ -214,6 +209,16 @@ public readonly ipAccessListProps: IpAccessListProps;
 
 ---
 
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/atlas-basic.AtlasBasicProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+---
+
 ### ClusterProps <a name="ClusterProps" id="@mongodbatlas-awscdk/atlas-basic.ClusterProps"></a>
 
 #### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/atlas-basic.ClusterProps.Initializer"></a>
@@ -229,7 +234,6 @@ const clusterProps: ClusterProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ClusterProps.property.advancedSettings">advancedSettings</a></code> | <code>@mongodbatlas-awscdk/cluster.ProcessArgs</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/atlas-basic.ClusterProps.property.apiKeys">apiKeys</a></code> | <code>@mongodbatlas-awscdk/cluster.ApiKeyDefinition</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ClusterProps.property.backupEnabled">backupEnabled</a></code> | <code>boolean</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ClusterProps.property.biConnector">biConnector</a></code> | <code>@mongodbatlas-awscdk/cluster.CfnClusterPropsBiConnector</code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/atlas-basic.ClusterProps.property.clusterType">clusterType</a></code> | <code>string</code> | *No description.* |
@@ -256,16 +260,6 @@ public readonly advancedSettings: ProcessArgs;
 ```
 
 - *Type:* @mongodbatlas-awscdk/cluster.ProcessArgs
-
----
-
-##### `apiKeys`<sup>Optional</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/atlas-basic.ClusterProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKeyDefinition;
-```
-
-- *Type:* @mongodbatlas-awscdk/cluster.ApiKeyDefinition
 
 ---
 

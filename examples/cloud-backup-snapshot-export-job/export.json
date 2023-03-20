@@ -2,6 +2,12 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters" : {
+    "Profile" : {
+      "Type" : "String",
+      "Description" : "",
+      "Default" : "default",
+      "ConstraintDescription" : ""
+    },
     "ProjectId" : {
       "Type" : "String",
       "Description" : "",
@@ -10,8 +16,7 @@
     },
     "ClusterName" : {
       "Type" : "String",
-      "Description" : "",
-	  "Default" : "cfntest",
+	  "Default" : "",
       "ConstraintDescription" : ""
     },
 	"ExportBucketId" : {
@@ -24,40 +29,47 @@
   "Mappings" : {},
   "Resources" : {
     "CloudBackUp": {
-      "Type": "MongoDB::Atlas::BackupSnapshot",
+      "Type": "MongoDB::Atlas::CloudBackupSnapshot",
       "Properties": {
-        "GroupId": { "Ref" : "ProjectId" },
+        "ProjectId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },
-        "Description": "A testing for creating cloud provider snapshot 2",
+        "Description": "Creating cloud provider snapshot for Export Job",
         "RetentionInDays" : 3 ,
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "Profile": {"Ref": "Profile"}
       }
     },
     "CloudBackupSnapshotExportJob": {
       "Type": "MongoDB::Atlas::CloudBackupSnapshotExportJob",
       "Properties": {
-        "GroupId": { "Ref" : "ProjectId" },
+        "ProjectId": { "Ref" : "ProjectId" },
         "ClusterName": { "Ref" : "ClusterName" },
-        "SnapshotId" : { "Ref" : "CloudBackUp" },
+        "SnapshotId" : { "Fn::GetAtt": [
+            "CloudBackUp",
+            "SnapshotId"
+          ] },
         "ExportBucketId": { "Ref" : "ExportBucketId" },
-        "ApiKeys": {
-          "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-          "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-        }
+        "Profile": {"Ref": "Profile"}
       }
     }
   },
   "Outputs" : {
     "SnapshotId": {
       "Description": "Id of the cloud provider snapshot",
-      "Value" : { "Ref" : "CloudBackUp" }
+      "Value" : {
+        "Fn::GetAtt": [
+        "CloudBackUp",
+        "SnapshotId"
+        ]
+      }
     },
     "ExportId": {
       "Description": "Id of the cloud provider snapshot restore job",
-      "Value" : { "Ref" : "CloudBackupSnapshotExportJob" }
+      "Value" : {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshotExportJob",
+          "ExportId"
+        ]
+      }
     }
   }
 }

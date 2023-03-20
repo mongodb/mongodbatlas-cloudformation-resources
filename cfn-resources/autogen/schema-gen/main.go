@@ -50,7 +50,7 @@ var optionalReqParams = []string{"app"}
 var diffFile = "diff"
 
 func main() {
-	/*Set the compare variable to TRUE to get the latest swagger file*/
+	/*Set the compare variable to TRUE to get the latest openAPI spec*/
 	compare := false
 
 	compare, err := readArgs()
@@ -58,14 +58,14 @@ func main() {
 		return
 	}
 
-	file, doc, err := readConfig(compare)
+	mappingFile, openAPIDoc, err := readConfig(compare)
 	if err != nil {
 		fmt.Printf("read config err:%v", err)
 		os.Exit(1)
 	}
 
 	data := OpenAPIMapping{}
-	err = json.Unmarshal(file, &data)
+	err = json.Unmarshal(mappingFile, &data)
 	if err != nil {
 		fmt.Printf("%v", err)
 		os.Exit(1)
@@ -78,12 +78,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	chn := make(chan CfnSchema, len(doc.Components.Schemas))
+	cfnSchema := make(chan CfnSchema, len(openAPIDoc.Components.Schemas))
 	reqFieldsChan := make(chan RequiredParams)
 
 	done := make(chan bool)
 	reqDone := make(chan bool)
-	go generateSchemas(chn, done, compare)
+	go generateSchemas(cfnSchema, done, compare)
 	go generateReqFields(reqFieldsChan, reqDone, compare)
 
 	fmt.Println("Generating schema")
@@ -103,17 +103,17 @@ func main() {
 		typeName = capitalize(res.TypeName)
 
 		for _, path := range res.OpenAPIPaths {
-			pathItem := doc.Paths.Find(path)
+			pathItem := openAPIDoc.Paths.Find(path)
 			if pathItem == nil {
 				continue
 			}
 
 			if method := pathItem.Post; method != nil {
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, doc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, doc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 				// Read from query params
 				queryParams := readQueryParams(method)
 				for _, reqSchemaKey := range reqSchemaKeys {
@@ -124,7 +124,6 @@ func main() {
 				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(bodySchema[key], queryParams))
 				definitions = mergeDefinitionMaps(definitions, mergeDefinitionMaps(reqDefinitions, resDefinitions))
 
-				definitions = defaultDefinition(definitions)
 				readOnly, ids = readOnlyAndUniqueProperties(bodySchema)
 				readOnlyDef, idsDef = readOnlyAndUniqueDefinitions(definitions)
 				readOnly = append(readOnly, readOnlyDef...)
@@ -143,11 +142,11 @@ func main() {
 					continue
 				}
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, doc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
 				createReqParams = reqParams
 
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, doc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -159,7 +158,6 @@ func main() {
 				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(bodySchema[key], queryParams))
 				definitions = mergeDefinitionMaps(definitions, mergeDefinitionMaps(reqDefinitions, resDefinitions))
 
-				definitions = defaultDefinition(definitions)
 				readOnly, ids = readOnlyAndUniqueProperties(bodySchema)
 				readOnlyDef, idsDef = readOnlyAndUniqueDefinitions(definitions)
 				readOnly = append(readOnly, readOnlyDef...)
@@ -172,14 +170,14 @@ func main() {
 			}
 			if method := pathItem.Get; method != nil {
 				if description == "" {
-					description = readDescription(method.Tags[0], doc)
+					description = readDescription(method.Tags[0], openAPIDoc)
 				}
 
 				// Read from Req params
-				_, _, _, reqParams := readRequestBody(method, doc)
+				_, _, _, reqParams := readRequestBody(method, openAPIDoc)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, doc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -189,8 +187,6 @@ func main() {
 				allMethodProps[key] = mergePropertyMaps(allMethodProps[key], mergePropertyMaps(bodySchema[key], queryParams))
 
 				definitions = mergeDefinitionMaps(definitions, resDefinitions)
-
-				definitions = defaultDefinition(definitions)
 				readOnly, ids = readOnlyAndUniqueProperties(bodySchema)
 				readOnlyDef, idsDef = readOnlyAndUniqueDefinitions(definitions)
 				readOnly = append(readOnly, readOnlyDef...)
@@ -205,7 +201,7 @@ func main() {
 			}
 			if method := pathItem.Delete; method != nil {
 				if description == "" {
-					description = readDescription(method.Tags[0], doc)
+					description = readDescription(method.Tags[0], openAPIDoc)
 				}
 				// Read from query params
 				for i := range method.Parameters {
@@ -225,15 +221,13 @@ func main() {
 			}
 		}
 		if allMethodProps[key] != nil {
-			allMethodProps[key] = defaultProperty(allMethodProps[key])
-
 			sort.Strings(createReqParams)
 			sort.Strings(readOnly)
 			sort.Strings(ids)
 
 			cfn = CfnSchema{
 				AdditionalProperties: false,
-				Definitions:          sortDefinitions(definitions),
+				Definitions:          sortProperties(definitions),
 				Description:          description,
 				Handlers:             h,
 				PrimaryIdentifier:    ids,
@@ -244,13 +238,13 @@ func main() {
 				SourceURL:            url,
 				FileName:             res.TypeName,
 			}
-			chn <- cfn
+			cfnSchema <- cfn
 
 			requiredParams.FileName = res.TypeName
 			reqFieldsChan <- requiredParams
 		}
 	}
-	close(chn)
+	close(cfnSchema)
 	<-done
 
 	close(reqFieldsChan)
@@ -282,28 +276,15 @@ func readArgs() (compare bool, err error) {
 	return false, nil
 }
 
-func sortProperties(properties map[string]Property) (props map[string]Property) {
-	keys := make([]string, len(properties))
-	for key := range properties {
-		keys = append(keys, key)
+func sortProperties[V any](properties map[string]V) (props map[string]interface{}) {
+	var propertyNames []string
+	for name := range properties {
+		propertyNames = append(propertyNames, name)
 	}
-	sort.Strings(keys)
-	props = make(map[string]Property, len(properties))
-	for _, key := range keys {
-		props[key] = properties[key]
-	}
-	return props
-}
-
-func sortDefinitions(properties map[string]Definitions) (props map[string]Definitions) {
-	keys := make([]string, len(properties))
-	for key := range properties {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	props = make(map[string]Definitions, len(properties))
-	for _, key := range keys {
-		props[key] = properties[key]
+	sort.Strings(propertyNames)
+	props = make(map[string]interface{}, len(properties))
+	for _, name := range propertyNames {
+		props[name] = properties[name]
 	}
 	return props
 }
@@ -351,7 +332,8 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	file, err := os.ReadFile(fmt.Sprintf("%s/mapping.json", dir))
+	fileName := fmt.Sprintf("%s/mapping.json", dir)
+	file, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -412,21 +394,34 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 	return schemaKeys, reqSchema, definitions, requiredParams
 }
 
-func readResponseBody(method *openapi3.Operation, doc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
-	var resSchemaKey string
-
-	if method.Responses["200"] != nil && method.Responses["200"].Value != nil && method.Responses["200"].Value.Content["application/json"] != nil &&
-		method.Responses["200"].Value.Content["application/json"].Schema != nil {
-		resSchemaKey = filepath.Base(method.Responses["200"].Value.Content["application/json"].Schema.Ref)
-		// Read from Request body
-		if doc.Components.Schemas[filepath.Base(resSchemaKey)] != nil {
-			value := *doc.Components.Schemas[filepath.Base(resSchemaKey)]
-			resSchema, definitions = processSchema(resSchemaKey, &value, doc.Components.Schemas)
-		}
+func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
+	if methodResponseHasSchema(method, "200") {
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "200")
 	}
-	return capitalize(resSchemaKey), resSchema, definitions
+
+	if methodResponseHasSchema(method, "201") {
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "201")
+	}
+
+	return "", nil, nil
 }
 
+func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
+	key = filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
+	// Read from Request body
+	if openAPIDoc.Components.Schemas[filepath.Base(key)] != nil {
+		value := *openAPIDoc.Components.Schemas[filepath.Base(key)]
+		resSchema, definitions := processSchema(key, &value, openAPIDoc.Components.Schemas)
+		return capitalize(key), resSchema, definitions
+	}
+
+	return capitalize(key), nil, nil
+}
+
+func methodResponseHasSchema(method *openapi3.Operation, responseCode string) bool {
+	return method.Responses[responseCode] != nil && method.Responses[responseCode].Value != nil && method.Responses[responseCode].Value.Content["application/json"] != nil &&
+		method.Responses[responseCode].Value.Content["application/json"].Schema != nil
+}
 func readQueryParams(method *openapi3.Operation) map[string]Property {
 	queryParams := map[string]Property{}
 	for i := range method.Parameters {
@@ -439,27 +434,6 @@ func readQueryParams(method *openapi3.Operation) map[string]Property {
 		}
 	}
 	return queryParams
-}
-
-func defaultProperty(defaultProperty map[string]Property) map[string]Property {
-	defaultProperty["ApiKeys"] = Property{Ref: "#/definitions/ApiKeyDefinition"}
-	return defaultProperty
-}
-
-func defaultDefinition(definitions map[string]Definitions) map[string]Definitions {
-	defaultDef := make(map[string]Property)
-	defaultDef["PublicKey"] = Property{
-		Type: "string",
-	}
-	defaultDef["PrivateKey"] = Property{
-		Type: "string",
-	}
-	definitions["ApiKeyDefinition"] = Definitions{
-		Type:                 "object",
-		Properties:           defaultDef,
-		AdditionalProperties: false,
-	}
-	return definitions
 }
 
 func readOnlyAndUniqueDefinitions(def map[string]Definitions) (readOnly []string, ids []string) {
@@ -642,7 +616,7 @@ func processSchema(id string, v *openapi3.SchemaRef, schemas openapi3.Schemas) (
 			}
 		}
 	}
-	properties[id] = defaultProperty(pMap)
+	properties[id] = pMap
 	for k, def := range definitions {
 		p, _ := processSchema(k, def, schemas)
 		for _, v1 := range p {

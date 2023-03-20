@@ -404,6 +404,7 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.attrId">attrId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::PrivateEndpoint.Id`. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.attrInterfaceEndpoints">attrInterfaceEndpoints</a></code> | <code>string[]</code> | Attribute `MongoDB::Atlas::PrivateEndpoint.InterfaceEndpoints`. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps">CfnPrivateEndpointProps</a></code> | Resource props. |
 
 ---
@@ -512,6 +513,18 @@ Attribute `MongoDB::Atlas::PrivateEndpoint.Id`.
 
 ---
 
+##### `attrInterfaceEndpoints`<sup>Required</sup> <a name="attrInterfaceEndpoints" id="@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.attrInterfaceEndpoints"></a>
+
+```typescript
+public readonly attrInterfaceEndpoints: string[];
+```
+
+- *Type:* string[]
+
+Attribute `MongoDB::Atlas::PrivateEndpoint.InterfaceEndpoints`.
+
+---
+
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpoint.property.props"></a>
 
 ```typescript
@@ -546,45 +559,6 @@ The CloudFormation resource type name for this resource class.
 
 ## Structs <a name="Structs" id="Structs"></a>
 
-### ApiKey <a name="ApiKey" id="@mongodbatlas-awscdk/private-endpoint.ApiKey"></a>
-
-#### Initializer <a name="Initializer" id="@mongodbatlas-awscdk/private-endpoint.ApiKey.Initializer"></a>
-
-```typescript
-import { ApiKey } from '@mongodbatlas-awscdk/private-endpoint'
-
-const apiKey: ApiKey = { ... }
-```
-
-#### Properties <a name="Properties" id="Properties"></a>
-
-| **Name** | **Type** | **Description** |
-| --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint.ApiKey.property.privateKey">privateKey</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint.ApiKey.property.publicKey">publicKey</a></code> | <code>string</code> | *No description.* |
-
----
-
-##### `privateKey`<sup>Optional</sup> <a name="privateKey" id="@mongodbatlas-awscdk/private-endpoint.ApiKey.property.privateKey"></a>
-
-```typescript
-public readonly privateKey: string;
-```
-
-- *Type:* string
-
----
-
-##### `publicKey`<sup>Optional</sup> <a name="publicKey" id="@mongodbatlas-awscdk/private-endpoint.ApiKey.property.publicKey"></a>
-
-```typescript
-public readonly publicKey: string;
-```
-
-- *Type:* string
-
----
-
 ### CfnPrivateEndpointProps <a name="CfnPrivateEndpointProps" id="@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps"></a>
 
 The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1.
@@ -603,23 +577,13 @@ const cfnPrivateEndpointProps: CfnPrivateEndpointProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.apiKeys">apiKeys</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint.ApiKey">ApiKey</a></code> | *No description.* |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.groupId">groupId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.region">region</a></code> | <code>string</code> | Aws Region. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.endpointServiceName">endpointServiceName</a></code> | <code>string</code> | Name of the AWS PrivateLink endpoint service. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.errorMessage">errorMessage</a></code> | <code>string</code> | Error message pertaining to the AWS PrivateLink connection. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.privateEndpoints">privateEndpoints</a></code> | <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint">PrivateEndpoint</a>[]</code> | List of private endpoint associated to the service. |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.status">status</a></code> | <code>string</code> | Status of the Atlas PrivateEndpoint service connection. |
-
----
-
-##### `apiKeys`<sup>Required</sup> <a name="apiKeys" id="@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.apiKeys"></a>
-
-```typescript
-public readonly apiKeys: ApiKey;
-```
-
-- *Type:* <a href="#@mongodbatlas-awscdk/private-endpoint.ApiKey">ApiKey</a>
 
 ---
 
@@ -687,6 +651,20 @@ List of private endpoint associated to the service.
 
 ---
 
+##### `profile`<sup>Optional</sup> <a name="profile" id="@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.profile"></a>
+
+```typescript
+public readonly profile: string;
+```
+
+- *Type:* string
+
+The profile is defined in AWS Secret manager.
+
+See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)
+
+---
+
 ##### `status`<sup>Optional</sup> <a name="status" id="@mongodbatlas-awscdk/private-endpoint.CfnPrivateEndpointProps.property.status"></a>
 
 ```typescript
@@ -716,7 +694,7 @@ const privateEndpoint: PrivateEndpoint = { ... }
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.atlasPrivateEndpointStatus">atlasPrivateEndpointStatus</a></code> | <code>string</code> | Status of the Atlas PrivateEndpoint connection. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.awsPrivateEndpointStatus">awsPrivateEndpointStatus</a></code> | <code>string</code> | Status of the AWS PrivateEndpoint connection. |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.interfaceEndpointId">interfaceEndpointId</a></code> | <code>string</code> | Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection. |
-| <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.subnetId">subnetId</a></code> | <code>string</code> | String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint). |
+| <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.subnetIds">subnetIds</a></code> | <code>string[]</code> | List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint). |
 | <code><a href="#@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.vpcId">vpcId</a></code> | <code>string</code> | String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint). |
 
 ---
@@ -757,15 +735,15 @@ Unique identifiers of the interface endpoints in your VPC that you added to the 
 
 ---
 
-##### `subnetId`<sup>Optional</sup> <a name="subnetId" id="@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.subnetId"></a>
+##### `subnetIds`<sup>Optional</sup> <a name="subnetIds" id="@mongodbatlas-awscdk/private-endpoint.PrivateEndpoint.property.subnetIds"></a>
 
 ```typescript
-public readonly subnetId: string;
+public readonly subnetIds: string[];
 ```
 
-- *Type:* string
+- *Type:* string[]
 
-String Representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint).
+List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint).
 
 ---
 

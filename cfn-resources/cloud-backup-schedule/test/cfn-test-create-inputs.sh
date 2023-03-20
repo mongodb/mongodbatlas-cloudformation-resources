@@ -34,49 +34,31 @@ export MCLI_PROJECT_ID=$projectId
 clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${clusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
 	echo "creating cluster.."
-	clusterId=$(atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json | jq -r '.id')
+	atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+	atlas clusters watch "${clusterName}" --projectId "${projectId}"
+	echo -e "Created Cluster \"${clusterName}\""
 fi
-
-status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
-echo "status: ${status}"
-
-while [[ "${status}" != "IDLE" ]]; do
-	sleep 30
-	status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
-	if [ -z "$status" ]; then
-		status="timeout"
-	fi
-	echo "status: ${status}"
-done
-
-echo -e "Created Cluster \"${clusterName}\" with id: ${clusterId}\n"
 
 policyId=$(atlas backups schedule describe "${clusterName}" --projectId "${projectId}" | jq -r '.policies[0].id')
 echo "policyId: ${policyId}"
 
 name="${1}"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
+jq --arg group_id "$projectId" \
 	--arg cluster_name "$clusterName" \
 	--arg policy_id "$policyId" \
-	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Policies[0].ID?|=$policy_id' \
+	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id| .Policies[0].ID?|=$policy_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
+jq --arg group_id "$projectId" \
 	--arg cluster_name "$clusterName" \
 	--arg policy_id "$policyId" \
-	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .Policies[0].ID?|=$policy_id' \
+	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id| .Policies[0].ID?|=$policy_id' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 name="${name}- more B@d chars !@(!(@====*** ;;::"
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg group_id "$projectId" \
+jq --arg group_id "$projectId" \
 	--arg cluster_name "$clusterName" \
-	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id |.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey' \
+	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

@@ -3,12 +3,14 @@
 ## Description
 Returns, adds, edits, and removes serverless instances.
 
-## Attributes & Parameters
+## Profile Setup
+This resource requires to set up a profile with the SecretManager:
+[Secret Manager Profile setup](../../examples/profile-secret.yaml)
 
+## Attributes & Parameters
 Please consult the [Resource Docs](docs/README.md)
 
 ## Local Testing
-
 The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
 
 ```

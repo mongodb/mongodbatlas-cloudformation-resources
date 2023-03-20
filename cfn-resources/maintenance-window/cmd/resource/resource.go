@@ -18,22 +18,19 @@ import (
 	"context"
 	"errors"
 
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var ReadRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var UpdateRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var DeleteRequiredFields = []string{constants.GroupID, constants.PvtKey, constants.PubKey}
-var ListRequiredFields []string
+var RequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-maintenance-window")
@@ -50,31 +47,33 @@ func (m Model) toAtlasModel() mongodbatlas.MaintenanceWindow {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	// Validation
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
+	// Create atlas client
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
+	}
+
+	maintenanceWindow, _ := get(client, *currentModel)
+	if maintenanceWindow != nil {
+		return progress_events.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
+	}
+
 	var res *mongodbatlas.Response
 
 	atlasModel := currentModel.toAtlasModel()
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	res, err = client.MaintenanceWindows.Update(context.Background(), *currentModel.GroupId, &atlasModel)
-
+	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.ProjectId, &atlasModel)
 	if err != nil {
 		_, _ = logger.Warnf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -88,20 +87,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// Validation
-	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	// Create atlas client
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	maintenanceWindow, errorProgressEvent := get(client, *currentModel)
@@ -121,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.MaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, res, err := client.MaintenanceWindows.Get(context.Background(), *currentModel.GroupId)
+	maintenanceWindow, res, err := client.MaintenanceWindows.Get(context.Background(), *currentModel.ProjectId)
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
 		ev := progress_events.GetFailedEventByResponse(err.Error(), res.Response)
@@ -143,20 +142,19 @@ func isResponseEmpty(maintenanceWindow *mongodbatlas.MaintenanceWindow) bool {
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// Validation
-	if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	_, handlerError := get(client, *currentModel)
@@ -170,8 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	res, err = client.MaintenanceWindows.Update(context.Background(), *currentModel.GroupId, &atlasModel)
-
+	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.ProjectId, &atlasModel)
 	if err != nil {
 		_, _ = logger.Warnf("Update - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -187,20 +184,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	// Validation
-	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
 	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		_, _ = logger.Warnf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	if pe != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
+		return *pe, nil
 	}
 
 	_, handlerError := get(client, *currentModel)
@@ -209,7 +205,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *mongodbatlas.Response
-	res, err = client.MaintenanceWindows.Reset(context.Background(), *currentModel.GroupId)
+	res, err := client.MaintenanceWindows.Reset(context.Background(), *currentModel.ProjectId)
 
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)

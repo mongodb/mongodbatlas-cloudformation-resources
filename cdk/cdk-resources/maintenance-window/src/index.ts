@@ -9,9 +9,11 @@ import * as constructs from 'constructs';
  */
 export interface CfnMaintenanceWindowProps {
   /**
-   * @schema CfnMaintenanceWindowProps#ApiKeys
+   * The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
+   *
+   * @schema CfnMaintenanceWindowProps#Profile
    */
-  readonly apiKeys?: ApiKeyDefinition;
+  readonly profile?: string;
 
   /**
    * Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them.
@@ -39,6 +41,13 @@ export interface CfnMaintenanceWindowProps {
   readonly dayOfWeek?: number;
 
   /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnMaintenanceWindowProps#ProjectId
+   */
+  readonly projectId?: string;
+
+  /**
    * Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use `0` for midnight and `12` for noon.
    *
    * @schema CfnMaintenanceWindowProps#HourOfDay
@@ -61,42 +70,12 @@ export interface CfnMaintenanceWindowProps {
 export function toJson_CfnMaintenanceWindowProps(obj: CfnMaintenanceWindowProps | undefined): Record<string, any> | undefined {
   if (obj === undefined) { return undefined; }
   const result = {
-    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Profile': obj.profile,
     'AutoDeferOnceEnabled': obj.autoDeferOnceEnabled,
     'DayOfWeek': obj.dayOfWeek,
+    'ProjectId': obj.projectId,
     'HourOfDay': obj.hourOfDay,
     'StartASAP': obj.startAsap,
-  };
-  // filter undefined values
-  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
-}
-/* eslint-enable max-len, quote-props */
-
-/**
- * @schema apiKeyDefinition
- */
-export interface ApiKeyDefinition {
-  /**
-   * @schema apiKeyDefinition#PrivateKey
-   */
-  readonly privateKey?: string;
-
-  /**
-   * @schema apiKeyDefinition#PublicKey
-   */
-  readonly publicKey?: string;
-
-}
-
-/**
- * Converts an object of type 'ApiKeyDefinition' to JSON representation.
- */
-/* eslint-disable max-len, quote-props */
-export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
-  if (obj === undefined) { return undefined; }
-  const result = {
-    'PrivateKey': obj.privateKey,
-    'PublicKey': obj.publicKey,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -121,10 +100,6 @@ export class CfnMaintenanceWindow extends cdk.CfnResource {
    */
   public readonly props: CfnMaintenanceWindowProps;
 
-  /**
-   * Attribute `MongoDB::Atlas::MaintenanceWindow.GroupId`
-   */
-  public readonly attrGroupId: string;
 
   /**
    * Create a new `MongoDB::Atlas::MaintenanceWindow`.
@@ -138,6 +113,5 @@ export class CfnMaintenanceWindow extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrGroupId = cdk.Token.asString(this.getAtt('GroupId'));
   }
 }

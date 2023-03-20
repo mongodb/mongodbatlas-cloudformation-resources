@@ -24,7 +24,7 @@ jobs:
           - 'cfn-resources/teams/**'
   project:
     needs: change-detection
-    if: ${{ needs.changes.outputs.project == 'true' }}
+    if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - name: setup Atlas CLI

@@ -1042,6 +1042,12 @@ func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCl
 		}
 	}
 
+	clusterRequest.Labels = append(clusterRequest.Labels, defaultLabel)
+	currentModel.Labels = append(currentModel.Labels, Labels{
+		Key:   &defaultLabel.Key,
+		Value: &defaultLabel.Key,
+	})
+
 	if currentModel.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
 	}

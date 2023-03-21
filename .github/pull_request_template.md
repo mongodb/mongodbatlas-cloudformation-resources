@@ -2,7 +2,11 @@
 
 Please include a summary of the fix/feature/change, including any relevant motivation and context.
 
-Link to any related issue(s):
+<!--
+What issue does this PR address? (for example, #1234), remove this section if none.
+-->
+
+Closes #[issue number]
 
 ## Type of change:
 

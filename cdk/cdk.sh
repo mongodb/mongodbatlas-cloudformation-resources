@@ -59,7 +59,7 @@ _run_projen_aws_cdk_construct() {
 	fi
 
 	pushd "${dir}"
-	npx projen new awscdk-construct --npm-access "public" --author "MongoDBAtlas" --author-name "MongoDBAtlas" --docgen true --sample-code false --name "@mongodbatlas-awscdk-${cdk_type}/${resource}" --author-address 'https://mongodb.com' --cdk-version '2.1.0' --default-release-branch 'master' --major-version 1 --release-to-npm true --repository-url 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git' --description "Retrieves or creates ${resource} in any given Atlas organization" --keywords {'cdk','awscdk','aws-cdk','cloudformation','cfn','extensions','constructs','cfn-resources','cloudformation-registry',"${cdk_type}",'mongodb','atlas',"$resource"}
+	npx projen new awscdk-construct --npm-access "public" --author "MongoDBAtlas" --author-name "MongoDBAtlas" --docgen true --name "@mongodbatlas-awscdk-${cdk_type}/${resource}" --author-address 'https://mongodb.com' --cdk-version '2.1.0' --default-release-branch 'master' --major-version 1 --release-to-npm true --repository-url 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git' --description "Retrieves or creates ${resource} in any given Atlas organization" --keywords {'cdk','awscdk','aws-cdk','cloudformation','cfn','extensions','constructs','cfn-resources','cloudformation-registry',"${cdk_type}",'mongodb','atlas',"$resource"}
 	rm -rf .git
 	popd
 }

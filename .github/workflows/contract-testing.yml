@@ -13,6 +13,8 @@ jobs:
    outputs:
      project: ${{ steps.filter.outputs.project }}
    steps:
+   - uses: actions/checkout@v3
+     if: ${{ github.event_name == 'push' }}
    - uses: dorny/paths-filter@v2
      id: filter
      with:

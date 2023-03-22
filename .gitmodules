@@ -1,0 +1,3 @@
+[submodule "quickstarts/quickstart-mongodb-atlas"]
+	path = quickstarts/quickstart-mongodb-atlas
+	url = https://github.com/aws-quickstart/quickstart-mongodb-atlas

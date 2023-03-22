@@ -27,7 +27,7 @@ Please see README for each resource for details on unit and integrated AWS testi
 ## Securing your Deployment
 This repository contains utilities which use both the AWS and MongoDB Atlas APIs to progamatically create, destory, or otherwise manage resources in the AWS and MongoDB clouds. This can have costs or other impact so please use these tools with diligence and follow best practices.
 
-The automated workflows require the following secrets to be placed into your Github forks' Settings/Secrets:
+The automated workflows require the following secrets to be placed into your Github fork's Settings/Secrets:
 
 ```
 AWS_ACCESS_KEY_ID

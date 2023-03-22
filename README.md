@@ -95,5 +95,5 @@ The following are common issues encountered when using AWS CloudFormation/CDK wi
    * For testing purposes with caution you can open keys to all access by adding “0.0.0.0/1” and “128.0.0.0/1” (do not use for production workloads). 
 6. How to determine which IP address AWS CloudFormation uses to deploy MongoDB Atlas resouces with my Atlas Programmatic API Keys (PAK)?
    * When you deploy MongoDB Atlas using CloudFormation with your Atlas PAK, CloudFormation will default to use the IP address of the machine from which you are making the API call. 
-   * The machine making the API call to 3rd party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
+   * The machine making the API call to the 3rd-party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
    * Review additional details at https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html and contact AWS Support directly who can help confirm CIDR range to be used in your Atlas PAK IP Whitelist.

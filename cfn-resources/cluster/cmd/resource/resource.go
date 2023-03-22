@@ -842,21 +842,6 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 }
 
-func removeLabel(list []mongodbatlas.Label, item mongodbatlas.Label) []mongodbatlas.Label {
-	var pos int
-	for _, v := range list {
-		if reflect.DeepEqual(v, item) {
-			list = append(list[:pos], list[pos+1:]...)
-			if pos > 0 {
-				pos--
-			}
-			continue
-		}
-		pos++
-	}
-	return list
-}
-
 func updateCluster(ctx context.Context, client *mongodbatlas.Client, currentModel *Model) (*Model, *mongodbatlas.Response, error) {
 	clusterRequest := &mongodbatlas.AdvancedCluster{}
 	if currentModel.BackupEnabled != nil {

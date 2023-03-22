@@ -24,6 +24,11 @@ After the above 2 steps are completed and we've agreed on a path forward:
 ## Testing the Provider
 Please see README for each resource for details on unit and integrated AWS testing.
 
+## Security - Setup
+1. Create and note your [MongoDB Atlas API Key](https://www.mongodb.com/docs/atlas/configure-api-access/#std-label-atlas-admin-api-access).
+2. Create and note your AWS Access Key and AWS Secret Key ID.
+3. Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
+
 ## Securing your Deployment
 This repository contains utilities which use both the AWS and MongoDB Atlas APIs to progamatically create, destory, or otherwise manage resources in the AWS and MongoDB clouds. This can have costs or other impact so please use these tools with diligence and follow best practices.
 
@@ -37,12 +42,6 @@ ATLAS_PUBLIC_KEY
 ATLAS_PRIVATE_KEY
 ATLAS_ORG_ID
 ```
-
-## Security - Setup
-
-1. Create and note your [MongoDB Atlas API Key](https://www.mongodb.com/docs/atlas/configure-api-access/#std-label-atlas-admin-api-access).
-2. Create and note your AWS Access Key and AWS Secret Key ID.
-3. Follow the Github docs on how to [create a Secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your clone of this repository.
 
 ## Using the MongoDB Atlas CFN Resources
 
@@ -59,7 +58,7 @@ There are two main parts of this project:
 
 1. Please check that you satisfy all the [requirements](#Requirements) before proceeding.
 2. Clone this repo.
-3. A helper script `[cfn-resources/cfn-submit-helper.sh](cfn-submit-helper.sh)` will build and submit each resource for you. You can also run the `cfn submit` tool yourself. Note- this step will soon not be required when AWS launch a public registry.
+3. Use the helper script to `[cfn-resources/cfn-submit-helper.sh](cfn-submit-helper.sh)` will build and submit each resource for you. You can also run the `cfn submit` tool yourself. Note- this step will soon not be required when AWS launch a public registry.
 
 The following command builds and registers all the types used in the quickstart:
 

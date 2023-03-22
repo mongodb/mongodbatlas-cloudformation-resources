@@ -62,9 +62,9 @@ cfn submit --set-default
 - Alert Settings for the respective Project in Atlas should be correctly configured:
 ![image](https://user-images.githubusercontent.com/5663078/226870968-9ef8ae46-b0cf-462b-ac62-7229d2d79ac0.png)
 - Stack Outputs should show required data correctly based on the template
-- Create - Stack should complete successfully and resource should be created and correctly configured in Atlas account as per template
-- Update - Stack should complete successfully and resource should be updated and correctly configured in Atlas account as per template
-- Delete - Stack should complete successfully and resource should be deleted from your Atlas account
+- Create: Stack should complete successfully and resource should be created and correctly configured in Atlas account as per template
+- Update: Stack should complete successfully and resource should be updated and correctly configured in Atlas account as per template
+- Delete: Stack should complete successfully and resource should be deleted from your Atlas account
 
 
 ### Important Links

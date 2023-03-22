@@ -1,9 +1,9 @@
-## Alert Configurations 
+# Alert Configurations 
 
-### Impact 
+## Impact 
  - Alert Configuration L1 CDK constructor
 
-### Manual QA
+## Manual QA
 
 #### Resources needed to run the manual QA
 - Atlas Project
@@ -67,6 +67,6 @@ cfn submit --set-default
 - Delete: Stack should complete successfully and resource should be deleted from your Atlas account
 
 
-### Important Links
+## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations/operation/listAlertConfigurations)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/configure-alerts/#configure-an-alert)

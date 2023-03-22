@@ -34,7 +34,7 @@ cfn submit --set-default
 ### Create a stack
 - Ensure all steps above are complete
 - Getting test parameters: 
-  - Option 1: Re-use params from `cfn-resources/[resource-folder]/inputs/inputs_1_create.template.json` generated as part of prerequisites
+  - Option 1 [Recommended]: Re-use params from `cfn-resources/[resource-folder]/inputs/inputs_1_create.template.json` generated as part of prerequisites
   - Option 2: Run again  `cfn-testing-helper` to create new parameters.  This will create some required resources for you in your configured Atlas account
 - Update template in `examples/[resource-folder]/[resource-name].json` with your changes (if any) AND required params from last step
 - Login to AWS account -> CloudFormation -> click on Create Stack dropdown and select (with new resources)

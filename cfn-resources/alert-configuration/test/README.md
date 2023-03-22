@@ -15,7 +15,7 @@ All resources are created as part of `cfn-testing-helper.sh`
 #### Prerequisites
  - Configure Atlas default profile on your machine as the scripts use Atlas CLI.
  - Ensure aws and cfn CLI are installed and configured correctly for your AWS account.
- - Configure an Atlas profile secret in AWS account with your API keys. Refer README for more information on how to do this.
+ - Configure an Atlas profile secret in AWS account with your API keys. Refer [README](../../../README.md) for more information on how to do this.
  - Have Docker running on your machine.
 
 #### Contract tests

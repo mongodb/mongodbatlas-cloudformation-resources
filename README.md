@@ -87,7 +87,7 @@ See our [CONTRIBUTING.md](CONTRIBUTING.md) guide.
 The following are common issues encountered when using AWS CloudFormation/CDK with MongoDB Atlas Resources: 
 1. Activate the 3rd party extension for each resource (i.e. MONGODB::ATLAS::[RESOURCE-NAME]) in each AWS region and from each AWS account that you wish to deploy.
 2. Ensure you have sufficiently strong AWS IAM Activation Role attached to each 3rd party extension. 
-   * For sample IAM Role see [here](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/execute-role.template.yml)
+   * For sample IAM Role see the [example execution role](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/execute-role.template.yml)
 3. Ensure your activated 3rd party public extension matches name exactly to MONGODB::ATLAS::[RESOURCE-NAME] 
    * You may need to delete private extension if this namespace is already occupied.
 4. Ensure your MongoDB Atlas Programmatic API Keys (PAKs) being used with CloudFormation have sufficiently strong permissions (Organization Project Creator or Organization Owner)
@@ -96,4 +96,4 @@ The following are common issues encountered when using AWS CloudFormation/CDK wi
 6. How to determine which IP address AWS CloudFormation uses to deploy MongoDB Atlas resouces with my Atlas Programmatic API Keys (PAK)?
    * When you deploy MongoDB Atlas using CloudFormation with your Atlas PAK, CloudFormation will default to use the IP address of the machine from which you are making the API call. 
    * The machine making the API call to 3rd party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
-   * Review additional details at https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html and contact AWS Support directly who can help confirm CIDR range to be used in your Atlas PAK IP Whitelist.
+   * Review the [AWS IP address ranges](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html) and contact AWS Support directly who can help confirm CIDR range to be used in your Atlas PAK IP Whitelist.

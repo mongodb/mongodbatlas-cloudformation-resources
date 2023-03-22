@@ -5,16 +5,24 @@
   "definitions": {},
   "handlers": {
     "create": {
-      "permissions": [ "secretsmanager:GetSecretValue"]
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": [ "secretsmanager:GetSecretValue"]
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": [ "secretsmanager:GetSecretValue"]
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": [ "secretsmanager:GetSecretValue"]
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "properties": {

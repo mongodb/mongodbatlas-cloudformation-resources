@@ -34,9 +34,11 @@
         "iam:DeleteRole",
         "secretsmanager:GetSecretValue"
       ]
-      },
+    },
     "read": {
-      "permissions": ["secretsmanager:GetSecretValue"]
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
       "permissions": [
@@ -58,7 +60,9 @@
       ]
     },
     "list": {
-      "permissions": ["secretsmanager:GetSecretValue"]
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
   "properties": {

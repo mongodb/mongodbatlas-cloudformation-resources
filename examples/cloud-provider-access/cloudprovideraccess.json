@@ -4,8 +4,8 @@
   "Parameters": {
     "Profile": {
       "Type": "String",
-      "Description" : "MongoDB Atlas Access  Keys Profile",
-      "Default" : "default"
+      "Description": "MongoDB Atlas Access  Keys Profile",
+      "Default": "default"
     },
     "ProjectId": {
       "Description": "Your MongoDB Project Id",
@@ -17,7 +17,9 @@
     "CloudProviderAccess": {
       "Type": "MongoDB::Atlas::CloudProviderAccess",
       "Properties": {
-        "Profile": { "Ref": "Profile" },
+        "Profile": {
+          "Ref": "Profile"
+        },
         "ProjectId": {
           "Ref": "ProjectId"
         }

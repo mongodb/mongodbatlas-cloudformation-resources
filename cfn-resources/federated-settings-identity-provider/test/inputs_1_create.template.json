@@ -1,13 +1,13 @@
 {
-    "FederationSettingsId": "",
-    "OktaIdpId": "",
-    "SsoDebugEnabled": "",
-    "AssociatedDomains":"" ,
-    "DisplayName": "",
-    "Status": "",
-    "IssuerUri": "",
-    "RequestBinding": "",
-    "ResponseSignatureAlgorithm": "",
-    "SsoUrl": "",
-    "Profile": "default"
+  "FederationSettingsId": "",
+  "OktaIdpId": "",
+  "SsoDebugEnabled": "",
+  "AssociatedDomains": "",
+  "DisplayName": "",
+  "Status": "",
+  "IssuerUri": "",
+  "RequestBinding": "",
+  "ResponseSignatureAlgorithm": "",
+  "SsoUrl": "",
+  "Profile": "default"
 }

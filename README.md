@@ -1,4 +1,6 @@
 # MongoDB Atlas AWS CloudFormation Resources & AWS Partner Solution Deployments 
+[![Code Health](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yml/badge.svg)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yml)
+[![Contract Testing](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yml/badge.svg)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yml)
 
 Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 

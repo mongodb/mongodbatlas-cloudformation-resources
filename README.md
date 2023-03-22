@@ -86,7 +86,7 @@ See our [CONTRIBUTING.md](CONTRIBUTING.md) guide.
 ## Troubleshooting
 The following are common issues encountered when using AWS CloudFormation/CDK with MongoDB Atlas Resources: 
 1. Activate the 3rd-party extension for each resource (i.e. `MONGODB::ATLAS::[RESOURCE-NAME]`) in each AWS region and from each AWS account that you wish to deploy.
-2. Ensure you have sufficiently strong AWS IAM Activation Role attached to each 3rd party extension. 
+2. Ensure you have a sufficiently strong AWS IAM Activation Role attached to each 3rd-party extension. 
    * For sample IAM Role see [here](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/execute-role.template.yml)
 3. Ensure your activated 3rd party public extension matches name exactly to MONGODB::ATLAS::[RESOURCE-NAME] 
    * You may need to delete private extension if this namespace is already occupied.

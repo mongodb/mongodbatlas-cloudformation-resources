@@ -1,3 +1,9 @@
 [submodule "quickstarts/quickstart-mongodb-atlas"]
 	path = quickstarts/quickstart-mongodb-atlas
 	url = https://github.com/aws-quickstart/quickstart-mongodb-atlas
+[submodule "quickstarts/quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration"]
+	path = quickstarts/quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration
+	url = https://github.com/aws-quickstart/quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration
+[submodule "quickstarts/quickstart-mongodb-atlas-mean-stack-aws-fargate-integration"]
+	path = quickstarts/quickstart-mongodb-atlas-mean-stack-aws-fargate-integration
+	url = https://github.com/aws-quickstart/quickstart-mongodb-atlas-mean-stack-aws-fargate-integration

@@ -1,2 +1,0 @@
-// Include details about the license and how they can sign up. If no license is required, clarify that. 
-This Quick Start deploys MongoDB Atlas with the latest stable MongoDB enterprise version, which is licensed and distributed under the https://www.mongodb.com/licensing/server-side-public-license[Server Side Public License (SSPL)^].

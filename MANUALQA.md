@@ -8,6 +8,7 @@
  - Ensure [AWS CLI](https://aws.amazon.com/cli/), [CFN CLI](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/what-is-cloudformation-cli.html), [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) are installed and configured correctly for your AWS account
  - Configure an Atlas profile secret in AWS account with your API keys. Refer [README](../../../README.md) for more information on how to do this
  - Have Docker running on your machine
+ - Refer to the prerequisites for your resource in the `cfn-resources/[resource-folder]/test`
 
 ### Contract tests
    - Run the following command to build the resource and start AWS SAM

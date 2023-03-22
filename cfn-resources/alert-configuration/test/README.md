@@ -5,7 +5,8 @@ The following components use this resource and are potentially impacted by any c
  - Alert Configuration L1 CDK constructor
 
 
-## Resources needed to run the manual QA
+## Prerequisites 
+### Resources needed to run the manual QA
 - Atlas Project
 
 All resources are created as part of `cfn-testing-helper.sh`

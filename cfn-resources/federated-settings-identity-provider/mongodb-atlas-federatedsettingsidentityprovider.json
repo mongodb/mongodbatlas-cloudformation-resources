@@ -2,41 +2,26 @@
   "typeName": "MongoDB::Atlas::FederatedSettingsIdentityProvider",
   "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
   "additionalProperties": false,
-  "definitions": {
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
+  "definitions": {},
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [ "secretsmanager:GetSecretValue"]
     },
     "read": {
-      "permissions": []
+      "permissions": [ "secretsmanager:GetSecretValue"]
     },
     "update": {
-      "permissions": []
+      "permissions": [ "secretsmanager:GetSecretValue"]
     },
     "delete": {
-      "permissions": []
+      "permissions": [ "secretsmanager:GetSecretValue"]
     }
   },
-  "primaryIdentifier": [
-    "/properties/FederationSettingsId",
-    "/properties/OktaIdpId"
-  ],
   "properties": {
-    "ApiKeys": {
-      "$ref": "#/definitions/ApiKeyDefinition"
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     },
     "FederationSettingsId": {
       "type": "string",
@@ -88,9 +73,15 @@
       "description": "Human-readable label that identifies the IdP."
     }
   },
-  "readOnlyProperties": [
+  "createOnlyProperties": [
     "/properties/FederationSettingsId",
-    "/properties/OktaIdpId"
+    "/properties/OktaIdpId",
+    "/properties/Profile"
+  ],
+  "primaryIdentifier": [
+    "/properties/FederationSettingsId",
+    "/properties/OktaIdpId",
+    "/properties/Profile"
   ],
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

@@ -1,6 +1,5 @@
 {
     "desiredResourceState" : {
-
       "FederationSettingsId": "",
       "OktaIdpId": "",
       "SsoDebugEnabled": "",
@@ -11,13 +10,7 @@
       "RequestBinding": "",
       "ResponseSignatureAlgorithm": "",
       "SsoUrl": "",
-      "ApiKeys": {
-        "PublicKey": "",
-        "PrivateKey": ""
-      }
-
-
-    },
-
+      "Profile": "default"
+  },
     "previousResourceState": { }
 }

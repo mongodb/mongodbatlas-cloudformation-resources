@@ -3,7 +3,6 @@
 #
 # This tool generates json files in the inputs/ for `cfn test`.
 #
-
 #set -o errexit
 #set -o nounset
 #set -o pipefail
@@ -65,6 +64,9 @@ else
 fi
 echo -e "--------------------------------AWS Role creation ends ----------------------------\n"
 
+# Role Arn not returning immediately
+sleep 30
+
 #------------ get Role arn-------------------
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.Arn')
 
@@ -84,7 +86,7 @@ echo -e "--------------------------------authorize mongodb  Role ends ----------
 
 bucketName="cloud-backup-snapshot-${CFN_TEST_TAG}-${awsRegion}"
 
-#aws s3 rb s3://${bucketName} --force
+aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
 
 if [ "$#" -ne 2 ]; then usage; fi

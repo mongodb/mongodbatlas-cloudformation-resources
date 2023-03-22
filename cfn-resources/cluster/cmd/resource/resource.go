@@ -40,7 +40,7 @@ const (
 	CallBackSeconds = 60
 )
 
-var defaultLabel = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas Terraform Provider")}
+var defaultLabel = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Name}
 var ReadRequiredFields = []string{constants.Name}

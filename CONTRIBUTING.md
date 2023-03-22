@@ -52,7 +52,7 @@ There are two main parts of this project:
 
 1. [quickstart-mongodbatlas](quickstart-mongodbatlas) This is a mirror of https://github.com/aws-quickstart/quickstart-mongodb-atlas.
 
-2. [cfn-resources](cfn-resources) A set of AWS CloudFormation custom resource providers for MongoDB Atlas Resources. Currently, AWS requires users to manually deploy these resources in each AWS region one one desires to use them in. We support this workflow through the standard AWS `cfn submit` tooling. Scripts and Github actions are contained in this repository which demonstrate automating this deployment process.
+2. [cfn-resources](cfn-resources) A set of AWS CloudFormation custom resource providers for MongoDB Atlas Resources. Currently, AWS requires users to manually deploy these resources in each AWS region that they want to use them in. We support this workflow through the standard AWS `cfn submit` tooling. Scripts and Github actions are contained in this repository that demonstrate automating this deployment process.
 
 
 ## Registering resources to run locally

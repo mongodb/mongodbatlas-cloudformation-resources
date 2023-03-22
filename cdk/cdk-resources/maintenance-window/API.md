@@ -403,8 +403,6 @@ Check whether the given construct is a CfnResource.
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.ref">ref</a></code> | <code>string</code> | Return a string that will be resolved to a CloudFormation `{ Ref }` for this element. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.cfnOptions">cfnOptions</a></code> | <code>aws-cdk-lib.ICfnResourceOptions</code> | Options for this resource, such as condition, update policy etc. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.cfnResourceType">cfnResourceType</a></code> | <code>string</code> | AWS resource type. |
-| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.attrAutoDeferOnceEnabled">attrAutoDeferOnceEnabled</a></code> | <code>aws-cdk-lib.IResolvable</code> | Attribute `MongoDB::Atlas::MaintenanceWindow.AutoDeferOnceEnabled`. |
-| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.attrProjectId">attrProjectId</a></code> | <code>string</code> | Attribute `MongoDB::Atlas::MaintenanceWindow.ProjectId`. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.props">props</a></code> | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps">CfnMaintenanceWindowProps</a></code> | Resource props. |
 
 ---
@@ -501,30 +499,6 @@ AWS resource type.
 
 ---
 
-##### `attrAutoDeferOnceEnabled`<sup>Required</sup> <a name="attrAutoDeferOnceEnabled" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.attrAutoDeferOnceEnabled"></a>
-
-```typescript
-public readonly attrAutoDeferOnceEnabled: IResolvable;
-```
-
-- *Type:* aws-cdk-lib.IResolvable
-
-Attribute `MongoDB::Atlas::MaintenanceWindow.AutoDeferOnceEnabled`.
-
----
-
-##### `attrProjectId`<sup>Required</sup> <a name="attrProjectId" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.attrProjectId"></a>
-
-```typescript
-public readonly attrProjectId: string;
-```
-
-- *Type:* string
-
-Attribute `MongoDB::Atlas::MaintenanceWindow.ProjectId`.
-
----
-
 ##### `props`<sup>Required</sup> <a name="props" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindow.property.props"></a>
 
 ```typescript
@@ -576,8 +550,10 @@ const cfnMaintenanceWindowProps: CfnMaintenanceWindowProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.hourOfDay">hourOfDay</a></code> | <code>number</code> | Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. |
+| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.autoDeferOnceEnabled">autoDeferOnceEnabled</a></code> | <code>boolean</code> | Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.dayOfWeek">dayOfWeek</a></code> | <code>number</code> | One-based integer that represents the day of the week that the maintenance window starts. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.profile">profile</a></code> | <code>string</code> | The profile is defined in AWS Secret manager. |
+| <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.projectId">projectId</a></code> | <code>string</code> | Unique 24-hexadecimal digit string that identifies your project. |
 | <code><a href="#@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.startAsap">startAsap</a></code> | <code>boolean</code> | Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. |
 
 ---
@@ -593,6 +569,18 @@ public readonly hourOfDay: number;
 Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock.
 
 Use `0` for midnight and `12` for noon.
+
+---
+
+##### `autoDeferOnceEnabled`<sup>Optional</sup> <a name="autoDeferOnceEnabled" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.autoDeferOnceEnabled"></a>
+
+```typescript
+public readonly autoDeferOnceEnabled: boolean;
+```
+
+- *Type:* boolean
+
+Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them.
 
 ---
 
@@ -629,6 +617,18 @@ public readonly profile: string;
 The profile is defined in AWS Secret manager.
 
 See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
+
+---
+
+##### `projectId`<sup>Optional</sup> <a name="projectId" id="@mongodbatlas-awscdk/maintenance-window.CfnMaintenanceWindowProps.property.projectId"></a>
+
+```typescript
+public readonly projectId: string;
+```
+
+- *Type:* string
+
+Unique 24-hexadecimal digit string that identifies your project.
 
 ---
 

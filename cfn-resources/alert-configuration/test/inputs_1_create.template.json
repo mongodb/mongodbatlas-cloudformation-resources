@@ -1,17 +1,21 @@
 {
-    "Profile":"default",
-    "GroupId":"",
-    "Id": "",
-    "Enabled": true,
-    "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
-    "MetricThreshold":{"MetricName":"NORMALIZED_SYSTEM_CPU_USER","Operator":"GREATER_THAN","Threshold":"5","Units":"RAW","Mode":"AVERAGE"},
-    "Notifications": [
-        {
-            "TypeName": "EMAIL",
-            "DelayMin": "0",
-            "EmailAddress": "dharmendran.rajendran@peerislands.io",
-            "IntervalMin": "15"
-
-        }
-    ]
+  "Profile": "default",
+  "GroupId": "",
+  "Enabled": true,
+  "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
+  "MetricThreshold": {
+    "MetricName": "NORMALIZED_SYSTEM_CPU_USER",
+    "Operator": "GREATER_THAN",
+    "Threshold": "5",
+    "Units": "RAW",
+    "Mode": "AVERAGE"
+  },
+  "Notifications": [
+    {
+      "TypeName": "EMAIL",
+      "DelayMin": "0",
+      "EmailAddress": "dharmendran.rajendran@peerislands.io",
+      "IntervalMin": "15"
+    }
+  ]
 }

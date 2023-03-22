@@ -23,7 +23,10 @@
       ]
     }
   },
-  "primaryIdentifier": ["/properties/ProjectId"],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
   "properties": {
     "Profile": {
       "type": "string",
@@ -54,11 +57,13 @@
       "description": "Flag that indicates whether MongoDB Cloud starts the maintenance window immediately upon receiving this request. To start the maintenance window immediately for your project, MongoDB Cloud must have maintenance scheduled and you must set a maintenance window. This flag resets to `false` after MongoDB Cloud completes maintenance."
     }
   },
-  "readOnlyProperties": [
-    "/properties/ProjectId",
-    "/properties/AutoDeferOnceEnabled"
+  "createOnlyProperties": [
+    "/properties/Profile",
+    "/properties/ProjectId"
   ],
-  "required": ["HourOfDay"],
+  "required": [
+    "HourOfDay"
+  ],
   "typeName": "MongoDB::Atlas::MaintenanceWindow",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

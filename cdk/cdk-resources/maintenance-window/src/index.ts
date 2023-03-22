@@ -16,6 +16,13 @@ export interface CfnMaintenanceWindowProps {
   readonly profile?: string;
 
   /**
+   * Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them.
+   *
+   * @schema CfnMaintenanceWindowProps#AutoDeferOnceEnabled
+   */
+  readonly autoDeferOnceEnabled?: boolean;
+
+  /**
    * One-based integer that represents the day of the week that the maintenance window starts.
    *
    * | Value | Day of Week |
@@ -32,6 +39,13 @@ export interface CfnMaintenanceWindowProps {
    * @schema CfnMaintenanceWindowProps#DayOfWeek
    */
   readonly dayOfWeek?: number;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnMaintenanceWindowProps#ProjectId
+   */
+  readonly projectId?: string;
 
   /**
    * Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use `0` for midnight and `12` for noon.
@@ -57,7 +71,9 @@ export function toJson_CfnMaintenanceWindowProps(obj: CfnMaintenanceWindowProps 
   if (obj === undefined) { return undefined; }
   const result = {
     'Profile': obj.profile,
+    'AutoDeferOnceEnabled': obj.autoDeferOnceEnabled,
     'DayOfWeek': obj.dayOfWeek,
+    'ProjectId': obj.projectId,
     'HourOfDay': obj.hourOfDay,
     'StartASAP': obj.startAsap,
   };
@@ -84,14 +100,6 @@ export class CfnMaintenanceWindow extends cdk.CfnResource {
    */
   public readonly props: CfnMaintenanceWindowProps;
 
-  /**
-   * Attribute `MongoDB::Atlas::MaintenanceWindow.ProjectId`
-   */
-  public readonly attrProjectId: string;
-  /**
-   * Attribute `MongoDB::Atlas::MaintenanceWindow.AutoDeferOnceEnabled`
-   */
-  public readonly attrAutoDeferOnceEnabled: cdk.IResolvable;
 
   /**
    * Create a new `MongoDB::Atlas::MaintenanceWindow`.
@@ -105,7 +113,5 @@ export class CfnMaintenanceWindow extends cdk.CfnResource {
 
     this.props = props;
 
-    this.attrProjectId = cdk.Token.asString(this.getAtt('ProjectId'));
-    this.attrAutoDeferOnceEnabled = this.getAtt('AutoDeferOnceEnabled');
   }
 }

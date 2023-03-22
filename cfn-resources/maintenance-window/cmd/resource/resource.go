@@ -61,6 +61,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
+
+	maintenanceWindow, _ := get(client, *currentModel)
+	if maintenanceWindow != nil {
+		return progress_events.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
+	}
+
 	var res *mongodbatlas.Response
 
 	atlasModel := currentModel.toAtlasModel()

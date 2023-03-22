@@ -130,6 +130,24 @@
         }
       ]
     },
+    "install": {
+      "name": "install",
+      "description": "Install project dependencies and update lockfile (non-frozen)",
+      "steps": [
+        {
+          "exec": "yarn install --check-files"
+        }
+      ]
+    },
+    "install:ci": {
+      "name": "install:ci",
+      "description": "Install project dependencies using frozen lockfile",
+      "steps": [
+        {
+          "exec": "yarn install --check-files --frozen-lockfile"
+        }
+      ]
+    },
     "package": {
       "name": "package",
       "description": "Creates the distribution package",
@@ -174,8 +192,8 @@
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
     },
-    "publish:git:INTMDB-548": {
-      "name": "publish:git:INTMDB-548",
+    "publish:git": {
+      "name": "publish:git",
       "description": "Prepends the release changelog onto the project changelog, creates a release commit, and tags the release",
       "env": {
         "CHANGELOG": "dist/changelog.md",
@@ -191,14 +209,14 @@
           "builtin": "release/tag-version"
         },
         {
-          "exec": "git push --follow-tags origin INTMDB-548"
+          "exec": "git push --follow-tags origin main"
         }
       ],
       "condition": "! git log --oneline -1 | grep -q \"chore(release):\""
     },
-    "release:INTMDB-548": {
-      "name": "release:INTMDB-548",
-      "description": "Prepare a release from \"INTMDB-548\" branch",
+    "release": {
+      "name": "release",
+      "description": "Prepare a release from \"main\" branch",
       "env": {
         "RELEASE": "true",
         "MAJOR": "1"
@@ -220,7 +238,7 @@
           "exec": "git diff --ignore-space-at-eol --exit-code"
         },
         {
-          "spawn": "publish:git:INTMDB-548"
+          "spawn": "publish:git"
         }
       ]
     },

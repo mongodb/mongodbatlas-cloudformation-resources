@@ -11,19 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-export interface ApiKeyDefinition {
-  /**
-   * Atlas private API key.
-   */
-  readonly privateKey: string;
-
-  /**
-   * Atlas public API key.
-   */
-  readonly publicKey: string;
-}
-
 export interface ThirdPartyIntegrationProps {
 
   /**
@@ -34,5 +21,5 @@ export interface ThirdPartyIntegrationProps {
   /**
    * Atlas API keys.
    */
-  readonly apiKeys: ApiKeyDefinition;
+  readonly profile?: string;
 }

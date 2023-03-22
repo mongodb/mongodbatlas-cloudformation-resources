@@ -1,4 +1,7 @@
 # MongoDB Atlas AWS CloudFormation Resources & AWS Partner Solution Deployments 
+[![Code Health](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yml/badge.svg)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yml)
+[![Contract Testing](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yml/badge.svg)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yml)
+
 Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
 Partner Solutions (formally AWS Quick Starts) are automated reference deployments built by Amazon Web Services (AWS) solutions architects and AWS Partners. Partner Solutions help you deploy popular technologies to AWS according to AWS best practices. The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Partner Solution Deployment directly from the AWS Management Console.

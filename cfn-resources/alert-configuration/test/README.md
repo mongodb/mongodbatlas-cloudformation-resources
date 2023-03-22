@@ -39,7 +39,7 @@ All resources are created as part of `cfn-testing-helper.sh`
 ```bash
 cfn submit --set-default
 ```
-##### Create a stack
+#### Create a stack
 - Ensure all steps above are complete
 - Getting test parameters: 
   - Option 1: Re-use params from cfn-resources/alert-configuration/inputs/inputs_1_create.template.json generated as part of prerequisites

@@ -34,7 +34,7 @@ After the above steps are completed and we've agreed on a path forward:
 ### Publish
 1. Make sure to create an NPM account and generate an NPM token.
 2. `export NPM_TOKEN=<>` to generated token.
-3. You may also need to `export NPM_ACCESS_LEVEL=public` in case it is not set in projenrc
+3. You might also need to `export NPM_ACCESS_LEVEL=public` in case it is not set in `projenrc`.
 4. Execute `./publish.sh private-endpoint` to publish the resource.
 
 ### Tagging

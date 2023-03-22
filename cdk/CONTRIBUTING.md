@@ -39,4 +39,4 @@ After the above steps are completed and we've agreed on a path forward:
 
 ### Tagging
 1. The version is bumped based on the previous release version, which is the tag in the git repository.
-2. Release task would look for previous tag in the git repository and bump the version based on the last commit message.
+2. Release task looks for the previous tag in the git repository and bump the version based on the last commit message.

@@ -28,7 +28,7 @@ After the above steps are completed and we've agreed on a path forward:
 ### Manual Release
 1. projenrc is set to do manual release.
 2. The release process is based on *Semantic Versioning* and *Conventional Commits* (https://www.conventionalcommits.org/).
-3. Make sure to follow the above guidelines in order to bump appropriate part of the version(*MAJOR, MINOR, PATCH*).
+3. Make sure to follow the above guidelines in order to bump appropriate part of the version (*MAJOR, MINOR, PATCH*).
 4. Commit the changes with the message based on the conventional commits guidelines.
 
 ### Publish

@@ -73,7 +73,7 @@
       "description": "Human-readable label that identifies the IdP."
     }
   },
-  "readOnlyProperties": [
+  "createOnlyProperties": [
     "/properties/FederationSettingsId",
     "/properties/OktaIdpId",
     "/properties/Profile"

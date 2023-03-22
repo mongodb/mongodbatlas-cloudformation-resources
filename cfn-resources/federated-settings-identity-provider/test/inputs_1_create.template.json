@@ -9,5 +9,5 @@
     "RequestBinding": "",
     "ResponseSignatureAlgorithm": "",
     "SsoUrl": "",
-    "Profile": "federation"
+    "Profile": "default"
 }

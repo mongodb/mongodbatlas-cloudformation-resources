@@ -1,1 +1,104 @@
-
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Returns all database users that belong to the specified project. To use this resource, the requesting API Key must have the Project Read Only role. This resource doesn't require the API Key to have an Access List.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": "",
+      "Default": "default"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "ScramUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "scramUser",
+        "Password": "changeme123",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "admin",
+        "Roles": [
+          {
+            "RoleName": "atlasAdmin",
+            "DatabaseName": "admin"
+          }
+        ]
+      }
+    },
+    "x509User": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "x509User",
+        "X509Type": "MANAGED",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "$external",
+        "Roles": [
+          {
+            "RoleName": "readWrite",
+            "DatabaseName": "test"
+          }
+        ],
+        "Scopes": [
+          {
+            "Type": "CLUSTER",
+            "Name": "test"
+          }
+        ]
+      }
+    },
+    "ldapUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "cn=Administrator,cn=Users,dc=MYDOMAIN,dc=com",
+        "LdapAuthType": "GROUP",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "admin",
+        "Roles": [
+          {
+            "RoleName": "atlasAdmin",
+            "DatabaseName": "admin"
+          }
+        ]
+      }
+    },
+    "awsIamUser": {
+      "Type": "MongoDB::Atlas::DatabaseUser",
+      "Properties": {
+        "Username": "arn:aws:iam::9831489223:role/cfn-admin",
+        "AWSIAMType": "ROLE",
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DatabaseName": "$external",
+        "Roles": [
+          {
+            "RoleName": "atlasAdmin",
+            "DatabaseName": "admin"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBIamUsername": {
+      "Value": {
+        "Fn::GetAtt": [
+          "awsIamUser",
+          "UserCFNIdentifier"
+        ]
+      }
+    }
+  }
+}

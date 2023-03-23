@@ -1,3 +1,4 @@
+# This Template creates the IAM role to use to run the quickstart template on a CFN stack
 Resources:
  AtlasQuickstartIAMRole:
   Type: 'AWS::IAM::Role'

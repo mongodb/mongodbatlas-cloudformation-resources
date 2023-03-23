@@ -29,6 +29,7 @@ Resources:
         - iam:DeleteRole
         - iam:GetRole
         - iam:GetRolePolicy
+        - iam:DetachRolePolicy
         Resource: '*'
       - Effect: Allow
         Action: cloudformation:*

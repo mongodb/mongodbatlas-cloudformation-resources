@@ -1,1 +1,74 @@
-
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Atlas Profile name",
+      "Default": "default"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description": "MongoDB project Key"
+    },
+    "AWSRegion": {
+      "Type": "String",
+      "Description": "Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
+      "Default": "us-east-1"
+    },
+    "AWSVpcId": {
+      "Type": "String",
+      "Description": "AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    },
+    "AWSSubnetId": {
+      "Type": "String",
+      "Default": "subnet-",
+      "Description": "AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "PrivateEndpoint": {
+      "Type": "MongoDB::Atlas::PrivateEndpoint",
+      "Properties": {
+        "GroupId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "Region": {
+          "Ref": "AWSRegion"
+        },
+        "PrivateEndpoints": [
+          {
+            "VpcId": {
+              "Ref": "AWSVpcId"
+            },
+            "SubnetIds": [
+              {
+                "Ref": "AWSSubnetId"
+              }
+            ]
+          }
+        ],
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBAtlasInterfaceConnectionIDs": {
+      "Description": "Cluster connection strings",
+      "Value": {
+        "Fn::Select": [
+          0,
+          {
+            "Fn::GetAtt": [
+              "PrivateEndpoint",
+              "InterfaceEndpoints"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

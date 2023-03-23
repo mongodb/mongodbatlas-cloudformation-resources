@@ -1,8 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: > 
- This template creates the IAM role to use to run the quickstart template on a CFN stack.
- It is optional to pass IAM role to CloudFormation while creating a stack. If you don't supply one, the user permissions are assumed. 
- See the IAM permissions section in the General information guide for more information: https://aws-ia.github.io/content/qs_info.html#_technical_requirements
+# This Template creates the IAM role to use to run the quickstart template on a CFN stack
 Resources:
  AtlasQuickstartIAMRole:
   Type: 'AWS::IAM::Role'
@@ -34,7 +30,7 @@ Resources:
         - iam:GetRole
         - iam:GetRolePolicy
         - iam:DetachRolePolicy
-        Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/*"
+        Resource: '*'
       - Effect: Allow
         Action: cloudformation:*
         Resource: '*'

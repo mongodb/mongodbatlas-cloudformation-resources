@@ -1,0 +1,49 @@
+# This Template creates the IAM role to use to run the quickstart template on a CFN stack
+Resources:
+ AtlasQuickstartIAMRole:
+  Type: 'AWS::IAM::Role'
+  Properties:
+   AssumeRolePolicyDocument:
+    Version: '2012-10-17'
+    Statement:
+    - Effect: Allow
+      Principal:
+       Service:
+       - "lambda.amazonaws.com"
+       - "resources.cloudformation.amazonaws.com"
+       - "cloudformation.amazonaws.com"
+      Action: sts:AssumeRole
+   Path: /
+   Policies:
+   - PolicyName: AtlasQuickstartPolicy
+     PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+        - iam:PassRole
+        - iam:DeleteRolePolicy
+        - iam:AttachRolePolicy
+        - iam:CreateRole
+        - iam:PutRolePolicy
+        - iam:DeleteRole
+        - iam:GetRole
+        - iam:GetRolePolicy
+        - iam:DetachRolePolicy
+        Resource: '*'
+      - Effect: Allow
+        Action: cloudformation:*
+        Resource: '*'
+      - Effect: Allow
+        Action: ec2:*
+        Resource: '*'
+      - Effect: Allow
+        Action:
+        - secretsmanager:CreateSecret
+        - secretsmanager:DeleteSecret
+        - secretsmanager:DescribeSecret
+        - secretsmanager:GetSecretValue
+        - secretsmanager:ListSecrets
+        - secretsmanager:PutSecretValue
+        - secretsmanager:TagResource
+        Resource: '*'

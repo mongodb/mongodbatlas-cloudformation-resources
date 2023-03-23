@@ -48,7 +48,7 @@ const (
 var (
 	toolName           = cfn
 	defaultLogLevel    = "warning"
-	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
+	userAgent          = fmt.Sprintf("%s/%s gitsha:%s (%s;%s)", toolName, version.Version, version.GitSha, runtime.GOOS, runtime.GOARCH)
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
 

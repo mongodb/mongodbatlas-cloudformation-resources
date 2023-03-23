@@ -34,7 +34,7 @@ Resources:
         - iam:GetRole
         - iam:GetRolePolicy
         - iam:DetachRolePolicy
-        Resource: 'arn:aws:iam::358363220050:role/*'
+        Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/*"
       - Effect: Allow
         Action: cloudformation:*
         Resource: '*'

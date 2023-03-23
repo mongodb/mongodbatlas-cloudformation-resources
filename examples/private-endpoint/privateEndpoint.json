@@ -56,17 +56,11 @@
     }
   },
   "Outputs": {
-    "MongoDBAtlasInterfaceConnectionIDs": {
-      "Description": "Cluster connection strings",
+    "PrivateEndpointId": {
       "Value": {
-        "Fn::Select": [
-          0,
-          {
-            "Fn::GetAtt": [
-              "PrivateEndpoint",
-              "InterfaceEndpoints"
-            ]
-          }
+        "Fn::GetAtt": [
+          "PrivateEndpoint",
+          "Id"
         ]
       }
     }

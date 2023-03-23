@@ -59,6 +59,14 @@
       "Value": {
         "Ref": "X509AuthenticationDatabaseUser"
       }
+    },
+    "Enabled": {
+      "Value": {
+        "Fn::GetAtt": [
+          "X509AuthenticationDatabaseUser",
+          "MonthsUntilExpiration"
+        ]
+      }
     }
   }
 }

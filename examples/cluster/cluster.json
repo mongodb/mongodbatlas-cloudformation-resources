@@ -3,17 +3,16 @@
   "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters": {
     "ProjectId": {
-      "Type": "String"
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
     },
     "ClusterName": {
-      "Type": "String"
+      "Type": "String",
+      "Description": "Name to use for your Atlas Cluster"
     },
     "Profile": {
-      "Type": "String"
-    },
-    "OrgId": {
       "Type": "String",
-      "Default": ""
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
     }
   },
   "Resources": {

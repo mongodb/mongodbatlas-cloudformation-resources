@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::ProjectIpAccessList
 Parameters:
   Profile:
-    Description: "YSecret Manager Profile that contains the Atlas Programmatic keys"
+    Description: "Secret Manager Profile that contains the Atlas Programmatic keys"
     Type: String
     Default: "default"
   ProjectId:

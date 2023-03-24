@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Teams
 
 ## Description
-Returns, adds, edits, or removes teams.
+Returns, adds, edits, or removes teams to Atlas Organization and Atlas Project (if specified).
 
 ## Attributes & Parameters
 

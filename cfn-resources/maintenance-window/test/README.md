@@ -1,14 +1,14 @@
-# MongoDB::Atlas::ProjectInvitation
+# MongoDB::Atlas::MaintenanceWindow
 
 ## Impact 
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
- - Project invitation L1 CDK constructor
+ - Maintenance window L1 CDK constructor
 
 
 
 ## Prerequisites 
 ### Resources needed to manually QA
-- Atlas organization (based on Atlas profile configured)
+- Atlas Project
 
 All resources are created as part of `cfn-testing-helper.sh`
 
@@ -17,12 +17,12 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 
 
 ### Success criteria when testing the resource
-- Atlas Project Access Manager should show `PENDING INVITE` for invited user:
+1. Atlas Project should show configured maintenance window correctly under Project Settings:
 
-![image](https://user-images.githubusercontent.com/122359335/227505950-afc41fa7-abb5-478b-807d-c9510a40888c.png)
+![image](https://user-images.githubusercontent.com/122359335/227540482-6f021ea1-7b7e-4fbf-b883-1d9e0e2eea9a.png)
 
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects/operation/createProjectInvitation)
-- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/invitations/)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Maintenance-Windows)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/tutorial/cluster-maintenance-window/)

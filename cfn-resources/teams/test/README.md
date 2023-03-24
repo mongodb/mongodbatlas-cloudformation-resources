@@ -31,6 +31,8 @@ The Atlas organization must be manually provided.
 
 ![image](https://user-images.githubusercontent.com/122359335/227534552-a338f068-2e60-4179-91cd-7a634a2dc9b3.png)
 
+2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams)
-- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/access/manage-teams-in-orgs/)

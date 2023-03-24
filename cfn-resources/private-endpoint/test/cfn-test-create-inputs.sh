@@ -44,10 +44,6 @@ else
   region=$AWS_DEFAULT_REGION
 fi
 
-#region="${4:-$AWS_DEFAULT_REGION}"
-#if [ -z "$region" ]; then
-#	region=$(aws configure get region)
-#fi
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then

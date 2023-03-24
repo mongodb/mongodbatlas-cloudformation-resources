@@ -14,6 +14,5 @@
 
 package version
 
-// Version for CFN.
-var Version = "v0.1.0"
+// GitSha Git SHA of the last GitHub commit for CFN.
 var GitSha = ""

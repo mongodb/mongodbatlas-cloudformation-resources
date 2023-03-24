@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Parameters": {
-    "ProjectId": {
+    "ProjectName": {
       "Type": "String"
     },
     "ClusterName": {
@@ -14,14 +14,35 @@
     "OrgId": {
       "Type": "String",
       "Default": ""
+    },
+    "PitEnabled": {
+      "Type": "String",
+      "Default": "true"
     }
   },
   "Resources": {
+    "Project": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": {
+          "Ref": "ProjectName"
+        },
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    },
     "AtlasCluster": {
       "Type": "MongoDB::Atlas::Cluster",
       "Properties": {
         "ProjectId": {
-          "Ref": "ProjectId"
+          "Fn::GetAtt": [
+            "Project",
+            "Id"
+          ]
         },
         "Name": {
           "Ref": "ClusterName"

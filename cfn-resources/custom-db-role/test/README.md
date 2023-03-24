@@ -18,5 +18,5 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 ![image](https://user-images.githubusercontent.com/5663078/227566882-b6bb8a83-988a-402e-9211-ffc0073c5aed.png)
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations/operation/listAlertConfigurations)
-- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/configure-alerts/#configure-an-alert)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-Database-Roles)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-add-mongodb-roles/)

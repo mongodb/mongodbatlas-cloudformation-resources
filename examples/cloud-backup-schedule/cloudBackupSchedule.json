@@ -115,5 +115,14 @@
       }
     }
   },
-  "Outputs": {}
+  "Outputs": {
+    "CloudBackupSchedule": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudBackupSchedule",
+          "ClusterId"
+        ]
+      }
+    }
+  }
 }

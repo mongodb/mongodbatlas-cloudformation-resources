@@ -1,68 +1,85 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates resources from the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates resources from the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
     "Profile": {
       "Type": "String",
       "Description": "MongoDB Atlas Proj Profile name",
-      "Default" : "default",
+      "Default": "default",
       "ConstraintDescription": ""
     },
     "MongoDBAtlasProjectId": {
       "Type": "String",
-      "Description" : "MongoDB project Key"
+      "Description": "MongoDB project Key"
     },
     "BindPassword": {
       "Type": "String",
-      "Description" : "Password used to authenticate the bindUsername."
+      "Description": "Password used to authenticate the bindUsername."
     },
     "BindUsername": {
       "Type": "String",
-      "Description" : "User DN that Atlas uses to connect to the LDAP server. Write in the format of a full DN"
+      "Description": "User DN that Atlas uses to connect to the LDAP server. Write in the format of a full DN"
     },
     "Hostname": {
       "Type": "String",
-      "Description" : "FQDN or IP address of the host that serves the LDAP directory. This host must be visible to the internet or connected to your Atlas cluster with VPC Peering."
+      "Description": "FQDN or IP address of the host that serves the LDAP directory. This host must be visible to the internet or connected to your Atlas cluster with VPC Peering."
     },
     "Port": {
-      "Type" : "Number",
-      "Description" : "Port to which the LDAP server listens for client connections. This parameter use a default value of 636.",
-      "Default" : 636
+      "Type": "Number",
+      "Description": "Port to which the LDAP server listens for client connections. This parameter use a default value of 636.",
+      "Default": 636
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "LdapVerify": {
       "Type": "MongoDB::Atlas::LDAPVerify",
-      "Properties":
-        {
-          "GroupId": { "Ref" : "MongoDBAtlasProjectId" },
-          "BindPassword": { "Ref" : "BindPassword" },
-          "BindUsername": { "Ref" : "BindUsername" },
-          "HostName": { "Ref" : "Hostname" },
-          "Port": { "Ref" : "Port" },
-          "Profile": { "Ref" : "Profile" }
+      "Properties": {
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "BindPassword": {
+          "Ref": "BindPassword"
+        },
+        "BindUsername": {
+          "Ref": "BindUsername"
+        },
+        "HostName": {
+          "Ref": "Hostname"
+        },
+        "Port": {
+          "Ref": "Port"
+        },
+        "Profile": {
+          "Ref": "Profile"
         }
+      }
     }
   },
-  "Outputs" : {
-    "ResourceId" : {
-      "Value" : { "Ref" : "LdapVerify" },
-      "Description" : "Ldap Id"
+  "Outputs": {
+    "ResourceId": {
+      "Value": {
+        "Ref": "LdapVerify"
+      },
+      "Description": "Ldap Id"
     },
-    "RequestId" : {
-      "Value" : { "Fn::GetAtt": [
-        "LdapVerify",
-        "RequestId"
-      ]},
-      "Description" : "Ldap Verify Request Id"
+    "RequestId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LdapVerify",
+          "RequestId"
+        ]
+      },
+      "Description": "Ldap Verify Request Id"
     },
-    "Status" : {
-      "Value" : { "Fn::GetAtt": [
-        "LdapVerify",
-        "Status"
-      ]},
-      "Description" : "Ldap Verify Status"
+    "Status": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LdapVerify",
+          "Status"
+        ]
+      },
+      "Description": "Ldap Verify Status"
     }
   }
 }

@@ -21,7 +21,7 @@ MongoDB::Atlas::AlertConfiguration \
   --execution-role-arn <role-arn>
 ```
 ### Running unit tests:
-5. Ensure unit tests for each resource (located in [resource-folder]/test/index.test.ts) are updated and successful.
+5. Ensure unit tests for each resource (located in `[resource-folder]/test/index.test.ts)` are updated and successful.
  - Run unit tests with `npx projen test` inside the resource folder
 ```
 # if you created an L1 resource

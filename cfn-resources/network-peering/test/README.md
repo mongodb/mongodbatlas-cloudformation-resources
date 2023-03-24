@@ -22,5 +22,5 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations/operation/listAlertConfigurations)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/reference/atlas-operator/ak8so-network-peering/)

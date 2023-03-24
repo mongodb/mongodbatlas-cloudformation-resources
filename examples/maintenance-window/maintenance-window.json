@@ -1,48 +1,54 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+      "Default": "default"
+    },
     "MongoDBAtlasProjectId": {
       "Type": "String",
-      "Description" : "MongoDB project Id"
+      "Description": "MongoDB project Id"
     },
     "DayOfWeek": {
       "Type": "String",
-      "Description" : "Day of the week that the maintenance window starts."
+      "Description": "Day of the week that the maintenance window starts."
     },
     "HourOfDay": {
       "Type": "String",
-      "Description" : "Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use 0 for midnight and 12 for noon."
+      "Description": "Zero-based integer that represents the hour of the of the day that the maintenance window starts according to a 24-hour clock. Use 0 for midnight and 12 for noon."
     },
     "AutoDeferOnceEnabled": {
       "AllowedValues": [
-          "true",
-          "false"
+        "true",
+        "false"
       ],
       "Default": "false",
       "Type": "String",
-      "Description" : "Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them."
-  }
-  },
-  "Mappings" : {},
-  "Resources" : {
-    "MaintenenceWindow": {
-      "Type": "MongoDB::Atlas::MaintenanceWindow",
-      "Properties":  {
-        "ProjectId": { "Ref" : "MongoDBAtlasProjectId" },
-        "DayOfWeek": { "Ref" : "DayOfWeek" },
-        "HourOfDay": { "Ref" : "HourOfDay" },
-        "AutoDeferOnceEnabled": { "Ref" : "AutoDeferOnceEnabled" }
-      }
+      "Description": "Flag that indicates whether MongoDB Cloud should defer all maintenance windows for one week after you enable them."
     }
   },
-  "Outputs" : {
-    "ProjectId": {
-      "Value": {
-        "Fn::GetAtt": [
-          "MaintenenceWindow",
-          "ProjectId"
-        ]
+  "Mappings": {},
+  "Resources": {
+    "MaintenenceWindow": {
+      "Type": "MongoDB::Atlas::MaintenanceWindow",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "DayOfWeek": {
+          "Ref": "DayOfWeek"
+        },
+        "HourOfDay": {
+          "Ref": "HourOfDay"
+        },
+        "AutoDeferOnceEnabled": {
+          "Ref": "AutoDeferOnceEnabled"
+        }
       }
     }
   }

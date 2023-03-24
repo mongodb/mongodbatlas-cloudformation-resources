@@ -22,6 +22,7 @@ CustomerX509 is to be manually provided.
 openssl req -new -newkey rsa:1024 -days 365 -nodes -x509 -keyout test.key -out test.cert
 ```
 A certificate for you will be generated in test.cert file.
+
 2. Use cert from #1 and update cert in inputs/inputs_1_create.json before running cfn test and when creating the stack in AWS CloudFormation in the steps below.
 
 

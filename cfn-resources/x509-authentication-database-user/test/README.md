@@ -33,7 +33,8 @@ A certificate for you will be generated in test.cert file.
 ### Success criteria when testing the resource
 1. X.509 Authentication should be enabled correctly set up in your Atlas Project as per configuration specified in the inputs/example. This can be found under Security section -> Advanced:
 
-<img src="https://user-images.githubusercontent.com/122359335/227374480-1afa48a4-5265-4a2a-ad92-067f5015eeca.png">
+   ![image](https://user-images.githubusercontent.com/122359335/227374480-1afa48a4-5265-4a2a-ad92-067f5015eeca.png)
+
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links

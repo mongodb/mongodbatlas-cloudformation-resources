@@ -64,6 +64,9 @@ https://realm.mongodb.com/api/admin/v3.0/groups/<ProjectId>/apps/<AppId>/service
 
 ### Success criteria when testing the resource
 1. Trigger should be set up in your Atlas account as per configuration specified in the inputs/example.
+
+   ![image](https://user-images.githubusercontent.com/122359335/227495196-59063691-c475-449c-b6b1-f206f4404715.png) 
+
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links

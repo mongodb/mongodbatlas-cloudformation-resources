@@ -4,35 +4,36 @@
   "Parameters": {
     "Profile": {
       "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
       "Default": "default"
     },
     "ProjectId": {
       "Type": "String",
-   "Default": ""
+      "Default": ""
     },
     "ClusterName": {
       "Type": "String",
-   "Default": ""
+      "Default": ""
     },
     "CloudProvider": {
       "Type": "String",
-   "Default": "AWS"
+      "Default": "AWS"
     },
     "RegionName": {
       "Type": "String",
-   "Default": "AP_NORTHEAST_2"
+      "Default": "AP_NORTHEAST_2"
     },
     "RegionName2": {
       "Type": "String",
-   "Default": "AP_NORTHEAST_2"
+      "Default": "AP_NORTHEAST_2"
     },
     "ReplicationSpecId": {
       "Type": "String",
-   "Default": "639db3eb42882a4bb573db75"
+      "Default": ""
     },
     "PolicyID": {
       "Type": "String",
-   "Default": "639db611e0fc2c5efcc3c5fa"
+      "Default": ""
     },
     "FrequencyInterval": {
       "Type": "String",
@@ -40,27 +41,15 @@
     },
     "FrequencyType": {
       "Type": "String",
-    "Default": "daily"
+      "Default": "daily"
     },
     "RetentionUnit": {
       "Type": "String",
-    "Default": "days"
+      "Default": "days"
     },
     "RetentionValue": {
       "Type": "String",
-    "Default": "1"
-    },
-  "DeleteCloudProvider": {
-      "Type": "String",
-   "Default": "AWS"
-    },
-    "DeleteRegionName": {
-      "Type": "String",
-   "Default": "US_EAST_2"
-    },
-    "DeleteReplicationSpecId": {
-      "Type": "String",
-      "Default": ""
+      "Default": "1"
     }
   },
   "Mappings": {},
@@ -77,31 +66,40 @@
         "AutoExportEnabled": "false",
         "CopySettings": [
           {
-            "CloudProvider": { "Ref" : "CloudProvider" },
+            "CloudProvider": {
+              "Ref": "CloudProvider"
+            },
             "Frequencies": [
-              "DAILY"
+              "HOURLY"
             ],
-            "RegionName": { "Ref" : "RegionName" },
-            "ReplicationSpecId": { "Ref" : "ReplicationSpecId" },
+            "RegionName": {
+              "Ref": "RegionName"
+            },
+            "ReplicationSpecId": {
+              "Ref": "ReplicationSpecId"
+            },
             "ShouldCopyOplogs": false
           }
         ],
-   "DeleteCopiedBackups": [
-            {
-              "CloudProvider": { "Ref" : "DeleteCloudProvider" },
-              "RegionName": { "Ref" : "DeleteRegionName" },
-              "ReplicationSpecId": { "Ref" : "DeleteReplicationSpecId" }
-            }
-        ],
         "Policies": [
           {
-            "ID": { "Ref" : "PolicyID" },
+            "ID": {
+              "Ref": "PolicyID"
+            },
             "PolicyItems": [
               {
-                "FrequencyInterval": { "Ref" : "FrequencyInterval" },
-                "FrequencyType": { "Ref" : "FrequencyType" },
-                "RetentionUnit": { "Ref" : "RetentionUnit" },
-                "RetentionValue": { "Ref" : "RetentionValue" }
+                "FrequencyInterval": {
+                  "Ref": "FrequencyInterval"
+                },
+                "FrequencyType": {
+                  "Ref": "FrequencyType"
+                },
+                "RetentionUnit": {
+                  "Ref": "RetentionUnit"
+                },
+                "RetentionValue": {
+                  "Ref": "RetentionValue"
+                }
               }
             ]
           }

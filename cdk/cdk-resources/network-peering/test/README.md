@@ -14,7 +14,7 @@ This CFN resource must be active in your AWS account while using this constructo
 
 ## Manual QA
 - Follow prerequisite steps for testing a CDK construct in [TESTING.md](../../../TESTING.md).
-- Follow prerequisite steps for the corresponding [Project Access List CFN resource](../../../../cfn-resources/network-peering/test/README.md).
+- Follow prerequisite steps for the corresponding [Network peering CFN resource](../../../../cfn-resources/network-peering/test/README.md).
 - Set any additional required configuration options/parameters as per your needs.
 - Please, follows the steps in [TESTING.md](../../../TESTING.md).
 

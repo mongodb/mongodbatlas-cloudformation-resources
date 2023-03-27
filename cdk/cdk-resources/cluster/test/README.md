@@ -14,15 +14,10 @@ The following components use this resource and are potentially impacted by any c
 This CFN resource must be active in your AWS account while using this constructor.
 
 
-## Prerequisites 
-### Resources needed to run the manual QA
-- Atlas Project
-All resources are created as part of `cfn-testing-helper.sh`
-
 
 ## Manual QA
-- Follow prerequisite steps for testing a CDK construct.
-- Follow prerequisite steps for corresponding [Cluster CFN resource](../../../../cfn-resources/cluster/test/README.md).
+- Follow prerequisite steps for testing a CDK construct in [TESTING.md](../../../TESTING.md).
+- Follow prerequisite steps for the corresponding [Cluster CFN resource](../../../../cfn-resources/cluster/test/README.md).
 - Set any additional required configuration options/parameters as per your needs.
 - Please, follows the steps in [TESTING.md](../../../TESTING.md).
 

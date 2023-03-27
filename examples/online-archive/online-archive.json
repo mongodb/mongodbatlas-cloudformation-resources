@@ -2,7 +2,11 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Returns, adds, edits, or removes an online archive, this will be billed to your Atlas account.",
   "Mappings": {},
-  "Parameters":{
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Profile name"
+    },
     "ProjectId": {
       "Type": "String"
     },
@@ -20,16 +24,27 @@
     "OnlineArchive": {
       "Type": "MongoDB::Atlas::OnlineArchive",
       "Properties": {
-        "ClusterName":  { "Ref" : "ClusterName" },
-        "CollName":  { "Ref" : "CollName" },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "CollName": {
+          "Ref": "CollName"
+        },
         "Criteria": {
           "Type": "DATE",
           "DateField": "created",
           "DateFormat": "ISODATE",
           "ExpireAfterDays": "5"
         },
-        "DbName":  { "Ref" : "DBName" },
-        "ProjectId": { "Ref" : "ProjectId" },
+        "DbName": {
+          "Ref": "DBName"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
         "PartitionFields": [
           {
             "FieldName": "firstName",
@@ -45,11 +60,26 @@
       }
     }
   },
-
   "Outputs": {
-    "ArchiveId": {
+    "Id": {
       "Value": {
         "Ref": "OnlineArchive"
+      }
+    },
+    "ArchiveId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "OnlineArchive",
+          "ArchiveId"
+        ]
+      }
+    },
+    "State": {
+      "Value": {
+        "Fn::GetAtt": [
+          "OnlineArchive",
+          "State"
+        ]
       }
     }
   }

@@ -20,7 +20,6 @@ This CFN resource must be active in your AWS account while using this constructo
 
 
 ### Success criteria when testing the resource
-### Success criteria when testing the resource
 - You should be able to see the container created when running the following Atlas CLI command:
 ```bash
 atlas networking container ls --projectId 641d818e36e2eb47d038f8c2

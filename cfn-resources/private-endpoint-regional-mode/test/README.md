@@ -3,6 +3,7 @@
 ## Impact 
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
  - Private endpoint regional mode L1 CDK constructor
+ - Quickstart Privateendpoint
 
 
 ## Prerequisites 

@@ -22,7 +22,7 @@ atlas networking container ls --projectId 641d818e36e2eb47d038f8c2
 [
   {
     "atlasCidrBlock": "10.8.2.0/24",
-    "id": "641d819636e2eb47d038f91c",
+    "id": "<network-container-id>",
     "providerName": "AWS",
     "provisioned": false,
     "regionName": "US_EAST_1"

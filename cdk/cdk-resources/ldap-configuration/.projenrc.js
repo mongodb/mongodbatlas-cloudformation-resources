@@ -6,7 +6,16 @@ const ldap_configuration = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasLdapConfiguration',
+    packageId: 'MongoDBCdk.MongoDBAtlasLdapConfiguration',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_ldap_configuration',
+    mavenArtifactId: 'mongodb-atlas-ldap-configuration',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'ldap-configuration'

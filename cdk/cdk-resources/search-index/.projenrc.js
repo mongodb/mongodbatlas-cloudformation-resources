@@ -6,7 +6,16 @@ const search_index = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasSearchIndex',
+    packageId: 'MongoDBCdk.MongoDBAtlasSearchIndex',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_search_index',
+    mavenArtifactId: 'mongodb-atlas-search-index',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'search-index'

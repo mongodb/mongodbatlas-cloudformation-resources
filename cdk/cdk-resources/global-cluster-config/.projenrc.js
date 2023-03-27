@@ -6,7 +6,16 @@ const global_cluster_config = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasGlobalClusterConfig',
+    packageId: 'MongoDBCdk.MongoDBAtlasGlobalClusterConfig',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_global_cluster_config',
+    mavenArtifactId: 'mongodb-atlas-global-cluster-config',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'global-cluster-config'

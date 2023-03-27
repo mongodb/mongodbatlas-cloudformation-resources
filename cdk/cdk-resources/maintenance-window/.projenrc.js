@@ -6,7 +6,16 @@ const maintenance_window = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasMaintenanceWindow',
+    packageId: 'MongoDBCdk.MongoDBAtlasMaintenanceWindow',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_maintenance_window',
+    mavenArtifactId: 'mongodb-atlas-maintenance-window',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'maintenance-window'

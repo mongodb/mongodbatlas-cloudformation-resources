@@ -6,7 +6,16 @@ const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCloudBackupRestoreJobs',
+    packageId: 'MongoDBCdk.MongoDBAtlasCloudBackupRestoreJobs',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_cloud_backup_restore_jobs',
+    mavenArtifactId: 'mongodb-atlas-cloud-backup-restore-jobs',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'cloud-backup-restore-jobs'

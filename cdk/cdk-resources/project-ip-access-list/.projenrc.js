@@ -6,7 +6,16 @@ const project_ip_access_list = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasProjectIpAccessList',
+    packageId: 'MongoDBCdk.MongoDBAtlasProjectIpAccessList',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_project_ip_access_list',
+    mavenArtifactId: 'mongodb-atlas-project-ip-access-list',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'project-ip-access-list'

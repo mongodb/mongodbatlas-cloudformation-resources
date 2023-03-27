@@ -6,7 +6,16 @@ const federated_settings_org_role_mapping = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasFederatedSettingsOrgRoleMapping',
+    packageId: 'MongoDBCdk.MongoDBAtlasFederatedSettingsOrgRoleMapping',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_federated_settings_org_role_mapping',
+    mavenArtifactId: 'mongodb-atlas-federated-settings-org-role-mapping',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'federated-settings-org-role-mapping'

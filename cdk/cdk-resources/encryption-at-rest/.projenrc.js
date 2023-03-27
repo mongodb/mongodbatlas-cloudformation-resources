@@ -6,7 +6,16 @@ const encryption_at_rest = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasEncryptionAtRest',
+    packageId: 'MongoDBCdk.MongoDBAtlasEncryptionAtRest',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_encryption_at_rest',
+    mavenArtifactId: 'mongodb-atlas-encryption-at-rest',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'encryption-at-rest'

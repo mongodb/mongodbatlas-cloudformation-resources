@@ -6,7 +6,16 @@ const cloud_backup_snapshot = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCloudBackupSnapshot',
+    packageId: 'MongoDBCdk.MongoDBAtlasCloudBackupSnapshot',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_cloud_backup_snapshot',
+    mavenArtifactId: 'mongodb-atlas-cloud-backup-snapshot',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'cloud-backup-snapshot'

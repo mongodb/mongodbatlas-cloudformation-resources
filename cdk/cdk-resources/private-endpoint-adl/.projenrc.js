@@ -6,7 +6,16 @@ const private_endpoint_adl = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasPrivateEndpointAdl',
+    packageId: 'MongoDBCdk.MongoDBAtlasPrivateEndpointAdl',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_private_endpoint_adl',
+    mavenArtifactId: 'mongodb-atlas-private-endpoint-adl',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'private-endpoint-adl'

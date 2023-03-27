@@ -6,7 +6,16 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCustomDnsConfigurationClusterAws',
+    packageId: 'MongoDBCdk.MongoDBAtlasCustomDnsConfigurationClusterAws',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_custom_dns_configuration_cluster_aws',
+    mavenArtifactId: 'mongodb-atlas-custom-dns-configuration-cluster-aws',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'custom-dns-configuration-cluster-aws'

@@ -6,7 +6,16 @@ const third_party_integration = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasThirdPartyIntegration',
+    packageId: 'MongoDBCdk.MongoDBAtlasThirdPartyIntegration',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_third_party_integration',
+    mavenArtifactId: 'mongodb-atlas-third-party-integration',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'third-party-integration'

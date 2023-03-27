@@ -6,7 +6,16 @@ const federated_setting_org_configs = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasFederatedSettingOrgConfigs',
+    packageId: 'MongoDBCdk.MongoDBAtlasFederatedSettingOrgConfigs',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_federated_setting_org_configs',
+    mavenArtifactId: 'mongodb-atlas-federated-setting-org-configs',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'federated-setting-org-configs'

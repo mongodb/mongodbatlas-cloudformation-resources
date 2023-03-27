@@ -6,7 +6,16 @@ const private_endpoint_regional_mode = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasPrivateEndpointRegionalMode',
+    packageId: 'MongoDBCdk.MongoDBAtlasPrivateEndpointRegionalMode',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_private_endpoint_regional_mode',
+    mavenArtifactId: 'mongodb-atlas-private-endpoint-regional-mode',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'private-endpoint-regional-mode'

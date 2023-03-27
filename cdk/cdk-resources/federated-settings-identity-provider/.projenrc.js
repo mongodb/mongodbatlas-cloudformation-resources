@@ -6,7 +6,16 @@ const federated_settings_identity_provider = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasFederatedSettingsIdentityProvider',
+    packageId: 'MongoDBCdk.MongoDBAtlasFederatedSettingsIdentityProvider',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_federated_settings_identity_provider',
+    mavenArtifactId: 'mongodb-atlas-federated-settings-identity-provider',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'federated-settings-identity-provider'

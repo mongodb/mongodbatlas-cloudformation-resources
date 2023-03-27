@@ -6,7 +6,16 @@ const x509_authentication_database_user = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',  
+  defaultReleaseBranch: 'master',
+  publishToNuget: {
+    dotNetNamespace: 'MongoDBCdk.MongoDBAtlasX509AuthenticationDatabaseUser',
+    packageId: 'MongoDBCdk.MongoDBAtlasX509AuthenticationDatabaseUser',
+  },
+  publishToMaven:{
+    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_x509_authentication_database_user',
+    mavenArtifactId: 'mongodb-atlas-x509-authentication-database-user',
+    mavenGroupId: 'com.github.mongodb.cdk',
+  },  
   publishToGo: {
    moduleName: 'github.com/mongoDB',
    packageName : 'x509-authentication-database-user'

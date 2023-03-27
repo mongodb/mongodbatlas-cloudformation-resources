@@ -10,7 +10,7 @@
     "Profile": {
       "Type": "String",
       "Description": "MongoDB Atlas Proj Profile Id",
-      "Default" : "default",
+      "Default": "default",
       "ConstraintDescription": ""
     },
     "ProjectID": {
@@ -52,7 +52,9 @@
         "Name": {
           "Ref": "Name"
         },
-        "ProjectID": {"Ref": "ProjectID"},
+        "ProjectID": {
+          "Ref": "ProjectID"
+        },
         "ProviderSettings": {
           "RegionName": {
             "Ref": "RegionName"
@@ -71,5 +73,24 @@
       }
     }
   },
-  "Outputs" : {}
+  "Outputs": {
+    "StateName": {
+      "Description": "TeamId",
+      "Value": {
+        "Fn::GetAtt": [
+          "ServerlessInstance",
+          "StateName"
+        ]
+      }
+    },
+    "MongoDBVersion": {
+      "Description": "TeamId",
+      "Value": {
+        "Fn::GetAtt": [
+          "ServerlessInstance",
+          "MongoDBVersion"
+        ]
+      }
+    }
+  }
 }

@@ -5,7 +5,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'project'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-project',
     module: 'mongodb_cdk_mongodb_project',

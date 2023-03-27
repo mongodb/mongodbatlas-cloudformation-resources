@@ -6,7 +6,11 @@ const custom_db_role = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'custom-db-role'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-custom-db-role',
     module: 'mongodb_cdk_mongodb_custom_db_role',

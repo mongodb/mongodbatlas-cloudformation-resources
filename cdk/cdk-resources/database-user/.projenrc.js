@@ -6,7 +6,11 @@ const database_user = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'database-user'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-database-user',
     module: 'mongodb_cdk_mongodb_database_user',

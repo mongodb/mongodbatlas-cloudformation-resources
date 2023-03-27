@@ -6,7 +6,11 @@ const x509_authentication_database_user = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'x509-authentication-database-user'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-x509-authentication-database-user',
     module: 'mongodb_cdk_mongodb_x509_authentication_database_user',

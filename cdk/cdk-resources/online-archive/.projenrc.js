@@ -6,7 +6,11 @@ const online_archive = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'online-archive'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-online-archive',
     module: 'mongodb_cdk_mongodb_online_archive',

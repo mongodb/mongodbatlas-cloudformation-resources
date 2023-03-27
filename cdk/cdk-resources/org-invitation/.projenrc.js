@@ -6,7 +6,11 @@ const org_invitation = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'org-invitation'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-org-invitation',
     module: 'mongodb_cdk_mongodb_org_invitation',

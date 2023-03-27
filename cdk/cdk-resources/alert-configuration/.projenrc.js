@@ -6,7 +6,11 @@ const alert_configuration = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'alert-configuration'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-alert-configuration',
     module: 'mongodb_cdk_mongodb_alert_configuration',

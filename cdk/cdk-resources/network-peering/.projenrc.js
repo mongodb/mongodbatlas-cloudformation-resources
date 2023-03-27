@@ -6,7 +6,11 @@ const network_peering = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'network-peering'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-network-peering',
     module: 'mongodb_cdk_mongodb_network_peering',

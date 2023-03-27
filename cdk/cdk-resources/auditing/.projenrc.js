@@ -6,7 +6,11 @@ const auditing = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'auditing'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-auditing',
     module: 'mongodb_cdk_mongodb_auditing',

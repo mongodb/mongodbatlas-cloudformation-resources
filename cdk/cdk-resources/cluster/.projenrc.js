@@ -6,7 +6,11 @@ const cluster = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'cluster'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-cluster',
     module: 'mongodb_cdk_mongodb_cluster',

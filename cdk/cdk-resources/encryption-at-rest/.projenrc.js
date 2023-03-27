@@ -6,7 +6,11 @@ const encryption_at_rest = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'encryption-at-rest'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-encryption-at-rest',
     module: 'mongodb_cdk_mongodb_encryption_at_rest',

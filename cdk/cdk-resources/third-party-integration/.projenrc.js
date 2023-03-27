@@ -6,7 +6,11 @@ const third_party_integration = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'third-party-integration'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-third-party-integration',
     module: 'mongodb_cdk_mongodb_third_party_integration',

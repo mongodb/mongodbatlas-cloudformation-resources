@@ -6,7 +6,11 @@ const cloud_provider_access = new awscdk.AwsCdkConstructLibrary
     authorAddress: 'https://mongodb.com',
     authorName: 'MongoDBAtlas',
     cdkVersion: '2.1.0',
-    defaultReleaseBranch: 'master',
+    defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'cloud-provider-access'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-cloud-provider-access',
     module: 'mongodb_cdk_mongodb_cloud_provider_access',

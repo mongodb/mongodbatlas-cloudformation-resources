@@ -6,7 +6,11 @@ const global_cluster_config = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'global-cluster-config'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-global-cluster-config',
     module: 'mongodb_cdk_mongodb_global_cluster_config',

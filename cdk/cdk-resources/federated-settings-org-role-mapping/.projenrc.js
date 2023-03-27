@@ -6,7 +6,11 @@ const federated_settings_org_role_mapping = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'federated-settings-org-role-mapping'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-federated-settings-org-role-mapping',
     module: 'mongodb_cdk_mongodb_federated_settings_org_role_mapping',

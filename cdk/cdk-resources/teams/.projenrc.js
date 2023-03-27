@@ -6,7 +6,11 @@ const teams = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'teams'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-teams',
     module: 'mongodb_cdk_mongodb_teams',

@@ -6,7 +6,11 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'custom-dns-configuration-cluster-aws'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-custom-dns-configuration-cluster-aws',
     module: 'mongodb_cdk_mongodb_custom_dns_configuration_cluster_aws',

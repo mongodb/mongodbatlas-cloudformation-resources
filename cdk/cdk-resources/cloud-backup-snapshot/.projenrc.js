@@ -6,7 +6,11 @@ const cloud_backup_snapshot = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'cloud-backup-snapshot'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-cloud-backup-snapshot',
     module: 'mongodb_cdk_mongodb_cloud_backup_snapshot',

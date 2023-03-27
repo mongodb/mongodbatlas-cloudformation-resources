@@ -6,7 +6,11 @@ const private_endpoint = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'private-endpoint'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-private-endpoint',
     module: 'mongodb_cdk_mongodb_private_endpoint',

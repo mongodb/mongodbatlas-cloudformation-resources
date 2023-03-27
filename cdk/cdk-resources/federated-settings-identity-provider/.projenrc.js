@@ -6,7 +6,11 @@ const federated_settings_identity_provider = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'federated-settings-identity-provider'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-federated-settings-identity-provider',
     module: 'mongodb_cdk_mongodb_federated_settings_identity_provider',

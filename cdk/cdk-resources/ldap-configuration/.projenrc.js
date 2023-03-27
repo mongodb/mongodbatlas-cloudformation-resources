@@ -6,7 +6,11 @@ const ldap_configuration = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'ldap-configuration'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-ldap-configuration',
     module: 'mongodb_cdk_mongodb_ldap_configuration',

@@ -6,7 +6,11 @@ const datalakes = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'datalakes'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-datalakes',
     module: 'mongodb_cdk_mongodb_datalakes',

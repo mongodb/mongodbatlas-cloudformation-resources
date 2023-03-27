@@ -6,7 +6,11 @@ const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'master',  
+  publishToGo: {
+   moduleName: 'github.com/mongoDB',
+   packageName : 'cloud-backup-restore-jobs'
+  },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-cloud-backup-restore-jobs',
     module: 'mongodb_cdk_mongodb_cloud-backup_restore_jobs',

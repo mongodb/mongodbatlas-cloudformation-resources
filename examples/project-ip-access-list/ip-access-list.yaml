@@ -3,11 +3,19 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::ProjectIpAccessList
 Parameters:
   Profile:
-    Description: "Your MongoDB Atlas Profile"
+    Description: "Secret Manager Profile that contains the Atlas Programmatic keys"
     Type: String
     Default: "default"
   ProjectId:
-    Description: "Your MongoDB Cloud Project ID"
+    Description: "Unique 24-hexadecimal digit string that identifies your project"
+    Type: String
+    Default: ""
+  IPAddress:
+    Description: "IP address that you want to add to the project's IP access list"
+    Type: String
+    Default: ""
+  IPAddressComment:
+    Description: "Remark that explains the purpose or scope of this IP access list entry"
     Type: String
     Default: ""
 Resources:
@@ -17,12 +25,8 @@ Resources:
       ProjectId: !Ref "ProjectId"
       Profile: !Ref "Profile"
       AccessList:
-      - IPAddress: "0.0.0.0/1"
-        Comment: "Testing open all ips"
-      - IPAddress: "128.0.0.0/1"
-        Comment: "Testing open all ips"
-      - CIDRBlock: "203.0.113.0/24"
-        Comment: "CIDR block for Application Server B - D"
+      - IPAddress: !Ref "IPAddress"
+        Comment: !Ref "IPAddressComment"
 Outputs:
   AtlasProjectIpAccessList:
     Description: "Info on your Atlas Project IP Access List resource"

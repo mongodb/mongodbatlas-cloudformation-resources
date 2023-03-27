@@ -23,5 +23,5 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 - A new entry should be added to the "Network Access" page:
 ![image](https://user-images.githubusercontent.com/5663078/227484402-9189af3d-a3f0-4bde-a288-9ee847e6eeab.png)
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations/operation/listAlertConfigurations)
+- [API Documentation](https://docs-atlas-staging.mongodb.com/cloud-docs/docsworker-xlarge/openapi-docs-test/reference/api-resources-spec/#operation/createProjectIpAccessList)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security/ip-access-list/)

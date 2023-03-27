@@ -8,7 +8,7 @@ The following components use this resource and are potentially impacted by any c
  - Atlas Quickstart
  - Atlas Quickstart Fargate
 
-## Uses CFN resource type
+## CFN resource type used
 - MongoDB::Atlas::Project
 
 This CFN resource must be active in your AWS account while using this constructor.

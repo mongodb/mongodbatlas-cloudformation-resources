@@ -8,11 +8,10 @@ The following components use this resource and are potentially impacted by any c
 - Atlas Quickstart
 - Atlas Quickstart Fargate
 
-## Uses CFN resource type
+## CFN resource type used
 - MongoDB::Atlas::Cluster
 
 This CFN resource must be active in your AWS account while using this constructor.
-
 
 
 ## Manual QA
@@ -20,7 +19,6 @@ This CFN resource must be active in your AWS account while using this constructo
 - Follow prerequisite steps for the corresponding [Cluster CFN resource](../../../../cfn-resources/cluster/test/README.md).
 - Set any additional required configuration options/parameters as per your needs.
 - Please, follows the steps in [TESTING.md](../../../TESTING.md).
-
 
 
 ### Success criteria when testing the resource

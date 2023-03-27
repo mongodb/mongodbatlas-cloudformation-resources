@@ -1,6 +1,5 @@
 # Project IP Access List 
 
-
 ## Impact 
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
 - Project IP access list L1 CDK constructor

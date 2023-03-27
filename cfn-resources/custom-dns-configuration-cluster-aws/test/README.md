@@ -1,4 +1,4 @@
-# MongoDB::Atlas::OnlineArchive
+# MongoDB::Atlas::CustomDnsConfigurationClusterAws
 
 ## Impact 
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.

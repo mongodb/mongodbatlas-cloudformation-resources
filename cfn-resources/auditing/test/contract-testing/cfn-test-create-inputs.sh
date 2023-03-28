@@ -33,9 +33,7 @@ org_id="${MONGODB_ATLAS_ORG_ID}"
 profile="${MONGODB_ATLAS_PROFILE}"
 
 project_name="Project-$((1 + RANDOM % 10000))"
-
-# create apikey
-api_key_id=$(atlas organizations apikeys create --desc "Created as part of the contract testing: ${project_name}" --role ORG_MEMBER --output json | jq -r '.id')
+projectId=$(atlas projects create --name "${project_name}" --orgId "${org_id}" --output json | jq -r '.id')
 
 rm -rf "inputs" && mkdir "inputs"
 

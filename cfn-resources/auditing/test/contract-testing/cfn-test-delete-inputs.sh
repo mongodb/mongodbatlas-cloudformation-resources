@@ -32,4 +32,4 @@ fi
 
 project_id=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 #delete project
-atlas projects delete "${projectId}" --force
+atlas projects delete "${project_id}" --force

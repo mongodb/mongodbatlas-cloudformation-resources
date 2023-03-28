@@ -1,54 +1,87 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "ProjectName" : {
-      "Type" : "String"
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Network Container on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String",
+      "Description": "Name of the project to create"
     },
-    "RegionName" : {
-      "Type" : "String",
-      "Default": "US_EAST_1"
+    "OrgId": {
+      "Type": "String",
+      "Description": "MongoDB cloud organization ID",
+      "Default": ""
     },
-    "AtlasCidrBlock" : {
-      "Type" : "String",
-      "Default": "10.8.2.0/24"
+    "RegionName": {
+      "Type": "String",
+      "Default": "US_EAST_1",
+      "Description": "Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container"
+    },
+    "AtlasCidrBlock": {
+      "Type": "String",
+      "Default": "10.8.2.0/24",
+      "Description": "IP addresses expressed in Classless Inter-Domain Routing (CIDR) notation that MongoDB Cloud uses for the network peering containers in your project"
+    },
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "Project": {
       "Type": "MongoDB::Atlas::Project",
       "Properties": {
-        "Name": { "Ref" : "ProjectName" },
-        "OrgId": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBOrgID}}"
+        "Name": {
+          "Ref": "ProjectName"
+        },
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
       }
     },
     "NetworkContainer": {
       "Type": "MongoDB::Atlas::NetworkContainer",
       "Properties": {
-        "AtlasCidrBlock": {"Ref": "AtlasCidrBlock"},
-        "RegionName": { "Ref" : "RegionName" },
-        "ProjectId": { "Fn::GetAtt": [
-          "Project",
-          "Id"
-        ] }
+        "AtlasCidrBlock": {
+          "Ref": "AtlasCidrBlock"
+        },
+        "RegionName": {
+          "Ref": "RegionName"
+        },
+        "ProjectId": {
+          "Fn::GetAtt": [
+            "Project",
+            "Id"
+          ]
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "ProjectId": {
       "Description": "Id of the project",
-      "Value" : { "Fn::GetAtt": [
-        "Project",
-        "Id"
-      ] }
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ]
+      }
     },
     "ContainerId": {
       "Description": "Id of the network container",
-      "Value" : { "Fn::GetAtt": [
-        "NetworkContainer",
-        "Id"
-      ] }
+      "Value": {
+        "Fn::GetAtt": [
+          "NetworkContainer",
+          "Id"
+        ]
+      }
     }
   }
 }

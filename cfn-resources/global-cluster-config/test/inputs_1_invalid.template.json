@@ -1,8 +1,11 @@
 {
-    "ProjectId": "",
-    "ClusterName": "",
-    "CustomZoneMappings": [{
-        "Location": "IN",
-        "Zone": "Zone 1"
-    }]
+  "ProjectId": "",
+  "ClusterName": "",
+  "Profile": "",
+  "CustomZoneMappings": [
+    {
+      "Location": "IN",
+      "Zone": "Zone 1"
+    }
+  ]
 }

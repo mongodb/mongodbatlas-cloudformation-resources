@@ -6,7 +6,7 @@ goarch=amd64
 
 DEBUG_FLAGS=all=-N -l
 CFNREP_GIT_SHA?=$(shell git rev-parse HEAD)
-LINKER_FLAGS=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.GitSha=${CFNREP_GIT_SHA}
+LINKER_FLAGS=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${CFNREP_GIT_SHA}
 
 build:
 	@echo "==> Building handler binary"

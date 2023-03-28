@@ -12,6 +12,7 @@ jobs:
      repository-projects: read
    outputs:
      project: ${{ steps.filter.outputs.project }}
+     auditing: ${{ steps.filter.outputs.auditing }}
    steps:
    - uses: actions/checkout@v3
      if: ${{ github.event_name == 'push' }}

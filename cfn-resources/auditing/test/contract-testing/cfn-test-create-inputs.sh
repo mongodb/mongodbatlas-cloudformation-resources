@@ -40,17 +40,21 @@ api_key_id=$(atlas organizations apikeys create --desc "Created as part of the c
 rm -rf "inputs" && mkdir "inputs"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"

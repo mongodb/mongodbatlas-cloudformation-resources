@@ -25,12 +25,11 @@
 #
 set -eu
 
-project_id=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
-
 if [ -z "${MONGODB_ATLAS_PUBLIC_API_KEY+x}" ] || [ -z "${MONGODB_ATLAS_PRIVATE_API_KEY+x}" ] || [ -z "${MONGODB_ATLAS_ORG_ID+x}" ]; then
 	echo "Error: MONGODB_ATLAS_PUBLIC_API_KEY, MONGODB_ATLAS_PRIVATE_API_KEY and MONGODB_ATLAS_ORG_ID environment variables must be set"
 	exit 1
 fi
 
+project_id=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 #delete project
 atlas projects delete "${projectId}" --force

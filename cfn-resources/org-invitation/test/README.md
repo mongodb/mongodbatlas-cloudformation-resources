@@ -26,9 +26,12 @@ by clicking on your organization and note the Organization Id from the URL (whic
 2. Follow [general steps](../../../TESTING.md.md#steps) to test a CFN resource.
 
 ### Success criteria when testing the resource
-1. Under Access Manager for your Atlas Organization, you should see a new entry under “Users” tab with status “PENDING INVITE”   ![image](https://user-images.githubusercontent.com/122359335/227275914-4af66737-fa72-49f8-8713-9d298606bc4f.png)
+1. Under Access Manager for your Atlas Organization, you should see a new entry under “Users” tab with status “PENDING INVITE”  
+
+![image](https://user-images.githubusercontent.com/122359335/227275914-4af66737-fa72-49f8-8713-9d298606bc4f.png)
+
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api/organization-create-one-invitation/#invite-one-user-to-an-service-organization)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/invitations/#invitations-to-organizations-and-projects)

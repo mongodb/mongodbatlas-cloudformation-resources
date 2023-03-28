@@ -42,7 +42,9 @@ The private endpoint id is to be manually provided.
 2. Follow [general steps](../../../TESTING.md.md#steps) to test CFN resources.
 
 ### Success criteria when testing the resource
-1. Private Endpoint should be correctly set up in your Atlas Project as per configuration specified in the inputs/example:   ![image](https://user-images.githubusercontent.com/122359335/227305880-c6c70d20-7f38-4885-a3ed-1de7b4921aa3.png)
+1. Private Endpoint should be correctly set up in your Atlas Project as per configuration specified in the inputs/example:   
+
+![image](https://user-images.githubusercontent.com/122359335/227305880-c6c70d20-7f38-4885-a3ed-1de7b4921aa3.png)
 
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 

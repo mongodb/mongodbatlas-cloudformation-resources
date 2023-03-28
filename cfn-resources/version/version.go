@@ -15,4 +15,4 @@
 package version
 
 // GitSha Git SHA of the last GitHub commit for CFN.
-var GitSha = ""
+var Version = "v0.1.0"

@@ -1,6 +1,6 @@
 {
-    "GroupId": "",
-    "Profile" : "",
-    "AuditAuthorizationSuccess": "false",
-    "AuditFilter": 123124235
+  "ProjectId": "",
+  "Profile": "",
+  "AuditAuthorizationSuccess": "false",
+  "AuditFilter": 123124235
 }

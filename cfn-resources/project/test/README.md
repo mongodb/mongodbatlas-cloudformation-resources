@@ -30,5 +30,5 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 - The team should be visible in the project Team page:
 ![image](https://user-images.githubusercontent.com/5663078/227303779-16069213-4fe7-49c8-a840-66afdb88cb6e.png)
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations/operation/listAlertConfigurations)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/tutorial/manage-projects/)

@@ -27,3 +27,8 @@ This CFN resource must be active in your AWS account while using this constructo
 ## Important Links
 - [API Documentation](https://docs-atlas-staging.mongodb.com/cloud-docs/docsworker-xlarge/openapi-docs-test/reference/api-resources-spec/#operation/createProjectIpAccessList)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security/ip-access-list/)
+
+
+## Important Links
+- [API Documentation](https://docs-atlas-staging.mongodb.com/cloud-docs/docsworker-xlarge/openapi-docs-test/reference/api-resources-spec/#operation/createProjectIpAccessList)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security/ip-access-list/)

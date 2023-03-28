@@ -36,3 +36,8 @@ curl --user "<PublicKey>:<PrivateKey>" -X GET --digest \
   } ],
   "totalCount" : 1
 }
+
+
+## Important Links
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups/operation/listExportBuckets)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/data-federation/config/config-aws-s3/)

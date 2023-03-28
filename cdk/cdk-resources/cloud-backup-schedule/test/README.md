@@ -17,3 +17,8 @@ This CFN resource must be active in your AWS account while using this constructo
 ### Success criteria when testing the resource
 - Backup policy should be updated in the "Backup" page of your cluster:
 ![image](https://user-images.githubusercontent.com/5663078/227544843-152b52ee-2c23-40db-b8bd-1391ef64aebc.png)
+
+
+## Important Links
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/backup/cloud-backup/overview/#std-label-backup-cloud-provider)

@@ -33,3 +33,8 @@ atlas networking container ls --projectId 641d818e36e2eb47d038f8c2
   }
 ]
 ```
+
+
+## Important Links
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/reference/atlas-operator/ak8so-network-peering/)

@@ -24,5 +24,5 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 - The Database User should be visible in the "Database Users" page:
 ![image](https://user-images.githubusercontent.com/5663078/227314604-d15f10a4-5e3b-4010-b94f-621ec55eceb3.png)
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Alert-Configurations/operation/listAlertConfigurations)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-add-mongodb-users/)

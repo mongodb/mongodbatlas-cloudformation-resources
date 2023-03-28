@@ -8,5 +8,5 @@ type Model struct {
 	AuditAuthorizationSuccess *bool   `json:",omitempty"`
 	AuditFilter               *string `json:",omitempty"`
 	ConfigurationType         *string `json:",omitempty"`
-	GroupId                   *string `json:",omitempty"`
+	ProjectId                 *string `json:",omitempty"`
 }

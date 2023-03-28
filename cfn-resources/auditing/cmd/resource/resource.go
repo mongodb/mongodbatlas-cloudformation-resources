@@ -30,7 +30,7 @@ import (
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.GroupID}
+var RequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-auditing")
@@ -42,7 +42,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
-		_, _ = log.Debugf("CRATE Validation Error")
+		_, _ = log.Debugf("CREATE Validation Error")
 		return *modelValidation, nil
 	}
 

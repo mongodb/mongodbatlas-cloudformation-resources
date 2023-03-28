@@ -8,12 +8,10 @@ ldXflags=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.
 ldXflagsD=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.GitSha=${CFNREP_GIT_SHA}
 
 build:
-	#make -f makebuild  # this runs build steps required by the cfn cli
 	cfn generate
 	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflags)" -tags="$(tags)" -o bin/handler cmd/main.go
 
 debug:
-	#make -f makebuild  # this runs build steps required by the cfn cli
 	cfn generate
 	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflagsD)" -tags="$(tags)" -o bin/handler cmd/main.go
 

@@ -3,12 +3,7 @@ tags=logging callback metrics scheduler
 cgo=0
 goos=linux
 goarch=amd64
-#export TAGS
-#export CGO_ENABLED
-#export GOARCH
-# Set next value at compile time for fallback log-level
 CFNREP_GIT_SHA?=$(shell git rev-parse HEAD)
-# Set next value at compile time for fallback log-level
 ldXflags=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.GitSha=${CFNREP_GIT_SHA}
 ldXflagsD=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.GitSha=${CFNREP_GIT_SHA}
 

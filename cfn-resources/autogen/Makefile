@@ -3,16 +3,9 @@ tags=logging callback metrics scheduler
 cgo=0
 goos=linux
 goarch=amd64
-#export TAGS
-#export CGO_ENABLED
-#export GOARCH
-# Set next value at compile time for fallback log-level
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=warning
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
-# example for resource naming convention: MongoDB::Atlas::Teams
-# example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/invites
-# example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/indexes
 
 create:
 	echo "Enter the go import path as: github.com/mongodb/mongodbatlas-cloudformation-resources/$(dirName) "

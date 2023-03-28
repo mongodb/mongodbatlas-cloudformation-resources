@@ -33,26 +33,26 @@ org_id="${MONGODB_ATLAS_ORG_ID}"
 profile="${MONGODB_ATLAS_PROFILE}"
 
 project_name="Project-$((1 + RANDOM % 10000))"
-projectId=$(atlas projects create --name "${project_name}" --orgId "${org_id}" --output json | jq -r '.id')
+projectId=$(atlas projects create "${project_name}" --orgId "${org_id}" --output json | jq -r '.id')
 
 rm -rf "inputs" && mkdir "inputs"
 
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId' \
-	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
+	"test/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
+	"test/inputs_1_update.json" >"inputs/inputs_1_update.json"
 
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
+	"test/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
+	"test/inputs_2_update.json" >"inputs/inputs_2_update.json"

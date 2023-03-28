@@ -39,7 +39,7 @@ rm -rf "inputs" && mkdir "inputs"
 
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
-	'.ProjectId?|=$projectId' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile' \
 	"test/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \

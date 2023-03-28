@@ -1,7 +1,6 @@
-const { awscdk } = require('projen');
-const { ReleaseTrigger } = require('projen/lib/release');
-const datalakes = new awscdk.AwsCdkConstructLibrary
-({
+const { awscdk } = require('projen')
+const { ReleaseTrigger } = require('projen/lib/release')
+const datalakes = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -9,29 +8,31 @@ const datalakes = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'master',
   publishToNuget: {
     dotNetNamespace: 'MongoDBCdk.MongoDBAtlasDatalakes',
-    packageId: 'MongoDBCdk.MongoDBAtlasDatalakes',
+    packageId: 'MongoDBCdk.MongoDBAtlasDatalakes'
   },
-  publishToMaven:{
+  publishToMaven: {
     javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_datalakes',
     mavenArtifactId: 'mongodb-atlas-datalakes',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },  
+    mavenGroupId: 'com.github.mongodb.cdk'
+  },
   publishToGo: {
-   moduleName: 'github.com/mongoDB',
-   packageName : 'datalakes'
+    moduleName: 'github.com/mongoDB',
+    packageName: 'datalakes'
   },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-datalakes',
-    module: 'mongodb_cdk_mongodb_datalakes',
+    module: 'mongodb_cdk_mongodb_datalakes'
   },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/datalakes',
-  repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  repositoryUrl:
+    'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  keywords: ['cdk',
+  keywords: [
+    'cdk',
     'awscdk',
     'aws-cdk',
     'cloudformation',
@@ -43,12 +44,13 @@ const datalakes = new awscdk.AwsCdkConstructLibrary
     'l1',
     'mongodb',
     'atlas',
-    'datalakes'],
-  description: 'Retrieves or creates datalakess in any given Atlas organization',
+    'datalakes'
+  ],
+  description: 'Retrieves or creates datalakess in any given Atlas organization'
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
-});
+})
 
-datalakes.synth();
+datalakes.synth()

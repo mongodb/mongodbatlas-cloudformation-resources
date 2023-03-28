@@ -1,7 +1,6 @@
-const { awscdk } = require('projen');
-const { ReleaseTrigger } = require('projen/lib/release');
-const encryption_at_rest = new awscdk.AwsCdkConstructLibrary
-({
+const { awscdk } = require('projen')
+const { ReleaseTrigger } = require('projen/lib/release')
+const encryption_at_rest = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -9,29 +8,31 @@ const encryption_at_rest = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'master',
   publishToNuget: {
     dotNetNamespace: 'MongoDBCdk.MongoDBAtlasEncryptionAtRest',
-    packageId: 'MongoDBCdk.MongoDBAtlasEncryptionAtRest',
+    packageId: 'MongoDBCdk.MongoDBAtlasEncryptionAtRest'
   },
-  publishToMaven:{
+  publishToMaven: {
     javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_encryption_at_rest',
     mavenArtifactId: 'mongodb-atlas-encryption-at-rest',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },  
+    mavenGroupId: 'com.github.mongodb.cdk'
+  },
   publishToGo: {
-   moduleName: 'github.com/mongoDB',
-   packageName : 'encryption-at-rest'
+    moduleName: 'github.com/mongoDB',
+    packageName: 'encryption-at-rest'
   },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-encryption-at-rest',
-    module: 'mongodb_cdk_mongodb_encryption_at_rest',
+    module: 'mongodb_cdk_mongodb_encryption_at_rest'
   },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/encryption-at-rest',
-  repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  repositoryUrl:
+    'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  keywords: ['cdk',
+  keywords: [
+    'cdk',
     'awscdk',
     'aws-cdk',
     'cloudformation',
@@ -43,12 +44,14 @@ const encryption_at_rest = new awscdk.AwsCdkConstructLibrary
     'l1',
     'mongodb',
     'atlas',
-    'encryption-at-rest'],
-  description: 'Retrieves or creates encryption-at-rests in any given Atlas organization',
+    'encryption-at-rest'
+  ],
+  description:
+    'Retrieves or creates encryption-at-rests in any given Atlas organization'
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
-});
+})
 
-encryption_at_rest.synth();
+encryption_at_rest.synth()

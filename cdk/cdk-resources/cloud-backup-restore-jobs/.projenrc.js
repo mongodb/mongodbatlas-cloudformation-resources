@@ -1,7 +1,6 @@
-const { awscdk } = require('projen');
-const { ReleaseTrigger } = require('projen/lib/release');
-const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary
-({
+const { awscdk } = require('projen')
+const { ReleaseTrigger } = require('projen/lib/release')
+const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -9,20 +8,21 @@ const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'master',
   publishToNuget: {
     dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCloudBackupRestoreJobs',
-    packageId: 'MongoDBCdk.MongoDBAtlasCloudBackupRestoreJobs',
+    packageId: 'MongoDBCdk.MongoDBAtlasCloudBackupRestoreJobs'
   },
-  publishToMaven:{
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_cloud_backup_restore_jobs',
+  publishToMaven: {
+    javaPackage:
+      'com.github.mongodb.cdk.mongodb_atlas_cloud_backup_restore_jobs',
     mavenArtifactId: 'mongodb-atlas-cloud-backup-restore-jobs',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },  
+    mavenGroupId: 'com.github.mongodb.cdk'
+  },
   publishToGo: {
-   moduleName: 'github.com/mongoDB',
-   packageName : 'cloud-backup-restore-jobs'
+    moduleName: 'github.com/mongoDB',
+    packageName: 'cloud-backup-restore-jobs'
   },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-cloud-backup-restore-jobs',
-    module: 'mongodb_cdk_mongodb_cloud-backup_restore_jobs',
+    module: 'mongodb_cdk_mongodb_cloud-backup_restore_jobs'
   },
   majorVersion: 1,
   releaseToNpm: true,
@@ -30,9 +30,11 @@ const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/cloud-backup-restore-jobs',
-  repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  repositoryUrl:
+    'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  keywords: ['cdk',
+  keywords: [
+    'cdk',
     'awscdk',
     'aws-cdk',
     'cloudformation',
@@ -44,12 +46,14 @@ const cloud_backup_restore_jobs = new awscdk.AwsCdkConstructLibrary
     'l1',
     'mongodb',
     'atlas',
-    'cloud-backup-restore-jobs'],
-  description: 'Retrieves or creates cloud-backup-restore-jobss in any given Atlas organization',
+    'cloud-backup-restore-jobs'
+  ],
+  description:
+    'Retrieves or creates cloud-backup-restore-jobss in any given Atlas organization'
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
-});
+})
 
-cloud_backup_restore_jobs.synth();
+cloud_backup_restore_jobs.synth()

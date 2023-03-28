@@ -1,7 +1,6 @@
-const { awscdk } = require('projen');
-const { ReleaseTrigger } = require('projen/lib/release');
-const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
-({
+const { awscdk } = require('projen')
+const { ReleaseTrigger } = require('projen/lib/release')
+const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -9,29 +8,32 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'master',
   publishToNuget: {
     dotNetNamespace: 'MongoDBCdk.MongoDBAtlasCustomDnsConfigurationClusterAws',
-    packageId: 'MongoDBCdk.MongoDBAtlasCustomDnsConfigurationClusterAws',
+    packageId: 'MongoDBCdk.MongoDBAtlasCustomDnsConfigurationClusterAws'
   },
-  publishToMaven:{
-    javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_custom_dns_configuration_cluster_aws',
+  publishToMaven: {
+    javaPackage:
+      'com.github.mongodb.cdk.mongodb_atlas_custom_dns_configuration_cluster_aws',
     mavenArtifactId: 'mongodb-atlas-custom-dns-configuration-cluster-aws',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },  
+    mavenGroupId: 'com.github.mongodb.cdk'
+  },
   publishToGo: {
-   moduleName: 'github.com/mongoDB',
-   packageName : 'custom-dns-configuration-cluster-aws'
+    moduleName: 'github.com/mongoDB',
+    packageName: 'custom-dns-configuration-cluster-aws'
   },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-custom-dns-configuration-cluster-aws',
-    module: 'mongodb_cdk_mongodb_custom_dns_configuration_cluster_aws',
+    module: 'mongodb_cdk_mongodb_custom_dns_configuration_cluster_aws'
   },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/custom-dns-configuration-cluster-aws',
-  repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  repositoryUrl:
+    'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  keywords: ['cdk',
+  keywords: [
+    'cdk',
     'awscdk',
     'aws-cdk',
     'cloudformation',
@@ -43,23 +45,26 @@ const custom_dns_configuration_cluster_aws = new awscdk.AwsCdkConstructLibrary
     'l1',
     'mongodb',
     'atlas',
-    'custom-dns-configuration-cluster-aws'],
-  description: 'Retrieves or creates custom-dns-configuration-cluster-awss in any given Atlas organization',
+    'custom-dns-configuration-cluster-aws'
+  ],
+  description:
+    'Retrieves or creates custom-dns-configuration-cluster-awss in any given Atlas organization'
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
-});
+})
 
 custom_dns_configuration_cluster_aws.eslint?.addOverride({
   files: ['src/**'],
   rules: {
     'max-len': [
-      'error', {
-        code: 180,
-      },
-    ],
-  },
-});
+      'error',
+      {
+        code: 180
+      }
+    ]
+  }
+})
 
-custom_dns_configuration_cluster_aws.synth();
+custom_dns_configuration_cluster_aws.synth()

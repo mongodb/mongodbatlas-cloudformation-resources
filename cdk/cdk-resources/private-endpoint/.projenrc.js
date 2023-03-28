@@ -1,7 +1,6 @@
-const { awscdk } = require('projen');
-const { ReleaseTrigger } = require('projen/lib/release');
-const private_endpoint = new awscdk.AwsCdkConstructLibrary
-({
+const { awscdk } = require('projen')
+const { ReleaseTrigger } = require('projen/lib/release')
+const private_endpoint = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -9,20 +8,20 @@ const private_endpoint = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'master',
   publishToNuget: {
     dotNetNamespace: 'MongoDBCdk.MongoDBAtlasPrivateEndpoint',
-    packageId: 'MongoDBCdk.MongoDBAtlasPrivateEndpoint',
+    packageId: 'MongoDBCdk.MongoDBAtlasPrivateEndpoint'
   },
-  publishToMaven:{
+  publishToMaven: {
     javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_private_endpoint',
     mavenArtifactId: 'mongodb-atlas-private-endpoint',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },  
+    mavenGroupId: 'com.github.mongodb.cdk'
+  },
   publishToGo: {
-   moduleName: 'github.com/mongoDB',
-   packageName : 'private-endpoint'
+    moduleName: 'github.com/mongoDB',
+    packageName: 'private-endpoint'
   },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-private-endpoint',
-    module: 'mongodb_cdk_mongodb_private_endpoint',
+    module: 'mongodb_cdk_mongodb_private_endpoint'
   },
   majorVersion: 1,
   releaseToNpm: true,
@@ -30,9 +29,11 @@ const private_endpoint = new awscdk.AwsCdkConstructLibrary
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/private-endpoint',
-  repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  repositoryUrl:
+    'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  keywords: ['cdk',
+  keywords: [
+    'cdk',
     'awscdk',
     'aws-cdk',
     'cloudformation',
@@ -44,12 +45,14 @@ const private_endpoint = new awscdk.AwsCdkConstructLibrary
     'l1',
     'mongodb',
     'atlas',
-    'private-endpoint'],
-  description: 'Retrieves or creates private-endpoints in any given Atlas organization',
+    'private-endpoint'
+  ],
+  description:
+    'Retrieves or creates private-endpoints in any given Atlas organization'
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
-});
+})
 
-private_endpoint.synth();
+private_endpoint.synth()

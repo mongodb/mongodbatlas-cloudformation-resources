@@ -1,7 +1,6 @@
-const { awscdk } = require('projen');
-const { ReleaseTrigger } = require('projen/lib/release');
-const network_container = new awscdk.AwsCdkConstructLibrary
-({
+const { awscdk } = require('projen')
+const { ReleaseTrigger } = require('projen/lib/release')
+const network_container = new awscdk.AwsCdkConstructLibrary({
   author: 'MongoDBAtlas',
   authorAddress: 'https://mongodb.com',
   authorName: 'MongoDBAtlas',
@@ -9,29 +8,31 @@ const network_container = new awscdk.AwsCdkConstructLibrary
   defaultReleaseBranch: 'master',
   publishToNuget: {
     dotNetNamespace: 'MongoDBCdk.MongoDBAtlasNetworkContainer',
-    packageId: 'MongoDBCdk.MongoDBAtlasNetworkContainer',
+    packageId: 'MongoDBCdk.MongoDBAtlasNetworkContainer'
   },
-  publishToMaven:{
+  publishToMaven: {
     javaPackage: 'com.github.mongodb.cdk.mongodb_atlas_network_container',
     mavenArtifactId: 'mongodb-atlas-network-container',
-    mavenGroupId: 'com.github.mongodb.cdk',
-  },  
+    mavenGroupId: 'com.github.mongodb.cdk'
+  },
   publishToGo: {
-   moduleName: 'github.com/mongoDB',
-   packageName : 'network-container'
+    moduleName: 'github.com/mongoDB',
+    packageName: 'network-container'
   },
   publishToPypi: {
     distName: 'mongodb-cdk-mongodb-network-container',
-    module: 'mongodb_cdk_mongodb_network_container',
+    module: 'mongodb_cdk_mongodb_network_container'
   },
   majorVersion: 1,
   releaseToNpm: true,
   releaseTrigger: ReleaseTrigger.manual(),
   docgen: true,
   name: '@mongodbatlas-awscdk/network-container',
-  repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
+  repositoryUrl:
+    'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   sampleCode: false,
-  keywords: ['cdk',
+  keywords: [
+    'cdk',
     'awscdk',
     'aws-cdk',
     'cloudformation',
@@ -43,12 +44,14 @@ const network_container = new awscdk.AwsCdkConstructLibrary
     'l1',
     'mongodb',
     'atlas',
-    'network-container'],
-  description: 'Retrieves or creates network-containers in any given Atlas organization',
+    'network-container'
+  ],
+  description:
+    'Retrieves or creates network-containers in any given Atlas organization'
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
-});
+})
 
-network_container.synth();
+network_container.synth()

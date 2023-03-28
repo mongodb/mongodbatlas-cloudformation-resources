@@ -22,7 +22,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 
   ![image](https://user-images.githubusercontent.com/122359335/227655088-8c1d44d3-da02-4413-af2a-5d814ab113a8.png)
 
-2. Ensure general [CDK resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
+2. Ensure general [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
 
 
 ## Important Links

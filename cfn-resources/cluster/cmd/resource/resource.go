@@ -101,10 +101,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		currentModel.EncryptionAtRestProvider = &none
 	}
 
-	pe := currentModel.validateDefaultLabel()
-	if pe != nil {
-		return *pe, nil
-	}
+	currentModel.validateDefaultLabel()
 
 	// Prepare cluster request
 	clusterRequest, event, err := setClusterRequest(currentModel, err)
@@ -201,10 +198,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return updateClusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 
-	pe := currentModel.validateDefaultLabel()
-	if pe != nil {
-		return *pe, nil
-	}
+	currentModel.validateDefaultLabel()
 
 	// Update Cluster
 	model, resp, err := updateCluster(context.Background(), client, currentModel)
@@ -1045,14 +1039,8 @@ func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCl
 	return clusterRequest, handler.ProgressEvent{}, nil
 }
 
-func (m *Model) validateDefaultLabel() *handler.ProgressEvent {
-	if containsLabelOrKey(m.Labels, defaultLabel) {
-		_, _ = log.Warnf("Update - error :%s", LabelError)
-		pe := progress_events.GetFailedEventByCode(LabelError, cloudformation.HandlerErrorCodeInvalidRequest)
-		return &pe
+func (m *Model) validateDefaultLabel() {
+	if !containsLabelOrKey(m.Labels, defaultLabel) {
+		m.Labels = append(m.Labels, defaultLabel)
 	}
-
-	m.Labels = append(m.Labels, defaultLabel)
-
-	return nil
 }

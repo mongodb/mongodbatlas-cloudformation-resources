@@ -21,7 +21,9 @@ for FILE in ${STAGED_GO_FILES}; do
 	golangci-lint run --fix --timeout 5m "${FILE}"
 done
 
-for FILE in ${STAGED_GO_FILES}; do
+echo "==> Linting GitHub Actions..."
+STAGED_ACTION_FILES=$(git diff --name-only | grep -E "\.github/workflows/.*(\.yaml|\.yml)$")
+for FILE in ${STAGEDSTAGED_ACTION_FILES_GO_FILES}; do
 	actionlint "${FILE}" -color -verbose
 done
 

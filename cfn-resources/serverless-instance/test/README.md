@@ -23,7 +23,7 @@ The following components use this resource and are potentially impacted by any c
 ### Success criteria when testing the resource
 1. A serverless instance should show correctly configured for the database:
 
-![image](https://user-images.githubusercontent.com/122359335/227501805-7eee80cc-12a0-4a80-8400-09a283655187.png)
+![image](https://user-images.githubusercontent.com/122359335/228200365-6e5950d8-1284-426c-97c8-57a6b24181d6.png)
 
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 

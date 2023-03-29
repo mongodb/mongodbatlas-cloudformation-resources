@@ -72,4 +72,4 @@ RequestBody:
 2. Ensure general [CDK resource success criteria](../../../TESTING.md#success-criteria-to-be-satisfied-when-testing-a-construct) for this resource is met.
 
 ## Important links
-- [Resource Usage Doc](https://www.mongodb.com/docs/atlas/security-aws-kms/#std-label-security-aws-kms)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-aws-kms/#std-label-security-aws-kms)

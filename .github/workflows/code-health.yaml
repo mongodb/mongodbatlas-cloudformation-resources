@@ -17,18 +17,23 @@ jobs:
       run: | 
         cd cfn-resources
         go build -v ./...
-  golangci-lint:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
           go-version: 1.19
-      - name: lint
+      - name: golangci-lint
         uses: golangci/golangci-lint-action@v3.4.0
         with:
           version: v1.48.0
           working-directory: cfn-resources
+      - name: actionlint
+        run: | 
+           make devtools 
+           actionlint -verbose -color
+        shell: bash
   check-copyright:
     runs-on: ubuntu-latest
     steps:

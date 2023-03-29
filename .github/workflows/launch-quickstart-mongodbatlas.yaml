@@ -25,7 +25,6 @@ on:
 jobs:
   launch-quickstart-mongodbatlas:
     name: launch-quickstart-mongodbatlas
-    #runs-on: ubuntu-latest
     runs-on: ubuntu-20.04
     env:
       STACK_NAME: ${{ github.event.inputs.projectName }}
@@ -46,12 +45,10 @@ jobs:
     - uses: FranzDiebold/github-env-vars-action@v2.7.0
     - name: Configure Environment Outputs
       id: vars
-      run: |
-        echo ::set-output name=sha_short::$(git rev-parse --short=5 ${{ github.sha }})
+      run: echo "sha_short=sha_short::$(git rev-parse --short=5 ${{ github.sha }})" >> "$GITHUB_OUTPUT"
     - name: Configure Environment
       id: cfg_env
-      run: |
-        echo "NAME=$NAME"
+      run: echo "NAME=$NAME"
       env:
         NAME: ${{ github.event.inputs.projectName }}-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}
     - name: Create AWS Secret for Atlas API Key (if needed)
@@ -68,13 +65,12 @@ jobs:
         EOF
         cat ./secret.json
         echo "standby, baking a fresh yummy secret for your MongoDB Atlas API Key..."
-        echo "Provisioning AWS Secret for MongoDB Atlas API Key called 'mongodbatlas/atlas-cfn-quickstart/$NAME"
-        secret_info=$(aws secretsmanager create-secret \
+        echo "Provisioning AWS Secret for MongoDB Atlas API Key called mongodbatlas/atlas-cfn-quickstart/$NAME"
+        secret_info="$(aws secretsmanager create-secret \
          --name="mongodbatlas/atlas-cfn-quickstart/$NAME" \
          --region="${AWS_REGION}" \
-         --secret-string="file://./secret.json" ) 
-        echo "secret_info=$secret_info"
-        echo ::set-output name=secret_info::$(echo $secret_info)
+         --secret-string="file://./secret.json" )" 
+        echo "secret_info=$secret_info" >> "$GITHUB_OUTPUT"
     - name: Create a new MongoDB Atlas CloudFormation Quickstart stack
       id: create_stack
       env:
@@ -83,7 +79,7 @@ jobs:
       run: |
         echo "NAME=$NAME"
         echo "SECRET_INFO=${SECRET_INFO}"
-        ATLAS_REGION=$(echo $AWS_REGION | tr "-" "_" | tr a-z A-Z)
+        ATLAS_REGION=$(echo "$AWS_REGION" | tr "-" "_" | tr '[:upper:]' '[:lower:]')
         echo "Converted AWS Region ${AWS_REGION} to MongoDB Atlas Region ${ATLAS_REGION}"
         cat << EOF > ./parameters.json
         [
@@ -122,8 +118,7 @@ jobs:
          --region="${AWS_REGION}" \
          --template-body="file://${TEMPLATE_FILE}" \
          --parameters="file://./parameters.json")
-        echo "stack_info=$stack_info"
-        echo ::set-output name=stack_info::$(echo $stack_info)
+        echo "stack_info=$stack_info" >> "$GITHUB_OUTPUT"
     - name: Wait for stack to build
       id: wait_create_stack
       env:

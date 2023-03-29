@@ -14,28 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-STAGED_GO_FILES=$(git diff --cached --name-only | grep ".go$")
+STAGED_GO_FILES=$(git diff --name-only | grep ".go$")
 
-echo "==> Formatting changed go files... $STAGED_GO_FILES"
+echo "==> Fixing lint errors..."
 for FILE in ${STAGED_GO_FILES}; do
-	gofmt -w -s "${FILE}"
-	goimports -w "${FILE}"
-	git add "${FILE}"
-done
-
-echo "==> Formatting changed sh files..."
-STAGED_SH_FILES=$(git diff --cached --name-only | grep ".sh$")
-for FILE in ${STAGED_SH_FILES}; do
-	shfmt -l -w "${FILE}"
-	git add "${FILE}"
-done
-
-echo "==> Formatting changed JSON files..."
-STAGED_JSON_FILES=$(git diff --cached --name-only | grep ".json$")
-for FILE in ${STAGED_JSON_FILES}; do
-  prettyFile=$(jq . "${FILE}")
-	echo "${prettyFile}" > "${FILE}"
-	git add "${FILE}"
+	golangci-lint run --fix --timeout 5m "${FILE}"
 done
 
 echo "==> Linting GitHub Actions..."
@@ -45,4 +28,3 @@ for FILE in ${STAGED_ACTION_FILES}; do
 done
 
 echo "==> Done..."
-

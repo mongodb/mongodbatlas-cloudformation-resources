@@ -34,3 +34,7 @@ link-git-hooks: ## Install git hooks
 	@echo "==> Installing all git hooks..."
 	find .git/hooks -type l -exec rm {} \;
 	find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;
+
+.PHONY: lint
+lint: ## Run linter
+	@scripts/lint.sh

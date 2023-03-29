@@ -1,23 +1,23 @@
-import * as dotenv from 'dotenv';
-import * as process from 'process'
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, tap } from 'rxjs';
 import { Employee } from './employee';
-import { EnvVariablesServiceService } from './env-variables-service.service';
+import { environment } from "src/environments/runtimeEnvironment";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class EmployeeService {
-
-  private url:any;
-
+  private url: any;
   private employees$: Subject<Employee[]> = new Subject();
 
-  constructor(private httpClient: HttpClient,private service: EnvVariablesServiceService) { 
-    this.url = this.service.ENV.ATLAS_URI
-    console.log("ENV varible ", this.url)
+  constructor(private httpClient: HttpClient) {
+    if (!environment.ATLAS_URI) {
+        console.error("No ATLAS_URI environment variable has been defined in environment.*.ts");
+        process.exit(1);
+    }
+
+    this.url = environment.ATLAS_URI;
   }
 
   private refreshEmployees() {

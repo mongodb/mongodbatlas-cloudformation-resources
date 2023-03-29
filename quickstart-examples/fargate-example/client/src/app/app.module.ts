@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -9,15 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { EditEmployeeComponent } from './edit-employee/edit-employee.component'; // <-- add this line
-import { EnvVariablesServiceService } from './env-variables-service.service';
 
-export function envVariableLoader(
-  envVariableService: EnvVariablesServiceService
-) {
-  return () => {
-    return envVariableService.getEnv();
-  };
-}
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,12 +24,7 @@ export function envVariableLoader(
     HttpClientModule,
     ReactiveFormsModule // <-- add this line
   ],
-  providers: [{
-                    provide: APP_INITIALIZER,
-                    useFactory: envVariableLoader,
-                    deps: [EnvVariablesServiceService],
-                    multi: true,
-                  },],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

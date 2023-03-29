@@ -1,4 +1,4 @@
-# AtlasEncryptionAtRest
+# @mongodbatlas-awscdk/atlas-encryption-at-rest
 
 ## CFN resource type used
 - MongoDB::Atlas::EncryptionAtRest

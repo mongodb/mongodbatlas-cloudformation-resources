@@ -1,4 +1,4 @@
-# Third Party Integrations
+# @mongodbatlas-awscdk/atlas-integrations
 
 ## CFN resource type used
 - MongoDB::Atlas::ThirdPartyIntegration

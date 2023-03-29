@@ -23,7 +23,7 @@ https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/awsCustom
 
 ![image](https://user-images.githubusercontent.com/122359335/227661815-d48398a9-aaa3-4978-9de4-736acab6ddf8.png)
 
-2. Ensure general [CDK resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
+2. Ensure general [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) for this resource is met.
 
 
 ## Important Links

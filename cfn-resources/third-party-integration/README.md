@@ -16,14 +16,6 @@ sam local start-lambda --skip-pull-image
 ```
 then in another shell:
 ```bash
-#https://www.mongodb.com/docs/mongocli/stable/configure/environment-variables/
-#Set the public API key for commands that interact with your MongoDB service.
-export MCLI_PUBLIC_API_KEY = ""
-#Set the private API key for commands that interact with your MongoDB service.
-export MCLI_PRIVATE_API_KEY=""
-#Sets the project ID for commands that require the --projectId option.
-export MCLI_PROJECT_ID = ""
-
 cd ${repo_root}/cfn-resources/thirdpartyintegration
 ./test/thirdpartyintegration.create-sample-cfn-request.sh > test.request.json 
 echo "Sample request:"

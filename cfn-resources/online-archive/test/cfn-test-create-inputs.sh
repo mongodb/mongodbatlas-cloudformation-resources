@@ -24,7 +24,6 @@ else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
-export MCLI_PROJECT_ID=$projectId
 
 ClusterName="${projectName}"
 

@@ -14,8 +14,6 @@
 ## Step 2: Create template using [privateEndpoint.json](privateEndpoint.json)
     Note: Make sure you are providing appropriate vales for 
     1. MongoDBAtlasProjectId
-    2. MongoDBAtlasAPIPublicKey
-    3. MongoDBAtlasAPIPrivateKey
     4. AWSRegion
     5. AWSVpcId 
     6. AWSSubnetId

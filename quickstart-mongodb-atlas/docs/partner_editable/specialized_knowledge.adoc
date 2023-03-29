@@ -1,3 +1,0 @@
-This Quick Start assumes familiarity with MongoDB Atlas. For more information, see https://docs.atlas.mongodb.com/getting-started[Get Started with Atlas^].
-
-This Quick Start uses the official {partner-product-short-name} AWS CloudFormation resource types. 

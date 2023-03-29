@@ -1,76 +1,91 @@
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "This template creates a Network Peer on the MongoDB Atlas API, this will be billed to your Atlas account.",
-  "Parameters" : {
-    "VpcId" : {
-      "Type" : "String",
-      "Default" : "",
-      "Description" : "",
-      "ConstraintDescription" : ""
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Network Peer on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "VpcId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "AwsAccountId" : {
-      "Type" : "String",
-      "Default" : "",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "AwsAccountId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "AwsRegionName" : {
-      "Type" : "String",
+    "AwsRegionName": {
+      "Type": "String",
       "Default": "us-east-1",
-      "Description" : "",
-      "ConstraintDescription" : ""
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "RouteTableCidrBlock" : {
-      "Type" : "String",
-      "Default" : "",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "RouteTableCidrBlock": {
+      "Type": "String",
+      "Default": "",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "ProjectId" : {
-      "Type" : "String",
-      "Default" : "",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "ProjectId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "ContainerId" : {
-      "Type" : "String",
-      "Default" : "",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "ContainerId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "",
+      "ConstraintDescription": ""
     },
-    "Profile" : {
-      "Type" : "String",
-      "Default" : "default",
-      "Description" : "",
-      "ConstraintDescription" : ""
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
     }
   },
-  "Mappings" : {},
-  "Resources" : {
+  "Mappings": {},
+  "Resources": {
     "NetworkPeering": {
       "Type": "MongoDB::Atlas::NetworkPeering",
       "Properties": {
-        "ProjectId": { "Ref" : "ProjectId" },
-        "ContainerId": { "Ref" : "ContainerId" },
-        "AccepterRegionName": { "Ref" : "AwsRegionName" },
-        "AwsAccountId": { "Ref" : "AwsAccountId" },
-        "RouteTableCIDRBlock": { "Ref" : "RouteTableCidrBlock" },
-        "VpcId": { "Ref" : "VpcId" },
-        "Profile": { "Ref" : "Profile" }
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ContainerId": {
+          "Ref": "ContainerId"
+        },
+        "AccepterRegionName": {
+          "Ref": "AwsRegionName"
+        },
+        "AwsAccountId": {
+          "Ref": "AwsAccountId"
+        },
+        "RouteTableCIDRBlock": {
+          "Ref": "RouteTableCidrBlock"
+        },
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
       }
     }
   },
-  "Outputs" : {
+  "Outputs": {
     "PeerId": {
       "Description": "Id of the network peer",
-      "Value" : { "Ref" : "NetworkPeering" }
+      "Value": {
+        "Ref": "NetworkPeering"
+      }
     },
     "ConnId": {
-      "Description": "Connection Id",
+      "Description": "Peering Status",
       "Value": {
         "Fn::GetAtt": [
           "NetworkPeering",
-          "ConnectionId"
+          "StatusName"
         ]
       }
     }

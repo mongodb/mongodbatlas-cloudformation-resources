@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # Change these variables according to your configuration.
-profile=sangram
-region=ca-central-1
+profile=default
+region=us-east-1
 repo_name=partner-meanstack-atlas-fargate-server
 
 # Get AWS account ID.

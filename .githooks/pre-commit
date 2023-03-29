@@ -38,5 +38,8 @@ for FILE in ${STAGED_JSON_FILES}; do
 	git add "${FILE}"
 done
 
+echo "==> Linting GitHub Actions..."
+actionlint
+
 echo "==> Done..."
 

@@ -295,6 +295,7 @@ func getAllEntries(client *mongodbatlas.Client, projectID string) (*mongodbatlas
 	return accessList, nil
 }
 
+// isEntryAlreadyInAccessList checks if the entry already exists in the atlas access list
 func isEntryAlreadyInAccessList(client *mongodbatlas.Client, model *Model) (bool, error) {
 	existingEntries, err := getAllEntries(client, *model.ProjectId)
 	if err != nil {

@@ -111,7 +111,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// currentModel.TotalCount = &result.TotalCount
+	currentModel.TotalCount = &result.TotalCount
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",

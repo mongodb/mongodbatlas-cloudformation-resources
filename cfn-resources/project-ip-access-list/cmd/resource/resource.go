@@ -179,13 +179,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return Read(req, prevModel, currentModel)
 }
 
-func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAccessList) {
-	m.IPAddress = &c.IPAddress
-	m.CIDRBlock = &c.CIDRBlock
-	m.Comment = &c.Comment
-	m.AwsSecurityGroup = &c.AwsSecurityGroup
-}
-
 func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
 	var accesslist []*mongodbatlas.ProjectIPAccessList
 	for i := range model.AccessList {

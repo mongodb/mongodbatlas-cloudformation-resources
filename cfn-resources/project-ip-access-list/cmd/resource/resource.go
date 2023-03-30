@@ -98,30 +98,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	listOptions := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		IncludeCount: true,
-		ItemsPerPage: 500,
-	}
-
-	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *currentModel.ProjectId, listOptions)
+	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *currentModel.ProjectId, nil)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
 	}
 
-	if result.TotalCount == 0 {
-		return progressevents.GetFailedEventByCode("Resource not found", cloudformation.HandlerErrorCodeNotFound), nil
-	}
-
-	mm := make([]AccessListDefinition, 0)
-	for i := range result.Results {
-		var m AccessListDefinition
-		m.completeByConnection(result.Results[i])
-		mm = append(mm, m)
-	}
-	currentModel.AccessList = mm
-
+	currentModel.TotalCount = &result.TotalCount
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",

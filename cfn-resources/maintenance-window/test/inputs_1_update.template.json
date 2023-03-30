@@ -1,5 +1,6 @@
 {
-    "DayOfWeek": "1",
-    "HourOfDay": "10",
-    "ProjectId" : "$ProjectId"
+  "DayOfWeek": "1",
+  "HourOfDay": "10",
+  "ProjectId": "$ProjectId",
+  "Profile": ""
 }

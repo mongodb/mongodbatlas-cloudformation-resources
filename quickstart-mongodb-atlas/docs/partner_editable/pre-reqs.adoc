@@ -1,7 +1,0 @@
-==== Prepare your AWS account
-
-This Quick Start uses MongoDB Atlas CloudFormation resource types and automatically registers them in the AWS Region of your choice. Once it's running, you can safely skip this step for additional deployments in each Region by setting the `RegisterMongoDBResources` parameter to *No*.
-
-==== Prepare your {partner-company-name} account
-
-A MongoDB Atlas programmatic API key must be generated with the appropriate permissions and network access entries so that AWS CloudFormation can successfully authenticate the MongoDB cloud. For more information about creating and managing API keys, see https://docs.atlas.mongodb.com/tutorial/manage-programmatic-access[Programmatic Access to Atlas^].

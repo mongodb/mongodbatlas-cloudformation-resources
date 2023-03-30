@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
-	github.com/aws/aws-sdk-go v1.44.220
+	github.com/aws/aws-sdk-go v1.44.230
 	github.com/dave/jennifer v1.6.0
 	github.com/getkin/kin-openapi v0.115.0
 	github.com/mongodb-forks/digest v1.0.4
@@ -12,7 +12,7 @@ require (
 	github.com/rs/xid v1.4.0
 	github.com/spf13/cast v1.5.0
 	github.com/tidwall/pretty v1.2.1
-	go.mongodb.org/atlas v0.23.1
+	go.mongodb.org/atlas v0.24.0
 	go.mongodb.org/realm v0.1.0
 )
 

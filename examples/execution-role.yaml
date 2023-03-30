@@ -13,7 +13,9 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: resources.cloudformation.amazonaws.com
+              Service:
+                - cloudformation.amazonaws.com
+                - resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
       Path: "/"
       Policies:

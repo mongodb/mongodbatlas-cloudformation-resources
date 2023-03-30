@@ -11,8 +11,8 @@
 
    Cluster Resource is ready to use.
 
-## Step 2: Create template using [cluster.json](cluster.json)
+## Step 2: Create template using [cluster.json](project-cluster.json)
     Note: Make sure you are providing appropriate vales for 
     1. OrgId
-    2. PublicKey
-    3. PrivateKey
+    2. ProjectName
+    3. Clustername

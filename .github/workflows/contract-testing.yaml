@@ -1,0 +1,113 @@
+name: 'Contract Testing'
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  change-detection:
+   runs-on: ubuntu-latest
+   permissions:
+     pull-requests: read
+     repository-projects: read
+   outputs:
+     project: ${{ steps.filter.outputs.project }}
+     auditing: ${{ steps.filter.outputs.auditing }}
+   steps:
+   - uses: actions/checkout@v3
+     if: ${{ github.event_name == 'push' }}
+   - uses: dorny/paths-filter@v2
+     id: filter
+     with:
+      filters: |
+        project:
+          - 'cfn-resources/project/**'
+        auditing:
+          - 'cfn-resources/auditing/**'
+  project:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.project == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: setup Atlas CLI
+      uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+      with:
+       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+    - uses: actions/checkout@v3
+    - uses: aws-actions/setup-sam@v2
+      with:
+       use-installer: true
+    - uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}
+        aws-region: eu-west-1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - name: Run the Contract test
+      shell: bash
+      env:
+       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+       MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
+       MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
+       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      run: |
+       pushd cfn-resources/project
+       make create-test-resources
+       
+       cat inputs/inputs_1_create.json
+       cat inputs/inputs_1_update.json
+       
+       make run-contract-testing
+       make delete-test-resources
+  auditing:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.auditing == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: setup Atlas CLI
+      uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+      with:
+       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+    - uses: actions/checkout@v3
+    - uses: aws-actions/setup-sam@v2
+      with:
+       use-installer: true
+    - uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}
+        aws-region: eu-west-1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+    - name: Run the Contract test
+      shell: bash
+      env:
+       MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+       MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+       MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
+       MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+      run: |
+       pushd cfn-resources/auditing
+       make create-test-resources
+       
+       cat inputs/inputs_1_create.json
+       cat inputs/inputs_1_update.json
+       cat inputs/inputs_2_create.json
+       cat inputs/inputs_2_update.json
+       
+       make run-contract-testing
+       make delete-test-resources

@@ -98,15 +98,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	projectID := *currentModel.ProjectId
-
 	listOptions := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		IncludeCount: true,
 		ItemsPerPage: 500,
 	}
 
-	result, resp, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
+	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *currentModel.ProjectId, listOptions)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil

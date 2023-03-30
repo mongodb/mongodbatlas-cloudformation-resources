@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ProjectIpAccessList
 
-Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.
+Returns, adds, edits, and removes network access limits to database deployments in Atlas.
 
 ## Syntax
 
@@ -40,7 +40,7 @@ _Required_: Yes
 
 _Type_: List of <a href="accesslistdefinition.md">accessListDefinition</a>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ProjectId
 
@@ -62,7 +62,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Profile
 
-The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: No
 

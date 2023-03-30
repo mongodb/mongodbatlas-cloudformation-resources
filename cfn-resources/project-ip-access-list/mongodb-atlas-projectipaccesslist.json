@@ -1,4 +1,7 @@
 {
+  "typeName": "MongoDB::Atlas::ProjectIpAccessList",
+  "description": "Returns, adds, edits, and removes network access limits to database deployments in Atlas.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "additionalProperties": false,
   "definitions": {
     "accessListDefinition": {
@@ -50,7 +53,31 @@
       "type": "object"
     }
   },
-  "description": "Returns, adds, edits, and removes network access limits to database deployments in MongoDB Cloud.",
+  "properties": {
+    "AccessList": {
+      "items": {
+        "$ref": "#/definitions/accessListDefinition"
+      },
+      "type": "array",
+      "insertionOrder": false
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string"
+    },
+    "ListOptions": {
+      "$ref": "#/definitions/listOptions"
+    },
+    "TotalCount": {
+      "description": "Number of documents returned in this response.",
+      "type": "integer"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    }
+  },
   "handlers": {
     "create": {
       "permissions": [
@@ -77,42 +104,16 @@
     "/properties/ProjectId",
     "/properties/Profile"
   ],
-  "properties": {
-    "AccessList": {
-      "items": {
-        "$ref": "#/definitions/accessListDefinition"
-      },
-      "type": "array",
-      "insertionOrder": false
-    },
-    "ProjectId": {
-      "description": "Unique 24-hexadecimal digit string that identifies your project.",
-      "type": "string"
-    },
-    "ListOptions": {
-      "$ref": "#/definitions/listOptions"
-    },
-    "TotalCount": {
-      "description": "Number of documents returned in this response.",
-      "type": "integer"
-    },
-    "Profile": {
-      "type": "string",
-      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-      "default": "default"
-    }
-  },
   "readOnlyProperties": [
-    "/properties/AccessList",
-    "/properties/AccessList/AwsSecurityGroup"
+    "/properties/TotalCount"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/AccessList"
   ],
   "required": [
-    "ProjectId"
-  ],
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-  "typeName": "MongoDB::Atlas::ProjectIpAccessList"
+    "ProjectId",
+    "AccessList"
+  ]
 }

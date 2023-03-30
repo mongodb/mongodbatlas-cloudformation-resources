@@ -175,6 +175,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return Read(req, prevModel, currentModel)
+}
+
 func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAccessList) {
 	m.IPAddress = &c.IPAddress
 	m.CIDRBlock = &c.CIDRBlock

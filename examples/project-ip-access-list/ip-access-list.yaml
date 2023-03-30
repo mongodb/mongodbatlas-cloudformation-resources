@@ -33,4 +33,8 @@ Outputs:
     Value: !Ref AtlasProjectIPAccessList
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName","AtlasProjectIPAccessList" ] ]
+  TotEntriesList:
+    Description: "Totale number of entries in the access list"
+    Value: !GetAtt AtlasProjectIPAccessList.TotalCount
+  
 

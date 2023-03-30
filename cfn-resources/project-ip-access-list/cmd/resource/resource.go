@@ -246,10 +246,7 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 	request := getProjectIPAccessListRequest(model)
 	projectID := *model.ProjectId
 
-	isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, model)
-
-	fmt.Printf("\n\nisEntryAlreadyInAccessList: %t", isEntryAlreadyInAccessList)
-	if isEntryAlreadyInAccessList || err != nil {
+	if isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, model); isEntryAlreadyInAccessList || err != nil {
 		return handler.ProgressEvent{
 			Message:          "Entry already exists in the access list",
 			OperationStatus:  handler.Failed,

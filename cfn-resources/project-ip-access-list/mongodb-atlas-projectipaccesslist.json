@@ -33,24 +33,6 @@
         }
       },
       "type": "object"
-    },
-    "listOptions": {
-      "additionalProperties": false,
-      "properties": {
-        "PageNum": {
-          "type": "integer",
-          "description": "Number of the page that displays the current set of the total objects that the response returns."
-        },
-        "ItemsPerPage": {
-          "type": "integer",
-          "description": "Number of items that the response returns per page."
-        },
-        "IncludeCount": {
-          "type": "boolean",
-          "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
-        }
-      },
-      "type": "object"
     }
   },
   "properties": {
@@ -64,9 +46,6 @@
     "ProjectId": {
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "type": "string"
-    },
-    "ListOptions": {
-      "$ref": "#/definitions/listOptions"
     },
     "TotalCount": {
       "description": "Number of documents returned in this response.",

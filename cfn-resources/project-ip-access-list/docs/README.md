@@ -14,7 +14,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#accesslist" title="AccessList">AccessList</a>" : <i>[ <a href="accesslistdefinition.md">accessListDefinition</a>, ... ]</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#listoptions" title="ListOptions">ListOptions</a>" : <i><a href="listoptions.md">listOptions</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
@@ -28,7 +27,6 @@ Properties:
     <a href="#accesslist" title="AccessList">AccessList</a>: <i>
       - <a href="accesslistdefinition.md">accessListDefinition</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#listoptions" title="ListOptions">ListOptions</a>: <i><a href="listoptions.md">listOptions</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
@@ -51,14 +49,6 @@ _Required_: Yes
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### ListOptions
-
-_Required_: No
-
-_Type_: <a href="listoptions.md">listOptions</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Profile
 

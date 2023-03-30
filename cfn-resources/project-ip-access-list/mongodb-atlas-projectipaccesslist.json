@@ -33,6 +33,23 @@
         }
       },
       "type": "object"
+    },
+    "listOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "PageNum": {
+          "type": "integer",
+          "description": "Number of the page that displays the current set of the total objects that the response returns."
+        },
+        "ItemsPerPage": {
+          "type": "integer",
+          "description": "Number of items that the response returns per page."
+        },
+        "IncludeCount": {
+          "type": "boolean",
+          "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
+        }
+      }
     }
   },
   "properties": {
@@ -55,6 +72,9 @@
       "type": "string",
       "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
       "default": "default"
+    },
+    "ListOptions": {
+      "$ref": "#/definitions/listOptions"
     }
   },
   "handlers": {

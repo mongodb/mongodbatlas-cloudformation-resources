@@ -190,7 +190,64 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return Read(req, prevModel, currentModel)
+	setup()
+	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	// Create atlas client
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	var pageNum, itemsPerPage int
+	var includeCount bool
+
+	if currentModel.ListOptions != nil {
+		if currentModel.ListOptions.PageNum != nil {
+			pageNum = *currentModel.ListOptions.PageNum
+		}
+		if currentModel.ListOptions.IncludeCount != nil {
+			includeCount = *currentModel.ListOptions.IncludeCount
+		}
+		if currentModel.ListOptions.ItemsPerPage != nil {
+			itemsPerPage = *currentModel.ListOptions.ItemsPerPage
+		}
+	}
+
+	listOptions := &mongodbatlas.ListOptions{
+		PageNum:      pageNum,
+		IncludeCount: includeCount,
+		ItemsPerPage: itemsPerPage,
+	}
+
+	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *currentModel.ProjectId, listOptions)
+	if err != nil {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp.Response), nil
+	}
+
+	mm := make([]AccessListDefinition, 0)
+	for i := range result.Results {
+		var m AccessListDefinition
+		m.completeByConnection(result.Results[i])
+		mm = append(mm, m)
+	}
+	currentModel.AccessList = mm
+	// create list with 1
+	models := []interface{}{}
+	models = append(models, currentModel)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List Complete",
+		ResourceModels:  models,
+	}, nil
 }
 
 func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
@@ -347,4 +404,11 @@ func newAccessListMap(accessList []mongodbatlas.ProjectIPAccessList) map[string]
 		}
 	}
 	return m
+}
+
+func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAccessList) {
+	m.IPAddress = &c.IPAddress
+	m.CIDRBlock = &c.CIDRBlock
+	m.Comment = &c.Comment
+	m.AwsSecurityGroup = &c.AwsSecurityGroup
 }

@@ -285,12 +285,12 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEv
 	return handler.ProgressEvent{}
 }
 
-func getAllEntries(client *mongodbatlas.Client, projectId string) (*mongodbatlas.ProjectIPAccessLists, error) {
+func getAllEntries(client *mongodbatlas.Client, projectID string) (*mongodbatlas.ProjectIPAccessLists, error) {
 	listOptions := &mongodbatlas.ListOptions{
 		IncludeCount: true,
 		ItemsPerPage: 500,
 	}
-	accessList, _, err := client.ProjectIPAccessList.List(context.Background(), projectId, listOptions)
+	accessList, _, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
 	if err != nil {
 		return nil, err
 	}

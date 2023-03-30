@@ -18,6 +18,8 @@ import (
 	"context"
 	"fmt"
 
+	"encoding/json"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -68,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	event, err := createEntries(currentModel, client)
-	if err != nil {
+	if event.OperationStatus == handler.Failed || err != nil {
 		_, _ = logger.Warnf("Create err:%v", err)
 		return event, nil
 	}
@@ -104,7 +106,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp.Response), nil
 	}
 
-	currentModel.TotalCount = &result.TotalCount
+	if result.TotalCount == 0 {
+		return handler.ProgressEvent{
+			Message:          "The entry to read is not in the access list",
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+
+	// currentModel.TotalCount = &result.TotalCount
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
@@ -115,6 +124,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	print("\n\nANDREAAAAAAAAA 22\n\n")
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -128,6 +138,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	if isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, currentModel); !isEntryAlreadyInAccessList || err != nil {
+		return handler.ProgressEvent{
+			Message:          "The entry to update is not in the access list",
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, err
+	}
+
 	progressEvent := deleteEntries(currentModel, client)
 	if progressEvent.OperationStatus == handler.Failed {
 		_, _ = logger.Warnf("Update deleteEntries error:%+v", progressEvent.Message)
@@ -135,10 +152,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	progressEvent, err := createEntries(currentModel, client)
-	if err != nil {
+	if progressEvent.OperationStatus == handler.Failed || err != nil {
 		_, _ = logger.Warnf("Update createEntries error:%+v", err)
 		return progressEvent, nil
 	}
+
+	print("\n\n ANDREA: PrevModel: %+v\n\n", prevModel)
+	print("\n\n ANDREA: CurrentModel: %+v\n\n", currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -232,6 +252,16 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 	request := getProjectIPAccessListRequest(model)
 	projectID := *model.ProjectId
 
+	isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, model)
+
+	fmt.Printf("\n\nisEntryAlreadyInAccessList: %t", isEntryAlreadyInAccessList)
+	if isEntryAlreadyInAccessList || err != nil {
+		return handler.ProgressEvent{
+			Message:          "Entry already exists in the access list",
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
+	}
+
 	if _, _, err := client.ProjectIPAccessList.Create(context.Background(), projectID, request); err != nil {
 		_, _ = logger.Warnf("Error createEntries projectId:%s, err:%+v", projectID, err)
 		return handler.ProgressEvent{
@@ -259,4 +289,60 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEv
 	}
 
 	return handler.ProgressEvent{}
+}
+
+func getAllEntries(client *mongodbatlas.Client, projectId string) (*mongodbatlas.ProjectIPAccessLists, error) {
+	listOptions := &mongodbatlas.ListOptions{
+		IncludeCount: true,
+		ItemsPerPage: 500,
+	}
+	accessList, _, err := client.ProjectIPAccessList.List(context.Background(), projectId, listOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	return accessList, nil
+}
+
+func isEntryInList(entry AccessListDefinition, accessList []mongodbatlas.ProjectIPAccessList) bool {
+	for _, accessListEntry := range accessList {
+		print("ANDREA - isEntryInList \n")
+		// print("accessListEntry.CIDRBlock: " + accessListEntry.CIDRBlock + "\n")
+		// print("*entry.CIDRBlock: " + *entry.CIDRBlock + "\n")
+
+		if entry.CIDRBlock != nil && accessListEntry.CIDRBlock != "" && accessListEntry.CIDRBlock == *entry.CIDRBlock {
+			print("\nANDREA - FOUND IT \n")
+			return true
+		}
+
+		if entry.IPAddress != nil && accessListEntry.IPAddress != "" && accessListEntry.IPAddress == *entry.IPAddress {
+			return true
+		}
+
+		if entry.AwsSecurityGroup != nil && accessListEntry.AwsSecurityGroup != "" && accessListEntry.AwsSecurityGroup == *entry.AwsSecurityGroup {
+			return true
+		}
+	}
+
+	return false
+}
+
+func isEntryAlreadyInAccessList(client *mongodbatlas.Client, model *Model) (bool, error) {
+	existingEntries, err := getAllEntries(client, *model.ProjectId)
+	if err != nil {
+		return false, err
+	}
+
+	print("\nANDREA existingEntries\n")
+	res2B, _ := json.Marshal(existingEntries)
+	fmt.Println(string(res2B))
+	print("\n")
+	for _, entry := range model.AccessList {
+		if isEntryInList(entry, existingEntries.Results) {
+			return true, nil
+		}
+	}
+
+	return false, nil
+
 }

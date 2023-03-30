@@ -88,11 +88,9 @@
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/Profile",
-    "/properties/AccessList"
+    "/properties/Profile"
   ],
   "required": [
-    "ProjectId",
-    "AccessList"
+    "ProjectId"
   ]
 }

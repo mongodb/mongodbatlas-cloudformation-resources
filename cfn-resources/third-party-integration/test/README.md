@@ -17,7 +17,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 
 
 ### Success criteria when testing the resource
-- Atlas Project should show correctly configured integration with chosen third-party service, for example Datadog:
+1. Atlas Project should show correctly configured integration with chosen third-party service, for example Datadog:
 
 ![image](https://user-images.githubusercontent.com/122359335/227501805-7eee80cc-12a0-4a80-8400-09a283655187.png)
 

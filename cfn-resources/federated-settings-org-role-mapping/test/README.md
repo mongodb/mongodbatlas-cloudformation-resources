@@ -27,7 +27,9 @@ These Atlas federated setting ID must be manually created.
 3. Use this URL to view RoleMappings configured for your organization: https://cloud.mongodb.com/v2#/federation/<ATLAS_FEDERATED_SETTINGS_ID>/organizations/<ATLAS_ORG_ID>/roleMappings
 
 ### Success criteria when testing the resource
-1. Role mappings should be correctly configured for the Organization under Federation settings:   ![image](https://user-images.githubusercontent.com/122359335/227274727-bee557f4-8def-467e-ad37-adcae1887911.png)
+1. Role mappings should be correctly configured for the Organization under Federation settings:  
+
+![image](https://user-images.githubusercontent.com/122359335/227274727-bee557f4-8def-467e-ad37-adcae1887911.png)
 
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 

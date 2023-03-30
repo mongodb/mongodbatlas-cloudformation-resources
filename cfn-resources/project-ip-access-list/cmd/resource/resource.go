@@ -67,15 +67,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	exists, peErr := existsEntries(currentModel, client)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	if exists {
-		return progressevents.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
-	}
-
 	event, err := createEntries(currentModel, client)
 	if err != nil {
 		_, _ = logger.Warnf("Create err:%v", err)
@@ -102,7 +93,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -113,7 +103,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	listOptions := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		IncludeCount: true,
-		ItemsPerPage: 200,
+		ItemsPerPage: 500,
 	}
 
 	result, resp, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
@@ -122,7 +112,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp.Response), nil
 	}
 
-	if !accessListHasEntries(*result) {
+	if result.TotalCount == 0 {
 		return progressevents.GetFailedEventByCode("Resource not found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
@@ -152,7 +142,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -188,7 +177,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -196,7 +184,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	event := deleteEntries(currentModel, client)
 	if event.OperationStatus == handler.Failed {
-		_, _ = logger.Warnf("Delete deleteEntries error:%+v", event.Message)
+		_, _ = logger.Warnf("Delete error: %+v", event.Message)
 		return event, nil
 	}
 
@@ -280,110 +268,81 @@ func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAcce
 func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
 	var accesslist []*mongodbatlas.ProjectIPAccessList
 	for i := range model.AccessList {
-		w := model.AccessList[i]
-		wl := &mongodbatlas.ProjectIPAccessList{}
-		if w.DeleteAfterDate != nil {
-			wl.DeleteAfterDate = *w.DeleteAfterDate
-		}
-		if w.Comment != nil {
-			wl.Comment = *w.Comment
-		}
-		if w.CIDRBlock != nil {
-			wl.CIDRBlock = *w.CIDRBlock
-		}
-		if w.IPAddress != nil {
-			wl.IPAddress = *w.IPAddress
-		}
-		if w.AwsSecurityGroup != nil {
-			wl.AwsSecurityGroup = *w.AwsSecurityGroup
+		modelAccessList := model.AccessList[i]
+		projectIPAccessList := &mongodbatlas.ProjectIPAccessList{}
+
+		if modelAccessList.DeleteAfterDate != nil {
+			projectIPAccessList.DeleteAfterDate = *modelAccessList.DeleteAfterDate
 		}
 
-		_, _ = logger.Debugf(" getProjectIPAccessListRequest: %+v\n", wl)
+		if modelAccessList.Comment != nil {
+			projectIPAccessList.Comment = *modelAccessList.Comment
+		}
 
-		accesslist = append(accesslist, wl)
+		if modelAccessList.CIDRBlock != nil {
+			projectIPAccessList.CIDRBlock = *modelAccessList.CIDRBlock
+		}
+
+		if modelAccessList.IPAddress != nil {
+			projectIPAccessList.IPAddress = *modelAccessList.IPAddress
+		}
+
+		if modelAccessList.AwsSecurityGroup != nil {
+			projectIPAccessList.AwsSecurityGroup = *modelAccessList.AwsSecurityGroup
+		}
+
+		accesslist = append(accesslist, projectIPAccessList)
 	}
+
 	_, _ = logger.Debugf("getProjectIPAccessListRequest accesslist:%v", accesslist)
 	return accesslist
 }
 
-func getEntry(wl mongodbatlas.ProjectIPAccessList) string {
-	if wl.CIDRBlock != "" {
-		return wl.CIDRBlock
+func getEntry(entry AccessListDefinition) (string, error) {
+	if entry.CIDRBlock != nil && *entry.CIDRBlock != "" {
+		return *entry.CIDRBlock, nil
 	}
-	if wl.AwsSecurityGroup != "" {
-		return wl.AwsSecurityGroup
+
+	if entry.AwsSecurityGroup != nil && *entry.AwsSecurityGroup != "" {
+		return *entry.AwsSecurityGroup, nil
 	}
-	if wl.IPAddress != "" {
-		return wl.IPAddress
+
+	if entry.IPAddress != nil && *entry.IPAddress != "" {
+		return *entry.IPAddress, nil
 	}
-	return ""
+
+	return "", fmt.Errorf("AccessList entry must have one of the following fields: cidrBlock, awsSecurityGroup, ipAddress")
 }
 
 func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
 	request := getProjectIPAccessListRequest(model)
 	projectID := *model.ProjectId
-	_, _ = logger.Debugf("createEntries : projectID:%s, model:%+v, request:%+v", projectID, model, request)
-	result, _, err := client.ProjectIPAccessList.Create(context.Background(), projectID, request)
-	if err != nil {
-		_, _ = logger.Warnf("Error createEntries projectId:%s,err:%+v", projectID, err)
+
+	if _, _, err := client.ProjectIPAccessList.Create(context.Background(), projectID, request); err != nil {
+		_, _ = logger.Warnf("Error createEntries projectId:%s, err:%+v", projectID, err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
 	}
-	_, _ = logger.Debugf("createEntries result:%+v", result)
+
 	return handler.ProgressEvent{}, nil
 }
 
 func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEvent {
-	projectID := *model.ProjectId
-
-	listOptions := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		IncludeCount: true,
-		ItemsPerPage: 200,
-	}
-
-	result, resp, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
-	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response)
-	}
-
-	if !accessListHasEntries(*result) {
-		return progressevents.GetFailedEventByCode("error trying to delete Resource not found", cloudformation.HandlerErrorCodeNotFound)
-	}
-
-	for i := range result.Results {
-		wl := result.Results[i]
-		entry := getEntry(wl)
-		resp, err := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry)
+	for _, accessListEntry := range model.AccessList {
+		entry, err := getEntry(accessListEntry)
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting the resource : %s", err.Error()),
+				nil)
+		}
+
+		resp, err := client.ProjectIPAccessList.Delete(context.Background(), *model.ProjectId, entry)
+		if err != nil {
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting the resource: %s", err.Error()),
 				resp.Response)
 		}
 	}
 
 	return handler.ProgressEvent{}
-}
-
-func existsEntries(model *Model, client *mongodbatlas.Client) (bool, *handler.ProgressEvent) {
-	listOptions := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		IncludeCount: true,
-		ItemsPerPage: 1,
-	}
-
-	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *model.ProjectId, listOptions)
-	if err != nil {
-		pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("Validating if the resource already exists : %s", err.Error()),
-			resp.Response)
-		return false, &pe
-	}
-
-	return accessListHasEntries(*result), nil
-}
-
-func accessListHasEntries(list mongodbatlas.ProjectIPAccessLists) bool {
-	return list.TotalCount != 0
 }

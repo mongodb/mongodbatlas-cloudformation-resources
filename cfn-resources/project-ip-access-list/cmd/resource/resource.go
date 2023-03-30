@@ -18,8 +18,6 @@ import (
 	"context"
 	"fmt"
 
-	"encoding/json"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -124,7 +122,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	print("\n\nANDREAAAAAAAAA 22\n\n")
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -156,9 +153,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Update createEntries error:%+v", err)
 		return progressEvent, nil
 	}
-
-	print("\n\n ANDREA: PrevModel: %+v\n\n", prevModel)
-	print("\n\n ANDREA: CurrentModel: %+v\n\n", currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -304,45 +298,55 @@ func getAllEntries(client *mongodbatlas.Client, projectId string) (*mongodbatlas
 	return accessList, nil
 }
 
-func isEntryInList(entry AccessListDefinition, accessList []mongodbatlas.ProjectIPAccessList) bool {
-	for _, accessListEntry := range accessList {
-		print("ANDREA - isEntryInList \n")
-		// print("accessListEntry.CIDRBlock: " + accessListEntry.CIDRBlock + "\n")
-		// print("*entry.CIDRBlock: " + *entry.CIDRBlock + "\n")
-
-		if entry.CIDRBlock != nil && accessListEntry.CIDRBlock != "" && accessListEntry.CIDRBlock == *entry.CIDRBlock {
-			print("\nANDREA - FOUND IT \n")
-			return true
-		}
-
-		if entry.IPAddress != nil && accessListEntry.IPAddress != "" && accessListEntry.IPAddress == *entry.IPAddress {
-			return true
-		}
-
-		if entry.AwsSecurityGroup != nil && accessListEntry.AwsSecurityGroup != "" && accessListEntry.AwsSecurityGroup == *entry.AwsSecurityGroup {
-			return true
-		}
-	}
-
-	return false
-}
-
 func isEntryAlreadyInAccessList(client *mongodbatlas.Client, model *Model) (bool, error) {
 	existingEntries, err := getAllEntries(client, *model.ProjectId)
 	if err != nil {
 		return false, err
 	}
 
-	print("\nANDREA existingEntries\n")
-	res2B, _ := json.Marshal(existingEntries)
-	fmt.Println(string(res2B))
-	print("\n")
+	existingEntriesMap := newAccessListMap(existingEntries.Results)
 	for _, entry := range model.AccessList {
-		if isEntryInList(entry, existingEntries.Results) {
+		if isEntryInMap(entry, existingEntriesMap) {
 			return true, nil
 		}
 	}
 
 	return false, nil
+}
 
+func isEntryInMap(entry AccessListDefinition, accessListMap map[string]bool) bool {
+	if entry.CIDRBlock != nil && accessListMap[*entry.CIDRBlock] {
+		return true
+	}
+
+	if entry.IPAddress != nil && accessListMap[*entry.IPAddress] {
+		return true
+	}
+
+	if entry.AwsSecurityGroup != nil && accessListMap[*entry.AwsSecurityGroup] {
+		return true
+	}
+
+	return false
+}
+
+func newAccessListMap(accessList []mongodbatlas.ProjectIPAccessList) map[string]bool {
+	m := make(map[string]bool)
+	for _, entry := range accessList {
+		if entry.CIDRBlock != "" {
+			m[entry.CIDRBlock] = true
+			continue
+		}
+
+		if entry.IPAddress != "" {
+			m[entry.IPAddress] = true
+			continue
+		}
+
+		if entry.AwsSecurityGroup != "" {
+			m[entry.AwsSecurityGroup] = true
+			continue
+		}
+	}
+	return m
 }

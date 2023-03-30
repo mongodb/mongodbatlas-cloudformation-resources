@@ -30,7 +30,7 @@ import (
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
-var RequiredFields = []string{constants.GroupID}
+var RequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-auditing")
@@ -42,7 +42,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
-		_, _ = log.Debugf("CRATE Validation Error")
+		_, _ = log.Debugf("CREATE Validation Error")
 		return *modelValidation, nil
 	}
 
@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	var res *mongodbatlas.Response
 
-	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
+	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.ProjectId)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -84,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		auditingInput.AuditFilter = *currentModel.AuditFilter
 	}
 
-	atlasAuditing, res, err = client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+	atlasAuditing, res, err = client.Auditing.Configure(context.Background(), *currentModel.ProjectId, &auditingInput)
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
@@ -121,7 +121,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	var res *mongodbatlas.Response
 
-	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
+	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.ProjectId)
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
@@ -202,7 +202,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.ProjectId, &auditingInput)
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
@@ -264,7 +264,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Enabled: &enabled,
 	}
 
-	_, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+	_, res, err := client.Auditing.Configure(context.Background(), *currentModel.ProjectId, &auditingInput)
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
@@ -284,7 +284,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func isEnabled(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent) {
-	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
+	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.ProjectId)
 
 	if err != nil {
 		_, _ = log.Debugf("Validating enabled - error: %+v", err)

@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -41,7 +40,7 @@ const (
 	CallBackSeconds = 60
 )
 
-var defaultLabel = mongodbatlas.Label{Key: "Infrastructure Tool", Value: "MongoDB Atlas Terraform Provider"}
+var defaultLabel = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Name}
 var ReadRequiredFields = []string{constants.Name}
@@ -101,6 +100,8 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	if currentModel.EncryptionAtRestProvider == nil {
 		currentModel.EncryptionAtRestProvider = &none
 	}
+
+	currentModel.validateDefaultLabel()
 
 	// Prepare cluster request
 	clusterRequest, event, err := setClusterRequest(currentModel, err)
@@ -196,6 +197,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
 		return updateClusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
+
+	currentModel.validateDefaultLabel()
 
 	// Update Cluster
 	model, resp, err := updateCluster(context.Background(), client, currentModel)
@@ -333,10 +336,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		models = append(models, model)
 	}
 	return handler.ProgressEvent{
-		OperationStatus:  handler.Success,
-		Message:          "List",
-		ResourceModel:    models,
-		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		OperationStatus: handler.Success,
+		Message:         "List",
+		ResourceModel:   models}, nil
 }
 
 func mapClusterToModel(model *Model, cluster *mongodbatlas.AdvancedCluster) {
@@ -350,7 +352,7 @@ func mapClusterToModel(model *Model, cluster *mongodbatlas.AdvancedCluster) {
 	model.CreatedDate = &cluster.CreateDate
 	model.DiskSizeGB = cluster.DiskSizeGB
 	model.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
-	model.Labels = flattenLabels(removeLabel(cluster.Labels, defaultLabel))
+	model.Labels = flattenLabels(cluster.Labels)
 	model.MongoDBMajorVersion = &cluster.MongoDBMajorVersion
 	model.MongoDBVersion = &cluster.MongoDBVersion
 	model.Paused = cluster.Paused
@@ -380,9 +382,9 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 	return progressEvent, nil
 }
 
-func containsLabelOrKey(list []mongodbatlas.Label, item mongodbatlas.Label) bool {
+func containsLabelOrKey(list []Labels, item Labels) bool {
 	for _, v := range list {
-		if reflect.DeepEqual(v, item) || v.Key == item.Key {
+		if reflect.DeepEqual(v, item) || *v.Key == *item.Key {
 			return true
 		}
 	}
@@ -805,7 +807,7 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 		currentModel.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
 	}
 	if currentModel.Labels != nil {
-		currentModel.Labels = flattenLabels(removeLabel(cluster.Labels, defaultLabel))
+		currentModel.Labels = flattenLabels(cluster.Labels)
 	}
 	if currentModel.MongoDBMajorVersion != nil {
 		currentModel.MongoDBMajorVersion = &cluster.MongoDBMajorVersion
@@ -834,21 +836,6 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 }
 
-func removeLabel(list []mongodbatlas.Label, item mongodbatlas.Label) []mongodbatlas.Label {
-	var pos int
-	for _, v := range list {
-		if reflect.DeepEqual(v, item) {
-			list = append(list[:pos], list[pos+1:]...)
-			if pos > 0 {
-				pos--
-			}
-			continue
-		}
-		pos++
-	}
-	return list
-}
-
 func updateCluster(ctx context.Context, client *mongodbatlas.Client, currentModel *Model) (*Model, *mongodbatlas.Response, error) {
 	clusterRequest := &mongodbatlas.AdvancedCluster{}
 	if currentModel.BackupEnabled != nil {
@@ -873,10 +860,6 @@ func updateCluster(ctx context.Context, client *mongodbatlas.Client, currentMode
 
 	if len(currentModel.Labels) > 0 {
 		clusterRequest.Labels = expandLabelSlice(currentModel.Labels)
-		if containsLabelOrKey(clusterRequest.Labels, defaultLabel) {
-			_, _ = log.Warnf("Update - error :%s", LabelError)
-			return nil, nil, errors.New(LabelError)
-		}
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
@@ -1034,12 +1017,6 @@ func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCl
 
 	if len(currentModel.Labels) > 0 {
 		clusterRequest.Labels = expandLabelSlice(currentModel.Labels)
-		if containsLabelOrKey(clusterRequest.Labels, defaultLabel) {
-			_, _ = log.Warnf("Create - error: %+v", err)
-			return nil, progress_events.GetFailedEventByCode(
-				LabelError,
-				cloudformation.HandlerErrorCodeInvalidRequest), nil
-		}
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
@@ -1060,4 +1037,10 @@ func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCl
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 	return clusterRequest, handler.ProgressEvent{}, nil
+}
+
+func (m *Model) validateDefaultLabel() {
+	if !containsLabelOrKey(m.Labels, defaultLabel) {
+		m.Labels = append(m.Labels, defaultLabel)
+	}
 }

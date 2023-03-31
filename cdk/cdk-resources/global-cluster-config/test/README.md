@@ -19,7 +19,11 @@ These resources are created as part of `cfn-testing-helper.sh`
 
 
 ### Success criteria when testing the resource
-1. Custom Zone Mappings and ManagedNamespaces should be configured for the global cluster as specified in the template. This can be validated via API call:
+1. Custom Zone Mappings and ManagedNamespaces should be configured for the global cluster as specified in the template. 
+
+This can be validated via GET API call at URL:
+  `https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/clusters/<ATLAS_CLUSTER_NAME>/globalWrites`
+
 ![image](https://user-images.githubusercontent.com/122359335/229160264-92715616-656e-4e7c-bd33-b6241041f9ae.png)
 
 2. Ensure general [CDK resource success criteria](../../../TESTING.md#success-criteria-to-be-satisfied-when-testing-a-construct) for this resource is met.

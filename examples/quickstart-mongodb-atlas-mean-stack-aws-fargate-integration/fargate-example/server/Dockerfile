@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:17-slim
+FROM --platform=linux/x86_64 node:17-slim
 WORKDIR /usr/app
 
 # Install dependencies and build the project.

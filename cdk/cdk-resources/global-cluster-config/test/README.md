@@ -7,7 +7,7 @@ This CFN resource must be active in your AWS account while using this constructo
 
 ## Prerequisites 
 ### Resources needed to run the manual QA
-This resource is created as part of `cfn-testing-helper.sh`
+These resources are created as part of `cfn-testing-helper.sh`
 - Atlas Project
 - Atlas Cluster (at least M30)
 

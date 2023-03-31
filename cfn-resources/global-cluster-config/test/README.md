@@ -23,7 +23,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 - Custom Zone Mappings and ManagedNamespaces should be configured for the global cluster as specified in the template. 
 
 This can be validated via GET API call at URL:
-  https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/clusters/<ATLAS_CLUSTER_NAME>/globalWrites
+  `https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/clusters/<ATLAS_CLUSTER_NAME>/globalWrites`
 
 ![image](https://user-images.githubusercontent.com/122359335/229160264-92715616-656e-4e7c-bd33-b6241041f9ae.png)
 

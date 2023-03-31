@@ -4,13 +4,31 @@
   "Parameters": {
     "ProjectId": {
       "Type": "String",
-      "Description": "",
+      "Description": "Atlas Project ID",
       "ConstraintDescription": ""
     },
     "ClusterName": {
       "Type": "String",
-      "Description": "",
+      "Description": "Atlas Cluster Name where to get the snapshot",
       "ConstraintDescription": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "The profile with your API keys stored in AWS Secrets Manager"
+    },
+    "DeliveryType": {
+      "Type": "String",
+      "Default": "download",
+      "Description": "Human-readable label that categorizes the restore job to create",
+      "AllowedValues": [
+        "automated",
+        "download",
+        "pointInTime"
+      ]
+    },
+    "TargetClusterName": {
+      "Type": "String",
+      "Description": "The atlas cluster name where the snapshot will be restored"
     }
   },
   "Mappings": {},
@@ -23,6 +41,9 @@
         },
         "ClusterName": {
           "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
         },
         "Description": "A testing for creating cloud backup snapshot 2",
         "RetentionInDays": 3
@@ -37,15 +58,24 @@
         "ClusterName": {
           "Ref": "ClusterName"
         },
+        "Profile": {
+          "Ref": "Profile"
+        },
         "SnapshotId": {
           "Fn::GetAtt": [
             "CloudBackupSnapshot",
             "SnapshotId"
           ]
         },
-        "DeliveryType": "download",
-        "TargetClusterName": "",
-        "TargetProjectId": ""
+        "DeliveryType": {
+          "Ref": "DeliveryType"
+        },
+        "TargetClusterName": {
+          "Ref": "TargetClusterName"
+        },
+        "TargetProjectId": {
+          "Ref": "ProjectId"
+        }
       }
     }
   },

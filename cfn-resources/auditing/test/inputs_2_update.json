@@ -1,5 +1,5 @@
 {
-    "GroupId": "",
-    "Profile" : "default",
-    "AuditAuthorizationSuccess": "false"
+  "ProjectId": "",
+  "Profile": "",
+  "AuditAuthorizationSuccess": "false"
 }

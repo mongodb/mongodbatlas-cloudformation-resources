@@ -38,5 +38,11 @@ for FILE in ${STAGED_JSON_FILES}; do
 	git add "${FILE}"
 done
 
+echo "==> Linting GitHub Actions..."
+STAGED_ACTION_FILES=$(git diff --name-only | grep -E "\.github/workflows/.*(\.yaml|\.yml)$")
+for FILE in ${STAGED_ACTION_FILES}; do
+	actionlint "${FILE}" -color -verbose
+done
+
 echo "==> Done..."
 

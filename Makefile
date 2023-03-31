@@ -26,6 +26,7 @@ devtools:  ## Install dev tools
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/google/go-licenses@latest
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
+	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)
 
 .PHONY: link-git-hooks
@@ -33,3 +34,7 @@ link-git-hooks: ## Install git hooks
 	@echo "==> Installing all git hooks..."
 	find .git/hooks -type l -exec rm {} \;
 	find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;
+
+.PHONY: lint
+lint: ## Run linter
+	@scripts/lint.sh

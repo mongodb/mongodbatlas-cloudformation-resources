@@ -7,7 +7,7 @@ The following components use this resource and are potentially impacted by any c
 
 ## Prerequisites 
 ### Resources needed to run the manual QA
-This resource is created as part of `cfn-testing-helper.sh`
+These resources are created as part of `cfn-testing-helper.sh`
 - Atlas Project
 - Atlas Cluster (at least M30)
 

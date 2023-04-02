@@ -24,9 +24,9 @@
 
 set -eu
 
-e2e_rand_suffix="${E2E_RAND_SUFFIX}"
-resource_type_name_for_e2e="${RESOURCE_TYPE_NAME_FOR_E2E}"
-resource_directory=${RESOURCE_DIRECTORY_NAME}
+e2e_rand_suffix="$E2E_RAND_SUFFIX"
+resource_type_name_for_e2e="$RESOURCE_TYPE_NAME_FOR_E2E"
+resource_directory=$RESOURCE_DIRECTORY_NAME
 
 
 echo "Updating .rpdk-config with the E2E resource type ${resource_type_name_for_e2e}"
@@ -60,10 +60,10 @@ make build && cfn submit --set-default
 cd ../integration-tests/"$resource_directory"
 
 
-echo "Reverting .rpdk-config with the original resource typeName ${RESOURCE_TYPE_NAME}"
+echo "Reverting .rpdk-config with the original resource typeName $RESOURCE_TYPE_NAME"
 rpdk_file="../../${resource_directory}/.rpdk-config"
 tmp_rpdk_file="../../${resource_directory}/.rpdk-config${e2e_rand_suffix}"
-jq --arg type_name "${RESOURCE_TYPE_NAME}" \
+jq --arg type_name "$RESOURCE_TYPE_NAME" \
 	'.typeName?|=$type_name' \
 	"${rpdk_file}" >"${tmp_rpdk_file}"
 rm "${rpdk_file}"

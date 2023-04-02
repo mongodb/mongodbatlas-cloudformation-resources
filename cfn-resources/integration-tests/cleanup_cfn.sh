@@ -15,7 +15,7 @@
 
 # This script 'de-registers' the test CFN resource type published to AWS private registry
 
-resource_type_name_for_e2e="${RESOURCE_TYPE_NAME_FOR_E2E}"
+resource_type_name_for_e2e="$RESOURCE_TYPE_NAME_FOR_E2E"
 
 echo "Cleaning up..."
 

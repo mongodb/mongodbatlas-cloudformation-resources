@@ -30,7 +30,7 @@ import (
 )
 
 type AtlasEnvOptions struct {
-	OrgId      string
+	OrgID      string
 	PrivateKey string
 	PublicKey  string
 	BaseURL    string
@@ -46,13 +46,13 @@ var (
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
 
-func GetNewAtlasTeam(ctx context.Context, client *atlas.Client, name string, orgId string) (*atlas.Team, error) {
-	orgUser, _ := getExistingOrgUser(ctx, client, orgId)
+func GetNewAtlasTeam(ctx context.Context, client *atlas.Client, name string, orgID string) (*atlas.Team, error) {
+	orgUser, _ := getExistingOrgUser(ctx, client, orgID)
 	teamRequest := atlas.Team{
 		Name:      name,
 		Usernames: []string{orgUser.Username},
 	}
-	team, _, err := client.Teams.Create(ctx, orgId, &teamRequest)
+	team, _, err := client.Teams.Create(ctx, orgID, &teamRequest)
 	if err != nil {
 		log.Println("Error when creating Atlas Team")
 		return nil, err
@@ -60,10 +60,10 @@ func GetNewAtlasTeam(ctx context.Context, client *atlas.Client, name string, org
 	return team, nil
 }
 
-func GetNewAtlasProject(ctx context.Context, client *atlas.Client, name string, orgId string) (*atlas.Project, error) {
+func GetNewAtlasProject(ctx context.Context, client *atlas.Client, name string, orgID string) (*atlas.Project, error) {
 	project, _, err := client.Projects.Create(ctx, &atlas.Project{
 		Name:  name,
-		OrgID: orgId,
+		OrgID: orgID,
 	}, &atlas.CreateProjectOptions{})
 
 	if err != nil {
@@ -116,27 +116,27 @@ func NewMongoDBClient() (atlasClient *atlas.Client, err error) {
 	return mongodbClient, nil
 }
 
-func GetNewBasicClusterWithSampleData(ctx context.Context, client *atlas.Client, projectId string) (*atlas.AdvancedCluster, error) {
+func GetNewBasicClusterWithSampleData(ctx context.Context, client *atlas.Client, projectID string) (*atlas.AdvancedCluster, error) {
 	// TODO: implement
 	return nil, nil
 }
 
 func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {
-	orgId, OrgIdOk := os.LookupEnv("ATLAS_ORG_ID")
+	orgID, OrgIDOk := os.LookupEnv("ATLAS_ORG_ID")
 	publicKey, publicKeyOk := os.LookupEnv("ATLAS_PUBLIC_KEY")
 	privateKey, privateKeyOk := os.LookupEnv("ATLAS_PRIVATE_KEY")
-	baseUrl, baseUrlOk := os.LookupEnv("ATLAS_BASE_URL")
+	baseURL, baseURLOk := os.LookupEnv("ATLAS_BASE_URL")
 
-	if !OrgIdOk || !privateKeyOk || !publicKeyOk || !baseUrlOk {
+	if !OrgIDOk || !privateKeyOk || !publicKeyOk || !baseURLOk {
 		return nil, errors.New("please ensure following env variables are set: " +
 			"ATLAS_ORG_ID, ATLAS_PUBLIC_KEY, ATLAS_PRIVATE_KEY, ATLAS_BASE_URL, ATLAS_SECRET_PROFILE")
 	}
 
-	return &AtlasEnvOptions{orgId, privateKey, publicKey, baseUrl}, nil
+	return &AtlasEnvOptions{orgID, privateKey, publicKey, baseURL}, nil
 }
 
-func getExistingOrgUser(ctx context.Context, client *atlas.Client, orgId string) (*atlas.AtlasUser, error) {
-	usersResponse, _, err := client.Organizations.Users(ctx, orgId, &atlas.ListOptions{})
+func getExistingOrgUser(ctx context.Context, client *atlas.Client, orgID string) (*atlas.AtlasUser, error) {
+	usersResponse, _, err := client.Organizations.Users(ctx, orgID, &atlas.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

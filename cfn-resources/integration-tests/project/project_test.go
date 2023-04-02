@@ -16,7 +16,6 @@ package project
 import (
 	"bytes"
 	ctx "context"
-	"fmt"
 	"log"
 	"os"
 	"path"
@@ -57,7 +56,7 @@ const (
 var (
 	profile         = os.Getenv("ATLAS_SECRET_PROFILE")
 	orgId           = os.Getenv("ATLAS_ORG_ID")
-	e2eRandSuffix   = fmt.Sprint(util.GetRandNum())
+	e2eRandSuffix   = util.GetRandNum().String()
 	testProjectName = "cfn-e2e-project" + e2eRandSuffix
 	testTeamName    = "cfn-e2e-team" + e2eRandSuffix
 	stackName       = "stack-project-e2e-" + e2eRandSuffix
@@ -100,9 +99,15 @@ func setupSuite(t *testing.T) (func(t *testing.T), *LocalTestContext) {
 
 func (c *LocalTestContext) setUp() {
 	c.resourceCtx = util.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
-	c.setClients()
+	err := c.setClients()
+	if err != nil {
+		log.Printf("Error during client creation: %s", err.Error())
+	}
 	util.PublishToPrivateRegistry(c.resourceCtx)
-	c.setupPrerequisites()
+	err = c.setupPrerequisites()
+	if err != nil {
+		log.Printf("Error when setting up prerequisites: %s", err.Error())
+	}
 }
 
 func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
@@ -114,13 +119,12 @@ func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
 
 func testCreateStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
-	ctx := ctx.Background()
 
 	output, _ := util.CreateStack(c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectId = getProjectIdFromStack(output)
 
-	project, getProjectResponse, _ := c.atlasClient.Projects.GetOneProject(ctx, c.projectTmplObj.ProjectId)
-	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx, project.ID)
+	project, getProjectResponse, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
+	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
 	if err != nil {
 		log.Printf("Error when validating project teamsAssigned: %s", err.Error())
 		return
@@ -133,7 +137,6 @@ func testCreateStack(t *testing.T, c *LocalTestContext) {
 
 func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
-	ctx := ctx.Background()
 
 	// create CFN template with updated project name
 	c.projectTmplObj.Name += "-updated"
@@ -142,8 +145,8 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	output, _ := util.UpdateStack(c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectId = getProjectIdFromStack(output)
 
-	project, _, _ := c.atlasClient.Projects.GetOneProject(ctx, c.projectTmplObj.ProjectId)
-	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx, project.ID)
+	project, _, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
+	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
 	if err != nil {
 		log.Printf("Error when validating project teamsAssigned: %s", err.Error())
 		return
@@ -156,10 +159,12 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 
 func testDeleteStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
-	util.DeleteStack(c.cfnClient, stackName)
+	_, err := util.DeleteStack(c.cfnClient, stackName)
+	if err != nil {
+		log.Printf("Error during stack deletion: %s", err.Error())
+	}
 
-	ctx := ctx.Background()
-	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx, c.projectTmplObj.ProjectId)
+	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
 
 	a := assert.New(t)
 	a.Equal(resp.StatusCode, 404)
@@ -168,12 +173,12 @@ func testDeleteStack(t *testing.T, c *LocalTestContext) {
 func (c *LocalTestContext) setClients() error {
 	c.atlasClient, c.err = util.NewMongoDBClient()
 	if c.err != nil {
-		fmt.Println("Unable to create atlas client, please check env variables")
+		log.Println("Unable to create atlas client, please check env variables")
 		return c.err
 	}
 	c.cfnClient, c.err = util.GetAWSClient()
 	if c.err != nil {
-		fmt.Println("Unable to create AWS client, please check AWS config is correctly setup")
+		log.Println("Unable to create AWS client, please check AWS config is correctly setup")
 		return c.err
 	}
 	return nil
@@ -222,7 +227,7 @@ func (c *LocalTestContext) setupPrerequisites() error {
 	// Read required data from resource CFN template
 	c.template, c.err = getCFNTemplate(c.projectTmplObj)
 	if c.err != nil {
-		panic(c.err)
+		return c.err
 	}
 	return nil
 }

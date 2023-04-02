@@ -15,14 +15,16 @@
 package util
 
 import (
+	"crypto/rand"
 	"log"
-	"math/rand"
+	"math/big"
 	"os"
 	"os/exec"
 )
 
-func GetRandNum() int {
-	return rand.Intn(10000)
+func GetRandNum() *big.Int {
+	randInt, _ := rand.Int(rand.Reader, big.NewInt(10000))
+	return randInt
 }
 
 func RunCleanupScript(rctx ResourceContext) {

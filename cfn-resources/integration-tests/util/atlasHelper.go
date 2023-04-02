@@ -48,7 +48,7 @@ var (
 )
 
 func GetNewAtlasTeam(ctx context.Context, client *atlas.Client, name string, orgId string) (*atlas.Team, error) {
-	orgUser, err := getExistingOrgUser(ctx, client, orgId)
+	orgUser, _ := getExistingOrgUser(ctx, client, orgId)
 	teamRequest := atlas.Team{
 		Name:      name,
 		Usernames: []string{orgUser.Username},
@@ -102,7 +102,7 @@ func NewMongoDBClient() (atlasClient *atlas.Client, err error) {
 		return nil, err
 	}
 	t := digest.NewTransport(atlasEnv.PublicKey, atlasEnv.PrivateKey)
-	client, err := t.Client()
+	client, _ := t.Client()
 
 	opts := []atlas.ClientOpt{atlas.SetUserAgent(userAgent)}
 	if baseURL := atlasEnv.BaseURL; baseURL != "" {
@@ -118,13 +118,11 @@ func NewMongoDBClient() (atlasClient *atlas.Client, err error) {
 }
 
 func GetNewBasicClusterWithSampleData(ctx context.Context, client *atlas.Client, projectId string) (*atlas.AdvancedCluster, error) {
-	// TODO
+	// TODO: implement
 	return nil, nil
 }
 
 func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {
-	orgId1 := os.Getenv("ATLAS_ORG_ID")
-	fmt.Println(orgId1)
 	orgId, OrgIdOk := os.LookupEnv("ATLAS_ORG_ID")
 	publicKey, publicKeyOk := os.LookupEnv("ATLAS_PUBLIC_KEY")
 	privateKey, privateKeyOk := os.LookupEnv("ATLAS_PRIVATE_KEY")

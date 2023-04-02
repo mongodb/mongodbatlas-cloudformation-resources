@@ -46,8 +46,7 @@ func CreateStack(client *cfn.Client, stackName string, fileContent string) (*cfn
 
 func createStackAndWait(client *cfn.Client, name, stackBody string) (*cfn.DescribeStacksOutput, error) {
 	creq := &cfn.CreateStackInput{
-		StackName: aws.String(name),
-		//OnFailure: aws.String("ROLLBACK"),
+		StackName:    aws.String(name),
 		TemplateBody: aws.String(stackBody),
 	}
 
@@ -88,7 +87,6 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 }
 
 func DeleteStack(svc *cfn.Client, name string) (*cfn.DescribeStacksOutput, error) {
-
 	resp, err := deleteStackAndWait(svc, name)
 	if err != nil {
 		return nil, err
@@ -143,7 +141,6 @@ func UpdateStack(svc *cfn.Client, stackName string, templateBody string) (*cfn.D
 }
 
 func updateStackAndWait(svc *cfn.Client, stackName, stackBody string) (*cfn.DescribeStacksOutput, error) {
-
 	input := &cfn.UpdateStackInput{
 		StackName:    aws.String(stackName),
 		TemplateBody: aws.String(stackBody),
@@ -151,7 +148,7 @@ func updateStackAndWait(svc *cfn.Client, stackName, stackBody string) (*cfn.Desc
 
 	updateOutput, err := svc.UpdateStack(context.Background(), input)
 	if err != nil {
-		return nil, fmt.Errorf("Error updating cloudformation stack: %v", err)
+		return nil, fmt.Errorf("error updating cloudformation stack: %v", err)
 	}
 
 	return waitForStackUpdateComplete(svc, *updateOutput.StackId)
@@ -190,7 +187,7 @@ func ValidateTemplate(svc *cfn.Client, template string) (bool, error) {
 	_, err := svc.ValidateTemplate(context.Background(), input)
 
 	if err != nil {
-		return false, fmt.Errorf("Invalid cloudformation stack: %v", err)
+		return false, fmt.Errorf("invalid cloudformation stack: %v", err)
 	}
 
 	return true, nil

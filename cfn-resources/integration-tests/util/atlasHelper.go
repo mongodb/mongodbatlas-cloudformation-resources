@@ -42,7 +42,6 @@ const (
 
 var (
 	toolName           = cfnTool
-	defaultLogLevel    = "warning"
 	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )

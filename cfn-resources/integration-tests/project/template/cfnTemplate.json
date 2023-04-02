@@ -7,7 +7,7 @@
       "Type": "{{ .ResourceTypeName }}",
       "Properties": {
         "Name": "{{ .Name }}",
-        "OrgId": "{{ .OrgId }}",
+        "OrgId": "{{ .OrgID }}",
         "Profile": "{{ .Profile }}",
         "ProjectSettings": {
           "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
@@ -18,7 +18,7 @@
         },
         "ProjectTeams": [
           {
-            "TeamId": "{{ .TeamId }}",
+            "TeamId": "{{ .TeamID }}",
             "RoleNames": [
               "GROUP_OWNER"
             ]

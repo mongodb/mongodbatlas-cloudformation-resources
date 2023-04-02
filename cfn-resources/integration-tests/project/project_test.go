@@ -41,11 +41,11 @@ type LocalTestContext struct {
 type TestProject struct {
 	ResourceTypeName string
 	Name             string
-	OrgId            string
+	OrgID            string
 	Profile          string
-	TeamId           string
+	TeamID           string
 	ProjectName      string
-	ProjectId        string
+	ProjectID        string
 }
 
 const (
@@ -55,7 +55,7 @@ const (
 
 var (
 	profile         = os.Getenv("ATLAS_SECRET_PROFILE")
-	orgId           = os.Getenv("ATLAS_ORG_ID")
+	orgID           = os.Getenv("ATLAS_ORG_ID")
 	e2eRandSuffix   = util.GetRandNum().String()
 	testProjectName = "cfn-e2e-project" + e2eRandSuffix
 	testTeamName    = "cfn-e2e-team" + e2eRandSuffix
@@ -121,9 +121,9 @@ func testCreateStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 
 	output, _ := util.CreateStack(c.cfnClient, stackName, c.template)
-	c.projectTmplObj.ProjectId = getProjectIdFromStack(output)
+	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
-	project, getProjectResponse, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
+	project, getProjectResponse, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
 	if err != nil {
 		log.Printf("Error when validating project teamsAssigned: %s", err.Error())
@@ -131,7 +131,7 @@ func testCreateStack(t *testing.T, c *LocalTestContext) {
 	}
 
 	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamId, teamsAssigned.Results[0].TeamID)
+	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
 	a.Equal(200, getProjectResponse.StatusCode)
 }
 
@@ -143,9 +143,9 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	c.template, c.err = getCFNTemplate(c.projectTmplObj)
 
 	output, _ := util.UpdateStack(c.cfnClient, stackName, c.template)
-	c.projectTmplObj.ProjectId = getProjectIdFromStack(output)
+	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
-	project, _, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
+	project, _, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
 	if err != nil {
 		log.Printf("Error when validating project teamsAssigned: %s", err.Error())
@@ -153,7 +153,7 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	}
 
 	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamId, teamsAssigned.Results[0].TeamID)
+	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
 	a.Equal(project.Name, c.projectTmplObj.Name)
 }
 
@@ -164,7 +164,7 @@ func testDeleteStack(t *testing.T, c *LocalTestContext) {
 		log.Printf("Error during stack deletion: %s", err.Error())
 	}
 
-	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
+	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 
 	a := assert.New(t)
 	a.Equal(resp.StatusCode, 404)
@@ -184,7 +184,7 @@ func (c *LocalTestContext) setClients() error {
 	return nil
 }
 
-func getProjectIdFromStack(output *cfn.DescribeStacksOutput) string {
+func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
 	for i := 0; i < len(stackOutputs); i++ {
 		if *aws.String(*stackOutputs[i].OutputKey) == "ProjectId" {
@@ -195,9 +195,9 @@ func getProjectIdFromStack(output *cfn.DescribeStacksOutput) string {
 }
 
 func deleteProjectIfExists(c *LocalTestContext) {
-	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectId)
+	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 	if err == nil {
-		_, err = c.atlasClient.Projects.Delete(ctx.Background(), c.projectTmplObj.ProjectId)
+		_, err = c.atlasClient.Projects.Delete(ctx.Background(), c.projectTmplObj.ProjectID)
 		if err != nil {
 			log.Println("Atlas Project could not be deleted during cleanup")
 		} else {
@@ -207,20 +207,20 @@ func deleteProjectIfExists(c *LocalTestContext) {
 }
 
 func cleanupPrerequisites(c *LocalTestContext) {
-	_, err := c.atlasClient.Teams.RemoveTeamFromOrganization(ctx.Background(), orgId, c.projectTmplObj.TeamId)
+	_, err := c.atlasClient.Teams.RemoveTeamFromOrganization(ctx.Background(), orgID, c.projectTmplObj.TeamID)
 	if err != nil {
 		log.Printf("Atlas Team could not be deleted during cleanup: %s\n", err.Error())
 	}
 }
 
 func (c *LocalTestContext) setupPrerequisites() error {
-	team, _ := util.GetNewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgId)
+	team, _ := util.GetNewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
 
 	c.projectTmplObj = TestProject{
 		Name:             testProjectName,
-		OrgId:            orgId,
+		OrgID:            orgID,
 		Profile:          profile,
-		TeamId:           team.ID,
+		TeamID:           team.ID,
 		ResourceTypeName: c.resourceCtx.ResourceTypeNameForE2e,
 	}
 

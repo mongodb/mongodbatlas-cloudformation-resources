@@ -154,7 +154,7 @@ func newMappings(currentModel *Model) (*mongodbatlas.IndexMapping, error) {
 		return nil, nil
 	}
 
-	if currentModel.Mappings.Fields != nil && currentModel.Mappings.Dynamic != nil && *currentModel.Mappings.Dynamic == true {
+	if currentModel.Mappings.Fields != nil && currentModel.Mappings.Dynamic != nil && *currentModel.Mappings.Dynamic {
 		return nil, nil
 	}
 

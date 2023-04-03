@@ -17,7 +17,9 @@ package resource
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,6 +32,9 @@ import (
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
+
+// indexFieldParts index field should be fieldName:fieldType.
+const indexFieldParts = 2
 
 func setup() {
 	util.SetupLogger("search-index")
@@ -69,7 +74,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
 
-	searchIndex, err := ToSearchIndex(currentModel)
+	searchIndex, err := newSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -79,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &searchIndex)
+	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndex)
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
@@ -101,12 +106,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func ToSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
-	return newSearchIndex(currentModel)
-}
-
-func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
-	searchIndex := mongodbatlas.SearchIndex{
+func newSearchIndex(currentModel *Model) (*mongodbatlas.SearchIndex, error) {
+	searchIndex := &mongodbatlas.SearchIndex{
 		Analyzer:       aws.StringValue(currentModel.Analyzer),
 		CollectionName: aws.StringValue(currentModel.CollectionName),
 		Database:       aws.StringValue(currentModel.Database),
@@ -116,29 +117,17 @@ func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 		Status:         aws.StringValue(currentModel.Status),
 	}
 	if currentModel.Mappings != nil {
-		var sec map[string]interface{}
-		var err error
-		if currentModel.Mappings.Fields != nil {
-			sec, err = cast.ToStringMapE(currentModel.Mappings.Fields)
-			if err != nil {
-				return mongodbatlas.SearchIndex{}, err
-			}
+		mapping, err := newMappings(currentModel)
+		if err != nil {
+			return nil, err
 		}
-		searchIndex.Mappings = &mongodbatlas.IndexMapping{
-			Dynamic: func() bool {
-				if currentModel.Mappings.Dynamic != nil {
-					return *currentModel.Mappings.Dynamic
-				}
-				return false
-			}(),
-			Fields: &sec,
-		}
+		searchIndex.Mappings = mapping
 	}
 	analyzers := make([]map[string]interface{}, 0, len(currentModel.Analyzers))
 	for _, v := range currentModel.Analyzers {
 		s, err := util.ToStringMapE(v)
 		if err != nil {
-			return mongodbatlas.SearchIndex{}, err
+			return nil, err
 		}
 		analyzers = append(analyzers, s)
 	}
@@ -150,7 +139,7 @@ func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 	for _, v := range currentModel.Synonyms {
 		s, err := util.ToStringMapE(v)
 		if err != nil {
-			return mongodbatlas.SearchIndex{}, err
+			return nil, err
 		}
 		synonyms = append(synonyms, s)
 	}
@@ -158,6 +147,44 @@ func newSearchIndex(currentModel *Model) (mongodbatlas.SearchIndex, error) {
 		searchIndex.Synonyms = synonyms
 	}
 	return searchIndex, nil
+}
+
+func newMappings(currentModel *Model) (*mongodbatlas.IndexMapping, error) {
+	if currentModel.Mappings == nil {
+		return nil, nil
+	}
+
+	if currentModel.Mappings.Fields != nil && currentModel.Mappings.Dynamic != nil && *currentModel.Mappings.Dynamic == true {
+		return nil, nil
+	}
+
+	sec, err := newMappingsFields(currentModel.Mappings.Fields)
+	if err != nil {
+		return nil, err
+	}
+	return &mongodbatlas.IndexMapping{
+		Dynamic: false,
+		Fields:  &sec,
+	}, nil
+}
+
+func newMappingsFields(fields []string) (map[string]interface{}, error) {
+	if len(fields) == 0 {
+		return nil, nil
+	}
+
+	fieldsMap := make(map[string]interface{})
+	for _, p := range fields {
+		f := strings.Split(p, ":")
+		if len(f) != indexFieldParts {
+			return nil, fmt.Errorf("partition should be fieldName:fieldType, got: %s", p)
+		}
+		fieldsMap[f[0]] = map[string]interface{}{
+			"type": f[1],
+		}
+	}
+
+	return fieldsMap, nil
 }
 
 func status(currentModel *Model) handler.Status {
@@ -205,15 +232,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
 	}
-	currentModel.Name = &searchIndex.Name
-	currentModel.Analyzer = &searchIndex.Analyzer
-	currentModel.Database = &searchIndex.Database
-	currentModel.CollectionName = &searchIndex.CollectionName
 	currentModel.Status = &searchIndex.Status
-	currentModel.Mappings = &ApiAtlasFTSMappingsViewManual{}
-	if searchIndex.Mappings != nil {
-		currentModel.Mappings.Dynamic = &searchIndex.Mappings.Dynamic
-	}
 	return handler.ProgressEvent{
 		OperationStatus: cloudformation.OperationStatusSuccess,
 		Message:         "Read Complete",
@@ -253,7 +272,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.IndexId = &id
 		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
 	}
-	searchIndex, err := ToSearchIndex(currentModel)
+	searchIndex, err := newSearchIndex(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -263,7 +282,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 	updatedSearchIndex, res, err := client.Search.UpdateIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
-		*currentModel.IndexId, &searchIndex)
+		*currentModel.IndexId, searchIndex)
 	if err != nil {
 		// Log and handle 404 ok
 		if res != nil && res.StatusCode == http.StatusNotFound {
@@ -278,8 +297,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 	currentModel.Status = &updatedSearchIndex.Status
-	currentModel.IndexId = &updatedSearchIndex.IndexID
-	currentModel.Name = &updatedSearchIndex.Name
 	return handler.ProgressEvent{
 		OperationStatus: status(currentModel),
 		Message:         "Update Complete",

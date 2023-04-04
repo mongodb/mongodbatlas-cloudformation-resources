@@ -6,7 +6,7 @@
 
 ![simple-quickstart-arch](https://user-images.githubusercontent.com/5663078/229119386-0dbc6e30-a060-465e-86dd-f89712b0fc49.png)
 
-The quickstart template enables you to begin working with your Machine Learning models rapidly, using your MongoDB Atlas Cluster and Amazon SageMaker Endpoint as tools. With this template, you can utilize MongoDB as a data source and Amazon SageMaker for data analysis, streamlining the process of building and deploying machine learning models.
+This Partner Solutions template enables you to begin working with your Machine Learning models rapidly, using your MongoDB Atlas Cluster and Amazon SageMaker Endpoint as tools. With this template, you can utilize MongoDB as a data source and Amazon SageMaker for data analysis, streamlining the process of building and deploying machine learning models.
 
 
 
@@ -15,8 +15,8 @@ The quickstart template enables you to begin working with your Machine Learning 
 - [MongoDB::Atlas::Trigger](../../cfn-resources/trigger/)
 
 
-## Environment Configured by the Quickstart template
-The quickstart templates will generate the following resources:
+## Environment Configured by the Partner Solutions template
+The Partner Solutions template will generate the following resources:
  - Configure [MongoDB Partner Event Bus](http://mongodb.com/docs/atlas/app-services/triggers/aws-eventbridge/#std-label-aws-eventbridge).
  - Set up a [database trigger](https://www.mongodb.com/docs/atlas/app-services/triggers/database-triggers/) with your Atlas Cluster.
  - Create lambda functions to run the machine learning model and send the classification results to your MongoDB Atlas Cluster. 

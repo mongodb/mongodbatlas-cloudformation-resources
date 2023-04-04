@@ -6,7 +6,7 @@
 
 ![simple-quickstart-arch](https://user-images.githubusercontent.com/5663078/229105149-59015114-1c14-44e3-ad5a-b48d9a487797.png)
 
-This quickstart template provides the architecture necessary to scale a MEAN (MongoDB, Express, Angular, Node.js) stack application using a combination of CloudFormation, MongoDB Atlas, and AWS Fargate. Specifically, the template leverages the MongoDB Atlas CFN resources to configure the MongoDB infrastructure and uses AWS CFN resources to set up an Application Load Balancer and a VPC. Additionally, the template employs AWS Fargate to run your Docker image.
+This Partner Solutions template provides the architecture necessary to scale a [MEAN](https://www.mongodb.com/mean-stack) (MongoDB, Express, Angular, Node.js) stack application using a combination of CloudFormation, MongoDB Atlas, and AWS Fargate. Specifically, the template leverages the MongoDB Atlas CFN resources to configure the MongoDB infrastructure and uses AWS CFN resources to set up an Application Load Balancer and a VPC. Additionally, the template employs AWS Fargate to run your Docker image.
 
 
 
@@ -21,14 +21,14 @@ This quickstart template provides the architecture necessary to scale a MEAN (Mo
 - [MongoDB::Atlas::PrivateEndpoint](../../cfn-resources/private-endpoint/)
 
 
-## Environment Configured by the Quickstart template
-The quickstart templates will generate the following resources:
- - A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS. The VPC provides Domain Name System (DNS) resolution. The quickstart temaplate leverage the [official AWS quickstart teamplate](https://github.com/aws-quickstart/quickstart-aws-vpc/blob/9dc47510f71f1fb6baf8c4e96b5330a6f51f540e/templates/aws-vpc.template.yaml) to build your VPC infrastructure. See [Deployment Guide](https://aws-quickstart.github.io/quickstart-aws-vpc/) for more information.
+## Environment Configured by the Partner Solutions template
+The Partner Solutions template will generate the following resources:
+ - A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS. The VPC provides Domain Name System (DNS) resolution. The template leverages the [official AWS quickstart template](https://github.com/aws-quickstart/quickstart-aws-vpc/blob/9dc47510f71f1fb6baf8c4e96b5330a6f51f540e/templates/aws-vpc.template.yaml) to build your VPC infrastructure. See [Deployment Guide](https://aws-quickstart.github.io/quickstart-aws-vpc/) for more information.
 
 - Set up an Atlas Project within the organization (input provided).
 - Create an Atlas Cluster that has authentication and authorization enabled, and is not accessible through the public internet.
 - Create a Database user with access to the Atlas Cluster.
-- Add the IP address range 0.0.0.0/1 to the Atlas access list, allowing the cluster to be accessed through the public internet.
+- Add the IP address range provided as input to the Atlas access list, allowing the cluster to be accessed through the public internet.
 - Establish a VPC peering connection between the MongoDB Atlas VPC (where the cluster is located) and the VPC on AWS.
 - An application Load Balancer 
 - Set up AWS Fargate to run your Docker image. See [fargate-example/](fargate-example/) for an example of docker images to use with Fargate.
@@ -38,15 +38,14 @@ The quickstart templates will generate the following resources:
 See [execution-role.yaml](execution-role.yaml) for the list of permissions needed to run the template. 
 
 
-If you want to create an IAM (Identity and Access Management) role to run the quickstart template on a CFN (CloudFormation) stack, you can use the [execution-role.yaml](execution-role.yaml) file. Note that passing an IAM role to CloudFormation when creating a stack is optional. If you don't supply one, the user permissions are assumed. 
+If you want to create an IAM (Identity and Access Management) role to run the Partner Solutions template on a CFN (CloudFormation) stack, you can use the [execution-role.yaml](execution-role.yaml) file. Note that passing an IAM role to CloudFormation when creating a stack is optional. If you don't supply one, the user permissions are assumed. 
 See the [IAM permissions section in the General information guide](https://aws-ia.github.io/content/qs_info.html#_technical_requirements) for more information.
 
 
 ## Additional Information
 
 - Repository: [quickstart-mongodb-atlas-mean-stack-aws-fargate-integration](https://github.com/aws-quickstart/quickstart-mongodb-atlas-mean-stack-aws-fargate-integration/tree/main)
-- Template: 
-- [mongodb-atlas-mean-stack.template.yaml](https://github.com/aws-quickstart/quickstart-mongodb-atlas-mean-stack-aws-fargate-integration/blob/main/templates/mongodb-atlas-mean-stack.template.yaml)
+- Template: [mongodb-atlas-mean-stack.template.yaml](https://github.com/aws-quickstart/quickstart-mongodb-atlas-mean-stack-aws-fargate-integration/blob/main/templates/mongodb-atlas-mean-stack.template.yaml)
 - [What Is The MEAN Stack? Introduction & Examples | MongoDB](https://www.mongodb.com/mean-stack)
 - [Serverless Compute Engine–AWS Fargate–Amazon Web Services](https://aws.amazon.com/fargate/)
 

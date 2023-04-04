@@ -29,7 +29,7 @@ update.json
 pytestdebug.log
 !*.rpdk-config
 !/cdk/**/.*
-
+*.DS_Store
 
 # We don't want to commit env variables
 *.env

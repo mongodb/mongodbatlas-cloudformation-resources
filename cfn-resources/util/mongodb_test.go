@@ -34,7 +34,7 @@ var (
 )
 
 func setupAtlasClient() (*mongodbatlas.Client, error) {
-	client, err := CreateMongoDBClient(publicKey, privateKey)
+	client, err := createMongoDBClient(publicKey, privateKey)
 	if err != nil {
 		return nil, err
 	}

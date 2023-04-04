@@ -242,6 +242,7 @@ mainSteps:
         - FAULT
         - STOPPED
         - TIMED_OUT
+      timeoutSeconds: 7200
   - name: Check_Build_Status
     action: 'aws:assertAwsResourceProperty'
     inputs:

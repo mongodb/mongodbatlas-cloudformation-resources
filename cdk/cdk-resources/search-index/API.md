@@ -654,7 +654,7 @@ const apiAtlasFtsMappingsViewManual: ApiAtlasFtsMappingsViewManual = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@mongodbatlas-awscdk/search-index.ApiAtlasFtsMappingsViewManual.property.dynamic">dynamic</a></code> | <code>boolean</code> | Flag that indicates whether the index uses dynamic or static mappings. |
-| <code><a href="#@mongodbatlas-awscdk/search-index.ApiAtlasFtsMappingsViewManual.property.fields">fields</a></code> | <code>string</code> | One or more field specifications for the Atlas Search index. |
+| <code><a href="#@mongodbatlas-awscdk/search-index.ApiAtlasFtsMappingsViewManual.property.fields">fields</a></code> | <code>string[]</code> | One or more field specifications for the Atlas Search index. |
 
 ---
 
@@ -675,14 +675,14 @@ Required if **mappings.fields** is omitted.
 ##### `fields`<sup>Optional</sup> <a name="fields" id="@mongodbatlas-awscdk/search-index.ApiAtlasFtsMappingsViewManual.property.fields"></a>
 
 ```typescript
-public readonly fields: string;
+public readonly fields: string[];
 ```
 
-- *Type:* string
+- *Type:* string[]
 
 One or more field specifications for the Atlas Search index.
 
-Required if **mappings.dynamic** is omitted or set to **false**.
+The element of the array must have the format fieldName:fieldType. Required if **mappings.dynamic** is omitted or set to **false**.
 
 ---
 

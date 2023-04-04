@@ -90,10 +90,8 @@ func GetRealmClient(ctx context.Context, req handler.Request, profileName *strin
 	return realmClient, nil
 }
 
-// CreateMongoDBClient creates a new Client using apikeys
-//
-// Deprecated: In the future this function will be private, the NewMongoDBClient should be used instead.
-func CreateMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
+// createMongoDBClient creates a new Client using apikeys
+func createMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
 	// setup a transport to handle digest
 	log.Printf("CreateMongoDBClient--- publicKey:%s", publicKey)
 	transport := digest.NewTransport(publicKey, privateKey)

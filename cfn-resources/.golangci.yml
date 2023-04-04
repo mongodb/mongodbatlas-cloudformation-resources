@@ -130,17 +130,6 @@ issues:
     - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
     - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
     - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - testpackage
-      # part of the golangci govet package is picking up things that go vet doesn't. Seems flaky, shutting that specific error off
-
-    # Exclude some staticcheck messages
-    - linters:
-        - staticcheck
-      text: "SA1019:" # d.GetOkExists is deprecated: usage is discouraged due to undefined behaviors and may be removed in a future version of the SDK
-
 run:
   tests: true
   timeout: 5m

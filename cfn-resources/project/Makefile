@@ -5,8 +5,8 @@ goos=linux
 goarch=amd64
 
 DEBUG_FLAGS=all=-N -l
-VERSION?=$(shell git describe --always --tags | cut -d "v" -f 2)
-LINKER_FLAGS=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${VERSION}
+CFNREP_GIT_SHA?=$(shell git rev-parse HEAD)
+LINKER_FLAGS=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${CFNREP_GIT_SHA}
 
 build:
 	@echo "==> Building handler binary"

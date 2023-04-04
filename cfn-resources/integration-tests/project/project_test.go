@@ -16,7 +16,6 @@ package project
 import (
 	"bytes"
 	ctx "context"
-	"log"
 	"os"
 	"path"
 	"testing"
@@ -24,7 +23,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/integration-tests/util"
+	util "github.com/mongodb/mongodbatlas-cloudformation-resources/integration-tests/utility"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -63,8 +62,7 @@ var (
 )
 
 func TestProjectCFN(t *testing.T) {
-	teardownSuite, testCtx := setupSuite(t)
-	defer teardownSuite(t)
+	testCtx := setupSuite(t)
 
 	t.Run("Validate Template", func(t *testing.T) {
 		testIsTemplateValid(t, testCtx)
@@ -83,36 +81,26 @@ func TestProjectCFN(t *testing.T) {
 	})
 }
 
-func setupSuite(t *testing.T) (func(t *testing.T), *LocalTestContext) {
-	log.Println("Setting up suite")
+func setupSuite(t *testing.T) *LocalTestContext {
+	t.Helper()
+	t.Log("Setting up suite")
 	testCtx := new(LocalTestContext)
-	testCtx.setUp()
+	testCtx.setUp(t)
 
-	// Return function to teardown the test suite
-	return func(t *testing.T) {
-		log.Println("Tearing down suite")
-		util.RunCleanupScript(testCtx.resourceCtx)
-		deleteProjectIfExists(testCtx)
-		cleanupPrerequisites(testCtx)
-	}, testCtx
+	return testCtx
 }
 
-func (c *LocalTestContext) setUp() {
+func (c *LocalTestContext) setUp(t *testing.T) {
 	c.resourceCtx = util.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
-	err := c.setClients()
-	if err != nil {
-		log.Printf("Error during client creation: %s", err.Error())
-	}
-	util.PublishToPrivateRegistry(c.resourceCtx)
-	err = c.setupPrerequisites()
-	if err != nil {
-		log.Printf("Error when setting up prerequisites: %s", err.Error())
-	}
+	c.setClients(t)
+	util.PublishToPrivateRegistry(t, c.resourceCtx)
+	c.setupPrerequisites(t)
 }
 
 func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
 	t.Helper()
-	isValid, _ := util.ValidateTemplate(c.cfnClient, c.template)
+
+	isValid := util.ValidateTemplate(t, c.cfnClient, c.template)
 	a := assert.New(t)
 	a.True(isValid)
 }
@@ -120,15 +108,14 @@ func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
 func testCreateStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 
-	output, _ := util.CreateStack(c.cfnClient, stackName, c.template)
+	output := util.CreateStack(t, c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
-	project, getProjectResponse, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
-	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
-	if err != nil {
-		log.Printf("Error when validating project teamsAssigned: %s", err.Error())
-		return
-	}
+	project, getProjectResponse, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	util.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
+
+	teamsAssigned, _, _ := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
+	util.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
 	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
@@ -140,17 +127,16 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 
 	// create CFN template with updated project name
 	c.projectTmplObj.Name += "-updated"
-	c.template, c.err = getCFNTemplate(c.projectTmplObj)
+	c.template, c.err = newCFNTemplate(c.projectTmplObj)
 
-	output, _ := util.UpdateStack(c.cfnClient, stackName, c.template)
+	output := util.UpdateStack(t, c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
-	project, _, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	project, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	util.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
+
 	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
-	if err != nil {
-		log.Printf("Error when validating project teamsAssigned: %s", err.Error())
-		return
-	}
+	util.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
 	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
@@ -159,10 +145,8 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 
 func testDeleteStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
-	_, err := util.DeleteStack(c.cfnClient, stackName)
-	if err != nil {
-		log.Printf("Error during stack deletion: %s", err.Error())
-	}
+
+	util.DeleteStack(t, c.cfnClient, stackName)
 
 	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 
@@ -170,18 +154,15 @@ func testDeleteStack(t *testing.T, c *LocalTestContext) {
 	a.Equal(resp.StatusCode, 404)
 }
 
-func (c *LocalTestContext) setClients() error {
+func (c *LocalTestContext) setClients(t *testing.T) {
+	t.Helper()
+
+	t.Log("Setting clients")
 	c.atlasClient, c.err = util.NewMongoDBClient()
-	if c.err != nil {
-		log.Println("Unable to create atlas client, please check env variables")
-		return c.err
-	}
-	c.cfnClient, c.err = util.GetAWSClient()
-	if c.err != nil {
-		log.Println("Unable to create AWS client, please check AWS config is correctly setup")
-		return c.err
-	}
-	return nil
+	util.FailNowIfError(t, "Unable to create atlas client: %v", c.err)
+
+	c.cfnClient, c.err = util.NewCFNClient()
+	util.FailNowIfError(t, "Unable to create AWS client, please check AWS config is correctly setup: %v", c.err)
 }
 
 func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
@@ -194,27 +175,33 @@ func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 	return ""
 }
 
-func deleteProjectIfExists(c *LocalTestContext) {
+func deleteProjectIfExists(t *testing.T, c *LocalTestContext) {
 	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 	if err == nil {
 		_, err = c.atlasClient.Projects.Delete(ctx.Background(), c.projectTmplObj.ProjectID)
 		if err != nil {
-			log.Println("Atlas Project could not be deleted during cleanup")
+			t.Logf("Atlas Project could not be deleted during cleanup")
 		} else {
-			log.Println("Atlas Project successfully deleted during cleanup")
+			t.Logf("Atlas Project successfully deleted during cleanup")
 		}
 	}
 }
 
-func cleanupPrerequisites(c *LocalTestContext) {
+func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
+	t.Log("Cleaning up prerequisites")
 	_, err := c.atlasClient.Teams.RemoveTeamFromOrganization(ctx.Background(), orgID, c.projectTmplObj.TeamID)
 	if err != nil {
-		log.Printf("Atlas Team could not be deleted during cleanup: %s\n", err.Error())
+		t.Logf("Atlas Team could not be deleted during cleanup: %s\n", err.Error())
 	}
 }
 
-func (c *LocalTestContext) setupPrerequisites() error {
-	team, _ := util.GetNewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
+func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
+	t.Log("Setting up prerequisites")
+	team, _ := util.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
+	t.Cleanup(func() {
+		cleanupPrerequisites(t, c)
+		deleteProjectIfExists(t, c)
+	})
 
 	c.projectTmplObj = TestProject{
 		Name:             testProjectName,
@@ -225,27 +212,26 @@ func (c *LocalTestContext) setupPrerequisites() error {
 	}
 
 	// Read required data from resource CFN template
-	c.template, c.err = getCFNTemplate(c.projectTmplObj)
-	if c.err != nil {
-		return c.err
-	}
-	return nil
+	c.template, c.err = newCFNTemplate(c.projectTmplObj)
+	util.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
 }
 
-func getCFNTemplate(tmpl TestProject) (string, error) {
+func newCFNTemplate(tmpl TestProject) (string, error) {
 	return executeGoTemplate(tmpl)
 }
 
 func executeGoTemplate(projectTmpl TestProject) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
-	name := path.Base("template/cfnTemplate.json")
-	cfnGoTemplate, err := template.New(name).ParseFiles("template/cfnTemplate.json")
+	cfnTemplatePath := "template/cfnTemplate.json"
+
+	name := path.Base(cfnTemplatePath)
+	cfnGoTemplate, err := template.New(name).ParseFiles(cfnTemplatePath)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	err = cfnGoTemplate.Execute(&cfnGoTemplateStr, projectTmpl)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	return cfnGoTemplateStr.String(), nil
 }

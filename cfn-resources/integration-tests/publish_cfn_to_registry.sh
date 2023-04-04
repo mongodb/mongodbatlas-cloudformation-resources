@@ -24,15 +24,13 @@
 
 set -eu
 
-e2e_rand_suffix="$E2E_RAND_SUFFIX"
-resource_type_name_for_e2e="$RESOURCE_TYPE_NAME_FOR_E2E"
 resource_directory=$RESOURCE_DIRECTORY_NAME
 
 
-echo "Updating .rpdk-config with the E2E resource type ${resource_type_name_for_e2e}"
-rpdk_file="../../${resource_directory}/.rpdk-config"
-tmp_rpdk_file="../../${resource_directory}/.rpdk-config${e2e_rand_suffix}"
-jq --arg type_name "${resource_type_name_for_e2e}" \
+echo "Updating .rpdk-config with the E2E resource type $RESOURCE_TYPE_NAME_FOR_E2E"
+rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config"
+tmp_rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config$E2E_RAND_SUFFIX"
+jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 	'.typeName?|=$type_name' \
 	"${rpdk_file}" >"${tmp_rpdk_file}"
 rm "${rpdk_file}"
@@ -42,14 +40,14 @@ mv "${tmp_rpdk_file}" "${rpdk_file}"
 echo "Creating a new resource schema"
 schema_file_name="${resource_directory//-}"
 echo "schema name file........ : ${schema_file_name}"
-resource_schema_file="../../${resource_directory}/mongodb-atlas-${schema_file_name}.json"
-tmp_resource_schema_file="../../${resource_directory}/mongodb-atlas-${schema_file_name}${e2e_rand_suffix}.json"
-jq --arg type_name "${resource_type_name_for_e2e}" \
+resource_schema_file="../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}.json"
+tmp_resource_schema_file="../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}$E2E_RAND_SUFFIX.json"
+jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 	'.typeName?|=$type_name' \
 	"${resource_schema_file}" >"${tmp_resource_schema_file}"
 
 
-echo "Releasing the resource to private registry ${resource_type_name_for_e2e}"
+echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../..
 cd "$resource_directory"
 
@@ -61,8 +59,8 @@ cd ../integration-tests/"$resource_directory"
 
 
 echo "Reverting .rpdk-config with the original resource typeName $RESOURCE_TYPE_NAME"
-rpdk_file="../../${resource_directory}/.rpdk-config"
-tmp_rpdk_file="../../${resource_directory}/.rpdk-config${e2e_rand_suffix}"
+rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config"
+tmp_rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config$E2E_RAND_SUFFIX"
 jq --arg type_name "$RESOURCE_TYPE_NAME" \
 	'.typeName?|=$type_name' \
 	"${rpdk_file}" >"${tmp_rpdk_file}"

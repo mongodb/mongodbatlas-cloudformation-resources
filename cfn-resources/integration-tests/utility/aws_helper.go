@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package utility
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"log"
+	"testing"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -26,31 +25,28 @@ import (
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )
 
-func GetAWSClient() (client *cfn.Client, err error) {
+func NewCFNClient() (client *cfn.Client, err error) {
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
-		return nil, errors.New("Error loading AWS configuration: " + err.Error())
+		return nil, fmt.Errorf("error loading AWS configuration: %w", err)
 	}
-	log.Println("Loaded AWS configuration")
 	return cfn.NewFromConfig(cfg), nil
 }
 
-func CreateStack(client *cfn.Client, stackName string, fileContent string) (*cfn.DescribeStacksOutput, error) {
-	templateBody := fileContent
-	outpt, err := createStackAndWait(client, stackName, templateBody)
-	if err != nil {
-		return nil, err
-	}
-	return outpt, nil
+func CreateStack(t *testing.T, client *cfn.Client, stackName string, fileContent string) *cfn.DescribeStacksOutput {
+	output, err := createStackAndWait(client, stackName, fileContent)
+	FailNowIfError(t, "Error during stack creation: %v", err)
+
+	return output
 }
 
 func createStackAndWait(client *cfn.Client, name, stackBody string) (*cfn.DescribeStacksOutput, error) {
-	creq := &cfn.CreateStackInput{
+	input := &cfn.CreateStackInput{
 		StackName:    aws.String(name),
 		TemplateBody: aws.String(stackBody),
 	}
 
-	resp, err := client.CreateStack(context.Background(), creq)
+	resp, err := client.CreateStack(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -75,30 +71,29 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		if len(resp.Stacks) == 0 {
 			return nil, fmt.Errorf("stack not found")
 		}
-		switch string(resp.Stacks[0].StackStatus) {
+		statusStr := string(resp.Stacks[0].StackStatus)
+		switch statusStr {
 		case "CREATE_COMPLETE":
 			return resp, nil
 		case "CREATE_FAILED":
-			return nil, errors.New(*aws.String(*resp.Stacks[0].StackStatusReason))
+			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		log.Println("Waiting for stack creation: ", resp.Stacks[0].StackStatus)
 		time.Sleep(3 * time.Second)
 	}
 }
 
-func DeleteStack(svc *cfn.Client, name string) (*cfn.DescribeStacksOutput, error) {
-	resp, err := deleteStackAndWait(svc, name)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func DeleteStack(t *testing.T, client *cfn.Client, stackName string) *cfn.DescribeStacksOutput {
+	output, err := deleteStackAndWait(client, stackName)
+	FailNowIfError(t, "Error during stack deletion: %v", err)
+
+	return output
 }
 
 func deleteStackAndWait(svc *cfn.Client, stackName string) (*cfn.DescribeStacksOutput, error) {
-	dreq := &cfn.DeleteStackInput{
+	input := &cfn.DeleteStackInput{
 		StackName: aws.String(stackName),
 	}
-	_, err := svc.DeleteStack(context.Background(), dreq)
+	_, err := svc.DeleteStack(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -121,23 +116,22 @@ func waitForStackDeleteComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 			return resp, nil
 		}
 
-		switch string(resp.Stacks[0].StackStatus) {
+		statusStr := string(resp.Stacks[0].StackStatus)
+		switch statusStr {
 		case "DELETE_COMPLETE":
 			return resp, nil
 		case "DELETE_FAILED":
-			return nil, errors.New(*aws.String(*resp.Stacks[0].StackStatusReason))
+			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		log.Println("Waiting for stack deletion: ", resp.Stacks[0].StackStatus)
 		time.Sleep(3 * time.Second)
 	}
 }
 
-func UpdateStack(svc *cfn.Client, stackName string, templateBody string) (*cfn.DescribeStacksOutput, error) {
-	outpt, err := updateStackAndWait(svc, stackName, templateBody)
-	if err != nil {
-		return nil, err
-	}
-	return outpt, nil
+func UpdateStack(t *testing.T, client *cfn.Client, stackName string, templateBody string) *cfn.DescribeStacksOutput {
+	output, err := updateStackAndWait(client, stackName, templateBody)
+	FailNowIfError(t, "Error during stack update: %v", err)
+
+	return output
 }
 
 func updateStackAndWait(svc *cfn.Client, stackName, stackBody string) (*cfn.DescribeStacksOutput, error) {
@@ -148,7 +142,7 @@ func updateStackAndWait(svc *cfn.Client, stackName, stackBody string) (*cfn.Desc
 
 	updateOutput, err := svc.UpdateStack(context.Background(), input)
 	if err != nil {
-		return nil, fmt.Errorf("error updating cloudformation stack: %v", err)
+		return nil, fmt.Errorf("error updating cloudformation stack: %w", err)
 	}
 
 	return waitForStackUpdateComplete(svc, *updateOutput.StackId)
@@ -166,29 +160,24 @@ func waitForStackUpdateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		if len(resp.Stacks) == 0 {
 			return nil, fmt.Errorf("stack not found")
 		}
-		statusString := string(resp.Stacks[0].StackStatus)
-		switch statusString {
+		statusStr := string(resp.Stacks[0].StackStatus)
+		switch statusStr {
 		case "UPDATE_COMPLETE":
 			return resp, nil
 		case "UPDATE_FAILED", "UPDATE_ROLLBACK_COMPLETE", "UPDATE_ROLLBACK_FAILED":
-			errMsg := fmt.Sprintf("Stack status: %s : %s", statusString, *resp.Stacks[0].StackStatusReason)
-			return nil, errors.New(errMsg)
+			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		log.Println("Waiting for stack update: ", resp.Stacks[0].StackStatus)
 		time.Sleep(3 * time.Second)
 	}
 }
 
-func ValidateTemplate(svc *cfn.Client, template string) (bool, error) {
+func ValidateTemplate(t *testing.T, svc *cfn.Client, template string) bool {
 	input := &cfn.ValidateTemplateInput{
 		TemplateBody: aws.String(template),
 	}
 
 	_, err := svc.ValidateTemplate(context.Background(), input)
+	FailNowIfError(t, "invalid cloudformation stack: %v", err)
 
-	if err != nil {
-		return false, fmt.Errorf("invalid cloudformation stack: %v", err)
-	}
-
-	return true, nil
+	return true
 }

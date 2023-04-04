@@ -15,10 +15,8 @@
 
 # This script 'de-registers' the test CFN resource type published to AWS private registry
 
-resource_type_name_for_e2e="$RESOURCE_TYPE_NAME_FOR_E2E"
-
 echo "Cleaning up..."
 
 # Deactivate the CFN resource (https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-register.html)
-echo "Deactivating the CFN resource ${resource_type_name_for_e2e}"
-aws cloudformation deregister-type --type-name "${resource_type_name_for_e2e}" --type RESOURCE
+echo "Deactivating the CFN resource $RESOURCE_TYPE_NAME_FOR_E2E"
+aws cloudformation deregister-type --type-name "$RESOURCE_TYPE_NAME_FOR_E2E" --type RESOURCE

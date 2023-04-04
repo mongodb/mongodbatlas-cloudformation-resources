@@ -1,11 +1,7 @@
 {
+  "typeName": "MongoDB::Atlas::SearchIndex",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "additionalProperties": false,
-  "required": [
-    "Mappings",
-    "ClusterName",
-    "CollectionName",
-    "Database"
-  ],
   "definitions": {
     "ApiAtlasFTSAnalyzersViewManual": {
       "type": "object",
@@ -43,8 +39,11 @@
           "description": "Flag that indicates whether the index uses dynamic or static mappings. Required if **mappings.fields** is omitted."
         },
         "Fields": {
-          "type": "string",
-          "description": "One or more field specifications for the Atlas Search index. Required if **mappings.dynamic** is omitted or set to **false**."
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:fieldType. Required if **mappings.dynamic** is omitted or set to **false**."
         }
       },
       "additionalProperties": false
@@ -80,34 +79,6 @@
     }
   },
   "description": "Returns, adds, edits, and removes Atlas Search indexes. Also returns and updates user-defined analyzers.",
-  "handlers": {
-    "create": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "read": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "update": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "delete": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    }
-  },
-  "primaryIdentifier": [
-    "/properties/IndexId",
-    "/properties/Profile",
-    "/properties/ProjectId",
-    "/properties/ClusterName"
-  ],
   "properties": {
     "Analyzer": {
       "type": "string",
@@ -189,14 +160,51 @@
       }
     }
   },
+  "required": [
+    "Mappings",
+    "ClusterName",
+    "CollectionName",
+    "Database"
+  ],
+  "primaryIdentifier": [
+    "/properties/IndexId",
+    "/properties/Profile",
+    "/properties/ProjectId",
+    "/properties/ClusterName"
+  ],
   "readOnlyProperties": [
     "/properties/IndexId",
     "/properties/Status"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/ClusterName",
+    "/properties/CollectionName",
+    "/properties/Database",
+    "/properties/Mappings",
+    "/properties/SearchAnalyzer"
   ],
-  "typeName": "MongoDB::Atlas::SearchIndex",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

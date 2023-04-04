@@ -4,10 +4,11 @@ go 1.19
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
-	github.com/aws/aws-sdk-go v1.44.230
+	github.com/aws/aws-sdk-go v1.44.235
 	github.com/aws/aws-sdk-go-v2 v1.17.7
 	github.com/aws/aws-sdk-go-v2/config v1.18.19
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.26.6
+	github.com/aws/aws-sdk-go v1.44.235
 	github.com/dave/jennifer v1.6.0
 	github.com/getkin/kin-openapi v0.115.0
 	github.com/mongodb-forks/digest v1.0.4

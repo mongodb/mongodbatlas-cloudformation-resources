@@ -22,6 +22,7 @@ else
 	(echo "Failed cleaning cluster:$clusterName" && exit 1)
 fi
 
+status="DELETING"
 echo "Waiting for cluster to get deleted"
 while [[ "${status}" == "DELETING" ]]; do
 	sleep 30

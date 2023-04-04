@@ -9,7 +9,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 {
     "<a href="#dynamic" title="Dynamic">Dynamic</a>" : <i>Boolean</i>,
-    "<a href="#fields" title="Fields">Fields</a>" : <i>String</i>
+    "<a href="#fields" title="Fields">Fields</a>" : <i>[ String, ... ]</i>
 }
 </pre>
 
@@ -17,7 +17,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#dynamic" title="Dynamic">Dynamic</a>: <i>Boolean</i>
-<a href="#fields" title="Fields">Fields</a>: <i>String</i>
+<a href="#fields" title="Fields">Fields</a>: <i>
+      - String</i>
 </pre>
 
 ## Properties
@@ -34,11 +35,11 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Fields
 
-One or more field specifications for the Atlas Search index. Required if **mappings.dynamic** is omitted or set to **false**.
+One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:fieldType. Required if **mappings.dynamic** is omitted or set to **false**.
 
 _Required_: No
 
-_Type_: String
+_Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

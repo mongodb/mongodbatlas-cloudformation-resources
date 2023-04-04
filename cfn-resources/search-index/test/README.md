@@ -16,7 +16,7 @@ All resources are created as part of `cfn-testing-helper.sh`:
 
 
 ## Manual QA
-Please follow the steps in [TESTING.md](../../../TESTING.md.md). Make sure to use all the teamplates in [example/search-index](../../../examples/search-index/).
+Please follow the steps in [TESTING.md](../../../TESTING.md.md). Make sure to use all the templates in [example/search-index](../../../examples/search-index/).
 
 
 ### Success criteria when testing the resource

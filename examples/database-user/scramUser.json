@@ -22,6 +22,7 @@
     },
     "Password": {
       "Type": "String",
+      "NoEcho": "true",
       "Description": "Alphanumeric string that authenticates this database user against the database specified in databaseName. To authenticate with SCRAM-SHA, you must specify this parameter"
     }
   },

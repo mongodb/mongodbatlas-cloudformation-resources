@@ -23,10 +23,6 @@
       "Type": "String",
       "Default": "AP_NORTHEAST_2"
     },
-    "RegionName2": {
-      "Type": "String",
-      "Default": "AP_NORTHEAST_2"
-    },
     "ReplicationSpecId": {
       "Type": "String",
       "Default": ""

@@ -13,6 +13,11 @@
     "Profile": {
       "Type": "String",
       "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "PitEnabled": {
+      "Type": "String",
+      "Description": "Enable Point in Time Recovery",
+      "Default": "false"
     }
   },
   "Resources": {

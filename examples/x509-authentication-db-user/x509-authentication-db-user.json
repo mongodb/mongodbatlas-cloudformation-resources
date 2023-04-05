@@ -40,11 +40,15 @@
         "ProjectId": {
           "Ref": "MongoDBAtlasProjectId"
         },
-        "MonthsUntilExpiration": 0,
+        "MonthsUntilExpiration": {
+          "Ref": "MonthsUntilExpiration"
+        },
         "UserName": {
           "Ref": "UserName"
         },
-        "Profile": "default",
+        "Profile": {
+          "Ref": "Profile"
+        },
         "CustomerX509": {
           "Cas": {
             "Ref": "CustomerX509"

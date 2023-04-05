@@ -190,11 +190,11 @@ export interface ApiAtlasFtsMappingsViewManual {
   readonly dynamic?: boolean;
 
   /**
-   * One or more field specifications for the Atlas Search index. Required if **mappings.dynamic** is omitted or set to **false**.
+   * One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:fieldType. Required if **mappings.dynamic** is omitted or set to **false**.
    *
    * @schema ApiAtlasFTSMappingsViewManual#Fields
    */
-  readonly fields?: string;
+  readonly fields?: string[];
 
 }
 
@@ -206,7 +206,7 @@ export function toJson_ApiAtlasFtsMappingsViewManual(obj: ApiAtlasFtsMappingsVie
   if (obj === undefined) { return undefined; }
   const result = {
     'Dynamic': obj.dynamic,
-    'Fields': obj.fields,
+    'Fields': obj.fields?.map(y => y),
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});

@@ -10,6 +10,11 @@
       "Description": "Your MongoDB Project Id",
       "Type": "String",
       "Default": ""
+    },
+    "Password": {
+      "Description": "Your MongoDB Atlas Prometheus Integration Password",
+      "Type": "String",
+      "NoEcho": "true"
     }
   },
   "Resources": {
@@ -27,7 +32,9 @@
         "Scheme": "http",
         "ServiceDiscovery": "http",
         "UserName": "647845",
-        "Password": "************************************************************************************************"
+        "Password": {
+          "Ref": "Password"
+        }
       }
     }
   }

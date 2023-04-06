@@ -270,6 +270,10 @@ Returns the <code>Private</code> value.
 
 Returns the <code>PrivateSrv</code> value.
 
+#### ConnectionStrings
+
+Collection of Uniform Resource Locators that point to the MongoDB database.
+
 #### StateName
 
 Current state of the cluster.

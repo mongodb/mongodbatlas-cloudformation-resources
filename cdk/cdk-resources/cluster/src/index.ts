@@ -35,13 +35,6 @@ export interface CfnClusterProps {
   readonly clusterType?: string;
 
   /**
-   * Set of connection strings that your applications use to connect to this cluster. Use the parameters in this object to connect your applications to this cluster. See the MongoDB [Connection String URI Format](https://docs.mongodb.com/manual/reference/connection-string/) reference for further details.
-   *
-   * @schema CfnClusterProps#ConnectionStrings
-   */
-  readonly connectionStrings?: ConnectionStrings;
-
-  /**
    * Storage capacity that the host's root volume possesses expressed in gigabytes. Increase this number to add capacity. MongoDB Cloud requires this parameter if you set replicationSpecs. If you specify a disk size below the minimum (10 GB), this parameter defaults to the minimum disk size value. Storage charge calculations depend on whether you choose the default value or a custom value. The maximum value for disk storage cannot exceed 50 times the maximum RAM for the selected cluster. If you require more storage space, consider upgrading your cluster to a higher tier.
    *
    * @schema CfnClusterProps#DiskSizeGB
@@ -145,7 +138,6 @@ export function toJson_CfnClusterProps(obj: CfnClusterProps | undefined): Record
     'BackupEnabled': obj.backupEnabled,
     'BiConnector': toJson_CfnClusterPropsBiConnector(obj.biConnector),
     'ClusterType': obj.clusterType,
-    'ConnectionStrings': toJson_ConnectionStrings(obj.connectionStrings),
     'DiskSizeGB': obj.diskSizeGb,
     'EncryptionAtRestProvider': obj.encryptionAtRestProvider,
     'Profile': obj.profile,
@@ -832,7 +824,7 @@ export class CfnCluster extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::Cluster';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::Cluster";
 
   /**
    * Resource props.
@@ -857,6 +849,11 @@ export class CfnCluster extends cdk.CfnResource {
   public readonly attrId: string;
 
   /**
+   * Attribute `MongoDB::Atlas::Cluster.ConnectionStrings`
+   */
+  public readonly connectionStrings: ConnectionStrings;
+
+  /**
    * Create a new `MongoDB::Atlas::Cluster`.
    *
    * @param scope - scope in which this resource is defined
@@ -868,9 +865,18 @@ export class CfnCluster extends cdk.CfnResource {
 
     this.props = props;
 
+    const connStringsStandard = cdk.Token.asString(this.getAtt('ConnectionStrings.Standard'));
+    const connStringsStandardSrv = cdk.Token.asString(this.getAtt('ConnectionStrings.StandardSrv'));
+    const connStringsPrivate = cdk.Token.asString(this.getAtt('ConnectionStrings.Private'));
+    const connStringsPrivateSrv = cdk.Token.asString(this.getAtt('ConnectionStrings.PrivateSrv'));
+
     this.attrStateName = cdk.Token.asString(this.getAtt('StateName'));
     this.attrMongoDBVersion = cdk.Token.asString(this.getAtt('MongoDBVersion'));
     this.attrCreatedDate = cdk.Token.asString(this.getAtt('CreatedDate'));
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
+    this.connectionStrings = {standard : connStringsStandard ,
+      standardSrv : connStringsStandardSrv,
+      private : connStringsPrivate,
+      privateSrv : connStringsPrivateSrv }
   }
 }

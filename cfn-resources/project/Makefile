@@ -8,11 +8,6 @@ DEBUG_FLAGS=all=-N -l
 CFNREP_GIT_SHA?=$(shell git rev-parse HEAD)
 LINKER_FLAGS=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=${CFNREP_GIT_SHA}
 
-#export E2E_RAND_SUFFIX := $(shell bash -c 'echo $$RANDOM')
-#export RESOURCE_TYPE_NAME := MongoDB::Atlas::Project
-#export RESOURCE_DIRECTORY_NAME := project
-#export RESOURCE_TYPE_NAME_FOR_E2E= $(RESOURCE_TYPE_NAME)$(E2E_RAND_SUFFIX)
-
 build:
 	@echo "==> Building handler binary"
 	cfn generate
@@ -26,13 +21,6 @@ debug:
 
 clean:
 	rm -rf bin
-
-e2e-test-run:
-	cd ../test && ./publish_cfn_to_registry.sh "MongoDB::Atlas::Project" "project" && go test e2e/project/project_test.go && ./cleanup_cfn.sh
-
-release:
-	@echo "==> Release the CFN resource to the Private Registry"
-	make build && cfn submit --set-default
 
 create-test-resources:
 	@echo "==> Creating test files for contract testing"

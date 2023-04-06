@@ -21,7 +21,7 @@ import (
 	"testing"
 	"text/template"
 
-	util "github.com/mongodb/mongodbatlas-cloudformation-resources/test/utility"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
@@ -35,7 +35,7 @@ type LocalTestContext struct {
 	atlasClient            *mongodbatlas.Client
 	projectTmplObj         TestProject
 	resourceTypeNameForE2e string
-	//resourceCtx    util.ResourceContext
+	resourceCtx            utility.ResourceContext
 
 	template string
 	err      error
@@ -52,16 +52,15 @@ type TestProject struct {
 }
 
 const (
-// resourceTypeName  = "MongoDB::Atlas::Project"
-// resourceDirectory = "project"
+	resourceTypeName  = "MongoDB::Atlas::Project"
+	resourceDirectory = "project"
 )
 
 var (
-	profile = os.Getenv("ATLAS_SECRET_PROFILE")
-	orgID   = os.Getenv("ATLAS_ORG_ID")
-	//e2eRandSuffix   = util.GetRandNum().String()
-	e2eRandSuffix          = os.Getenv("E2E_RAND_SUFFIX")
-	resourceTypeNameForE2e = os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E")
+	profile                = os.Getenv("ATLAS_SECRET_PROFILE")
+	orgID                  = os.Getenv("ATLAS_ORG_ID")
+	e2eRandSuffix          = utility.GetRandNum().String()
+	resourceTypeNameForE2e = resourceTypeName + e2eRandSuffix
 	testProjectName        = "cfn-e2e-project" + e2eRandSuffix
 	testTeamName           = "cfn-e2e-team" + e2eRandSuffix
 	stackName              = "stack-project-e2e-" + e2eRandSuffix
@@ -71,8 +70,7 @@ func TestProjectCFN(t *testing.T) {
 	testCtx := setupSuite(t)
 
 	t.Run("Validate Template", func(t *testing.T) {
-		//testIsTemplateValid(t, testCtx)
-		util.ValidateTemplate(t, testCtx.cfnClient, testCtx.template)
+		utility.TestIsTemplateValid(t, testCtx.cfnClient, testCtx.template)
 	})
 
 	t.Run("Create Stack", func(t *testing.T) {
@@ -97,34 +95,24 @@ func setupSuite(t *testing.T) *LocalTestContext {
 	return testCtx
 }
 
-// TODO: remove
 func (c *LocalTestContext) setUp(t *testing.T) {
-	// test if RESOURCE_TYPE_NAME_FOR_E2E is exported (means publish ran already)
-	util.FailIfResourceEnvNotSet(t, "Project")
-	//c.resourceCtx = util.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
-	c.cfnClient, c.atlasClient = util.NewClients(t)
-	//util.PublishToPrivateRegistry(t, c.resourceCtx)
+	c.resourceCtx = utility.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
+	c.cfnClient, c.atlasClient = utility.NewClients(t)
+	utility.PublishToPrivateRegistry(t, c.resourceCtx)
 	c.setupPrerequisites(t)
 }
-
-//func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
-//	t.Helper()
-//
-//	//isValid := util.ValidateTemplate(t, c.cfnClient, c.template)
-//
-//}
 
 func testCreateStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 
-	output := util.CreateStack(t, c.cfnClient, stackName, c.template)
+	output := utility.CreateStack(t, c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
 	project, getProjectResponse, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
-	util.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
+	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
 
 	teamsAssigned, _, _ := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
-	util.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
+	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
 	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
@@ -138,14 +126,14 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	c.projectTmplObj.Name += "-updated"
 	c.template, c.err = newCFNTemplate(c.projectTmplObj)
 
-	output := util.UpdateStack(t, c.cfnClient, stackName, c.template)
+	output := utility.UpdateStack(t, c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
 	project, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
-	util.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
+	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
 
 	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
-	util.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
+	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
 	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
@@ -155,17 +143,13 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 func testDeleteStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 
-	util.DeleteStack(t, c.cfnClient, stackName)
+	utility.DeleteStack(t, c.cfnClient, stackName)
 
 	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 
 	a := assert.New(t)
 	a.Equal(resp.StatusCode, 404)
 }
-
-//func (c *LocalTestContext) setClients(t *testing.T) {
-//	c.cfnClient, c.atlasClient = util.NewClients(t)
-//}
 
 func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
@@ -199,7 +183,7 @@ func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
 
 func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 	t.Log("Setting up prerequisites")
-	team, _ := util.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
+	team, _ := utility.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
 	t.Cleanup(func() {
 		cleanupPrerequisites(t, c)
 		deleteProjectIfExists(t, c)
@@ -215,7 +199,7 @@ func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 
 	// Read required data from resource CFN template
 	c.template, c.err = newCFNTemplate(c.projectTmplObj)
-	util.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
+	utility.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
 }
 
 func newCFNTemplate(tmpl TestProject) (string, error) {

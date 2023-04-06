@@ -68,14 +68,14 @@ func runShScript(path string) ([]byte, error) {
 	return output, nil
 }
 
-func NewClients(t *testing.T) (*cfn.Client, *mongodbatlas.Client) {
+func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *mongodbatlas.Client) {
 	t.Helper()
 
 	t.Log("Setting clients")
 	atlasClient, err := NewMongoDBClient()
 	FailNowIfError(t, "Unable to create atlas client: %v", err)
 
-	cfnClient, err := NewCFNClient()
+	cfnClient, err = NewCFNClient()
 	FailNowIfError(t, "Unable to create AWS client, please check AWS config is correctly setup: %v", err)
 
 	return cfnClient, atlasClient

@@ -31,11 +31,10 @@ import (
 )
 
 type LocalTestContext struct {
-	cfnClient              *cfn.Client
-	atlasClient            *mongodbatlas.Client
-	projectTmplObj         TestProject
-	resourceTypeNameForE2e string
-	resourceCtx            utility.ResourceContext
+	cfnClient      *cfn.Client
+	atlasClient    *mongodbatlas.Client
+	projectTmplObj TestProject
+	resourceCtx    utility.ResourceContext
 
 	template string
 	err      error
@@ -57,13 +56,12 @@ const (
 )
 
 var (
-	profile                = os.Getenv("ATLAS_SECRET_PROFILE")
-	orgID                  = os.Getenv("ATLAS_ORG_ID")
-	e2eRandSuffix          = utility.GetRandNum().String()
-	resourceTypeNameForE2e = resourceTypeName + e2eRandSuffix
-	testProjectName        = "cfn-e2e-project" + e2eRandSuffix
-	testTeamName           = "cfn-e2e-team" + e2eRandSuffix
-	stackName              = "stack-project-e2e-" + e2eRandSuffix
+	profile         = os.Getenv("ATLAS_SECRET_PROFILE")
+	orgID           = os.Getenv("ATLAS_ORG_ID")
+	e2eRandSuffix   = utility.GetRandNum().String()
+	testProjectName = "cfn-e2e-project" + e2eRandSuffix
+	testTeamName    = "cfn-e2e-team" + e2eRandSuffix
+	stackName       = "stack-project-e2e-" + e2eRandSuffix
 )
 
 func TestProjectCFN(t *testing.T) {

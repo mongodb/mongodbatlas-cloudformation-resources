@@ -6,7 +6,7 @@
 
 ![simple-quickstart-arch](https://user-images.githubusercontent.com/5663078/229105149-59015114-1c14-44e3-ad5a-b48d9a487797.png)
 
-This Partner Solutions template provides the architecture necessary to scale a [MEAN](https://www.mongodb.com/mean-stack) (MongoDB, Express, Angular, Node.js) stack application using a combination of CloudFormation, MongoDB Atlas, and AWS Fargate. Specifically, the template leverages the MongoDB Atlas CFN resources to configure the MongoDB infrastructure and uses AWS CFN resources to set up an Application Load Balancer and a VPC. Additionally, the template employs AWS Fargate to run your Docker image.
+This Partner Solutions template provides the architecture necessary to scale a [MEAN](https://www.mongodb.com/mean-stack) (MongoDB, Express, Angular, Node.js) stack application using a combination of CloudFormation, MongoDB Atlas, and AWS Fargate. The template leverages the MongoDB Atlas CFN resources to configure the MongoDB infrastructure and AWS CFN resources to set up an Application Load Balancer and a VPC. Additionally, the template employs AWS Fargate to run your Docker image.
 
 
 

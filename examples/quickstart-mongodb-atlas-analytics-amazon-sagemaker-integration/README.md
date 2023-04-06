@@ -16,7 +16,7 @@ This Partner Solutions template enables you to begin working with your Machine L
 
 
 ## Environment Configured by the Partner Solutions template
-The Partner Solutions template will generate the following resources:
+The Partner Solutions template will generate and configure the following resources:
  - Configure [MongoDB Partner Event Bus](http://mongodb.com/docs/atlas/app-services/triggers/aws-eventbridge/#std-label-aws-eventbridge).
  - Set up a [database trigger](https://www.mongodb.com/docs/atlas/app-services/triggers/database-triggers/) with your Atlas Cluster.
  - Create lambda functions to run the machine learning model and send the classification results to your MongoDB Atlas Cluster. 

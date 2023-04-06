@@ -1,0 +1,8 @@
+{
+  "desiredResourceState": {
+    "Profile": "default",
+    "ProjectId": "<ReplacedBy-cfn-test-create-inputs.sh>"
+  },
+  "providerLogGroupName": "mongodb-atlas-cloudprovideraccess-logs",
+  "previousResourceState": {}
+}

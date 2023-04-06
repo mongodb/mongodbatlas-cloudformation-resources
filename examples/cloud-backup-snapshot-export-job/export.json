@@ -1,0 +1,75 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters" : {
+    "Profile" : {
+      "Type" : "String",
+      "Description" : "",
+      "Default" : "default",
+      "ConstraintDescription" : ""
+    },
+    "ProjectId" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "",
+      "ConstraintDescription" : ""
+    },
+    "ClusterName" : {
+      "Type" : "String",
+	  "Default" : "",
+      "ConstraintDescription" : ""
+    },
+	"ExportBucketId" : {
+      "Type" : "String",
+      "Description" : "",
+	  "Default" : "",
+      "ConstraintDescription" : ""
+    }
+  },
+  "Mappings" : {},
+  "Resources" : {
+    "CloudBackUp": {
+      "Type": "MongoDB::Atlas::CloudBackupSnapshot",
+      "Properties": {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "Description": "Creating cloud provider snapshot for Export Job",
+        "RetentionInDays" : 3 ,
+        "Profile": {"Ref": "Profile"}
+      }
+    },
+    "CloudBackupSnapshotExportJob": {
+      "Type": "MongoDB::Atlas::CloudBackupSnapshotExportJob",
+      "Properties": {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "ClusterName": { "Ref" : "ClusterName" },
+        "SnapshotId" : { "Fn::GetAtt": [
+            "CloudBackUp",
+            "SnapshotId"
+          ] },
+        "ExportBucketId": { "Ref" : "ExportBucketId" },
+        "Profile": {"Ref": "Profile"}
+      }
+    }
+  },
+  "Outputs" : {
+    "SnapshotId": {
+      "Description": "Id of the cloud provider snapshot",
+      "Value" : {
+        "Fn::GetAtt": [
+        "CloudBackUp",
+        "SnapshotId"
+        ]
+      }
+    },
+    "ExportId": {
+      "Description": "Id of the cloud provider snapshot restore job",
+      "Value" : {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshotExportJob",
+          "ExportId"
+        ]
+      }
+    }
+  }
+}

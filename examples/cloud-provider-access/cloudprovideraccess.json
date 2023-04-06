@@ -1,0 +1,39 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "MongoDB Atlas AWS CloudFormation Example for MongoDB::Atlas::CloudProviderAccess",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Access  Keys Profile",
+      "Default": "default"
+    },
+    "ProjectId": {
+      "Description": "Your MongoDB Project Id",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Resources": {
+    "CloudProviderAccess": {
+      "Type": "MongoDB::Atlas::CloudProviderAccess",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "RoleId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudProviderAccess",
+          "RoleId"
+        ]
+      }
+    }
+  }
+}

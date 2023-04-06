@@ -1,0 +1,10 @@
+{
+  "FederationSettingsId": "",
+  "OrgId": "",
+  "Profile": "",
+  "DomainRestrictionEnabled": "false",
+  "DomainAllowList": [
+    "gmail.com"
+  ],
+  "TestMode": "true"
+}

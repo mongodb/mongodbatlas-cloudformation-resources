@@ -24,14 +24,13 @@ This Partner Solutions template provides the architecture necessary to scale a [
 ## Environment Configured by the Partner Solutions template
 The Partner Solutions template will generate the following resources:
  - A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS. The VPC provides Domain Name System (DNS) resolution. The template leverages the [official AWS quickstart template](https://github.com/aws-quickstart/quickstart-aws-vpc/blob/9dc47510f71f1fb6baf8c4e96b5330a6f51f540e/templates/aws-vpc.template.yaml) to build your VPC infrastructure. See [Deployment Guide](https://aws-quickstart.github.io/quickstart-aws-vpc/) for more information.
-
-- Set up an Atlas Project within the organization (input provided).
-- Create an Atlas Cluster that has authentication and authorization enabled, and is not accessible through the public internet.
-- Create a Database user with access to the Atlas Cluster.
+- An Atlas Project within the organization (input provided).
+- An Atlas Cluster that has authentication and authorization enabled, and is not accessible through the public internet.
+- A Database user with access to the Atlas Cluster.
 - Add the IP address range provided as input to the Atlas access list, allowing the cluster to be accessed through the public internet.
-- Establish a VPC peering connection between the MongoDB Atlas VPC (where the cluster is located) and the VPC on AWS.
+- A VPC peering connection between the MongoDB Atlas VPC (where the cluster is located) and the VPC on AWS.
 - An application Load Balancer 
-- Set up AWS Fargate to run your Docker image. See [fargate-example/](fargate-example/) for an example of docker images to use with Fargate.
+- AWS Fargate to run your Docker image. See [fargate-example/](fargate-example/) for an example of docker images to use with Fargate.
 
 
 ## Permissions required to run the template

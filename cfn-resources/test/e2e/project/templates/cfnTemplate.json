@@ -1,0 +1,48 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "Project": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Name": "{{ .Name }}",
+        "OrgId": "{{ .OrgID }}",
+        "Profile": "{{ .Profile }}",
+        "ProjectSettings": {
+          "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
+          "IsDataExplorerEnabled": "false",
+          "IsPerformanceAdvisorEnabled": "false",
+          "IsRealtimePerformancePanelEnabled": "false",
+          "IsSchemaAdvisorEnabled": "false"
+        },
+        "ProjectTeams": [
+          {
+            "TeamId": "{{ .TeamID }}",
+            "RoleNames": [
+              "GROUP_OWNER"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ProjectId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "Id"
+        ]
+      }
+    },
+    "ClusterCount": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Project",
+          "ClusterCount"
+        ]
+      }
+    }
+  }
+}

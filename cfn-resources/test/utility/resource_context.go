@@ -14,18 +14,18 @@
 
 package utility
 
-type ResourceContext struct {
-	ResourceDirectory      string
-	ResourceTypeName       string
-	ResourceTypeNameForE2e string
-	E2eRandSuffix          string
-}
-
-func InitResourceCtx(randSuffix string, resourceTypeName string, resourceDirectory string) ResourceContext {
-	return ResourceContext{
-		ResourceDirectory:      resourceDirectory,
-		ResourceTypeName:       resourceTypeName,
-		E2eRandSuffix:          randSuffix,
-		ResourceTypeNameForE2e: resourceTypeName + randSuffix,
-	}
-}
+//type ResourceContext struct {
+//	ResourceDirectory      string
+//	ResourceTypeName       string
+//	ResourceTypeNameForE2e string
+//	E2eRandSuffix          string
+//}
+//
+//func InitResourceCtx(randSuffix string, resourceTypeName string, resourceDirectory string) ResourceContext {
+//	return ResourceContext{
+//		ResourceDirectory:      resourceDirectory,
+//		ResourceTypeName:       resourceTypeName,
+//		E2eRandSuffix:          randSuffix,
+//		ResourceTypeNameForE2e: resourceTypeName + randSuffix,
+//	}
+//}

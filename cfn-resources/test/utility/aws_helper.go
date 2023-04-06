@@ -171,7 +171,7 @@ func waitForStackUpdateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 	}
 }
 
-func ValidateTemplate(t *testing.T, svc *cfn.Client, template string) bool {
+func ValidateTemplate(t *testing.T, svc *cfn.Client, template string) {
 	input := &cfn.ValidateTemplateInput{
 		TemplateBody: aws.String(template),
 	}
@@ -179,5 +179,9 @@ func ValidateTemplate(t *testing.T, svc *cfn.Client, template string) bool {
 	_, err := svc.ValidateTemplate(context.Background(), input)
 	FailNowIfError(t, "invalid cloudformation stack: %v", err)
 
-	return true
+	//a := assert.New(t)
+	//
+	//a.
+	//	a.True(isValid)
+	//return true
 }

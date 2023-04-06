@@ -21,20 +21,24 @@ import (
 	"testing"
 	"text/template"
 
+	util "github.com/mongodb/mongodbatlas-cloudformation-resources/test/utility"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	util "github.com/mongodb/mongodbatlas-cloudformation-resources/integration-tests/utility"
+
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 type LocalTestContext struct {
-	cfnClient      *cfn.Client
-	atlasClient    *mongodbatlas.Client
-	projectTmplObj TestProject
-	resourceCtx    util.ResourceContext
-	template       string
-	err            error
+	cfnClient              *cfn.Client
+	atlasClient            *mongodbatlas.Client
+	projectTmplObj         TestProject
+	resourceTypeNameForE2e string
+	//resourceCtx    util.ResourceContext
+
+	template string
+	err      error
 }
 
 type TestProject struct {
@@ -48,24 +52,27 @@ type TestProject struct {
 }
 
 const (
-	resourceTypeName  = "MongoDB::Atlas::Project"
-	resourceDirectory = "project"
+// resourceTypeName  = "MongoDB::Atlas::Project"
+// resourceDirectory = "project"
 )
 
 var (
-	profile         = os.Getenv("ATLAS_SECRET_PROFILE")
-	orgID           = os.Getenv("ATLAS_ORG_ID")
-	e2eRandSuffix   = util.GetRandNum().String()
-	testProjectName = "cfn-e2e-project" + e2eRandSuffix
-	testTeamName    = "cfn-e2e-team" + e2eRandSuffix
-	stackName       = "stack-project-e2e-" + e2eRandSuffix
+	profile = os.Getenv("ATLAS_SECRET_PROFILE")
+	orgID   = os.Getenv("ATLAS_ORG_ID")
+	//e2eRandSuffix   = util.GetRandNum().String()
+	e2eRandSuffix          = os.Getenv("E2E_RAND_SUFFIX")
+	resourceTypeNameForE2e = os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E")
+	testProjectName        = "cfn-e2e-project" + e2eRandSuffix
+	testTeamName           = "cfn-e2e-team" + e2eRandSuffix
+	stackName              = "stack-project-e2e-" + e2eRandSuffix
 )
 
 func TestProjectCFN(t *testing.T) {
 	testCtx := setupSuite(t)
 
 	t.Run("Validate Template", func(t *testing.T) {
-		testIsTemplateValid(t, testCtx)
+		//testIsTemplateValid(t, testCtx)
+		util.ValidateTemplate(t, testCtx.cfnClient, testCtx.template)
 	})
 
 	t.Run("Create Stack", func(t *testing.T) {
@@ -90,20 +97,22 @@ func setupSuite(t *testing.T) *LocalTestContext {
 	return testCtx
 }
 
+// TODO: remove
 func (c *LocalTestContext) setUp(t *testing.T) {
-	c.resourceCtx = util.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
-	c.setClients(t)
-	util.PublishToPrivateRegistry(t, c.resourceCtx)
+	// test if RESOURCE_TYPE_NAME_FOR_E2E is exported (means publish ran already)
+	util.FailIfResourceEnvNotSet(t, "Project")
+	//c.resourceCtx = util.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
+	c.cfnClient, c.atlasClient = util.NewClients(t)
+	//util.PublishToPrivateRegistry(t, c.resourceCtx)
 	c.setupPrerequisites(t)
 }
 
-func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
-	t.Helper()
-
-	isValid := util.ValidateTemplate(t, c.cfnClient, c.template)
-	a := assert.New(t)
-	a.True(isValid)
-}
+//func testIsTemplateValid(t *testing.T, c *LocalTestContext) {
+//	t.Helper()
+//
+//	//isValid := util.ValidateTemplate(t, c.cfnClient, c.template)
+//
+//}
 
 func testCreateStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
@@ -154,16 +163,9 @@ func testDeleteStack(t *testing.T, c *LocalTestContext) {
 	a.Equal(resp.StatusCode, 404)
 }
 
-func (c *LocalTestContext) setClients(t *testing.T) {
-	t.Helper()
-
-	t.Log("Setting clients")
-	c.atlasClient, c.err = util.NewMongoDBClient()
-	util.FailNowIfError(t, "Unable to create atlas client: %v", c.err)
-
-	c.cfnClient, c.err = util.NewCFNClient()
-	util.FailNowIfError(t, "Unable to create AWS client, please check AWS config is correctly setup: %v", c.err)
-}
+//func (c *LocalTestContext) setClients(t *testing.T) {
+//	c.cfnClient, c.atlasClient = util.NewClients(t)
+//}
 
 func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
@@ -208,7 +210,7 @@ func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 		OrgID:            orgID,
 		Profile:          profile,
 		TeamID:           team.ID,
-		ResourceTypeName: c.resourceCtx.ResourceTypeNameForE2e,
+		ResourceTypeName: os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
 	}
 
 	// Read required data from resource CFN template
@@ -222,7 +224,7 @@ func newCFNTemplate(tmpl TestProject) (string, error) {
 
 func executeGoTemplate(projectTmpl TestProject) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
-	cfnTemplatePath := "template/cfnTemplate.json"
+	cfnTemplatePath := "templates/cfnTemplate.json"
 
 	name := path.Base(cfnTemplatePath)
 	cfnGoTemplate, err := template.New(name).ParseFiles(cfnTemplatePath)

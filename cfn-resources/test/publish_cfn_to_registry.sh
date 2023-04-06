@@ -24,12 +24,27 @@
 
 set -eu
 
+#t.Setenv("RESOURCE_TYPE_NAME", rctx.ResourceTypeName)
+#//	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
+#//	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)
+#//	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
+
+export RESOURCE_TYPE_NAME=${1}
+export RESOURCE_DIRECTORY_NAME=${2}
+#
+##RANDOM_NUMBER=$((1 + RANDOM % 10000))
+##RESOURCE_TYPE_NAME_FOR_E2E="${RESOURCE_TYPE_NAME}${RANDOM_NUMBER}"
+#
+export E2E_RAND_SUFFIX=$((1 + RANDOM % 10000))
+export RESOURCE_TYPE_NAME_FOR_E2E="${RESOURCE_TYPE_NAME}${E2E_RAND_SUFFIX}"
+
 resource_directory=$RESOURCE_DIRECTORY_NAME
 
 
 echo "Updating .rpdk-config with the E2E resource type $RESOURCE_TYPE_NAME_FOR_E2E"
-rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config"
-tmp_rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config$E2E_RAND_SUFFIX"
+echo "...... $PWD"
+rpdk_file="../$RESOURCE_DIRECTORY_NAME/.rpdk-config"
+tmp_rpdk_file="../$RESOURCE_DIRECTORY_NAME/.rpdk-config$E2E_RAND_SUFFIX"
 jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 	'.typeName?|=$type_name' \
 	"${rpdk_file}" >"${tmp_rpdk_file}"
@@ -40,27 +55,21 @@ mv "${tmp_rpdk_file}" "${rpdk_file}"
 echo "Creating a new resource schema"
 schema_file_name="${resource_directory//-}"
 echo "schema name file........ : ${schema_file_name}"
-resource_schema_file="../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}.json"
-tmp_resource_schema_file="../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}$E2E_RAND_SUFFIX.json"
+resource_schema_file="../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}.json"
+tmp_resource_schema_file="../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}$E2E_RAND_SUFFIX.json"
 jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 	'.typeName?|=$type_name' \
 	"${resource_schema_file}" >"${tmp_resource_schema_file}"
 
 
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
-cd ../..
-cd "$resource_directory"
-
-# Run contract tests:
-# make build && cfn test
-
+cd ../"$RESOURCE_DIRECTORY_NAME"
 make build && cfn submit --set-default
-cd ../integration-tests/"$resource_directory"
 
 
 echo "Reverting .rpdk-config with the original resource typeName $RESOURCE_TYPE_NAME"
-rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config"
-tmp_rpdk_file="../../$RESOURCE_DIRECTORY_NAME/.rpdk-config$E2E_RAND_SUFFIX"
+rpdk_file=".rpdk-config"
+tmp_rpdk_file=".rpdk-config$E2E_RAND_SUFFIX"
 jq --arg type_name "$RESOURCE_TYPE_NAME" \
 	'.typeName?|=$type_name' \
 	"${rpdk_file}" >"${tmp_rpdk_file}"

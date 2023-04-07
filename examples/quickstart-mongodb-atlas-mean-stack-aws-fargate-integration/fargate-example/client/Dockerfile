@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:17-slim AS build
+FROM --platform=linux/x86_64 node:17-slim AS build
 
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build --prod
 
 # Configure the nginx web server
-FROM --platform=linux/amd64 nginx:1.17.1-alpine
+FROM --platform=linux/x86_64 nginx:1.17.1-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /usr/src/app/dist/client /usr/share/nginx/html
 

@@ -6,7 +6,7 @@
 
 ![simple-quickstart-arch](https://user-images.githubusercontent.com/5663078/229119386-0dbc6e30-a060-465e-86dd-f89712b0fc49.png)
 
-This Partner Solutions template enables you to begin working with your machine learning models using your MongoDB Atlas Cluster and Amazon SageMaker Endpoint as tools. With this template, you can utilize MongoDB as a data source and Amazon SageMaker for data analysis, streamlining the process of building and deploying machine learning models.
+This Partner Solutions template enables you to begin working with your machine learning models using MongoDB Atlas Cluster and Amazon SageMaker endpoints. With this template, you can utilize MongoDB as a data source and SageMaker for data analysis, streamlining the process of building and deploying machine learning models.
 
 
 

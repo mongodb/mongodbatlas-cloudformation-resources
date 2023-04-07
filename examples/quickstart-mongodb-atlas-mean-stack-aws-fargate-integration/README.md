@@ -27,7 +27,7 @@ The Partner Solutions template will generate the following resources:
 - An Atlas Project within the organization (input provided).
 - An Atlas Cluster with authentication and authorization enabled, and not accessible through the public internet.
 - A Database user with access to the Atlas Cluster.
-- Add the IP address range provided as input to the Atlas access list, allowing the cluster to be accessed through the public internet.
+- An Atlas IP access list, allowing the cluster to be accessed through the public internet.
 - A VPC peering connection between the MongoDB Atlas VPC (where the cluster is located) and the VPC on AWS.
 - An application Load Balancer 
 - AWS Fargate to run your Docker image. See [fargate-example/](fargate-example/) for an example of docker images to use with Fargate.

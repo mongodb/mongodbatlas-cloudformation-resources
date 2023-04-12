@@ -107,9 +107,9 @@ The problem is caused by incorrect trust relationships linked to the role used f
     - Effect: Allow
       Principal:
        Service:
-       - "lambda.amazonaws.com"
-       - "resources.cloudformation.amazonaws.com"
-       - "cloudformation.amazonaws.com"
+       - lambda.amazonaws.com
+       - resources.cloudformation.amazonaws.com
+       - cloudformation.amazonaws.com
       Action: sts:AssumeRole
 ```
 We suggest using the [execution-role.yaml](examples/execution-role.yaml) file to generate an IAM role that you can use to activate the CFN resources and run your CFN stacks. Alternatively, you can set the trust relationships of your role through the AWS Console. To do so, go to the IAM dashboard, select your role, and click on Trust Relationships.

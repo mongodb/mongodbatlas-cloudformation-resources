@@ -224,8 +224,7 @@
   "readOnlyProperties": [
     "/properties/State",
     "/properties/TotalCount",
-    "/properties/ArchiveId",
-    "/properties/State"
+    "/properties/ArchiveId"
   ],
   "createOnlyProperties": [
     "/properties/Profile",

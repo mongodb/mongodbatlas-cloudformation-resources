@@ -212,17 +212,3 @@ Number of documents returned in this response.
 
 Unique 24-hexadecimal digit string that identifies the online archive to delete.
 
-#### State
-
-Phase of the process to create this online archive when you made this request.
-
-| State       | Indication |
-|-------------|------------|
-| `PENDING`   | MongoDB Cloud has queued documents for archive. Archiving hasn't started. |
-| `ARCHIVING` | MongoDB Cloud started archiving documents that meet the archival criteria. |
-| `IDLE`      | MongoDB Cloud waits to start the next archival job. |
-| `PAUSING`   | Someone chose to stop archiving. MongoDB Cloud finishes the running archival job then changes the state to `PAUSED` when that job completes. |
-| `PAUSED`    | MongoDB Cloud has stopped archiving. Archived documents can be queried. The specified archiving operation on the active cluster cannot archive additional documents. You can resume archiving for paused archives at any time. |
-| `ORPHANED`  | Someone has deleted the collection associated with an active or paused archive. MongoDB Cloud doesn't delete the archived data. You must manually delete the online archives associated with the deleted collection. |
-| `DELETED`   | Someone has deleted the archive was deleted. When someone deletes an online archive, MongoDB Cloud removes all associated archived documents from the cloud object storage. |
-

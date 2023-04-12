@@ -97,3 +97,24 @@ The following are common issues encountered when using AWS CloudFormation/CDK wi
    * When you deploy MongoDB Atlas using CloudFormation with your Atlas PAK, CloudFormation will default to use the IP address of the machine that you are making the API call from. 
    * The machine making the API call to the 3rd-party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
    * Review the [AWS IP address ranges](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html) and contact AWS Support directly who can help confirm the CIDR range to be used in your Atlas PAK IP Whitelist.
+
+### Error: The CFN stack remains in the `CREATE_IN_PROGRESS` state before failing after an hour or so
+This issue is cause by wrong trust relationships associated to the role used to activate the CFN resources and/or run the CFN stack.
+You should make sure that the trust relationships of your IAM role have `resources.cloudformation.amazonaws.com`, `cloudformation.amazonaws.com`, `lambda.amazonaws.com`.
+Here an example of correct trust relationships:
+```yaml
+ AssumeRolePolicyDocument:
+    Version: '2012-10-17'
+    Statement:
+    - Effect: Allow
+      Principal:
+       Service:
+       - "lambda.amazonaws.com"
+       - "resources.cloudformation.amazonaws.com"
+       - "cloudformation.amazonaws.com"
+      Action: sts:AssumeRole
+```
+We reccomend to use [execution-role.yaml](examples/execution-role.yaml) to generate a IAM role to use to activate the CFN resources and run your CFN stacks.
+
+Alternatively, you can set the trust relationships of your role via AWS Console: in the IAM dashboard, select your role and click on `Trust Relationships`:
+![Screenshot 2023-03-31 at 17 32 55](https://user-images.githubusercontent.com/5663078/230436500-fb4ee057-b70e-4580-a94d-f56191728117.png)

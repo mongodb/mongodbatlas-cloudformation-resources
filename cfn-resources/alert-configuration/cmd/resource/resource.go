@@ -378,5 +378,9 @@ func convertToUIModel(alertConfig *mongodbatlas.AlertConfiguration, currentModel
 		currentModel.Updated = &alertConfig.Updated
 	}
 
+	if alertConfig.Enabled != nil {
+		currentModel.Enabled = alertConfig.Enabled
+	}
+
 	return currentModel
 }

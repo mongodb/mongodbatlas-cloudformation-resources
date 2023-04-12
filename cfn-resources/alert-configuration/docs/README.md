@@ -13,7 +13,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::AlertConfiguration",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#created" title="Created">Created</a>" : <i>String</i>,
         "<a href="#eventtypename" title="EventTypeName">EventTypeName</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#matchers" title="Matchers">Matchers</a>" : <i>[ <a href="matcher.md">Matcher</a>, ... ]</i>,
@@ -31,7 +30,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::AlertConfiguration
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
-    <a href="#created" title="Created">Created</a>: <i>String</i>
     <a href="#eventtypename" title="EventTypeName">EventTypeName</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#matchers" title="Matchers">Matchers</a>: <i>
@@ -54,18 +52,6 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### Created
-
-Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
-
-_Required_: No
-
-_Type_: String
-
-_Pattern_: <code>^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z)$</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### EventTypeName
 
@@ -158,4 +144,8 @@ Flag that indicates whether someone enabled this alert configuration for the spe
 #### Updated
 
 Date and time when someone last updated this alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
+
+#### Created
+
+Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
 

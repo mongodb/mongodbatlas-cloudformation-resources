@@ -566,7 +566,8 @@
   "readOnlyProperties": [
     "/properties/Id",
     "/properties/Enabled",
-    "/properties/Updated"
+    "/properties/Updated",
+    "/properties/Created"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",

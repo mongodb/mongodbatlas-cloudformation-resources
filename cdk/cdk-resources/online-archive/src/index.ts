@@ -57,6 +57,13 @@ export interface CfnOnlineArchiveProps {
   readonly dbName?: string;
 
   /**
+   * Unique 24-hexadecimal digit string that identifies your project.
+   *
+   * @schema CfnOnlineArchiveProps#ProjectId
+   */
+  readonly projectId?: string;
+
+  /**
    * Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
    *
    * @schema CfnOnlineArchiveProps#IncludeCount
@@ -106,6 +113,7 @@ export function toJson_CfnOnlineArchiveProps(obj: CfnOnlineArchiveProps | undefi
     'CollectionType': obj.collectionType,
     'Criteria': toJson_CriteriaView(obj.criteria),
     'DbName': obj.dbName,
+    'ProjectId': obj.projectId,
     'IncludeCount': obj.includeCount,
     'ItemsPerPage': obj.itemsPerPage,
     'PageNum': obj.pageNum,
@@ -383,7 +391,7 @@ export class CfnOnlineArchive extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::OnlineArchive';
+  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::OnlineArchive";
 
   /**
    * Resource props.
@@ -403,9 +411,9 @@ export class CfnOnlineArchive extends cdk.CfnResource {
    */
   public readonly attrArchiveId: string;
   /**
-   * Attribute `MongoDB::Atlas::OnlineArchive.ProjectId`
+   * Attribute `MongoDB::Atlas::OnlineArchive.State`
    */
-  public readonly attrProjectId: string;
+  public readonly attrState: string;
 
   /**
    * Create a new `MongoDB::Atlas::OnlineArchive`.
@@ -422,6 +430,6 @@ export class CfnOnlineArchive extends cdk.CfnResource {
     this.attrState = cdk.Token.asString(this.getAtt('State'));
     this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
     this.attrArchiveId = cdk.Token.asString(this.getAtt('ArchiveId'));
-    this.attrProjectId = cdk.Token.asString(this.getAtt('ProjectId'));
+    this.attrState = cdk.Token.asString(this.getAtt('State'));
   }
 }

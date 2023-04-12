@@ -18,6 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#collectiontype" title="CollectionType">CollectionType</a>" : <i>String</i>,
         "<a href="#criteria" title="Criteria">Criteria</a>" : <i><a href="criteriaview.md">CriteriaView</a></i>,
         "<a href="#dbname" title="DbName">DbName</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
         "<a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>" : <i>Integer</i>,
         "<a href="#pagenum" title="PageNum">PageNum</a>" : <i>Integer</i>,
@@ -38,6 +39,7 @@ Properties:
     <a href="#collectiontype" title="CollectionType">CollectionType</a>: <i>String</i>
     <a href="#criteria" title="Criteria">Criteria</a>: <i><a href="criteriaview.md">CriteriaView</a></i>
     <a href="#dbname" title="DbName">DbName</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>
     <a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>: <i>Integer</i>
     <a href="#pagenum" title="PageNum">PageNum</a>: <i>Integer</i>
@@ -116,6 +118,22 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### ProjectId
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### IncludeCount
 
 Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
@@ -193,10 +211,6 @@ Number of documents returned in this response.
 #### ArchiveId
 
 Unique 24-hexadecimal digit string that identifies the online archive to delete.
-
-#### ProjectId
-
-Unique 24-hexadecimal digit string that identifies your project.
 
 #### State
 

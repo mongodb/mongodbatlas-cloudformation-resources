@@ -65,7 +65,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// API Request creation
 	alertConfigRequest := &mongodbatlas.AlertConfiguration{
-		GroupID:         cast.ToString(currentModel.GroupId),
+		GroupID:         cast.ToString(currentModel.ProjectId),
 		EventTypeName:   cast.ToString(currentModel.EventTypeName),
 		Enabled:         currentModel.Enabled,
 		Matchers:        expandAlertConfigurationMatchers(currentModel.Matchers),
@@ -78,7 +78,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	deploySecretString, _ := json.Marshal(&alertConfigRequest)
 	fmt.Printf("deploySecretString: %s  \n\n\n", deploySecretString)
 
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 
 	// API call to create
 	var res *mongodbatlas.Response
@@ -123,7 +123,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// API call to read resource
-	alertConfig, resp, err := client.AlertConfigurations.GetAnAlertConfig(context.Background(), *currentModel.GroupId, *currentModel.Id)
+	alertConfig, resp, err := client.AlertConfigurations.GetAnAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
@@ -168,7 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// In order to update an alert config it is necessary to send the original alert configuration request again, if not the
 	// server returns an error 500
-	projectID := *currentModel.GroupId
+	projectID := *currentModel.ProjectId
 	id := *currentModel.Id
 	alertReq, res, err := client.AlertConfigurations.GetAnAlertConfig(context.Background(), projectID, id)
 	if err != nil {
@@ -231,7 +231,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// API call to delete
-	res, err := client.AlertConfigurations.Delete(context.Background(), *currentModel.GroupId, *currentModel.Id)
+	res, err := client.AlertConfigurations.Delete(context.Background(), *currentModel.ProjectId, *currentModel.Id)
 
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
@@ -265,13 +265,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var alerts []mongodbatlas.AlertConfiguration
 	var res *mongodbatlas.Response
 
-	if currentModel.GroupId != nil {
+	if currentModel.ProjectId != nil {
 		if currentModel.Id != nil {
 			// return all open alerts for the ID that the specified alert configuration triggers
-			alerts, res, err = client.AlertConfigurations.GetOpenAlertsConfig(context.Background(), *currentModel.GroupId, *currentModel.Id)
+			alerts, res, err = client.AlertConfigurations.GetOpenAlertsConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id)
 		} else {
 			// return all alert configurations for one project
-			alerts, res, err = client.AlertConfigurations.List(context.Background(), *currentModel.GroupId, params)
+			alerts, res, err = client.AlertConfigurations.List(context.Background(), *currentModel.ProjectId, params)
 		}
 	} else {
 		// get all field names that the matchers.fieldName parameter accepts
@@ -303,7 +303,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // function to check if record already exist
 func isExist(currentModel *Model, client *mongodbatlas.Client) bool {
-	alert, _, err := client.AlertConfigurations.GetAnAlertConfig(context.Background(), *currentModel.GroupId, *currentModel.Id)
+	alert, _, err := client.AlertConfigurations.GetAnAlertConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id)
 	return err == nil && alert != nil
 }
 
@@ -499,7 +499,6 @@ func convertToMongoModel(reqModel *mongodbatlas.AlertConfiguration, currentModel
 
 func convertToUIModel(alertConfig *mongodbatlas.AlertConfiguration, currentModel *Model, links []*mongodbatlas.Link) *Model {
 	currentModel.Id = &alertConfig.ID
-	currentModel.GroupId = &alertConfig.GroupID
 	currentModel.EventTypeName = &alertConfig.EventTypeName
 	currentModel.Created = &alertConfig.Created
 	currentModel.Enabled = alertConfig.Enabled

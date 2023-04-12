@@ -1,0 +1,48 @@
+name: 'E2E Testing'
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  change-detection:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      repository-projects: read
+    outputs:
+      project: ${{ steps.filter.outputs.project }}
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ github.event_name == 'push' }}
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            project:
+              - 'cfn-resources/project/**'
+  project:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.project == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.19
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}
+          aws-region: eu-west-1
+      - name: Run E2E test
+        shell: bash
+        env:
+          ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
+          ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          pushd cfn-resources/test/e2e/project
+          go test -v project_test.go

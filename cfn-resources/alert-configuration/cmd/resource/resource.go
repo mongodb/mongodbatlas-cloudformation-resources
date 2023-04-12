@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -34,8 +33,8 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.EventTypeName, constants.GroupID}
-var RequiredFields = []string{constants.ID, constants.GroupID}
+var CreateRequiredFields = []string{constants.EventTypeName, constants.ProjectID}
+var RequiredFields = []string{constants.ID, constants.ProjectID}
 
 func validateRequest(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
@@ -63,6 +62,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	// Check if  already exist
+	if currentModel.Id != nil && *currentModel.Id != "" {
+		_, _ = logger.Warnf("resource already exists for Id: %s", *currentModel.Id)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Resource Already Exists",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+	}
+
 	// API Request creation
 	alertConfigRequest := &mongodbatlas.AlertConfiguration{
 		GroupID:         cast.ToString(currentModel.ProjectId),
@@ -75,20 +83,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Notifications != nil {
 		alertConfigRequest.Notifications, _ = expandAlertConfigurationNotification(currentModel.Notifications)
 	}
-	deploySecretString, _ := json.Marshal(&alertConfigRequest)
-	fmt.Printf("deploySecretString: %s  \n\n\n", deploySecretString)
 
 	projectID := *currentModel.ProjectId
-
 	// API call to create
 	var res *mongodbatlas.Response
 	alertConfig, res, err := client.AlertConfigurations.Create(context.Background(), projectID, alertConfigRequest)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	// populate response model
-	currentModel = convertToUIModel(alertConfig, currentModel, res.Links)
 
+	currentModel = convertToUIModel(alertConfig, currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -129,7 +133,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// populate response model
-	convertToUIModel(alertConfig, currentModel, resp.Links)
+	currentModel = convertToUIModel(alertConfig, currentModel)
 
 	// Response
 	return handler.ProgressEvent{
@@ -197,7 +201,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
-	convertToUIModel(alertModel, currentModel, res.Links)
+	currentModel = convertToUIModel(alertModel, currentModel)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel}, nil
@@ -245,60 +249,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	var err error
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-	// create request object
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
-	var models []interface{}
-	var alerts []mongodbatlas.AlertConfiguration
-	var res *mongodbatlas.Response
-
-	if currentModel.ProjectId != nil {
-		if currentModel.Id != nil {
-			// return all open alerts for the ID that the specified alert configuration triggers
-			alerts, res, err = client.AlertConfigurations.GetOpenAlertsConfig(context.Background(), *currentModel.ProjectId, *currentModel.Id)
-		} else {
-			// return all alert configurations for one project
-			alerts, res, err = client.AlertConfigurations.List(context.Background(), *currentModel.ProjectId, params)
-		}
-	} else {
-		// get all field names that the matchers.fieldName parameter accepts
-		fieldNames, res, err := client.AlertConfigurations.ListMatcherFields(context.Background())
-		if err != nil {
-			_, _ = logger.Warnf("List - error: %+v", err)
-			return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
-		}
-		for ind := range fieldNames {
-			models = append(models, &fieldNames[ind])
-		}
-	}
-
-	if err != nil {
-		_, _ = logger.Warnf("List - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	// populate list
-	for ind := range alerts {
-		var model Model
-		models = append(models, convertToUIModel(&alerts[ind], &model, nil))
-	}
-
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModels:  models,
-	}, nil
+		OperationStatus:  handler.Failed,
+		Message:          "List operation is not supported",
+		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 }
 
 // function to check if record already exist
@@ -319,29 +273,7 @@ func expandAlertConfigurationMatchers(matchers []Matcher) []mongodbatlas.Matcher
 	}
 	return mts
 }
-func flattenLinks(linksResult []*mongodbatlas.Link) []Link {
-	links := make([]Link, 0)
-	for ind := range linksResult {
-		var lin Link
-		lin.Href = &linksResult[ind].Href
-		lin.Rel = &linksResult[ind].Rel
-		links = append(links, lin)
-	}
-	return links
-}
 
-func flattenMatchers(matchers []mongodbatlas.Matcher) []Matcher {
-	mts := make([]Matcher, 0)
-	for ind := range matchers {
-		mts = append(mts, Matcher{
-			FieldName: &matchers[ind].FieldName,
-			Operator:  &matchers[ind].Operator,
-			Value:     &matchers[ind].Value,
-		})
-	}
-
-	return mts
-}
 func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *mongodbatlas.MetricThreshold {
 	threshold := currentModel.MetricThreshold
 	if threshold == nil {
@@ -365,30 +297,6 @@ func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *mongodb
 		Threshold: cast.ToFloat64(threshold.Threshold),
 		Units:     cast.ToString(threshold.Units),
 	}
-}
-
-func flattenMetricThreshold(metricThreshold *mongodbatlas.MetricThreshold) *MetricThresholdView {
-	if metricThreshold != nil {
-		return &MetricThresholdView{
-			MetricName: &metricThreshold.MetricName,
-			Operator:   &metricThreshold.Operator,
-			Threshold:  &metricThreshold.Threshold,
-			Units:      &metricThreshold.Units,
-			Mode:       &metricThreshold.Mode,
-		}
-	}
-	return nil
-}
-
-func flattenThreshold(threshold *mongodbatlas.Threshold) *IntegerThresholdView {
-	if threshold != nil {
-		return &IntegerThresholdView{
-			Operator:  &threshold.Operator,
-			Units:     &threshold.Units,
-			Threshold: &threshold.Threshold,
-		}
-	}
-	return nil
 }
 
 // convert  model notification to mongodb atlas  notification
@@ -433,43 +341,6 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	return notifications, nil
 }
 
-// convert mongodb atlas  notification to model notification
-func flattenNotifications(notifications []mongodbatlas.Notification) []NotificationView {
-	notificationList := make([]NotificationView, 0)
-	for ind := range notifications {
-		fmt.Printf("Notification %v", notifications[ind])
-		notification := NotificationView{
-			ApiToken:            &notifications[ind].APIToken,
-			ChannelName:         &notifications[ind].ChannelName,
-			DatadogApiKey:       &notifications[ind].DatadogAPIKey,
-			DatadogRegion:       &notifications[ind].DatadogRegion,
-			DelayMin:            aws.Float64(cast.ToFloat64(notifications[ind].DelayMin)),
-			EmailAddress:        &notifications[ind].EmailAddress,
-			EmailEnabled:        notifications[ind].EmailEnabled,
-			FlowdockApiToken:    &notifications[ind].FlowdockAPIToken,
-			FlowName:            &notifications[ind].FlowName,
-			IntervalMin:         aws.Float64(cast.ToFloat64(notifications[ind].IntervalMin)),
-			MobileNumber:        &notifications[ind].MobileNumber,
-			OpsGenieApiKey:      &notifications[ind].OpsGenieAPIKey,
-			OpsGenieRegion:      &notifications[ind].OpsGenieRegion,
-			OrgName:             &notifications[ind].OrgName,
-			ServiceKey:          &notifications[ind].ServiceKey,
-			SmsEnabled:          notifications[ind].SMSEnabled,
-			TeamId:              &notifications[ind].TeamID,
-			TeamName:            &notifications[ind].TeamName,
-			TypeName:            &notifications[ind].TypeName,
-			Username:            &notifications[ind].Username,
-			VictorOpsApiKey:     &notifications[ind].VictorOpsAPIKey,
-			VictorOpsRoutingKey: &notifications[ind].VictorOpsRoutingKey,
-		}
-		// We need to validate it due to the datasource haven't the roles attribute
-		if len(notifications[ind].Roles) > 0 {
-			notification.Roles = notifications[ind].Roles
-		}
-		notificationList = append(notificationList, notification)
-	}
-	return notificationList
-}
 func convertToMongoModel(reqModel *mongodbatlas.AlertConfiguration, currentModel *Model) *mongodbatlas.AlertConfiguration {
 	if reqModel == nil {
 		reqModel = &mongodbatlas.AlertConfiguration{}
@@ -497,26 +368,15 @@ func convertToMongoModel(reqModel *mongodbatlas.AlertConfiguration, currentModel
 	return reqModel
 }
 
-func convertToUIModel(alertConfig *mongodbatlas.AlertConfiguration, currentModel *Model, links []*mongodbatlas.Link) *Model {
+func convertToUIModel(alertConfig *mongodbatlas.AlertConfiguration, currentModel *Model) *Model {
 	currentModel.Id = &alertConfig.ID
-	currentModel.EventTypeName = &alertConfig.EventTypeName
-	currentModel.Created = &alertConfig.Created
-	currentModel.Enabled = alertConfig.Enabled
-	currentModel.Updated = &alertConfig.Updated
-	if alertConfig.Matchers != nil {
-		currentModel.Matchers = flattenMatchers(alertConfig.Matchers)
+	if alertConfig.Created != "" {
+		currentModel.Created = &alertConfig.Created
 	}
-	if alertConfig.MetricThreshold != nil {
-		currentModel.MetricThreshold = flattenMetricThreshold(alertConfig.MetricThreshold)
+
+	if alertConfig.Updated != "" {
+		currentModel.Updated = &alertConfig.Updated
 	}
-	if alertConfig.Threshold != nil {
-		currentModel.Threshold = flattenThreshold(alertConfig.Threshold)
-	}
-	if alertConfig.Notifications != nil {
-		currentModel.Notifications = flattenNotifications(alertConfig.Notifications)
-	}
-	if len(links) > 0 {
-		currentModel.Links = flattenLinks(links)
-	}
+
 	return currentModel
 }

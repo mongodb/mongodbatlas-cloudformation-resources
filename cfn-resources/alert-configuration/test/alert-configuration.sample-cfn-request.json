@@ -1,27 +1,25 @@
 {
-  "desiredResourceState":{
-    "Profile":"default",
-    "Id":"",
-    "GroupId":"",
-    "Enabled":true,
-    "EventTypeName":"OUTSIDE_METRIC_THRESHOLD",
-    "MetricThreshold":{
-      "MetricName":"NORMALIZED_SYSTEM_CPU_USER",
-      "Operator":"GREATER_THAN",
-      "Threshold":5,
-      "Units":"RAW",
-      "Mode":"AVERAGE"
+  "desiredResourceState": {
+    "Profile": "default",
+    "ProjectId": "",
+    "Enabled": true,
+    "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
+    "MetricThreshold": {
+      "MetricName": "NORMALIZED_SYSTEM_CPU_USER",
+      "Operator": "GREATER_THAN",
+      "Threshold": 5,
+      "Units": "RAW",
+      "Mode": "AVERAGE"
     },
-    "Notifications":[
+    "Notifications": [
       {
-        "TypeName":"EMAIL",
-        "DelayMin":"0",
-        "EmailAddress":"abc@example.com",
-        "EmailEnabled":true,
-        "IntervalMin":"15"
+        "TypeName": "EMAIL",
+        "DelayMin": "0",
+        "EmailAddress": "abc@example.com",
+        "EmailEnabled": true,
+        "IntervalMin": "15"
       }
     ]
   },
-  "previousResourceState":{
-  }
+  "previousResourceState": {}
 }

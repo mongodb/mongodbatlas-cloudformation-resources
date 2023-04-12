@@ -13,13 +13,14 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::AlertConfiguration",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#enabled" title="Enabled">Enabled</a>" : <i>Boolean</i>,
+        "<a href="#created" title="Created">Created</a>" : <i>String</i>,
         "<a href="#eventtypename" title="EventTypeName">EventTypeName</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#matchers" title="Matchers">Matchers</a>" : <i>[ <a href="matcher.md">Matcher</a>, ... ]</i>,
         "<a href="#metricthreshold" title="MetricThreshold">MetricThreshold</a>" : <i><a href="metricthresholdview.md">MetricThresholdView</a></i>,
         "<a href="#notifications" title="Notifications">Notifications</a>" : <i>[ <a href="notificationview.md">NotificationView</a>, ... ]</i>,
         "<a href="#threshold" title="Threshold">Threshold</a>" : <i><a href="integerthresholdview.md">IntegerThresholdView</a></i>,
+        "<a href="#typename" title="TypeName">TypeName</a>" : <i>String</i>,
     }
 }
 </pre>
@@ -30,7 +31,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::AlertConfiguration
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
-    <a href="#enabled" title="Enabled">Enabled</a>: <i>Boolean</i>
+    <a href="#created" title="Created">Created</a>: <i>String</i>
     <a href="#eventtypename" title="EventTypeName">EventTypeName</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#matchers" title="Matchers">Matchers</a>: <i>
@@ -39,6 +40,7 @@ Properties:
     <a href="#notifications" title="Notifications">Notifications</a>: <i>
       - <a href="notificationview.md">NotificationView</a></i>
     <a href="#threshold" title="Threshold">Threshold</a>: <i><a href="integerthresholdview.md">IntegerThresholdView</a></i>
+    <a href="#typename" title="TypeName">TypeName</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -53,13 +55,15 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### Enabled
+#### Created
 
-Flag that indicates whether someone enabled this alert configuration for the specified project.
+Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
 
 _Required_: No
 
-_Type_: Boolean
+_Type_: String
+
+_Pattern_: <code>^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z)$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -71,9 +75,7 @@ _Required_: No
 
 _Type_: String
 
-_Allowed Values_: <code>AWS_ENCRYPTION_KEY_NEEDS_ROTATION</code> | <code>AZURE_ENCRYPTION_KEY_NEEDS_ROTATION</code> | <code>CLUSTER_MONGOS_IS_MISSING</code> | <code>CPS_RESTORE_FAILED</code> | <code>CPS_RESTORE_SUCCESSFUL</code> | <code>CPS_SNAPSHOT_BEHIND</code> | <code>CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED</code> | <code>CPS_SNAPSHOT_FALLBACK_FAILED</code> | <code>CPS_SNAPSHOT_FALLBACK_SUCCESSFUL</code> | <code>CPS_SNAPSHOT_SUCCESSFUL</code> | <code>CREDIT_CARD_ABOUT_TO_EXPIRE</code> | <code>DAILY_BILL_OVER_THRESHOLD</code> | <code>GCP_ENCRYPTION_KEY_NEEDS_ROTATION</code> | <code>HOST_DOWN</code> | <code>JOINED_GROUP</code> | <code>NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK</code> | <code>NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK</code> | <code>NO_PRIMARY</code> | <code>OUTSIDE_METRIC_THRESHOLD</code> | <code>OUTSIDE_SERVERLESS_METRIC_THRESHOLD</code> | <code>OUTSIDE_REALM_METRIC_THRESHOLD</code> | <code>PENDING_INVOICE_OVER_THRESHOLD</code> | <code>PRIMARY_ELECTED</code> | <code>REMOVED_FROM_GROUP</code> | <code>REPLICATION_OPLOG_WINDOW_RUNNING_OUT</code> | <code>TOO_MANY_ELECTIONS</code> | <code>USER_ROLES_CHANGED_AUDIT</code> | <code>USERS_WITHOUT_MULTIFACTOR_AUTH</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ProjectId
 
@@ -99,7 +101,7 @@ _Required_: No
 
 _Type_: List of <a href="matcher.md">Matcher</a>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### MetricThreshold
 
@@ -117,7 +119,7 @@ _Required_: No
 
 _Type_: List of <a href="notificationview.md">NotificationView</a>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Threshold
 
@@ -126,6 +128,16 @@ _Required_: No
 _Type_: <a href="integerthresholdview.md">IntegerThresholdView</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TypeName
+
+Human-readable label that displays the alert type.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
 
@@ -139,27 +151,11 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Unique 24-hexadecimal digit string that identifies the alert configuration.
 
-#### Links
+#### Enabled
 
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
-#### TypeName
-
-Human-readable label that displays the alert type.
-
-#### Created
-
-Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
-
-#### TotalCount
-
-Number of documents returned in this response.
+Flag that indicates whether someone enabled this alert configuration for the specified project.
 
 #### Updated
 
 Date and time when someone last updated this alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
-
-#### Results
-
-List of returned documents that MongoDB Cloud provides when completing this request.
 

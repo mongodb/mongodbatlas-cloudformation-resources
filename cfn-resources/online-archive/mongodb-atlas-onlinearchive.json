@@ -218,7 +218,8 @@
   "primaryIdentifier": [
     "/properties/ArchiveId",
     "/properties/Profile",
-    "/properties/ProjectId"
+    "/properties/ProjectId",
+    "/properties/ClusterName"
   ],
   "readOnlyProperties": [
     "/properties/State",

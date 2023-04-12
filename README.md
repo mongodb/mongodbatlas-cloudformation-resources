@@ -99,7 +99,7 @@ The following are common issues encountered when using AWS CloudFormation/CDK wi
    * Review the [AWS IP address ranges](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html) and contact AWS Support directly who can help confirm the CIDR range to be used in your Atlas PAK IP Whitelist.
 
 ### Error: The CFN stack remains in the `CREATE_IN_PROGRESS` state before failing after an hour or so
-The problem is caused by incorrect trust relationships linked to the role used for activating CFN resources or running the CFN stack. To resolve the issue, ensure that your IAM role's trust relationships include resources.cloudformation.amazonaws.com, cloudformation.amazonaws.com, lambda.amazonaws.com. The following YAML code shows an example of the correct trust relationships:
+The problem is caused by incorrect trust relationships linked to the role that you used to activate CFN resources or run the CFN stack. To resolve the issue, ensure that your IAM role's trust relationships include `resources.cloudformation.amazonaws.com`, `cloudformation.amazonaws.com`, `lambda.amazonaws.com`. The following YAML code shows an example of the correct trust relationships:
 ```yaml
  AssumeRolePolicyDocument:
     Version: '2012-10-17'

@@ -16,25 +16,18 @@ export interface CfnAlertConfigurationProps {
   readonly profile?: string;
 
   /**
-   * Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
-   *
-   * @schema CfnAlertConfigurationProps#Created
-   */
-  readonly created?: string;
-
-  /**
    * Event type that triggers an alert.
    *
    * @schema CfnAlertConfigurationProps#EventTypeName
    */
-  readonly eventTypeName?: string;
+  readonly eventTypeName?: CfnAlertConfigurationPropsEventTypeName;
 
   /**
-   * Unique 24-hexadecimal digit string that identifies your project.
+   * List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
    *
-   * @schema CfnAlertConfigurationProps#ProjectId
+   * @schema CfnAlertConfigurationProps#Links
    */
-  readonly projectId?: string;
+  readonly links?: Link[];
 
   /**
    * List of rules that determine whether MongoDB Cloud checks an object for the alert configuration. You can filter using the matchers array if the **eventTypeName** specifies an event for a host, replica set, or sharded cluster.
@@ -58,18 +51,18 @@ export interface CfnAlertConfigurationProps {
   readonly notifications?: NotificationView[];
 
   /**
+   * List of returned documents that MongoDB Cloud provides when completing this request.
+   *
+   * @schema CfnAlertConfigurationProps#Results
+   */
+  readonly results?: AlertView[];
+
+  /**
    * Limit that triggers an alert when exceeded. The resource returns this parameter when **eventTypeName** has not been set to 'OUTSIDE_METRIC_THRESHOLD'.
    *
    * @schema CfnAlertConfigurationProps#Threshold
    */
   readonly threshold?: IntegerThresholdView;
-
-  /**
-   * Human-readable label that displays the alert type.
-   *
-   * @schema CfnAlertConfigurationProps#TypeName
-   */
-  readonly typeName?: string;
 
 }
 
@@ -81,14 +74,118 @@ export function toJson_CfnAlertConfigurationProps(obj: CfnAlertConfigurationProp
   if (obj === undefined) { return undefined; }
   const result = {
     'Profile': obj.profile,
-    'Created': obj.created,
     'EventTypeName': obj.eventTypeName,
-    'ProjectId': obj.projectId,
+    'Links': obj.links?.map(y => toJson_Link(y)),
     'Matchers': obj.matchers?.map(y => toJson_Matcher(y)),
     'MetricThreshold': toJson_MetricThresholdView(obj.metricThreshold),
     'Notifications': obj.notifications?.map(y => toJson_NotificationView(y)),
+    'Results': obj.results?.map(y => toJson_AlertView(y)),
     'Threshold': toJson_IntegerThresholdView(obj.threshold),
-    'TypeName': obj.typeName,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
+ * Event type that triggers an alert.
+ *
+ * @schema CfnAlertConfigurationPropsEventTypeName
+ */
+export enum CfnAlertConfigurationPropsEventTypeName {
+  /** AWS_ENCRYPTION_KEY_NEEDS_ROTATION */
+  AWS_ENCRYPTION_KEY_NEEDS_ROTATION = 'AWS_ENCRYPTION_KEY_NEEDS_ROTATION',
+  /** AZURE_ENCRYPTION_KEY_NEEDS_ROTATION */
+  AZURE_ENCRYPTION_KEY_NEEDS_ROTATION = 'AZURE_ENCRYPTION_KEY_NEEDS_ROTATION',
+  /** CLUSTER_MONGOS_IS_MISSING */
+  CLUSTER_MONGOS_IS_MISSING = 'CLUSTER_MONGOS_IS_MISSING',
+  /** CPS_RESTORE_FAILED */
+  CPS_RESTORE_FAILED = 'CPS_RESTORE_FAILED',
+  /** CPS_RESTORE_SUCCESSFUL */
+  CPS_RESTORE_SUCCESSFUL = 'CPS_RESTORE_SUCCESSFUL',
+  /** CPS_SNAPSHOT_BEHIND */
+  CPS_SNAPSHOT_BEHIND = 'CPS_SNAPSHOT_BEHIND',
+  /** CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED */
+  CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED = 'CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED',
+  /** CPS_SNAPSHOT_FALLBACK_FAILED */
+  CPS_SNAPSHOT_FALLBACK_FAILED = 'CPS_SNAPSHOT_FALLBACK_FAILED',
+  /** CPS_SNAPSHOT_FALLBACK_SUCCESSFUL */
+  CPS_SNAPSHOT_FALLBACK_SUCCESSFUL = 'CPS_SNAPSHOT_FALLBACK_SUCCESSFUL',
+  /** CPS_SNAPSHOT_SUCCESSFUL */
+  CPS_SNAPSHOT_SUCCESSFUL = 'CPS_SNAPSHOT_SUCCESSFUL',
+  /** CREDIT_CARD_ABOUT_TO_EXPIRE */
+  CREDIT_CARD_ABOUT_TO_EXPIRE = 'CREDIT_CARD_ABOUT_TO_EXPIRE',
+  /** DAILY_BILL_OVER_THRESHOLD */
+  DAILY_BILL_OVER_THRESHOLD = 'DAILY_BILL_OVER_THRESHOLD',
+  /** GCP_ENCRYPTION_KEY_NEEDS_ROTATION */
+  GCP_ENCRYPTION_KEY_NEEDS_ROTATION = 'GCP_ENCRYPTION_KEY_NEEDS_ROTATION',
+  /** HOST_DOWN */
+  HOST_DOWN = 'HOST_DOWN',
+  /** JOINED_GROUP */
+  JOINED_GROUP = 'JOINED_GROUP',
+  /** NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK */
+  NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK = 'NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK',
+  /** NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK */
+  NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK = 'NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK',
+  /** NO_PRIMARY */
+  NO_PRIMARY = 'NO_PRIMARY',
+  /** OUTSIDE_METRIC_THRESHOLD */
+  OUTSIDE_METRIC_THRESHOLD = 'OUTSIDE_METRIC_THRESHOLD',
+  /** OUTSIDE_SERVERLESS_METRIC_THRESHOLD */
+  OUTSIDE_SERVERLESS_METRIC_THRESHOLD = 'OUTSIDE_SERVERLESS_METRIC_THRESHOLD',
+  /** OUTSIDE_REALM_METRIC_THRESHOLD */
+  OUTSIDE_REALM_METRIC_THRESHOLD = 'OUTSIDE_REALM_METRIC_THRESHOLD',
+  /** PENDING_INVOICE_OVER_THRESHOLD */
+  PENDING_INVOICE_OVER_THRESHOLD = 'PENDING_INVOICE_OVER_THRESHOLD',
+  /** PRIMARY_ELECTED */
+  PRIMARY_ELECTED = 'PRIMARY_ELECTED',
+  /** REMOVED_FROM_GROUP */
+  REMOVED_FROM_GROUP = 'REMOVED_FROM_GROUP',
+  /** REPLICATION_OPLOG_WINDOW_RUNNING_OUT */
+  REPLICATION_OPLOG_WINDOW_RUNNING_OUT = 'REPLICATION_OPLOG_WINDOW_RUNNING_OUT',
+  /** TOO_MANY_ELECTIONS */
+  TOO_MANY_ELECTIONS = 'TOO_MANY_ELECTIONS',
+  /** USER_ROLES_CHANGED_AUDIT */
+  USER_ROLES_CHANGED_AUDIT = 'USER_ROLES_CHANGED_AUDIT',
+  /** USERS_WITHOUT_MULTIFACTOR_AUTH */
+  USERS_WITHOUT_MULTIFACTOR_AUTH = 'USERS_WITHOUT_MULTIFACTOR_AUTH',
+}
+
+/**
+ * @schema Link
+ */
+export interface Link {
+  /**
+   * @schema Link#ApiKeys
+   */
+  readonly apiKeys?: ApiKeyDefinition;
+
+  /**
+   * Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with 'https://mms.mongodb.com'.
+   *
+   * @schema Link#Href
+   */
+  readonly href?: string;
+
+  /**
+   * Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with 'https://mms.mongodb.com'.
+   *
+   * @schema Link#Rel
+   */
+  readonly rel?: string;
+
+}
+
+/**
+ * Converts an object of type 'Link' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_Link(obj: Link | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'ApiKeys': toJson_ApiKeyDefinition(obj.apiKeys),
+    'Href': obj.href,
+    'Rel': obj.rel,
   };
   // filter undefined values
   return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
@@ -147,7 +244,7 @@ export interface MetricThresholdView {
    *
    * @schema MetricThresholdView#MetricName
    */
-  readonly metricName?: string;
+  readonly metricName?: MetricThresholdViewMetricName;
 
   /**
    * MongoDB Cloud computes the current metric value as an average.
@@ -175,7 +272,7 @@ export interface MetricThresholdView {
    *
    * @schema MetricThresholdView#Units
    */
-  readonly units?: string;
+  readonly units?: MetricThresholdViewUnits;
 
 }
 
@@ -466,6 +563,181 @@ export function toJson_NotificationView(obj: NotificationView | undefined): Reco
 /* eslint-enable max-len, quote-props */
 
 /**
+ * @schema AlertView
+ */
+export interface AlertView {
+  /**
+   * Date and time until which this alert has been acknowledged. This parameter expresses its value in the ISO 8601 timestamp format in UTC. The resource returns this parameter if a MongoDB User previously acknowledged this alert.
+   *
+   * - To acknowledge this alert forever, set the parameter value to 100 years in the future.
+   *
+   * - To unacknowledge a previously acknowledged alert, set the parameter value to a date in the past.
+   *
+   * @schema AlertView#AcknowledgedUntil
+   */
+  readonly acknowledgedUntil?: string;
+
+  /**
+   * Comment that a MongoDB Cloud user submitted when acknowledging the alert.
+   *
+   * @schema AlertView#AcknowledgementComment
+   */
+  readonly acknowledgementComment?: string;
+
+  /**
+   * MongoDB Cloud username of the person who acknowledged the alert. The response returns this parameter if a MongoDB Cloud user previously acknowledged this alert.
+   *
+   * @schema AlertView#AcknowledgingUsername
+   */
+  readonly acknowledgingUsername?: string;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies the alert configuration that sets this alert.
+   *
+   * @schema AlertView#AlertConfigId
+   */
+  readonly alertConfigId?: string;
+
+  /**
+   * Human-readable label that identifies the cluster to which this alert applies. This resource returns this parameter for alerts of events impacting backups, replica sets, or sharded clusters.
+   *
+   * @schema AlertView#ClusterName
+   */
+  readonly clusterName?: string;
+
+  /**
+   * Date and time when MongoDB Cloud created this alert. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
+   *
+   * @schema AlertView#Created
+   */
+  readonly created?: string;
+
+  /**
+   * Value of the metric that triggered the alert. The resource returns this parameter for alerts of events impacting hosts.
+   *
+   * @schema AlertView#CurrentValue
+   */
+  readonly currentValue?: CurrentValue;
+
+  /**
+   * Incident that triggered this alert.
+   *
+   * @schema AlertView#EventTypeName
+   */
+  readonly eventTypeName?: AlertViewEventTypeName;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies the project that owns this alert.
+   *
+   * @schema AlertView#GroupId
+   */
+  readonly groupId?: string;
+
+  /**
+   * Hostname and port of the host to which this alert applies. The resource returns this parameter for alerts of events impacting hosts or replica sets.
+   *
+   * @schema AlertView#HostnameAndPort
+   */
+  readonly hostnameAndPort?: string;
+
+  /**
+   * Unique 24-hexadecimal digit string that identifies this alert.
+   *
+   * @schema AlertView#Id
+   */
+  readonly id?: string;
+
+  /**
+   * Date and time that any notifications were last sent for this alert. This parameter expresses its value in the ISO 8601 timestamp format in UTC. The resource returns this parameter if MongoDB Cloud has sent notifications for this alert.
+   *
+   * @schema AlertView#LastNotified
+   */
+  readonly lastNotified?: string;
+
+  /**
+   * List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
+   *
+   * @schema AlertView#Links
+   */
+  readonly links?: Link[];
+
+  /**
+   * Human-readable label that identifies the metric against which MongoDB Cloud checks the alert.
+   *
+   * @schema AlertView#MetricName
+   */
+  readonly metricName?: AlertViewMetricName;
+
+  /**
+   * Name of the replica set to which this alert applies. The response returns this parameter for alerts of events impacting backups, hosts, or replica sets.
+   *
+   * @schema AlertView#ReplicaSetName
+   */
+  readonly replicaSetName?: string;
+
+  /**
+   * Date and time that this alert changed to '"status" : "CLOSED"'. This parameter expresses its value in the ISO 8601 timestamp format in UTC. The resource returns this parameter once '"status" : "CLOSED"'.
+   *
+   * @schema AlertView#Resolved
+   */
+  readonly resolved?: string;
+
+  /**
+   * State of this alert at the time you requested its details.
+   *
+   * @schema AlertView#Status
+   */
+  readonly status?: AlertViewStatus;
+
+  /**
+   * Category in which MongoDB Cloud classifies this alert.
+   *
+   * @schema AlertView#TypeName
+   */
+  readonly typeName?: string;
+
+  /**
+   * Date and time when someone last updated this alert. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
+   *
+   * @schema AlertView#Updated
+   */
+  readonly updated?: string;
+
+}
+
+/**
+ * Converts an object of type 'AlertView' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_AlertView(obj: AlertView | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'AcknowledgedUntil': obj.acknowledgedUntil,
+    'AcknowledgementComment': obj.acknowledgementComment,
+    'AcknowledgingUsername': obj.acknowledgingUsername,
+    'AlertConfigId': obj.alertConfigId,
+    'ClusterName': obj.clusterName,
+    'Created': obj.created,
+    'CurrentValue': toJson_CurrentValue(obj.currentValue),
+    'EventTypeName': obj.eventTypeName,
+    'GroupId': obj.groupId,
+    'HostnameAndPort': obj.hostnameAndPort,
+    'Id': obj.id,
+    'LastNotified': obj.lastNotified,
+    'Links': obj.links?.map(y => toJson_Link(y)),
+    'MetricName': obj.metricName,
+    'ReplicaSetName': obj.replicaSetName,
+    'Resolved': obj.resolved,
+    'Status': obj.status,
+    'TypeName': obj.typeName,
+    'Updated': obj.updated,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
  * @schema IntegerThresholdView
  */
 export interface IntegerThresholdView {
@@ -488,7 +760,7 @@ export interface IntegerThresholdView {
    *
    * @schema IntegerThresholdView#Units
    */
-  readonly units?: string;
+  readonly units?: IntegerThresholdViewUnits;
 
 }
 
@@ -509,25 +781,56 @@ export function toJson_IntegerThresholdView(obj: IntegerThresholdView | undefine
 /* eslint-enable max-len, quote-props */
 
 /**
+ * @schema ApiKeyDefinition
+ */
+export interface ApiKeyDefinition {
+  /**
+   * @schema ApiKeyDefinition#PrivateKey
+   */
+  readonly privateKey?: string;
+
+  /**
+   * @schema ApiKeyDefinition#PublicKey
+   */
+  readonly publicKey?: string;
+
+}
+
+/**
+ * Converts an object of type 'ApiKeyDefinition' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_ApiKeyDefinition(obj: ApiKeyDefinition | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'PrivateKey': obj.privateKey,
+    'PublicKey': obj.publicKey,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
  * Name of the parameter in the target object that MongoDB Cloud checks. The parameter must match all rules for MongoDB Cloud to check for alert configurations.
  *
  * @schema MatcherFieldName
  */
 export enum MatcherFieldName {
   /** CLUSTER_NAME */
-  CLUSTER_NAME = "CLUSTER_NAME",
+  CLUSTER_NAME = 'CLUSTER_NAME',
   /** HOSTNAME */
-  HOSTNAME = "HOSTNAME",
+  HOSTNAME = 'HOSTNAME',
   /** HOSTNAME_AND_PORT */
-  HOSTNAME_AND_PORT = "HOSTNAME_AND_PORT",
+  HOSTNAME_AND_PORT = 'HOSTNAME_AND_PORT',
   /** PORT */
-  PORT = "PORT",
+  PORT = 'PORT',
   /** REPLICA_SET_NAME */
-  REPLICA_SET_NAME = "REPLICA_SET_NAME",
+  REPLICA_SET_NAME = 'REPLICA_SET_NAME',
   /** SHARD_NAME */
-  SHARD_NAME = "SHARD_NAME",
+  SHARD_NAME = 'SHARD_NAME',
   /** TYPE_NAME */
-  TYPE_NAME = "TYPE_NAME",
+  TYPE_NAME = 'TYPE_NAME',
 }
 
 /**
@@ -537,19 +840,255 @@ export enum MatcherFieldName {
  */
 export enum MatcherOperator {
   /** EQUALS */
-  EQUALS = "EQUALS",
+  EQUALS = 'EQUALS',
   /** CONTAINS */
-  CONTAINS = "CONTAINS",
+  CONTAINS = 'CONTAINS',
   /** STARTS_WITH */
-  STARTS_WITH = "STARTS_WITH",
+  STARTS_WITH = 'STARTS_WITH',
   /** ENDS_WITH */
-  ENDS_WITH = "ENDS_WITH",
+  ENDS_WITH = 'ENDS_WITH',
   /** NOT_EQUALS */
-  NOT_EQUALS = "NOT_EQUALS",
+  NOT_EQUALS = 'NOT_EQUALS',
   /** NOT_CONTAINS */
-  NOT_CONTAINS = "NOT_CONTAINS",
+  NOT_CONTAINS = 'NOT_CONTAINS',
   /** REGEX */
-  REGEX = "REGEX",
+  REGEX = 'REGEX',
+}
+
+/**
+ * Human-readable label that identifies the metric against which MongoDB Cloud checks the configured **metricThreshold.threshold**.
+ *
+ * @schema MetricThresholdViewMetricName
+ */
+export enum MetricThresholdViewMetricName {
+  /** ASSERT_MSG */
+  ASSERT_MSG = 'ASSERT_MSG',
+  /** ASSERT_REGULAR */
+  ASSERT_REGULAR = 'ASSERT_REGULAR',
+  /** ASSERT_USER */
+  ASSERT_USER = 'ASSERT_USER',
+  /** ASSERT_WARNING */
+  ASSERT_WARNING = 'ASSERT_WARNING',
+  /** AVG_COMMAND_EXECUTION_TIME */
+  AVG_COMMAND_EXECUTION_TIME = 'AVG_COMMAND_EXECUTION_TIME',
+  /** AVG_READ_EXECUTION_TIME */
+  AVG_READ_EXECUTION_TIME = 'AVG_READ_EXECUTION_TIME',
+  /** AVG_WRITE_EXECUTION_TIME */
+  AVG_WRITE_EXECUTION_TIME = 'AVG_WRITE_EXECUTION_TIME',
+  /** BACKGROUND_FLUSH_AVG */
+  BACKGROUND_FLUSH_AVG = 'BACKGROUND_FLUSH_AVG',
+  /** CACHE_BYTES_READ_INTO */
+  CACHE_BYTES_READ_INTO = 'CACHE_BYTES_READ_INTO',
+  /** CACHE_BYTES_WRITTEN_FROM */
+  CACHE_BYTES_WRITTEN_FROM = 'CACHE_BYTES_WRITTEN_FROM',
+  /** CACHE_USAGE_DIRTY */
+  CACHE_USAGE_DIRTY = 'CACHE_USAGE_DIRTY',
+  /** CACHE_USAGE_USED */
+  CACHE_USAGE_USED = 'CACHE_USAGE_USED',
+  /** COMPUTED_MEMORY */
+  COMPUTED_MEMORY = 'COMPUTED_MEMORY',
+  /** CONNECTIONS */
+  CONNECTIONS = 'CONNECTIONS',
+  /** CONNECTIONS_MAX */
+  CONNECTIONS_MAX = 'CONNECTIONS_MAX',
+  /** CONNECTIONS_PERCENT */
+  CONNECTIONS_PERCENT = 'CONNECTIONS_PERCENT',
+  /** CURSORS_TOTAL_CLIENT_CURSORS_SIZE */
+  CURSORS_TOTAL_CLIENT_CURSORS_SIZE = 'CURSORS_TOTAL_CLIENT_CURSORS_SIZE',
+  /** CURSORS_TOTAL_OPEN */
+  CURSORS_TOTAL_OPEN = 'CURSORS_TOTAL_OPEN',
+  /** CURSORS_TOTAL_TIMED_OUT */
+  CURSORS_TOTAL_TIMED_OUT = 'CURSORS_TOTAL_TIMED_OUT',
+  /** DB_DATA_SIZE_TOTAL */
+  DB_DATA_SIZE_TOTAL = 'DB_DATA_SIZE_TOTAL',
+  /** DB_INDEX_SIZE_TOTAL */
+  DB_INDEX_SIZE_TOTAL = 'DB_INDEX_SIZE_TOTAL',
+  /** DB_STORAGE_TOTAL */
+  DB_STORAGE_TOTAL = 'DB_STORAGE_TOTAL',
+  /** DISK_PARTITION_SPACE_USED_DATA */
+  DISK_PARTITION_SPACE_USED_DATA = 'DISK_PARTITION_SPACE_USED_DATA',
+  /** DISK_PARTITION_SPACE_USED_INDEX */
+  DISK_PARTITION_SPACE_USED_INDEX = 'DISK_PARTITION_SPACE_USED_INDEX',
+  /** DISK_PARTITION_SPACE_USED_JOURNAL */
+  DISK_PARTITION_SPACE_USED_JOURNAL = 'DISK_PARTITION_SPACE_USED_JOURNAL',
+  /** DISK_PARTITION_UTILIZATION_DATA */
+  DISK_PARTITION_UTILIZATION_DATA = 'DISK_PARTITION_UTILIZATION_DATA',
+  /** DISK_PARTITION_UTILIZATION_INDEX */
+  DISK_PARTITION_UTILIZATION_INDEX = 'DISK_PARTITION_UTILIZATION_INDEX',
+  /** DISK_PARTITION_UTILIZATION_JOURNAL */
+  DISK_PARTITION_UTILIZATION_JOURNAL = 'DISK_PARTITION_UTILIZATION_JOURNAL',
+  /** DOCUMENT_DELETED */
+  DOCUMENT_DELETED = 'DOCUMENT_DELETED',
+  /** DOCUMENT_INSERTED */
+  DOCUMENT_INSERTED = 'DOCUMENT_INSERTED',
+  /** DOCUMENT_RETURNED */
+  DOCUMENT_RETURNED = 'DOCUMENT_RETURNED',
+  /** DOCUMENT_UPDATED */
+  DOCUMENT_UPDATED = 'DOCUMENT_UPDATED',
+  /** EXTRA_INFO_PAGE_FAULTS */
+  EXTRA_INFO_PAGE_FAULTS = 'EXTRA_INFO_PAGE_FAULTS',
+  /** FTS_DISK_UTILIZATION */
+  FTS_DISK_UTILIZATION = 'FTS_DISK_UTILIZATION',
+  /** FTS_MEMORY_MAPPED */
+  FTS_MEMORY_MAPPED = 'FTS_MEMORY_MAPPED',
+  /** FTS_MEMORY_RESIDENT */
+  FTS_MEMORY_RESIDENT = 'FTS_MEMORY_RESIDENT',
+  /** FTS_MEMORY_VIRTUAL */
+  FTS_MEMORY_VIRTUAL = 'FTS_MEMORY_VIRTUAL',
+  /** FTS_PROCESS_CPU_KERNEL */
+  FTS_PROCESS_CPU_KERNEL = 'FTS_PROCESS_CPU_KERNEL',
+  /** FTS_PROCESS_CPU_USER */
+  FTS_PROCESS_CPU_USER = 'FTS_PROCESS_CPU_USER',
+  /** GLOBAL_ACCESSES_NOT_IN_MEMORY */
+  GLOBAL_ACCESSES_NOT_IN_MEMORY = 'GLOBAL_ACCESSES_NOT_IN_MEMORY',
+  /** GLOBAL_LOCK_CURRENT_QUEUE_READERS */
+  GLOBAL_LOCK_CURRENT_QUEUE_READERS = 'GLOBAL_LOCK_CURRENT_QUEUE_READERS',
+  /** GLOBAL_LOCK_CURRENT_QUEUE_TOTAL */
+  GLOBAL_LOCK_CURRENT_QUEUE_TOTAL = 'GLOBAL_LOCK_CURRENT_QUEUE_TOTAL',
+  /** GLOBAL_LOCK_CURRENT_QUEUE_WRITERS */
+  GLOBAL_LOCK_CURRENT_QUEUE_WRITERS = 'GLOBAL_LOCK_CURRENT_QUEUE_WRITERS',
+  /** GLOBAL_LOCK_PERCENTAGE */
+  GLOBAL_LOCK_PERCENTAGE = 'GLOBAL_LOCK_PERCENTAGE',
+  /** GLOBAL_PAGE_FAULT_EXCEPTIONS_THROWN */
+  GLOBAL_PAGE_FAULT_EXCEPTIONS_THROWN = 'GLOBAL_PAGE_FAULT_EXCEPTIONS_THROWN',
+  /** INDEX_COUNTERS_BTREE_ACCESSES */
+  INDEX_COUNTERS_BTREE_ACCESSES = 'INDEX_COUNTERS_BTREE_ACCESSES',
+  /** INDEX_COUNTERS_BTREE_HITS */
+  INDEX_COUNTERS_BTREE_HITS = 'INDEX_COUNTERS_BTREE_HITS',
+  /** INDEX_COUNTERS_BTREE_MISS_RATIO */
+  INDEX_COUNTERS_BTREE_MISS_RATIO = 'INDEX_COUNTERS_BTREE_MISS_RATIO',
+  /** INDEX_COUNTERS_BTREE_MISSES */
+  INDEX_COUNTERS_BTREE_MISSES = 'INDEX_COUNTERS_BTREE_MISSES',
+  /** JOURNALING_COMMITS_IN_WRITE_LOCK */
+  JOURNALING_COMMITS_IN_WRITE_LOCK = 'JOURNALING_COMMITS_IN_WRITE_LOCK',
+  /** JOURNALING_MB */
+  JOURNALING_MB = 'JOURNALING_MB',
+  /** JOURNALING_WRITE_DATA_FILES_MB */
+  JOURNALING_WRITE_DATA_FILES_MB = 'JOURNALING_WRITE_DATA_FILES_MB',
+  /** LOGICAL_SIZE */
+  LOGICAL_SIZE = 'LOGICAL_SIZE',
+  /** MEMORY_MAPPED */
+  MEMORY_MAPPED = 'MEMORY_MAPPED',
+  /** MEMORY_RESIDENT */
+  MEMORY_RESIDENT = 'MEMORY_RESIDENT',
+  /** MEMORY_VIRTUAL */
+  MEMORY_VIRTUAL = 'MEMORY_VIRTUAL',
+  /** MUNIN_CPU_IOWAIT */
+  MUNIN_CPU_IOWAIT = 'MUNIN_CPU_IOWAIT',
+  /** MUNIN_CPU_IRQ */
+  MUNIN_CPU_IRQ = 'MUNIN_CPU_IRQ',
+  /** MUNIN_CPU_NICE */
+  MUNIN_CPU_NICE = 'MUNIN_CPU_NICE',
+  /** MUNIN_CPU_SOFTIRQ */
+  MUNIN_CPU_SOFTIRQ = 'MUNIN_CPU_SOFTIRQ',
+  /** MUNIN_CPU_STEAL */
+  MUNIN_CPU_STEAL = 'MUNIN_CPU_STEAL',
+  /** MUNIN_CPU_SYSTEM */
+  MUNIN_CPU_SYSTEM = 'MUNIN_CPU_SYSTEM',
+  /** MUNIN_CPU_USER */
+  MUNIN_CPU_USER = 'MUNIN_CPU_USER',
+  /** NETWORK_BYTES_IN */
+  NETWORK_BYTES_IN = 'NETWORK_BYTES_IN',
+  /** NETWORK_BYTES_OUT */
+  NETWORK_BYTES_OUT = 'NETWORK_BYTES_OUT',
+  /** NETWORK_NUM_REQUESTS */
+  NETWORK_NUM_REQUESTS = 'NETWORK_NUM_REQUESTS',
+  /** NORMALIZED_FTS_PROCESS_CPU_KERNEL */
+  NORMALIZED_FTS_PROCESS_CPU_KERNEL = 'NORMALIZED_FTS_PROCESS_CPU_KERNEL',
+  /** NORMALIZED_FTS_PROCESS_CPU_USER */
+  NORMALIZED_FTS_PROCESS_CPU_USER = 'NORMALIZED_FTS_PROCESS_CPU_USER',
+  /** NORMALIZED_SYSTEM_CPU_STEAL */
+  NORMALIZED_SYSTEM_CPU_STEAL = 'NORMALIZED_SYSTEM_CPU_STEAL',
+  /** NORMALIZED_SYSTEM_CPU_USER */
+  NORMALIZED_SYSTEM_CPU_USER = 'NORMALIZED_SYSTEM_CPU_USER',
+  /** OPCOUNTER_CMD */
+  OPCOUNTER_CMD = 'OPCOUNTER_CMD',
+  /** OPCOUNTER_DELETE */
+  OPCOUNTER_DELETE = 'OPCOUNTER_DELETE',
+  /** OPCOUNTER_GETMORE */
+  OPCOUNTER_GETMORE = 'OPCOUNTER_GETMORE',
+  /** OPCOUNTER_INSERT */
+  OPCOUNTER_INSERT = 'OPCOUNTER_INSERT',
+  /** OPCOUNTER_QUERY */
+  OPCOUNTER_QUERY = 'OPCOUNTER_QUERY',
+  /** OPCOUNTER_REPL_CMD */
+  OPCOUNTER_REPL_CMD = 'OPCOUNTER_REPL_CMD',
+  /** OPCOUNTER_REPL_DELETE */
+  OPCOUNTER_REPL_DELETE = 'OPCOUNTER_REPL_DELETE',
+  /** OPCOUNTER_REPL_INSERT */
+  OPCOUNTER_REPL_INSERT = 'OPCOUNTER_REPL_INSERT',
+  /** OPCOUNTER_REPL_UPDATE */
+  OPCOUNTER_REPL_UPDATE = 'OPCOUNTER_REPL_UPDATE',
+  /** OPCOUNTER_UPDATE */
+  OPCOUNTER_UPDATE = 'OPCOUNTER_UPDATE',
+  /** OPERATIONS_SCAN_AND_ORDER */
+  OPERATIONS_SCAN_AND_ORDER = 'OPERATIONS_SCAN_AND_ORDER',
+  /** OPLOG_MASTER_LAG_TIME_DIFF */
+  OPLOG_MASTER_LAG_TIME_DIFF = 'OPLOG_MASTER_LAG_TIME_DIFF',
+  /** OPLOG_MASTER_TIME */
+  OPLOG_MASTER_TIME = 'OPLOG_MASTER_TIME',
+  /** OPLOG_MASTER_TIME_ESTIMATED_TTL */
+  OPLOG_MASTER_TIME_ESTIMATED_TTL = 'OPLOG_MASTER_TIME_ESTIMATED_TTL',
+  /** OPLOG_RATE_GB_PER_HOUR */
+  OPLOG_RATE_GB_PER_HOUR = 'OPLOG_RATE_GB_PER_HOUR',
+  /** OPLOG_SLAVE_LAG_MASTER_TIME */
+  OPLOG_SLAVE_LAG_MASTER_TIME = 'OPLOG_SLAVE_LAG_MASTER_TIME',
+  /** QUERY_EXECUTOR_SCANNED */
+  QUERY_EXECUTOR_SCANNED = 'QUERY_EXECUTOR_SCANNED',
+  /** QUERY_EXECUTOR_SCANNED_OBJECTS */
+  QUERY_EXECUTOR_SCANNED_OBJECTS = 'QUERY_EXECUTOR_SCANNED_OBJECTS',
+  /** QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED */
+  QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED = 'QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED',
+  /** QUERY_TARGETING_SCANNED_PER_RETURNED */
+  QUERY_TARGETING_SCANNED_PER_RETURNED = 'QUERY_TARGETING_SCANNED_PER_RETURNED',
+  /** RESTARTS_IN_LAST_HOUR */
+  RESTARTS_IN_LAST_HOUR = 'RESTARTS_IN_LAST_HOUR',
+  /** SERVERLESS_CONNECTIONS */
+  SERVERLESS_CONNECTIONS = 'SERVERLESS_CONNECTIONS',
+  /** SERVERLESS_CONNECTIONS_PERCENT */
+  SERVERLESS_CONNECTIONS_PERCENT = 'SERVERLESS_CONNECTIONS_PERCENT',
+  /** SERVERLESS_DATA_SIZE_TOTAL */
+  SERVERLESS_DATA_SIZE_TOTAL = 'SERVERLESS_DATA_SIZE_TOTAL',
+  /** SERVERLESS_NETWORK_BYTES_IN */
+  SERVERLESS_NETWORK_BYTES_IN = 'SERVERLESS_NETWORK_BYTES_IN',
+  /** SERVERLESS_NETWORK_BYTES_OUT */
+  SERVERLESS_NETWORK_BYTES_OUT = 'SERVERLESS_NETWORK_BYTES_OUT',
+  /** SERVERLESS_NETWORK_NUM_REQUESTS */
+  SERVERLESS_NETWORK_NUM_REQUESTS = 'SERVERLESS_NETWORK_NUM_REQUESTS',
+  /** SERVERLESS_OPCOUNTER_CMD */
+  SERVERLESS_OPCOUNTER_CMD = 'SERVERLESS_OPCOUNTER_CMD',
+  /** SERVERLESS_OPCOUNTER_DELETE */
+  SERVERLESS_OPCOUNTER_DELETE = 'SERVERLESS_OPCOUNTER_DELETE',
+  /** SERVERLESS_OPCOUNTER_GETMORE */
+  SERVERLESS_OPCOUNTER_GETMORE = 'SERVERLESS_OPCOUNTER_GETMORE',
+  /** SERVERLESS_OPCOUNTER_INSERT */
+  SERVERLESS_OPCOUNTER_INSERT = 'SERVERLESS_OPCOUNTER_INSERT',
+  /** SERVERLESS_OPCOUNTER_QUERY */
+  SERVERLESS_OPCOUNTER_QUERY = 'SERVERLESS_OPCOUNTER_QUERY',
+  /** SERVERLESS_OPCOUNTER_UPDATE */
+  SERVERLESS_OPCOUNTER_UPDATE = 'SERVERLESS_OPCOUNTER_UPDATE',
+  /** SERVERLESS_TOTAL_READ_UNITS */
+  SERVERLESS_TOTAL_READ_UNITS = 'SERVERLESS_TOTAL_READ_UNITS',
+  /** SERVERLESS_TOTAL_WRITE_UNITS */
+  SERVERLESS_TOTAL_WRITE_UNITS = 'SERVERLESS_TOTAL_WRITE_UNITS',
+  /** SWAP_USAGE_FREE */
+  SWAP_USAGE_FREE = 'SWAP_USAGE_FREE',
+  /** SWAP_USAGE_USED */
+  SWAP_USAGE_USED = 'SWAP_USAGE_USED',
+  /** SYSTEM_MEMORY_AVAILABLE */
+  SYSTEM_MEMORY_AVAILABLE = 'SYSTEM_MEMORY_AVAILABLE',
+  /** SYSTEM_MEMORY_FREE */
+  SYSTEM_MEMORY_FREE = 'SYSTEM_MEMORY_FREE',
+  /** SYSTEM_MEMORY_USED */
+  SYSTEM_MEMORY_USED = 'SYSTEM_MEMORY_USED',
+  /** SYSTEM_NETWORK_IN */
+  SYSTEM_NETWORK_IN = 'SYSTEM_NETWORK_IN',
+  /** SYSTEM_NETWORK_OUT */
+  SYSTEM_NETWORK_OUT = 'SYSTEM_NETWORK_OUT',
+  /** TICKETS_AVAILABLE_READS */
+  TICKETS_AVAILABLE_READS = 'TICKETS_AVAILABLE_READS',
+  /** TICKETS_AVAILABLE_WRITES */
+  TICKETS_AVAILABLE_WRITES = 'TICKETS_AVAILABLE_WRITES',
 }
 
 /**
@@ -559,7 +1098,7 @@ export enum MatcherOperator {
  */
 export enum MetricThresholdViewMode {
   /** AVERAGE */
-  AVERAGE = "AVERAGE",
+  AVERAGE = 'AVERAGE',
 }
 
 /**
@@ -569,9 +1108,49 @@ export enum MetricThresholdViewMode {
  */
 export enum MetricThresholdViewOperator {
   /** GREATER_THAN */
-  GREATER_THAN = "GREATER_THAN",
+  GREATER_THAN = 'GREATER_THAN',
   /** LESS_THAN */
-  LESS_THAN = "LESS_THAN",
+  LESS_THAN = 'LESS_THAN',
+}
+
+/**
+ * Element used to express the quantity. This can be an element of time, storage capacity, and the like.
+ *
+ * @schema MetricThresholdViewUnits
+ */
+export enum MetricThresholdViewUnits {
+  /** BITS */
+  BITS = 'BITS',
+  /** BYTES */
+  BYTES = 'BYTES',
+  /** DAYS */
+  DAYS = 'DAYS',
+  /** GIGABITS */
+  GIGABITS = 'GIGABITS',
+  /** GIGABYTES */
+  GIGABYTES = 'GIGABYTES',
+  /** HOURS */
+  HOURS = 'HOURS',
+  /** KILOBITS */
+  KILOBITS = 'KILOBITS',
+  /** KILOBYTES */
+  KILOBYTES = 'KILOBYTES',
+  /** MEGABITS */
+  MEGABITS = 'MEGABITS',
+  /** MEGABYTES */
+  MEGABYTES = 'MEGABYTES',
+  /** MILLISECONDS */
+  MILLISECONDS = 'MILLISECONDS',
+  /** MINUTES */
+  MINUTES = 'MINUTES',
+  /** PETABYTES */
+  PETABYTES = 'PETABYTES',
+  /** RAW */
+  RAW = 'RAW',
+  /** SECONDS */
+  SECONDS = 'SECONDS',
+  /** TERABYTES */
+  TERABYTES = 'TERABYTES',
 }
 
 /**
@@ -581,9 +1160,9 @@ export enum MetricThresholdViewOperator {
  */
 export enum NotificationViewDatadogRegion {
   /** EU */
-  EU = "EU",
+  EU = 'EU',
   /** US */
-  US = "US",
+  US = 'US',
 }
 
 /**
@@ -593,9 +1172,9 @@ export enum NotificationViewDatadogRegion {
  */
 export enum NotificationViewOpsGenieRegion {
   /** EU */
-  EU = "EU",
+  EU = 'EU',
   /** US */
-  US = "US",
+  US = 'US',
 }
 
 /**
@@ -603,27 +1182,27 @@ export enum NotificationViewOpsGenieRegion {
  */
 export enum NotificationViewRoles {
   /** GROUP_CLUSTER_MANAGER */
-  GROUP_CLUSTER_MANAGER = "GROUP_CLUSTER_MANAGER",
+  GROUP_CLUSTER_MANAGER = 'GROUP_CLUSTER_MANAGER',
   /** GROUP_DATA_ACCESS_ADMIN */
-  GROUP_DATA_ACCESS_ADMIN = "GROUP_DATA_ACCESS_ADMIN",
+  GROUP_DATA_ACCESS_ADMIN = 'GROUP_DATA_ACCESS_ADMIN',
   /** GROUP_DATA_ACCESS_READ_ONLY */
-  GROUP_DATA_ACCESS_READ_ONLY = "GROUP_DATA_ACCESS_READ_ONLY",
+  GROUP_DATA_ACCESS_READ_ONLY = 'GROUP_DATA_ACCESS_READ_ONLY',
   /** GROUP_DATA_ACCESS_READ_WRITE */
-  GROUP_DATA_ACCESS_READ_WRITE = "GROUP_DATA_ACCESS_READ_WRITE",
+  GROUP_DATA_ACCESS_READ_WRITE = 'GROUP_DATA_ACCESS_READ_WRITE',
   /** GROUP_OWNER */
-  GROUP_OWNER = "GROUP_OWNER",
+  GROUP_OWNER = 'GROUP_OWNER',
   /** GROUP_READ_WRITE */
-  GROUP_READ_WRITE = "GROUP_READ_WRITE",
+  GROUP_READ_WRITE = 'GROUP_READ_WRITE',
   /** ORG_OWNER */
-  ORG_OWNER = "ORG_OWNER",
+  ORG_OWNER = 'ORG_OWNER',
   /** ORG_MEMBER */
-  ORG_MEMBER = "ORG_MEMBER",
+  ORG_MEMBER = 'ORG_MEMBER',
   /** ORG_GROUP_CREATOR */
-  ORG_GROUP_CREATOR = "ORG_GROUP_CREATOR",
+  ORG_GROUP_CREATOR = 'ORG_GROUP_CREATOR',
   /** ORG_BILLING_ADMIN */
-  ORG_BILLING_ADMIN = "ORG_BILLING_ADMIN",
+  ORG_BILLING_ADMIN = 'ORG_BILLING_ADMIN',
   /** ORG_READ_ONLY */
-  ORG_READ_ONLY = "ORG_READ_ONLY",
+  ORG_READ_ONLY = 'ORG_READ_ONLY',
 }
 
 /**
@@ -633,11 +1212,11 @@ export enum NotificationViewRoles {
  */
 export enum NotificationViewSeverity {
   /** CRITICAL */
-  CRITICAL = "CRITICAL",
+  CRITICAL = 'CRITICAL',
   /** ERROR */
-  ERROR = "ERROR",
+  ERROR = 'ERROR',
   /** WARNING */
-  WARNING = "WARNING",
+  WARNING = 'WARNING',
 }
 
 /**
@@ -647,35 +1226,324 @@ export enum NotificationViewSeverity {
  */
 export enum NotificationViewTypeName {
   /** DATADOG */
-  DATADOG = "DATADOG",
+  DATADOG = 'DATADOG',
   /** EMAIL */
-  EMAIL = "EMAIL",
+  EMAIL = 'EMAIL',
   /** FLOWDOCK */
-  FLOWDOCK = "FLOWDOCK",
+  FLOWDOCK = 'FLOWDOCK',
   /** GROUP */
-  GROUP = "GROUP",
+  GROUP = 'GROUP',
   /** MICROSOFT_TEAMS */
-  MICROSOFT_TEAMS = "MICROSOFT_TEAMS",
+  MICROSOFT_TEAMS = 'MICROSOFT_TEAMS',
   /** OPS_GENIE */
-  OPS_GENIE = "OPS_GENIE",
+  OPS_GENIE = 'OPS_GENIE',
   /** ORG */
-  ORG = "ORG",
+  ORG = 'ORG',
   /** PAGER_DUTY */
-  PAGER_DUTY = "PAGER_DUTY",
+  PAGER_DUTY = 'PAGER_DUTY',
   /** PROMETHEUS */
-  PROMETHEUS = "PROMETHEUS",
+  PROMETHEUS = 'PROMETHEUS',
   /** SLACK */
-  SLACK = "SLACK",
+  SLACK = 'SLACK',
   /** SMS */
-  SMS = "SMS",
+  SMS = 'SMS',
   /** TEAM */
-  TEAM = "TEAM",
+  TEAM = 'TEAM',
   /** USER */
-  USER = "USER",
+  USER = 'USER',
   /** VICTOR_OPS */
-  VICTOR_OPS = "VICTOR_OPS",
+  VICTOR_OPS = 'VICTOR_OPS',
   /** WEBHOOK */
-  WEBHOOK = "WEBHOOK",
+  WEBHOOK = 'WEBHOOK',
+}
+
+/**
+ * @schema CurrentValue
+ */
+export interface CurrentValue {
+  /**
+   * Amount of the **metricName** recorded at the time of the event. This value triggered the alert.
+   *
+   * @schema CurrentValue#Number
+   */
+  readonly number?: number;
+
+  /**
+   * Element used to express the quantity in **currentValue.number**. This can be an element of time, storage capacity, and the like. This metric triggered the alert.
+   *
+   * @schema CurrentValue#Units
+   */
+  readonly units?: CurrentValueUnits;
+
+}
+
+/**
+ * Converts an object of type 'CurrentValue' to JSON representation.
+ */
+/* eslint-disable max-len, quote-props */
+export function toJson_CurrentValue(obj: CurrentValue | undefined): Record<string, any> | undefined {
+  if (obj === undefined) { return undefined; }
+  const result = {
+    'Number': obj.number,
+    'Units': obj.units,
+  };
+  // filter undefined values
+  return Object.entries(result).reduce((r, i) => (i[1] === undefined) ? r : ({ ...r, [i[0]]: i[1] }), {});
+}
+/* eslint-enable max-len, quote-props */
+
+/**
+ * Incident that triggered this alert.
+ *
+ * @schema AlertViewEventTypeName
+ */
+export enum AlertViewEventTypeName {
+  /** AWS_ENCRYPTION_KEY_NEEDS_ROTATION */
+  AWS_ENCRYPTION_KEY_NEEDS_ROTATION = 'AWS_ENCRYPTION_KEY_NEEDS_ROTATION',
+  /** AZURE_ENCRYPTION_KEY_NEEDS_ROTATION */
+  AZURE_ENCRYPTION_KEY_NEEDS_ROTATION = 'AZURE_ENCRYPTION_KEY_NEEDS_ROTATION',
+  /** CLUSTER_MONGOS_IS_MISSING */
+  CLUSTER_MONGOS_IS_MISSING = 'CLUSTER_MONGOS_IS_MISSING',
+  /** CPS_RESTORE_FAILED */
+  CPS_RESTORE_FAILED = 'CPS_RESTORE_FAILED',
+  /** CPS_RESTORE_SUCCESSFUL */
+  CPS_RESTORE_SUCCESSFUL = 'CPS_RESTORE_SUCCESSFUL',
+  /** CPS_SNAPSHOT_BEHIND */
+  CPS_SNAPSHOT_BEHIND = 'CPS_SNAPSHOT_BEHIND',
+  /** CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED */
+  CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED = 'CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED',
+  /** CPS_SNAPSHOT_FALLBACK_FAILED */
+  CPS_SNAPSHOT_FALLBACK_FAILED = 'CPS_SNAPSHOT_FALLBACK_FAILED',
+  /** CPS_SNAPSHOT_FALLBACK_SUCCESSFUL */
+  CPS_SNAPSHOT_FALLBACK_SUCCESSFUL = 'CPS_SNAPSHOT_FALLBACK_SUCCESSFUL',
+  /** CPS_SNAPSHOT_SUCCESSFUL */
+  CPS_SNAPSHOT_SUCCESSFUL = 'CPS_SNAPSHOT_SUCCESSFUL',
+  /** CREDIT_CARD_ABOUT_TO_EXPIRE */
+  CREDIT_CARD_ABOUT_TO_EXPIRE = 'CREDIT_CARD_ABOUT_TO_EXPIRE',
+  /** DAILY_BILL_OVER_THRESHOLD */
+  DAILY_BILL_OVER_THRESHOLD = 'DAILY_BILL_OVER_THRESHOLD',
+  /** GCP_ENCRYPTION_KEY_NEEDS_ROTATION */
+  GCP_ENCRYPTION_KEY_NEEDS_ROTATION = 'GCP_ENCRYPTION_KEY_NEEDS_ROTATION',
+  /** HOST_DOWN */
+  HOST_DOWN = 'HOST_DOWN',
+  /** JOINED_GROUP */
+  JOINED_GROUP = 'JOINED_GROUP',
+  /** NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK */
+  NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK = 'NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK',
+  /** NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK */
+  NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK = 'NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK',
+  /** NO_PRIMARY */
+  NO_PRIMARY = 'NO_PRIMARY',
+  /** OUTSIDE_METRIC_THRESHOLD */
+  OUTSIDE_METRIC_THRESHOLD = 'OUTSIDE_METRIC_THRESHOLD',
+  /** OUTSIDE_SERVERLESS_METRIC_THRESHOLD */
+  OUTSIDE_SERVERLESS_METRIC_THRESHOLD = 'OUTSIDE_SERVERLESS_METRIC_THRESHOLD',
+  /** PENDING_INVOICE_OVER_THRESHOLD */
+  PENDING_INVOICE_OVER_THRESHOLD = 'PENDING_INVOICE_OVER_THRESHOLD',
+  /** PRIMARY_ELECTED */
+  PRIMARY_ELECTED = 'PRIMARY_ELECTED',
+  /** REMOVED_FROM_GROUP */
+  REMOVED_FROM_GROUP = 'REMOVED_FROM_GROUP',
+  /** REPLICATION_OPLOG_WINDOW_RUNNING_OUT */
+  REPLICATION_OPLOG_WINDOW_RUNNING_OUT = 'REPLICATION_OPLOG_WINDOW_RUNNING_OUT',
+  /** TOO_MANY_ELECTIONS */
+  TOO_MANY_ELECTIONS = 'TOO_MANY_ELECTIONS',
+  /** USERS_WITHOUT_MULTIFACTOR_AUTH */
+  USERS_WITHOUT_MULTIFACTOR_AUTH = 'USERS_WITHOUT_MULTIFACTOR_AUTH',
+}
+
+/**
+ * Human-readable label that identifies the metric against which MongoDB Cloud checks the alert.
+ *
+ * @schema AlertViewMetricName
+ */
+export enum AlertViewMetricName {
+  /** ASSERT_MSG */
+  ASSERT_MSG = 'ASSERT_MSG',
+  /** ASSERT_REGULAR */
+  ASSERT_REGULAR = 'ASSERT_REGULAR',
+  /** ASSERT_USER */
+  ASSERT_USER = 'ASSERT_USER',
+  /** ASSERT_WARNING */
+  ASSERT_WARNING = 'ASSERT_WARNING',
+  /** AVG_COMMAND_EXECUTION_TIME */
+  AVG_COMMAND_EXECUTION_TIME = 'AVG_COMMAND_EXECUTION_TIME',
+  /** AVG_READ_EXECUTION_TIME */
+  AVG_READ_EXECUTION_TIME = 'AVG_READ_EXECUTION_TIME',
+  /** AVG_WRITE_EXECUTION_TIME */
+  AVG_WRITE_EXECUTION_TIME = 'AVG_WRITE_EXECUTION_TIME',
+  /** CACHE_BYTES_READ_INTO */
+  CACHE_BYTES_READ_INTO = 'CACHE_BYTES_READ_INTO',
+  /** CACHE_BYTES_WRITTEN_FROM */
+  CACHE_BYTES_WRITTEN_FROM = 'CACHE_BYTES_WRITTEN_FROM',
+  /** CACHE_DIRTY_BYTES */
+  CACHE_DIRTY_BYTES = 'CACHE_DIRTY_BYTES',
+  /** CACHE_USED_BYTES */
+  CACHE_USED_BYTES = 'CACHE_USED_BYTES',
+  /** COMPUTED_MEMORY */
+  COMPUTED_MEMORY = 'COMPUTED_MEMORY',
+  /** CONNECTIONS */
+  CONNECTIONS = 'CONNECTIONS',
+  /** CONNECTIONS_PERCENT */
+  CONNECTIONS_PERCENT = 'CONNECTIONS_PERCENT',
+  /** CURSORS_TOTAL_OPEN */
+  CURSORS_TOTAL_OPEN = 'CURSORS_TOTAL_OPEN',
+  /** CURSORS_TOTAL_TIMED_OUT */
+  CURSORS_TOTAL_TIMED_OUT = 'CURSORS_TOTAL_TIMED_OUT',
+  /** DB_DATA_SIZE_TOTAL */
+  DB_DATA_SIZE_TOTAL = 'DB_DATA_SIZE_TOTAL',
+  /** DB_INDEX_SIZE_TOTAL */
+  DB_INDEX_SIZE_TOTAL = 'DB_INDEX_SIZE_TOTAL',
+  /** DB_STORAGE_TOTAL */
+  DB_STORAGE_TOTAL = 'DB_STORAGE_TOTAL',
+  /** DISK_PARTITION_SPACE_USED_DATA */
+  DISK_PARTITION_SPACE_USED_DATA = 'DISK_PARTITION_SPACE_USED_DATA',
+  /** DISK_PARTITION_SPACE_USED_INDEX */
+  DISK_PARTITION_SPACE_USED_INDEX = 'DISK_PARTITION_SPACE_USED_INDEX',
+  /** DISK_PARTITION_SPACE_USED_JOURNAL */
+  DISK_PARTITION_SPACE_USED_JOURNAL = 'DISK_PARTITION_SPACE_USED_JOURNAL',
+  /** DISK_PARTITION_UTILIZATION_DATA */
+  DISK_PARTITION_UTILIZATION_DATA = 'DISK_PARTITION_UTILIZATION_DATA',
+  /** DISK_PARTITION_UTILIZATION_INDEX */
+  DISK_PARTITION_UTILIZATION_INDEX = 'DISK_PARTITION_UTILIZATION_INDEX',
+  /** DISK_PARTITION_UTILIZATION_JOURNAL */
+  DISK_PARTITION_UTILIZATION_JOURNAL = 'DISK_PARTITION_UTILIZATION_JOURNAL',
+  /** DOCUMENT_DELETED */
+  DOCUMENT_DELETED = 'DOCUMENT_DELETED',
+  /** DOCUMENT_INSERTED */
+  DOCUMENT_INSERTED = 'DOCUMENT_INSERTED',
+  /** DOCUMENT_RETURNED */
+  DOCUMENT_RETURNED = 'DOCUMENT_RETURNED',
+  /** DOCUMENT_UPDATED */
+  DOCUMENT_UPDATED = 'DOCUMENT_UPDATED',
+  /** EXTRA_INFO_PAGE_FAULTS */
+  EXTRA_INFO_PAGE_FAULTS = 'EXTRA_INFO_PAGE_FAULTS',
+  /** FTS_MEMORY_RESIDENT */
+  FTS_MEMORY_RESIDENT = 'FTS_MEMORY_RESIDENT',
+  /** FTS_MEMORY_SHARED */
+  FTS_MEMORY_SHARED = 'FTS_MEMORY_SHARED',
+  /** FTS_MEMORY_VIRTUAL */
+  FTS_MEMORY_VIRTUAL = 'FTS_MEMORY_VIRTUAL',
+  /** FTS_PROCESS_CPU_KERNEL */
+  FTS_PROCESS_CPU_KERNEL = 'FTS_PROCESS_CPU_KERNEL',
+  /** FTS_PROCESS_CPU_USER */
+  FTS_PROCESS_CPU_USER = 'FTS_PROCESS_CPU_USER',
+  /** FTS_PROCESS_DISK */
+  FTS_PROCESS_DISK = 'FTS_PROCESS_DISK',
+  /** GLOBAL_LOCK_CURRENT_QUEUE_READERS */
+  GLOBAL_LOCK_CURRENT_QUEUE_READERS = 'GLOBAL_LOCK_CURRENT_QUEUE_READERS',
+  /** GLOBAL_LOCK_CURRENT_QUEUE_TOTAL */
+  GLOBAL_LOCK_CURRENT_QUEUE_TOTAL = 'GLOBAL_LOCK_CURRENT_QUEUE_TOTAL',
+  /** GLOBAL_LOCK_CURRENT_QUEUE_WRITERS */
+  GLOBAL_LOCK_CURRENT_QUEUE_WRITERS = 'GLOBAL_LOCK_CURRENT_QUEUE_WRITERS',
+  /** LOGICAL_SIZE */
+  LOGICAL_SIZE = 'LOGICAL_SIZE',
+  /** MEMORY_RESIDENT */
+  MEMORY_RESIDENT = 'MEMORY_RESIDENT',
+  /** MEMORY_VIRTUAL */
+  MEMORY_VIRTUAL = 'MEMORY_VIRTUAL',
+  /** NETWORK_BYTES_IN */
+  NETWORK_BYTES_IN = 'NETWORK_BYTES_IN',
+  /** NETWORK_BYTES_OUT */
+  NETWORK_BYTES_OUT = 'NETWORK_BYTES_OUT',
+  /** NETWORK_NUM_REQUESTS */
+  NETWORK_NUM_REQUESTS = 'NETWORK_NUM_REQUESTS',
+  /** NORMALIZED_FTS_PROCESS_CPU_KERNEL */
+  NORMALIZED_FTS_PROCESS_CPU_KERNEL = 'NORMALIZED_FTS_PROCESS_CPU_KERNEL',
+  /** NORMALIZED_FTS_PROCESS_CPU_USER */
+  NORMALIZED_FTS_PROCESS_CPU_USER = 'NORMALIZED_FTS_PROCESS_CPU_USER',
+  /** NORMALIZED_SYSTEM_CPU_STEAL */
+  NORMALIZED_SYSTEM_CPU_STEAL = 'NORMALIZED_SYSTEM_CPU_STEAL',
+  /** NORMALIZED_SYSTEM_CPU_USER */
+  NORMALIZED_SYSTEM_CPU_USER = 'NORMALIZED_SYSTEM_CPU_USER',
+  /** OPCOUNTER_CMD */
+  OPCOUNTER_CMD = 'OPCOUNTER_CMD',
+  /** OPCOUNTER_DELETE */
+  OPCOUNTER_DELETE = 'OPCOUNTER_DELETE',
+  /** OPCOUNTER_GETMORE */
+  OPCOUNTER_GETMORE = 'OPCOUNTER_GETMORE',
+  /** OPCOUNTER_INSERT */
+  OPCOUNTER_INSERT = 'OPCOUNTER_INSERT',
+  /** OPCOUNTER_QUERY */
+  OPCOUNTER_QUERY = 'OPCOUNTER_QUERY',
+  /** OPCOUNTER_REPL_CMD */
+  OPCOUNTER_REPL_CMD = 'OPCOUNTER_REPL_CMD',
+  /** OPCOUNTER_REPL_DELETE */
+  OPCOUNTER_REPL_DELETE = 'OPCOUNTER_REPL_DELETE',
+  /** OPCOUNTER_REPL_INSERT */
+  OPCOUNTER_REPL_INSERT = 'OPCOUNTER_REPL_INSERT',
+  /** OPCOUNTER_REPL_UPDATE */
+  OPCOUNTER_REPL_UPDATE = 'OPCOUNTER_REPL_UPDATE',
+  /** OPCOUNTER_UPDATE */
+  OPCOUNTER_UPDATE = 'OPCOUNTER_UPDATE',
+  /** OPERATIONS_SCAN_AND_ORDER */
+  OPERATIONS_SCAN_AND_ORDER = 'OPERATIONS_SCAN_AND_ORDER',
+  /** OPLOG_MASTER_LAG_TIME_DIFF */
+  OPLOG_MASTER_LAG_TIME_DIFF = 'OPLOG_MASTER_LAG_TIME_DIFF',
+  /** OPLOG_MASTER_TIME */
+  OPLOG_MASTER_TIME = 'OPLOG_MASTER_TIME',
+  /** OPLOG_RATE_GB_PER_HOUR */
+  OPLOG_RATE_GB_PER_HOUR = 'OPLOG_RATE_GB_PER_HOUR',
+  /** OPLOG_SLAVE_LAG_MASTER_TIME */
+  OPLOG_SLAVE_LAG_MASTER_TIME = 'OPLOG_SLAVE_LAG_MASTER_TIME',
+  /** QUERY_EXECUTOR_SCANNED */
+  QUERY_EXECUTOR_SCANNED = 'QUERY_EXECUTOR_SCANNED',
+  /** QUERY_EXECUTOR_SCANNED_OBJECTS */
+  QUERY_EXECUTOR_SCANNED_OBJECTS = 'QUERY_EXECUTOR_SCANNED_OBJECTS',
+  /** QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED */
+  QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED = 'QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED',
+  /** QUERY_TARGETING_SCANNED_PER_RETURNED */
+  QUERY_TARGETING_SCANNED_PER_RETURNED = 'QUERY_TARGETING_SCANNED_PER_RETURNED',
+  /** RESTARTS_IN_LAST_HOUR */
+  RESTARTS_IN_LAST_HOUR = 'RESTARTS_IN_LAST_HOUR',
+  /** SERVERLESS_CONNECTIONS */
+  SERVERLESS_CONNECTIONS = 'SERVERLESS_CONNECTIONS',
+  /** SERVERLESS_CONNECTIONS_PERCENT */
+  SERVERLESS_CONNECTIONS_PERCENT = 'SERVERLESS_CONNECTIONS_PERCENT',
+  /** SERVERLESS_DATA_SIZE_TOTAL */
+  SERVERLESS_DATA_SIZE_TOTAL = 'SERVERLESS_DATA_SIZE_TOTAL',
+  /** SERVERLESS_NETWORK_BYTES_IN */
+  SERVERLESS_NETWORK_BYTES_IN = 'SERVERLESS_NETWORK_BYTES_IN',
+  /** SERVERLESS_NETWORK_BYTES_OUT */
+  SERVERLESS_NETWORK_BYTES_OUT = 'SERVERLESS_NETWORK_BYTES_OUT',
+  /** SERVERLESS_NETWORK_NUM_REQUESTS */
+  SERVERLESS_NETWORK_NUM_REQUESTS = 'SERVERLESS_NETWORK_NUM_REQUESTS',
+  /** SERVERLESS_OPCOUNTER_CMD */
+  SERVERLESS_OPCOUNTER_CMD = 'SERVERLESS_OPCOUNTER_CMD',
+  /** SERVERLESS_OPCOUNTER_DELETE */
+  SERVERLESS_OPCOUNTER_DELETE = 'SERVERLESS_OPCOUNTER_DELETE',
+  /** SERVERLESS_OPCOUNTER_GETMORE */
+  SERVERLESS_OPCOUNTER_GETMORE = 'SERVERLESS_OPCOUNTER_GETMORE',
+  /** SERVERLESS_OPCOUNTER_INSERT */
+  SERVERLESS_OPCOUNTER_INSERT = 'SERVERLESS_OPCOUNTER_INSERT',
+  /** SERVERLESS_OPCOUNTER_QUERY */
+  SERVERLESS_OPCOUNTER_QUERY = 'SERVERLESS_OPCOUNTER_QUERY',
+  /** SERVERLESS_OPCOUNTER_UPDATE */
+  SERVERLESS_OPCOUNTER_UPDATE = 'SERVERLESS_OPCOUNTER_UPDATE',
+  /** SERVERLESS_TOTAL_READ_UNITS */
+  SERVERLESS_TOTAL_READ_UNITS = 'SERVERLESS_TOTAL_READ_UNITS',
+  /** SERVERLESS_TOTAL_WRITE_UNITS */
+  SERVERLESS_TOTAL_WRITE_UNITS = 'SERVERLESS_TOTAL_WRITE_UNITS',
+  /** TICKETS_AVAILABLE_READS */
+  TICKETS_AVAILABLE_READS = 'TICKETS_AVAILABLE_READS',
+  /** TICKETS_AVAILABLE_WRITES */
+  TICKETS_AVAILABLE_WRITES = 'TICKETS_AVAILABLE_WRITES',
+}
+
+/**
+ * State of this alert at the time you requested its details.
+ *
+ * @schema AlertViewStatus
+ */
+export enum AlertViewStatus {
+  /** CANCELLED */
+  CANCELLED = 'CANCELLED',
+  /** CLOSED */
+  CLOSED = 'CLOSED',
+  /** OPEN */
+  OPEN = 'OPEN',
+  /** TRACKING */
+  TRACKING = 'TRACKING',
 }
 
 /**
@@ -685,9 +1553,89 @@ export enum NotificationViewTypeName {
  */
 export enum IntegerThresholdViewOperator {
   /** GREATER_THAN */
-  GREATER_THAN = "GREATER_THAN",
+  GREATER_THAN = 'GREATER_THAN',
   /** LESS_THAN */
-  LESS_THAN = "LESS_THAN",
+  LESS_THAN = 'LESS_THAN',
+}
+
+/**
+ * Element used to express the quantity. This can be an element of time, storage capacity, and the like.
+ *
+ * @schema IntegerThresholdViewUnits
+ */
+export enum IntegerThresholdViewUnits {
+  /** BITS */
+  BITS = 'BITS',
+  /** BYTES */
+  BYTES = 'BYTES',
+  /** DAYS */
+  DAYS = 'DAYS',
+  /** GIGABITS */
+  GIGABITS = 'GIGABITS',
+  /** GIGABYTES */
+  GIGABYTES = 'GIGABYTES',
+  /** HOURS */
+  HOURS = 'HOURS',
+  /** KILOBITS */
+  KILOBITS = 'KILOBITS',
+  /** KILOBYTES */
+  KILOBYTES = 'KILOBYTES',
+  /** MEGABITS */
+  MEGABITS = 'MEGABITS',
+  /** MEGABYTES */
+  MEGABYTES = 'MEGABYTES',
+  /** MILLISECONDS */
+  MILLISECONDS = 'MILLISECONDS',
+  /** MINUTES */
+  MINUTES = 'MINUTES',
+  /** PETABYTES */
+  PETABYTES = 'PETABYTES',
+  /** RAW */
+  RAW = 'RAW',
+  /** SECONDS */
+  SECONDS = 'SECONDS',
+  /** TERABYTES */
+  TERABYTES = 'TERABYTES',
+}
+
+/**
+ * Element used to express the quantity in **currentValue.number**. This can be an element of time, storage capacity, and the like. This metric triggered the alert.
+ *
+ * @schema CurrentValueUnits
+ */
+export enum CurrentValueUnits {
+  /** BITS */
+  BITS = 'BITS',
+  /** BYTES */
+  BYTES = 'BYTES',
+  /** DAYS */
+  DAYS = 'DAYS',
+  /** GIGABITS */
+  GIGABITS = 'GIGABITS',
+  /** GIGABYTES */
+  GIGABYTES = 'GIGABYTES',
+  /** HOURS */
+  HOURS = 'HOURS',
+  /** KILOBITS */
+  KILOBITS = 'KILOBITS',
+  /** KILOBYTES */
+  KILOBYTES = 'KILOBYTES',
+  /** MEGABITS */
+  MEGABITS = 'MEGABITS',
+  /** MEGABYTES */
+  MEGABYTES = 'MEGABYTES',
+  /** MILLISECONDS */
+  MILLISECONDS = 'MILLISECONDS',
+  /** MINUTES */
+  MINUTES = 'MINUTES',
+  /** PETABYTES */
+  PETABYTES = 'PETABYTES',
+  /** RAW */
+  RAW = 'RAW',
+  /** SECONDS */
+  SECONDS = 'SECONDS',
+  /** TERABYTES */
+  TERABYTES = 'TERABYTES',
 }
 
 
@@ -701,7 +1649,7 @@ export class CfnAlertConfiguration extends cdk.CfnResource {
   /**
   * The CloudFormation resource type name for this resource class.
   */
-  public static readonly CFN_RESOURCE_TYPE_NAME = "MongoDB::Atlas::AlertConfiguration";
+  public static readonly CFN_RESOURCE_TYPE_NAME = 'MongoDB::Atlas::AlertConfiguration';
 
   /**
    * Resource props.
@@ -712,6 +1660,22 @@ export class CfnAlertConfiguration extends cdk.CfnResource {
    * Attribute `MongoDB::Atlas::AlertConfiguration.Id`
    */
   public readonly attrId: string;
+  /**
+   * Attribute `MongoDB::Atlas::AlertConfiguration.GroupId`
+   */
+  public readonly attrGroupId: string;
+  /**
+   * Attribute `MongoDB::Atlas::AlertConfiguration.TypeName`
+   */
+  public readonly attrTypeName: string;
+  /**
+   * Attribute `MongoDB::Atlas::AlertConfiguration.Created`
+   */
+  public readonly attrCreated: string;
+  /**
+   * Attribute `MongoDB::Atlas::AlertConfiguration.TotalCount`
+   */
+  public readonly attrTotalCount: number;
   /**
    * Attribute `MongoDB::Atlas::AlertConfiguration.Enabled`
    */
@@ -734,6 +1698,10 @@ export class CfnAlertConfiguration extends cdk.CfnResource {
     this.props = props;
 
     this.attrId = cdk.Token.asString(this.getAtt('Id'));
+    this.attrGroupId = cdk.Token.asString(this.getAtt('GroupId'));
+    this.attrTypeName = cdk.Token.asString(this.getAtt('TypeName'));
+    this.attrCreated = cdk.Token.asString(this.getAtt('Created'));
+    this.attrTotalCount = cdk.Token.asNumber(this.getAtt('TotalCount'));
     this.attrEnabled = this.getAtt('Enabled');
     this.attrUpdated = cdk.Token.asString(this.getAtt('Updated'));
   }

@@ -111,6 +111,7 @@
     "/properties/Profile"
   ],
   "required": [
-    "ProjectId"
+    "ProjectId",
+    "AccessList"
   ]
 }

@@ -1,8 +1,14 @@
 {
-    "ProjectId" : "ProjectId",
-    "Profile": "default",
-    "AccessList" : [
-        { "CIDRBlock": "203.0.113.0/24",
-          "Comment": "CIDR block for Application Server B - D" }
-    ]
+  "ProjectId": "ProjectId",
+  "Profile": "default",
+  "AccessList": [
+    {
+      "CIDRBlock": "0.0.0.0/1",
+      "Comment": "Testing open all ips with changes"
+    },
+    {
+      "CIDRBlock": "203.0.113.0/24",
+      "Comment": "CIDR block for Application Server B - D"
+    }
+  ]
 }

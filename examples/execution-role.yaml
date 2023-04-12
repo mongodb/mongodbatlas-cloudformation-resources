@@ -16,6 +16,7 @@ Resources:
               Service:
                 - cloudformation.amazonaws.com
                 - resources.cloudformation.amazonaws.com
+                - lambda.amazonaws.com
             Action: sts:AssumeRole
       Path: "/"
       Policies:

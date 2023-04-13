@@ -1,4 +1,7 @@
 {
+  "typeName": "MongoDB::Atlas::OnlineArchive",
+  "description": "Returns, adds, edits, or removes an online archive.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "additionalProperties": false,
   "definitions": {
     "ScheduleView": {
@@ -6,7 +9,12 @@
       "properties": {
         "Type": {
           "type": "string",
-          "enum": ["DAILY", "MONTHLY","DEFAULT","WEEKLY"]
+          "enum": [
+            "DAILY",
+            "MONTHLY",
+            "DEFAULT",
+            "WEEKLY"
+          ]
         },
         "EndHour": {
           "type": "integer",
@@ -53,7 +61,10 @@
         "Type": {
           "type": "string",
           "description": "Means by which MongoDB Cloud selects data to archive. Data can be chosen using the age of the data or a MongoDB query.\n**DATE** selects documents to archive based on a date.\n**CUSTOM** selects documents to archive based on a custom JSON query. MongoDB Cloud doesn't support **CUSTOM** when `\"collectionType\": \"TIMESERIES\"`.",
-          "enum": ["DATE", "CUSTOM"]
+          "enum": [
+            "DATE",
+            "CUSTOM"
+          ]
         },
         "DateField": {
           "type": "string",
@@ -62,7 +73,12 @@
         "DateFormat": {
           "type": "string",
           "description": "Syntax used to write the date after which data moves to the online archive. Date can be expressed as ISO 8601 or Epoch timestamps. The Epoch timestamp can be expressed as nanoseconds, milliseconds, or seconds. Set this parameter when \"criteria.type\" : \"DATE\". You must set \"criteria.type\" : \"DATE\" if \"collectionType\": \"TIMESERIES\".",
-          "enum": ["ISODATE","EPOCH_SECONDS","EPOCH_MILLIS","EPOCH_NANOSECONDS"]
+          "enum": [
+            "ISODATE",
+            "EPOCH_SECONDS",
+            "EPOCH_MILLIS",
+            "EPOCH_NANOSECONDS"
+          ]
         },
         "ExpireAfterDays": {
           "type": "integer",
@@ -86,7 +102,14 @@
         "FieldType": {
           "type": "string",
           "description": "Data type of the parameter that that MongoDB Cloud uses to partition data. Partition parameters of type [UUID](http://bsonspec.org/spec.html) must be of binary subtype 4. MongoDB Cloud skips partition parameters of type UUID with subtype 3.",
-          "enum": ["date", "int", "long", "objectId", "string", "uuid"]
+          "enum": [
+            "date",
+            "int",
+            "long",
+            "objectId",
+            "string",
+            "uuid"
+          ]
         },
         "Order": {
           "type": "integer",
@@ -96,33 +119,6 @@
       "additionalProperties": false
     }
   },
-  "description": "Returns, adds, edits, or removes an online archive.",
-  "handlers": {
-    "create": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "read": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "update": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    },
-    "delete": {
-      "permissions": [
-        "secretsmanager:GetSecretValue"
-      ]
-    }
-  },
-  "primaryIdentifier": [
-    "/properties/ArchiveId",
-    "/properties/Profile"
-  ],
   "properties": {
     "Profile": {
       "type": "string",
@@ -141,7 +137,7 @@
       "description": "Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
     },
     "CollName": {
       "type": "string",
@@ -150,7 +146,10 @@
     "CollectionType": {
       "type": "string",
       "description": "Classification of MongoDB database collection that you want to return.\n\nIf you set this parameter to `TIMESERIES`, set `\"criteria.type\" : \"date\"` and `\"criteria.dateFormat\" : \"ISODATE\"`.",
-      "enum": ["STANDARD", "TIMESERIES"]
+      "enum": [
+        "STANDARD",
+        "TIMESERIES"
+      ]
     },
     "Criteria": {
       "type": "object",
@@ -198,12 +197,12 @@
       "type": "string",
       "description": "Phase of the process to create this online archive when you made this request.\n\n| State       | Indication |\n|-------------|------------|\n| `PENDING`   | MongoDB Cloud has queued documents for archive. Archiving hasn't started. |\n| `ARCHIVING` | MongoDB Cloud started archiving documents that meet the archival criteria. |\n| `IDLE`      | MongoDB Cloud waits to start the next archival job. |\n| `PAUSING`   | Someone chose to stop archiving. MongoDB Cloud finishes the running archival job then changes the state to `PAUSED` when that job completes. |\n| `PAUSED`    | MongoDB Cloud has stopped archiving. Archived documents can be queried. The specified archiving operation on the active cluster cannot archive additional documents. You can resume archiving for paused archives at any time. |\n| `ORPHANED`  | Someone has deleted the collection associated with an active or paused archive. MongoDB Cloud doesn't delete the archived data. You must manually delete the online archives associated with the deleted collection. |\n| `DELETED`   | Someone has deleted the archive was deleted. When someone deletes an online archive, MongoDB Cloud removes all associated archived documents from the cloud object storage. |",
       "enum": [
-        "PENDING", 
-        "ARCHIVING", 
-        "IDLE", 
-        "PAUSING", 
-        "PAUSED", 
-        "ORPHANED", 
+        "PENDING",
+        "ARCHIVING",
+        "IDLE",
+        "PAUSING",
+        "PAUSED",
+        "ORPHANED",
         "DELETED"
       ]
     },
@@ -212,18 +211,45 @@
       "description": "Number of documents returned in this response."
     }
   },
-  "readOnlyProperties": [
-    "/properties/State", 
-    "/properties/TotalCount",
+  "required": [
+    "ClusterName",
+    "Criteria"
+  ],
+  "primaryIdentifier": [
     "/properties/ArchiveId",
+    "/properties/Profile",
     "/properties/ProjectId",
-    "/properties/State"
+    "/properties/ClusterName"
   ],
-
-  "required": ["ClusterName", "Criteria"],
+  "readOnlyProperties": [
+    "/properties/State",
+    "/properties/TotalCount",
+    "/properties/ArchiveId"
+  ],
   "createOnlyProperties": [
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/ProjectId"
   ],
-  "typeName": "MongoDB::Atlas::OnlineArchive",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

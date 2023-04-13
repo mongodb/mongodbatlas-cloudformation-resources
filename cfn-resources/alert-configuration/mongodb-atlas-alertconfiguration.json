@@ -1,10 +1,12 @@
 {
+  "typeName": "MongoDB::Atlas::AlertConfiguration",
+  "description": "Returns and edits the conditions that trigger alerts and how MongoDB Cloud notifies users. This collection remains under revision and may change. Refer to the legacy documentation for this collection in the following link.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "additionalProperties": false,
   "definitions": {
     "AlertConfigView": {
       "type": "object",
       "properties": {
-
         "Created": {
           "type": "string",
           "description": "Date and time when MongoDB Cloud created the alert configuration. This parameter expresses its value in the ISO 8601 timestamp format in UTC.",
@@ -16,37 +18,7 @@
         },
         "EventTypeName": {
           "type": "string",
-          "description": "Event type that triggers an alert.",
-          "enum": [
-            "AWS_ENCRYPTION_KEY_NEEDS_ROTATION", 
-            "AZURE_ENCRYPTION_KEY_NEEDS_ROTATION", 
-            "CLUSTER_MONGOS_IS_MISSING", 
-            "CPS_RESTORE_FAILED", 
-            "CPS_RESTORE_SUCCESSFUL", 
-            "CPS_SNAPSHOT_BEHIND", 
-            "CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED", 
-            "CPS_SNAPSHOT_FALLBACK_FAILED", 
-            "CPS_SNAPSHOT_FALLBACK_SUCCESSFUL", 
-            "CPS_SNAPSHOT_SUCCESSFUL", 
-            "CREDIT_CARD_ABOUT_TO_EXPIRE", 
-            "DAILY_BILL_OVER_THRESHOLD", 
-            "GCP_ENCRYPTION_KEY_NEEDS_ROTATION", 
-            "HOST_DOWN", 
-            "JOINED_GROUP", 
-            "NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK", 
-            "NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK", 
-            "NO_PRIMARY", 
-            "OUTSIDE_METRIC_THRESHOLD", 
-            "OUTSIDE_SERVERLESS_METRIC_THRESHOLD", 
-            "OUTSIDE_REALM_METRIC_THRESHOLD", 
-            "PENDING_INVOICE_OVER_THRESHOLD", 
-            "PRIMARY_ELECTED", 
-            "REMOVED_FROM_GROUP", 
-            "REPLICATION_OPLOG_WINDOW_RUNNING_OUT", 
-            "TOO_MANY_ELECTIONS", 
-            "USER_ROLES_CHANGED_AUDIT", 
-            "USERS_WITHOUT_MULTIFACTOR_AUTH"
-          ]
+          "description": "Event type that triggers an alert."
         },
         "GroupId": {
           "type": "string",
@@ -132,13 +104,12 @@
           "minLength": 24,
           "pattern": "^([a-f0-9]{24})$"
         },
-
         "ClusterName": {
           "type": "string",
           "description": "Human-readable label that identifies the cluster to which this alert applies. This resource returns this parameter for alerts of events impacting backups, replica sets, or sharded clusters.",
           "maxLength": 64,
           "minLength": 1,
-          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?\u003c!-)([\\w]{0,42}))$"
+          "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
         },
         "Created": {
           "type": "string",
@@ -152,35 +123,7 @@
         },
         "EventTypeName": {
           "type": "string",
-          "description": "Incident that triggered this alert.",
-          "enum": [
-            "AWS_ENCRYPTION_KEY_NEEDS_ROTATION", 
-            "AZURE_ENCRYPTION_KEY_NEEDS_ROTATION", 
-            "CLUSTER_MONGOS_IS_MISSING", 
-            "CPS_RESTORE_FAILED", 
-            "CPS_RESTORE_SUCCESSFUL", 
-            "CPS_SNAPSHOT_BEHIND", 
-            "CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED", 
-            "CPS_SNAPSHOT_FALLBACK_FAILED", 
-            "CPS_SNAPSHOT_FALLBACK_SUCCESSFUL", 
-            "CPS_SNAPSHOT_SUCCESSFUL", 
-            "CREDIT_CARD_ABOUT_TO_EXPIRE", 
-            "DAILY_BILL_OVER_THRESHOLD", 
-            "GCP_ENCRYPTION_KEY_NEEDS_ROTATION", 
-            "HOST_DOWN", 
-            "JOINED_GROUP", 
-            "NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK", 
-            "NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK", 
-            "NO_PRIMARY", 
-            "OUTSIDE_METRIC_THRESHOLD", 
-            "OUTSIDE_SERVERLESS_METRIC_THRESHOLD", 
-            "PENDING_INVOICE_OVER_THRESHOLD", 
-            "PRIMARY_ELECTED", 
-            "REMOVED_FROM_GROUP", 
-            "REPLICATION_OPLOG_WINDOW_RUNNING_OUT", 
-            "TOO_MANY_ELECTIONS", 
-            "USERS_WITHOUT_MULTIFACTOR_AUTH"
-          ]
+          "description": "Incident that triggered this alert."
         },
         "GroupId": {
           "type": "string",
@@ -216,94 +159,7 @@
         },
         "MetricName": {
           "type": "string",
-          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the alert.",
-          "enum": [
-            "ASSERT_MSG", 
-            "ASSERT_REGULAR", 
-            "ASSERT_USER", 
-            "ASSERT_WARNING", 
-            "AVG_COMMAND_EXECUTION_TIME", 
-            "AVG_READ_EXECUTION_TIME", 
-            "AVG_WRITE_EXECUTION_TIME", 
-            "CACHE_BYTES_READ_INTO", 
-            "CACHE_BYTES_WRITTEN_FROM", 
-            "CACHE_DIRTY_BYTES", 
-            "CACHE_USED_BYTES", 
-            "COMPUTED_MEMORY", 
-            "CONNECTIONS", 
-            "CONNECTIONS_PERCENT", 
-            "CURSORS_TOTAL_OPEN", 
-            "CURSORS_TOTAL_TIMED_OUT", 
-            "DB_DATA_SIZE_TOTAL", 
-            "DB_INDEX_SIZE_TOTAL", 
-            "DB_STORAGE_TOTAL", 
-            "DISK_PARTITION_SPACE_USED_DATA", 
-            "DISK_PARTITION_SPACE_USED_INDEX", 
-            "DISK_PARTITION_SPACE_USED_JOURNAL", 
-            "DISK_PARTITION_UTILIZATION_DATA", 
-            "DISK_PARTITION_UTILIZATION_INDEX", 
-            "DISK_PARTITION_UTILIZATION_JOURNAL", 
-            "DOCUMENT_DELETED", 
-            "DOCUMENT_INSERTED", 
-            "DOCUMENT_RETURNED", 
-            "DOCUMENT_UPDATED", 
-            "EXTRA_INFO_PAGE_FAULTS", 
-            "FTS_MEMORY_RESIDENT", 
-            "FTS_MEMORY_SHARED", 
-            "FTS_MEMORY_VIRTUAL", 
-            "FTS_PROCESS_CPU_KERNEL", 
-            "FTS_PROCESS_CPU_USER", 
-            "FTS_PROCESS_DISK", 
-            "GLOBAL_LOCK_CURRENT_QUEUE_READERS", 
-            "GLOBAL_LOCK_CURRENT_QUEUE_TOTAL", 
-            "GLOBAL_LOCK_CURRENT_QUEUE_WRITERS", 
-            "LOGICAL_SIZE", 
-            "MEMORY_RESIDENT", 
-            "MEMORY_VIRTUAL", 
-            "NETWORK_BYTES_IN", 
-            "NETWORK_BYTES_OUT", 
-            "NETWORK_NUM_REQUESTS", 
-            "NORMALIZED_FTS_PROCESS_CPU_KERNEL", 
-            "NORMALIZED_FTS_PROCESS_CPU_USER", 
-            "NORMALIZED_SYSTEM_CPU_STEAL", 
-            "NORMALIZED_SYSTEM_CPU_USER", 
-            "OPCOUNTER_CMD", 
-            "OPCOUNTER_DELETE", 
-            "OPCOUNTER_GETMORE", 
-            "OPCOUNTER_INSERT", 
-            "OPCOUNTER_QUERY", 
-            "OPCOUNTER_REPL_CMD", 
-            "OPCOUNTER_REPL_DELETE", 
-            "OPCOUNTER_REPL_INSERT", 
-            "OPCOUNTER_REPL_UPDATE", 
-            "OPCOUNTER_UPDATE", 
-            "OPERATIONS_SCAN_AND_ORDER", 
-            "OPLOG_MASTER_LAG_TIME_DIFF", 
-            "OPLOG_MASTER_TIME", 
-            "OPLOG_RATE_GB_PER_HOUR", 
-            "OPLOG_SLAVE_LAG_MASTER_TIME", 
-            "QUERY_EXECUTOR_SCANNED", 
-            "QUERY_EXECUTOR_SCANNED_OBJECTS", 
-            "QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED", 
-            "QUERY_TARGETING_SCANNED_PER_RETURNED", 
-            "RESTARTS_IN_LAST_HOUR", 
-            "SERVERLESS_CONNECTIONS", 
-            "SERVERLESS_CONNECTIONS_PERCENT", 
-            "SERVERLESS_DATA_SIZE_TOTAL", 
-            "SERVERLESS_NETWORK_BYTES_IN", 
-            "SERVERLESS_NETWORK_BYTES_OUT", 
-            "SERVERLESS_NETWORK_NUM_REQUESTS", 
-            "SERVERLESS_OPCOUNTER_CMD", 
-            "SERVERLESS_OPCOUNTER_DELETE", 
-            "SERVERLESS_OPCOUNTER_GETMORE", 
-            "SERVERLESS_OPCOUNTER_INSERT", 
-            "SERVERLESS_OPCOUNTER_QUERY", 
-            "SERVERLESS_OPCOUNTER_UPDATE", 
-            "SERVERLESS_TOTAL_READ_UNITS", 
-            "SERVERLESS_TOTAL_WRITE_UNITS", 
-            "TICKETS_AVAILABLE_READS", 
-            "TICKETS_AVAILABLE_WRITES"
-          ]
+          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the alert."
         },
         "ReplicaSetName": {
           "type": "string",
@@ -317,7 +173,12 @@
         "Status": {
           "type": "string",
           "description": "State of this alert at the time you requested its details.",
-          "enum": ["CANCELLED", "CLOSED", "OPEN", "TRACKING"]
+          "enum": [
+            "CANCELLED",
+            "CLOSED",
+            "OPEN",
+            "TRACKING"
+          ]
         },
         "TypeName": {
           "type": "string",
@@ -334,11 +195,13 @@
     "IntegerThresholdView": {
       "type": "object",
       "properties": {
-
         "Operator": {
           "type": "string",
           "description": "Comparison operator to apply when checking the current metric value.",
-          "enum": ["GREATER_THAN", "LESS_THAN"]
+          "enum": [
+            "GREATER_THAN",
+            "LESS_THAN"
+          ]
         },
         "Threshold": {
           "type": "number",
@@ -346,37 +209,7 @@
         },
         "Units": {
           "type": "string",
-          "description": "Element used to express the quantity. This can be an element of time, storage capacity, and the like.",
-          "enum": [
-            "BITS", 
-            "BYTES", 
-            "DAYS", 
-            "GIGABITS", 
-            "GIGABYTES", 
-            "HOURS", 
-            "KILOBITS", 
-            "KILOBYTES", 
-            "MEGABITS", 
-            "MEGABYTES", 
-            "MILLISECONDS", 
-            "MINUTES", 
-            "PETABYTES", 
-            "RAW", 
-            "SECONDS", 
-            "TERABYTES"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
-    "ApiKeyDefinition": {
-      "type": "object",
-      "properties": {
-        "PrivateKey": {
-          "type": "string"
-        },
-        "PublicKey": {
-          "type": "string"
+          "description": "Element used to express the quantity. This can be an element of time, storage capacity, and the like."
         }
       },
       "additionalProperties": false
@@ -384,17 +217,16 @@
     "Matcher": {
       "type": "object",
       "properties": {
-
         "FieldName": {
           "type": "string",
           "description": "Name of the parameter in the target object that MongoDB Cloud checks. The parameter must match all rules for MongoDB Cloud to check for alert configurations.",
           "enum": [
-            "CLUSTER_NAME", 
-            "HOSTNAME", 
-            "HOSTNAME_AND_PORT", 
-            "PORT", 
-            "REPLICA_SET_NAME", 
-            "SHARD_NAME", 
+            "CLUSTER_NAME",
+            "HOSTNAME",
+            "HOSTNAME_AND_PORT",
+            "PORT",
+            "REPLICA_SET_NAME",
+            "SHARD_NAME",
             "TYPE_NAME"
           ]
         },
@@ -402,12 +234,12 @@
           "type": "string",
           "description": "Comparison operator to apply when checking the current metric value against **matcher[n].value**.",
           "enum": [
-            "EQUALS", 
-            "CONTAINS", 
-            "STARTS_WITH", 
-            "ENDS_WITH", 
-            "NOT_EQUALS", 
-            "NOT_CONTAINS", 
+            "EQUALS",
+            "CONTAINS",
+            "STARTS_WITH",
+            "ENDS_WITH",
+            "NOT_EQUALS",
+            "NOT_CONTAINS",
             "REGEX"
           ]
         },
@@ -421,136 +253,24 @@
     "MetricThresholdView": {
       "type": "object",
       "properties": {
-
         "MetricName": {
           "type": "string",
-          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the configured **metricThreshold.threshold**.",
-          "enum": [
-            "ASSERT_MSG", 
-            "ASSERT_REGULAR", 
-            "ASSERT_USER", 
-            "ASSERT_WARNING", 
-            "AVG_COMMAND_EXECUTION_TIME", 
-            "AVG_READ_EXECUTION_TIME", 
-            "AVG_WRITE_EXECUTION_TIME", 
-            "BACKGROUND_FLUSH_AVG", 
-            "CACHE_BYTES_READ_INTO", 
-            "CACHE_BYTES_WRITTEN_FROM", 
-            "CACHE_USAGE_DIRTY", 
-            "CACHE_USAGE_USED", 
-            "COMPUTED_MEMORY", 
-            "CONNECTIONS", 
-            "CONNECTIONS_MAX", 
-            "CONNECTIONS_PERCENT", 
-            "CURSORS_TOTAL_CLIENT_CURSORS_SIZE", 
-            "CURSORS_TOTAL_OPEN", 
-            "CURSORS_TOTAL_TIMED_OUT", 
-            "DB_DATA_SIZE_TOTAL", 
-            "DB_INDEX_SIZE_TOTAL", 
-            "DB_STORAGE_TOTAL", 
-            "DISK_PARTITION_SPACE_USED_DATA", 
-            "DISK_PARTITION_SPACE_USED_INDEX", 
-            "DISK_PARTITION_SPACE_USED_JOURNAL", 
-            "DISK_PARTITION_UTILIZATION_DATA", 
-            "DISK_PARTITION_UTILIZATION_INDEX", 
-            "DISK_PARTITION_UTILIZATION_JOURNAL", 
-            "DOCUMENT_DELETED", 
-            "DOCUMENT_INSERTED", 
-            "DOCUMENT_RETURNED", 
-            "DOCUMENT_UPDATED", 
-            "EXTRA_INFO_PAGE_FAULTS", 
-            "FTS_DISK_UTILIZATION", 
-            "FTS_MEMORY_MAPPED", 
-            "FTS_MEMORY_RESIDENT", 
-            "FTS_MEMORY_VIRTUAL", 
-            "FTS_PROCESS_CPU_KERNEL", 
-            "FTS_PROCESS_CPU_USER", 
-            "GLOBAL_ACCESSES_NOT_IN_MEMORY", 
-            "GLOBAL_LOCK_CURRENT_QUEUE_READERS", 
-            "GLOBAL_LOCK_CURRENT_QUEUE_TOTAL", 
-            "GLOBAL_LOCK_CURRENT_QUEUE_WRITERS", 
-            "GLOBAL_LOCK_PERCENTAGE", 
-            "GLOBAL_PAGE_FAULT_EXCEPTIONS_THROWN", 
-            "INDEX_COUNTERS_BTREE_ACCESSES", 
-            "INDEX_COUNTERS_BTREE_HITS", 
-            "INDEX_COUNTERS_BTREE_MISS_RATIO", 
-            "INDEX_COUNTERS_BTREE_MISSES", 
-            "JOURNALING_COMMITS_IN_WRITE_LOCK", 
-            "JOURNALING_MB", 
-            "JOURNALING_WRITE_DATA_FILES_MB", 
-            "LOGICAL_SIZE", 
-            "MEMORY_MAPPED", 
-            "MEMORY_RESIDENT", 
-            "MEMORY_VIRTUAL", 
-            "MUNIN_CPU_IOWAIT", 
-            "MUNIN_CPU_IRQ", 
-            "MUNIN_CPU_NICE", 
-            "MUNIN_CPU_SOFTIRQ", 
-            "MUNIN_CPU_STEAL", 
-            "MUNIN_CPU_SYSTEM", 
-            "MUNIN_CPU_USER", 
-            "NETWORK_BYTES_IN", 
-            "NETWORK_BYTES_OUT", 
-            "NETWORK_NUM_REQUESTS", 
-            "NORMALIZED_FTS_PROCESS_CPU_KERNEL", 
-            "NORMALIZED_FTS_PROCESS_CPU_USER", 
-            "NORMALIZED_SYSTEM_CPU_STEAL", 
-            "NORMALIZED_SYSTEM_CPU_USER", 
-            "OPCOUNTER_CMD", 
-            "OPCOUNTER_DELETE", 
-            "OPCOUNTER_GETMORE", 
-            "OPCOUNTER_INSERT", 
-            "OPCOUNTER_QUERY", 
-            "OPCOUNTER_REPL_CMD", 
-            "OPCOUNTER_REPL_DELETE", 
-            "OPCOUNTER_REPL_INSERT", 
-            "OPCOUNTER_REPL_UPDATE", 
-            "OPCOUNTER_UPDATE", 
-            "OPERATIONS_SCAN_AND_ORDER", 
-            "OPLOG_MASTER_LAG_TIME_DIFF", 
-            "OPLOG_MASTER_TIME", 
-            "OPLOG_MASTER_TIME_ESTIMATED_TTL", 
-            "OPLOG_RATE_GB_PER_HOUR", 
-            "OPLOG_SLAVE_LAG_MASTER_TIME", 
-            "QUERY_EXECUTOR_SCANNED", 
-            "QUERY_EXECUTOR_SCANNED_OBJECTS", 
-            "QUERY_TARGETING_SCANNED_OBJECTS_PER_RETURNED", 
-            "QUERY_TARGETING_SCANNED_PER_RETURNED", 
-            "RESTARTS_IN_LAST_HOUR", 
-            "SERVERLESS_CONNECTIONS", 
-            "SERVERLESS_CONNECTIONS_PERCENT", 
-            "SERVERLESS_DATA_SIZE_TOTAL", 
-            "SERVERLESS_NETWORK_BYTES_IN", 
-            "SERVERLESS_NETWORK_BYTES_OUT", 
-            "SERVERLESS_NETWORK_NUM_REQUESTS", 
-            "SERVERLESS_OPCOUNTER_CMD", 
-            "SERVERLESS_OPCOUNTER_DELETE", 
-            "SERVERLESS_OPCOUNTER_GETMORE", 
-            "SERVERLESS_OPCOUNTER_INSERT", 
-            "SERVERLESS_OPCOUNTER_QUERY", 
-            "SERVERLESS_OPCOUNTER_UPDATE", 
-            "SERVERLESS_TOTAL_READ_UNITS", 
-            "SERVERLESS_TOTAL_WRITE_UNITS", 
-            "SWAP_USAGE_FREE", 
-            "SWAP_USAGE_USED", 
-            "SYSTEM_MEMORY_AVAILABLE", 
-            "SYSTEM_MEMORY_FREE", 
-            "SYSTEM_MEMORY_USED", 
-            "SYSTEM_NETWORK_IN", 
-            "SYSTEM_NETWORK_OUT", 
-            "TICKETS_AVAILABLE_READS", 
-            "TICKETS_AVAILABLE_WRITES"
-          ]
+          "description": "Human-readable label that identifies the metric against which MongoDB Cloud checks the configured **metricThreshold.threshold**."
         },
         "Mode": {
           "type": "string",
           "description": "MongoDB Cloud computes the current metric value as an average.",
-          "enum": ["AVERAGE"]
+          "enum": [
+            "AVERAGE"
+          ]
         },
         "Operator": {
           "type": "string",
           "description": "Comparison operator to apply when checking the current metric value.",
-          "enum": ["GREATER_THAN", "LESS_THAN"]
+          "enum": [
+            "GREATER_THAN",
+            "LESS_THAN"
+          ]
         },
         "Threshold": {
           "type": "number",
@@ -558,25 +278,7 @@
         },
         "Units": {
           "type": "string",
-          "description": "Element used to express the quantity. This can be an element of time, storage capacity, and the like.",
-          "enum": [
-            "BITS", 
-            "BYTES", 
-            "DAYS", 
-            "GIGABITS", 
-            "GIGABYTES", 
-            "HOURS", 
-            "KILOBITS", 
-            "KILOBYTES", 
-            "MEGABITS", 
-            "MEGABYTES", 
-            "MILLISECONDS", 
-            "MINUTES", 
-            "PETABYTES", 
-            "RAW", 
-            "SECONDS", 
-            "TERABYTES"
-          ]
+          "description": "Element used to express the quantity. This can be an element of time, storage capacity, and the like."
         }
       },
       "additionalProperties": false
@@ -584,7 +286,6 @@
     "NotificationView": {
       "type": "object",
       "properties": {
-
         "ApiToken": {
           "type": "string",
           "description": "Slack API token or Bot token that MongoDB Cloud needs to send alert notifications via Slack. The resource requires this parameter when '\"notifications.typeName\" : \"SLACK\"'. If the token later becomes invalid, MongoDB Cloud sends an email to the project owners. If the token remains invalid, MongoDB Cloud removes the token."
@@ -603,7 +304,10 @@
           "description": "Datadog region that indicates which API Uniform Resource Locator (URL) to use. The resource requires this parameter when '\"notifications.typeName\" : \"DATADOG\"'.",
           "maxLength": 2,
           "minLength": 2,
-          "enum": ["EU", "US"]
+          "enum": [
+            "EU",
+            "US"
+          ]
         },
         "DelayMin": {
           "type": "number",
@@ -619,7 +323,7 @@
         },
         "FlowName": {
           "type": "string",
-          "description": "Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: 'www.flowdock.com/app/\u003corganization-name\u003e/\u003cflow-name\u003e'. The resource requires this parameter when '\"notifications.typeName\" : \"FLOWDOCK\"'.",
+          "description": "Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: 'www.flowdock.com/app/<organization-name>/<flow-name>'. The resource requires this parameter when '\"notifications.typeName\" : \"FLOWDOCK\"'.",
           "maxLength": 100,
           "minLength": 1,
           "pattern": "^([a-z\\-]+)$"
@@ -653,7 +357,10 @@
           "description": "Opsgenie region that indicates which API Uniform Resource Locator (URL) to use.",
           "maxLength": 2,
           "minLength": 2,
-          "enum": ["EU", "US"]
+          "enum": [
+            "EU",
+            "US"
+          ]
         },
         "OrgName": {
           "type": "string",
@@ -669,16 +376,16 @@
           "items": {
             "type": "string",
             "enum": [
-              "GROUP_CLUSTER_MANAGER", 
-              "GROUP_DATA_ACCESS_ADMIN", 
-              "GROUP_DATA_ACCESS_READ_ONLY", 
-              "GROUP_DATA_ACCESS_READ_WRITE", 
-              "GROUP_OWNER", 
-              "GROUP_READ_WRITE", 
-              "ORG_OWNER", 
-              "ORG_MEMBER", 
-              "ORG_GROUP_CREATOR", 
-              "ORG_BILLING_ADMIN", 
+              "GROUP_CLUSTER_MANAGER",
+              "GROUP_DATA_ACCESS_ADMIN",
+              "GROUP_DATA_ACCESS_READ_ONLY",
+              "GROUP_DATA_ACCESS_READ_WRITE",
+              "GROUP_OWNER",
+              "GROUP_READ_WRITE",
+              "ORG_OWNER",
+              "ORG_MEMBER",
+              "ORG_GROUP_CREATOR",
+              "ORG_BILLING_ADMIN",
               "ORG_READ_ONLY"
             ]
           }
@@ -694,7 +401,11 @@
         "Severity": {
           "type": "string",
           "description": "Degree of seriousness given to this notification.",
-          "enum": ["CRITICAL", "ERROR", "WARNING"]
+          "enum": [
+            "CRITICAL",
+            "ERROR",
+            "WARNING"
+          ]
         },
         "SmsEnabled": {
           "type": "boolean",
@@ -715,20 +426,20 @@
           "type": "string",
           "description": "Human-readable label that displays the alert notification type.",
           "enum": [
-            "DATADOG", 
-            "EMAIL", 
-            "FLOWDOCK", 
-            "GROUP", 
-            "MICROSOFT_TEAMS", 
-            "OPS_GENIE", 
-            "ORG", 
-            "PAGER_DUTY", 
-            "PROMETHEUS", 
-            "SLACK", 
-            "SMS", 
-            "TEAM", 
-            "USER", 
-            "VICTOR_OPS", 
+            "DATADOG",
+            "EMAIL",
+            "FLOWDOCK",
+            "GROUP",
+            "MICROSOFT_TEAMS",
+            "OPS_GENIE",
+            "ORG",
+            "PAGER_DUTY",
+            "PROMETHEUS",
+            "SLACK",
+            "SMS",
+            "TEAM",
+            "USER",
+            "VICTOR_OPS",
             "WEBHOOK"
           ]
         },
@@ -758,32 +469,13 @@
     "CurrentValue": {
       "type": "object",
       "properties": {
-
         "Number": {
           "type": "number",
           "description": "Amount of the **metricName** recorded at the time of the event. This value triggered the alert."
         },
         "Units": {
           "type": "string",
-          "description": "Element used to express the quantity in **currentValue.number**. This can be an element of time, storage capacity, and the like. This metric triggered the alert.",
-          "enum": [
-            "BITS", 
-            "BYTES", 
-            "DAYS", 
-            "GIGABITS", 
-            "GIGABYTES", 
-            "HOURS", 
-            "KILOBITS", 
-            "KILOBYTES", 
-            "MEGABITS", 
-            "MEGABYTES", 
-            "MILLISECONDS", 
-            "MINUTES", 
-            "PETABYTES", 
-            "RAW", 
-            "SECONDS", 
-            "TERABYTES"
-          ]
+          "description": "Element used to express the quantity in **currentValue.number**. This can be an element of time, storage capacity, and the like. This metric triggered the alert."
         }
       },
       "additionalProperties": false
@@ -791,9 +483,6 @@
     "Link": {
       "type": "object",
       "properties": {
-        "ApiKeys": {
-          "$ref": "#/definitions/ApiKeyDefinition"
-        },
         "Href": {
           "type": "string",
           "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with 'https://mms.mongodb.com'."
@@ -806,14 +495,10 @@
       "additionalProperties": false
     }
   },
-  "description": "Returns and edits the conditions that trigger alerts and how MongoDB Cloud notifies users. This collection remains under revision and may change. Refer to the legacy documentation for this collection in the following link.",
   "properties": {
     "Id": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies the alert configuration.",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
+      "description": "Unique 24-hexadecimal digit string that identifies the alert configuration."
     },
     "Profile": {
       "type": "string",
@@ -831,54 +516,14 @@
     },
     "EventTypeName": {
       "type": "string",
-      "description": "Event type that triggers an alert.",
-      "enum": [
-        "AWS_ENCRYPTION_KEY_NEEDS_ROTATION", 
-        "AZURE_ENCRYPTION_KEY_NEEDS_ROTATION", 
-        "CLUSTER_MONGOS_IS_MISSING", 
-        "CPS_RESTORE_FAILED", 
-        "CPS_RESTORE_SUCCESSFUL", 
-        "CPS_SNAPSHOT_BEHIND", 
-        "CPS_SNAPSHOT_DOWNLOAD_REQUEST_FAILED", 
-        "CPS_SNAPSHOT_FALLBACK_FAILED", 
-        "CPS_SNAPSHOT_FALLBACK_SUCCESSFUL", 
-        "CPS_SNAPSHOT_SUCCESSFUL", 
-        "CREDIT_CARD_ABOUT_TO_EXPIRE", 
-        "DAILY_BILL_OVER_THRESHOLD", 
-        "GCP_ENCRYPTION_KEY_NEEDS_ROTATION", 
-        "HOST_DOWN", 
-        "JOINED_GROUP", 
-        "NDS_X509_USER_AUTHENTICATION_CUSTOMER_CA_EXPIRATION_CHECK", 
-        "NDS_X509_USER_AUTHENTICATION_MANAGED_USER_CERTS_EXPIRATION_CHECK", 
-        "NO_PRIMARY", 
-        "OUTSIDE_METRIC_THRESHOLD", 
-        "OUTSIDE_SERVERLESS_METRIC_THRESHOLD", 
-        "OUTSIDE_REALM_METRIC_THRESHOLD", 
-        "PENDING_INVOICE_OVER_THRESHOLD", 
-        "PRIMARY_ELECTED", 
-        "REMOVED_FROM_GROUP", 
-        "REPLICATION_OPLOG_WINDOW_RUNNING_OUT", 
-        "TOO_MANY_ELECTIONS", 
-        "USER_ROLES_CHANGED_AUDIT", 
-        "USERS_WITHOUT_MULTIFACTOR_AUTH"
-      ]
+      "description": "Event type that triggers an alert."
     },
-    "GroupId": {
+    "ProjectId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies your project.",
       "maxLength": 24,
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
-    },
-
-    "Links": {
-      "type": "array",
-      "insertionOrder": false,
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
     },
     "Matchers": {
       "type": "array",
@@ -903,24 +548,10 @@
         "type": "object"
       }
     },
-
-    "Results": {
-      "type": "array",
-      "insertionOrder": false,
-      "description": "List of returned documents that MongoDB Cloud provides when completing this request.",
-      "items": {
-        "$ref": "#/definitions/AlertView",
-        "type": "object"
-      }
-    },
     "Threshold": {
       "type": "object",
       "description": "Limit that triggers an alert when exceeded. The resource returns this parameter when **eventTypeName** has not been set to 'OUTSIDE_METRIC_THRESHOLD'.",
       "$ref": "#/definitions/IntegerThresholdView"
-    },
-    "TotalCount": {
-      "type": "number",
-      "description": "Number of documents returned in this response."
     },
     "TypeName": {
       "type": "string",
@@ -934,43 +565,22 @@
   },
   "readOnlyProperties": [
     "/properties/Id",
-    "/properties/GroupId",
-    "/properties/Links", 
-    "/properties/TypeName", 
-    "/properties/Created", 
-    "/properties/TotalCount",
     "/properties/Enabled",
-    "/properties/Updated", 
-    "/properties/Results",
-    "/definitions/AlertConfigView/GroupId",
-    "/definitions/AlertConfigView/Id",
-    "/definitions/AlertConfigView/Updated",
-    "/definitions/AlertConfigView/Created",
-    "/definitions/AlertConfigView/Links",
-    "/definitions/AlertConfigView/TypeName",
-    "/definitions/CurrentValue/Number", 
-    "/definitions/CurrentValue/Units", 
-    "/definitions/AlertView/GroupId",
-    "/definitions/AlertView/Id",
-    "/definitions/AlertView/ClusterName",
-    "/definitions/AlertView/Created",
-    "/definitions/AlertView/EventTypeName",
-    "/definitions/AlertView/Status",
-    "/definitions/AlertView/TypeName",
-    "/definitions/AlertView/Updated",
-    "/definitions/AlertView/HostnameAndPort",
-    "/definitions/AlertView/LastNotified",
-    "/definitions/AlertView/MetricName",
-    "/definitions/AlertView/AlertConfigId",
-    "/definitions/AlertView/ReplicaSetName",
-    "/definitions/AlertView/CurrentValue",
-    "/definitions/AlertView/Resolved",
-    "/definitions/AlertView/AcknowledgingUsername",
-    "/definitions/AlertView/Links",
-   "/definitions/NotificationView/TeamId"
+    "/properties/Updated",
+    "/properties/Created"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile",
+    "/properties/EventTypeName",
+    "/properties/Matchers",
+    "/properties/Notifications",
+    "/properties/MetricThreshold",
+    "/properties/Threshold",
+    "/properties/TypeName"
   ],
   "primaryIdentifier": [
-    "/properties/GroupId",
+    "/properties/ProjectId",
     "/properties/Profile",
     "/properties/Id"
   ],
@@ -995,7 +605,5 @@
         "secretsmanager:GetSecretValue"
       ]
     }
-  },
-  "typeName": "MongoDB::Atlas::AlertConfiguration",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  }
 }

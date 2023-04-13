@@ -119,9 +119,9 @@ _Type_: String
 
 _Allowed Values_: <code>EU</code> | <code>US</code>
 
-_Minimum_: <code>2</code>
+_Minimum Length_: <code>2</code>
 
-_Maximum_: <code>2</code>
+_Maximum Length_: <code>2</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -174,9 +174,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>100</code>
+_Maximum Length_: <code>100</code>
 
 _Pattern_: <code>^([a-z\-]+)$</code>
 
@@ -254,9 +254,9 @@ _Type_: String
 
 _Allowed Values_: <code>EU</code> | <code>US</code>
 
-_Minimum_: <code>2</code>
+_Minimum Length_: <code>2</code>
 
-_Maximum_: <code>2</code>
+_Maximum Length_: <code>2</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -268,9 +268,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>64</code>
+_Maximum Length_: <code>64</code>
 
 _Pattern_: <code>^([a-z\-]+)$</code>
 
@@ -340,9 +340,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 

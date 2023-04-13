@@ -37,7 +37,7 @@
           "Type": "DATE",
           "DateField": "created",
           "DateFormat": "ISODATE",
-          "ExpireAfterDays": "5"
+          "ExpireAfterDays": "15"
         },
         "DbName": {
           "Ref": "DBName"

@@ -1,6 +1,6 @@
 {
   "Profile": "default",
-  "GroupId": "",
+  "ProjectId": "",
   "Enabled": true,
   "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
   "MetricThreshold": {
@@ -14,7 +14,7 @@
     {
       "TypeName": "EMAIL",
       "DelayMin": "0",
-      "EmailAddress": "dharmendran.rajendran@peerislands.io",
+      "EmailAddress": "test@test.com",
       "IntervalMin": "15"
     }
   ]

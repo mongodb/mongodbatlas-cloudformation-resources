@@ -18,6 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#collectiontype" title="CollectionType">CollectionType</a>" : <i>String</i>,
         "<a href="#criteria" title="Criteria">Criteria</a>" : <i><a href="criteriaview.md">CriteriaView</a></i>,
         "<a href="#dbname" title="DbName">DbName</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
         "<a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>" : <i>Integer</i>,
         "<a href="#pagenum" title="PageNum">PageNum</a>" : <i>Integer</i>,
@@ -38,6 +39,7 @@ Properties:
     <a href="#collectiontype" title="CollectionType">CollectionType</a>: <i>String</i>
     <a href="#criteria" title="Criteria">Criteria</a>: <i><a href="criteriaview.md">CriteriaView</a></i>
     <a href="#dbname" title="DbName">DbName</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>
     <a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>: <i>Integer</i>
     <a href="#pagenum" title="PageNum">PageNum</a>: <i>Integer</i>
@@ -116,6 +118,22 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### ProjectId
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+_Required_: No
+
+_Type_: String
+
+_Minimum Length_: <code>24</code>
+
+_Maximum Length_: <code>24</code>
+
+_Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### IncludeCount
 
 Flag that indicates whether the response returns the total number of items (**totalCount**) in the response.
@@ -193,22 +211,4 @@ Number of documents returned in this response.
 #### ArchiveId
 
 Unique 24-hexadecimal digit string that identifies the online archive to delete.
-
-#### ProjectId
-
-Unique 24-hexadecimal digit string that identifies your project.
-
-#### State
-
-Phase of the process to create this online archive when you made this request.
-
-| State       | Indication |
-|-------------|------------|
-| `PENDING`   | MongoDB Cloud has queued documents for archive. Archiving hasn't started. |
-| `ARCHIVING` | MongoDB Cloud started archiving documents that meet the archival criteria. |
-| `IDLE`      | MongoDB Cloud waits to start the next archival job. |
-| `PAUSING`   | Someone chose to stop archiving. MongoDB Cloud finishes the running archival job then changes the state to `PAUSED` when that job completes. |
-| `PAUSED`    | MongoDB Cloud has stopped archiving. Archived documents can be queried. The specified archiving operation on the active cluster cannot archive additional documents. You can resume archiving for paused archives at any time. |
-| `ORPHANED`  | Someone has deleted the collection associated with an active or paused archive. MongoDB Cloud doesn't delete the archived data. You must manually delete the online archives associated with the deleted collection. |
-| `DELETED`   | Someone has deleted the archive was deleted. When someone deletes an online archive, MongoDB Cloud removes all associated archived documents from the cloud object storage. |
 

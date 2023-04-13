@@ -34,7 +34,7 @@
         "Profile": {
           "Ref": "Profile"
         },
-        "GroupId": {
+        "ProjectId": {
           "Ref": "ProjectId"
         },
         "Enabled": {

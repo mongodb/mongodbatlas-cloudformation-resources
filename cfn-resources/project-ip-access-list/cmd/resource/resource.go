@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -120,6 +121,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // Update handles the Update event from the Cloudformation service.
+// Logic: Atlas does not provide an endpoint to update a single entry in the accesslist.
+// As a result, we delete all the entries in the current model + previous model
+// and then create all the entries in the current model.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
@@ -135,20 +139,50 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	if isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, currentModel); !isEntryAlreadyInAccessList || err != nil {
+	// "cfn test" will fail without these validations
+	if len(prevModel.AccessList) == 0 {
 		return handler.ProgressEvent{
-			Message:          "The entry to update is not in the access list",
+			Message:          "The previous model does not have entry. You should use CREATE instead of UPDATE",
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+
+	existingEntries, err := getAllEntries(client, *currentModel.ProjectId)
+	if err != nil {
+		return handler.ProgressEvent{
+			Message:          "Error in retrieving the existing entries",
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, err
 	}
 
-	progressEvent := deleteEntries(currentModel, client)
+	if existingEntries.TotalCount == 0 {
+		return handler.ProgressEvent{
+			Message:          "You have no entry in the accesslist. You should use CREATE instead of UPDATE",
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+
+	if len(currentModel.AccessList) == 0 {
+		return handler.ProgressEvent{
+			Message:          "You cannot have an empty accesslist. You shoud use DELETE instead of UPDATE",
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+
+	// We need to make sure that the entries in the previous and current model are not in the accesslist.
+	// Why do we need to do delete entries in the previous model?
+	// Scenario: If the user updates the current model by removing one of the entries in the accesslist,
+	// CFN will call the UPDATE operation which won't delete the removed entry bacause it is no longer in the current model.
+	entriesToDelete := currentModel.AccessList
+	entriesToDelete = append(entriesToDelete, prevModel.AccessList...)
+
+	progressEvent := deleteEntriesForUpdate(entriesToDelete, *currentModel.ProjectId, client)
 	if progressEvent.OperationStatus == handler.Failed {
 		_, _ = logger.Warnf("Update deleteEntries error:%+v", progressEvent.Message)
 		return progressEvent, nil
 	}
 
-	progressEvent, err := createEntries(currentModel, client)
+	progressEvent, err = createEntries(currentModel, client)
 	if progressEvent.OperationStatus == handler.Failed || err != nil {
 		_, _ = logger.Warnf("Update createEntries error:%+v", err)
 		return progressEvent, nil
@@ -321,16 +355,40 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 	return handler.ProgressEvent{}, nil
 }
 
+// deleteEntriesForUpdate deletes entries in the atlas access list without failing if the entry is NOT_FOUND.
+// This function is used in the update handler where we don't want to fail if the entry is not found.
+// Note: The delete handler MUST fail if the entry is not found otherwise "cfn test" will fail.
+func deleteEntriesForUpdate(list []AccessListDefinition, projectID string, client *mongodbatlas.Client) handler.ProgressEvent {
+	for _, accessListEntry := range list {
+		entry, err := getEntry(accessListEntry)
+		if err != nil {
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting the resource: %s", err.Error()),
+				nil)
+		}
+
+		if resp, err := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry); err != nil {
+			if resp.StatusCode == http.StatusNotFound {
+				_, _ = logger.Warnf("Accesslist entry Not Found: %s, err:%+v", entry, err)
+				continue
+			}
+
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting the resource: %s", err.Error()),
+				resp.Response)
+		}
+	}
+
+	return handler.ProgressEvent{}
+}
+
 func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEvent {
 	for _, accessListEntry := range model.AccessList {
 		entry, err := getEntry(accessListEntry)
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting the resource : %s", err.Error()),
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting the resource: %s", err.Error()),
 				nil)
 		}
 
-		resp, err := client.ProjectIPAccessList.Delete(context.Background(), *model.ProjectId, entry)
-		if err != nil {
+		if resp, err := client.ProjectIPAccessList.Delete(context.Background(), *model.ProjectId, entry); err != nil {
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting the resource: %s", err.Error()),
 				resp.Response)
 		}

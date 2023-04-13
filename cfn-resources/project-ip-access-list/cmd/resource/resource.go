@@ -120,12 +120,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-/*
-Update handles the Update event from the Cloudformation service.
-Logic:	Atlas does not provide an endpoint to update a single entry in the accesslist.
-As a result, we delete all the entries in the current model + previous model
-and then create all the entries in the current model.
-*/
+// Update handles the Update event from the Cloudformation service.
+// Logic:	Atlas does not provide an endpoint to update a single entry in the accesslist.
+// As a result, we delete all the entries in the current model + previous model
+// and then create all the entries in the current model.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
@@ -172,12 +170,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	/*
-		We need to make sure that the entries in the previous and current model are not in the accesslist.
-		Why do we need to do delete entries in the previous model?
-		Scenario: If the user updates the current model by removing one of the entries in the accesslist,
-		CFN will call the UPDATE operation which won't delete the removed entry bacause it is no longer in the current model.
-	*/
+	// We need to make sure that the entries in the previous and current model are not in the accesslist.
+	// Why do we need to do delete entries in the previous model?
+	// Scenario: If the user updates the current model by removing one of the entries in the accesslist,
+	// CFN will call the UPDATE operation which won't delete the removed entry bacause it is no longer in the current model.
 	entriesToDelete := append(currentModel.AccessList, prevModel.AccessList...)
 	progressEvent := deleteEntriesForUpdate(entriesToDelete, *currentModel.ProjectId, client)
 	if progressEvent.OperationStatus == handler.Failed {
@@ -358,11 +354,9 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 	return handler.ProgressEvent{}, nil
 }
 
-/*
-deleteEntriesForUpdate deletes entries in the atlas access list without failing if the entry is NOT_FOUND.
-This function is used in the update handler where we don't want to fail if the entry is not found.
-Note: The delete handler MUST fail if the entry is not found otherwise "cfn test" will fail.
-*/
+// deleteEntriesForUpdate deletes entries in the atlas access list without failing if the entry is NOT_FOUND.
+// This function is used in the update handler where we don't want to fail if the entry is not found.
+// Note: The delete handler MUST fail if the entry is not found otherwise "cfn test" will fail.
 func deleteEntriesForUpdate(list []AccessListDefinition, projectId string, client *mongodbatlas.Client) handler.ProgressEvent {
 	for _, accessListEntry := range list {
 		entry, err := getEntry(accessListEntry)

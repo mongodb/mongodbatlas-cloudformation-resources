@@ -142,7 +142,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	// We need these validations otherwise "cfn test" will fail
+	// "cfn test" will fail without these validations
 	if len(prevModel.AccessList) == 0 {
 		return handler.ProgressEvent{
 			Message:          "The previous model does not have entry. You should use CREATE instead of UPDATE",

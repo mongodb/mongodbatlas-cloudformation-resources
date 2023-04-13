@@ -160,7 +160,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          "You have no entry in the accesslist. You should use CREATE instead of UPDATE",
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-
 	}
 
 	if len(currentModel.AccessList) == 0 {
@@ -174,7 +173,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Why do we need to do delete entries in the previous model?
 	// Scenario: If the user updates the current model by removing one of the entries in the accesslist,
 	// CFN will call the UPDATE operation which won't delete the removed entry bacause it is no longer in the current model.
-	entriesToDelete := append(currentModel.AccessList, prevModel.AccessList...)
+	entriesToDelete := currentModel.AccessList
+	entriesToDelete = append(entriesToDelete, prevModel.AccessList...)
+
 	progressEvent := deleteEntriesForUpdate(entriesToDelete, *currentModel.ProjectId, client)
 	if progressEvent.OperationStatus == handler.Failed {
 		_, _ = logger.Warnf("Update deleteEntries error:%+v", progressEvent.Message)
@@ -357,7 +358,7 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 // deleteEntriesForUpdate deletes entries in the atlas access list without failing if the entry is NOT_FOUND.
 // This function is used in the update handler where we don't want to fail if the entry is not found.
 // Note: The delete handler MUST fail if the entry is not found otherwise "cfn test" will fail.
-func deleteEntriesForUpdate(list []AccessListDefinition, projectId string, client *mongodbatlas.Client) handler.ProgressEvent {
+func deleteEntriesForUpdate(list []AccessListDefinition, projectID string, client *mongodbatlas.Client) handler.ProgressEvent {
 	for _, accessListEntry := range list {
 		entry, err := getEntry(accessListEntry)
 		if err != nil {
@@ -365,7 +366,7 @@ func deleteEntriesForUpdate(list []AccessListDefinition, projectId string, clien
 				nil)
 		}
 
-		if resp, err := client.ProjectIPAccessList.Delete(context.Background(), projectId, entry); err != nil {
+		if resp, err := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry); err != nil {
 			if resp.StatusCode == http.StatusNotFound {
 				_, _ = logger.Warnf("Accesslist entry Not Found: %s, err:%+v", entry, err)
 				continue

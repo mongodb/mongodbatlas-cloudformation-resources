@@ -121,7 +121,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // Update handles the Update event from the Cloudformation service.
-// Logic:	Atlas does not provide an endpoint to update a single entry in the accesslist.
+// Logic: Atlas does not provide an endpoint to update a single entry in the accesslist.
 // As a result, we delete all the entries in the current model + previous model
 // and then create all the entries in the current model.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

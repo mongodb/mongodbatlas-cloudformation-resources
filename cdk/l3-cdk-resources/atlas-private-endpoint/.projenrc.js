@@ -25,7 +25,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     peerDeps: [
         '@mongodbatlas-awscdk/atlas-basic',
         '@mongodbatlas-awscdk/private-endpoint',
-        '@mongodbatlas-awscdk/cluster',
+        '@mongodbatlas-awscdk/cluster@1.1.4',
         '@mongodbatlas-awscdk/project',
         '@mongodbatlas-awscdk/database-user',
         '@mongodbatlas-awscdk/project-ip-access-list',

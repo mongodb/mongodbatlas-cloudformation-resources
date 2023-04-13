@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@mongodbatlas-awscdk/atlas-basic": "1.1.0",
-    "@mongodbatlas-awscdk/cluster": "1.1.0",
+    "@mongodbatlas-awscdk/cluster": "1.1.4",
     "@mongodbatlas-awscdk/database-user": "1.1.0",
     "@mongodbatlas-awscdk/private-endpoint": "1.1.0",
     "@mongodbatlas-awscdk/project": "1.1.0",
@@ -65,7 +65,7 @@
   },
   "peerDependencies": {
     "@mongodbatlas-awscdk/atlas-basic": "^1.1.0",
-    "@mongodbatlas-awscdk/cluster": "^1.1.0",
+    "@mongodbatlas-awscdk/cluster": "1.1.4",
     "@mongodbatlas-awscdk/database-user": "^1.1.0",
     "@mongodbatlas-awscdk/private-endpoint": "^1.1.0",
     "@mongodbatlas-awscdk/project": "^1.1.0",

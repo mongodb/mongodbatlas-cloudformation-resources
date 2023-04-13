@@ -9,7 +9,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   repositoryUrl: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources.git',
   stability: 'experimental',
   peerDeps: [
-    '@mongodbatlas-awscdk/cluster',
+    '@mongodbatlas-awscdk/cluster@1.1.4',
     '@mongodbatlas-awscdk/project',
     '@mongodbatlas-awscdk/database-user',
     '@mongodbatlas-awscdk/project-ip-access-list',

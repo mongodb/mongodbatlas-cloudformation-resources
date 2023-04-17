@@ -1,5 +1,5 @@
 ---
-name: New issue
+name: Create JIRA ticket for new issues
 
 on:
   issues:

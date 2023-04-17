@@ -1,0 +1,33 @@
+---
+name: Create JIRA ticket for new issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  jira_task:
+    name: Create Jira issue
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login
+      uses: atlassian/gajira-login@v3.0.0
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    - name: Create JIRA ticket
+      uses: atlassian/gajira-create@v3.0.0
+      id: create
+      with:
+        project: INTMDB
+        issuetype: Task
+        summary: «[HELP] - ${{ github.event.issue.title }}»
+        description: ${{ github.event.issue.html_url }}
+        fields: '{"components": "CloudFormation-PI"}'
+    - name: Add comment
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        issue-number: ${{ github.event.issue.number }}
+        body: |
+          Thanks for opening this issue. The ticket ${{ steps.create.outputs.issue }} was created for internal tracking.

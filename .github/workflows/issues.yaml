@@ -8,7 +8,7 @@ on:
 jobs:
   jira_task:
     name: Create Jira issue
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Login
       uses: atlassian/gajira-login@v3.0.0

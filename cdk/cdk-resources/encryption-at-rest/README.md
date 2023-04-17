@@ -1,4 +1,5 @@
 # @mongodbatlas-awscdk/encryption-at-rest
+## This package is now deprecated and will no longer receive new features. Use [awscdk-resource-mongodbatlas](https://constructs.dev/packages/awscdk-resources-mongodbatlas) instead.
 
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 

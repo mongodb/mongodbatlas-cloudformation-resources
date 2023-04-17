@@ -1,5 +1,5 @@
 # @mongodbatlas-awscdk/encryption-at-rest-express
-
+## This package is now deprecated and will no longer receive new features. Use [awscdk-resource-mongodbatlas](https://constructs.dev/packages/awscdk-resources-mongodbatlas) instead.
 The official [MongoDB Atlas](https://www.mongodb.com/) AWS CDK resource for Node.js.
 
 > This L3 construct uses MongoDB Atlas [L1 constructs](https://constructs.dev/search?q=&offset=0&tags=mongodb-published) and data structures (including Cluster, Database User, IP Access List, and Encryption at Rest).

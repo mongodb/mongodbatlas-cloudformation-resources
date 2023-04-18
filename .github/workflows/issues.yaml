@@ -4,7 +4,9 @@ name: Create JIRA ticket for new issues
 on:
   issues:
     types: [opened]
-
+permissions: 
+  issues: write
+  contents: read
 jobs:
   jira_task:
     name: Create Jira issue
@@ -49,6 +51,5 @@ jobs:
       uses: peter-evans/create-or-update-comment@v3
       with:
         issue-number: ${{ github.event.issue.number }}
-        token: ${{ secrets.TOKEN_TO_ADD_COMMENT_TO_ISSUES_PRS }}
         body: |
           Thanks for opening this issue. The ticket [${{ steps.create.outputs.jira-ticket-id }}](https://jira.mongodb.org/browse/${{ steps.create.outputs.jira-ticket-id }}) was created for internal tracking.

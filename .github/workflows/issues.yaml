@@ -10,8 +10,6 @@ jobs:
     name: Create Jira issue
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
     - name: Create JIRA ticket
       id: create
       shell: bash
@@ -43,7 +41,7 @@ jobs:
                 ]
             }
           }')
-          
+
         JIRA_TICKET_ID=$(echo "${json_response}" | jq -r '.key')
         echo "The following JIRA ticket has been created: ${JIRA_TICKET_ID}"
         echo "jira-ticket-id=${JIRA_TICKET_ID}" >> "${GITHUB_OUTPUT}"

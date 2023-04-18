@@ -43,9 +43,9 @@ jobs:
                 ]
             }
           }')
-        JIRA_TICKET_ID=$(echo $json_response | jq -r '.key')
+        JIRA_TICKET_ID=$(echo ${json_response} | jq -r '.key')
         echo "The following JIRA ticket has been created: ${JIRA_TICKET_ID}"
-        echo "jira-ticket-id=$(echo $JIRA_TICKET_ID)" >> $GITHUB_OUTPUT
+        echo "jira-ticket-id=$(echo ${JIRA_TICKET_ID})" >> $GITHUB_OUTPUT
     - name: Add comment
       uses: peter-evans/create-or-update-comment@v3
       with:

@@ -40,7 +40,10 @@ jobs:
                     {
                         "id": "32225"
                     }
-                ]
+                ],
+                "assignee": {
+                  "name": "zuhair.ahmed@mongodb.com"
+                }
             }
           }')
 

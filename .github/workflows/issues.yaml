@@ -10,24 +10,46 @@ jobs:
     name: Create Jira issue
     runs-on: ubuntu-latest
     steps:
-    - name: Login
-      uses: atlassian/gajira-login@v3.0.1
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    - name: Checkout repository
+      uses: actions/checkout@v3
     - name: Create JIRA ticket
-      uses: atlassian/gajira-create@v3.0.1
       id: create
-      with:
-        project: INTMDB
-        issuetype: Task
-        summary: «[HELP] - ${{ github.event.issue.title }}»
-        description: ${{ github.event.issue.html_url }}
-        fields: '{"components": "CloudFormation-PI"}'
+      shell: bash
+      run: |
+        ISSUE_TITLE="${{ github.event.issue.title }}"
+        ISSUE_BODY="${{ github.event.issue.body }}"
+        ISSUE_URL="${{ github.event.issue.html_url }}"
+        JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+
+        json_response=$(curl --request POST \
+          --url 'https://jira.mongodb.org/rest/api/2/issue' \
+          --header 'Authorization: Bearer '"${JIRA_API_TOKEN}" \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --data '{
+            "fields": {
+                "project": {
+                    "id": "19383"
+                },
+                "summary": "HELP: '"${ISSUE_TITLE}"'",
+                "issuetype": {
+                    "id": "3"
+                },
+                "description": "This ticket track the following GitHub issue: '"${ISSUE_URL}"'\n\n Description:\n'"${ISSUE_BODY}"'",
+                "components": [
+                    {
+                        "id": "32225"
+                    }
+                ]
+            }
+          }')
+        JIRA_TICKET_ID=$(echo $json_response | jq -r '.key')
+        echo "The following JIRA ticket has been created: ${JIRA_TICKET_ID}"
+        echo "jira-ticket-id=$(echo $JIRA_TICKET_ID)" >> $GITHUB_OUTPUT
     - name: Add comment
       uses: peter-evans/create-or-update-comment@v3
       with:
         issue-number: ${{ github.event.issue.number }}
+        token: ${{ secrets.TOKEN_TO_ADD_COMMENT_TO_ISSUES_PRS }}
         body: |
-          Thanks for opening this issue. The ticket ${{ steps.create.outputs.issue }} was created for internal tracking.
+          Thanks for opening this issue. The ticket [${{ steps.create.outputs.jira-ticket-id }}](https://jira.mongodb.org/browse/${{ steps.create.outputs.jira-ticket-id }}) was created for internal tracking.

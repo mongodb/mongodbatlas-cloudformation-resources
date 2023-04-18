@@ -42,7 +42,7 @@ jobs:
                     }
                 ],
                 "assignee": {
-                  "name": "zuhair.ahmed@mongodb.com"
+                  "name": "atlas-devops-integrations@mongodb.com"
                 }
             }
           }')

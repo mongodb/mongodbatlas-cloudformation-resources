@@ -42,7 +42,7 @@ jobs:
                     }
                 ],
                 "assignee": {
-                  "name": "zuhair.ahmed@mongodb.com"
+                  "name": "jira-help-atlas-devops-integrations"
                 }
             }
           }')

@@ -33,7 +33,7 @@ jobs:
                 "issuetype": {
                     "id": "3"
                 },
-                "description": "This ticket track the following GitHub issue: '"${ISSUE_URL}"'\n\n Description:\n'"${ISSUE_BODY}"'",
+                "description": "This ticket tracks the following GitHub issue: '"${ISSUE_URL}"'\n\n Description:\n'"${ISSUE_BODY}"'",
                 "components": [
                     {
                         "id": "32225"

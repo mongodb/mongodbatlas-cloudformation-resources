@@ -35,14 +35,14 @@ jobs:
                 "issuetype": {
                     "id": "3"
                 },
-                "description": "This ticket tracks the following GitHub issue: '"${ISSUE_URL}"'\n\n Description:\n'"${ISSUE_BODY}"'",
+                "description": "This ticket tracks the following GitHub issue: '"${ISSUE_URL}"'.",
                 "components": [
                     {
                         "id": "32225"
                     }
                 ],
                 "assignee": {
-                  "name": "jira-help-atlas-devops-integrations"
+                  "name": "'"${ASSIGNEE_JIRA_TICKET}"'"
                 }
             }
           }')
@@ -50,7 +50,7 @@ jobs:
         echo "Response: ${json_response}"
 
         JIRA_TICKET_ID=$(echo "${json_response}" | jq -r '.key')
-        
+
         echo "The following JIRA ticket has been created: ${JIRA_TICKET_ID}"
         echo "jira-ticket-id=${JIRA_TICKET_ID}" >> "${GITHUB_OUTPUT}"
     - name: Add comment

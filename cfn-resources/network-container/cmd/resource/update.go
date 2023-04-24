@@ -28,10 +28,10 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var UpdateRequiredFields = []string{constants.ProjectID, constants.ID}
+var updateRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func UpdateOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
+func updateOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	if errEvent := validateModel(updateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 

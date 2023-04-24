@@ -27,16 +27,15 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var ListRequiredFields = []string{constants.ProjectID}
+var listRequiredFields = []string{constants.ProjectID}
 
-// List handles the List event from the Cloudformation service.
-func ListOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func listOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	_, _ = logger.Debugf("List currentModel:%+v", currentModel)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	_, _ = logger.Debugf("List currentModel:%+v", currentModel)
 
-	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(listRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 

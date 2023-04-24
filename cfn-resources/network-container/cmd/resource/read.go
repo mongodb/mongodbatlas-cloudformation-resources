@@ -26,11 +26,10 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
+var readRequiredFields = []string{constants.ProjectID, constants.ID}
 
-// Read handles the Read event from the Cloudformation service.
-func ReadOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
+func readOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	if errEvent := validateModel(readRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 

@@ -30,10 +30,10 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
+var createRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
 
-func CreateOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	if err := validateCreateModel(CreateRequiredFields, currentModel); err != nil {
+func createOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	if err := validateCreateModel(createRequiredFields, currentModel); err != nil {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         err.Error(),

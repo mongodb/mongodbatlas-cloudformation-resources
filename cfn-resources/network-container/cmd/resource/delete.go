@@ -28,12 +28,12 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
+var deleteRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func DeleteOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
 
-	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validateModel(deleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 

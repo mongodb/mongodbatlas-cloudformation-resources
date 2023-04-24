@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -81,23 +81,31 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		if res.StatusCode == http.StatusConflict {
 			_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
-			containers, _, err2 := client.Containers.ListAll(context.Background(), *projectID, nil)
-			if err2 != nil {
+			containers, _, err := client.Containers.ListAll(context.Background(), *projectID, nil)
+			if err != nil {
 				_, _ = logger.Debugf("Error Containers.ListAll err:%v", err)
 				return handler.ProgressEvent{}, fmt.Errorf("error Containers.ListAll err:%v", err)
 			}
-			_, _ = logger.Debugf("containers:%v", containers)
-			if containers != nil {
-				first := containers[0]
-				_, _ = logger.Debugf("Will return reference to first container: first:%+v", first)
-				currentModel.Id = &first.ID
+
+			for _, c := range containers {
+				if c.RegionName == *regionName {
+					currentModel.Id = &c.ID
+					return handler.ProgressEvent{
+						OperationStatus: handler.Success,
+						Message:         "Create complete",
+						ResourceModel:   currentModel,
+					}, nil
+				}
 			}
-		} else {
+
 			return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
 		}
-	} else {
-		currentModel.Id = &containerResponse.ID
+
+		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
+
 	}
+
+	currentModel.Id = &containerResponse.ID
 
 	_, _ = logger.Debugf("Create about to return this --->> currentModel:%+v", currentModel)
 	return handler.ProgressEvent{
@@ -206,9 +214,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
-	response, err := deleteContainer(client, projectID, containerID)
-	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+	if response, err := client.Containers.Delete(context.Background(), projectID, containerID); err != nil {
+		if response.StatusCode == 409 {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", err.Error()),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
+			}, nil
+		}
+
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
 			response.Response), nil
 	}
 
@@ -216,17 +231,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
 	}, nil
-}
-
-func deleteContainer(client *mongodbatlas.Client, projectID string, containerID string) (*mongodbatlas.Response, error) {
-	response, err := client.Containers.Delete(context.Background(), projectID, containerID)
-
-	// handling "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER" error
-	if err != nil && response.StatusCode == 409 {
-		time.Sleep(time.Second * 3)
-		return client.Containers.Delete(context.Background(), projectID, containerID)
-	}
-	return response, err
 }
 
 // List handles the List event from the Cloudformation service.

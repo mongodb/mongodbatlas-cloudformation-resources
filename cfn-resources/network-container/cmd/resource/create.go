@@ -102,7 +102,6 @@ func createContainer(client *mongodbatlas.Client, projectID string, request *mon
 
 	print("\nANDREA 4\n")
 	return "", errors.New("error creating network container")
-
 }
 
 // function to validate inputs to all actions

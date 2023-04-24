@@ -75,7 +75,7 @@ func ListOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 	}, nil
 }
 
-func completeByConnection(c mongodbatlas.Container, projectId, profile string) Model {
+func completeByConnection(c mongodbatlas.Container, projectId, profileName string) Model {
 	return Model{
 		RegionName:     &c.RegionName,
 		Provisioned:    c.Provisioned,
@@ -83,6 +83,6 @@ func completeByConnection(c mongodbatlas.Container, projectId, profile string) M
 		VpcId:          &c.VPCID,
 		AtlasCidrBlock: &c.AtlasCIDRBlock,
 		ProjectId:      &projectId,
-		Profile:        &profile,
+		Profile:        &profileName,
 	}
 }

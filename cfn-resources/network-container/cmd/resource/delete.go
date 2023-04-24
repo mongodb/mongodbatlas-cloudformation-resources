@@ -52,6 +52,8 @@ func DeleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 
 	if response, err := client.Containers.Delete(context.Background(), projectID, containerID); err != nil {
 		if response.StatusCode == 409 {
+			// The deletion will fail if the there is an atlas cluster or network peering
+			// available in the same region a the container
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", err.Error()),

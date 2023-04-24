@@ -78,29 +78,22 @@ func createContainer(client *mongodbatlas.Client, projectID string, request *mon
 		return container.ID, nil
 	}
 
-	print("\nANDREA 1\n")
 	if httpResponse.StatusCode != http.StatusConflict {
-		print("\nANDREA 11:\n")
-		print(err == nil)
-		print("\n")
 		return "", fmt.Errorf("error creating network container: %w", err)
 	}
 
-	print("\nANDREA 2\n")
 	_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
 	containers, _, err := client.Containers.ListAll(context.Background(), projectID, nil)
 	if err != nil {
 		return "", fmt.Errorf("error Containers.ListAll err:%v", err)
 	}
 
-	print("\nANDREA 3\n")
 	for i := range containers {
 		if containers[i].RegionName == request.RegionName {
 			return containers[i].ID, nil
 		}
 	}
 
-	print("\nANDREA 4\n")
 	return "", errors.New("error creating network container")
 }
 

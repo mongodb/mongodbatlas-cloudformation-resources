@@ -47,7 +47,6 @@ func ReadOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 	containerID := *currentModel.Id
 
 	containerResponse, response, err := client.Containers.Get(context.Background(), projectID, containerID)
-
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil

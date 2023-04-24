@@ -50,6 +50,20 @@ func DeleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
+	containerResponse, response, err := client.Containers.Get(context.Background(), projectID, containerID)
+	if err != nil {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
+			response.Response), nil
+	}
+	if containerResponse != nil && containerResponse.Provisioned != nil && *containerResponse.Provisioned {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message: `You are trying to delete a container that is in use. (container.provisioned = true)
+			Please, make sure to delete the network peering and the atlas cluster before deleting the container`,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
+		}, nil
+	}
+
 	if response, err := client.Containers.Delete(context.Background(), projectID, containerID); err != nil {
 		if response.StatusCode == 409 {
 			// The deletion will fail if the there is an atlas cluster or network peering

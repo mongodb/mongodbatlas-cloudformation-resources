@@ -65,7 +65,7 @@ func ListOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 
 	mm := make([]interface{}, 0)
 	for i := range containerResponse {
-		mm = append(mm, completeByConnection(containerResponse[i]))
+		mm = append(mm, completeByConnection(containerResponse[i], projectID, *currentModel.Profile))
 	}
 
 	return handler.ProgressEvent{
@@ -75,12 +75,14 @@ func ListOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 	}, nil
 }
 
-func completeByConnection(c mongodbatlas.Container) Model {
+func completeByConnection(c mongodbatlas.Container, projectId, profile string) Model {
 	return Model{
 		RegionName:     &c.RegionName,
 		Provisioned:    c.Provisioned,
 		Id:             &c.ID,
 		VpcId:          &c.VPCID,
 		AtlasCidrBlock: &c.AtlasCIDRBlock,
+		ProjectId:      &projectId,
+		Profile:        &profile,
 	}
 }

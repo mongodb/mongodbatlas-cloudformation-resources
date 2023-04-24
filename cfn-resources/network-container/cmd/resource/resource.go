@@ -87,9 +87,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				return handler.ProgressEvent{}, fmt.Errorf("error Containers.ListAll err:%v", err)
 			}
 
-			for _, c := range containers {
-				if c.RegionName == *regionName {
-					currentModel.Id = &c.ID
+			for i := range containers {
+				if containers[i].RegionName == *regionName {
+					currentModel.Id = &containers[i].ID
 					return handler.ProgressEvent{
 						OperationStatus: handler.Success,
 						Message:         "Create complete",
@@ -102,7 +102,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 
 		return handler.ProgressEvent{}, fmt.Errorf("error creating network container: %s", err)
-
 	}
 
 	currentModel.Id = &containerResponse.ID

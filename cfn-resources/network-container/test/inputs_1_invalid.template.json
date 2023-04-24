@@ -1,6 +1,1 @@
-{
-  "ProjectId": "$ATLAS_PROJECT_ID",
-  "Profile" : "default",
-  "RegionName": "US_EAST_1",
-  "AtlasCidrBlock": "192.168.BAD.CIDR/21"
-}
+

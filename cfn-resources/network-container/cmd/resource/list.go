@@ -54,7 +54,7 @@ func listOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 		ListOptions:  mongodbatlas.ListOptions{},
 	}
 	_, _ = logger.Debugf("List projectId:%v, containerRequest:%v", projectID, containerRequest)
-	containerResponse, _, err := client.Containers.List(context.TODO(), projectID, containerRequest)
+	containerResponse, _, err := client.Containers.List(context.Background(), projectID, containerRequest)
 	if err != nil {
 		_, _ = logger.Warnf("Error %v", err)
 		return handler.ProgressEvent{}, err

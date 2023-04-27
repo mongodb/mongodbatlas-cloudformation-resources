@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -26,6 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var deleteRequiredFields = []string{constants.ProjectID, constants.ID}
@@ -65,22 +67,41 @@ func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	}
 
 	if response, err := client.Containers.Delete(context.Background(), projectID, containerID); err != nil {
-		if response.StatusCode == 409 {
-			// The deletion will fail if the there is an atlas cluster or network peering
-			// available in the same region a the container
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", err.Error()),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
-			}, nil
-		}
-
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
-			response.Response), nil
+		return errorHandling(client, response, err, projectID, containerID)
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
 	}, nil
+}
+
+func errorHandling(client *mongodbatlas.Client, response *mongodbatlas.Response, err error, projectID, containerID string) (handler.ProgressEvent, error) {
+	if response.StatusCode != 409 {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
+			response.Response), err
+	}
+
+	// handling "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER" error during release process:
+	// During the release process, the container is created and deleted in a short period of time which cause
+	// the deletion to fail with the error "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER".
+	time.Sleep(time.Second * 5)
+	responseSecondCall, errSecondCall := client.Containers.Delete(context.Background(), projectID, containerID)
+	if errSecondCall == nil {
+		return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}, nil
+	}
+
+	// A second reason why the deletion can fail with 409 is because the container is in use.
+	if responseSecondCall.StatusCode == 409 {
+		// The deletion will fail if the there is an atlas cluster or network peering
+		// available in the same region a the container
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
+		}, nil
+	}
+
+	return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", errSecondCall.Error()),
+		response.Response), errSecondCall
 }

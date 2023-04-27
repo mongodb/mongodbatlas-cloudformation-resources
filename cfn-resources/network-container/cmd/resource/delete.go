@@ -97,7 +97,7 @@ func errorHandling(client *mongodbatlas.Client, response *mongodbatlas.Response,
 		// available in the same region a the container
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", err.Error()),
+			Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", errSecondCall.Error()),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeResourceConflict,
 		}, nil
 	}

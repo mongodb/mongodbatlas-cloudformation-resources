@@ -1,55 +1,43 @@
 # MongoDb::Atlas::X509AuthenticationDatabaseUser
 ## Description
+
 Returns, edits, and removes user-managed X.509 configurations.
-Also returns and generates MongoDB Cloud-managed X.509 certificates for database users.
+Also returns and generates MongoDB Atlas-managed X.509 certificates for database users.
 
-## Attributes & Parameters
+## Attributes and Parameters
 
-Please consult the [Resource Docs](docs/README.md)
+See the [Resource Docs](docs/README.md).
 
-## Local Testing
-
-The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
-
-```
-sam local start-lambda --skip-pull-image
-```
-then in another shell:
-```bash
-repo_root=$(git rev-parse --show-toplevel)
-source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/x509-authentication-database-user
-./test/x509authenticationdatabaseuser.create-sample-cfn-request.sh YourProjectID > test.request.json 
-echo "Sample request:"
-cat test.request.json
-cfn invoke CREATE test.request.json 
-cfn invoke DELETE test.request.json 
-```
-Both CREATE & DELETE tests must pass.
 ## Cloudformation Examples
 
-Please see the [CFN Template](/examples/x509-authentication-db-user/x509-authentication-db-user.json) for example resource
+See the [CFN Template](/examples/x509-authentication-db-user/x509-authentication-db-user.json) for example resource.
 
 ## Installation
+
+From the repository root directory, run the following commands:
+
+```
 TAGS=logging make
 cfn submit --verbose --set-default
+```
 
 ## Usage
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
-can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
+The [`launch-x-quickstart.sh`](https://github.com/aws-quickstart/quickstart-mongodb-atlas/blob/main/scripts/launch-x-quickstart.sh) script
+can be used to safely inject your MongoDB Atlas ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the x509authenticationdatabaseuser.sample-template.yaml to create a stack using the resource.
-Similar to the local testing described above you can follow the logs for the deployed
+You can use the`x509authenticationdatabaseuser.sample-template.yaml` to create a stack using the resource.
+Similar to [Local Testing](#local-testing), you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 
-In one shell session:
+In one shell session, run:
+
 ```
 aws logs tail mongodb-atlas-project-logs --follow
 ```
 
-And then you can create the stack with a helper script it insert the apikeys for you:
+Then create the stack with a helper script. The script inserts the API keys for you.
 
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
@@ -57,5 +45,30 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/x509-authentication-database-user/test/x509authenticationdatabaseuser.sample-template.yaml SampleProject1 ParameterKey=UserName,ParameterValue=${UserName}  ParameterKey=ProjectId,ParameterValue=${ProjectId}
 ```
 
+## Local Testing
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features.
+First, run
+
+```
+sam local start-lambda --skip-pull-image
+```
+
+Then in another shell:
+
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/x509-authentication-database-user
+./test/x509authenticationdatabaseuser.create-sample-cfn-request.sh YourProjectID > test.request.json
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json
+cfn invoke DELETE test.request.json
+```
+
+The `CREATE` and `DELETE` tests must pass.
+
 ## For More Information
+
 See the MongoDB Atlas API [X.509 Authentication for Database Users Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users)

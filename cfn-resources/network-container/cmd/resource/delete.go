@@ -94,7 +94,7 @@ func errorHandling(client *mongodbatlas.Client, response *mongodbatlas.Response,
 	// A second reason why the deletion can fail with 409 is because the container is in use.
 	if responseSecondCall.StatusCode == 409 {
 		// The deletion will fail if the there is an atlas cluster or network peering
-		// available in the same region a the container
+		// available in the same region of the container
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          fmt.Sprintf("Please, make sure to delete the network peering and the atlas cluster before deleting the container: %s", errSecondCall.Error()),

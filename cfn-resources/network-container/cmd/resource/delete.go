@@ -67,7 +67,7 @@ func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	}
 
 	if response, err := client.Containers.Delete(context.Background(), projectID, containerID); err != nil {
-		return errorHandling(client, response, err, projectID, containerID)
+		return retryDeleteIfRequired(client, response, err, projectID, containerID)
 	}
 
 	return handler.ProgressEvent{
@@ -76,7 +76,7 @@ func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	}, nil
 }
 
-func errorHandling(client *mongodbatlas.Client, response *mongodbatlas.Response, err error, projectID, containerID string) (handler.ProgressEvent, error) {
+func retryDeleteIfRequired(client *mongodbatlas.Client, response *mongodbatlas.Response, err error, projectID, containerID string) (handler.ProgressEvent, error) {
 	if response.StatusCode != 409 {
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
 			response.Response), err

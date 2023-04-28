@@ -27,7 +27,7 @@ The [`launch-x-quickstart.sh`](https://github.com/aws-quickstart/quickstart-mong
 can be used to safely inject your MongoDB Atlas ApiKey environment variables into an example
 CloudFormation stack template along with the other necessary parameters.
 
-You can use the`x509authenticationdatabaseuser.sample-template.yaml` to create a stack using the resource.
+You can use the [x509authenticationdatabaseuser.sample-template.yaml](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/examples/x509-authentication-db-user/x509-authentication-db-user.json) to create a stack using the resource.
 Similar to [Local Testing](#local-testing), you can follow the logs for the deployed
 lambda function which handles the request for the Resource Type.
 

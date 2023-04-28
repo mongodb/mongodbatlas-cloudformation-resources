@@ -45,29 +45,9 @@ source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py
 ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/cfn-resources/x509-authentication-database-user/test/x509authenticationdatabaseuser.sample-template.yaml SampleProject1 ParameterKey=UserName,ParameterValue=${UserName}  ParameterKey=ProjectId,ParameterValue=${ProjectId}
 ```
 
-## Local Testing
+## Testing
 
-The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features.
-First, run
-
-```
-sam local start-lambda --skip-pull-image
-```
-
-Then in another shell:
-
-```bash
-repo_root=$(git rev-parse --show-toplevel)
-source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/x509-authentication-database-user
-./test/x509authenticationdatabaseuser.create-sample-cfn-request.sh YourProjectID > test.request.json
-echo "Sample request:"
-cat test.request.json
-cfn invoke CREATE test.request.json
-cfn invoke DELETE test.request.json
-```
-
-The `CREATE` and `DELETE` tests must pass.
+For information on running the tests, see [here](./test/README.md).
 
 ## For More Information
 

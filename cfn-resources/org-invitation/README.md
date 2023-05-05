@@ -1,35 +1,17 @@
 # Mongodb::Atlas::OrgInvitation
 
-Add, delete and update invitation for MongoDB organization.
+Add, delete and update invitation for MongoDB organizations.
 
-## Attributes & Parameters
+## Attributes and Parameters
 
-Please consult the [Resource Docs](docs/README.md)
-
-## Local Testing
-
-The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
-
-```
-sam local start-lambda --skip-pull-image
-```
-then in another shell:
-```bash
-repo_root=$(git rev-parse --show-toplevel)
-source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/project
-./test/project.create-sample-cfn-request.sh YourProjectName > test.request.json 
-echo "Sample request:"
-cat test.request.json
-cfn invoke CREATE test.request.json 
-cfn invoke DELETE test.request.json 
-```
-
-Both CREATE & DELETE tests must pass.
+See the [Resource Docs](./docs/README.md).
 
 ## Installation
+
+```
 TAGS=logging make
 cfn submit --verbose --set-default
+```
 
 ## CloudFormation Examples
 
@@ -37,7 +19,7 @@ Please see the [CFN Template](https://github.com/mongodb/mongodbatlas-cloudforma
 
 ## Usage
 
-The [/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh](launch-x-quickstart.sh) script
+The [launch-x-quickstart.sh](https://github.com/aws-quickstart/quickstart-mongodb-atlas/blob/8cd6e87ed36f467202432eed170a25ff10abf566/scripts/launch-x-quickstart.sh) script
 can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other neccessary parameters.
 
@@ -60,4 +42,5 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
 ```
 
 ## For More Information
-See the MongoDB Atlas API [Organization Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Organizations) Documentation.
+
+See the MongoDB Atlas API [Organization](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Organizations) documentation.

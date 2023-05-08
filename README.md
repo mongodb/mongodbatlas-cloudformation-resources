@@ -35,7 +35,7 @@ To use Atlas CloudFormation resources, you must configure a "profile" with your 
 The secret should follow this format:
 ```
 SecretName: cfn/atlas/profile/{ProfileName}
-SecretValue: {PublicKey: {YourPublicKey}, PrivateKey: {YourPrivateKey}}
+SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 
 To create a new secret for a default profile, use the [PROFILE SECRET TEMPLATE](/examples/profile-secret.yaml) file provided in this repository.
@@ -46,13 +46,13 @@ Here are some examples of how to use this template:
 ```
   ProfileName: default
   SecretName: cfn/atlas/profile/default
-  SecretValue = {PublicKey: xxxxxxx , PrivateKey: yyyyyyyy}
+  SecretValue = {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 #### Example 2
 ```
-  ProfileName: testProfile1
-  SecretName: cfn/atlas/profile/tetProfile1
-  SecretValue = {PublicKey: zzzzzzzzzz , PrivateKey:jjjjjjjjj}
+  ProfileName: testProfile
+  SecretName: cfn/atlas/profile/testProfile
+  SecretValue = {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 
 ### 3. Provide the profile to your CloudFormation template

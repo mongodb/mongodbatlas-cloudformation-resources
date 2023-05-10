@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Resource activation - This template can be used to activate all MongoDB Atlas resources in current AWS account in the selected region. Note - This template should be used to activate only required resources by uncommenting 'TypeActivation' for the specific resource types, otherwise the stack may result in `Status Code 400 - Rate exceeded` error.
+Description: MongoDB Resource activation - This template can be used to activate all MongoDB Atlas resources in current AWS account in the selected region.
 Metadata:
   cfn-lint: { config: { ignore_checks: [ W9002, W9003, W9006, E3001, E1010 ] } }
   AWS::CloudFormation::Interface:

@@ -21,10 +21,7 @@ You must then activate the Public extension from your AWS console. You have to d
 Use the [CFN template provided](activate-mongodb-atlas-resources.template.yaml) to create a new stack in required AWS region which will activate all required MongoDB Atlas extensions in your account in the specified region.
 
 _Note:_
-
-_1. All the `TypeActivation` resources are commented out by default in the template. Please use this template to activate only the required extensions by **_uncommenting_** otherwise you might get `"Rate exceeded (Service: CloudFormation, Status Code: 400)` error in your stack if all extensions are tried to be activated at once._
-
-_2. If the stack is created to activate already activated extensions in the region, you will run into failures as AWS does not allow to use `TypeActivation` to re-activate extensions._
+_If the stack is created to activate already activated extensions in the region, you will run into failures as AWS does not allow to use `TypeActivation` to re-activate extensions._
 
 
 ### CloudFormation Profile

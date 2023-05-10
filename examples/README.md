@@ -11,12 +11,14 @@ You must [configure API keys](https://www.mongodb.com/docs/atlas/configure-api-a
 ### AWS
 ### Activate the MongoDB Atlas CloudFormation public extensions
 **Option 1: Manually create IAM execution role and activate resources from AWS Console** 
+
 To activate a public extension, create an execution role and pass the ARN of the role as an input. Use [this template](execution-role.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) to create the execution role.
 
 You must then activate the Public extension from your AWS console. You have to do this in each AWS Account and in each AWS Region. Use [this link](https://us-east-1.console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=AWS_TYPES) to register extensions on CloudFormation.
 
 **Option 2: Use provided CFN template to create IAM execution role and activate extensions**
-Use the [CFN template provided](activate-mongodb-atlas-resources.template.yaml) to create a new stack in required AWS region which will activate all required MongoDB Atlas extensions in your account.
+
+Use the [CFN template provided](activate-mongodb-atlas-resources.template.yaml) to create a new stack in required AWS region which will activate all required MongoDB Atlas extensions in your account in the specified region.
 
 _Note:_
 

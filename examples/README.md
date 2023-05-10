@@ -9,12 +9,23 @@ This collection of sample templates will help you get started with MongoDB Atlas
 You must [configure API keys](https://www.mongodb.com/docs/atlas/configure-api-access/#std-label-atlas-admin-api-access) to authenticate with your MongoDB Atlas organization.
 
 ### AWS
-#### Activate the MongoDB Atlas CloudFormation public extensions
+### Activate the MongoDB Atlas CloudFormation public extensions
+**Option 1: Manually create IAM execution role and activate resources from AWS Console** 
 To activate a public extension, create an execution role and pass the ARN of the role as an input. Use [this template](execution-role.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) to create the execution role.
 
 You must then activate the Public extension from your AWS console. You have to do this in each AWS Account and in each AWS Region. Use [this link](https://us-east-1.console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=AWS_TYPES) to register extensions on CloudFormation.
 
-#### CloudFormation Profile
+**Option 2: Use provided CFN template to create IAM execution role and activate extensions**
+Use the [CFN template provided](activate-mongodb-atlas-resources.template.yaml) to create a new stack in required AWS region which will activate all required MongoDB Atlas extensions in your account.
+
+_Note:_
+
+_1. All the `TypeActivation` resources are commented out by default in the template. Please use this template to activate only the required extensions by **_uncommenting_** otherwise you might get `"Rate exceeded (Service: CloudFormation, Status Code: 400)` error in your stack if all extensions are tried to be activated at once._
+
+_2. If the stack is created to activate already activated extensions in the region, you will run into failures as AWS does not allow to use `TypeActivation` to re-activate extensions._
+
+
+### CloudFormation Profile
 A profile should be created in the AWS Secrets Manager, containing the MongoDB Atlas Programmatic API Key.
 
 Use [this template](profile-secret.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) for the default profile that all resources will attempt to use unless a different override is specified.

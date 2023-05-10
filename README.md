@@ -118,7 +118,7 @@ Alternatively, you can set the trust relationships of your role via AWS Console:
 ![Screenshot 2023-03-31 at 17 32 55](https://user-images.githubusercontent.com/5663078/230436500-fb4ee057-b70e-4580-a94d-f56191728117.png)
 
 ## Error: 404 (request "INVALID_GROUP_ID") An invalid group ID 6458c1bacde92a3069d69603|default was specified
-The problem is caused by using the project resource identifies (ID + Profile Name) as input paramater ProjectID of another CFN resource. The correct approach is to use [GetAttr](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html) function to get the ProjectId from the project resource and use that value as input paramenter to the next CFN resource.
+The problem is caused by using the project resource identifier (ID + Profile Name) as input paramater ProjectID of another CFN resource. The correct approach is to use [GetAttr](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html) function to get the ProjectId from the project resource and use that value as input paramenter to the next CFN resource.
 Example of correct use of GetAtt (see [project-cluster.json](examples/cluster/project-cluster.json)):
 ```json
    "AtlasCluster": {
@@ -136,7 +136,7 @@ Example of correct use of GetAtt (see [project-cluster.json](examples/cluster/pr
 ```
 
 ## Error: The CFN stack faield to delete `MongoDB::Atlas::NetworkContainer` with the error 409 (request "CONTAINERS_IN_USE") Cannot modify in use containers. The container still contained resources." 
-The problem is caused by having Atlas resources using your network container, if your Atlas project has a cluster or a network peering, you won't be able to delete the network container. 
+The problem is caused by having Atlas resources using your network container. If your Atlas project has a cluster or a network peering, you won't be able to delete the network container. 
 To make sure your CFN stack deletes the cluster and the network peering resources before attempting to delete the network container, you should add [DependsOn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) to your cluster resource.
 ```yaml
 Resources:

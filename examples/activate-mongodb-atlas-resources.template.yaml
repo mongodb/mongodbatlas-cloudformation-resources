@@ -38,230 +38,261 @@ Parameters:
       - "me-south-1"
       - "af-south-1"
 Resources:
-#  ActivateAlertConfigurationType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-AlertConfiguration' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::AlertConfiguration
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateAuditingType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Auditing' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::Auditing
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateCloudBackUpRestoreJobsType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CloudBackUpRestoreJobs' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::CloudBackUpRestoreJobs
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateCloudBackupSnapshotType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CloudBackupSnapshot' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::CloudBackupSnapshot
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateCloudBackupSnapshotExportBucketType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CloudBackupSnapshotExportBucket' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::CloudBackupSnapshotExportBucket
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateCustomDBRoleType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CustomDBRole' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::CustomDBRole
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateCustomDnsConfigurationClusterAwsType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CustomDnsConfigurationClusterAws' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::CustomDnsConfigurationClusterAws
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateDataLakesType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DataLakes' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::DataLakes
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateEncryptionAtRestType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-EncryptionAtRest' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::EncryptionAtRest
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateFederatedSettingsOrgRoleMappingType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-FederatedSettingsOrgRoleMapping' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::FederatedSettingsOrgRoleMapping
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateGlobalClusterConfigType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-GlobalClusterConfig' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::GlobalClusterConfig
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateLDAPConfigurationType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-LDAPConfiguration' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::LDAPConfiguration
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateLDAPVerifyType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-LDAPVerify' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::LDAPVerify
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateMaintenanceWindowType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-MaintenanceWindow' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::MaintenanceWindow
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateOnlineArchiveType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-OnlineArchive' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::OnlineArchive
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateOrgInvitationType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-OrgInvitation' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::OrgInvitation
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivatePrivateEndPointRegionalModeType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndPointRegionalMode' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::PrivateEndPointRegionalMode
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivatePrivateEndpointADLType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndpointADL' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::PrivateEndpointADL
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateProjectInvitationType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ProjectInvitation' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::ProjectInvitation
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateSearchIndexType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-SearchIndex' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::SearchIndex
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateServerlessInstanceType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ServerlessInstance' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::ServerlessInstance
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateTeamsType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Teams' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::Teams
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateThirdPartyIntegrationType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ThirdPartyIntegration' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::ThirdPartyIntegration
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateX509AuthenticationDatabaseUserType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-X509AuthenticationDatabaseUser' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::X509AuthenticationDatabaseUser
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateTriggerType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Trigger' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::Trigger
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateClusterType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Cluster' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::Cluster
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateProjectIpAccessListType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ProjectIpAccessList' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::ProjectIpAccessList
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateDatabaseUserType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DatabaseUser' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::DatabaseUser
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateProjectType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Project' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::Project
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivateNetworkPeeringType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-NetworkPeering' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::NetworkPeering
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
-#  ActivatePrivateEndpointType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndpoint' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::PrivateEndpoint
-#      ExecutionRoleArn: !GetAtt MongoDBPrivateEndpointExecutionRole.Arn
-#  ActivateNetworkContainerType:
-#    Type: AWS::CloudFormation::TypeActivation
-#    Properties:
-#      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-NetworkContainer' ] ]
-#      Type: RESOURCE
-#      TypeName: MongoDB::Atlas::NetworkContainer
-#      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+  ActivateAlertConfigurationType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-AlertConfiguration' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::AlertConfiguration
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+  ActivateAuditingType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Auditing' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Auditing
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateAlertConfigurationType"
+  ActivateCloudBackUpRestoreJobsType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CloudBackUpRestoreJobs' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::CloudBackUpRestoreJobs
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateAuditingType"
+  ActivateCloudBackupSnapshotType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CloudBackupSnapshot' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::CloudBackupSnapshot
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateCloudBackUpRestoreJobsType"
+  ActivateCloudBackupSnapshotExportBucketType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CloudBackupSnapshotExportBucket' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::CloudBackupSnapshotExportBucket
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateCloudBackupSnapshotType"
+  ActivateCustomDBRoleType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CustomDBRole' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::CustomDBRole
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateCloudBackupSnapshotExportBucketType"
+  ActivateCustomDnsConfigurationClusterAwsType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-CustomDnsConfigurationClusterAws' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::CustomDnsConfigurationClusterAws
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateCustomDBRoleType"
+  ActivateDataLakesType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DataLakes' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::DataLakes
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateCustomDnsConfigurationClusterAwsType"
+  ActivateEncryptionAtRestType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-EncryptionAtRest' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::EncryptionAtRest
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateDataLakesType"
+  ActivateFederatedSettingsOrgRoleMappingType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-FederatedSettingsOrgRoleMapping' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::FederatedSettingsOrgRoleMapping
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateEncryptionAtRestType"
+  ActivateGlobalClusterConfigType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-GlobalClusterConfig' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::GlobalClusterConfig
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateFederatedSettingsOrgRoleMappingType"
+  ActivateLDAPConfigurationType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-LDAPConfiguration' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::LDAPConfiguration
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateGlobalClusterConfigType"
+  ActivateLDAPVerifyType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-LDAPVerify' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::LDAPVerify
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateLDAPConfigurationType"
+  ActivateMaintenanceWindowType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-MaintenanceWindow' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::MaintenanceWindow
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateLDAPVerifyType"
+  ActivateOnlineArchiveType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-OnlineArchive' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::OnlineArchive
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateMaintenanceWindowType"
+  ActivateOrgInvitationType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-OrgInvitation' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::OrgInvitation
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateOnlineArchiveType"
+  ActivatePrivateEndPointRegionalModeType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndPointRegionalMode' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::PrivateEndPointRegionalMode
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateOrgInvitationType"
+  ActivatePrivateEndpointADLType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndpointADL' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::PrivateEndpointADL
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivatePrivateEndPointRegionalModeType"
+  ActivateProjectInvitationType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ProjectInvitation' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::ProjectInvitation
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivatePrivateEndpointADLType"
+  ActivateSearchIndexType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-SearchIndex' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::SearchIndex
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateProjectInvitationType"
+  ActivateServerlessInstanceType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ServerlessInstance' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::ServerlessInstance
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateSearchIndexType"
+  ActivateTeamsType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Teams' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Teams
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateServerlessInstanceType"
+  ActivateThirdPartyIntegrationType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ThirdPartyIntegration' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::ThirdPartyIntegration
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateTeamsType"
+  ActivateX509AuthenticationDatabaseUserType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-X509AuthenticationDatabaseUser' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::X509AuthenticationDatabaseUser
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateThirdPartyIntegrationType"
+  ActivateTriggerType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Trigger' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Trigger
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateX509AuthenticationDatabaseUserType"
+  ActivateClusterType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Cluster' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Cluster
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateTriggerType"
+  ActivateProjectIpAccessListType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-ProjectIpAccessList' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::ProjectIpAccessList
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateClusterType"
+  ActivateDatabaseUserType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-DatabaseUser' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::DatabaseUser
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateProjectIpAccessListType"
+  ActivateProjectType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Project' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Project
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateDatabaseUserType"
+  ActivateNetworkPeeringType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-NetworkPeering' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::NetworkPeering
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateProjectType"
+  ActivatePrivateEndpointType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-PrivateEndpoint' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::PrivateEndpoint
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivateNetworkPeeringType"
+  ActivateNetworkContainerType:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:',!Ref "Region",'::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-NetworkContainer' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::NetworkContainer
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+    DependsOn: "ActivatePrivateEndpointType"
   MongoDBCustomResourceExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -306,36 +337,4 @@ Resources:
                   - "iam:ListAttachedRolePolicies"
                   - "iam:ListRolePolicies"
                   - "iam:PutRolePolicy"
-                Resource: '*'
-  MongoDBPrivateEndpointExecutionRole:
-    Metadata:
-      cfn-lint:
-        config:
-          ignore_checks:
-            - EIAMPolicyWildcardResource
-          ignore_reasons:
-            EIAMPolicyWildcardResource: >-
-              Create and Delete VPC Endpoint permissions are necessary.
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - resources.cloudformation.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Path: "/"
-      Policies:
-        - PolicyName: vpcEndpointPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'ec2:CreateVpcEndpoint'
-                  - 'ec2:DeleteVpcEndpoints'
-                  - "secretsmanager:GetSecretValue"
                 Resource: '*'

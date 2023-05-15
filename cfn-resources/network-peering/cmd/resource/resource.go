@@ -108,6 +108,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, _ = logger.Debugf("Create peerResponse:%+v", peerResponse)
 	currentModel.Id = &peerResponse.ID
+	currentModel.ConnectionId = &peerResponse.ConnectionID
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

@@ -10,7 +10,7 @@ You must [configure API keys](https://www.mongodb.com/docs/atlas/configure-api-a
 
 ### AWS
 ### Activate the MongoDB Atlas CloudFormation public extensions
-**Option 1: Manually create IAM execution role and activate resources from AWS Console** 
+**Option 1: Manually create an IAM execution role and activate resources from the AWS Console** 
 
 To activate a public extension, create an execution role and pass the ARN of the role as an input. Use [this template](execution-role.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) to create the execution role.
 

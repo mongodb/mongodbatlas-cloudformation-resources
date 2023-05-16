@@ -135,7 +135,7 @@ Example of correct use of GetAtt (see [project-cluster.json](examples/cluster/pr
         },
 ```
 
-## Error: The CFN stack failed to delete `MongoDB::Atlas::NetworkContainer` with the error 409 (request "CONTAINERS_IN_USE") Cannot modify in use containers. The container still contained resources." 
+## Error: The CFN stack failed to delete `MongoDB::Atlas::NetworkContainer` with the error 409 (request "CONTAINERS_IN_USE"). You cannot modify in-use containers; the container still contains resources." 
 The problem is that Atlas resources are using your network container. If your Atlas project has a cluster or a network peering resource, you can't delete the network container. 
 To make sure your CFN stack deletes clusters and network peering resources before attempting to delete the network container, you should add [DependsOn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) to your cluster resource.
 ```yaml

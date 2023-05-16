@@ -10,7 +10,7 @@ Metadata:
           - Region
 Parameters:
   Region:
-    Description: The AWS Region where resources would be activated.
+    Description: The AWS Region where resources will be activated.
     Type: String
     AllowedValues:
       - "us-east-1"

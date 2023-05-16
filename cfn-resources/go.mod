@@ -4,25 +4,25 @@ go 1.19
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
-	github.com/aws/aws-sdk-go v1.44.259
+	github.com/aws/aws-sdk-go v1.44.263
 	github.com/aws/aws-sdk-go-v2 v1.18.0
-	github.com/aws/aws-sdk-go-v2/config v1.18.24
+	github.com/aws/aws-sdk-go-v2/config v1.18.25
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.27.4
 	github.com/dave/jennifer v1.6.1
 	github.com/getkin/kin-openapi v0.116.0
 	github.com/mongodb-forks/digest v1.0.4
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/rs/xid v1.5.0
-	github.com/spf13/cast v1.5.0
+	github.com/spf13/cast v1.5.1
 	github.com/stretchr/testify v1.8.2
 	github.com/tidwall/pretty v1.2.1
-	go.mongodb.org/atlas v0.25.0
+	go.mongodb.org/atlas v0.26.0
 	go.mongodb.org/realm v0.1.0
 )
 
 require (
 	github.com/aws/aws-lambda-go v1.37.0 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.23 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.24 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.33 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.27 // indirect

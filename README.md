@@ -117,7 +117,7 @@ Use the [execution-role.yaml](examples/execution-role.yaml) file to generate an 
 Alternatively, you can set the trust relationships of your role via AWS Console: in the IAM dashboard, select your role and click **Trust Relationships**:
 ![Screenshot 2023-03-31 at 17 32 55](https://user-images.githubusercontent.com/5663078/230436500-fb4ee057-b70e-4580-a94d-f56191728117.png)
 
-## Error: 404 (request "INVALID_GROUP_ID") An invalid group ID 6458c1bacde92a3069d69603|default was specified
+## Error: 404 (request "INVALID_GROUP_ID") An invalid group ID <YOUR-PROJECT-ID>|default was specified
 The problem is caused by using the project resource identifier (ID + Profile Name) as the input parameter `ProjectID` of another CFN resource. The correct approach is to use [GetAttr](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html) function to get the ProjectId from the project resource and use that value as input parameter to the next CFN resource.
 Example of correct use of GetAtt (see [project-cluster.json](examples/cluster/project-cluster.json)):
 ```json

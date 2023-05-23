@@ -14,7 +14,7 @@ require (
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/rs/xid v1.5.0
 	github.com/spf13/cast v1.5.1
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.3
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas v0.26.0
 	go.mongodb.org/realm v0.1.0

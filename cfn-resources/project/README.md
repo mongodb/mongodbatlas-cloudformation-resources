@@ -31,7 +31,7 @@ Example:
     "ApiKeys": {
       "PublicKey": "wwdsirvb",
       "PrivateKey": "privateKey"
-    }
+    },
 ```
 
 ### Test the handler operations CREATE and READ
@@ -51,7 +51,7 @@ Example:
     "ApiKeys": {
       "PublicKey": "wwdsirvb",
       "PrivateKey": "privateKey"
-    }
+    },
 ```
 You can retrieve the projectId to add to the sam template by running:
 ```yaml

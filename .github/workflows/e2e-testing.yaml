@@ -35,6 +35,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: eu-west-1
+      - uses: actions/checkout@v3
       - name: Run E2E test
         shell: bash
         env:

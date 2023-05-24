@@ -5,7 +5,7 @@ Returns, adds, and edits collections of clusters and users in MongoDB Cloud.
 
 ## Attributes & Parameters
 
-Please consult the [Resource Docs](docs/README.md).
+Please consult the [Resource Docs](docs/README.md)
 
 ## Local Testing
 

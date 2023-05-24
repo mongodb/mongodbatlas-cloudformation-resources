@@ -41,8 +41,8 @@ jobs:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
     - uses: actions/setup-python@v4
       with:
@@ -84,8 +84,8 @@ jobs:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MMS_SCRATCH }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MMS_SCRATCH }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
         aws-region: eu-west-1
     - uses: actions/setup-python@v4
       with:

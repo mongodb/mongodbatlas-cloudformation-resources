@@ -200,15 +200,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
 	projectID := currentModel.ProjectId
 	clusterName := currentModel.ClusterName
-	_, _ = logger.Debugf("Update cloud backup schedule for clusterName:%s", *clusterName)
-
-	// Delete policies items
-	_, _ = logger.Debugf("First deleting cloud backup schedule for clusterName:%s", *clusterName)
-	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
-	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
-			resp.Response), nil
-	}
 
 	if event, err := validateExportDetails(currentModel); err != nil {
 		return event, nil
@@ -216,6 +207,12 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 
 	if event, err := validatePolicies(currentModel); err != nil {
 		return event, nil
+	}
+
+	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
+	if err != nil {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
+			resp.Response), nil
 	}
 
 	cloudBackupScheduleRequest := modelToCLoudBackupSchedule(currentModel)
@@ -234,17 +231,19 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 }
 
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
-	if currentModel.Policies == nil {
-		return pe, nil
+	if currentModel.Policies == nil || len(currentModel.Policies) == 0 {
+		msg := "validation error: policies cannot be empty"
+		return progressevents.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
 	}
 	for _, policy := range currentModel.Policies {
-		if policy.PolicyItems == nil {
-			continue
+		if policy.PolicyItems == nil || len(policy.PolicyItems) == 0 {
+			msg := "validation error: policy items cannot be empty"
+			return progressevents.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
 		}
 		for _, policyItem := range policy.PolicyItems {
 			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
 				policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
-				err := errors.New("error updating cloud backup schedule: All values from PolicyItem should be set when `PolicyItems` is set")
+				err := errors.New("validation error: All values from PolicyItem should be set when `PolicyItems` is set")
 				_, _ = logger.Warnf("Update - error: %+v", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,

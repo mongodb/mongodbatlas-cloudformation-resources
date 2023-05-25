@@ -216,7 +216,8 @@
   },
   "additionalProperties": false,
   "required": [
-    "Profile"
+    "Profile",
+    "AutoExportEnabled"
   ],
   "writeOnlyProperties": [
     "/properties/UpdateSnapshots",

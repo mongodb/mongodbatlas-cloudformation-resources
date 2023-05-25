@@ -37,8 +37,8 @@ mv "${tmp_rpdk_file}" "${rpdk_file}"
 
 
 echo "Creating a new resource schema"
-schema_file_name="${resource_directory//-}"
-echo "schema name file........ : ${schema_file_name}"
+schema_file_name=$(echo "$resource_directory" | sed 's/-//g')
+echo "New schema file name: ${schema_file_name}"
 resource_schema_file="../../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}.json"
 tmp_resource_schema_file="../../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}$E2E_RAND_SUFFIX.json"
 jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \

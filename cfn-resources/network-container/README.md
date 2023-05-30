@@ -3,13 +3,68 @@
 ## Description
 Returns, adds, edits, and removes network peering containers.
 
-## Attributes and Parameters
+## Attributes & Parameters
 
-See the [Resource Docs](./docs/README.md).
+Please consult the [Resource Docs](docs/README.md)
+
+## Unit Testing Locally
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/network-container
+./test/networkcontainer.create-sample-cfn-request.sh <PROJECT_ID> > test.request.json
+echo "Sample request:"
+cat test.request.json
+```
+There is only 1 Network Container resource per Atlas project for AWS for a given region. So depending on your project the CREATE test may fail.
+
+```
+cfn invoke resource CREATE test.request.json 
+cfn invoke resource READ test.request.json 
+cfn invoke resource UPDATE test.request.json
+cfn invoke resource LIST test.request.json 
+cfn invoke resource DELETE test.request.json 
+```
+
+Use the `LIST` method to find the id of any existing
+network container. Here is an example of the command and sample output. 
+
+```
+cfn invoke LIST test.request.json
+...<output omitted>...
+=== Handler response ===
+{
+  "message": "List Complete",
+  "status": "SUCCESS",
+  "resourceModel": [
+    {
+      "RegionName": "US_EAST_1",
+      "Provisioned": "true",
+      "VpcId": "vpc-ffffgggghhhhijj1232",
+      "AtlasCIDRBlock": "192.168.248.0/21",
+      "Id": "5f871f997cd85921961f62a5",
+      "ApiKeys": {}
+    }
+  ],
+  "bearerToken": "92f914c7-23b3-4ea5-a1e1-8215a6aa4b78",
+  "resourceModels": null
+}
+```
+
+You can use the `resourceModel.Id` property as the container id when creating a [Network Peering](../network-peering).
+
+CREATE, READ, UPDATE, LIST, & DELETE tests must pass 
 
 ## Installation
 
-Installation currently requires the follow steps to build and then submit/register the 
+Installation currently requires the follow 2 steps to build and then submit/register the 
 new MongoDB::Atlas::networkcontainer Resource Type into your AWS Region. Note, this command uses the
 default AWS region.
 
@@ -18,12 +73,12 @@ TAGS=logging make
 cfn submit --verbose --set-default
 ```
 
-## Integration Testing with AWS
+## Integration Testing w/ AWS
 
 Once the resource is installed, you can do integrated testing from your shell to AWS.
 
-Use the [launch-x-quickstart.sh](https://github.com/aws-quickstart/quickstart-mongodb-atlas/blob/8cd6e87ed36f467202432eed170a25ff10abf566/scripts/launch-x-quickstart.sh) script
-to safely inject your MongoDB Cloud ApiKey environment variables into an example
+The [launch-x-quickstart.sh](../../quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh) script
+can be used to safely inject your MongoDB Cloud ApiKey environment variables into an example
 CloudFormation stack template along with the other neccessary parameters.
 
 You can use the project.sample-template.yaml to create a stack using the resource.
@@ -46,4 +101,8 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-x-quickstart.sh ${repo_root
  
 ```
 
-For more information see the Atlas API Documentation ["Network Peering Containers"](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering-Containers).
+
+
+For more information please refer API Documentation,
+https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering-Containers
+

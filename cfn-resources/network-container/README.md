@@ -1,4 +1,4 @@
-# MongoDB::Atlas::Teams
+# MongoDB::Atlas::NetworkContainer
 
 ## Description
 Resource for managing [Network Containers](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering) in Atlas.

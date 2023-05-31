@@ -313,7 +313,6 @@ func readServerlessInstance(cluster *mongodbatlas.Cluster, profile *string) (ser
 	}
 	serverless.CreateDate = &cluster.CreateDate
 	serverless.MongoDBVersion = &cluster.MongoDBVersion
-	serverless.Links = readLinks(cluster.Links)
 	serverless.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 	serverless.StateName = &cluster.StateName
 	return serverless
@@ -336,16 +335,6 @@ func readPrivateEndpointEndpoints(peEndpoints []mongodbatlas.Endpoint) (epEndpoi
 			EndpointId:   &peEndpoints[i].EndpointID,
 			ProviderName: &peEndpoints[i].ProviderName,
 			Region:       &peEndpoints[i].Region,
-		})
-	}
-	return
-}
-
-func readLinks(clsLinks []*mongodbatlas.Link) (links []Link) {
-	for i := range clsLinks {
-		links = append(links, Link{
-			Href: &clsLinks[i].Href,
-			Rel:  &clsLinks[i].Rel,
 		})
 	}
 	return

@@ -13,7 +13,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#expiresat" title="ExpiresAt">ExpiresAt</a>" : <i>String</i>,
     "<a href="#frequencytype" title="FrequencyType">FrequencyType</a>" : <i>String</i>,
     "<a href="#id" title="Id">Id</a>" : <i>String</i>,
-    "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>,
     "<a href="#masterkeyuuid" title="MasterKeyUUID">MasterKeyUUID</a>" : <i>String</i>,
     "<a href="#members" title="Members">Members</a>" : <i>[ <a href="apiatlasdiskbackupshardedclustersnapshotmemberview.md">ApiAtlasDiskBackupShardedClusterSnapshotMemberView</a>, ... ]</i>,
     "<a href="#mongodversion" title="MongodVersion">MongodVersion</a>" : <i>String</i>,
@@ -34,8 +33,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#expiresat" title="ExpiresAt">ExpiresAt</a>: <i>String</i>
 <a href="#frequencytype" title="FrequencyType">FrequencyType</a>: <i>String</i>
 <a href="#id" title="Id">Id</a>: <i>String</i>
-<a href="#links" title="Links">Links</a>: <i>
-      - <a href="link.md">Link</a></i>
 <a href="#masterkeyuuid" title="MasterKeyUUID">MasterKeyUUID</a>: <i>String</i>
 <a href="#members" title="Members">Members</a>: <i>
       - <a href="apiatlasdiskbackupshardedclustersnapshotmemberview.md">ApiAtlasDiskBackupShardedClusterSnapshotMemberView</a></i>
@@ -106,19 +103,11 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Links
-
-_Required_: No
-
-_Type_: List of <a href="link.md">Link</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

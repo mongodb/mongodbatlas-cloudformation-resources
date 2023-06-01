@@ -407,7 +407,7 @@ func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.
 		if res.Response.StatusCode == 401 { // cfn test
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
-				Message:          "Error while getting project by name",
+				Message:          "Unauthorized Error: Unable to retrieve Project by name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
 		}
 		return progressevents.GetFailedEventByResponse(err.Error(),
@@ -422,7 +422,7 @@ func getProjectByID(id *string, client *mongodbatlas.Client) (event handler.Prog
 		if res.Response.StatusCode == 401 { // cfn test
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
-				Message:          "Error while  getting project by id",
+				Message:          "Unauthorized Error: Unable to retrieve Project by ID. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, err
 		}
 		return progressevents.GetFailedEventByResponse(err.Error(),

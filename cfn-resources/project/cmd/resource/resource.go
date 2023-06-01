@@ -405,7 +405,6 @@ func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.
 	project, res, err := client.Projects.GetOneProjectByName(context.Background(), *name)
 	if err != nil {
 		if res.Response.StatusCode == 401 { // cfn test
-
 			return progressevents.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				cloudformation.HandlerErrorCodeNotFound), nil, err

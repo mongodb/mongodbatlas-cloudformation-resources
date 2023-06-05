@@ -4,20 +4,6 @@
   "additionalProperties": false,
   "description": "Returns, adds, edits, and removes serverless instances.",
   "definitions": {
-    "Link": {
-      "type": "object",
-      "properties": {
-        "Href": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
-        },
-        "Rel": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
-        }
-      },
-      "additionalProperties": false
-    },
     "ServerlessInstanceConnectionStrings": {
       "type": "object",
       "properties": {
@@ -132,14 +118,6 @@
       "type": "integer",
       "description": "Number of items that the response returns per page."
     },
-    "Links": {
-      "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
-    },
     "MongoDBVersion": {
       "type": "string",
       "description": "Version of MongoDB that the serverless instance runs.",
@@ -199,7 +177,6 @@
     "/properties/Id",
     "/properties/TotalCount",
     "/properties/ConnectionStrings",
-    "/properties/Links",
     "/properties/StateName",
     "/properties/MongoDBVersion",
     "/properties/ConnectionStrings/StandardSrv",

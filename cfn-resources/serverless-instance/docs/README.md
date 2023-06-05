@@ -177,10 +177,6 @@ Number of documents returned in this response.
 
 Returns the <code>ConnectionStrings</code> value.
 
-#### Links
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
 #### StateName
 
 Human-readable label that indicates the current operating condition of the serverless instance.

@@ -468,8 +468,14 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 	if regionCfg.RegionName != nil {
 		region = *regionCfg.RegionName
 	}
+
+	providerName := constants.AWS
+	if regionCfg.ProviderName != nil {
+		providerName = *regionCfg.ProviderName
+	}
+
 	advRegionConfig := &mongodbatlas.AdvancedRegionConfig{
-		ProviderName: constants.AWS,
+		ProviderName: providerName,
 		RegionName:   region,
 		Priority:     regionCfg.Priority,
 	}
@@ -477,7 +483,6 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 	if regionCfg.AutoScaling != nil {
 		advRegionConfig.AutoScaling = expandAutoScaling(regionCfg.AutoScaling)
 	}
-
 	if regionCfg.AnalyticsAutoScaling != nil {
 		advRegionConfig.AnalyticsAutoScaling = expandAutoScaling(regionCfg.AnalyticsAutoScaling)
 	}

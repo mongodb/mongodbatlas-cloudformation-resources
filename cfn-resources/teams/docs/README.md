@@ -18,6 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#usernames" title="Usernames">Usernames</a>" : <i>[ String, ... ]</i>,
+        "<a href="#users" title="Users">Users</a>" : <i>[ <a href="atlasuser.md">AtlasUser</a>, ... ]</i>
     }
 }
 </pre>
@@ -35,6 +36,8 @@ Properties:
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#usernames" title="Usernames">Usernames</a>: <i>
       - String</i>
+    <a href="#users" title="Users">Users</a>: <i>
+      - <a href="atlasuser.md">AtlasUser</a></i>
 </pre>
 
 ## Properties
@@ -73,7 +76,7 @@ _Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### ProjectId
 
@@ -105,6 +108,16 @@ _Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Users
+
+List of returned documents that MongoDB Cloud provides when completing this request.
+
+_Required_: No
+
+_Type_: List of <a href="atlasuser.md">AtlasUser</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 ## Return Values
 
 ### Fn::GetAtt
@@ -116,8 +129,4 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### TeamId
 
 Unique 24-hexadecimal character string that identifies the team.
-
-#### Users
-
-List of returned documents that MongoDB Cloud provides when completing this request.
 

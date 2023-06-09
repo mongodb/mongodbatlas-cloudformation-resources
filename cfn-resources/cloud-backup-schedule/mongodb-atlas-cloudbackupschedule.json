@@ -217,7 +217,6 @@
   },
   "additionalProperties": false,
   "required": [
-    "Profile",
     "AutoExportEnabled"
   ],
   "writeOnlyProperties": [

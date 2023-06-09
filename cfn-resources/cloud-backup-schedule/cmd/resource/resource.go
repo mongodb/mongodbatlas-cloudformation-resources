@@ -49,15 +49,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// logger setup
 	setup()
 	_, _ = logger.Debugf("Create() currentModel:%+v", currentModel)
+
 	// Validate required fields in the request
 	if errEvent := validateModel(RequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	// Create atlas client
+
+	// Validate the Profile
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
+
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)

@@ -31,6 +31,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"github.com/mwielbut/pointy"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -268,7 +269,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
 	}
 
-	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name)
+	options := &mongodbatlas.DeleteAdvanceClusterOptions{RetainBackups: pointy.Bool(false)}
+	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name, options)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			_, _ = log.Warnf("Delete 404 err: %+v", err)

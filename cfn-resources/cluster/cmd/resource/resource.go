@@ -268,7 +268,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
 	}
 
-	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name)
+	options := &mongodbatlas.DeleteAdvanceClusterOptions{RetainBackups: util.Pointer(false)}
+	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name, options)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			_, _ = log.Warnf("Delete 404 err: %+v", err)

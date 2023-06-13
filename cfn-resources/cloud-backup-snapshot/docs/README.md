@@ -20,6 +20,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
         "<a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>" : <i>Integer</i>,
+        "<a href="#members" title="Members">Members</a>" : <i>[ <a href="apiatlasdiskbackupshardedclustersnapshotmemberview.md">ApiAtlasDiskBackupShardedClusterSnapshotMemberView</a>, ... ]</i>,
         "<a href="#pagenum" title="PageNum">PageNum</a>" : <i>Integer</i>,
         "<a href="#policyitems" title="PolicyItems">PolicyItems</a>" : <i>[ String, ... ]</i>,
         "<a href="#results" title="Results">Results</a>" : <i>[ <a href="apiatlasdiskbackupshardedclustersnapshotview.md">ApiAtlasDiskBackupShardedClusterSnapshotView</a>, ... ]</i>,
@@ -43,6 +44,8 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>
     <a href="#itemsperpage" title="ItemsPerPage">ItemsPerPage</a>: <i>Integer</i>
+    <a href="#members" title="Members">Members</a>: <i>
+      - <a href="apiatlasdiskbackupshardedclustersnapshotmemberview.md">ApiAtlasDiskBackupShardedClusterSnapshotMemberView</a></i>
     <a href="#pagenum" title="PageNum">PageNum</a>: <i>Integer</i>
     <a href="#policyitems" title="PolicyItems">PolicyItems</a>: <i>
       - String</i>
@@ -73,9 +76,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>64</code>
+_Maximum Length_: <code>64</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
@@ -87,9 +90,9 @@ _Required_: No
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>64</code>
+_Maximum Length_: <code>64</code>
 
 _Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
 
@@ -125,9 +128,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>24</code>
+_Minimum Length_: <code>24</code>
 
-_Maximum_: <code>24</code>
+_Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
@@ -150,6 +153,16 @@ Number of items that the response returns per page.
 _Required_: No
 
 _Type_: Integer
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Members
+
+List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `"type" : "SHARDED_CLUSTER"`.
+
+_Required_: No
+
+_Type_: List of <a href="apiatlasdiskbackupshardedclustersnapshotmemberview.md">ApiAtlasDiskBackupShardedClusterSnapshotMemberView</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -239,10 +252,6 @@ Unique string that identifies the Amazon Web Services (AWS) Key Management Servi
 
 Human-readable label that categorizes the cluster as a replica set or sharded cluster.
 
-#### Members
-
-List that includes the snapshots and the cloud provider that stores the snapshots. The resource returns this parameter when `"type" : "SHARDED_CLUSTER"`.
-
 #### ExpiresAt
 
 Date and time when MongoDB Cloud deletes the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
@@ -258,10 +267,6 @@ Unique 24-hexadecimal digit string that identifies the snapshot.
 #### CreatedAt
 
 Date and time when MongoDB Cloud took the snapshot. This parameter expresses its value in the ISO 8601 timestamp format in UTC.
-
-#### Links
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
 
 #### CloudProvider
 

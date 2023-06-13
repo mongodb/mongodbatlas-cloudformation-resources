@@ -17,6 +17,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#analyticsautoscaling" title="AnalyticsAutoScaling">AnalyticsAutoScaling</a>" : <i><a href="advancedautoscaling.md">advancedAutoScaling</a></i>,
     "<a href="#autoscaling" title="AutoScaling">AutoScaling</a>" : <i><a href="advancedautoscaling.md">advancedAutoScaling</a></i>,
     "<a href="#regionname" title="RegionName">RegionName</a>" : <i>String</i>,
+    "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
     "<a href="#analyticsspecs" title="AnalyticsSpecs">AnalyticsSpecs</a>" : <i><a href="specs.md">specs</a></i>,
     "<a href="#electablespecs" title="ElectableSpecs">ElectableSpecs</a>" : <i><a href="specs.md">specs</a></i>,
     "<a href="#priority" title="Priority">Priority</a>" : <i>Integer</i>,
@@ -30,6 +31,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#analyticsautoscaling" title="AnalyticsAutoScaling">AnalyticsAutoScaling</a>: <i><a href="advancedautoscaling.md">advancedAutoScaling</a></i>
 <a href="#autoscaling" title="AutoScaling">AutoScaling</a>: <i><a href="advancedautoscaling.md">advancedAutoScaling</a></i>
 <a href="#regionname" title="RegionName">RegionName</a>: <i>String</i>
+<a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
 <a href="#analyticsspecs" title="AnalyticsSpecs">AnalyticsSpecs</a>: <i><a href="specs.md">specs</a></i>
 <a href="#electablespecs" title="ElectableSpecs">ElectableSpecs</a>: <i><a href="specs.md">specs</a></i>
 <a href="#priority" title="Priority">Priority</a>: <i>Integer</i>
@@ -61,6 +63,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProviderName
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>AWS</code> | <code>GCP</code> | <code>AZURE</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

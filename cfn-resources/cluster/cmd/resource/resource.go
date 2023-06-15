@@ -691,6 +691,7 @@ func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {
 		OplogSizeMB:                      castNO64(p.OplogSizeMB),
 		SampleSizeBIConnector:            castNO64(p.SampleSizeBIConnector),
 		SampleRefreshIntervalBIConnector: castNO64(p.SampleRefreshIntervalBIConnector),
+		OplogMinRetentionHours:           p.OplogMinRetentionHours,
 	}
 }
 
@@ -761,6 +762,10 @@ func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
 	}
 	if processArgs.SampleRefreshIntervalBIConnector != nil {
 		args.SampleRefreshIntervalBIConnector = cast64(processArgs.SampleRefreshIntervalBIConnector)
+	}
+
+	if processArgs.OplogMinRetentionHours != nil {
+		args.OplogMinRetentionHours = processArgs.OplogMinRetentionHours
 	}
 
 	return &args

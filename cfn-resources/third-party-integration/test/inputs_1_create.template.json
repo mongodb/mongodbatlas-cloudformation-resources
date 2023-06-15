@@ -2,5 +2,5 @@
     "ProjectId": "$ATLAS_PROJECT_ID",
     "Profile": "default",
     "Type": "WEBHOOK",
-    "Url": "http://7e9ea9dc.ngrok.io/github-webhook"
+    "Url": ""
 }

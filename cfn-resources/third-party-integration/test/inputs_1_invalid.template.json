@@ -1,7 +1,0 @@
-{
-    "ProjectId": "$ATLAS_PROJECT_ID",
-    "Profile": "default",
-    "Type": "WEBHOOK_Invalid",
-    "Url": "https://www.google.com/happy",
-    "Secret": "Hello@1234"
-}

@@ -151,8 +151,7 @@ func newModel(globalCluster *mongodbatlas.GlobalCluster, currentModel *Model) *M
 	readModel.ProjectId = currentModel.ProjectId
 	readModel.ClusterName = currentModel.ClusterName
 	maps := flattenManagedNamespaces(globalCluster.ManagedNamespaces)
-	zones := customZoneToModelMappings(globalCluster.CustomZoneMapping)
-	readModel.CustomZoneMappings = zones
+	readModel.CustomZoneMappings = currentModel.CustomZoneMappings
 	readModel.ManagedNamespaces = maps
 	readModel.Profile = currentModel.Profile
 	readModel.RemoveAllZoneMapping = currentModel.RemoveAllZoneMapping
@@ -294,30 +293,6 @@ func modelToCustomZoneMappings(tfList []ZoneMapping) []mongodbatlas.CustomZoneMa
 		}
 		apiObject := modelToCustomZoneMapping(tfMapRaw)
 		apiObjects[i] = *apiObject
-	}
-	return apiObjects
-}
-func customZoneToModelMapping(location string, zone string) *ZoneMapping {
-	if location == "" {
-		return nil
-	}
-	return &ZoneMapping{
-		Location: &location,
-		Zone:     &zone,
-	}
-}
-
-func customZoneToModelMappings(tfList map[string]string) []ZoneMapping {
-	apiObjects := make([]ZoneMapping, len(tfList))
-	var i = 0
-	for k, v := range tfList {
-		fmt.Printf("key[%s] value[%s]\n", k, v)
-		apiObject := customZoneToModelMapping(k, v)
-		if apiObject == nil {
-			continue
-		}
-		apiObjects[i] = *apiObject
-		i++
 	}
 	return apiObjects
 }

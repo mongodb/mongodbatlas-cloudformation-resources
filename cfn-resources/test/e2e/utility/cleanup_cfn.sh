@@ -17,6 +17,15 @@
 
 echo "Cleaning up..."
 
+resource_directory=$RESOURCE_DIRECTORY_NAME
+# shellcheck disable=SC2001
+schema_file_name=$(echo "$resource_directory" | sed 's/-//g')
+role_stack_name="mongodb-atlas-${schema_file_name}-role-stack"
+
 # Deactivate the CFN resource (https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-register.html)
 echo "Deactivating the CFN resource $RESOURCE_TYPE_NAME_FOR_E2E"
 aws cloudformation deregister-type --type-name "$RESOURCE_TYPE_NAME_FOR_E2E" --type RESOURCE
+
+echo "Deleting the CFN stack for resource $RESOURCE_TYPE_NAME_FOR_E2E role-stack"
+aws cloudformation update-termination-protection --stack-name role_stack_name --no-enable-termination-protection
+aws cloudformation delete-stack --stack-name role_stack_name

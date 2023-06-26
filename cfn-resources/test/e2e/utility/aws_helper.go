@@ -75,10 +75,10 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		switch statusStr {
 		case "CREATE_COMPLETE":
 			return resp, nil
-		case "CREATE_FAILED":
+		case "CREATE_FAILED", "ROLLBACK_COMPLETE":
 			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 }
 
@@ -120,10 +120,10 @@ func waitForStackDeleteComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		switch statusStr {
 		case "DELETE_COMPLETE":
 			return resp, nil
-		case "DELETE_FAILED":
+		case "DELETE_FAILED", "ROLLBACK_COMPLETE":
 			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 }
 
@@ -164,10 +164,10 @@ func waitForStackUpdateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		switch statusStr {
 		case "UPDATE_COMPLETE":
 			return resp, nil
-		case "UPDATE_FAILED", "UPDATE_ROLLBACK_COMPLETE", "UPDATE_ROLLBACK_FAILED":
+		case "UPDATE_FAILED", "UPDATE_ROLLBACK_COMPLETE", "UPDATE_ROLLBACK_FAILED", "ROLLBACK_COMPLETE":
 			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 }
 

@@ -17,6 +17,9 @@ package utility
 import (
 	"crypto/rand"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
 	"math/big"
 	"os/exec"
 	"testing"
@@ -61,9 +64,55 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 }
 
 func runShScript(path string) ([]byte, error) {
-	output, err := exec.Command("/bin/sh", path).CombinedOutput()
+	//output, err := exec.Command("/bin/sh", path).CombinedOutput()
+	//if err != nil {
+	//	return output, err
+	//}
+	cmd := exec.Command(path)
+
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return output, err
+		log.Fatal(err)
+	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start the command
+	err = cmd.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Read the output from pipes
+	output, err := readOutput(stdout)
+	if err != nil {
+		log.Fatal(err)
+	}
+	errorOutput, err := readOutput(stderr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Wait for the command to complete
+	err = cmd.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print the captured outputs
+	fmt.Println("Standard Output:", string(output))
+	fmt.Println("Standard Error:", string(errorOutput))
+
+	return output, nil
+}
+
+// Helper function to read output from a pipe
+func readOutput(pipe io.Reader) ([]byte, error) {
+	output, err := ioutil.ReadAll(pipe)
+	if err != nil {
+		return nil, err
 	}
 	return output, nil
 }

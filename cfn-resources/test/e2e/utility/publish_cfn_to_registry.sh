@@ -64,3 +64,5 @@ mv "${tmp_rpdk_file}" "${rpdk_file}"
 
 echo "Deleting resource JSON schema used for the E2E test"
 rm "${tmp_resource_schema_file}"
+
+echo "Script executed.."

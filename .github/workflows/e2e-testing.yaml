@@ -5,25 +5,25 @@ on:
       - master
   pull_request:
 jobs:
-  change-detection:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-      repository-projects: read
-    outputs:
-      project: ${{ steps.filter.outputs.project }}
-    steps:
-      - uses: actions/checkout@v3
-        if: ${{ github.event_name == 'push' }}
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            project:
-              - 'cfn-resources/project/**'
+#  change-detection:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      pull-requests: read
+#      repository-projects: read
+#    outputs:
+#      project: ${{ steps.filter.outputs.project }}
+#    steps:
+#      - uses: actions/checkout@v3
+#        if: ${{ github.event_name == 'push' }}
+#      - uses: dorny/paths-filter@v2
+#        id: filter
+#        with:
+#          filters: |
+#            project:
+#              - 'cfn-resources/project/**'
   project:
-    needs: change-detection
-    if: ${{ needs.change-detection.outputs.project == 'true' }}
+#    needs: change-detection
+#    if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go

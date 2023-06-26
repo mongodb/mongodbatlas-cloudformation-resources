@@ -25,6 +25,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### ID
 
+Unique 24-hexadecimal digit string that identifies this backup policy. The policy id can be retrieved by running: atlas backups schedule describe "${clusterName}" --projectId "${projectId}" | jq -r '.policies[0].id'
+
 _Required_: No
 
 _Type_: String

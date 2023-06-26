@@ -12,6 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::CloudBackupSchedule",
     "Properties" : {
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#autoexportenabled" title="AutoExportEnabled">AutoExportEnabled</a>" : <i>Boolean</i>,
         "<a href="#useorgandgroupnamesinexportprefix" title="UseOrgAndGroupNamesInExportPrefix">UseOrgAndGroupNamesInExportPrefix</a>" : <i>Boolean</i>,
@@ -33,6 +34,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::CloudBackupSchedule
 Properties:
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#autoexportenabled" title="AutoExportEnabled">AutoExportEnabled</a>: <i>Boolean</i>
     <a href="#useorgandgroupnamesinexportprefix" title="UseOrgAndGroupNamesInExportPrefix">UseOrgAndGroupNamesInExportPrefix</a>: <i>Boolean</i>
@@ -52,6 +54,16 @@ Properties:
 
 ## Properties
 
+#### ProjectId
+
+The unique identifier of the project for the Atlas cluster.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### Id
 
 Unique identifier of the snapshot.
@@ -66,7 +78,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Flag that indicates whether automatic export of cloud backup snapshots to the AWS bucket is enabled.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: Boolean
 
@@ -164,7 +176,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
@@ -189,10 +201,6 @@ Timestamp in the number of seconds that have elapsed since the UNIX epoc when At
 #### ID
 
 Returns the <code>ID</code> value.
-
-#### ProjectId
-
-The unique identifier of the project for the Atlas cluster.
 
 #### ClusterName
 

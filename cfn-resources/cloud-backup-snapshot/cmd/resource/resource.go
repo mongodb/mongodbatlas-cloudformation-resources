@@ -410,18 +410,6 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-backup-snapshot")
 }
 
-// converts mongodb link class to model link class
-func flattenLinks(linksResult []*mongodbatlas.Link) []Link {
-	links := make([]Link, 0)
-	for ind := range linksResult {
-		var lin Link
-		lin.Href = &linksResult[ind].Href
-		lin.Rel = &linksResult[ind].Rel
-		links = append(links, lin)
-	}
-	return links
-}
-
 func flattenCloudMember(apiObject *mongodbatlas.Member) ApiAtlasDiskBackupShardedClusterSnapshotMemberView {
 	tfMap := ApiAtlasDiskBackupShardedClusterSnapshotMemberView{}
 	tfMap.CloudProvider = &apiObject.CloudProvider
@@ -458,7 +446,6 @@ func convertToUIModel(snapShot *mongodbatlas.CloudProviderSnapshot, currentModel
 	currentModel.MongodVersion = &snapShot.MongodVersion
 	storageInBytesString := strconv.Itoa(snapShot.StorageSizeBytes)
 	currentModel.StorageSizeBytes = &storageInBytesString
-	currentModel.Links = flattenLinks(snapShot.Links)
 	currentModel.CloudProvider = aws.String(constants.AWS)
 	currentModel.SnapshotIds = snapShot.SnapshotsIds
 	currentModel.Members = flattenCloudMembers(snapShot.Members)

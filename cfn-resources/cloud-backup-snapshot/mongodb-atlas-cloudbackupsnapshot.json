@@ -46,15 +46,6 @@
           "minLength": 24,
           "pattern": "^([a-f0-9]{24})$"
         },
-        "Links": {
-          "type": "array",
-          "insertionOrder": false,
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link",
-            "type": "object"
-          }
-        },
         "MasterKeyUUID": {
           "type": "string",
           "description": "Unique string that identifies the Amazon Web Services (AWS) Key Management Service (KMS) Customer Master Key (CMK) used to encrypt the snapshot. The resource returns this value when `\"encryptionEnabled\" : true`."
@@ -169,15 +160,6 @@
           "minLength": 24,
           "pattern": "^([a-f0-9]{24})$"
         },
-        "Links": {
-          "type": "array",
-          "insertionOrder": false,
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link",
-            "type": "object"
-          }
-        },
         "MasterKeyUUID": {
           "type": "string",
           "description": "Unique string that identifies the Amazon Web Services (AWS) Key Management Service (KMS) Customer Master Key (CMK) used to encrypt the snapshot. The resource returns this value when `\"encryptionEnabled\" : true`."
@@ -241,20 +223,6 @@
             "REPLICA_SET",
             "SHARDED_CLUSTER"
           ]
-        }
-      },
-      "additionalProperties": false
-    },
-    "Link": {
-      "type": "object",
-      "properties": {
-        "Href": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://mms.mongodb.com`."
-        },
-        "Rel": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://mms.mongodb.com`."
         }
       },
       "additionalProperties": false
@@ -345,15 +313,6 @@
     "ItemsPerPage": {
       "type": "integer",
       "description": "Number of items that the response returns per page."
-    },
-    "Links": {
-      "type": "array",
-      "insertionOrder": false,
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link",
-        "type": "object"
-      }
     },
     "MasterKeyUUID": {
       "type": "string",
@@ -479,12 +438,10 @@
     "/properties/SnapshotIds",
     "/properties/MasterKeyUUID",
     "/properties/Type",
-    "/properties/Members",
     "/properties/ExpiresAt",
     "/properties/StorageSizeBytes",
     "/properties/Id",
     "/properties/CreatedAt",
-    "/properties/Links",
     "/properties/CloudProvider",
     "/properties/MongodVersion",
     "/properties/ReplicaSetName",

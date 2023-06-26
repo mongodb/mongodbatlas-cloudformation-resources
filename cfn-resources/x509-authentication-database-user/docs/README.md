@@ -19,7 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#customerx509" title="CustomerX509">CustomerX509</a>" : <i><a href="customerx509.md">customerX509</a></i>,
         "<a href="#username" title="UserName">UserName</a>" : <i>String</i>,
-        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>
     }
 }
 </pre>
@@ -82,14 +82,6 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
-
-#### Links
-
-One or more links to sub-resources and/or related resources.
-
-#### Results
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
 
 #### TotalCount
 

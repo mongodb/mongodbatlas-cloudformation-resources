@@ -1,41 +1,6 @@
 {
     "additionalProperties": false,
     "definitions": {
-        "Certificate": {
-            "type": "object",
-            "properties": {
-                "UserName": {
-                    "type": "string",
-                    "description": " Username of the database user to create a certificate for."
-                },
-                "CreatedAt": {
-                    "type": "string",
-                    "description": "Timestamp in ISO 8601 date and time format in UTC when Atlas created this X.509 certificate."
-                },
-                "MonthsUntilExpiration": {
-                    "type": "integer",
-                    "description": "A number of months that the created certificate is valid for before expiry, up to 24 months.default 3."
-                },
-                "NotAfter": {
-                    "type": "string",
-                    "description": "Timestamp in ISO 8601 date and time format in UTC when this certificate expires."
-                },
-                "Subject": {
-                    "type": "string",
-                    "description": "Fully distinguished name of the database user to which this certificate belongs. To learn more, see RFC 2253."
-                },
-                "GroupId": {
-                    "type": "string",
-                    "description": "Unique identifier of the Atlas project to which this certificate belongs."
-                },
-                "Id": {
-                    "type": "string",
-                    "description": "Serial number of this certificate."
-
-                }
-            },
-            "additionalProperties": false
-        },
         "customerX509": {
             "type": "object",
             "properties": {
@@ -70,22 +35,6 @@
             "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
             "default": "default"
         },
-        "Links": {
-            "description": "One or more links to sub-resources and/or related resources.",
-            "type": "array",
-            "items": {
-                "type" : "object",
-                "properties": {
-                    "Rel": {
-                        "type": "string"
-                    },
-                    "Href": {
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false
-            }
-        },
         "TotalCount": {
             "type": "integer",
             "description": "Total number of unexpired certificates returned in this response."
@@ -105,14 +54,6 @@
         "ProjectId": {
             "type": "string",
             "description": "The unique identifier for the project ."
-        },
-        "Results": {
-            "type": "array",
-            "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-            "items": {
-                "$ref": "#/definitions/Certificate",
-                "type": "object"
-            }
         }
     },
     "createOnlyProperties": [
@@ -121,8 +62,6 @@
         "/properties/Profile"
     ],
     "readOnlyProperties": [
-        "/properties/Links",
-        "/properties/Results",
         "/properties/TotalCount",
         "/properties/MonthsUntilExpiration",
         "/properties/CustomerX509/Cas",

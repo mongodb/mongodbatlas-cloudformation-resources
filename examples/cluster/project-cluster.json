@@ -104,7 +104,8 @@
                   "NodeCount": "3"
                 },
                 "Priority": "7",
-                "RegionName": "US_EAST_1"
+                "RegionName": "US_EAST_1",
+                "ProviderName": "AWS"
               }
             ]
           }

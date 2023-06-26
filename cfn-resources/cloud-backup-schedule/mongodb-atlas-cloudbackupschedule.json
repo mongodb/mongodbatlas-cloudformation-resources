@@ -95,7 +95,8 @@
       "type": "object",
       "properties": {
         "ID": {
-          "type": "string"
+          "type": "string",
+          "description" : "Unique 24-hexadecimal digit string that identifies this backup policy. The policy id can be retrieved by running: atlas backups schedule describe \"${clusterName}\" --projectId \"${projectId}\" | jq -r '.policies[0].id'"
         },
         "PolicyItems": {
           "type": "array",
@@ -216,7 +217,7 @@
   },
   "additionalProperties": false,
   "required": [
-    "Profile"
+    "AutoExportEnabled"
   ],
   "writeOnlyProperties": [
     "/properties/UpdateSnapshots",

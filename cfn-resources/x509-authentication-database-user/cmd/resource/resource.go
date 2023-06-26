@@ -28,7 +28,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -160,19 +159,6 @@ func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (
 
 	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
-	userName := *currentModel.UserName
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
-	// API call to read all user certificates
-	certificates, resp, err := client.X509AuthDBUsers.GetUserCertificates(context.Background(), projectID, userName, params)
-	if err != nil {
-		_, _ = logger.Warnf("create - error: %+v", err)
-		return nil, fmt.Errorf("error reading all MongoDB X509 certificates for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
-	}
-	currentModel.Links = flattenLinks(resp.Links)
-	flattenCertificates(certificates, currentModel)
 
 	// API call to get currently configured certificate
 	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
@@ -254,37 +240,6 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-x509-authentication-db-user")
-}
-func flattenLinks(linksResult []*mongodbatlas.Link) []Links {
-	if linksResult != nil {
-		links := make([]Links, 0)
-		for _, link := range linksResult {
-			var lin Links
-			lin.Href = &link.Href
-			lin.Rel = &link.Rel
-			links = append(links, lin)
-		}
-		return links
-	}
-	return nil
-}
-func flattenCertificates(userCertificates []mongodbatlas.UserCertificate, currentModel *Model) *Model {
-	if userCertificates != nil {
-		certificates := make([]Certificate, 0)
-		for _, v := range userCertificates {
-			role := Certificate{
-				Id:        aws.String(cast.ToString(v.ID)),
-				CreatedAt: aws.String(v.CreatedAt),
-				GroupId:   aws.String(v.GroupID),
-				NotAfter:  aws.String(v.NotAfter),
-				Subject:   aws.String(v.Subject),
-			}
-			certificates = append(certificates, role)
-		}
-		currentModel.Results = certificates
-		currentModel.TotalCount = aws.Int(len(userCertificates))
-	}
-	return currentModel
 }
 
 // function to track snapshot creation status

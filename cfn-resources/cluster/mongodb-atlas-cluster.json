@@ -51,6 +51,14 @@
                 "RegionName": {
                     "type": "string"
                 },
+                "ProviderName": {
+                    "type": "string",
+                    "enum": [
+                        "AWS",
+                        "GCP",
+                        "AZURE"
+                    ]
+                },
                 "AnalyticsSpecs": {
                         "$ref": "#/definitions/specs"
                 },

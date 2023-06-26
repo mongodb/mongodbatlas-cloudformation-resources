@@ -268,7 +268,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
 	}
 
-	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name)
+	options := &mongodbatlas.DeleteAdvanceClusterOptions{RetainBackups: util.Pointer(false)}
+	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name, options)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			_, _ = log.Warnf("Delete 404 err: %+v", err)
@@ -468,8 +469,14 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 	if regionCfg.RegionName != nil {
 		region = *regionCfg.RegionName
 	}
+
+	providerName := constants.AWS
+	if regionCfg.ProviderName != nil {
+		providerName = *regionCfg.ProviderName
+	}
+
 	advRegionConfig := &mongodbatlas.AdvancedRegionConfig{
-		ProviderName: constants.AWS,
+		ProviderName: providerName,
 		RegionName:   region,
 		Priority:     regionCfg.Priority,
 	}
@@ -477,7 +484,6 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 	if regionCfg.AutoScaling != nil {
 		advRegionConfig.AutoScaling = expandAutoScaling(regionCfg.AutoScaling)
 	}
-
 	if regionCfg.AnalyticsAutoScaling != nil {
 		advRegionConfig.AnalyticsAutoScaling = expandAutoScaling(regionCfg.AnalyticsAutoScaling)
 	}

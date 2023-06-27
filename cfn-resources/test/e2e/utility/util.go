@@ -49,6 +49,10 @@ func RunCleanupScript(t *testing.T, rctx ResourceContext) {
 }
 
 func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
+	t.Cleanup(func() {
+		RunCleanupScript(t, rctx)
+	})
+
 	t.Setenv("RESOURCE_TYPE_NAME", rctx.ResourceTypeName)
 	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
 	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)
@@ -60,11 +64,6 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 		return
 	}
 	t.Logf("New E2E test resource type %s successfully published to private registry!\n", rctx.ResourceTypeNameForE2e)
-
-	t.Cleanup(func() {
-		// delete stack if exists
-		RunCleanupScript(t, rctx)
-	})
 }
 
 func runShScript(t *testing.T, path string) ([]byte, error) {

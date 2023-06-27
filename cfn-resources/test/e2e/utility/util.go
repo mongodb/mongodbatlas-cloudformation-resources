@@ -18,7 +18,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
 	"os/exec"
 	"testing"
@@ -40,9 +39,12 @@ func FailNowIfError(t *testing.T, msgf string, err error) {
 }
 
 func RunCleanupScript(t *testing.T, rctx ResourceContext) {
-	output, err := runShScript("../utility/cleanup_cfn.sh")
+	output, err := runShScript(t, "../utility/cleanup_cfn.sh")
 	FailNowIfError(t, fmt.Sprintf("Error when executing cleanup script. Output: %s\n", output)+"%v", err)
 
+	if err != nil {
+		return
+	}
 	t.Logf("E2E test resource type %s successfully de-registered from private registry!\n", rctx.ResourceTypeNameForE2e)
 }
 
@@ -52,17 +54,20 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)
 	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
 
-	output, err := runShScript("../utility/publish_cfn_to_registry.sh")
+	output, err := runShScript(t, "../utility/publish_cfn_to_registry.sh")
 	FailNowIfError(t, fmt.Sprintf("Error when executing publishing script. Output: %s\n", output)+"%v", err)
-
+	if err != nil {
+		return
+	}
 	t.Logf("New E2E test resource type %s successfully published to private registry!\n", rctx.ResourceTypeNameForE2e)
 
 	t.Cleanup(func() {
+		// delete stack if exists
 		RunCleanupScript(t, rctx)
 	})
 }
 
-func runShScript(path string) ([]byte, error) {
+func runShScript(t *testing.T, path string) ([]byte, error) {
 	//output, err := exec.Command("/bin/sh", path).CombinedOutput()
 	//if err != nil {
 	//	return output, err
@@ -75,43 +80,40 @@ func runShScript(path string) ([]byte, error) {
 	// Start the command
 	err := cmd.Start()
 	if err != nil {
-		//log.Fatal(err)
-		fmt.Println(" Output in err := cmd.Start():")
 		return nil, err
 	}
 
 	// Read the output from pipes
-	output, err := readOutput(stdout)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println(" Output in output, err := readOutput(stdout):", string(output))
-		return output, err
-	}
-	errorOutput, err := readOutput(stderr)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println(" Output in errorOutput, err := readOutput(stderr):", string(errorOutput))
-		return errorOutput, err
-	}
+	output, _ := readOutput(stdout)
+	//if err != nil {
+	//	//log.Fatal(err)
+	//	return output, err
+	//}
+	errorOutput, _ := readOutput(stderr)
+	//if err != nil {
+	//	//log.Fatal(err)
+	//	return errorOutput, err
+	//}
 
 	// Wait for the command to complete
 	err = cmd.Wait()
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println(" Output in cmd.Wait():", string(output))
-		return output, err
-	}
+	//if err != nil {
+	//	//log.Fatal(err)
+	//	fmt.Println("Standard Output:", string(output))
+	//	fmt.Println("Standard Error:", string(errorOutput))
+	//	return output, err
+	//}
 
 	// Print the captured outputs
-	fmt.Println("Standard Output:", string(output))
-	fmt.Println("Standard Error:", string(errorOutput))
+	t.Logf("Standard Output: %v", string(output))
+	t.Logf("Standard Error: %v", string(errorOutput))
 
 	return output, err
 }
 
 // Helper function to read output from a pipe
 func readOutput(pipe io.Reader) ([]byte, error) {
-	output, err := ioutil.ReadAll(pipe)
+	output, err := io.ReadAll(pipe)
 	if err != nil {
 		return nil, err
 	}

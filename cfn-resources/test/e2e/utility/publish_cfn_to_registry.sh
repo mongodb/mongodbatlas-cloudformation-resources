@@ -54,7 +54,7 @@ echo "ran cfn...."
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
-#make build && cfn submit --set-default
+make build && cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 
 

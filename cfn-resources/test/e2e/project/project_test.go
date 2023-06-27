@@ -94,7 +94,7 @@ func setupSuite(t *testing.T) *LocalTestContext {
 }
 
 func (c *LocalTestContext) setUp(t *testing.T) {
-	c.resourceCtx = utility.InitResourceCtx(e2eRandSuffix, resourceTypeName, resourceDirectory)
+	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
 	c.cfnClient, c.atlasClient = utility.NewClients(t)
 	utility.PublishToPrivateRegistry(t, c.resourceCtx)
 	c.setupPrerequisites(t)
@@ -159,8 +159,12 @@ func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 	return ""
 }
 
-func deleteProjectIfExists(t *testing.T, c *LocalTestContext) {
-	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+func cleanupResources(t *testing.T, c *LocalTestContext) {
+	err := utility.DeleteStackIfExists(t, c.cfnClient, stackName)
+	if err != nil {
+		t.Logf("Error when Deleting Stack If Exists during cleanup")
+	}
+	_, _, err = c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 	if err == nil {
 		_, err = c.atlasClient.Projects.Delete(ctx.Background(), c.projectTmplObj.ProjectID)
 		if err != nil {
@@ -184,7 +188,7 @@ func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 	team, _ := utility.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
 	t.Cleanup(func() {
 		cleanupPrerequisites(t, c)
-		deleteProjectIfExists(t, c)
+		cleanupResources(t, c)
 	})
 
 	c.projectTmplObj = TestProject{

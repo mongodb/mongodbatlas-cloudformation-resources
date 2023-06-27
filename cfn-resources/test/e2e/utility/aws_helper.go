@@ -25,6 +25,10 @@ import (
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )
 
+const (
+	StackNotFoundErr = "stack not found"
+)
+
 func NewCFNClient() (client *cfn.Client, err error) {
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
@@ -80,6 +84,20 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		}
 		time.Sleep(2 * time.Second)
 	}
+}
+
+func DescribeStack(svc *cfn.Client, stackID string) (*cfn.DescribeStacksOutput, error) {
+	req := cfn.DescribeStacksInput{
+		StackName: aws.String(stackID),
+	}
+	resp, err := svc.DescribeStacks(context.Background(), &req)
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.Stacks) == 0 {
+		return nil, fmt.Errorf(StackNotFoundErr)
+	}
+	return resp, nil
 }
 
 func DeleteStack(t *testing.T, client *cfn.Client, stackName string) *cfn.DescribeStacksOutput {
@@ -178,4 +196,13 @@ func TestIsTemplateValid(t *testing.T, svc *cfn.Client, template string) {
 
 	_, err := svc.ValidateTemplate(context.Background(), input)
 	FailNowIfError(t, "invalid cloudformation stack: %v", err)
+}
+
+func DeleteStackIfExists(t *testing.T, c *cfn.Client, stackName string) error {
+	_, err := DescribeStack(c, stackName)
+	if err != nil && err.Error() != StackNotFoundErr {
+		DeleteStack(t, c, stackName)
+		return nil
+	}
+	return err
 }

@@ -22,7 +22,7 @@
 # 3) Updates the resource schema to use the typename generated at the step 1
 # 4) Cleanings: Updates the files changed in the previous steps to the correct typename
 
-#set -eu
+set -eu
 set -x
 
 resource_directory=$RESOURCE_DIRECTORY_NAME
@@ -47,10 +47,6 @@ jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 	'.typeName?|=$type_name' \
 	"${resource_schema_file}" >"${tmp_resource_schema_file}"
 
-echo "running aws:  .....:"
-#aws help
-echo "ran aws...."
-
 echo "running cfn:  .....:"
 cfn
 echo "ran cfn...."
@@ -58,7 +54,7 @@ echo "ran cfn...."
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
 
-make build && cfn submit --set-default
+#make build && cfn submit --set-default
 cd ../test/e2e/"$resource_directory"
 
 

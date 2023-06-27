@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"os/exec"
 	"testing"
@@ -70,42 +69,44 @@ func runShScript(path string) ([]byte, error) {
 	//}
 	cmd := exec.Command(path)
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
 
 	// Start the command
-	err = cmd.Start()
+	err := cmd.Start()
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		fmt.Println(" Output in err := cmd.Start():")
+		return nil, err
 	}
 
 	// Read the output from pipes
 	output, err := readOutput(stdout)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		fmt.Println(" Output in output, err := readOutput(stdout):", string(output))
+		return output, err
 	}
 	errorOutput, err := readOutput(stderr)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		fmt.Println(" Output in errorOutput, err := readOutput(stderr):", string(errorOutput))
+		return errorOutput, err
 	}
 
 	// Wait for the command to complete
 	err = cmd.Wait()
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		fmt.Println(" Output in cmd.Wait():", string(output))
+		return output, err
 	}
 
 	// Print the captured outputs
 	fmt.Println("Standard Output:", string(output))
 	fmt.Println("Standard Error:", string(errorOutput))
 
-	return output, nil
+	return output, err
 }
 
 // Helper function to read output from a pipe

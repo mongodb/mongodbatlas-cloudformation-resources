@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"fmt"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -28,11 +27,20 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"log"
 )
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-network-peering")
 }
+
+const (
+	StatusPendingAcceptance string = "PENDING_ACCEPTANCE"
+	StatusFailed                   = "FAILED"
+	StatusAvailable                = "AVAILABLE"
+	StatusDeleted                  = "DELETED"
+	StatusInitiating               = "INITIATING"
+)
 
 // Helper to check container id or create one for the AWS region for
 // the given project. This is patterned off the mongocli logic:
@@ -82,6 +90,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	if _, ok := req.CallbackContext["stateName"]; ok {
+		currentModel.Id = aws.String(req.CallbackContext["id"].(string))
+		log.Printf("se asigno el ID = ")
+		log.Print(currentModel.Id)
+		return validateCreationProcess(client, currentModel), nil
+	}
+
 	projectID := *currentModel.ProjectId
 	awsAccountID := currentModel.AwsAccountId
 	if awsAccountID == nil || *awsAccountID == "" {
@@ -107,13 +122,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	_, _ = logger.Debugf("Create peerResponse:%+v", peerResponse)
-	currentModel.Id = &peerResponse.ID
 
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Create complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return progressevents.GetInProgressProgressEvent("Creating",
+		map[string]interface{}{
+			"stateName": StatusInitiating,
+			"id":        &peerResponse.ID,
+		},
+		currentModel,
+		5,
+	), nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -239,7 +256,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
-		return validateProgress(client, currentModel, "DELETED")
+		return validateDeletionProcess(client, currentModel), nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -250,15 +267,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			resp.Response), nil
 	}
 
-	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              "Delete in-progress",
-		ResourceModel:        currentModel,
-		CallbackDelaySeconds: 10,
-		CallbackContext: map[string]interface{}{
-			"stateName": "DELETING",
+	return progressevents.GetInProgressProgressEvent("Deleting",
+		map[string]interface{}{
+			"stateName": StatusDeleted,
 		},
-	}, nil
+		currentModel,
+		5,
+	), nil
 }
 
 // List handles the List event from the Cloudformation service.
@@ -306,45 +321,64 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	isReady, state, err := networkPeeringIsReady(client, *currentModel.ProjectId, *currentModel.Id, targetState)
+func validateDeletionProcess(client *mongodbatlas.Client, currentModel *Model) handler.ProgressEvent {
+	state, _, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+	}
+
+	if state == StatusDeleted {
 		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-	}
-
-	if !isReady {
-		p := handler.NewProgressEvent()
-		p.ResourceModel = currentModel
-		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 15
-		p.Message = "Pending"
-		p.CallbackContext = map[string]interface{}{
-			"stateName": state,
+			OperationStatus: handler.Success,
+			Message:         "Complete",
 		}
-		return p, nil
 	}
 
-	p := handler.NewProgressEvent()
-	p.OperationStatus = handler.Success
-	p.Message = "Complete"
-	if state == "DELETED" {
-		_, _ = logger.Debugf("Do not set ResourceModel property for DELETED resources")
-	} else {
-		_, _ = logger.Debugf("validateProgress isReady was true but state not DELETED?")
-		p.ResourceModel = currentModel
-	}
-	return p, nil
+	return progressevents.GetInProgressProgressEvent("Deleting",
+		map[string]interface{}{
+			"stateName": state,
+		},
+		currentModel,
+		5,
+	)
 }
 
-func networkPeeringIsReady(client *mongodbatlas.Client, projectID, peerID, targetState string) (isReady bool, statusName string, err error) {
+func validateCreationProcess(client *mongodbatlas.Client, currentModel *Model) handler.ProgressEvent {
+	state, errorMessage, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
+	if err != nil {
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+	}
+
+	if state == StatusPendingAcceptance || state == StatusAvailable {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Complete",
+			ResourceModel:   currentModel,
+		}
+	}
+
+	if state == StatusFailed {
+		return progressevents.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInternalFailure)
+	}
+
+	return progressevents.GetInProgressProgressEvent("Creating",
+		map[string]interface{}{
+			"stateName": state,
+		},
+		currentModel,
+		5,
+	)
+}
+
+func getStatus(client *mongodbatlas.Client, projectID, peerID string) (string, string, error) {
 	peerResponse, resp, err := client.Peers.Get(context.Background(), projectID, peerID)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			return true, "DELETED", nil
+			return StatusDeleted, "", nil
+		} else {
+			return "", "", err
 		}
 	}
-	return peerResponse.StatusName == targetState, peerResponse.StatusName, nil
+
+	return peerResponse.StatusName, peerResponse.ErrorStateName, nil
 }

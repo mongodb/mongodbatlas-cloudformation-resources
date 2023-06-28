@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -35,10 +36,10 @@ func setup() {
 
 const (
 	StatusPendingAcceptance string = "PENDING_ACCEPTANCE"
-	StatusFailed                   = "FAILED"
-	StatusAvailable                = "AVAILABLE"
-	StatusDeleted                  = "DELETED"
-	StatusInitiating               = "INITIATING"
+	StatusFailed            string = "FAILED"
+	StatusAvailable         string = "AVAILABLE"
+	StatusDeleted           string = "DELETED"
+	StatusInitiating        string = "INITIATING"
 )
 
 // Helper to check container id or create one for the AWS region for
@@ -360,20 +361,21 @@ func validateCreationProcess(client *mongodbatlas.Client, currentModel *Model) h
 	return progressevents.GetInProgressProgressEvent("Creating",
 		map[string]interface{}{
 			"stateName": state,
+			"id":        &currentModel.Id,
 		},
 		currentModel,
 		5,
 	)
 }
 
-func getStatus(client *mongodbatlas.Client, projectID, peerID string) (string, string, error) {
+func getStatus(client *mongodbatlas.Client, projectID, peerID string) (statusName string, errorStatusName string, err error) {
 	peerResponse, resp, err := client.Peers.Get(context.Background(), projectID, peerID)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			return StatusDeleted, "", nil
-		} else {
-			return "", "", err
 		}
+
+		return "", "", err
 	}
 
 	return peerResponse.StatusName, peerResponse.ErrorStateName, nil

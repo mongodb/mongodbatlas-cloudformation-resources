@@ -27,7 +27,6 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"log"
 )
 
 func setup() {
@@ -92,8 +91,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
 		currentModel.Id = aws.String(req.CallbackContext["id"].(string))
-		log.Printf("se asigno el ID = ")
-		log.Print(currentModel.Id)
 		return validateCreationProcess(client, currentModel), nil
 	}
 
@@ -113,7 +110,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ProviderName:        constants.AWS,
 	}
 
-	_, _ = logger.Debugf("peerRequest:%+v", peerRequest)
 	peerResponse, resp, err := client.Peers.Create(context.Background(), projectID, &peerRequest)
 	if err != nil {
 		_, _ = logger.Warnf("error creating network peering: %s", err)
@@ -121,7 +117,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			resp.Response), nil
 	}
 
-	_, _ = logger.Debugf("Create peerResponse:%+v", peerResponse)
+	currentModel.Id = &peerResponse.ID
 
 	return progressevents.GetInProgressProgressEvent("Creating",
 		map[string]interface{}{

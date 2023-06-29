@@ -69,16 +69,9 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 }
 
 func runShScript(t *testing.T, path string) ([]byte, error) {
-	//output, err := exec.Command("/bin/sh", path).CombinedOutput()
-	//if err != nil {
-	//	return output, err
-	//}
 	cmd := exec.Command(path)
-
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
-
-	// Start the command
 	err := cmd.Start()
 	if err != nil {
 		return nil, err
@@ -86,33 +79,16 @@ func runShScript(t *testing.T, path string) ([]byte, error) {
 
 	// Read the output from pipes
 	output, _ := readOutput(stdout)
-	//if err != nil {
-	//	//log.Fatal(err)
-	//	return output, err
-	//}
 	errorOutput, _ := readOutput(stderr)
-	//if err != nil {
-	//	//log.Fatal(err)
-	//	return errorOutput, err
-	//}
 
-	// Wait for the command to complete
 	err = cmd.Wait()
-	//if err != nil {
-	//	//log.Fatal(err)
-	//	fmt.Println("Standard Output:", string(output))
-	//	fmt.Println("Standard Error:", string(errorOutput))
-	//	return output, err
-	//}
 
-	// Print the captured outputs
 	t.Logf("Standard Output: %v", string(output))
 	t.Logf("Standard Error: %v", string(errorOutput))
 
 	return output, err
 }
 
-// Helper function to read output from a pipe
 func readOutput(pipe io.Reader) ([]byte, error) {
 	output, err := io.ReadAll(pipe)
 	if err != nil {

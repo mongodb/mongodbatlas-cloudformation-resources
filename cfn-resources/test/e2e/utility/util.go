@@ -39,6 +39,9 @@ func FailNowIfError(t *testing.T, msgf string, err error) {
 }
 
 func RunCleanupScript(t *testing.T, rctx ResourceContext) {
+	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
+	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
+
 	output, err := runShScript(t, "../utility/cleanup_cfn.sh")
 	FailNowIfError(t, fmt.Sprintf("Error when executing cleanup script. Output: %s\n", output)+"%v", err)
 
@@ -49,14 +52,13 @@ func RunCleanupScript(t *testing.T, rctx ResourceContext) {
 }
 
 func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
-	t.Cleanup(func() {
-		RunCleanupScript(t, rctx)
-	})
-
 	t.Setenv("RESOURCE_TYPE_NAME", rctx.ResourceTypeName)
 	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
 	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)
 	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
+	t.Cleanup(func() {
+		RunCleanupScript(t, rctx)
+	})
 
 	output, err := runShScript(t, "../utility/publish_cfn_to_registry.sh")
 	FailNowIfError(t, fmt.Sprintf("Error when executing publishing script. Output: %s\n", output)+"%v", err)

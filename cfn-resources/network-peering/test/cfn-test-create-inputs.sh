@@ -89,7 +89,7 @@ for inputFile in inputs_*; do
 		--arg awsId "$awsId" \
 		--arg vpcId "$vpcId" \
 		--arg nwkConId "$nwkConId" \
-		--arg accepterRegionName "$region_name" \
+		--arg accepterRegionName "$region" \
 		'.ProjectId?|=$projectId | .AwsAccountId?|=$awsId | .VpcId|=$vpcId | .ContainerId|=$nwkConId | .AccepterRegionName|=$accepterRegionName' \
 		"$inputFile" >"../inputs/$outputFile"
 done

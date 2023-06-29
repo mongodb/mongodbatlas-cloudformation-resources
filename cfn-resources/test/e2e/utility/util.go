@@ -83,8 +83,8 @@ func runShScript(t *testing.T, path string) ([]byte, error) {
 
 	err = cmd.Wait()
 
-	t.Logf("Standard Output: %v", string(output))
-	t.Logf("Standard Error: %v", string(errorOutput))
+	t.Logf("runShScript Output: %v", string(output))
+	t.Logf("runShScript Error: %v", string(errorOutput))
 
 	return output, err
 }

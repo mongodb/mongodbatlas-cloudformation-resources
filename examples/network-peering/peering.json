@@ -80,12 +80,12 @@
         "Ref": "NetworkPeering"
       }
     },
-    "ConnId": {
+    "ConnectionId": {
       "Description": "Peering Status",
       "Value": {
         "Fn::GetAtt": [
           "NetworkPeering",
-          "StatusName"
+          "ConnectionId"
         ]
       }
     }

@@ -31,6 +31,7 @@ func GetRandNum() *big.Int {
 }
 
 func FailNowIfError(t *testing.T, msgf string, err error) {
+	t.Helper()
 	if err != nil {
 		t.Errorf(msgf, err.Error())
 		t.FailNow()
@@ -38,6 +39,7 @@ func FailNowIfError(t *testing.T, msgf string, err error) {
 }
 
 func RunCleanupScript(t *testing.T, rctx ResourceContext) {
+	t.Helper()
 	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
 	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
 
@@ -51,6 +53,7 @@ func RunCleanupScript(t *testing.T, rctx ResourceContext) {
 }
 
 func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
+	t.Helper()
 	t.Setenv("RESOURCE_TYPE_NAME", rctx.ResourceTypeName)
 	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
 	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)

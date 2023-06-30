@@ -188,5 +188,5 @@ func DeleteStackForCleanup(t *testing.T, c *cfn.Client, stackName string) {
 	input := &cfn.DeleteStackInput{
 		StackName: aws.String(stackName),
 	}
-	c.DeleteStack(context.Background(), input)
+	_, _ = c.DeleteStack(context.Background(), input)
 }

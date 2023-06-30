@@ -17,7 +17,6 @@ package utility
 import (
 	"crypto/rand"
 	"fmt"
-	"io"
 	"math/big"
 	"os/exec"
 	"testing"
@@ -69,32 +68,12 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 }
 
 func runShScript(t *testing.T, path string) ([]byte, error) {
+	t.Helper()
 	cmd := exec.Command(path)
-	stdout, _ := cmd.StdoutPipe()
-	stderr, _ := cmd.StderrPipe()
-	err := cmd.Start()
-	if err != nil {
-		return nil, err
-	}
+	resp, err := cmd.CombinedOutput()
 
-	// Read the output from pipes
-	output, _ := readOutput(stdout)
-	errorOutput, _ := readOutput(stderr)
-
-	err = cmd.Wait()
-
-	t.Logf("runShScript Output: %v", string(output))
-	t.Logf("runShScript Error: %v", string(errorOutput))
-
-	return output, err
-}
-
-func readOutput(pipe io.Reader) ([]byte, error) {
-	output, err := io.ReadAll(pipe)
-	if err != nil {
-		return nil, err
-	}
-	return output, nil
+	t.Logf("runShScript Output: %v", string(resp))
+	return resp, err
 }
 
 func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *mongodbatlas.Client) {

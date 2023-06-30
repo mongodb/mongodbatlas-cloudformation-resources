@@ -25,10 +25,6 @@ import (
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )
 
-const (
-	StackNotFoundErr = "stack not found"
-)
-
 func NewCFNClient() (client *cfn.Client, err error) {
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
@@ -38,6 +34,7 @@ func NewCFNClient() (client *cfn.Client, err error) {
 }
 
 func CreateStack(t *testing.T, client *cfn.Client, stackName string, fileContent string) *cfn.DescribeStacksOutput {
+	t.Helper()
 	output, err := createStackAndWait(client, stackName, fileContent)
 	FailNowIfError(t, "Error during stack creation: %v", err)
 
@@ -86,21 +83,8 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 	}
 }
 
-func DescribeStack(svc *cfn.Client, stackID string) (*cfn.DescribeStacksOutput, error) {
-	req := cfn.DescribeStacksInput{
-		StackName: aws.String(stackID),
-	}
-	resp, err := svc.DescribeStacks(context.Background(), &req)
-	if err != nil {
-		return nil, err
-	}
-	if len(resp.Stacks) == 0 {
-		return nil, fmt.Errorf(StackNotFoundErr)
-	}
-	return resp, nil
-}
-
 func DeleteStack(t *testing.T, client *cfn.Client, stackName string) *cfn.DescribeStacksOutput {
+	t.Helper()
 	output, err := deleteStackAndWait(client, stackName)
 	FailNowIfError(t, "Error during stack deletion: %v", err)
 
@@ -146,6 +130,7 @@ func waitForStackDeleteComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 }
 
 func UpdateStack(t *testing.T, client *cfn.Client, stackName string, templateBody string) *cfn.DescribeStacksOutput {
+	t.Helper()
 	output, err := updateStackAndWait(client, stackName, templateBody)
 	FailNowIfError(t, "Error during stack update: %v", err)
 
@@ -198,11 +183,10 @@ func TestIsTemplateValid(t *testing.T, svc *cfn.Client, template string) {
 	FailNowIfError(t, "invalid cloudformation stack: %v", err)
 }
 
-func DeleteStackIfExists(t *testing.T, c *cfn.Client, stackName string) error {
-	_, err := DescribeStack(c, stackName)
-	if err != nil && err.Error() != StackNotFoundErr {
-		DeleteStack(t, c, stackName)
-		return nil
+func DeleteStackForCleanup(t *testing.T, c *cfn.Client, stackName string) {
+	t.Helper()
+	input := &cfn.DeleteStackInput{
+		StackName: aws.String(stackName),
 	}
-	return err
+	c.DeleteStack(context.Background(), input)
 }

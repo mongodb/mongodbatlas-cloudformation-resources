@@ -160,17 +160,15 @@ func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 }
 
 func cleanupResources(t *testing.T, c *LocalTestContext) {
-	err := utility.DeleteStackIfExists(t, c.cfnClient, stackName)
-	if err != nil {
-		t.Logf("Error when Deleting Stack If Exists during cleanup")
-	}
-	_, _, err = c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
+
+	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
 	if err == nil {
 		_, err = c.atlasClient.Projects.Delete(ctx.Background(), c.projectTmplObj.ProjectID)
 		if err != nil {
-			t.Logf("Atlas Project could not be deleted during cleanup")
+			t.Logf("Atlas Project could not be deleted during cleanup: %v", err)
 		} else {
-			t.Logf("Atlas Project successfully deleted during cleanup")
+			t.Logf("Atlas Project successfully deleted during cleanup: %v", err)
 		}
 	}
 }
@@ -184,12 +182,13 @@ func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
 }
 
 func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
-	t.Log("Setting up prerequisites")
-	team, _ := utility.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
 	t.Cleanup(func() {
 		cleanupPrerequisites(t, c)
 		cleanupResources(t, c)
 	})
+
+	t.Log("Setting up prerequisites")
+	team, _ := utility.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
 
 	c.projectTmplObj = TestProject{
 		Name:             testProjectName,

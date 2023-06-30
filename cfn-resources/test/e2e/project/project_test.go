@@ -176,6 +176,7 @@ func cleanupResources(t *testing.T, c *LocalTestContext) {
 }
 
 func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
+	t.Helper()
 	t.Log("Cleaning up prerequisites")
 	_, err := c.atlasClient.Teams.RemoveTeamFromOrganization(ctx.Background(), orgID, c.projectTmplObj.TeamID)
 	if err != nil {
@@ -184,6 +185,7 @@ func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
 }
 
 func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
+	t.Helper()
 	t.Cleanup(func() {
 		cleanupPrerequisites(t, c)
 		cleanupResources(t, c)

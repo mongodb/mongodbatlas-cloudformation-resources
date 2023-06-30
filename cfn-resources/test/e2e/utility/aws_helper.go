@@ -175,6 +175,7 @@ func waitForStackUpdateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 }
 
 func TestIsTemplateValid(t *testing.T, svc *cfn.Client, template string) {
+	t.Helper()
 	input := &cfn.ValidateTemplateInput{
 		TemplateBody: aws.String(template),
 	}

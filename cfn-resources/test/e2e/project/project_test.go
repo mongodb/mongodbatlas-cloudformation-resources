@@ -94,6 +94,7 @@ func setupSuite(t *testing.T) *LocalTestContext {
 }
 
 func (c *LocalTestContext) setUp(t *testing.T) {
+	t.Helper()
 	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
 	c.cfnClient, c.atlasClient = utility.NewClients(t)
 	utility.PublishToPrivateRegistry(t, c.resourceCtx)
@@ -160,6 +161,7 @@ func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 }
 
 func cleanupResources(t *testing.T, c *LocalTestContext) {
+	t.Helper()
 	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
 
 	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)

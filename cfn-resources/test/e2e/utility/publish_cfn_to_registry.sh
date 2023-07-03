@@ -23,7 +23,7 @@
 # 4) Cleanings: Updates the files changed in the previous steps to the correct typename
 
 set -eu
-set -x
+set -eux
 
 resource_directory=$RESOURCE_DIRECTORY_NAME
 

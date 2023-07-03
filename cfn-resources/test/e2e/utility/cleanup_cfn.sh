@@ -14,8 +14,7 @@
 # limitations under the License.
 
 # This script 'de-registers' the test CFN resource type published to AWS private registr
-set -eu
-set -x
+set -eux
 echo "Cleaning up..."
 
 resource_directory=$RESOURCE_DIRECTORY_NAME

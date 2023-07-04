@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#database" title="Database">Database</a>" : <i>String</i>,
     "<a href="#collection" title="Collection">Collection</a>" : <i>String</i>,
     "<a href="#operationtypes" title="OperationTypes">OperationTypes</a>" : <i>[ String, ... ]</i>,
-    "<a href="#match" title="Match">Match</a>" : <i>Map</i>,
+    "<a href="#match" title="Match">Match</a>" : <i>String</i>,
     "<a href="#fulldocument" title="FullDocument">FullDocument</a>" : <i>Boolean</i>,
     "<a href="#fulldocumentbeforechange" title="FullDocumentBeforeChange">FullDocumentBeforeChange</a>" : <i>Boolean</i>,
     "<a href="#skipcatchupevents" title="SkipCatchupEvents">SkipCatchupEvents</a>" : <i>Boolean</i>,
@@ -29,7 +29,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#collection" title="Collection">Collection</a>: <i>String</i>
 <a href="#operationtypes" title="OperationTypes">OperationTypes</a>: <i>
       - String</i>
-<a href="#match" title="Match">Match</a>: <i>Map</i>
+<a href="#match" title="Match">Match</a>: <i>String</i>
 <a href="#fulldocument" title="FullDocument">FullDocument</a>: <i>Boolean</i>
 <a href="#fulldocumentbeforechange" title="FullDocumentBeforeChange">FullDocumentBeforeChange</a>: <i>Boolean</i>
 <a href="#skipcatchupevents" title="SkipCatchupEvents">SkipCatchupEvents</a>: <i>Boolean</i>
@@ -92,7 +92,7 @@ change event.
 
 _Required_: No
 
-_Type_: Map
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

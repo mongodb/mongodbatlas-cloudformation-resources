@@ -119,8 +119,8 @@
           "description": "The type(s) of MongoDB change event that the trigger listens for."
         },
         "Match": {
-          "type": "object",
-          "description": "A [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match)\nexpression filters change events. The trigger will only\nfire if the expression evaluates to true for a given\nchange event."
+          "type": "string",
+          "description": "stringify version of a [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match) expression filters change events. The trigger will only fire if the expression evaluates to true for a given change event."
         },
         "FullDocument": {
           "type": "boolean",

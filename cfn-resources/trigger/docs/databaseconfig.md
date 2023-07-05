@@ -85,10 +85,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Match
 
-A [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match)
-expression filters change events. The trigger will only
-fire if the expression evaluates to true for a given
-change event.
+stringify version of a [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match) expression filters change events. The trigger will only fire if the expression evaluates to true for a given change event.
 
 _Required_: No
 

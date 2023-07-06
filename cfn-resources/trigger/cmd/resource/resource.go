@@ -229,11 +229,21 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 		conf.Database = *model.DatabaseTrigger.Database
 	}
 	dTrigger := model.DatabaseTrigger
+
+	if dTrigger.Match != nil {
+		jsonData := []byte(*dTrigger.Match)
+		// convert the JSON string to a map
+		var m interface{}
+		if err := json.Unmarshal(jsonData, &m); err != nil {
+			return nil, errors.New("error unmarshalling Match field - " + err.Error())
+		}
+		conf.Match = m
+	}
+
 	if dTrigger != nil {
 		conf.Collection = aws.StringValue(dTrigger.Collection)
 		conf.ServiceID = aws.StringValue(dTrigger.ServiceId)
 		conf.OperationTypes = dTrigger.OperationTypes
-		conf.Match = dTrigger.Match
 		conf.FullDocument = dTrigger.FullDocument
 		conf.FullDocumentBeforeChange = dTrigger.FullDocumentBeforeChange
 		conf.Unordered = dTrigger.Unordered

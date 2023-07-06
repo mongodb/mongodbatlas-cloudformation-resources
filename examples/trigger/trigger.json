@@ -79,7 +79,7 @@
   },
   "Outputs": {
     "CloudFormationID": {
-      "Description": "cloud formation resource Id of the trigger",
+      "Description": "CloudFormation Resource ID of the trigger",
       "Value": {
         "Ref": "EventTrigger"
       }

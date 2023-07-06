@@ -208,8 +208,7 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/TeamId",
-    "/properties/Users"
+    "/properties/TeamId"
   ],
   "primaryIdentifier": [
     "/properties/TeamId",
@@ -217,7 +216,8 @@
     "/properties/OrgId"
   ],
   "createOnlyProperties": [
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/OrgId"
   ],
   "typeName": "MongoDB::Atlas::Teams"
 }

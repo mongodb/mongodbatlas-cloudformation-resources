@@ -234,9 +234,8 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 		jsonData := []byte(*dTrigger.Match)
 		// convert the JSON string to a map
 		var m interface{}
-		err := json.Unmarshal(jsonData, &m)
-		if err != nil {
-			return nil, errors.New("error unmarshalling Match field - " + err.Error())
+		if err := json.Unmarshal(jsonData, &m); err != nil {
+		   return nil, errors.New("error unmarshalling Match field - " + err.Error())
 		}
 		conf.Match = m
 	}

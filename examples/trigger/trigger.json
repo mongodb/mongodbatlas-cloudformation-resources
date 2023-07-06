@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Trigger on the MongoDB Cluster, this will be billed to your Atlas account, For more information check https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/triggers/operation/adminListTriggers.",
+  "Description": "This template creates a Trigger on the MongoDB Cluster, this will be billed to your Atlas account, For more information check https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/triggers/operation/adminListTriggers",
   "Mappings": {},
   "Parameters": {
     "TriggerName": {

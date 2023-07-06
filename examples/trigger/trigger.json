@@ -85,7 +85,7 @@
       }
     },
     "TriggerID": {
-      "Description": "cloud formation resource Id of the trigger",
+      "Description": "CloudFormation Resource ID of the trigger",
       "Value": {
         "Fn::GetAtt": [
           "EventTrigger",

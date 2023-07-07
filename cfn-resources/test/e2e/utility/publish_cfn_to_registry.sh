@@ -23,6 +23,7 @@
 # 4) Cleanings: Updates the files changed in the previous steps to the correct typename
 
 set -eu
+set -eux
 
 resource_directory=$RESOURCE_DIRECTORY_NAME
 
@@ -37,14 +38,13 @@ mv "${tmp_rpdk_file}" "${rpdk_file}"
 
 
 echo "Creating a new resource schema"
-schema_file_name="${resource_directory//-}"
-echo "schema name file........ : ${schema_file_name}"
+schema_file_name="${resource_directory//-/}"
+echo "New schema file name: ${schema_file_name}"
 resource_schema_file="../../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}.json"
 tmp_resource_schema_file="../../../$RESOURCE_DIRECTORY_NAME/mongodb-atlas-${schema_file_name}$E2E_RAND_SUFFIX.json"
 jq --arg type_name "$RESOURCE_TYPE_NAME_FOR_E2E" \
 	'.typeName?|=$type_name' \
 	"${resource_schema_file}" >"${tmp_resource_schema_file}"
-
 
 echo "Releasing the resource to private registry $RESOURCE_TYPE_NAME_FOR_E2E"
 cd ../../../"$resource_directory"
@@ -63,3 +63,5 @@ mv "${tmp_rpdk_file}" "${rpdk_file}"
 
 echo "Deleting resource JSON schema used for the E2E test"
 rm "${tmp_resource_schema_file}"
+
+echo "Script executed.."

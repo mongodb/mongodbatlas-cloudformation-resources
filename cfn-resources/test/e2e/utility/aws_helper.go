@@ -25,6 +25,8 @@ import (
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )
 
+const stackStatusWait = 2 * time.Second
+
 func NewCFNClient() (client *cfn.Client, err error) {
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
@@ -34,6 +36,7 @@ func NewCFNClient() (client *cfn.Client, err error) {
 }
 
 func CreateStack(t *testing.T, client *cfn.Client, stackName string, fileContent string) *cfn.DescribeStacksOutput {
+	t.Helper()
 	output, err := createStackAndWait(client, stackName, fileContent)
 	FailNowIfError(t, "Error during stack creation: %v", err)
 
@@ -75,14 +78,15 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		switch statusStr {
 		case "CREATE_COMPLETE":
 			return resp, nil
-		case "CREATE_FAILED":
+		case "CREATE_FAILED", "ROLLBACK_COMPLETE":
 			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(stackStatusWait)
 	}
 }
 
 func DeleteStack(t *testing.T, client *cfn.Client, stackName string) *cfn.DescribeStacksOutput {
+	t.Helper()
 	output, err := deleteStackAndWait(client, stackName)
 	FailNowIfError(t, "Error during stack deletion: %v", err)
 
@@ -120,14 +124,15 @@ func waitForStackDeleteComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		switch statusStr {
 		case "DELETE_COMPLETE":
 			return resp, nil
-		case "DELETE_FAILED":
+		case "DELETE_FAILED", "ROLLBACK_COMPLETE":
 			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(stackStatusWait)
 	}
 }
 
 func UpdateStack(t *testing.T, client *cfn.Client, stackName string, templateBody string) *cfn.DescribeStacksOutput {
+	t.Helper()
 	output, err := updateStackAndWait(client, stackName, templateBody)
 	FailNowIfError(t, "Error during stack update: %v", err)
 
@@ -164,18 +169,28 @@ func waitForStackUpdateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		switch statusStr {
 		case "UPDATE_COMPLETE":
 			return resp, nil
-		case "UPDATE_FAILED", "UPDATE_ROLLBACK_COMPLETE", "UPDATE_ROLLBACK_FAILED":
+		case "UPDATE_FAILED", "UPDATE_ROLLBACK_COMPLETE", "UPDATE_ROLLBACK_FAILED", "ROLLBACK_COMPLETE":
 			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(stackStatusWait)
 	}
 }
 
 func TestIsTemplateValid(t *testing.T, svc *cfn.Client, template string) {
+	t.Helper()
 	input := &cfn.ValidateTemplateInput{
 		TemplateBody: aws.String(template),
 	}
 
 	_, err := svc.ValidateTemplate(context.Background(), input)
 	FailNowIfError(t, "invalid cloudformation stack: %v", err)
+}
+
+func DeleteStackForCleanup(t *testing.T, c *cfn.Client, stackName string) {
+	t.Helper()
+	input := &cfn.DeleteStackInput{
+		StackName: aws.String(stackName),
+	}
+	_, err := c.DeleteStack(context.Background(), input)
+	t.Logf("error response when deleting stack for cleanup: %v", err)
 }

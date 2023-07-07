@@ -31,6 +31,7 @@ func GetRandNum() *big.Int {
 }
 
 func FailNowIfError(t *testing.T, msgf string, err error) {
+	t.Helper()
 	if err != nil {
 		t.Errorf(msgf, err.Error())
 		t.FailNow()
@@ -38,34 +39,44 @@ func FailNowIfError(t *testing.T, msgf string, err error) {
 }
 
 func RunCleanupScript(t *testing.T, rctx ResourceContext) {
-	output, err := runShScript("../utility/cleanup_cfn.sh")
+	t.Helper()
+	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
+	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
+
+	output, err := runShScript(t, "../utility/cleanup_cfn.sh")
 	FailNowIfError(t, fmt.Sprintf("Error when executing cleanup script. Output: %s\n", output)+"%v", err)
 
+	if err != nil {
+		return
+	}
 	t.Logf("E2E test resource type %s successfully de-registered from private registry!\n", rctx.ResourceTypeNameForE2e)
 }
 
 func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
+	t.Helper()
 	t.Setenv("RESOURCE_TYPE_NAME", rctx.ResourceTypeName)
 	t.Setenv("RESOURCE_TYPE_NAME_FOR_E2E", rctx.ResourceTypeNameForE2e)
 	t.Setenv("E2E_RAND_SUFFIX", rctx.E2eRandSuffix)
 	t.Setenv("RESOURCE_DIRECTORY_NAME", rctx.ResourceDirectory)
-
-	output, err := runShScript("../utility/publish_cfn_to_registry.sh")
-	FailNowIfError(t, fmt.Sprintf("Error when executing publishing script. Output: %s\n", output)+"%v", err)
-
-	t.Logf("New E2E test resource type %s successfully published to private registry!\n", rctx.ResourceTypeNameForE2e)
-
 	t.Cleanup(func() {
 		RunCleanupScript(t, rctx)
 	})
+
+	output, err := runShScript(t, "../utility/publish_cfn_to_registry.sh")
+	FailNowIfError(t, fmt.Sprintf("Error when executing publishing script. Output: %s\n", output)+"%v", err)
+	if err != nil {
+		return
+	}
+	t.Logf("New E2E test resource type %s successfully published to private registry!\n", rctx.ResourceTypeNameForE2e)
 }
 
-func runShScript(path string) ([]byte, error) {
-	output, err := exec.Command("/bin/sh", path).CombinedOutput()
-	if err != nil {
-		return output, err
-	}
-	return output, nil
+func runShScript(t *testing.T, path string) ([]byte, error) {
+	t.Helper()
+	cmd := exec.Command(path)
+	resp, err := cmd.CombinedOutput()
+
+	t.Logf("runShScript Output: %v", string(resp))
+	return resp, err
 }
 
 func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *mongodbatlas.Client) {

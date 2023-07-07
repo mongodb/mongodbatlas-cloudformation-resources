@@ -29,6 +29,16 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 ![image](https://user-images.githubusercontent.com/5663078/227303503-14e7a53b-92a0-46f3-9f4a-6ea9fbf2a20d.png)
 - The team should be visible in the project Team page:
 ![image](https://user-images.githubusercontent.com/5663078/227303779-16069213-4fe7-49c8-a840-66afdb88cb6e.png)
+
+## Automated E2E Testing:
+- E2E tests are located under `cfn-resources/test/e2e/project`. Please ensure to run/update those accordingly.
+  
+To run the automated E2E tests use following commands:
+```
+cd cfn-resources/test/e2e/project
+go test -v project_test.go
+```
+
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/tutorial/manage-projects/)

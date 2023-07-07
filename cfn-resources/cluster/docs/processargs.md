@@ -18,7 +18,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#notablescan" title="NoTableScan">NoTableScan</a>" : <i>Boolean</i>,
     "<a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>" : <i>Integer</i>,
     "<a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>" : <i>Integer</i>,
-    "<a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>" : <i>Integer</i>
+    "<a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>" : <i>Integer</i>,
+    "<a href="#oplogminretentionhours" title="OplogMinRetentionHours">OplogMinRetentionHours</a>" : <i>Double</i>
 }
 </pre>
 
@@ -34,6 +35,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>: <i>Integer</i>
 <a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>: <i>Integer</i>
 <a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>: <i>Integer</i>
+<a href="#oplogminretentionhours" title="OplogMinRetentionHours">OplogMinRetentionHours</a>: <i>Double</i>
 </pre>
 
 ## Properties
@@ -125,6 +127,16 @@ Number of documents per database to sample when gathering schema information.
 _Required_: No
 
 _Type_: Integer
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### OplogMinRetentionHours
+
+Minimum retention window for cluster's oplog expressed in hours. A value of null indicates that the cluster uses the default minimum oplog window that MongoDB Cloud calculates.
+
+_Required_: No
+
+_Type_: Double
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

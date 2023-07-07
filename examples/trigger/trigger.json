@@ -1,40 +1,96 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Trigger on the MongoDB Cluster, this will be billed to your Atlas account.",
+  "Description": "This template creates a Trigger on the MongoDB Cluster, this will be billed to your Atlas account, For more information check https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/triggers/operation/adminListTriggers",
   "Mappings": {},
+  "Parameters": {
+    "TriggerName": {
+      "Type": "String",
+      "Description": "The trigger's name."
+    },
+    "FunctionName": {
+      "Type": "String",
+      "Description": "Name to use for your Atlas Cluster"
+    },
+    "FunctionId": {
+      "Type": "String",
+      "Description": "The name of the function that the trigger calls when it fires, i.e. the function described by function_id"
+    },
+    "AppId": {
+      "Type": "String",
+      "Description": "The ObjectID of your application."
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
+    },
+    "ServiceId": {
+      "Type": "String",
+      "Description": "The _id value of a linked MongoDB data source."
+    }
+  },
   "Resources": {
     "EventTrigger": {
       "Type": "MongoDB::Atlas::Trigger",
       "Properties": {
-        "Name": "cfn-trigger-example",
+        "Name":{
+          "Ref": "TriggerName"
+        },
         "Type": "DATABASE",
+        "Profile": "default",
         "DatabaseTrigger": {
           "OperationTypes": [
             "INSERT"
           ],
-          "Database": "sample_mflix",
-          "Collection": "comments",
-          "ServiceId": "64020111d61a66df7ea2c732"
+          "Database": "store",
+          "Collection": "sales",
+          "ServiceId": {
+            "Ref": "ServiceId"
+          },
+          "FullDocument": "true",
+          "FullDocumentBeforeChange": "false",
+          "Unordered": "false",
+          "SkipCatchupEvents": "false",
+          "Match" : "{\"$and\":[{\"fullDocument.availability.value\":\"AVAILABLE\"},{\"$ne\":[\"fullDocument.retailPrice\",\"fullDocumentBeforeChange.retailPrice\"]}]}"
         },
+        "Disabled": "false",
         "EventProcessors": {
           "FUNCTION": {
             "FuncConfig": {
-              "FunctionName": "myFuncInTrigger",
-              "FunctionId": "64020cfc5ef00ef0be9584e4"
+              "FunctionName": {
+                "Ref": "FunctionName"
+              },
+              "FunctionId": {
+                "Ref": "FunctionId"
+              }
             }
+          },
+          "AWSEVENTBRIDGE": {
+            "AWSConfig": {}
           }
         },
-        "AppId": "64020111d61a66df7ea2c72b",
-        "ProjectId": "63f4df9e1c744217893c19f7",
-        "Profile": "default"
+        "AppId": {
+          "Ref": "AppId"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        }
       }
     }
   },
   "Outputs": {
-    "Id": {
-      "Description": "Id of the trigger",
+    "CloudFormationID": {
+      "Description": "CloudFormation Resource ID of the trigger",
       "Value": {
         "Ref": "EventTrigger"
+      }
+    },
+    "TriggerID": {
+      "Description": "CloudFormation Resource ID of the trigger",
+      "Value": {
+        "Fn::GetAtt": [
+          "EventTrigger",
+          "Id"
+        ]
       }
     }
   }

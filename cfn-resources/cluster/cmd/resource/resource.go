@@ -402,7 +402,6 @@ func (m *Model) HasAdvanceSettings() bool {
 		m.AdvancedSettings.SampleSizeBIConnector != nil ||
 		m.AdvancedSettings.SampleRefreshIntervalBIConnector != nil ||
 		m.AdvancedSettings.OplogMinRetentionHours != nil)
-
 }
 
 func containsLabelOrKey(list []Labels, item Labels) bool {

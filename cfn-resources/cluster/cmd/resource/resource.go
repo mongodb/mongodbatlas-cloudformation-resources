@@ -88,7 +88,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		return *peErr, nil
 	}
 
-	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s ", *currentModel.ProjectId, *currentModel.Name)
+	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s", *currentModel.ProjectId, *currentModel.Name)
 
 	// Callback
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
@@ -389,9 +389,6 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 }
 
 func (m *Model) HasAdvanceSettings() bool {
-	/*TODO: this logic is because of a bug un Cloud Formation, when we return in_progress in the CREATE
-	,the second time the CREATE gets executed
-	it returns the AdvancedSettings is not nil but its fields are nil*/
 	return m.AdvancedSettings != nil && (m.AdvancedSettings.DefaultReadConcern != nil ||
 		m.AdvancedSettings.DefaultWriteConcern != nil ||
 		m.AdvancedSettings.FailIndexKeyTooLong != nil ||

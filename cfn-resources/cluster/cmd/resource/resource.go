@@ -389,6 +389,9 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 }
 
 func (m *Model) HasAdvanceSettings() bool {
+	/*This logic is because of a bug un Cloud Formation, when we return in_progress in the CREATE
+	,the second time the CREATE gets executed
+	it returns the AdvancedSettings is not nil but its fields are nil*/
 	return m.AdvancedSettings != nil && (m.AdvancedSettings.DefaultReadConcern != nil ||
 		m.AdvancedSettings.DefaultWriteConcern != nil ||
 		m.AdvancedSettings.FailIndexKeyTooLong != nil ||

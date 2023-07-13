@@ -35,3 +35,24 @@ by clicking on your organization and note the Organization Id from the URL (whic
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api/organization-create-one-invitation/#invite-one-user-to-an-service-organization)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/invitations/#invitations-to-organizations-and-projects)
+
+## Local Testing
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/project
+./test/project.create-sample-cfn-request.sh YourProjectName > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
+```
+
+Both CREATE and DELETE tests must pass.

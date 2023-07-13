@@ -103,8 +103,7 @@
     "/properties/Profile"
   ],
   "readOnlyProperties": [
-    "/properties/RemoveAllZoneMapping",
-    "/properties/CustomZoneMappings"
+    "/properties/RemoveAllZoneMapping"
   ],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

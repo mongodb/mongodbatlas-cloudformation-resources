@@ -19,10 +19,12 @@ type ResourceContext struct {
 	ResourceTypeName       string
 	ResourceTypeNameForE2e string
 	E2eRandSuffix          string
+	StackName              string
 }
 
-func InitResourceCtx(randSuffix string, resourceTypeName string, resourceDirectory string) ResourceContext {
+func InitResourceCtx(stackName, randSuffix, resourceTypeName, resourceDirectory string) ResourceContext {
 	return ResourceContext{
+		StackName:              stackName,
 		ResourceDirectory:      resourceDirectory,
 		ResourceTypeName:       resourceTypeName,
 		E2eRandSuffix:          randSuffix,

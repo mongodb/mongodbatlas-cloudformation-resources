@@ -1,7 +1,7 @@
 {
   "ProjectId" : "ProjectId",
   "Profile" : "default",
-  "AccepterRegionName": "us-east-1",
+  "AccepterRegionName": "",
   "AwsAccountId": "${AWS_ACCOUNTID}",
   "RouteTableCIDRBlock": "10.0.0.0/24",
   "VpcId": "VPC",

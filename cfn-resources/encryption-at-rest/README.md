@@ -1,6 +1,28 @@
 # MongoDB::Atlas::EncryptionAtRest
 
 ## Description
+Resource for managing [Encryption at Rest](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management)
+using Customer Key Management configuration.
+
+## Requirements
+
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
+
+## Attributes and Parameters
+
+See the [resource docs](./docs/README.md).
+
+## CloudFormation Examples
+
+See the examples [CFN Template](/examples/encryption-at-rest/encryption-at-rest.json) for example resource.
+
+<!-- 
+--------------
+
+# MongoDB::Atlas::EncryptionAtRest
+
+## Description
 
 Returns and edits the Encryption at Rest using Customer Key Management configuration.
 ## Attributes & Parameters
@@ -65,3 +87,4 @@ ${repo_root}/quickstart-mongodb-atlas/scripts/launch-quickstart.sh ${repo_root}/
 ```
 
 For more information see: MongoDB Atlas API [Encryption At Rest Endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management) Documentation.
+ -->

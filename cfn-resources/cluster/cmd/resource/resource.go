@@ -37,7 +37,7 @@ import (
 
 const (
 	LabelError      = "you should not set `Infrastructure Tool` label, it is used for internal purposes"
-	CallBackSeconds = 60
+	CallBackSeconds = 40
 )
 
 var defaultLabel = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
@@ -88,7 +88,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		return *peErr, nil
 	}
 
-	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s ", *currentModel.ProjectId, *currentModel.Name)
+	_, _ = log.Debugf("Cluster create projectId: %s, clusterName: %s", *currentModel.ProjectId, *currentModel.Name)
 
 	// Callback
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
@@ -96,10 +96,6 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	}
 
 	var err error
-	var none = "NONE"
-	if currentModel.EncryptionAtRestProvider == nil {
-		currentModel.EncryptionAtRestProvider = &none
-	}
 
 	currentModel.validateDefaultLabel()
 
@@ -369,7 +365,15 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 	if err != nil {
 		return progressEvent, nil
 	}
+
 	if progressEvent.Message == constants.Complete {
+		if !currentModel.HasAdvanceSettings() {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Create Success",
+				ResourceModel:   currentModel}, nil
+		}
+
 		_, _ = log.Debugf("Cluster Creation completed:%s", *currentModel.Name)
 
 		cluster, res, err := client.AdvancedClusters.Get(context.Background(), projectID, *currentModel.Name)
@@ -377,10 +381,27 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
 				res.Response), nil
 		}
+
 		_, _ = log.Debugf("Updating cluster settings:%s", *currentModel.Name)
 		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
+}
+
+func (m *Model) HasAdvanceSettings() bool {
+	/*This logic is because of a bug un Cloud Formation, when we return in_progress in the CREATE
+	,the second time the CREATE gets executed
+	it returns the AdvancedSettings is not nil but its fields are nil*/
+	return m.AdvancedSettings != nil && (m.AdvancedSettings.DefaultReadConcern != nil ||
+		m.AdvancedSettings.DefaultWriteConcern != nil ||
+		m.AdvancedSettings.FailIndexKeyTooLong != nil ||
+		m.AdvancedSettings.JavascriptEnabled != nil ||
+		m.AdvancedSettings.MinimumEnabledTLSProtocol != nil ||
+		m.AdvancedSettings.NoTableScan != nil ||
+		m.AdvancedSettings.OplogSizeMB != nil ||
+		m.AdvancedSettings.SampleSizeBIConnector != nil ||
+		m.AdvancedSettings.SampleRefreshIntervalBIConnector != nil ||
+		m.AdvancedSettings.OplogMinRetentionHours != nil)
 }
 
 func containsLabelOrKey(list []Labels, item Labels) bool {
@@ -495,6 +516,9 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 	}
 	if regionCfg.ReadOnlySpecs != nil {
 		advRegionConfig.ReadOnlySpecs = expandRegionConfigSpec(regionCfg.ReadOnlySpecs)
+	}
+	if regionCfg.BackingProviderName != nil {
+		advRegionConfig.BackingProviderName = *regionCfg.BackingProviderName
 	}
 	return advRegionConfig
 }
@@ -691,6 +715,7 @@ func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {
 		OplogSizeMB:                      castNO64(p.OplogSizeMB),
 		SampleSizeBIConnector:            castNO64(p.SampleSizeBIConnector),
 		SampleRefreshIntervalBIConnector: castNO64(p.SampleRefreshIntervalBIConnector),
+		OplogMinRetentionHours:           p.OplogMinRetentionHours,
 	}
 }
 
@@ -761,6 +786,10 @@ func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
 	}
 	if processArgs.SampleRefreshIntervalBIConnector != nil {
 		args.SampleRefreshIntervalBIConnector = cast64(processArgs.SampleRefreshIntervalBIConnector)
+	}
+
+	if processArgs.OplogMinRetentionHours != nil {
+		args.OplogMinRetentionHours = processArgs.OplogMinRetentionHours
 	}
 
 	return &args
@@ -996,9 +1025,8 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCluster, handler.ProgressEvent, error) {
 	// Atlas client
 	clusterRequest := &mongodbatlas.AdvancedCluster{
-		Name:                     *currentModel.Name,
-		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider,
-		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
+		Name:             *currentModel.Name,
+		ReplicationSpecs: expandReplicationSpecs(currentModel.ReplicationSpecs),
 	}
 
 	if currentModel.EncryptionAtRestProvider != nil {

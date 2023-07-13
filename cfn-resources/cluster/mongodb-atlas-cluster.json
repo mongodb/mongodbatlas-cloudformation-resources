@@ -51,12 +51,16 @@
                 "RegionName": {
                     "type": "string"
                 },
+                "BackingProviderName" : {
+                    "type": "string"
+                },
                 "ProviderName": {
                     "type": "string",
                     "enum": [
                         "AWS",
                         "GCP",
-                        "AZURE"
+                        "AZURE",
+                        "TENANT"
                     ]
                 },
                 "AnalyticsSpecs": {
@@ -254,6 +258,10 @@
                 "SampleRefreshIntervalBIConnector":{
                     "type": "integer",
                     "description": "Number of documents per database to sample when gathering schema information."
+                },
+                "OplogMinRetentionHours":{
+                    "type": "number",
+                    "description": "Minimum retention window for cluster's oplog expressed in hours. A value of null indicates that the cluster uses the default minimum oplog window that MongoDB Cloud calculates."
                 }
             },
             "additionalProperties": false

@@ -13,10 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script 'de-registers' the test CFN resource type published to AWS private registry
-
+# This script 'de-registers' the test CFN resource type published to AWS private registr
+set -eux
 echo "Cleaning up..."
 
-# Deactivate the CFN resource (https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-register.html)
+resource_directory=$RESOURCE_DIRECTORY_NAME
+schema_file_name="${resource_directory//-/}"
+role_stack_name="mongodb-atlas-${schema_file_name}$E2E_RAND_SUFFIX-role-stack"
+
 echo "Deactivating the CFN resource $RESOURCE_TYPE_NAME_FOR_E2E"
 aws cloudformation deregister-type --type-name "$RESOURCE_TYPE_NAME_FOR_E2E" --type RESOURCE
+
+echo "Deleting the CFN stack for resource $RESOURCE_TYPE_NAME_FOR_E2E role-stack"
+aws cloudformation update-termination-protection --stack-name "${role_stack_name}" --no-enable-termination-protection
+aws cloudformation delete-stack --stack-name "${role_stack_name}"

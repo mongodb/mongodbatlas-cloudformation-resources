@@ -105,6 +105,7 @@ linters:
     - structcheck
     - stylecheck
     - typecheck
+    - thelper
     - unconvert
     - unused
     - varcheck

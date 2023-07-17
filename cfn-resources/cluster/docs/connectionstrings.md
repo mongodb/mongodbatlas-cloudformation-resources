@@ -14,9 +14,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#standardsrv" title="StandardSrv">StandardSrv</a>" : <i>String</i>,
     "<a href="#private" title="Private">Private</a>" : <i>String</i>,
     "<a href="#privatesrv" title="PrivateSrv">PrivateSrv</a>" : <i>String</i>,
-    "<a href="#privateendpoint" title="PrivateEndpoint">PrivateEndpoint</a>" : <i>[ <a href="privateendpoint.md">privateEndpoint</a>, ... ]</i>,
-    "<a href="#awsprivatelinksrv" title="AwsPrivateLinkSrv">AwsPrivateLinkSrv</a>" : <i>String</i>,
-    "<a href="#awsprivatelink" title="AwsPrivateLink">AwsPrivateLink</a>" : <i>String</i>
+    "<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>" : <i>[ String, ... ]</i>,
+    "<a href="#privateendpointssrv" title="PrivateEndpointsSrv">PrivateEndpointsSrv</a>" : <i>[ String, ... ]</i>
 }
 </pre>
 
@@ -27,10 +26,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#standardsrv" title="StandardSrv">StandardSrv</a>: <i>String</i>
 <a href="#private" title="Private">Private</a>: <i>String</i>
 <a href="#privatesrv" title="PrivateSrv">PrivateSrv</a>: <i>String</i>
-<a href="#privateendpoint" title="PrivateEndpoint">PrivateEndpoint</a>: <i>
-      - <a href="privateendpoint.md">privateEndpoint</a></i>
-<a href="#awsprivatelinksrv" title="AwsPrivateLinkSrv">AwsPrivateLinkSrv</a>: <i>String</i>
-<a href="#awsprivatelink" title="AwsPrivateLink">AwsPrivateLink</a>: <i>String</i>
+<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>: <i>
+      - String</i>
+<a href="#privateendpointssrv" title="PrivateEndpointsSrv">PrivateEndpointsSrv</a>: <i>
+      - String</i>
 </pre>
 
 ## Properties
@@ -75,33 +74,23 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### PrivateEndpoint
-
-List of private endpoint connection strings that you can use to connect to this cluster through a private endpoint. This parameter returns only if you deployed a private endpoint to all regions to which you deployed this clusters' nodes.
-
-_Required_: No
-
-_Type_: List of <a href="privateendpoint.md">privateEndpoint</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AwsPrivateLinkSrv
-
-Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related mongodb:// connection string that you use to connect to Atlas through the interface endpoint that the key names.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AwsPrivateLink
+#### PrivateEndpoints
 
 Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related mongodb:// connection string that you use to connect to MongoDB Cloud through the interface endpoint that the key names.
 
 _Required_: No
 
-_Type_: String
+_Type_: List of String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### PrivateEndpointsSrv
+
+Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related mongodb:// connection string that you use to connect to Atlas through the interface endpoint that the key names.
+
+_Required_: No
+
+_Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

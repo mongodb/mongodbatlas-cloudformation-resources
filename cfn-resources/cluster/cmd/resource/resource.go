@@ -100,7 +100,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	currentModel.validateDefaultLabel()
 
 	// Prepare cluster request
-	clusterRequest, event, err := setClusterRequest(currentModel, err)
+	clusterRequest, event, err := setClusterRequest(currentModel)
 	if err != nil {
 		return event, nil
 	}
@@ -675,33 +675,28 @@ func flattenBiConnectorConfig(biConnector *mongodbatlas.BiConnector) *BiConnecto
 }
 
 func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings) (connStrings *ConnectionStrings) {
+	privateEndpoints, privateEndpointsServ := flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint)
 	if clusterConnStrings != nil {
 		connStrings = &ConnectionStrings{
-			Standard:        &clusterConnStrings.Standard,
-			StandardSrv:     &clusterConnStrings.StandardSrv,
-			Private:         &clusterConnStrings.Private,
-			PrivateSrv:      &clusterConnStrings.PrivateSrv,
-			PrivateEndpoint: flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint),
+			Standard:            &clusterConnStrings.Standard,
+			StandardSrv:         &clusterConnStrings.StandardSrv,
+			Private:             &clusterConnStrings.Private,
+			PrivateSrv:          &clusterConnStrings.PrivateSrv,
+			PrivateEndpoints:    privateEndpoints,
+			PrivateEndpointsSrv: privateEndpointsServ,
 		}
 	}
 	return
 }
 
-func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) []PrivateEndpoint {
-	var prvEndpoints []PrivateEndpoint
-	if pes == nil {
-		return prvEndpoints
+func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) (privateEndpoints, privateEndpointsServ []string) {
+	privateEndpoints = make([]string, len(pes))
+	privateEndpointsServ = make([]string, len(pes))
+	for i := range pes {
+		privateEndpoints[i] = pes[i].ConnectionString
+		privateEndpointsServ[i] = pes[i].SRVConnectionString
 	}
-	for ind := range pes {
-		pe := PrivateEndpoint{
-			ConnectionString:    &pes[ind].ConnectionString,
-			SRVConnectionString: &pes[ind].SRVConnectionString,
-			Type:                &pes[ind].Type,
-			Endpoints:           flattenEndpoints(pes[ind].Endpoints),
-		}
-		prvEndpoints = append(prvEndpoints, pe)
-	}
-	return prvEndpoints
+	return privateEndpoints, privateEndpointsServ
 }
 
 func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {
@@ -717,19 +712,6 @@ func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {
 		SampleRefreshIntervalBIConnector: castNO64(p.SampleRefreshIntervalBIConnector),
 		OplogMinRetentionHours:           p.OplogMinRetentionHours,
 	}
-}
-
-func flattenEndpoints(eps []mongodbatlas.Endpoint) []Endpoint {
-	var endPoints []Endpoint
-	for ind := range eps {
-		ep := Endpoint{
-			EndpointID:   &eps[ind].EndpointID,
-			ProviderName: &eps[ind].ProviderName,
-			Region:       &eps[ind].Region,
-		}
-		endPoints = append(endPoints, ep)
-	}
-	return endPoints
 }
 
 func flattenLabels(clusterLabels []mongodbatlas.Label) []Labels {
@@ -1022,7 +1004,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentS
 	return p, nil
 }
 
-func setClusterRequest(currentModel *Model, err error) (*mongodbatlas.AdvancedCluster, handler.ProgressEvent, error) {
+func setClusterRequest(currentModel *Model) (*mongodbatlas.AdvancedCluster, handler.ProgressEvent, error) {
 	// Atlas client
 	clusterRequest := &mongodbatlas.AdvancedCluster{
 		Name:             *currentModel.Name,

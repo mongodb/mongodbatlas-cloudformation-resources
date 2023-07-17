@@ -402,6 +402,8 @@
         "/properties/ConnectionStrings/StandardSrv",
         "/properties/ConnectionStrings/Private",
         "/properties/ConnectionStrings/PrivateSrv",
+        "/properties/ConnectionStrings/PrivateEndpoints",
+        "/properties/ConnectionStrings/PrivateEndpointsSrv",
         "/properties/StateName",
         "/properties/MongoDBVersion",
         "/properties/CreatedDate",

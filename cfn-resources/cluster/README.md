@@ -6,7 +6,8 @@ Lists, creates, edits, and deletes [Clusters](https://www.mongodb.com/docs/atlas
 
 ## Requirements
 
-The resource requires your Project ID.
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
 
 ## Attributes and Parameters
 

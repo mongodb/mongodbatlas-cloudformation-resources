@@ -675,8 +675,8 @@ func flattenBiConnectorConfig(biConnector *mongodbatlas.BiConnector) *BiConnecto
 }
 
 func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings) (connStrings *ConnectionStrings) {
-	privateEndpoints, privateEndpointsServ := flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint)
 	if clusterConnStrings != nil {
+		privateEndpoints, privateEndpointsServ := flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint)
 		connStrings = &ConnectionStrings{
 			Standard:            &clusterConnStrings.Standard,
 			StandardSrv:         &clusterConnStrings.StandardSrv,

@@ -71,6 +71,15 @@
         "false"
       ]
     },
+    "IsExtendedStorageSizesEnabled": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": "Flag that indicates whether to enable extended storage sizes for the specified project.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
     "KeyId": {
       "Type": "String",
       "Description": "Programmatic Api Key Id",

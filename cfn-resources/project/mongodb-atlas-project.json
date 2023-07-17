@@ -19,6 +19,9 @@
                 },
                 "IsSchemaAdvisorEnabled": {
                     "type": "boolean"
+                },
+                "IsExtendedStorageSizesEnabled": {
+                    "type": "boolean"
                 }
             },
             "additionalProperties": false

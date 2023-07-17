@@ -12,7 +12,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#isdataexplorerenabled" title="IsDataExplorerEnabled">IsDataExplorerEnabled</a>" : <i>Boolean</i>,
     "<a href="#isperformanceadvisorenabled" title="IsPerformanceAdvisorEnabled">IsPerformanceAdvisorEnabled</a>" : <i>Boolean</i>,
     "<a href="#isrealtimeperformancepanelenabled" title="IsRealtimePerformancePanelEnabled">IsRealtimePerformancePanelEnabled</a>" : <i>Boolean</i>,
-    "<a href="#isschemaadvisorenabled" title="IsSchemaAdvisorEnabled">IsSchemaAdvisorEnabled</a>" : <i>Boolean</i>
+    "<a href="#isschemaadvisorenabled" title="IsSchemaAdvisorEnabled">IsSchemaAdvisorEnabled</a>" : <i>Boolean</i>,
+    "<a href="#isextendedstoragesizesenabled" title="IsExtendedStorageSizesEnabled">IsExtendedStorageSizesEnabled</a>" : <i>Boolean</i>
 }
 </pre>
 
@@ -24,6 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#isperformanceadvisorenabled" title="IsPerformanceAdvisorEnabled">IsPerformanceAdvisorEnabled</a>: <i>Boolean</i>
 <a href="#isrealtimeperformancepanelenabled" title="IsRealtimePerformancePanelEnabled">IsRealtimePerformancePanelEnabled</a>: <i>Boolean</i>
 <a href="#isschemaadvisorenabled" title="IsSchemaAdvisorEnabled">IsSchemaAdvisorEnabled</a>: <i>Boolean</i>
+<a href="#isextendedstoragesizesenabled" title="IsExtendedStorageSizesEnabled">IsExtendedStorageSizesEnabled</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -61,6 +63,14 @@ _Type_: Boolean
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### IsSchemaAdvisorEnabled
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### IsExtendedStorageSizesEnabled
 
 _Required_: No
 

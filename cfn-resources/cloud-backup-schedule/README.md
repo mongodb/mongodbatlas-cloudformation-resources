@@ -1,13 +1,12 @@
 # MongoDB::Atlas::CloudBackupSchedule
 
 ## Description
-Returns, adds,  and removes [Cloud Backup Schedule](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule).
+Returns, adds, and removes [Cloud Backup Schedule](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule).
 
 ## Requirements
 
 Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
 For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
-
 
 ## Attributes & Parameters
 

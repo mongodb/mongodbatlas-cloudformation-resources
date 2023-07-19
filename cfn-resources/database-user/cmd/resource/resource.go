@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"fmt"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -48,7 +47,6 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf(" currentModel: %#+v, prevModel: %#+v", currentModel, prevModel)
 
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
@@ -63,17 +61,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	groupID, dbUser, event, err := setModel(currentModel)
+	dbUser, err := setModel(currentModel)
 	if err != nil {
-		return event, nil
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error Creating resource: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
-	_, _ = logger.Debugf("Arguments: Project ID: %s, Request %#+v", groupID, dbUser)
-	newUser, res, err := client.DatabaseUsers.Create(context.Background(), groupID, dbUser)
+
+	groupID := *currentModel.ProjectId
+
+	_, res, err := client.DatabaseUsers.Create(context.Background(), groupID, dbUser)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			res.Response), nil
 	}
-	_, _ = logger.Debugf("newUser: %s", newUser)
+
 	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
 	currentModel.UserCFNIdentifier = &cfnid
 
@@ -136,7 +139,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		roles = append(roles, role)
 	}
 	currentModel.Roles = roles
-	_, _ = logger.Debugf("currentModel.Roles:%+v", roles)
+
 	var labels []LabelDefinition
 
 	for i := range databaseUser.Labels {
@@ -175,13 +178,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	groupID, dbUser, event, err := setModel(currentModel)
+	dbUser, err := setModel(currentModel)
 	if err != nil {
-		return event, nil
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error Creating resource: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
+
+	groupID := *currentModel.ProjectId
+
 	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbUser)
 
-	_, _ = logger.Debugf("Update resp:%+v", resp)
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
@@ -294,9 +302,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			}
 
 			model.Labels = labels
-			cfnid := fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID)
 
-			model.UserCFNIdentifier = &cfnid
+			model.UserCFNIdentifier = aws.String(fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID))
 			dbUserModels = append(dbUserModels, model)
 		}
 	}
@@ -309,11 +316,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
-	return &mongodbatlas.DatabaseUser{
+	user := &mongodbatlas.DatabaseUser{
 		Roles:           roles,
 		GroupID:         groupID,
 		Username:        *currentModel.Username,
-		Password:        *currentModel.Password,
 		DatabaseName:    *currentModel.DatabaseName,
 		Labels:          labels,
 		Scopes:          scopes,
@@ -322,9 +328,15 @@ func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, l
 		X509Type:        *currentModel.X509Type,
 		DeleteAfterDate: *currentModel.DeleteAfterDate,
 	}
+
+	if currentModel.Password != nil {
+		user.Password = *currentModel.Password
+	}
+
+	return user
 }
 
-func setModel(currentModel *Model) (string, *mongodbatlas.DatabaseUser, handler.ProgressEvent, error) {
+func setModel(currentModel *Model) (*mongodbatlas.DatabaseUser, error) {
 	var roles []mongodbatlas.Role
 	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
@@ -340,7 +352,6 @@ func setModel(currentModel *Model) (string, *mongodbatlas.DatabaseUser, handler.
 		}
 		roles = append(roles, role)
 	}
-	_, _ = logger.Debugf("roles: %#+v", roles)
 
 	var labels []mongodbatlas.Label
 	for i := range currentModel.Labels {
@@ -351,7 +362,6 @@ func setModel(currentModel *Model) (string, *mongodbatlas.DatabaseUser, handler.
 		}
 		labels = append(labels, label)
 	}
-	_, _ = logger.Debugf("labels: %#+v", labels)
 
 	var scopes []mongodbatlas.Scope
 	for i := range currentModel.Scopes {
@@ -362,10 +372,8 @@ func setModel(currentModel *Model) (string, *mongodbatlas.DatabaseUser, handler.
 		}
 		scopes = append(scopes, scope)
 	}
-	_, _ = logger.Debugf("scopes: %#+v", scopes)
 
 	groupID := *currentModel.ProjectId
-	_, _ = logger.Debugf("groupID: %#+v", groupID)
 
 	none := "NONE"
 	if currentModel.LdapAuthType == nil {
@@ -377,22 +385,20 @@ func setModel(currentModel *Model) (string, *mongodbatlas.DatabaseUser, handler.
 	if currentModel.X509Type == nil {
 		currentModel.X509Type = &none
 	}
+
 	if currentModel.Password == nil {
-		if (currentModel.LdapAuthType == &none) && (currentModel.AWSIAMType == &none) && (currentModel.X509Type == &none) {
-			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509: %v", currentModel)
-			return "", nil, handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+		if (*currentModel.LdapAuthType == none) && (*currentModel.AWSIAMType == none) && (*currentModel.X509Type == none) {
+			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509 is not provided")
+			return nil, err
 		}
-		s := ""
-		currentModel.Password = &s
+		currentModel.Password = aws.String("")
 	}
+
 	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
-		s := ""
-		currentModel.DeleteAfterDate = &s
+		currentModel.DeleteAfterDate = aws.String("")
 	}
-	_, _ = logger.Debugf("Check Delete after date here::???????")
+
 	user := getDBUser(roles, groupID, currentModel, labels, scopes)
-	return groupID, user, handler.ProgressEvent{}, nil
+
+	return user, nil
 }

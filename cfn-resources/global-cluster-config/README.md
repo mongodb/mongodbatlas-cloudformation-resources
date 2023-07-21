@@ -1,7 +1,7 @@
 # Mongodb::Atlas::GlobalClusterConfig
 
 ## Description
-Returns, adds, and removes [Global Cluster](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Global-Clusters) managed namespaces and custom zone mappings.
+Resource for managing [Global Cluster](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Global-Clusters) managed namespaces and custom zone mappings.
 
 ## Requirements
 

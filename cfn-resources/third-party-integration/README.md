@@ -2,7 +2,7 @@
 
 ## Description
 
-Returns, adds, edits, and removes [Third Party Service Integrations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations) configurations. MongoDB Cloud sends alerts to each third-party service that you configure.
+Resource for managing [Third Party Service Integration](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations) configurations. MongoDB Cloud sends alerts to each third-party service that you configure.
 
 ## Requirements
 

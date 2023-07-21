@@ -1,7 +1,7 @@
 # MongoDB::Atlas::DataLakes
 
 ## Description
-Returns, adds, edits, and removes [Federated Database Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation).
+Resource for managing [Federated Database Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation).
 
 ## Requirements
 

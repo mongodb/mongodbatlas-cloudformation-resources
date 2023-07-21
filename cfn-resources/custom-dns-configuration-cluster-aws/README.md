@@ -2,7 +2,7 @@
 
 ## Description
 
-Returns, adds and removes [Custom DNS for Atlas Clusters Deployed to AWS](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-DNS-for-Atlas-Clusters-Deployed-to-AWS).
+Resource for managing [Custom DNS for Atlas Clusters Deployed to AWS](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-DNS-for-Atlas-Clusters-Deployed-to-AWS).
 
 ## Requirements
 

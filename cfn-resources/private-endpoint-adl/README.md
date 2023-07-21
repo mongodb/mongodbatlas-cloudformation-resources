@@ -1,7 +1,7 @@
 # MongoDB::Atlas::PrivateEndpointADL
 
 ## Description
-Adds one [Private Endpoint for Federated Database Instances and Online Archives](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation-Private-Networks) to a project.
+Resource for managing [Private Endpoints for Federated Database Instances and Online Archives](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation-Private-Networks).
 
 ## Requirements
 

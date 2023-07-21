@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Trigger
 
 ## Description
-View and manage your application's [Trigger](https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/triggers).
+Resource for managing [Triggers](https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/triggers).
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::DatabaseUser
 
 ## Description
-Returns, adds, edits, and removes [Database Users](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users).
+Resource for managing [Database Users](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users).
 
 ## Attributes & Parameters
 

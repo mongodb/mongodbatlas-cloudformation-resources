@@ -2,7 +2,7 @@
 
 ## Description
 
-Returns, takes, edits, and removes [Cloud Backups](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Cloud-Backups) snapshots.
+Resource for managing [Cloud Backups](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Cloud-Backups) snapshots.
 
 ## Requirements
 

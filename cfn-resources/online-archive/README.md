@@ -1,7 +1,7 @@
 # MongoDB::Atlas::OnlineArchive
 
 ## Description
-Returns, adds, edits, or removes an [Online Archive](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Online-Archive).
+Resource for managing [Online Archive](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Online-Archive).
 
 ## Requirements
 

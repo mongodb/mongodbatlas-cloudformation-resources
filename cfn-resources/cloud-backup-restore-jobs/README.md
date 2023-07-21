@@ -1,7 +1,7 @@
 # MongoDB::Atlas::CloudBackUpRestoreJobs
 
 ## Description
-Returns, starts, and cancels [Cloud BackUp Restore Jobs](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs).
+Resource for managing [Cloud BackUp Restore Jobs](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Restore-Jobs).
 
 ## Requirements
 

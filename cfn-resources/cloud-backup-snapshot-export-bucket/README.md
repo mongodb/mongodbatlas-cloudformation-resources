@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing access for [Cloud Backup Export](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Export).
+Resource for managing [Cloud Backup Export](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backup-Export) access.
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::CloudBackupSchedule
 
 ## Description
-Returns, adds, and removes [Cloud Backup Schedule](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule).
+Resource for managing [Cloud Backup Schedule](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule).
 
 ## Requirements
 

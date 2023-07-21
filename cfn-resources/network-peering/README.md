@@ -1,7 +1,7 @@
 # MongoDB::Atlas::NetworkPeering
 
 ## Description
-This resource allows you to create, read, update and delete a [Network Peering](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Network-Peering).
+Resource for managing [Network Peering](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Network-Peering).
 
 ## Requirements
 

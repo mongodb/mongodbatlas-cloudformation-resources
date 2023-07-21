@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
@@ -56,6 +57,22 @@ var (
 	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
+
+// EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
+// and returns "US_EAST_1" -- i.e. a valid Atlas region
+func EnsureAtlasRegion(region string) string {
+	r := strings.ToUpper(strings.ReplaceAll(region, "-", "_"))
+	log.Printf("EnsureAtlasRegion--- region:%s r:%s", region, r)
+	return r
+}
+
+// EnsureAWSRegion This takes either "us-east-1" or "US_EAST_1"
+// and returns "us-east-1" -- i.e. a valid AWS region
+func EnsureAWSRegion(region string) string {
+	r := strings.ToLower(strings.ReplaceAll(region, "_", "-"))
+	log.Printf("EnsureAWSRegion--- region:%s r:%s", region, r)
+	return r
+}
 
 func GetRealmClient(ctx context.Context, req handler.Request, profileName *string) (*realm.Client, error) {
 	p, err := profile.NewProfile(&req, profileName)

@@ -19,12 +19,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"runtime"
-	"strings"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -38,6 +32,10 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
+	"log"
+	"net/http"
+	"os"
+	"runtime"
 )
 
 const (
@@ -57,22 +55,6 @@ var (
 	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
-
-// EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
-// and returns "US_EAST_1" -- i.e. a valid Atlas region
-func EnsureAtlasRegion(region string) string {
-	r := strings.ToUpper(strings.ReplaceAll(region, "-", "_"))
-	log.Printf("EnsureAtlasRegion--- region:%s r:%s", region, r)
-	return r
-}
-
-// EnsureAWSRegion This takes either "us-east-1" or "US_EAST_1"
-// and returns "us-east-1" -- i.e. a valid AWS region
-func EnsureAWSRegion(region string) string {
-	r := strings.ToLower(strings.ReplaceAll(region, "_", "-"))
-	log.Printf("EnsureAWSRegion--- region:%s r:%s", region, r)
-	return r
-}
 
 func GetRealmClient(ctx context.Context, req handler.Request, profileName *string) (*realm.Client, error) {
 	p, err := profile.NewProfile(&req, profileName)
@@ -149,7 +131,7 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 	return mongodbClient, nil
 }
 
-// NewAtlasClient func for atlas-go-sdk and atlas-go-client
+// NewAtlasClient func for creating atlas-go-sdk and mongodb-atlas-go client
 func NewAtlasClient(req *handler.Request, profileName *string) (interface{}, *handler.ProgressEvent) {
 	prof, err := profile.NewProfile(req, profileName)
 
@@ -271,37 +253,6 @@ func ToStringMapE(ep any) (map[string]any, error) {
 func CreateSSManagerClient(curSession *session.Session) (*ssm.SSM, error) {
 	ssmCli := ssm.New(curSession)
 	return ssmCli, nil
-}
-func PutKey(keyID, keyValue, prefix string, curSession *session.Session) (*ssm.PutParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return nil, err
-	}
-	// transform api keys to json string
-	parameterName := buildKey(keyID, prefix)
-	parameterType := "SecureString"
-	overwrite := true
-	putParamOutput, err := ssmClient.PutParameter(&ssm.PutParameterInput{Name: &parameterName, Value: &keyValue, Type: &parameterType, Overwrite: &overwrite})
-	if err != nil {
-		return nil, err
-	}
-
-	return putParamOutput, nil
-}
-
-func DeleteKey(keyID, prefix string, curSession *session.Session) (*ssm.DeleteParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return nil, err
-	}
-	parameterName := buildKey(keyID, prefix)
-
-	deleteParamOutput, err := ssmClient.DeleteParameter(&ssm.DeleteParameterInput{Name: &parameterName})
-	if err != nil {
-		return nil, err
-	}
-
-	return deleteParamOutput, nil
 }
 
 func Get(keyID, prefix string, curSession *session.Session) string {

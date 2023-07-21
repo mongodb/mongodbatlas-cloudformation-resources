@@ -1,7 +1,7 @@
 # MongoDB::Atlas::FederatedSettingsOrgRoleMapping
 
 ## Description
-Returns, edit, and remove [Federated Setting Org Role Mapping](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication).
+Returns, edit, and removes [Federated Setting Org Role Mapping](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication).
 
 ## Requirements
 

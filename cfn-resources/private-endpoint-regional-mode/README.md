@@ -1,9 +1,7 @@
 # MongoDB::Atlas::PrivateEndPointRegionalMode
 
 ## Description
-Returns, adds and removes regional mode setting for private endpoints.
-
-[Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services)
+Returns, adds and removes the [Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) setting for private endpoints.
 
 ## Requirements
 

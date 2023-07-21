@@ -361,6 +361,13 @@ func mapClusterToModel(model *Model, cluster *mongodbatlas.AdvancedCluster) {
 }
 
 func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID string) (handler.ProgressEvent, error) {
+
+	cluster, res, err := client.AdvancedClusters.Get(context.Background(), projectID, *currentModel.Name)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
+			res.Response), nil
+	}
+
 	progressEvent, err := validateProgress(client, currentModel, constants.CreatingState, constants.IdleState)
 	if err != nil {
 		return progressEvent, nil
@@ -374,15 +381,6 @@ func clusterCallback(client *mongodbatlas.Client, currentModel *Model, projectID
 				ResourceModel:   currentModel}, nil
 		}
 
-		_, _ = log.Debugf("Cluster Creation completed:%s", *currentModel.Name)
-
-		cluster, res, err := client.AdvancedClusters.Get(context.Background(), projectID, *currentModel.Name)
-		if err != nil {
-			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-				res.Response), nil
-		}
-
-		_, _ = log.Debugf("Updating cluster settings:%s", *currentModel.Name)
 		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
@@ -732,16 +730,15 @@ func formatMongoDBMajorVersion(val interface{}) string {
 	return fmt.Sprintf("%.1f", cast.ToFloat32(val))
 }
 
-func isClusterInTargetState(client *mongodbatlas.Client, projectID, clusterName, targetState string) (isReady bool, stateName string, mongoCluster *mongodbatlas.AdvancedCluster, err error) {
-	cluster, resp, err := client.AdvancedClusters.Get(context.Background(), projectID, clusterName)
+func isClusterInTargetState(cluster *mongodbatlas.AdvancedCluster, resp *mongodbatlas.Response, clusterName, targetState string) (isReady bool, stateName string, err error) {
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			return constants.DeletedState == targetState, constants.DeletedState, nil, nil
+			return constants.DeletedState == targetState, constants.DeletedState, nil
 		}
-		return false, constants.Error, nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+		return false, constants.Error,, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
 	_, _ = log.Debugf("Cluster state: %s, targetState : %s", cluster.StateName, targetState)
-	return cluster.StateName == targetState, cluster.StateName, cluster, nil
+	return cluster.StateName == targetState, cluster.StateName, nil
 }
 
 func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
@@ -772,6 +769,10 @@ func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
 
 	if processArgs.OplogMinRetentionHours != nil {
 		args.OplogMinRetentionHours = processArgs.OplogMinRetentionHours
+	}
+
+	if processArgs.TransactionLifetimeLimitSeconds != nil {
+		args.TransactionLifetimeLimitSeconds = cast64(processArgs.TransactionLifetimeLimitSeconds)
 	}
 
 	return &args
@@ -967,10 +968,10 @@ func updateClusterSettings(currentModel *Model, client *mongodbatlas.Client,
 	return *pe, nil
 }
 
-func validateProgress(client *mongodbatlas.Client, currentModel *Model, currentState, targetState string) (handler.ProgressEvent, error) {
+func validateProgress(cluster mongodbatlas.AdvancedCluster, ,currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	_, _ = log.Debugf(" Cluster validateProgress() currentModel:%+v", currentModel)
 
-	isReady, state, cluster, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
+	isReady, state, err := isClusterInTargetState(cluster, resp, *currentModel.Name, targetState)
 	if err != nil {
 		_, _ = log.Debugf("ERROR Cluster validateProgress() err:%+v", err)
 		return handler.ProgressEvent{

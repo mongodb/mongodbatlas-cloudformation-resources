@@ -19,7 +19,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>" : <i>Integer</i>,
     "<a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>" : <i>Integer</i>,
     "<a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>" : <i>Integer</i>,
-    "<a href="#oplogminretentionhours" title="OplogMinRetentionHours">OplogMinRetentionHours</a>" : <i>Double</i>
+    "<a href="#oplogminretentionhours" title="OplogMinRetentionHours">OplogMinRetentionHours</a>" : <i>Double</i>,
+    "<a href="#transactionlifetimelimitseconds" title="TransactionLifetimeLimitSeconds">TransactionLifetimeLimitSeconds</a>" : <i>Integer</i>
 }
 </pre>
 
@@ -36,6 +37,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>: <i>Integer</i>
 <a href="#samplerefreshintervalbiconnector" title="SampleRefreshIntervalBIConnector">SampleRefreshIntervalBIConnector</a>: <i>Integer</i>
 <a href="#oplogminretentionhours" title="OplogMinRetentionHours">OplogMinRetentionHours</a>: <i>Double</i>
+<a href="#transactionlifetimelimitseconds" title="TransactionLifetimeLimitSeconds">TransactionLifetimeLimitSeconds</a>: <i>Integer</i>
 </pre>
 
 ## Properties
@@ -137,6 +139,16 @@ Minimum retention window for cluster's oplog expressed in hours. A value of null
 _Required_: No
 
 _Type_: Double
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TransactionLifetimeLimitSeconds
+
+Lifetime, in seconds, of multi-document transactions. Atlas considers the transactions that exceed this limit as expired and so aborts them through a periodic cleanup process.
+
+_Required_: No
+
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

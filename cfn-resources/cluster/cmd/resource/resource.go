@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -143,8 +144,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Read call
 	model, resp, err := readCluster(context.Background(), client, currentModel)
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			_, _ = log.Warnf("error 404- err:%+v resp:%+v", err, resp)
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
@@ -398,14 +398,14 @@ func isClusterInTargetState(client *mongodbatlas.Client, projectID, clusterName,
 func readCluster(ctx context.Context, client *mongodbatlas.Client, currentModel *Model) (*Model, *mongodbatlas.Response, error) {
 	cluster, res, err := client.AdvancedClusters.Get(ctx, *currentModel.ProjectId, *currentModel.Name)
 
-	if err != nil || res.StatusCode != 200 {
+	if err != nil || res.StatusCode != http.StatusOK {
 		return currentModel, res, err
 	}
 	setClusterData(currentModel, cluster)
 
 	if currentModel.AdvancedSettings != nil {
 		processArgs, resp, errr := client.Clusters.GetProcessArgs(ctx, *currentModel.ProjectId, *currentModel.Name)
-		if errr != nil || resp.StatusCode != 200 {
+		if errr != nil || resp.StatusCode != http.StatusOK {
 			return currentModel, resp, errr
 		}
 		currentModel.AdvancedSettings = flattenProcessArgs(processArgs)

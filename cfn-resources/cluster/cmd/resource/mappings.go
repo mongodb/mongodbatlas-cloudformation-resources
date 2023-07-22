@@ -337,6 +337,7 @@ func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {
 		SampleSizeBIConnector:            castNO64(p.SampleSizeBIConnector),
 		SampleRefreshIntervalBIConnector: castNO64(p.SampleRefreshIntervalBIConnector),
 		OplogMinRetentionHours:           p.OplogMinRetentionHours,
+		TransactionLifetimeLimitSeconds:  castNO64(p.TransactionLifetimeLimitSeconds),
 	}
 }
 

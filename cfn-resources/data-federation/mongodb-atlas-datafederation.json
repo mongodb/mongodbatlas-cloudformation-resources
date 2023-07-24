@@ -1,0 +1,278 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "AtlasDataLakeCloudProviderConfig" : {
+      "type": "object",
+      "description": "Name of the cloud service that hosts the data lake's data stores.",
+      "properties": {
+        "ExternalId": {
+          "type": "string",
+          "description": "Unique identifier associated with the Identity and Access Management (IAM) role that the data lake assumes when accessing the data stores."
+        },
+        "IamAssumedRoleARN": {
+          "type": "string",
+          "description": "Amazon Resource Name (ARN) of the Identity and Access Management (IAM) role that the data lake assumes when accessing data stores."
+        },
+        "IamUserARN": {
+          "type": "string",
+          "description": "Amazon Resource Name (ARN) of the user that the data lake assumes when accessing data stores."
+        },
+        "RoleId": {
+          "type": "string",
+          "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
+        },
+        "TestS3Bucket": {
+          "type": "string",
+          "description": "Name of the S3 data bucket that the provided role ID is authorized to access.Required if specifying cloudProviderConfig."
+        }
+      },
+      "additionalProperties": false
+    },
+    "AtlasDataLakeDataProcessRegion": {
+      "type": "object",
+      "description": "Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.",
+      "properties": {
+        "CloudProvider": {
+          "type": "string",
+          "description": "Name of the cloud service that hosts the data lake's data stores."
+        },
+        "Region": {
+          "type": "string",
+          "description": "Name of the region to which the data lake routes client connections."
+        }
+      },
+      "additionalProperties": false
+    },
+    "AtlasDataLakeStorage": {
+      "type": "object",
+      "properties": {
+        "Databases": {
+          "type": "array",
+          "description": "Array that contains the queryable databases and collections for this data lake.",
+          "items": {
+            "$ref": "#/definitions/AtlasDataLakeDatabase",
+            "type": "object"
+          }
+        },
+        "Stores": {
+          "type": "array",
+          "description": "Array that contains the data stores for the data lake.",
+          "items": {
+            "$ref": "#/definitions/AtlasDataLakeStore",
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "AtlasDataLakeDatabase": {
+      "type": "object",
+      "properties": {
+        "Collections": {
+          "type":"array",
+          "items": {
+            "$ref": "#/definitions/Collection",
+            "type": "object"
+          }
+        },
+        "MaxWildcardCollections": {
+          "type": "string"
+        },
+        "Name": {
+          "type":"string"
+        },
+        "Views": {
+          "type":"array",
+          "items": {
+            "$ref": "#/definitions/View",
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "AtlasDataLakeStore": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type":"string"
+        },
+        "Provider": {
+          "type":"string"
+        },
+        "AdditionalStorageClasses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Bucket": {
+          "type":"string"
+        },
+        "Delimiter": {
+          "type":"string"
+        },
+        "IncludeTags": {
+          "type":"boolean"
+        },
+        "Prefix": {
+          "type":"string"
+        },
+        "Public": {
+          "type":"boolean"
+        },
+        "Region": {
+          "type":"string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Collection": {
+      "type":"object",
+      "properties": {
+        "DataSources": {
+          "type":"array",
+          "items": {
+            "$ref": "#/definitions/DataSource",
+            "type": "object"
+          }
+        },
+        "Name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DataSource": {
+      "type":"object",
+      "properties": {
+        "AllowInsecure": {
+          "type": "boolean"
+        },
+        "Collection": {
+          "type":"string"
+        },
+        "CollectionRegex": {
+          "type":"string"
+        },
+        "Database": {
+          "type":"string"
+        },
+        "DatabaseRegex": {
+          "type":"string"
+        },
+        "DefaultFormat": {
+          "type": "string",
+          "default" : ".avro"
+        },
+        "Path": {
+          "type":"string"
+        },
+        "ProvenanceFieldName": {
+          "type":"string"
+        },
+        "StoreName": {
+          "type":"string"
+        },
+        "Urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "View": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type":"string"
+        },
+        "Pipeline": {
+          "type":"string"
+        },
+        "Source": {
+          "type":"string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes Federated Database Instances.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "properties": {
+    "CloudProviderConfig": {
+      "type": "object",
+      "description": "Cloud provider linked to this data lake.",
+      "$ref": "#/definitions/AtlasDataLakeCloudProviderConfig"
+    },
+    "DataProcessRegion": {
+      "type": "object",
+      "description": "Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.",
+      "$ref": "#/definitions/AtlasDataLakeDataProcessRegion"
+    },
+    "ProjectId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Name": {
+      "type": "string",
+      "description": "Human-readable label that identifies the data lake."
+    },
+    "SkipRoleValidation": {
+      "type": "boolean",
+      "description": "Flag that indicates whether this request should check if the requesting IAM role can read from the S3 bucket. AWS checks if the role can list the objects in the bucket before writing to it. Some IAM roles only need write permissions. This flag allows you to skip that check."
+    },
+    "Storage": {
+      "type": "object",
+      "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
+      "$ref": "#/definitions/AtlasDataLakeStorage"
+    },
+    "TenantName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the federated database instance to remove."
+    },
+    "Type": {
+      "type": "string",
+      "description": "Type of Federated Database Instances to return.",
+      "enum": ["USER", "ONLINE_ARCHIVE"]
+    },
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    }
+  },
+  "readOnlyProperties": [
+    "/definitions/AtlasDataLakeStorage/Databases",
+    "/properties/DataProcessRegion",
+    "/properties/Name",
+    "/properties/Storage"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId"
+  ],
+  "required": [
+    "ProjectId"
+  ],
+  "primaryIdentifier": ["/properties/ProjectId"],
+  "typeName": "MongoDB::Atlas::DataFederation",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

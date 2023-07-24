@@ -122,6 +122,8 @@ const (
 	ExportID                   = "ExportId"
 	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
 
-	ExternalGroupName = "ExternalGroupName"
-	RoleAssignments   = "RoleAssignments"
+	ExternalGroupName          = "ExternalGroupName"
+	RoleAssignments            = "RoleAssignments"
+	DataFederationRoleID       = "AtlasDataLakeCloudProviderConfig.RoleId"
+	DataFederationTestS3Bucket = "AtlasDataLakeCloudProviderConfig.TestS3Bucket"
 )

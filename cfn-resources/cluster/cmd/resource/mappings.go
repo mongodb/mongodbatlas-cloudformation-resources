@@ -324,15 +324,23 @@ func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings
 
 func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) privateEndpointConnectionStrings {
 	privateEndpoints := privateEndpointConnectionStrings{
-		PrivateEndpoints:                  make([]string, len(pes)),
-		PrivateEndpointsSrv:               make([]string, len(pes)),
-		SRVShardOptimizedConnectionString: make([]string, len(pes)),
+		PrivateEndpoints:                  make([]string, 0),
+		PrivateEndpointsSrv:               make([]string, 0),
+		SRVShardOptimizedConnectionString: make([]string, 0),
 	}
 
-	for i := range pes {
-		privateEndpoints.PrivateEndpoints[i] = pes[i].ConnectionString
-		privateEndpoints.PrivateEndpointsSrv[i] = pes[i].SRVConnectionString
-		privateEndpoints.SRVShardOptimizedConnectionString[i] = pes[i].SRVShardOptimizedConnectionString
+	for _, pe := range pes {
+		if pe.ConnectionString != "" {
+			privateEndpoints.PrivateEndpoints = append(privateEndpoints.PrivateEndpoints, pe.ConnectionString)
+		}
+
+		if pe.SRVConnectionString != "" {
+			privateEndpoints.PrivateEndpointsSrv = append(privateEndpoints.PrivateEndpointsSrv, pe.SRVConnectionString)
+		}
+
+		if pe.SRVShardOptimizedConnectionString != "" {
+			privateEndpoints.SRVShardOptimizedConnectionString = append(privateEndpoints.SRVShardOptimizedConnectionString, pe.SRVShardOptimizedConnectionString)
+		}
 	}
 	return privateEndpoints
 }

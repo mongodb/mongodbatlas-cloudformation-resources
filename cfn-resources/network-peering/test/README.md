@@ -24,3 +24,28 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/reference/atlas-operator/ak8so-network-peering/)
+
+## Unit Testing Locally
+
+Suggested to use a new Project to test the Network Peering resource.
+(Shortcut: `mongocli iam projects create Network-Peering-Test-1` can grab the id)
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/network-peering
+ ./test/networkpeering.create-sample-cfn-request.sh <PROJECT_ID> "10.0.0.0/16" <YOUR_VPC_ID>  > test.request.json
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
+cd -
+```
+
+Both CREATE & DELETE tests must pass.

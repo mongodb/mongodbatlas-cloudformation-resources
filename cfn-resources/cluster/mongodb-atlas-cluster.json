@@ -125,6 +125,7 @@
                 },
                 "AdvancedRegionConfigs": {
                     "type": "array",
+                    "insertionOrder": false,
                     "description": "Hardware specifications for nodes set for a given region. Each regionConfigs object describes the region's priority in elections and the number and type of MongoDB nodes that MongoDB Cloud deploys to the region. Each regionConfigs object must have either an analyticsSpecs object, electableSpecs object, or readOnlySpecs object. Tenant clusters only require electableSpecs. Dedicated clusters can specify any of these specifications, but must have at least one electableSpecs object within a replicationSpec. Every hardware specification must use the same instanceSize.\n\nExample:\n\nIf you set \"replicationSpecs[n].regionConfigs[m].analyticsSpecs.instanceSize\" : \"M30\", set \"replicationSpecs[n].regionConfigs[m].electableSpecs.instanceSize\" : \"M30\"if you have electable nodes and\"replicationSpecs[n].regionConfigs[m].readOnlySpecs.instanceSize\" : \"M30\" if you have read-only nodes.\",",
                     "items": {
                         "$ref": "#/definitions/advancedRegionConfig"
@@ -162,14 +163,24 @@
                     "description": "Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related mongodb:// connection string that you use to connect to MongoDB Cloud through the interface endpoint that the key names.",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "insertionOrder": true
                 },
                 "PrivateEndpointsSrv": {
                     "type": "array",
                     "description": "Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related mongodb:// connection string that you use to connect to Atlas through the interface endpoint that the key names.",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "insertionOrder": true
+                },
+                "SRVShardOptimizedConnectionString": {
+                    "type": "array",
+                    "description": "Private endpoint-aware connection string optimized for sharded clusters that uses the `mongodb+srv://` protocol to connect to MongoDB Cloud through a private endpoint. If the connection string uses this Uniform Resource Identifier (URI) format, you don't need to change the Uniform Resource Identifier (URI) if the nodes change. Use this Uniform Resource Identifier (URI) format if your application and Atlas cluster supports it. If it doesn't, use and consult the documentation for connectionStrings.privateEndpoint[n].srvConnectionString.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "insertionOrder": true
                 }
             },
             "additionalProperties": false
@@ -335,6 +346,7 @@
         "Labels": {
             "description": "Collection of key-value pairs between 1 to 255 characters in length that tag and categorize the cluster. The MongoDB Cloud console doesn't display your labels.",
             "type": "array",
+            "insertionOrder": false,
             "items": {
                 "type": "object",
                 "properties": {
@@ -377,7 +389,8 @@
             "type": "array",
             "items": {
                 "$ref": "#/definitions/advancedReplicationSpec"
-            }
+            },
+            "insertionOrder": false
         },
         "RootCertType": {
             "description": "Root Certificate Authority that MongoDB Cloud cluster uses. MongoDB Cloud supports Internet Security Research Group.",
@@ -408,6 +421,7 @@
         "/properties/ConnectionStrings/PrivateSrv",
         "/properties/ConnectionStrings/PrivateEndpoints",
         "/properties/ConnectionStrings/PrivateEndpointsSrv",
+        "/properties/ConnectionStrings/SRVShardOptimizedConnectionString",
         "/properties/StateName",
         "/properties/MongoDBVersion",
         "/properties/CreatedDate",

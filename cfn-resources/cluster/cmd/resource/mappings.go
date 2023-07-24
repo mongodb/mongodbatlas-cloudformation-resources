@@ -2,12 +2,13 @@ package resource
 
 import (
 	"fmt"
+	"reflect"
+	"strconv"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
-	"reflect"
-	"strconv"
 )
 
 func mapClusterToModel(model *Model, cluster *mongodbatlas.AdvancedCluster) {

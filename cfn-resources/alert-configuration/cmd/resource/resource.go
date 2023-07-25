@@ -338,6 +338,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 			VictorOpsAPIKey:     cast.ToString(notificationList[ind].VictorOpsApiKey),
 			VictorOpsRoutingKey: cast.ToString(notificationList[ind].VictorOpsRoutingKey),
 			Roles:               cast.ToStringSlice(notificationList[ind].Roles),
+			DelayMin:            notificationList[ind].DelayMin,
 		}
 		notifications = append(notifications, notification)
 	}

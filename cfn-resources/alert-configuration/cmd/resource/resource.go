@@ -72,6 +72,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// API Request creation
+	notifications, err := expandAlertConfigurationNotification(currentModel.Notifications)
+	if err != nil {
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
+	}
+
 	alertConfigRequest := &mongodbatlas.AlertConfiguration{
 		GroupID:         cast.ToString(currentModel.ProjectId),
 		EventTypeName:   cast.ToString(currentModel.EventTypeName),
@@ -79,9 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Matchers:        expandAlertConfigurationMatchers(currentModel.Matchers),
 		MetricThreshold: expandAlertConfigurationMetricThresholdConfig(currentModel),
 		Threshold:       expandAlertConfigurationThreshold(currentModel.Threshold),
-	}
-	if currentModel.Notifications != nil {
-		alertConfigRequest.Notifications, _ = expandAlertConfigurationNotification(currentModel.Notifications)
+		Notifications:   notifications,
 	}
 
 	projectID := *currentModel.ProjectId
@@ -304,7 +307,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	notifications := make([]mongodbatlas.Notification, 0)
 
 	for ind := range notificationList {
-		if *notificationList[ind].IntervalMin > cast.ToFloat64(0) {
+		if notificationList[ind].IntervalMin != nil && *notificationList[ind].IntervalMin > cast.ToFloat64(0) {
 			typeName := *notificationList[ind].TypeName
 			if strings.EqualFold(typeName, constants.PagerDuty) || strings.EqualFold(typeName, constants.OpsGenie) || strings.EqualFold(typeName, constants.VictorOps) {
 				return nil, fmt.Errorf(`'interval_min' doesn't need to be set if type_name is 'PAGER_DUTY', 'OPS_GENIE' or 'VICTOR_OPS'`)

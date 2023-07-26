@@ -17,7 +17,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>" : <i>Boolean</i>,
         "<a href="#storage" title="Storage">Storage</a>" : <i><a href="atlasdatalakestorage.md">AtlasDataLakeStorage</a></i>,
-        "<a href="#tenantname" title="TenantName">TenantName</a>" : <i>String</i>,
         "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
@@ -34,7 +33,6 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>: <i>Boolean</i>
     <a href="#storage" title="Storage">Storage</a>: <i><a href="atlasdatalakestorage.md">AtlasDataLakeStorage</a></i>
-    <a href="#tenantname" title="TenantName">TenantName</a>: <i>String</i>
     <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
@@ -95,16 +93,6 @@ _Type_: <a href="atlasdatalakestorage.md">AtlasDataLakeStorage</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### TenantName
-
-Human-readable label that identifies the federated database instance to remove.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### Type
 
 Type of Federated Database Instances to return.
@@ -139,19 +127,19 @@ The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
 
-#### Databases
+#### ExternalId
 
-Returns the <code>Databases</code> value.
+Returns the <code>ExternalId</code> value.
 
-#### DataProcessRegion
+#### IamAssumedRoleARN
 
-Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.
+Returns the <code>IamAssumedRoleARN</code> value.
+
+#### IamUserARN
+
+Returns the <code>IamUserARN</code> value.
 
 #### Name
 
 Human-readable label that identifies the data lake.
-
-#### Storage
-
-Returns the <code>Storage</code> value.
 

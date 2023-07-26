@@ -123,6 +123,16 @@
         },
         "Region": {
           "type":"string"
+        },
+        "ProjectId": {
+          "type":"string"
+        },
+        "ClusterName": {
+          "type":"string"
+        },
+        "ReadPreference": {
+          "type":"object",
+          "$ref": "#/definitions/ReadPreference"
         }
       },
       "additionalProperties": false
@@ -197,6 +207,43 @@
         }
       },
       "additionalProperties": false
+    },
+    "ReadPreference": {
+      "type": "object",
+      "properties": {
+        "Mode": {
+          "type": "string"
+        },
+        "MaxStalenessSeconds": {
+          "type": "string"
+        },
+        "Tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReadReferenceTags"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ReadReferenceTags": {
+      "type": "array",
+      "items": {
+          "$ref": "#/definitions/TagSet"
+      },
+      "additionalProperties": false
+    },
+    "TagSet": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "description": "Returns, adds, edits, and removes Federated Database Instances.",
@@ -245,10 +292,6 @@
       "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
       "$ref": "#/definitions/AtlasDataLakeStorage"
     },
-    "TenantName": {
-      "type": "string",
-      "description": "Human-readable label that identifies the federated database instance to remove."
-    },
     "Type": {
       "type": "string",
       "description": "Type of Federated Database Instances to return.",
@@ -261,10 +304,13 @@
     }
   },
   "readOnlyProperties": [
-    "/definitions/AtlasDataLakeStorage/Databases",
-    "/properties/DataProcessRegion",
-    "/properties/Name",
-    "/properties/Storage"
+    "/properties/CloudProviderConfig/ExternalId",
+    "/properties/CloudProviderConfig/IamAssumedRoleARN",
+    "/properties/CloudProviderConfig/IamUserARN",
+    "/properties/Name"
+  ],
+  "writeOnlyProperties": [
+    "/properties/CloudProviderConfig/TestS3Bucket"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId"

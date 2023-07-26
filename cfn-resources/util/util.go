@@ -150,7 +150,7 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 }
 
 // NewAtlasClient func for creating atlas-go-sdk and mongodb-atlas-go client
-func NewAtlasClient(req *handler.Request, profileName *string) (interface{}, *handler.ProgressEvent) {
+func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {
 	prof, err := profile.NewProfile(req, profileName)
 
 	if err != nil {
@@ -161,7 +161,7 @@ func NewAtlasClient(req *handler.Request, profileName *string) (interface{}, *ha
 	}
 
 	// setup a transport to handle digest
-	transport := digest.NewTransport(prof.PublicKey, prof.PublicKey)
+	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
 
 	// initialize the client
 	client, err := transport.Client()

@@ -16,7 +16,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#includetags" title="IncludeTags">IncludeTags</a>" : <i>Boolean</i>,
     "<a href="#prefix" title="Prefix">Prefix</a>" : <i>String</i>,
     "<a href="#public" title="Public">Public</a>" : <i>Boolean</i>,
-    "<a href="#region" title="Region">Region</a>" : <i>String</i>
+    "<a href="#region" title="Region">Region</a>" : <i>String</i>,
+    "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+    "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+    "<a href="#readpreference" title="ReadPreference">ReadPreference</a>" : <i><a href="readpreference.md">ReadPreference</a></i>
 }
 </pre>
 
@@ -33,6 +36,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#prefix" title="Prefix">Prefix</a>: <i>String</i>
 <a href="#public" title="Public">Public</a>: <i>Boolean</i>
 <a href="#region" title="Region">Region</a>: <i>String</i>
+<a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
+<a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+<a href="#readpreference" title="ReadPreference">ReadPreference</a>: <i><a href="readpreference.md">ReadPreference</a></i>
 </pre>
 
 ## Properties
@@ -106,6 +112,30 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProjectId
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ClusterName
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ReadPreference
+
+_Required_: No
+
+_Type_: <a href="readpreference.md">ReadPreference</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

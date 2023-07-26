@@ -124,6 +124,8 @@ const (
 
 	ExternalGroupName          = "ExternalGroupName"
 	RoleAssignments            = "RoleAssignments"
-	DataFederationRoleID       = "AtlasDataLakeCloudProviderConfig.RoleId"
-	DataFederationTestS3Bucket = "AtlasDataLakeCloudProviderConfig.TestS3Bucket"
+	DataFederationRoleID       = "CloudProviderConfig.RoleId"
+	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"
+	DataProcessRegion          = "DataProcessRegion.Region"
+	SkipRoleValidation         = "SkipRoleValidation"
 )

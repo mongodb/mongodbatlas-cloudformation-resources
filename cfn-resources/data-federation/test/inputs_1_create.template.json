@@ -1,0 +1,21 @@
+{
+    "Name": "cfn-test-data-federation-2",
+    "ProjectId": "",
+    "CloudProviderConfig": {
+        "RoleId": "",
+        "TestS3Bucket": ""
+    },
+    "Profile": "default",
+    "DataProcessRegion":{
+        "Region": "VIRGINIA_USA"
+    },
+    "Storage": {
+        "Databases": [
+            {
+                "MaxWildcardCollections": "50",
+                "Name": "cfn-df-dbs"
+            }
+        ]
+    },
+    "SkipRoleValidation": "true"
+}

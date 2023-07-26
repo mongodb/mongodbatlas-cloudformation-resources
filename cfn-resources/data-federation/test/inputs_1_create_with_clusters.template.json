@@ -1,0 +1,38 @@
+{
+    "Name": "cfn-test-data-federation-2",
+    "ProjectId": "",
+    "CloudProviderConfig": {
+        "RoleId": "",
+        "TestS3Bucket": ""
+    },
+    "DataProcessRegion":{
+        "Region": "VIRGINIA_USA"
+    },
+    "SkipRoleValidation": "true",
+    "Storage":{
+        "Databases": [
+            {
+                "MaxWildcardCollections": "50",
+                "Name" : "virtualCollection0"
+            }
+        ],
+        "Stores": [
+            {
+                "Name"                     : "",
+                "ClusterName"              : "",
+                "Provider"                 : "atlas",
+                "ReadPreference"            : {
+                    "Mode": "secondary"
+                }
+            },
+            {
+                "Name"                     : "",
+                "ClusterName"              : "",
+                "Provider"                 : "atlas",
+                "ReadPreference"            : {
+                    "Mode": "secondary"
+                }
+            }
+        ]
+    }
+}

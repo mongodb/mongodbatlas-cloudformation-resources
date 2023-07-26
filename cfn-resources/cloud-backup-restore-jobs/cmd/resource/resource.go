@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/callback"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -35,6 +36,8 @@ var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType
 var ReadDeleteRequiredFields = []string{constants.ID}
 var ListRequiredFields = []string{constants.ProjectID}
 
+const callBackSeconds = 5
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
@@ -51,6 +54,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
+	}
+
+	// Callback
+	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
+		id := req.CallbackContext["id"]
+		return createCallback(client, currentModel, cast.ToString(id)), nil
 	}
 
 	targetClusterName := cast.ToString(currentModel.TargetClusterName)
@@ -117,11 +126,57 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = &restoreJob.ID
 	}
 
+	if flowIsAsynchronous(currentModel) {
+		return progressevents.GetInProgressProgressEvent(
+				"Create in progress",
+				map[string]interface{}{
+					constants.StateName: callback.InProgress,
+					"id":                currentModel.Id,
+				},
+				currentModel,
+				int64(callBackSeconds)),
+			nil
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
 	}, nil
+}
+
+func flowIsAsynchronous(model *Model) bool {
+	return model.DeliveryType != nil && *model.DeliveryType == constants.Automated
+}
+
+func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID string) handler.ProgressEvent {
+	clusterName := cast.ToString(currentModel.ClusterName)
+	instanceName := cast.ToString(currentModel.InstanceName)
+	projectID := cast.ToString(currentModel.ProjectId)
+
+	restoreJob, progressEvent := ReadResource(client, currentModel, clusterName, instanceName, projectID, jobID)
+	if progressEvent != nil {
+		return *progressEvent
+	}
+
+	currentModel.Id = &jobID
+
+	if restoreJob.FinishedAt != "" {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create Complete",
+			ResourceModel:   currentModel,
+		}
+	}
+
+	return progressevents.GetInProgressProgressEvent(
+		"Create in progress",
+		map[string]interface{}{
+			constants.StateName: callback.InProgress,
+			"id":                currentModel.Id,
+		},
+		currentModel,
+		int64(callBackSeconds))
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -155,6 +210,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			ResourceModel:   currentModel,
 		}, nil
 	}
+
 	// Check if job already exist
 	if !isRestoreJobExist(client, currentModel) {
 		_, _ = logger.Warnf(constants.ErrorReadCloudBackUpRestoreJob, *currentModel.Id)
@@ -165,6 +221,20 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create Atlas API Request Object
+	restoreJob, progressEvent := ReadResource(client, currentModel, clusterName, instanceName, projectID, jobID)
+	if progressEvent != nil {
+		return *progressEvent, nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Read complete",
+		ResourceModel:   convertToUIModel(restoreJob, currentModel),
+	}, nil
+}
+
+func ReadResource(client *mongodbatlas.Client, currentModel *Model, clusterName, instanceName, projectID, jobID string) (*mongodbatlas.CloudProviderSnapshotRestoreJob, *handler.ProgressEvent) {
+	// Create Atlas API Request Object
 	if clusterName != "" {
 		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
 			GroupID:     projectID,
@@ -173,22 +243,19 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 		restoreJob, resp, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), requestParameters)
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("error reading restore job with id(project: %s, job: %s): %+v", projectID, jobID, err), resp.Response), nil
+			pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("error reading restore job with id(project: %s, job: %s): %+v", projectID, jobID, err), resp.Response)
+			return nil, &pe
 		}
-		currentModel = convertToUIModel(restoreJob, currentModel)
+		return restoreJob, nil
 	} else {
 		// API call to create job
 		restoreJob, resp, err := client.CloudProviderSnapshotRestoreJobs.GetForServerlessBackupRestore(context.Background(), projectID, instanceName, jobID)
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("error reading restore job for serverless instance with id(project: %s, job: %s): %+v", projectID, jobID, err), resp.Response), nil
+			pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("error reading restore job for serverless instance with id(project: %s, job: %s): %+v", projectID, jobID, err), resp.Response)
+			return nil, &pe
 		}
-		currentModel = convertToUIModel(restoreJob, currentModel)
+		return restoreJob, nil
 	}
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Read complete",
-		ResourceModel:   currentModel,
-	}, nil
 }
 
 // Update handles the Update event from the Cloudformation service.

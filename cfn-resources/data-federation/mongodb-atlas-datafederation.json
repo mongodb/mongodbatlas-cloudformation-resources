@@ -301,10 +301,16 @@
       "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
       "$ref": "#/definitions/AtlasDataLakeStorage"
     },
-    "Type": {
+    "State": {
       "type": "string",
+      "description": "Type of Federated Database Instances to return."
+    },
+    "HostNames": {
+      "type": "array",
       "description": "Type of Federated Database Instances to return.",
-      "enum": ["USER", "ONLINE_ARCHIVE"]
+      "items": {
+        "type": "string"
+      }
     },
     "Profile": {
       "type": "string",
@@ -316,6 +322,8 @@
     "/properties/CloudProviderConfig/ExternalId",
     "/properties/CloudProviderConfig/IamAssumedRoleARN",
     "/properties/CloudProviderConfig/IamUserARN",
+    "/properties/HostNames",
+    "/properties/State",
     "/properties/TenantName"
   ],
   "writeOnlyProperties": [
@@ -327,7 +335,11 @@
   "required": [
     "ProjectId"
   ],
-  "primaryIdentifier": ["/properties/ProjectId"],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/TenantName",
+    "/properties/Profile"
+  ],
   "typeName": "MongoDB::Atlas::DataFederation",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

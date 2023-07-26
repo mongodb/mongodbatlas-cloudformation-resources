@@ -10,7 +10,8 @@ type Model struct {
 	TenantName          *string                           `json:",omitempty"`
 	SkipRoleValidation  *bool                             `json:",omitempty"`
 	Storage             *AtlasDataLakeStorage             `json:",omitempty"`
-	Type                *string                           `json:",omitempty"`
+	State               *string                           `json:",omitempty"`
+	HostNames           []string                          `json:",omitempty"`
 	Profile             *string                           `json:",omitempty"`
 }
 

@@ -17,7 +17,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>" : <i>Boolean</i>,
         "<a href="#storage" title="Storage">Storage</a>" : <i><a href="atlasdatalakestorage.md">AtlasDataLakeStorage</a></i>,
-        "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
@@ -33,7 +32,6 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>: <i>Boolean</i>
     <a href="#storage" title="Storage">Storage</a>: <i><a href="atlasdatalakestorage.md">AtlasDataLakeStorage</a></i>
-    <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
@@ -93,18 +91,6 @@ _Type_: <a href="atlasdatalakestorage.md">AtlasDataLakeStorage</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Type
-
-Type of Federated Database Instances to return.
-
-_Required_: No
-
-_Type_: String
-
-_Allowed Values_: <code>USER</code> | <code>ONLINE_ARCHIVE</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### Profile
 
 The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
@@ -116,10 +102,6 @@ _Type_: String
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
-
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ProjectId.
 
 ### Fn::GetAtt
 
@@ -138,6 +120,14 @@ Returns the <code>IamAssumedRoleARN</code> value.
 #### IamUserARN
 
 Returns the <code>IamUserARN</code> value.
+
+#### HostNames
+
+Type of Federated Database Instances to return.
+
+#### State
+
+Type of Federated Database Instances to return.
 
 #### TenantName
 

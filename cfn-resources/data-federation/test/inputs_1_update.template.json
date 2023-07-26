@@ -1,11 +1,9 @@
 {
-  "Name": "cfn-test-data-federation-2",
+  "TenantName": "cfn-test-data-federation-2",
   "ProjectId": "",
   "CloudProviderConfig": {
     "RoleId": "",
-    "TestS3Bucket": "",
-    "IamAssumedRoleARN": "",
-    "IamUserARN": ""
+    "TestS3Bucket": ""
   },
   "DataProcessRegion":{
     "Region": "VIRGINIA_USA"

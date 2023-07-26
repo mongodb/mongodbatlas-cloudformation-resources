@@ -76,15 +76,15 @@ keyRegionUnderScore=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegionUnderScore=$(echo "$keyRegionUnderScore" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
-roleName="mongodb-test-data-federation-role-${keyRegionUnderScore}"
-policyName="atlas-data-federation-bucket-role-policy-${keyRegionUnderScore}"
+roleName="mongodb-test-data-federation-role-${projectName}-${keyRegionUnderScore}"
+policyName="atlas-data-federation-bucket-role-policy-${projectName}-${keyRegionUnderScore}"
 
 echo "roleName: ${roleName} , policyName: ${policyName}"
 
 echo -e "--------------------------------create key and key policy document starts ----------------------------\n"
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
-bucketName="cfn-data-federation-test1-${keyRegion}"
+bucketName="cfn-data-federation-test1-${projectName}-${keyRegion}"
 aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
 

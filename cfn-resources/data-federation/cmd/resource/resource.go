@@ -382,6 +382,8 @@ func (model *Model) getDataLakeTenant(dataLakeTenant atlasSDK.DataLakeTenant) {
 	model.DataProcessRegion = &AtlasDataLakeDataProcessRegion{
 		Region: &dataLakeTenant.DataProcessRegion.Region,
 	}
+	model.State = dataLakeTenant.State
+	model.HostNames = dataLakeTenant.Hostnames
 }
 
 func getDataLakeStorage(storage *atlasSDK.DataLakeStorage) *AtlasDataLakeStorage {

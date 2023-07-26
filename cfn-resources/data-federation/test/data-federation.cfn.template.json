@@ -35,6 +35,18 @@
       "Description": "Name of the region to which Data Federation routes client connections for data processing",
       "Default": "VIRGINIA_USA",
       "ConstraintDescription": ""
+    },
+    "Cluster1": {
+      "Type": "String",
+      "Description": "Name of the cluster",
+      "Default": "cfn-df-test-5-cluster1",
+      "ConstraintDescription": ""
+    },
+    "Cluster2": {
+      "Type": "String",
+      "Description": "Name of the cluster",
+      "Default": "cfn-df-test-5-cluster2",
+      "ConstraintDescription": ""
     }
   },
   "Mappings": {},
@@ -70,7 +82,54 @@
           "Databases": [
             {
               "MaxWildcardCollections": "50",
-              "Name": "sample_airbnb"
+              "Name": "sample_airbnb",
+              "Collections": [
+                {
+                  "DataSources": [
+                    {
+                      "Collection": "listingsAndReviews",
+                      "Database": "sample_airbnb",
+                      "StoreName": {
+                        "Ref": "Cluster1"
+                      }
+                    },
+                    {
+                      "Collection": "listingsAndReviews",
+                      "Database": "sample_airbnb",
+                      "StoreName": {
+                        "Ref": "Cluster2"
+                      }
+                    }
+                  ],
+                  "Name": "virtual-dbs"
+                }
+              ]
+            }
+          ],
+          "Stores": [
+            {
+              "Provider": "atlas",
+              "ClusterName": {
+                "Ref": "Cluster1"
+              },
+              "Name": {
+                "Ref": "Cluster1"
+              },
+              "ProjectId": {
+                "Ref": "ProjectId"
+              }
+            },
+            {
+              "Provider": "atlas",
+              "ClusterName": {
+                "Ref": "Cluster2"
+              },
+              "Name": {
+                "Ref": "Cluster2"
+              },
+              "ProjectId": {
+                "Ref": "ProjectId"
+              }
             }
           ]
         }
@@ -78,5 +137,19 @@
     }
   },
   "Outputs": {
+    "DataFederation": {
+      "Description": "Data Federation",
+      "Value": {
+        "Fn::Select": [
+          0,
+          {
+            "Fn::GetAtt": [
+              "DataFederation",
+              "HostNames"
+            ]
+          }
+        ]
+      }
+    }
   }
 }

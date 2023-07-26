@@ -48,6 +48,7 @@
       "properties": {
         "Databases": {
           "type": "array",
+          "insertionOrder": false,
           "description": "Array that contains the queryable databases and collections for this data lake.",
           "items": {
             "$ref": "#/definitions/AtlasDataLakeDatabase",
@@ -56,6 +57,7 @@
         },
         "Stores": {
           "type": "array",
+          "insertionOrder": false,
           "description": "Array that contains the data stores for the data lake.",
           "items": {
             "$ref": "#/definitions/AtlasDataLakeStore",
@@ -70,6 +72,7 @@
       "properties": {
         "Collections": {
           "type":"array",
+          "insertionOrder": false,
           "items": {
             "$ref": "#/definitions/Collection",
             "type": "object"
@@ -83,6 +86,7 @@
         },
         "Views": {
           "type":"array",
+          "insertionOrder": false,
           "items": {
             "$ref": "#/definitions/View",
             "type": "object"
@@ -102,6 +106,7 @@
         },
         "AdditionalStorageClasses": {
           "type": "array",
+          "insertionOrder": false,
           "items": {
             "type": "string"
           }
@@ -142,6 +147,7 @@
       "properties": {
         "DataSources": {
           "type":"array",
+          "insertionOrder": false,
           "items": {
             "$ref": "#/definitions/DataSource",
             "type": "object"
@@ -186,6 +192,7 @@
         },
         "Urls": {
           "type": "array",
+          "insertionOrder": false,
           "items": {
             "type": "string"
           }
@@ -219,6 +226,7 @@
         },
         "Tags": {
           "type": "array",
+          "insertionOrder": false,
           "items": {
             "$ref": "#/definitions/ReadReferenceTags"
           }
@@ -228,6 +236,7 @@
     },
     "ReadReferenceTags": {
       "type": "array",
+      "insertionOrder": false,
       "items": {
           "$ref": "#/definitions/TagSet"
       },
@@ -249,16 +258,16 @@
   "description": "Returns, adds, edits, and removes Federated Database Instances.",
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     },
     "read": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     },
     "update": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     },
     "delete": {
-      "permissions": []
+      "permissions": ["secretsmanager:GetSecretValue"]
     }
   },
   "properties": {
@@ -279,9 +288,9 @@
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
     },
-    "Name": {
+    "TenantName": {
       "type": "string",
-      "description": "Human-readable label that identifies the data lake."
+      "description": "Human-readable label that identifies the data federation."
     },
     "SkipRoleValidation": {
       "type": "boolean",
@@ -307,7 +316,7 @@
     "/properties/CloudProviderConfig/ExternalId",
     "/properties/CloudProviderConfig/IamAssumedRoleARN",
     "/properties/CloudProviderConfig/IamUserARN",
-    "/properties/Name"
+    "/properties/TenantName"
   ],
   "writeOnlyProperties": [
     "/properties/CloudProviderConfig/TestS3Bucket"

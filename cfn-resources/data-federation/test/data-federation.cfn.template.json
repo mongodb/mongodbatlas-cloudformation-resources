@@ -1,0 +1,82 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates an Atlas Data Lake in the specified project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id",
+      "Default": ""
+    },
+    "RoleID": {
+      "Type": "String",
+      "Description": "Unique identifier of the role that the federated database instance can use to access S3 Buckets. If necessary, use the Atlas API to retrieve the role ID. You must also specify the testS3Bucket",
+      "Default": "",
+      "ConstraintDescription": ""
+    },
+    "TestS3Bucket": {
+      "Type": "String",
+      "Description": "",
+      "Default": "",
+      "ConstraintDescription": "Name of the S3 data bucket that the provided role ID is authorized to access. You must also specify the roleId"
+    },
+    "TenantName": {
+      "Type": "String",
+      "Description": "",
+      "Default": "cfn-data-federation-tenant",
+      "ConstraintDescription": ""
+    },
+    "Region": {
+      "Type": "String",
+      "Description": "Name of the region to which Data Federation routes client connections for data processing",
+      "Default": "VIRGINIA_USA",
+      "ConstraintDescription": ""
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "DataFederation": {
+      "Type": "MongoDB::Atlas::DataFederation",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "TenantName": {
+          "Ref": "TenantName"
+        },
+        "CloudProviderConfig": {
+            "RoleId": {
+              "Ref": "RoleID"
+            },
+            "TestS3Bucket": {
+              "Ref": "TestS3Bucket"
+            }
+        },
+        "DataProcessRegion": {
+          "CloudProvider": "AWS",
+          "Region": {
+            "Ref": "Region"
+          }
+        },
+        "SkipRoleValidation": "true",
+        "Storage": {
+          "Databases": [
+            {
+              "MaxWildcardCollections": "50",
+              "Name": "sample_airbnb"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+  }
+}

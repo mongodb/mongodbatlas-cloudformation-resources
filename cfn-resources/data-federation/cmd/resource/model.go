@@ -7,7 +7,7 @@ type Model struct {
 	CloudProviderConfig *AtlasDataLakeCloudProviderConfig `json:",omitempty"`
 	DataProcessRegion   *AtlasDataLakeDataProcessRegion   `json:",omitempty"`
 	ProjectId           *string                           `json:",omitempty"`
-	Name                *string                           `json:",omitempty"`
+	TenantName          *string                           `json:",omitempty"`
 	SkipRoleValidation  *bool                             `json:",omitempty"`
 	Storage             *AtlasDataLakeStorage             `json:",omitempty"`
 	Type                *string                           `json:",omitempty"`

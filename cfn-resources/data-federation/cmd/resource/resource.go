@@ -32,10 +32,10 @@ import (
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.Name, constants.DataFederationRoleID, constants.DataFederationTestS3Bucket, constants.DataProcessRegion}
-var ReadRequiredFields = []string{constants.ProjectID, constants.Name}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.Name, constants.DataFederationRoleID, constants.DataFederationTestS3Bucket, constants.SkipRoleValidation}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+var CreateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.DataFederationRoleID, constants.DataFederationTestS3Bucket, constants.DataProcessRegion}
+var ReadRequiredFields = []string{constants.ProjectID, constants.TenantName}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.DataFederationRoleID, constants.DataFederationTestS3Bucket, constants.SkipRoleValidation}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var ListRequiredFields = []string{constants.ProjectID}
 
 func setup() {
@@ -99,7 +99,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	_, _ = logger.Debugf("Initiating Read Execute: %+v", currentModel)
 
-	getFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.Name)
+	getFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
 	dataLakeTenant, response, err := getFederatedDatabaseAPIRequest.Execute()
 	defer CloseResponse(response)
 
@@ -136,7 +136,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	updateFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.Name, &dataLakeTenantInput)
+	updateFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
 	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 	defer CloseResponse(response)
@@ -170,7 +170,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.Name)
+	deleteFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
 	_, response, err := deleteFederatedDatabaseAPIRequest.Execute()
 	defer CloseResponse(response)
 
@@ -249,8 +249,12 @@ func handleError(response *http.Response, err error) (handler.ProgressEvent, err
 }
 
 func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant, err error) {
+	cloudProvider := constants.AWS
+	if model.DataProcessRegion.CloudProvider != nil {
+		cloudProvider = *model.DataProcessRegion.CloudProvider
+	}
 	dataLakeTenant = atlasSDK.DataLakeTenant{
-		Name: model.Name,
+		Name: model.TenantName,
 		CloudProviderConfig: &atlasSDK.DataLakeCloudProviderConfig{
 			Aws: atlasSDK.DataLakeAWSCloudProviderConfig{
 				TestS3Bucket: *model.CloudProviderConfig.TestS3Bucket,
@@ -259,7 +263,7 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant,
 		},
 		DataProcessRegion: &atlasSDK.DataLakeDataProcessRegion{
 			Region:        *model.DataProcessRegion.Region,
-			CloudProvider: constants.AWS,
+			CloudProvider: cloudProvider,
 		},
 
 		Storage: model.newDataFederationDataStorage(),
@@ -298,41 +302,41 @@ func (model *Model) newDataFederationDatabase() []atlasSDK.DataLakeDatabaseInsta
 	return dbs
 }
 
-func newDataFederationCollections(storageDBColls []Collection) []atlasSDK.DataLakeDatabaseCollection {
-	if len(storageDBColls) == 0 {
+func newDataFederationCollections(storageDBCollections []Collection) []atlasSDK.DataLakeDatabaseCollection {
+	if len(storageDBCollections) == 0 {
 		return nil
 	}
 
-	collections := make([]atlasSDK.DataLakeDatabaseCollection, len(storageDBColls))
-	for i := range storageDBColls {
+	collections := make([]atlasSDK.DataLakeDatabaseCollection, len(storageDBCollections))
+	for i := range storageDBCollections {
 		collections[i] = atlasSDK.DataLakeDatabaseCollection{
-			Name:        storageDBColls[i].Name,
-			DataSources: newDataFederationDataSource(storageDBColls[i].DataSources),
+			Name:        storageDBCollections[i].Name,
+			DataSources: newDataFederationDataSource(storageDBCollections[i].DataSources),
 		}
 	}
 
 	return collections
 }
 
-func newDataFederationDataSource(dataSrcs []DataSource) []atlasSDK.DataLakeDatabaseDataSourceSettings {
-	if len(dataSrcs) == 0 {
+func newDataFederationDataSource(dataSources []DataSource) []atlasSDK.DataLakeDatabaseDataSourceSettings {
+	if len(dataSources) == 0 {
 		return nil
 	}
-	dataSources := make([]atlasSDK.DataLakeDatabaseDataSourceSettings, len(dataSrcs))
-	for i := range dataSrcs {
-		dataSources[i] = atlasSDK.DataLakeDatabaseDataSourceSettings{
-			AllowInsecure:       dataSrcs[i].AllowInsecure,
-			Database:            dataSrcs[i].Database,
-			Collection:          dataSrcs[i].Collection,
-			CollectionRegex:     dataSrcs[i].CollectionRegex,
-			DefaultFormat:       dataSrcs[i].DefaultFormat,
-			Path:                dataSrcs[i].Path,
-			ProvenanceFieldName: dataSrcs[i].ProvenanceFieldName,
-			StoreName:           dataSrcs[i].StoreName,
-			Urls:                dataSrcs[i].Urls,
+	dataSourceSettings := make([]atlasSDK.DataLakeDatabaseDataSourceSettings, len(dataSources))
+	for i := range dataSources {
+		dataSourceSettings[i] = atlasSDK.DataLakeDatabaseDataSourceSettings{
+			AllowInsecure:       dataSources[i].AllowInsecure,
+			Database:            dataSources[i].Database,
+			Collection:          dataSources[i].Collection,
+			CollectionRegex:     dataSources[i].CollectionRegex,
+			DefaultFormat:       dataSources[i].DefaultFormat,
+			Path:                dataSources[i].Path,
+			ProvenanceFieldName: dataSources[i].ProvenanceFieldName,
+			StoreName:           dataSources[i].StoreName,
+			Urls:                dataSources[i].Urls,
 		}
 	}
-	return dataSources
+	return dataSourceSettings
 }
 
 func (model *Model) newStores() []atlasSDK.DataLakeStoreSettings {
@@ -367,7 +371,7 @@ func (model *Model) newStores() []atlasSDK.DataLakeStoreSettings {
 
 func (model *Model) getDataLakeTenant(dataLakeTenant atlasSDK.DataLakeTenant) {
 	model.Storage = getDataLakeStorage(dataLakeTenant.Storage)
-	model.Name = dataLakeTenant.Name
+	model.TenantName = dataLakeTenant.Name
 	model.CloudProviderConfig = &AtlasDataLakeCloudProviderConfig{
 		ExternalId:        dataLakeTenant.CloudProviderConfig.Aws.ExternalId,
 		IamAssumedRoleARN: dataLakeTenant.CloudProviderConfig.Aws.IamAssumedRoleARN,

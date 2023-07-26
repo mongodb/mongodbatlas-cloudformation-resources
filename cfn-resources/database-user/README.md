@@ -19,7 +19,7 @@ then in another shell:
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
 cd ${repo_root}/cfn-resources/database-user
-./test/datafederation-db-instace.create-sample-cfn-request.sh YourProjectID SomeIAMRole > test.request.json 
+./test/databaseuser.create-sample-cfn-request.sh YourProjectID SomeIAMRole > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 

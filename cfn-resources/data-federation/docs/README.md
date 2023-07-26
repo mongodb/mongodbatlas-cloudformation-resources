@@ -139,7 +139,7 @@ Returns the <code>IamAssumedRoleARN</code> value.
 
 Returns the <code>IamUserARN</code> value.
 
-#### Name
+#### TenantName
 
-Human-readable label that identifies the data lake.
+Human-readable label that identifies the data federation.
 

@@ -41,8 +41,7 @@ else
   echo "tenant created with name ${tenantName}"
 fi
 
-ls
-pwd
+#TODO: handle the error
 jq --arg projectId "${projectId}" \
     tenantName "${tenantName}" \
     limitName "${limitName}" \

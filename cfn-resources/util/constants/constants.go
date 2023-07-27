@@ -122,6 +122,8 @@ const (
 	ExportID                   = "ExportId"
 	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
 
+	LimitName         = "LimitName"
+	Value             = "Value"
 	ExternalGroupName = "ExternalGroupName"
 	RoleAssignments   = "RoleAssignments"
 )

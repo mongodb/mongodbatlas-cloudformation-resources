@@ -34,6 +34,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -51,6 +52,11 @@ var (
 	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
+
+type MongoDBClient struct {
+	Atlas   *mongodbatlas.Client
+	AtlasV2 *atlasSDK.APIClient
+}
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
 // and returns "US_EAST_1" -- i.e. a valid Atlas region
@@ -141,6 +147,75 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 	}
 
 	return mongodbClient, nil
+}
+
+// NewAtlasClient func for creating atlas-go-sdk and mongodb-atlas-go client
+func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {
+	prof, err := profile.NewProfile(req, profileName)
+
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+	}
+
+	// setup a transport to handle digest
+	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
+
+	// initialize the client
+	client, err := transport.Client()
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	optsAtlas := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if prof.BaseURL != "" {
+		optsAtlas = append(optsAtlas, mongodbatlas.SetBaseURL(prof.BaseURL))
+	}
+
+	// Initialize the MongoDB Atlas API Client.
+	atlasClient, err := mongodbatlas.New(client, optsAtlas...)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	// New SDK Client
+	sdkV2Client, err := newSDKV2Client(client)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	clients := &MongoDBClient{
+		Atlas:   atlasClient,
+		AtlasV2: sdkV2Client,
+	}
+
+	return clients, nil
+}
+
+func newSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
+	opts := []atlasSDK.ClientModifier{
+		atlasSDK.UseHTTPClient(client),
+		atlasSDK.UseUserAgent(userAgent),
+		atlasSDK.UseDebug(false)}
+
+	// Initialize the MongoDB Versioned Atlas Client.
+	sdkV2, err := atlasSDK.NewClient(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return sdkV2, nil
 }
 
 func newHTTPClient(p *profile.Profile) (*http.Client, error) {

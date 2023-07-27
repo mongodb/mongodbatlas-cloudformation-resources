@@ -1,0 +1,6 @@
+{
+    "ProjectId": "64c1947fdfd1a05759299ab9",
+    "TenantName":"cfn-data-federation-tenant-4",
+    "LimitName": "bytesProcessed.monthly",
+    "Value": "100"
+}

@@ -23,6 +23,8 @@ import (
 
 func getHandlerErrorCode(response *http.Response) string {
 	switch response.StatusCode {
+	case http.StatusConflict:
+		return cloudformation.HandlerErrorCodeAlreadyExists
 	case http.StatusBadRequest:
 		return cloudformation.HandlerErrorCodeInvalidRequest
 	case http.StatusNotFound:

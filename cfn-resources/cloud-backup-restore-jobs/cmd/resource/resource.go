@@ -17,8 +17,6 @@ package resource
 import (
 	"context"
 	"fmt"
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/callback"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -130,7 +128,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetInProgressProgressEvent(
 				"Create in progress",
 				map[string]interface{}{
-					constants.StateName: callback.InProgress,
+					constants.StateName: "in_progress",
 					"id":                currentModel.Id,
 				},
 				currentModel,
@@ -172,7 +170,7 @@ func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID stri
 	return progressevents.GetInProgressProgressEvent(
 		"Create in progress",
 		map[string]interface{}{
-			constants.StateName: callback.InProgress,
+			constants.StateName: "in_progress",
 			"id":                currentModel.Id,
 		},
 		currentModel,

@@ -28,13 +28,19 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
+	"time"
 )
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType}
 var ReadDeleteRequiredFields = []string{constants.ID}
 var ListRequiredFields = []string{constants.ProjectID}
 
-const callBackSeconds = 5
+const (
+	defaultBackSeconds            = 30
+	defaultTimeOutInSeconds       = 1200
+	defaultReturnSuccessIfTimeOut = false
+	timeLayout                    = "2006-01-02 15:04:05"
+)
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -44,6 +50,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
+
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
@@ -54,10 +61,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
+	err := currentModel.validateAsynchronousProperties()
+	if err != nil {
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
+	}
+
 	// Callback
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		id := req.CallbackContext["id"]
-		return createCallback(client, currentModel, cast.ToString(id)), nil
+		startTime := req.CallbackContext["startTime"]
+		return createCallback(client, currentModel, cast.ToString(id), cast.ToString(startTime)), nil
 	}
 
 	targetClusterName := cast.ToString(currentModel.TargetClusterName)
@@ -130,9 +143,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				map[string]interface{}{
 					constants.StateName: "in_progress",
 					"id":                currentModel.Id,
+					"startTime":         time.Now().Format(timeLayout),
 				},
 				currentModel,
-				int64(callBackSeconds)),
+				int64(*currentModel.SynchronousCreationOptions.CallbackDelaySeconds)),
 			nil
 	}
 
@@ -143,11 +157,33 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func flowIsAsynchronous(model *Model) bool {
-	return model.DeliveryType != nil && *model.DeliveryType == constants.Automated
+func (model *Model) validateAsynchronousProperties() error {
+	if model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation {
+		if model.SynchronousCreationOptions == nil {
+			model.SynchronousCreationOptions = &SynchronousCreationOptions{}
+		}
+
+		if model.SynchronousCreationOptions.CallbackDelaySeconds == nil {
+			model.SynchronousCreationOptions.CallbackDelaySeconds = aws.Int(defaultBackSeconds)
+		}
+
+		if model.SynchronousCreationOptions.TimeOutInSeconds == nil {
+			model.SynchronousCreationOptions.TimeOutInSeconds = aws.Int(defaultTimeOutInSeconds)
+		}
+
+		if model.SynchronousCreationOptions.ReturnSuccessIfTimeOut == nil {
+			model.SynchronousCreationOptions.ReturnSuccessIfTimeOut = aws.Bool(defaultReturnSuccessIfTimeOut)
+		}
+	}
+
+	return nil
 }
 
-func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID string) handler.ProgressEvent {
+func flowIsAsynchronous(model *Model) bool {
+	return model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation
+}
+
+func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID, startTime string) handler.ProgressEvent {
 	clusterName := cast.ToString(currentModel.ClusterName)
 	instanceName := cast.ToString(currentModel.InstanceName)
 	projectID := cast.ToString(currentModel.ProjectId)
@@ -167,14 +203,44 @@ func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID stri
 		}
 	}
 
+	if isTimeOutReached(startTime, *currentModel.SynchronousCreationOptions.TimeOutInSeconds) {
+		if *currentModel.SynchronousCreationOptions.ReturnSuccessIfTimeOut {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Create Complete - the resource was completed with timeout",
+				ResourceModel:   currentModel,
+			}
+		}
+
+		return progressevents.GetFailedEventByCode("Create failed with Timout", cloudformation.HandlerErrorCodeInternalFailure)
+	}
+
 	return progressevents.GetInProgressProgressEvent(
 		"Create in progress",
 		map[string]interface{}{
 			constants.StateName: "in_progress",
 			"id":                currentModel.Id,
+			"startTime":         startTime,
 		},
 		currentModel,
-		int64(callBackSeconds))
+		int64(*currentModel.SynchronousCreationOptions.CallbackDelaySeconds))
+}
+
+func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
+
+	startDateTime, err := time.Parse(timeLayout, startTime)
+	if err != nil {
+		return false // If there's an error parsing the start time, assume timeout is not reached
+	}
+
+	// Calculate the timeout time by adding timeOutInSeconds to the startDateTime
+	timeoutTime := startDateTime.Add(time.Duration(timeOutInSeconds) * time.Second)
+
+	// Get the current time
+	currentTime := time.Now()
+
+	// Compare the current time with the timeout time
+	return currentTime.After(timeoutTime)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -210,7 +276,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Check if job already exist
-	if !isRestoreJobExist(client, currentModel) {
+	if !restoreJobExist(client, currentModel) {
 		_, _ = logger.Warnf(constants.ErrorReadCloudBackUpRestoreJob, *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -286,7 +352,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Check if job already exist
-	if !isRestoreJobExist(client, currentModel) {
+	if !restoreJobExist(client, currentModel) {
 		_, _ = logger.Warnf("restore job not fund for id :%s", *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -299,10 +365,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := cast.ToString(currentModel.ClusterName)
 	if clusterName != "" {
 		// Check if delivery type is automated
+		/*Hay que refactorizar esto, si es automated, pero esta terminado, tiene que devolver success*/
 		if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
-				Message:         "Automated restore cannot be cancelled",
+				Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
 				ResourceModel:   currentModel,
 			}, nil
 		}
@@ -401,7 +468,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // function to check id restore job already exist
-func isRestoreJobExist(client *mongodbatlas.Client, currentModel *Model) (isExist bool) {
+func restoreJobExist(client *mongodbatlas.Client, currentModel *Model) (isExist bool) {
 	var restoreJobs *mongodbatlas.CloudProviderSnapshotRestoreJobs
 	var err error
 	clusterName := cast.ToString(currentModel.ClusterName)
@@ -426,8 +493,8 @@ func isRestoreJobExist(client *mongodbatlas.Client, currentModel *Model) (isExis
 	if err != nil {
 		return false
 	}
+
 	for _, restoreJob := range restoreJobs.Results {
-		_, _ = logger.Debugf("Read - Restore Job with id(%s): %s", restoreJob.ID, *currentModel.Id)
 		if restoreJob.ID == *currentModel.Id && !restoreJob.Expired && !restoreJob.Cancelled {
 			return true
 		}

@@ -44,7 +44,7 @@ if [ -z "$projectId" ]; then
 
     echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+    echo -e "Found project \"${projectName}\" with id: ${projectId}\n"
 fi
 
 keyRegion="us-east-1"
@@ -53,7 +53,7 @@ keyRegion=$(aws configure get region)
 fi
 
 if atlas clusters describe "${cluster1}" --projectId "${projectId}"; then
-  echo "project found"
+  echo "Cluster found"
 else
   echo "Cluster1 not found, creating..."
   atlas clusters create "${cluster1}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
@@ -62,7 +62,7 @@ else
 fi
 
 if atlas clusters describe "${cluster2}" --projectId "${projectId}"; then
-  echo "project found"
+  echo "Cluster found"
 else
     echo "Cluster2 not found, creating..."
   atlas clusters create "${cluster2}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
@@ -98,8 +98,8 @@ echo -e "--------------------------------printing mongodb role details ---------
 atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg NAME "${projectName}" -r '.awsIamRoles[] |select(.iamAssumedRoleArn |test( "mongodb-test-export-role$")?)'
 echo -e "--------------------------------AWS Role policy creation starts ----------------------------\n"
 
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
    --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
   '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"

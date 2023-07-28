@@ -16,6 +16,5 @@
                 "Name": "cfn-df-dbs"
             }
         ]
-    },
-    "SkipRoleValidation": "true"
+    }
 }

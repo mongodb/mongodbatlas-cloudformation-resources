@@ -344,7 +344,11 @@
         "/properties/Profile"
     ],
     "required": [
-        "ProjectId"
+        "ProjectId",
+        "TenantName",
+        "CloudProviderConfig/RoleId",
+        "CloudProviderConfig/TestS3Bucket",
+        "DataProcessRegion/Region"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",

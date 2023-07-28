@@ -55,27 +55,25 @@ keyRegionUnderScore=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegionUnderScore=$(echo "$keyRegionUnderScore" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
 
-roleName="cfn-boto-df-role-${keyRegionUnderScore}"
-policyName="cfn-boto-df-bucket-role-policy-${keyRegionUnderScore}"
 
-echo "roleName: ${roleName} , policyName: ${policyName}"
-
-echo -e "--------------------------------create key and key policy document starts ----------------------------\n"
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
 bucketName="cfn-boto-data-federation-test1-${keyRegion}"
 aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
-
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
-
 
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
 echo -e "--------------------------------Mongo CLI Role creation ends ----------------------------\n"
 
 
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
+echo -e "--------------------------------create key and key policy document starts ----------------------------\n"
+roleName="cfn-boto-df-role-${keyRegionUnderScore}"
+policyName="cfn-boto-df-bucket-role-policy-${keyRegionUnderScore}"
+echo "roleName: ${roleName} , policyName: ${policyName}"
+
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
    --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
   '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
@@ -115,21 +113,21 @@ jq --arg projectId "$projectId" \
    --arg role "$roleID" \
    --arg name "${projectName}" \
    --arg bucketName "$bucketName" \
-   '.Name?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+   '.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
    --arg role "$roleID" \
    --arg name "((((( (*dsa^%$^%)" \
    --arg bucketName "$bucketName" \
-   '.Name?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+   '.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
 jq --arg projectId "$projectId" \
    --arg role "$roleID" \
    --arg name "${projectName}" \
    --arg bucketName "$bucketName" \
-   '.Name?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+   '.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
    "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 ls -l inputs

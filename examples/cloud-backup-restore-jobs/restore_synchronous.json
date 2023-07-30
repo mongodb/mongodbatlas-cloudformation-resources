@@ -1,0 +1,107 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a cloud provider snapshot restore job on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project ID",
+      "ConstraintDescription": ""
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Atlas Cluster Name where to get the snapshot",
+      "ConstraintDescription": ""
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "The profile with your API keys stored in AWS Secrets Manager"
+    },
+    "DeliveryType": {
+      "Type": "String",
+      "Default": "download",
+      "Description": "Human-readable label that categorizes the restore job to create",
+      "AllowedValues": [
+        "automated",
+        "download",
+        "pointInTime"
+      ]
+    },
+    "TargetClusterName": {
+      "Type": "String",
+      "Description": "The atlas cluster name where the snapshot will be restored"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "CloudBackupSnapshot": {
+      "Type": "MongoDB::Atlas::CloudBackupSnapshot",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Description": "A testing for creating cloud backup snapshot 2",
+        "RetentionInDays": 3
+      }
+    },
+    "CloudProviderSnapshotRestoreJob": {
+      "Type": "MongoDB::Atlas::CloudBackUpRestoreJobs",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "SnapshotId": {
+          "Fn::GetAtt": [
+            "CloudBackupSnapshot",
+            "SnapshotId"
+          ]
+        },
+        "DeliveryType": {
+          "Ref": "DeliveryType"
+        },
+        "TargetClusterName": {
+          "Ref": "TargetClusterName"
+        },
+        "TargetProjectId": {
+          "Ref": "ProjectId"
+        },
+        "EnableSynchronousCreation" : "true",
+        "SynchronousCreationOptions" : {
+          "TimeOutInSeconds" : 900,
+          "CallbackDelaySeconds" : 30,
+          "ReturnSuccessIfTimeOut" : true
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "SnapshotId": {
+      "Description": "Id of the cloud provider snapshot",
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudBackupSnapshot",
+          "SnapshotId"
+        ]
+      }
+    },
+    "RestoreJobId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudProviderSnapshotRestoreJob",
+          "Id"
+        ]
+      }
+    }
+  }
+}

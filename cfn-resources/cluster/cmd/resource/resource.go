@@ -696,7 +696,7 @@ func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) (privateEndpoint
 		privateEndpoints[i] = pes[i].ConnectionString
 		privateEndpointsServ[i] = pes[i].SRVConnectionString
 	}
-	return privateEndpoints, privateEndpointsServ
+	return privateEndpoints, privateEndpointsSrv
 }
 
 func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {

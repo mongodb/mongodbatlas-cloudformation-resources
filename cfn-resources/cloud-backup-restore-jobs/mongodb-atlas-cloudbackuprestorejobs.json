@@ -8,15 +8,15 @@
             "properties": {
                 "TimeOutInSeconds": {
                     "type": "integer",
-                    "description": "The amount of time the process will wait until exiting with a success, default ()"
+                    "description": "The amount of time the process will wait until exiting with a success, default (1200 seconds)"
                 },
                 "CallbackDelaySeconds": {
                     "type": "integer",
-                    "description": "Represents the time interval, measured in seconds, for the synchronous process to wait before checking again to verify if the job has been completed. example: if set to 20, it will chek every 20 seconds if the resource is completed"
+                    "description": "Represents the time interval, measured in seconds, for the synchronous process to wait before checking again to verify if the job has been completed. example: if set to 20, it will chek every 20 seconds if the resource is completed, default (30 seconds)"
                 },
                 "ReturnSuccessIfTimeOut": {
                     "type": "boolean",
-                    "description": "if set to true, the process will return success, in the event of a timeOut"
+                    "description": "if set to true, the process will return success, in the event of a timeOut default false"
                 }
             },
             "additionalProperties": false

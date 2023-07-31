@@ -18,7 +18,7 @@
     },
     "DeliveryType": {
       "Type": "String",
-      "Default": "download",
+      "Default": "automated",
       "Description": "Human-readable label that categorizes the restore job to create",
       "AllowedValues": [
         "automated",

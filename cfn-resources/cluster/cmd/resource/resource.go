@@ -691,7 +691,7 @@ func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings
 
 func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) (privateEndpoints, privateEndpointsServ []string) {
 	privateEndpoints = make([]string, len(pes))
-	privateEndpointsServ = make([]string, len(pes))
+	privateEndpointsSrv = make([]string, len(pes))
 	for i := range pes {
 		privateEndpoints[i] = pes[i].ConnectionString
 		privateEndpointsServ[i] = pes[i].SRVConnectionString

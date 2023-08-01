@@ -29,8 +29,7 @@ else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-#LimitName is an enum from this list. "bytesProcessed.query" "bytesProcessed.daily" "bytesProcessed.weekly" "bytesProcessed.monthly"
-limitName="bytesProcessed.query"
+#LimitName is an enum from this list. i.e. "bytesProcessed.query" "bytesProcessed.daily" "bytesProcessed.weekly" "bytesProcessed.monthly"
 
 #create federated tenant
 tenantName="${projectName}-tenant"
@@ -41,10 +40,13 @@ else
   echo "tenant created with name ${tenantName}"
 fi
 
-#TODO: handle the error
 jq --arg projectId "${projectId}" \
-    tenantName "${tenantName}" \
-    limitName "${limitName}" \
-   '.ProjectId?|=$projectId | .TenantName?|=$tenantName | .LimitName?|=$limitName ' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+   --arg tenantName "${tenantName}" \
+   '.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+   "$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
+
+jq --arg projectId "${projectId}" \
+   --arg tenantName "${tenantName}" \
+   '.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+   "$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 

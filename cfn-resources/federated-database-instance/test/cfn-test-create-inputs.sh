@@ -78,8 +78,8 @@ jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
    --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
   '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
 echo cat add-policy.json
-echo -e "--------------------------------AWS Role creation ends ----------------------------\n"
 
+echo -e "--------------------------------AWS Role creation starts ----------------------------\n"
 
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
@@ -104,6 +104,7 @@ echo -e "--------------------------------Role Id : ${roleID} -------------------
 # shellcheck disable=SC2001
 awsArne=$(echo "${awsArn}" | sed 's/"//g')
 
+# AWS IAM Takes time for IAM put role policy
 sleep 65
 atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}" --projectId "${projectId}"
 

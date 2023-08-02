@@ -333,14 +333,15 @@
         "/properties/CloudProviderConfig/IamAssumedRoleARN",
         "/properties/CloudProviderConfig/IamUserARN",
         "/properties/HostNames",
-        "/properties/State",
-        "/properties/TenantName"
+        "/properties/State"
     ],
     "writeOnlyProperties": [
-        "/properties/CloudProviderConfig/TestS3Bucket"
+        "/properties/CloudProviderConfig/TestS3Bucket",
+        "/properties/SkipRoleValidation"
     ],
     "createOnlyProperties": [
         "/properties/ProjectId",
+        "/properties/TenantName",
         "/properties/Profile"
     ],
     "required": [
@@ -352,7 +353,8 @@
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",
-        "/properties/TenantName"
+        "/properties/TenantName",
+        "/properties/Profile"
     ],
     "typeName": "MongoDB::Atlas::FederatedDatabaseInstance",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"

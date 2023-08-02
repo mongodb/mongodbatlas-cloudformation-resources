@@ -38,6 +38,14 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, c
 var DeleteRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var ListRequiredFields = []string{constants.ProjectID}
 
+const (
+	CREATE = "CREATE"
+	READ   = "READ"
+	UPDATE = "UPDATE"
+	DELETE = "DELETE"
+	LIST   = "LIST"
+)
+
 func setup() {
 	util.SetupLogger("mongodb-atlas-data-federation")
 }
@@ -45,7 +53,6 @@ func setup() {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf("Create Request: %+v\n", currentModel)
 
 	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -57,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	dataLakeTenantInput, _ := currentModel.setDataLakeTenant()
+	dataLakeTenantInput := currentModel.setDataLakeTenant()
 	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -67,21 +74,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	defer closeResponse(response)
 	if err != nil {
-		_, _ = logger.Warnf("Create failed, error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, CREATE, err)
 	}
-	currentModel.getDataLakeTenant(*dataLakeTenant)
+	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, Profile: currentModel.Profile}
+	readModel.getDataLakeTenant(*dataLakeTenant)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
-		ResourceModel:   currentModel}, nil
+		ResourceModel:   readModel}, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf("Read Request: %+v", currentModel)
 
 	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
 	if modelValidation != nil {
@@ -97,18 +103,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_, _ = logger.Debugf("Initiating Read Execute: %+v", currentModel)
 
 	getFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
 	dataLakeTenant, response, err := getFederatedDatabaseAPIRequest.Execute()
 
 	defer closeResponse(response)
 	if err != nil {
-		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, READ, err)
 	}
 	currentModel.getDataLakeTenant(*dataLakeTenant)
-	_, _ = logger.Debugf("Read Response: %+v", currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -130,7 +133,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	dataLakeTenantInput, _ := currentModel.setDataLakeTenant()
+	dataLakeTenantInput := currentModel.setDataLakeTenant()
 	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -142,15 +145,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	defer closeResponse(response)
 	if err != nil {
-		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, UPDATE, err)
 	}
-	currentModel.getDataLakeTenant(*dataLakeTenant)
+	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, Profile: currentModel.Profile}
+	readModel.getDataLakeTenant(*dataLakeTenant)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Completed",
-		ResourceModel:   currentModel}, nil
+		ResourceModel:   readModel}, nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -176,8 +179,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	defer closeResponse(response)
 	if err != nil {
-		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, DELETE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -210,12 +212,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	defer closeResponse(response)
 	if err != nil {
-		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, LIST, err)
 	}
 	tenants := make([]interface{}, 0)
 	for i := range dataLakeTenants {
-		var tenant Model
+		tenant := Model{Profile: currentModel.Profile}
 		tenant.getDataLakeTenant(dataLakeTenants[i])
 		tenants = append(tenants, tenant)
 	}
@@ -232,18 +233,20 @@ func closeResponse(response *http.Response) {
 	}
 }
 
-func handleError(response *http.Response, err error) (handler.ProgressEvent, error) {
+func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
+	_, _ = logger.Warnf("%s failed, error: %s", method, err.Error())
 	if response.StatusCode == http.StatusConflict {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
+			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
+
 	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()),
 		response), nil
 }
 
-func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant, err error) {
+func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant) {
 	cloudProvider := constants.AWS
 	if model.DataProcessRegion.CloudProvider != nil {
 		cloudProvider = *model.DataProcessRegion.CloudProvider
@@ -263,7 +266,7 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant,
 
 		Storage: model.newDataFederationDataStorage(),
 	}
-	return dataLakeTenant, nil
+	return dataLakeTenant
 }
 
 func (model *Model) newDataFederationDataStorage() *atlasSDK.DataLakeStorage {

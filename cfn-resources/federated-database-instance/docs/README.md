@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#cloudproviderconfig" title="CloudProviderConfig">CloudProviderConfig</a>" : <i><a href="cloudproviderconfig.md">CloudProviderConfig</a></i>,
         "<a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>" : <i><a href="dataprocessregion.md">DataProcessRegion</a></i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+        "<a href="#tenantname" title="TenantName">TenantName</a>" : <i>String</i>,
         "<a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>" : <i>Boolean</i>,
         "<a href="#storage" title="Storage">Storage</a>" : <i><a href="storage.md">Storage</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
@@ -30,6 +31,7 @@ Properties:
     <a href="#cloudproviderconfig" title="CloudProviderConfig">CloudProviderConfig</a>: <i><a href="cloudproviderconfig.md">CloudProviderConfig</a></i>
     <a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>: <i><a href="dataprocessregion.md">DataProcessRegion</a></i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
+    <a href="#tenantname" title="TenantName">TenantName</a>: <i>String</i>
     <a href="#skiprolevalidation" title="SkipRoleValidation">SkipRoleValidation</a>: <i>Boolean</i>
     <a href="#storage" title="Storage">Storage</a>: <i><a href="storage.md">Storage</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
@@ -70,6 +72,16 @@ _Minimum Length_: <code>24</code>
 _Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### TenantName
+
+Human-readable label that identifies the data federation.
+
+_Required_: Yes
+
+_Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
@@ -130,8 +142,4 @@ Type of Federated Database Instances to return.
 #### State
 
 Type of Federated Database Instances to return.
-
-#### TenantName
-
-Human-readable label that identifies the data federation.
 

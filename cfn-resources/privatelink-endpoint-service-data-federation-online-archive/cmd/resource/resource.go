@@ -3,17 +3,17 @@ package resource
 import (
 	ctx "context"
 	"fmt"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointId}
@@ -66,8 +66,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Read endpoint
-	response, err = currentModel.getPrivateEndpoint(atlas)
-	defer closeResponse(response)
+	readResponse, err = currentModel.getPrivateEndpoint(atlas)
+	defer closeResponse(readResponse)
+	if err != nil {
+		return handleError(readResponse, err)
+	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -76,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func createOrUpdate(currentModel *Model, atlas *util.MongoDBClient) (*http.Response, error) {
 	provider := constants.AWS
-	privateNetworkEndpointIdEntry := atlasSDK.PrivateNetworkEndpointIdEntry{
+	privateNetworkEndpointIDEntry := atlasSDK.PrivateNetworkEndpointIdEntry{
 		EndpointId: *currentModel.EndpointId,
 		Comment:    currentModel.Comment,
 		Type:       currentModel.Type,
@@ -85,7 +88,7 @@ func createOrUpdate(currentModel *Model, atlas *util.MongoDBClient) (*http.Respo
 	createRequest := atlas.AtlasV2.DataFederationApi.CreateDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
-		&privateNetworkEndpointIdEntry,
+		&privateNetworkEndpointIDEntry,
 	)
 	_, response, err := createRequest.Execute()
 	return response, err
@@ -124,7 +127,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
 	setup()
 
 	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
@@ -155,8 +157,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Read endpoint
-	response, err = currentModel.getPrivateEndpoint(atlas)
-	defer closeResponse(response)
+	readResponse, err = currentModel.getPrivateEndpoint(atlas)
+	defer closeResponse(readResponse)
+	if err != nil {
+		return handleError(readResponse, err)
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Completed",
@@ -189,7 +195,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	)
 	_, response, err := deleteRequest.Execute()
 
-	//_, response, err := getFederatedQueryLimit(atlas, currentModel)
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
@@ -252,11 +257,11 @@ func (model *Model) getPrivateEndpoint(atlas *util.MongoDBClient) (*http.Respons
 		*model.ProjectId,
 		*model.EndpointId,
 	)
-	paginatedPrivateNetworkEndpointIdEntry, response, err := readRequest.Execute()
+	paginatedPrivateNetworkEndpointIDEntry, response, err := readRequest.Execute()
 	if err != nil {
 		return response, err
 	}
-	model.readPrivateEndpoint(paginatedPrivateNetworkEndpointIdEntry)
+	model.readPrivateEndpoint(paginatedPrivateNetworkEndpointIDEntry)
 	return response, err
 }
 
@@ -274,22 +279,6 @@ func (model *Model) readPrivateEndpoint(pe *atlasSDK.PrivateNetworkEndpointIdEnt
 	model.Type = pe.Type
 	model.EndpointId = &pe.EndpointId
 	return model
-}
-func (model *Model) readPrivateEndpoints(pe *atlasSDK.PaginatedPrivateNetworkEndpointIdEntry) []interface{} {
-	if pe == nil {
-		return nil
-	}
-	models := make([]interface{}, len(pe.Results))
-	for i := range pe.Results {
-		models[i] = &Model{
-			ProjectId:  model.ProjectId,
-			Profile:    model.Profile,
-			Comment:    pe.Results[i].Comment,
-			Type:       pe.Results[i].Type,
-			EndpointId: &pe.Results[i].EndpointId,
-		}
-	}
-	return models
 }
 
 func handleError(response *http.Response, err error) (handler.ProgressEvent, error) {

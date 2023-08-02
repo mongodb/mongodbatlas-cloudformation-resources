@@ -2,7 +2,7 @@
 
 ## Description
 
-Returns, adds, edits, and removes [project invitations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Projects/operation/listProjectInvitations).
+Resource for managing [Project Invitations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Projects/operation/listProjectInvitations).
 
 ## Requirements
 

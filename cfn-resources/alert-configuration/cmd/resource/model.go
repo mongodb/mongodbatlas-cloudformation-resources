@@ -40,7 +40,7 @@ type NotificationView struct {
 	ChannelName              *string  `json:",omitempty"`
 	DatadogApiKey            *string  `json:",omitempty"`
 	DatadogRegion            *string  `json:",omitempty"`
-	DelayMin                 *float64 `json:",omitempty"`
+	DelayMin                 *int     `json:",omitempty"`
 	EmailAddress             *string  `json:",omitempty"`
 	EmailEnabled             *bool    `json:",omitempty"`
 	FlowName                 *string  `json:",omitempty"`

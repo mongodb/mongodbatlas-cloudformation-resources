@@ -1,58 +1,17 @@
 # MongoDB::Atlas::PrivateEndPointRegionalMode
 
 ## Description
-Returns, adds and removes regional mode setting for private endpoints.
+Resource for managing the [Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) setting for private endpoints.
 
-## Attributes & Parameters
-Please consult the [Resource Docs](https://github.com/PeerIslands/mongodbatlas-cloudformation-resources/blob/feature-private-endpoint-regional-mode/cfn-resources/private-endpoint-regional-mode/docs/README.md)
+## Requirements
 
-## Local Testing
-The local tests are integrated with the AWS sam local and cfn invoke tooling features:
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
 
-```
-sam local start-lambda --skip-pull-image
-```
+## Attributes and Parameters
 
-then in another shell:
-```bash
-#https://www.mongodb.com/docs/mongocli/stable/configure/environment-variables/
-cd ${repo_root}/cfn-resources/private-endpoint-regional-mode
-./test/private-endpoint-regional-mode.create-sample-cfn-request.sh > test.request.json
-echo "Sample request:"
-cat test.request.json
-cfn invoke CREATE test.request.json
-cfn invoke DELETE test.request.json
-```
+See the [resource docs](https://github.com/PeerIslands/mongodbatlas-cloudformation-resources/blob/feature-private-endpoint-regional-mode/cfn-resources/private-endpoint-regional-mode/docs/README.md).
 
-Both CREATE & DELETE tests must pass.
+## Cloudformation Examples
 
-## CloudFormation Examples
-
-Please see the [CFN Template](test/private-endpoint-regional-mode.sample-cfn-request.json) for example resource
-
-## Installation
-```
-TAGS=logging make
-cfn submit --verbose --set-default
-```
-
-## Usage
-Examples aws cloudformation template is available here example template.
-
-```bash
-#Configure you AWS Credentials to create Cloudformation Stack
-export AWS_ACCESS_KEY_ID=""
-export AWS_SECRET_ACCESS_KEY=""
-export AWS_REGION=""
-export AWS_DEFAULT_REGION=""
-
-#Command to deploy the sample PrivateEndPointRegionalMode stack (Before this step "cfn submit" should have been executed successfully)
-./examples/private-endpoint-regional-mode/Deploy.sh
-```
-
-| Operation | Flag       | Reference links                                                                                                                                                                                                                                                 |
-|-----------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| PATCH     | true/false | [From MongoDB](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services/operation/toggleRegionalizedPrivateEndpointStatus) |
-| READ      | true/false | [From MongoDB](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services/operation/returnRegionalizedPrivateEndpointStatus) |                                   
-
-For more information see: MongoDB Atlas API Endpoint [Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) Documentation.
+See the examples [CFN Template](test/private-endpoint-regional-mode.sample-cfn-request.json) for example resource.

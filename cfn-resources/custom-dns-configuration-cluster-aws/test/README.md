@@ -29,3 +29,22 @@ https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/awsCustom
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/AWS-Clusters-DNS/operation/toggleAWSCustomDNS)
 
+
+## Local Testing
+
+The local tests are integrated with the AWS sam local and cfn invoke tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+cd ${repo_root}/cfn-resources/custom-dns-configuration-cluster-aws
+./test/custom-dns-config-cluster-aws.create-sample-cfn-request.sh > test.request.json
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json
+cfn invoke DELETE test.request.json
+```
+
+Both CREATE & DELETE tests must pass.

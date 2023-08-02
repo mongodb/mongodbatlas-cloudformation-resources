@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Federated Settings Org Role Mapping on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template creates a Query limit for one federated database instance.",
   "Parameters": {
     "Profile": {
       "Type": "String",

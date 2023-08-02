@@ -50,3 +50,8 @@ jq --arg projectId "${projectId}" \
    '.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
    "$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
+jq --arg projectId "${projectId}" \
+   --arg tenantName "${tenantName}" \
+   '.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+   "$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
+

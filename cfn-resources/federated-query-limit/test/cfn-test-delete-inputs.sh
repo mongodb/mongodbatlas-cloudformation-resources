@@ -11,15 +11,16 @@ set -o pipefail
 function usage {
 	echo "usage:$0 "
 }
+
+projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
+
 tenantName=$(jq -r '.TenantName' ./inputs/inputs_1_create.json)
 
-if atlas dataFederation delete "${tenantName}" ;then
+if atlas dataFederation delete "${tenantName}" --projectId "${projectId}" --force ;then
   echo "deleted tenant with name ${tenantName}"
 else
   echo "failed to delete the tenant with name ${tenantName}"
 fi
-
-projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 
 #delete project
 if atlas projects delete "$projectId" --force; then

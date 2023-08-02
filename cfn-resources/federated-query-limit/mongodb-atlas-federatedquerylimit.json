@@ -67,12 +67,14 @@
     "createOnlyProperties": [
         "/properties/ProjectId",
         "/properties/TenantName",
-        "/properties/LimitName"
+        "/properties/LimitName",
+        "/properties/Profile"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",
         "/properties/TenantName",
-        "/properties/LimitName"
+        "/properties/LimitName",
+        "/properties/Profile"
     ],
     "handlers": {
         "create": {

@@ -40,6 +40,11 @@ var ListRequiredFields = []string{constants.ProjectID, constants.TenantName}
 const (
 	AlreadyExists = "already exists"
 	DoesntExists  = "does not exist"
+	CREATE        = "CREATE"
+	READ          = "READ"
+	UPDATE        = "UPDATE"
+	DELETE        = "DELETE"
+	LIST          = "LIST"
 )
 
 func setup() {
@@ -74,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 	// create and update uses same PATCH API
-	return createOrUpdateQueryLimit(currentModel, atlas)
+	return createOrUpdateQueryLimit(currentModel, atlas, CREATE)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -102,7 +107,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, READ, err)
 	}
 	currentModel.getQueryLimit(queryLimit)
 	_, _ = logger.Debugf("Read Response: %+v", currentModel)
@@ -111,17 +116,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "Read Completed",
 		ResourceModel:   currentModel}, nil
-}
-
-func getFederatedQueryLimit(atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.DataFederationTenantQueryLimit, *http.Response, error) {
-	getQueryLimitAPIRequest := atlas.AtlasV2.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
-		context.Background(),
-		*currentModel.ProjectId,
-		*currentModel.TenantName,
-		*currentModel.LimitName,
-	)
-	queryLimit, response, err := getQueryLimitAPIRequest.Execute()
-	return queryLimit, response, err
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -151,7 +145,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          DoesntExists,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	return createOrUpdateQueryLimit(currentModel, atlas)
+	return createOrUpdateQueryLimit(currentModel, atlas, UPDATE)
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -183,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, DELETE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -221,12 +215,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, LIST, err)
 	}
 	queryLimits := make([]interface{}, 0)
 	for i := range listQueryLimitsAPIResult {
 		queryLimit := Model{
 			ProjectId: currentModel.ProjectId,
+			Profile:   currentModel.Profile,
 		}
 		queryLimit.getQueryLimit(&listQueryLimitsAPIResult[i])
 		queryLimits = append(queryLimits, queryLimit)
@@ -244,18 +239,30 @@ func closeResponse(response *http.Response) {
 	}
 }
 
-func handleError(response *http.Response, err error) (handler.ProgressEvent, error) {
+func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
+	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
+	_, _ = logger.Warn(errMsg)
 	if response.StatusCode == http.StatusConflict {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
+			Message:          errMsg,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()),
-		response), nil
+	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func createOrUpdateQueryLimit(currentModel *Model, atlas *util.MongoDBClient) (handler.ProgressEvent, error) {
+func getFederatedQueryLimit(atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.DataFederationTenantQueryLimit, *http.Response, error) {
+	getQueryLimitAPIRequest := atlas.AtlasV2.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
+		context.Background(),
+		*currentModel.ProjectId,
+		*currentModel.TenantName,
+		*currentModel.LimitName,
+	)
+	queryLimit, response, err := getQueryLimitAPIRequest.Execute()
+	return queryLimit, response, err
+}
+
+func createOrUpdateQueryLimit(currentModel *Model, atlas *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
 	queryLimitInput := currentModel.setQueryLimit()
 	createQueryLimitRequest := atlas.AtlasV2.DataFederationApi.CreateOneDataFederationQueryLimit(
 		context.Background(),
@@ -267,8 +274,7 @@ func createOrUpdateQueryLimit(currentModel *Model, atlas *util.MongoDBClient) (h
 	_, response, err := createQueryLimitRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
-		_, _ = logger.Warnf("Create failed, error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, method, err)
 	}
 
 	queryLimit, response, err := getFederatedQueryLimit(atlas, currentModel)
@@ -276,14 +282,15 @@ func createOrUpdateQueryLimit(currentModel *Model, atlas *util.MongoDBClient) (h
 
 	if err != nil {
 		_, _ = logger.Warnf("Read failed, error: %s", err.Error())
-		return handleError(response, err)
+		return handleError(response, method, err)
 	}
-	currentModel.getQueryLimit(queryLimit)
+	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, LimitName: currentModel.LimitName, Profile: currentModel.Profile}
+	readModel.getQueryLimit(queryLimit)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Successfully executed",
-		ResourceModel:   currentModel}, nil
+		Message:         fmt.Sprintf("%s completed", method),
+		ResourceModel:   readModel}, nil
 }
 
 func (model *Model) setQueryLimit() *atlasSDK.DataFederationTenantQueryLimit {

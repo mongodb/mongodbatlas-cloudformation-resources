@@ -58,11 +58,6 @@ var (
 	terraformUserAgent = "terraform-provider-mongodbatlas"
 )
 
-type MongoDBClient struct {
-	Atlas   *mongodbatlas.Client
-	AtlasV2 *atlasSDK.APIClient
-}
-
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
 // and returns "US_EAST_1" -- i.e. a valid Atlas region
 func EnsureAtlasRegion(region string) string {

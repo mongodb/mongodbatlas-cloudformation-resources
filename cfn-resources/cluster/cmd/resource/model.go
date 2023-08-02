@@ -93,6 +93,7 @@ type AdvancedRegionConfig struct {
 	AnalyticsAutoScaling *AdvancedAutoScaling `json:",omitempty"`
 	AutoScaling          *AdvancedAutoScaling `json:",omitempty"`
 	RegionName           *string              `json:",omitempty"`
+	BackingProviderName  *string              `json:",omitempty"`
 	ProviderName         *string              `json:",omitempty"`
 	AnalyticsSpecs       *Specs               `json:",omitempty"`
 	ElectableSpecs       *Specs               `json:",omitempty"`

@@ -27,3 +27,24 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services/operation/returnRegionalizedPrivateEndpointStatus)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-private-endpoint/#enable-regionalized-private-endpoints-1)
+
+
+## Local Testing
+The local tests are integrated with the AWS sam local and cfn invoke tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+
+then in another shell:
+```bash
+#https://www.mongodb.com/docs/mongocli/stable/configure/environment-variables/
+cd ${repo_root}/cfn-resources/private-endpoint-regional-mode
+./test/private-endpoint-regional-mode.create-sample-cfn-request.sh > test.request.json
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json
+cfn invoke DELETE test.request.json
+```
+
+Both CREATE & DELETE tests must pass.

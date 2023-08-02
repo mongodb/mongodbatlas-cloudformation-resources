@@ -51,12 +51,16 @@
                 "RegionName": {
                     "type": "string"
                 },
+                "BackingProviderName" : {
+                    "type": "string"
+                },
                 "ProviderName": {
                     "type": "string",
                     "enum": [
                         "AWS",
                         "GCP",
-                        "AZURE"
+                        "AZURE",
+                        "TENANT"
                     ]
                 },
                 "AnalyticsSpecs": {

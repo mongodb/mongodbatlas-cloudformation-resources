@@ -161,7 +161,7 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 	}
 
 	// setup a transport to handle digest
-	transport := digest.NewTransport(prof.PublicKey, prof.PublicKey)
+	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
 
 	// initialize the client
 	client, err := transport.Client()

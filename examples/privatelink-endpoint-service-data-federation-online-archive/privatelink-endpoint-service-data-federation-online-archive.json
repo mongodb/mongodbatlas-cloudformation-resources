@@ -1,0 +1,39 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Adds one private endpoint for Federated Database Instances and Online Archives to the specified projects.",
+  "Parameters" : {
+    "Profile": {
+      "Type": "String",
+      "Default": "default"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Default":"64ca491d92d44257c7fedeae"
+    },
+    "EndpointId": {
+      "Type": "String",
+      "Default":"vpce-0d5697d16229d0815"
+    },
+    "Comment": {
+      "Type": "String",
+      "Default":"online-archive-private-link-endpoint-1"
+    },
+    "Type": {
+      "Type": "String",
+      "Default":"DATA_LAKE"
+    }
+  },
+  "Resources" : {
+    "PrivatelinkEndpointServiceDataFederationOnlineArchive": {
+      "Type": "MongoDB::Atlas::PrivatelinkEndpointServiceDataFederationOnlineArchive",
+      "Properties":  {
+        "ProjectId": { "Ref" : "ProjectId" },
+        "Profile": { "Ref" : "Profile" },
+        "EndpointId": { "Ref" : "EndpointId" },
+        "Comment": { "Ref" : "Comment" },
+        "Type": {"Ref": "Type"}
+      }
+    }
+  },
+  "Outputs" : {}
+}

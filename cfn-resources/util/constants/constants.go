@@ -111,6 +111,7 @@ const (
 	ProjID              = "ProjectID"
 	Serverless          = "SERVERLESS"
 	Duplicate           = "DUPLICATE"
+	EndpointId          = "EndpointId"
 
 	AppID       = "AppId"
 	RealmPubKey = "RealmConfig.PublicKey"

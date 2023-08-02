@@ -46,6 +46,11 @@ const (
 	debug       = "debug"
 )
 
+type MongoDBClient struct {
+	Atlas   *mongodbatlas.Client
+	AtlasV2 *atlasSDK.APIClient
+}
+
 var (
 	toolName           = cfn
 	defaultLogLevel    = "warning"
@@ -271,37 +276,6 @@ func ToStringMapE(ep any) (map[string]any, error) {
 func CreateSSManagerClient(curSession *session.Session) (*ssm.SSM, error) {
 	ssmCli := ssm.New(curSession)
 	return ssmCli, nil
-}
-func PutKey(keyID, keyValue, prefix string, curSession *session.Session) (*ssm.PutParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return nil, err
-	}
-	// transform api keys to json string
-	parameterName := buildKey(keyID, prefix)
-	parameterType := "SecureString"
-	overwrite := true
-	putParamOutput, err := ssmClient.PutParameter(&ssm.PutParameterInput{Name: &parameterName, Value: &keyValue, Type: &parameterType, Overwrite: &overwrite})
-	if err != nil {
-		return nil, err
-	}
-
-	return putParamOutput, nil
-}
-
-func DeleteKey(keyID, prefix string, curSession *session.Session) (*ssm.DeleteParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return nil, err
-	}
-	parameterName := buildKey(keyID, prefix)
-
-	deleteParamOutput, err := ssmClient.DeleteParameter(&ssm.DeleteParameterInput{Name: &parameterName})
-	if err != nil {
-		return nil, err
-	}
-
-	return deleteParamOutput, nil
 }
 
 func Get(keyID, prefix string, curSession *session.Session) string {

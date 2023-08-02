@@ -151,7 +151,6 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 
 // NewAtlasClient func for creating atlas-go-sdk and mongodb-atlas-go client
 func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {
-
 	prof, err := profile.NewProfile(req, profileName)
 
 	if err != nil {

@@ -16,9 +16,9 @@ import (
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointId}
-var ReadRequiredFields = []string{constants.ProjectID, constants.EndpointId}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.EndpointId}
+var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointID}
+var ReadRequiredFields = []string{constants.ProjectID, constants.EndpointID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.EndpointID}
 var ListRequiredFields = []string{constants.ProjectID}
 
 const (

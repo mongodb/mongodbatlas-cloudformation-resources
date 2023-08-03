@@ -16,8 +16,16 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
+
 rm -rf inputs
 mkdir inputs
+
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 #project_id
 projectName="${1}"
@@ -50,7 +58,8 @@ echo "endpointID: ${endpointId}"
 
 jq --arg projectId "$projectId" \
 	--arg endpointId "$endpointId" \
-	'.ProjectId?|=$projectId | .EndpointId?|=$endpointId' \
+	--arg profile "$profile" \
+	'.ProjectId?|=$projectId | .EndpointId?|=$endpointId | .Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
@@ -60,7 +69,8 @@ jq --arg projectId "$projectId" \
 
 jq --arg projectId "$projectId" \
 	--arg endpointId "$endpointId" \
-	'.ProjectId?|=$projectId | .EndpointId?|=$endpointId' \
+	--arg profile "$profile" \
+	'.ProjectId?|=$projectId | .EndpointId?|=$endpointId| .Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

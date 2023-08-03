@@ -18,10 +18,7 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ];then
   exit 1
 fi
 
-rm -rf inputs
-mkdir inputs
-
-#project_id
+# setting projectName
 projectName="pes-online-archive-$((1 + RANDOM % 10000))"
 
 ./test/cfn-test-create-inputs.sh $projectName

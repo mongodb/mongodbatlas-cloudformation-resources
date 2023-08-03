@@ -35,13 +35,10 @@ else
 fi
 
 
-atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json
+id=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json | jq -r '.id' )
 
 # WAIT UNTIL CREATES
 atlas privateEndpoints aws watch "${id}" --projectId "${projectId}"
-
-id=$(atlas privateEndpoints aws list --projectId "$projectId" | jq -r '.[0].id')
-
 
 #Read the service name once created.
 endpointServiceName=$(atlas privateEndpoints aws describe "${id}" --projectId "${projectId}" | jq -r '.endpointServiceName')

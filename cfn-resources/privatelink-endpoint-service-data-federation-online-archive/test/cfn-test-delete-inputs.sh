@@ -14,12 +14,18 @@ function usage {
 
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
-
+echo "projectId: ${projectId}"
 #delete endpoint
-endpointId=$(jq -r '.EndpointId' ./inputs/inputs_1_create.json)
-if atlas privateEndpoints aws delete "${endpointId}" --projectId "$projectId"; then
-  echo "endpoint $endpointId  deleted"
+endpointId=$(atlas privateEndpoints aws list --projectId "$projectId" | jq -r '.[0].id')
+echo "endpointId: ${endpointId}"
+
+if atlas privateEndpoints aws delete "${endpointId}" --projectId "$projectId" --force; then
+  echo "endpoint $endpointId  delete initiated..."
+  if ! atlas privateEndpoints aws watch "${endpointId}" --projectId "${projectId}";then
+      echo "endpoint $endpointId  deleted"
+  fi
 fi
+
 
 #delete project
 if atlas projects delete "$projectId" --force; then

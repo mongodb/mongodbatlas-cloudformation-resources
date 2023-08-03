@@ -21,7 +21,10 @@ mkdir inputs
 
 #project_id
 projectName="${1}"
-projectName=${projectName:0:23}
+if [ ${#projectName} -gt 24 ];then
+  projectName=${projectName:0:23}
+fi
+
 region="${AWS_DEFAULT_REGION}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then

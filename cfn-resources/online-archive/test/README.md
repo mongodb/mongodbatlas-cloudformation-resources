@@ -28,3 +28,25 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Online-Archive)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/online-archive/connect-to-online-archive/)
+
+## Unit Testing Locally
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/online-archive
+./test/cfn-test-create-inputs.sh YourProjectID YourClusterName > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke resource CREATE test.request.json 
+cfn invoke resource DELETE test.request.json 
+cd -
+```
+
+Both CREATE & DELETE tests must pass.

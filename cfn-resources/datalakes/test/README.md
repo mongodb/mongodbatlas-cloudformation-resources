@@ -27,3 +27,23 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 ## Important Links
 - [API Documentation](https://docs-atlas-staging.mongodb.com/cloud-docs/docsworker-xlarge/openapi-docs-test/reference/api-resources-spec/#tag/Data-Federationt)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/data-federation/config/config-adl-datasets/)
+
+## Unit Testing Locally
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/datalakes
+./test/datalakes.create-sample-cfn-request.sh YourProjectID ExternalId IamAssumedRoleARN IamUserARN RoleId TestS3BucketId > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
+```
+
+Both CREATE & DELETE tests must pass.

@@ -34,6 +34,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -44,6 +45,11 @@ const (
 	envLogLevel = "LOG_LEVEL"
 	debug       = "debug"
 )
+
+type MongoDBClient struct {
+	Atlas   *mongodbatlas.Client
+	AtlasV2 *atlasSDK.APIClient
+}
 
 var (
 	toolName           = cfn
@@ -143,6 +149,75 @@ func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.C
 	return mongodbClient, nil
 }
 
+// NewAtlasClient func for creating atlas-go-sdk and mongodb-atlas-go client
+func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {
+	prof, err := profile.NewProfile(req, profileName)
+
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+	}
+
+	// setup a transport to handle digest
+	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
+
+	// initialize the client
+	client, err := transport.Client()
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	optsAtlas := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
+	if prof.BaseURL != "" {
+		optsAtlas = append(optsAtlas, mongodbatlas.SetBaseURL(prof.BaseURL))
+	}
+
+	// Initialize the MongoDB Atlas API Client.
+	atlasClient, err := mongodbatlas.New(client, optsAtlas...)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	// New SDK Client
+	sdkV2Client, err := newSDKV2Client(client)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	clients := &MongoDBClient{
+		Atlas:   atlasClient,
+		AtlasV2: sdkV2Client,
+	}
+
+	return clients, nil
+}
+
+func newSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
+	opts := []atlasSDK.ClientModifier{
+		atlasSDK.UseHTTPClient(client),
+		atlasSDK.UseUserAgent(userAgent),
+		atlasSDK.UseDebug(false)}
+
+	// Initialize the MongoDB Versioned Atlas Client.
+	sdkV2, err := atlasSDK.NewClient(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return sdkV2, nil
+}
+
 func newHTTPClient(p *profile.Profile) (*http.Client, error) {
 	if p.AreKeysAvailable() {
 		return nil, errors.New("PublicKey and PrivateKey cannot be empty")
@@ -196,37 +271,6 @@ func ToStringMapE(ep any) (map[string]any, error) {
 func CreateSSManagerClient(curSession *session.Session) (*ssm.SSM, error) {
 	ssmCli := ssm.New(curSession)
 	return ssmCli, nil
-}
-func PutKey(keyID, keyValue, prefix string, curSession *session.Session) (*ssm.PutParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return nil, err
-	}
-	// transform api keys to json string
-	parameterName := buildKey(keyID, prefix)
-	parameterType := "SecureString"
-	overwrite := true
-	putParamOutput, err := ssmClient.PutParameter(&ssm.PutParameterInput{Name: &parameterName, Value: &keyValue, Type: &parameterType, Overwrite: &overwrite})
-	if err != nil {
-		return nil, err
-	}
-
-	return putParamOutput, nil
-}
-
-func DeleteKey(keyID, prefix string, curSession *session.Session) (*ssm.DeleteParameterOutput, error) {
-	ssmClient, err := CreateSSManagerClient(curSession)
-	if err != nil {
-		return nil, err
-	}
-	parameterName := buildKey(keyID, prefix)
-
-	deleteParamOutput, err := ssmClient.DeleteParameter(&ssm.DeleteParameterInput{Name: &parameterName})
-	if err != nil {
-		return nil, err
-	}
-
-	return deleteParamOutput, nil
 }
 
 func Get(keyID, prefix string, curSession *session.Session) string {

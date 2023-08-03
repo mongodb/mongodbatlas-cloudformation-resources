@@ -1,7 +1,7 @@
 # MongoDB::Atlas::ProjectIpAccessLisp
 
 ## Description
-Returns, adds, edits, and removes [project network access limits](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List) to database deployments in MongoDB Atlas.
+Resource for managing a [Project IP Access List](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List).
 
 ## Requirements
 

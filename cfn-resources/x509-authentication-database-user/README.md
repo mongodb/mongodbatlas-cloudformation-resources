@@ -2,7 +2,7 @@
 
 ## Description
 
-Returns, edits, and removes user-managed [X.509 configurations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users).
+Resource for managing [X.509 configurations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication-for-Database-Users).
 Also returns and generates MongoDB Atlas-managed X.509 certificates for database users.
 
 ## Requirements

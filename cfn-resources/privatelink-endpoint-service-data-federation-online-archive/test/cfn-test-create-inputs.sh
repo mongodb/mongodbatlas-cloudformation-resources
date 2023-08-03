@@ -41,7 +41,7 @@ id=$(atlas privateEndpoints aws create --region "${region}" --projectId "${proje
 atlas privateEndpoints aws watch "${id}" --projectId "${projectId}"
 
 #Read the service name once created.
-endpointServiceName=$(atlas privateEndpoints aws describe "${id}" --projectId "${projectId}" | jq -r '.endpointServiceName')
+endpointServiceName=$(atlas privateEndpoints aws describe "${id}" --projectId "${projectId}" --output json | jq -r '.endpointServiceName')
 echo "endpointServiceName : ${endpointServiceName}"
 
 #Transforming endpointServiceName. eg: com.amazonaws.vpce.us-east-1.vpce-svc-00e311695874992b4 to vpce-00e311695874992b4

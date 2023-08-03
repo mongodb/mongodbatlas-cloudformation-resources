@@ -35,10 +35,19 @@ else
 fi
 
 
-id=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" | jq -r '.id')
+atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json
+
+# WAIT UNTIL CREATES
 atlas privateEndpoints aws watch "${id}" --projectId "${projectId}"
+
+id=$(atlas privateEndpoints aws list --projectId "$projectId" | jq -r '.[0].id')
+
+
+#Read the service name once created.
 endpointServiceName=$(atlas privateEndpoints aws describe "${id}" --projectId "${projectId}" | jq -r '.endpointServiceName')
 echo "endpointServiceName : ${endpointServiceName}"
+
+#Transforming endpointServiceName. eg: com.amazonaws.vpce.us-east-1.vpce-svc-00e311695874992b4 to vpce-00e311695874992b4
 endpointId="vpce-${endpointServiceName: (-17)}"
 echo "endpointID: ${endpointId}"
 

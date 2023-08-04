@@ -24,6 +24,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
@@ -49,6 +50,26 @@ const (
 type MongoDBClient struct {
 	Atlas   *mongodbatlas.Client
 	AtlasV2 *atlasSDK.APIClient
+}
+
+type Config struct {
+	AssumeRole   *AssumeRole
+	PublicKey    string
+	PrivateKey   string
+	BaseURL      string
+	RealmBaseURL string
+}
+
+type AssumeRole struct {
+	Tags              map[string]string
+	RoleARN           string
+	ExternalID        string
+	Policy            string
+	SessionName       string
+	SourceIdentity    string
+	PolicyARNs        []string
+	TransitiveTagKeys []string
+	Duration          time.Duration
 }
 
 var (
@@ -186,8 +207,9 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
 	}
 
+	c := Config{BaseURL: prof.BaseURL}
 	// New SDK Client
-	sdkV2Client, err := newSDKV2Client(client)
+	sdkV2Client, err := c.newSDKV2Client(client)
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -203,10 +225,11 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 	return clients, nil
 }
 
-func newSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
+func (c *Config) newSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
 	opts := []atlasSDK.ClientModifier{
 		atlasSDK.UseHTTPClient(client),
 		atlasSDK.UseUserAgent(userAgent),
+		atlasSDK.UseBaseURL(c.BaseURL),
 		atlasSDK.UseDebug(false)}
 
 	// Initialize the MongoDB Versioned Atlas Client.

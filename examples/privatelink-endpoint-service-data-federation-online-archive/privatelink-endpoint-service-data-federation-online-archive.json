@@ -8,11 +8,11 @@
     },
     "ProjectId": {
       "Type": "String",
-      "Default":"64ca491d92d44257c7fedeae"
+      "Default":"64cd58d2ee26f172e0a3d648"
     },
     "EndpointId": {
       "Type": "String",
-      "Default":"vpce-0d5697d16229d0815"
+      "Default":"vpce-0ff8dec060882557d"
     },
     "Comment": {
       "Type": "String",
@@ -34,6 +34,5 @@
         "Type": {"Ref": "Type"}
       }
     }
-  },
-  "Outputs" : {}
+  }
 }

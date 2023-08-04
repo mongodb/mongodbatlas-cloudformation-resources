@@ -3,5 +3,5 @@
     "EndpointId": "",
     "Type": "DATA_LAKE",
     "Comment": "online-archive-private-link-endpoint",
-    "Profile": "default"
+    "Profile": ""
 }

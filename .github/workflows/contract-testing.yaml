@@ -12,6 +12,7 @@ jobs:
      repository-projects: read
    outputs:
      project: ${{ steps.filter.outputs.project }}
+     federated-query-limit: ${{ steps.filter.outputs.federated-query-limit }}
      auditing: ${{ steps.filter.outputs.auditing }}
    steps:
    - uses: actions/checkout@v3

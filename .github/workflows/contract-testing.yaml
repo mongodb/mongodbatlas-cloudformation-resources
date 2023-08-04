@@ -28,7 +28,7 @@ jobs:
           - 'cfn-resources/auditing/**'
   federated-database-instance:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.project == 'true' }}
+    if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI

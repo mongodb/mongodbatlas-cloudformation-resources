@@ -20,6 +20,13 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -42,7 +49,8 @@ fi
 
 jq --arg projectId "${projectId}" \
    --arg tenantName "${tenantName}" \
-   '.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile |.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
    "$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "${projectId}" \
@@ -52,6 +60,7 @@ jq --arg projectId "${projectId}" \
 
 jq --arg projectId "${projectId}" \
    --arg tenantName "${tenantName}" \
-   '.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile |.ProjectId?|=$projectId | .TenantName?|=$tenantName' \
    "$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 

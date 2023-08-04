@@ -10,24 +10,20 @@
     "ProjectId": {
       "Type": "String",
       "Description": "Atlas Project Id",
-      "Default": ""
     },
     "RoleID": {
       "Type": "String",
       "Description": "Unique identifier of the role that the federated database instance can use to access S3 Buckets. If necessary, use the Atlas API to retrieve the role ID. You must also specify the testS3Bucket",
-      "Default": "",
       "ConstraintDescription": ""
     },
     "TestS3Bucket": {
       "Type": "String",
       "Description": "",
-      "Default": "",
       "ConstraintDescription": "Name of the S3 data bucket that the provided role ID is authorized to access. You must also specify the roleId"
     },
     "TenantName": {
       "Type": "String",
       "Description": "",
-      "Default": "",
       "ConstraintDescription": ""
     },
     "Region": {
@@ -39,13 +35,11 @@
     "Cluster1": {
       "Type": "String",
       "Description": "Name of the cluster",
-      "Default": "",
       "ConstraintDescription": ""
     },
     "Cluster2": {
       "Type": "String",
       "Description": "Name of the cluster",
-      "Default": "",
       "ConstraintDescription": ""
     },
     "DBName": {

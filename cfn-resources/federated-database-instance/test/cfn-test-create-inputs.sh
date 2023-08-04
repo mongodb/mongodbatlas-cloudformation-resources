@@ -32,9 +32,14 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 #project_id
-
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -114,7 +119,8 @@ jq --arg projectId "$projectId" \
    --arg role "$roleID" \
    --arg name "${projectName}" \
    --arg bucketName "$bucketName" \
-   '.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile | .TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
@@ -128,7 +134,8 @@ jq --arg projectId "$projectId" \
    --arg role "$roleID" \
    --arg name "${projectName}" \
    --arg bucketName "$bucketName" \
-   '.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile | .TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
    "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
 
 ls -l inputs

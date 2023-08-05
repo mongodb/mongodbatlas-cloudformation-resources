@@ -1,11 +1,25 @@
 {
+  "Profile": "default",
   "ClusterName": "",
+  "CollName":"rombo-bongo",
   "Criteria": {
     "Type": "DATE",
     "DateField": "created",
     "DateFormat": "ISODATE",
-    "ExpireAfterDays": "6"
+    "ExpireAfterDays": "7"
   },
+  "DbName": "testdb",
   "ProjectId": "",
-  "Profile": "default"
+  "PartitionFields": [
+    {
+      "FieldName": "created",
+      "Order": "0",
+      "FieldType": "string"
+    },
+    {
+      "FieldName": "lastName",
+      "Order": "1",
+      "FieldType": "string"
+    }
+  ]
 }

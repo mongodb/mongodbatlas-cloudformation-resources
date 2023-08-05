@@ -12,7 +12,7 @@
   "ProjectId": "",
   "PartitionFields": [
     {
-      "FieldName": "firstName",
+      "FieldName": "created",
       "Order": "0",
       "FieldType": "string"
     },

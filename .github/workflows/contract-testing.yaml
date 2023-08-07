@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+        uses: andreaangiolillo/atlas-cli-github-action@v1.9.2
         with:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}

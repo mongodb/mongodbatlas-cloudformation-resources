@@ -18,7 +18,13 @@
         },
         "LimitName": {
             "type": "string",
-            "description": "Human-readable label that identifies this data federation instance limit. Enum: \"bytesProcessed.query\" \"bytesProcessed.daily\" \"bytesProcessed.weekly\" \"bytesProcessed.monthly\""
+            "description": "Human-readable label that identifies this data federation instance limit.",
+            "enum": [
+                "bytesProcessed.query",
+                "bytesProcessed.daily",
+                "bytesProcessed.weekly",
+                "bytesProcessed.monthly"
+            ]
         },
         "CurrentUsage" : {
             "type" : "string",

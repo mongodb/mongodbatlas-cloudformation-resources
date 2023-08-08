@@ -65,11 +65,13 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### LimitName
 
-Human-readable label that identifies this data federation instance limit. Enum: "bytesProcessed.query" "bytesProcessed.daily" "bytesProcessed.weekly" "bytesProcessed.monthly"
+Human-readable label that identifies this data federation instance limit.
 
 _Required_: Yes
 
 _Type_: String
+
+_Allowed Values_: <code>bytesProcessed.query</code> | <code>bytesProcessed.daily</code> | <code>bytesProcessed.weekly</code> | <code>bytesProcessed.monthly</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 

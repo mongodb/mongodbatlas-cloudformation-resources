@@ -7,12 +7,10 @@
       "Default": "default"
     },
     "ProjectId": {
-      "Type": "String",
-      "Default": ""
+      "Type": "String"
     },
     "TenantName": {
-      "Type": "String",
-      "Default": ""
+      "Type": "String"
     },
     "LimitName": {
       "Type": "String",
@@ -54,5 +52,13 @@
     }
   },
   "Outputs": {
+    "FederatedQueryLimitUsage": {
+      "Value": {
+        "Fn::GetAtt": [
+          "FederatedQueryLimit",
+          "CurrentUsage"
+        ]
+      }
+    }
   }
 }

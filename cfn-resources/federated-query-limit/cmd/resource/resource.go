@@ -139,7 +139,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, response, err := getFederatedQueryLimit(atlas, currentModel)
 	defer closeResponse(response)
 
-	if err != nil {
+	if err != nil && response.StatusCode == http.StatusNotFound {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          DoesntExists,
@@ -271,26 +271,18 @@ func createOrUpdateQueryLimit(currentModel *Model, atlas *util.MongoDBClient, me
 		*currentModel.LimitName,
 		queryLimitInput,
 	)
-	_, response, err := createQueryLimitRequest.Execute()
+	queryLimit, response, err := createQueryLimitRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, method, err)
 	}
 
-	queryLimit, response, err := getFederatedQueryLimit(atlas, currentModel)
-	defer closeResponse(response)
-
-	if err != nil {
-		_, _ = logger.Warnf("Read failed, error: %s", err.Error())
-		return handleError(response, method, err)
-	}
-	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, LimitName: currentModel.LimitName, Profile: currentModel.Profile}
-	readModel.getQueryLimit(queryLimit)
+	currentModel.getQueryLimit(queryLimit)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         fmt.Sprintf("%s completed", method),
-		ResourceModel:   readModel}, nil
+		ResourceModel:   currentModel}, nil
 }
 
 func (model *Model) setQueryLimit() *atlasSDK.DataFederationTenantQueryLimit {
@@ -324,7 +316,7 @@ func (model *Model) getQueryLimit(atlasQueryLimit *atlasSDK.DataFederationTenant
 	}
 	if atlasQueryLimit.MaximumLimit != nil {
 		maximumLimit := cast.ToString(atlasQueryLimit.MaximumLimit)
-		model.CurrentUsage = &maximumLimit
+		model.MaximumLimit = &maximumLimit
 	}
 
 	value := cast.ToString(atlasQueryLimit.Value)

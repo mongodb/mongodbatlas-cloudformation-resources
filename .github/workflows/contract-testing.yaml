@@ -21,8 +21,6 @@ jobs:
      id: filter
      with:
       filters: |
-        federated-database-instance:
-          - 'cfn-resources/federated-database-instance/**'
         project:
           - 'cfn-resources/project/**'
         auditing:

@@ -1,0 +1,18 @@
+{
+  "desiredResourceState": {
+    "OrgId": "63350255419cf25e3d511c95",
+    "Profile": "default",
+    "Id": "64d1819900588e06b0d545b1",
+    "Roles": [
+      {
+        "RoleName": "ORG_TEAM_MEMBERS_ADMIN"
+      },
+      {
+        "RoleName": "ORG_MEMBER"
+      }
+    ],
+    "Description": "cfn test create sample keys"
+  },
+  "providerLogGroupName": "mongodb-atlas-auditing-logs-updated",
+  "previousResourceState": {}
+}

@@ -1,0 +1,13 @@
+{
+  "OrgId": "",
+  "Profile": "",
+  "Roles": [
+    {
+      "RoleName": "ORG_TEAM_MEMBERS_ADMIN"
+    },
+    {
+      "RoleName": "ORG_GROUP_CREATOR"
+    }
+  ],
+  "Description": "cfn test create sample keys - updated"
+}

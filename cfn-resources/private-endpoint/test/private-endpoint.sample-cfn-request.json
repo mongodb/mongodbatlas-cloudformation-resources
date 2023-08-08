@@ -2,10 +2,7 @@
     "desiredResourceState" : {
         "GroupId" : "$ATLAS_ORG_ID",
         "Region" : "",
-        "ApiKeys" : {
-            "PublicKey" : "$ATLAS_PUBLIC_KEY",
-            "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-        },
+        "Profile" : "default",
         "PrivateEndpoints": [
             {
                 "VpcId": "",

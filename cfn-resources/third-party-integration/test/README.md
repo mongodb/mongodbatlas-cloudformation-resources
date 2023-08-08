@@ -26,3 +26,22 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Integrations/operation/createThirdPartyIntegration)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/)
+
+## Local Testing
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+cd ${repo_root}/cfn-resources/thirdpartyintegration
+./test/thirdpartyintegration.create-sample-cfn-request.sh > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
+```
+
+Both CREATE & DELETE tests must pass.

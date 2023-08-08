@@ -15,7 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="role.md">Role</a>, ... ]</i>
+        "<a href="#roles" title="Roles">Roles</a>" : <i>[ String, ... ]</i>
     }
 }
 </pre>
@@ -29,7 +29,7 @@ Properties:
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
-      - <a href="role.md">Role</a></i>
+      - String</i>
 </pre>
 
 ## Properties
@@ -76,9 +76,9 @@ List of roles to grant this API key. If you provide this list, provide a minimum
 
 _Required_: No
 
-_Type_: List of <a href="role.md">Role</a>
+_Type_: List of String
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
 
@@ -91,6 +91,14 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Links
 
 List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
+
+#### OrgId
+
+Returns the <code>OrgId</code> value.
+
+#### ProjectId
+
+Returns the <code>ProjectId</code> value.
 
 #### PrivateKey
 

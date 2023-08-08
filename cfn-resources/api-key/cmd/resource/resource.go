@@ -71,10 +71,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	//Set the roles from model
-	roles := setRoles(currentModel)
 	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
-		Roles: roles,
+		Roles: currentModel.Roles,
 	}
 	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.CreateApiKey(
 		context.Background(),
@@ -154,10 +153,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 	//Set the roles from model
-	roles := setRoles(currentModel)
 	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
-		Roles: roles,
+		Roles: currentModel.Roles,
 	}
 	updateRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.UpdateApiKey(
 		context.Background(),
@@ -273,29 +271,26 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func setRoles(currentModel *Model) []string {
-	var roles []string
-	if len(currentModel.Roles) > 0 {
-		for i := range currentModel.Roles {
-			roles = append(roles, *currentModel.Roles[i].RoleName)
-		}
-	}
-	return roles
-}
+//func setRoles(currentModel *Model) []string {
+//	var roles []string
+//	if len(currentModel.Roles) > 0 {
+//		for i := range currentModel.Roles {
+//			roles = append(roles, *currentModel.Roles[i].RoleName)
+//		}
+//	}
+//	return roles
+//}
 
 func (model *Model) readAPIKeyDetails(apikey *atlasSDK.ApiKeyUserDetails) *Model {
 	model.Id = apikey.Id
 	model.Description = apikey.Desc
 	model.PublicKey = apikey.PublicKey
 	model.PrivateKey = apikey.PrivateKey
-	roles := make([]Role, len(apikey.Roles))
+	roles := make([]string, len(apikey.Roles))
 	for i := range apikey.Roles {
-		role := Role{
-			RoleName:  apikey.Roles[i].RoleName,
-			ProjectId: apikey.Roles[i].GroupId,
-			OrgId:     apikey.Roles[i].OrgId,
+		if apikey.Roles[i].RoleName != nil {
+			roles[i] = *apikey.Roles[i].RoleName
 		}
-		roles[i] = role
 	}
 	model.Roles = roles
 

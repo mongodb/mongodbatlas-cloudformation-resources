@@ -73,8 +73,6 @@
     ],
     "readOnlyProperties": [
         "/properties/Links",
-        "/properties/Roles/OrgId",
-        "/properties/Roles/ProjectId",
         "/properties/PrivateKey",
         "/properties/PublicKey",
         "/properties/Id"
@@ -82,7 +80,7 @@
     "createOnlyProperties": [
         "/properties/OrgId",
         "/properties/Profile",
-        "/properties/Roles/RoleName"
+        "/properties/Roles"
     ],
     "primaryIdentifier": [
         "/properties/OrgId",

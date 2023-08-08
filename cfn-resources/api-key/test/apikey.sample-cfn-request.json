@@ -2,14 +2,10 @@
   "desiredResourceState": {
     "OrgId": "63350255419cf25e3d511c95",
     "Profile": "default",
-    "Id": "64d1819900588e06b0d545b1",
+    "Id": "64d2591a8b221474c192eb4c",
     "Roles": [
-      {
-        "RoleName": "ORG_TEAM_MEMBERS_ADMIN"
-      },
-      {
-        "RoleName": "ORG_MEMBER"
-      }
+      "ORG_GROUP_CREATOR",
+      "ORG_TEAM_MEMBERS_ADMIN"
     ],
     "Description": "cfn test create sample keys"
   },

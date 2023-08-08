@@ -78,7 +78,7 @@ _Required_: No
 
 _Type_: List of String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
 
@@ -91,14 +91,6 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Links
 
 List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
-#### OrgId
-
-Returns the <code>OrgId</code> value.
-
-#### ProjectId
-
-Returns the <code>ProjectId</code> value.
 
 #### PrivateKey
 

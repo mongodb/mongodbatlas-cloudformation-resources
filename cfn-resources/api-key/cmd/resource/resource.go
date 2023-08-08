@@ -244,7 +244,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	apiKeys := make([]interface{}, *apiKeysList.TotalCount)
 	for i := range apiKeysList.Results {
 		model := currentModel.readAPIKeyDetails(&apiKeysList.Results[i])
-		apiKeys = append(apiKeys, model)
+		apiKeys[i] = model
 	}
 
 	return handler.ProgressEvent{
@@ -268,18 +268,14 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 			Message:          errMsg,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
+	if response.StatusCode == http.StatusBadRequest {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errMsg,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
-
-//func setRoles(currentModel *Model) []string {
-//	var roles []string
-//	if len(currentModel.Roles) > 0 {
-//		for i := range currentModel.Roles {
-//			roles = append(roles, *currentModel.Roles[i].RoleName)
-//		}
-//	}
-//	return roles
-//}
 
 func (model *Model) readAPIKeyDetails(apikey *atlasSDK.ApiKeyUserDetails) *Model {
 	model.Id = apikey.Id

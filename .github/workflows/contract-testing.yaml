@@ -33,11 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: setup Atlas CLI
-      uses: andreaangiolillo/atlas-cli-github-action@v1.10.0
+      uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
       with:
        public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+
     - uses: actions/checkout@v3
     - uses: aws-actions/setup-sam@v2
       with:
@@ -81,7 +82,7 @@ jobs:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: 1.10.0
+          version: v1.10.0
       - uses: actions/checkout@v3
       - uses: aws-actions/setup-sam@v2
         with:

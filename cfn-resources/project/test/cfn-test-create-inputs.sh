@@ -49,14 +49,6 @@ fi
 
 name="${1}"
 
-projectId=$(atlas projects list --output json | jq --arg NAME "${name}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$projectId" ]; then
-      echo -e "No project found with \"${name}"
-else
-      echo -e "project found with ${name} and id ${projectId}, deleting"
-      atlas projects delete "${projectId}" --force
-fi
-
 jq --arg org "$ATLAS_ORG_ID" \
    --arg name "$name" \
    --arg key_id "$api_key_id" \

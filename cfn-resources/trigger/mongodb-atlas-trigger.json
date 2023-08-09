@@ -122,6 +122,10 @@
           "type": "string",
           "description": "stringify version of a [$match](https://www.mongodb.com/docs/manual/reference/operator/aggregation/match) expression filters change events. The trigger will only fire if the expression evaluates to true for a given change event."
         },
+        "Project": {
+          "type": "string",
+          "description": "stringify version of a [$project](https://www.mongodb.com/docs/manual/reference/operator/aggregation/project/) expressions to limit the data included in each event."
+        },
         "FullDocument": {
           "type": "boolean",
           "default": false,

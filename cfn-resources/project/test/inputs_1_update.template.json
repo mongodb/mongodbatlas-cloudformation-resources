@@ -7,7 +7,8 @@
         "IsDataExplorerEnabled": "false",
         "IsPerformanceAdvisorEnabled": "false",
         "IsRealtimePerformancePanelEnabled": "false",
-        "IsSchemaAdvisorEnabled": "true"
+        "IsSchemaAdvisorEnabled": "true",
+        "IsExtendedStorageSizesEnabled": "false"
     },
     "ProjectApiKeys": [
         {

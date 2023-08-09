@@ -55,8 +55,8 @@
     },
     "IsRealtimePerformancePanelEnabled": {
       "Type": "String",
-      "Description": "",
-      "ConstraintDescription": "Flag that indicates whether to enable the Real Time Performance Panel for the specified project.\n\n",
+      "Description": "Flag that indicates whether to enable the Real Time Performance Panel for the specified project.",
+      "ConstraintDescription": "",
       "AllowedValues": [
         "true",
         "false"
@@ -64,8 +64,17 @@
     },
     "IsSchemaAdvisorEnabled": {
       "Type": "String",
-      "Description": "",
-      "ConstraintDescription": "Flag that indicates whether to enable the Schema Advisor for the specified project.",
+      "Description": "Flag that indicates whether to enable the Schema Advisor for the specified project.",
+      "ConstraintDescription": "",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    },
+    "IsExtendedStorageSizesEnabled": {
+      "Type": "String",
+      "Description": "Flag that indicates whether to enable extended storage sizes for the specified project.",
+      "ConstraintDescription": "",
       "AllowedValues": [
         "true",
         "false"

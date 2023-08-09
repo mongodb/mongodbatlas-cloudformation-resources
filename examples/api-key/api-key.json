@@ -4,7 +4,7 @@
   "Parameters": {
     "OrgId": {
       "Type": "String",
-      "Description": "MongoDB Atlas Project ID"
+      "Description": "MongoDB Atlas Organization ID"
     },
     "Profile": {
       "Type": "String",

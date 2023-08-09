@@ -16,6 +16,23 @@
                 }
             },
             "additionalProperties": false
+        },
+        "ListOptions": {
+            "additionalProperties": false,
+            "properties": {
+                "PageNum": {
+                    "type": "integer",
+                    "description": "Number of the page that displays the current set of the total objects that the response returns."
+                },
+                "ItemsPerPage": {
+                    "type": "integer",
+                    "description": "Number of items that the response returns per page."
+                },
+                "IncludeCount": {
+                    "type": "boolean",
+                    "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
+                }
+            }
         }
 
     },
@@ -63,19 +80,36 @@
             "items": {
                 "type": "string"
             },
+            "enum": [
+                "ORG_OWNER",
+                "ORG_MEMBER",
+                "ORG_GROUP_CREATOR",
+                "ORG_BILLING_ADMIN",
+                "ORG_READ_ONLY",
+                "ORG_TEAM_MEMBERS_ADMIN"
+            ],
             "insertionOrder": false,
             "uniqueItems": true
+        },
+        "ListOptions": {
+            "$ref": "#/definitions/ListOptions"
         }
     },
     "additionalProperties": false,
     "required": [
-        "OrgId"
+        "OrgId",
+        "Description"
     ],
     "readOnlyProperties": [
         "/properties/Links",
         "/properties/PrivateKey",
         "/properties/PublicKey",
         "/properties/Id"
+    ],
+    "writeOnlyProperties": [
+        "/properties/ListOptions/IncludeCount",
+        "/properties/ListOptions/ItemsPerPage",
+        "/properties/ListOptions/PageNum"
     ],
     "createOnlyProperties": [
         "/properties/OrgId",

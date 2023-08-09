@@ -25,7 +25,6 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ];then
     echo "profile set to ${MONGODB_ATLAS_PROFILE}"
     profile=${MONGODB_ATLAS_PROFILE}
 fi
-ATLAS_ORG_ID="63350255419cf25e3d511c95"
 # Check ATLAS_ORG_ID is set
 if [ -z "${ATLAS_ORG_ID+x}" ];then
   echo "ATLAS_ORG_ID must be set"

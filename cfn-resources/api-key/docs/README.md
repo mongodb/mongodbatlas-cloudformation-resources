@@ -15,7 +15,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#roles" title="Roles">Roles</a>" : <i>[ String, ... ]</i>
+        "<a href="#roles" title="Roles">Roles</a>" : <i>[ String, ... ]</i>,
+        "<a href="#listoptions" title="ListOptions">ListOptions</a>" : <i><a href="listoptions.md">ListOptions</a></i>
     }
 }
 </pre>
@@ -30,6 +31,7 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
       - String</i>
+    <a href="#listoptions" title="ListOptions">ListOptions</a>: <i><a href="listoptions.md">ListOptions</a></i>
 </pre>
 
 ## Properties
@@ -38,7 +40,7 @@ Properties:
 
 Purpose or explanation provided when someone created this organization API key.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -78,7 +80,17 @@ _Required_: No
 
 _Type_: List of String
 
+_Allowed Values_: <code>ORG_OWNER</code> | <code>ORG_MEMBER</code> | <code>ORG_GROUP_CREATOR</code> | <code>ORG_BILLING_ADMIN</code> | <code>ORG_READ_ONLY</code> | <code>ORG_TEAM_MEMBERS_ADMIN</code>
+
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### ListOptions
+
+_Required_: No
+
+_Type_: <a href="listoptions.md">ListOptions</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
 

@@ -31,7 +31,7 @@ import (
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 )
 
-var CreateRequiredFields = []string{constants.OrgID}
+var CreateRequiredFields = []string{constants.OrgID, constants.Description}
 var UpdateRequiredFields = []string{constants.OrgID, constants.ID}
 var ReadRequiredFields = []string{constants.OrgID, constants.ID}
 var DeleteRequiredFields = []string{constants.OrgID, constants.ID}
@@ -235,15 +235,35 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		context.Background(),
 		*currentModel.OrgId,
 	)
-	apiKeysList, response, err := apiKeyRequest.Execute()
+
+	pageNumber := 1
+	itemsPerPage := 100
+	apiKeyRequest = apiKeyRequest.ItemsPerPage(itemsPerPage).PageNum(pageNumber)
+
+	pagedApiKeysList, response, err := apiKeyRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, LIST, err)
 	}
+	apiKeyList := pagedApiKeysList.Results
 
-	apiKeys := make([]interface{}, *apiKeysList.TotalCount)
-	for i := range apiKeysList.Results {
-		model := currentModel.readAPIKeyDetails(&apiKeysList.Results[i])
+	defer closeResponse(response)
+	for *pagedApiKeysList.TotalCount > len(apiKeyList) {
+		pageNumber++
+		apiKeyRequest = apiKeyRequest.PageNum(pageNumber)
+		nextPageResults, response, err := apiKeyRequest.Execute()
+		if err != nil {
+			return handleError(response, LIST, err)
+		}
+		apiKeyList = append(apiKeyList, nextPageResults.Results...)
+	}
+
+	apiKeys := make([]interface{}, len(apiKeyList))
+	for i := range apiKeyList {
+		model := new(Model)
+		model = model.readAPIKeyDetails(&apiKeyList[i])
+		model.Profile = currentModel.Profile
+		model.OrgId = currentModel.OrgId
 		apiKeys[i] = model
 	}
 
@@ -277,28 +297,30 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func (model *Model) readAPIKeyDetails(apikey *atlasSDK.ApiKeyUserDetails) *Model {
+func (m *Model) readAPIKeyDetails(apikey *atlasSDK.ApiKeyUserDetails) *Model {
+	model := new(Model)
+	model.Profile = m.Profile
+	model.OrgId = m.OrgId
 	model.Id = apikey.Id
 	model.Description = apikey.Desc
 	model.PublicKey = apikey.PublicKey
 	model.PrivateKey = apikey.PrivateKey
-	roles := make([]string, len(apikey.Roles))
+	var roles []string
 	for i := range apikey.Roles {
 		if apikey.Roles[i].RoleName != nil {
-			roles[i] = *apikey.Roles[i].RoleName
+			roles = append(roles, *apikey.Roles[i].RoleName)
 		}
 	}
 	model.Roles = roles
 
-	links := make([]Link, len(apikey.Links))
+	var links []Link
 	for i := range apikey.Links {
 		link := Link{
 			Href: apikey.Links[i].Href,
 			Rel:  apikey.Links[i].Rel,
 		}
-		links[i] = link
+		links = append(links, link)
 	}
 	model.Links = links
-
 	return model
 }

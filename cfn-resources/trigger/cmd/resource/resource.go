@@ -240,6 +240,16 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 		conf.Match = m
 	}
 
+	if dTrigger.Project != nil {
+		jsonData := []byte(*dTrigger.Project)
+		// convert the JSON string to a map
+		var m interface{}
+		if err := json.Unmarshal(jsonData, &m); err != nil {
+			return nil, errors.New("error unmarshalling Project field - " + err.Error())
+		}
+		conf.Project = m
+	}
+
 	if dTrigger != nil {
 		conf.Collection = aws.StringValue(dTrigger.Collection)
 		conf.ServiceID = aws.StringValue(dTrigger.ServiceId)
@@ -248,10 +258,12 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 		conf.FullDocumentBeforeChange = dTrigger.FullDocumentBeforeChange
 		conf.Unordered = dTrigger.Unordered
 	}
+
 	if model.ScheduleTrigger != nil &&
 		model.ScheduleTrigger.Schedule != nil {
 		conf.Schedule = *model.ScheduleTrigger.Schedule
 	}
+
 	if model.AuthTrigger != nil {
 		if model.AuthTrigger.Providers != nil {
 			conf.Providers = model.AuthTrigger.Providers
@@ -260,6 +272,7 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 			conf.OperationType = *model.AuthTrigger.OperationType
 		}
 	}
+
 	et.Config = &conf
 	var err2 error
 	if model.EventProcessors != nil {

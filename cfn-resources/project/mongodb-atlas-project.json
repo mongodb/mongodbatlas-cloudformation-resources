@@ -6,19 +6,33 @@
             "type": "object",
             "properties": {
                 "IsCollectDatabaseSpecificsStatisticsEnabled": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to collect database-specific metrics for the specified project."
                 },
                 "IsDataExplorerEnabled": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to enable the Data Explorer for the specified project."
+
+                },
+                "IsExtendedStorageSizesEnabled": {
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to enable extended storage sizes for the specified project."
+
                 },
                 "IsPerformanceAdvisorEnabled": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to enable the Performance Advisor and Profiler for the specified project."
+
                 },
                 "IsRealtimePerformancePanelEnabled": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to enable the Real Time Performance Panel for the specified project."
+
                 },
                 "IsSchemaAdvisorEnabled": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Flag that indicates whether to enable the Schema Advisor for the specified project."
+
                 }
             },
             "additionalProperties": false
@@ -27,9 +41,12 @@
             "type": "object",
             "properties": {
                 "TeamId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Unique 24-hexadecimal character string that identifies the team. string = 24 characters ^([a-f0-9]{24})$"
+
                 },
                 "RoleNames": {
+                    "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user. tems Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\"",
                     "items": {
                         "$ref": "#/definitions/Roles"
                     },
@@ -43,20 +60,24 @@
             "type": "object",
             "properties": {
                 "Key": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project."
+
                 },
                 "RoleNames": {
                     "items": {
                         "$ref": "#/definitions/Roles"
                     },
                     "type": "array",
+                    "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this project.Items Enum: \"ORG_OWNER\" \"ORG_MEMBER\" \"ORG_GROUP_CREATOR\" \"ORG_BILLING_ADMIN\" \"ORG_READ_ONLY\" \"ORG_TEAM_MEMBERS_ADMIN\" \"GROUP_ATLAS_ADMIN\" \"GROUP_AUTOMATION_ADMIN\" \"GROUP_BACKUP_ADMIN\" \"GROUP_MONITORING_ADMIN\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\" \"GROUP_USER_ADMIN\" \"GROUP_BILLING_ADMIN\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_CHARTS_ADMIN\" \"GROUP_CLUSTER_MANAGER\" \"GROUP_SEARCH_INDEX_EDITOR\"",
                     "uniqueItems": true
                 }
             },
             "additionalProperties": false
         },
         "Roles": {
-            "type": "string"
+            "type": "string",
+            "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.Items Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\""
         }
     },
     "properties": {
@@ -108,6 +129,7 @@
                 "$ref": "#/definitions/projectTeam"
             },
             "type": "array",
+            "description": "Teams to which the authenticated user has access in the project specified using its unique 24-hexadecimal digit identifier.",
             "uniqueItems": true
         },
         "ProjectApiKeys": {
@@ -115,6 +137,7 @@
                 "$ref": "#/definitions/projectApiKey"
             },
             "type": "array",
+            "description": "API keys that you assigned to the specified project.",
             "uniqueItems": true
         }
     },

@@ -91,6 +91,8 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### ProjectTeams
 
+Teams to which the authenticated user has access in the project specified using its unique 24-hexadecimal digit identifier.
+
 _Required_: No
 
 _Type_: List of <a href="projectteam.md">projectTeam</a>
@@ -98,6 +100,8 @@ _Type_: List of <a href="projectteam.md">projectTeam</a>
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ProjectApiKeys
+
+API keys that you assigned to the specified project.
 
 _Required_: No
 

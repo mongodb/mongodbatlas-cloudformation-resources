@@ -38,13 +38,11 @@ var DeleteRequiredFields = []string{constants.OrgID, constants.ID}
 var ListRequiredFields = []string{constants.OrgID}
 
 const (
-	AlreadyExists = "already exists"
-	DoesntExists  = "does not exist"
-	CREATE        = "CREATE"
-	READ          = "READ"
-	UPDATE        = "UPDATE"
-	DELETE        = "DELETE"
-	LIST          = "LIST"
+	CREATE = "CREATE"
+	READ   = "READ"
+	UPDATE = "UPDATE"
+	DELETE = "DELETE"
+	LIST   = "LIST"
 )
 
 func setup() {

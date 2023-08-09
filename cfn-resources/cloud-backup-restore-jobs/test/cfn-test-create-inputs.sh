@@ -17,7 +17,6 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-region="us-east-1"
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -26,9 +25,19 @@ if [ -z "$projectId" ]; then
 	echo -e "Cant find project \"${projectName}\"\n"
 fi
 export MCLI_PROJECT_ID=$projectId
+
+
+
 ClusterName=$projectName
-atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
-atlas clusters watch "${ClusterName}" --projectId "${projectId}"
+
+clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
+if [ -z "$clusterId" ]; then
+	echo "creating cluster.."
+  atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+  atlas clusters watch "${ClusterName}" --projectId "${projectId}"
+	echo -e "Created Cluster \"${ClusterName}\""
+fi
+
 echo -e "Created Cluster \"${ClusterName}\""
 
 SnapshotId=$(atlas backup snapshots create "${ClusterName}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')

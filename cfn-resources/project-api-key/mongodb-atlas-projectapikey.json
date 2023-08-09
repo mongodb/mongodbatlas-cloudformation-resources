@@ -1,0 +1,173 @@
+{
+    "typeName": "MongoDB::Atlas::ProjectAPIKey",
+    "description": "Creates one API key for the specified organization. An organization API key grants programmatic access to an organization.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "Link": {
+            "type": "object",
+            "properties": {
+                "Href": {
+                    "type": "string",
+                    "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with https://cloud.mongodb.com/api/atlas."
+                },
+                "Rel": {
+                    "type": "string",
+                    "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with https://cloud.mongodb.com/api/atlas."
+                }
+            },
+            "additionalProperties": false
+        },
+        "ListOptions": {
+            "additionalProperties": false,
+            "properties": {
+                "PageNum": {
+                    "type": "integer",
+                    "description": "Number of the page that displays the current set of the total objects that the response returns."
+                },
+                "ItemsPerPage": {
+                    "type": "integer",
+                    "description": "Number of items that the response returns per page."
+                },
+                "IncludeCount": {
+                    "type": "boolean",
+                    "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
+                }
+            }
+        }
+
+    },
+    "properties": {
+        "Description": {
+            "type": "string",
+            "description": "Purpose or explanation provided when someone created this project API key."
+        },
+        "Id": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "Links": {
+            "type": "array",
+            "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+            "items": {
+                "$ref": "#/definitions/Link",
+                "type": "object"
+            },
+            "insertionOrder": false
+        },
+        "OrgId": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects. Use the /orgs endpoint to retrieve all organizations to which the authenticated user has access.",
+            "maxLength": 24,
+            "minLength": 24,
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "ProjectId": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies your project. Use the groups endpoint to retrieve all projects to which the authenticated user has access.",
+            "maxLength": 24,
+            "minLength": 24,
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "Profile": {
+            "type": "string",
+            "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
+        },
+        "PublicKey": {
+            "type": "string",
+            "description": "Public API key value set for the specified organization API key."
+        },
+        "PrivateKey": {
+            "type": "string",
+            "description": "Purpose or explanation provided when someone created this organization API key."
+        },
+        "Roles": {
+            "type": "array",
+            "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
+            "items": {
+                "type": "string"
+            },
+            "enum": [
+                "ORG_OWNER",
+                "ORG_MEMBER",
+                "ORG_GROUP_CREATOR",
+                "ORG_BILLING_ADMIN",
+                "ORG_READ_ONLY",
+                "ORG_TEAM_MEMBERS_ADMIN",
+                "GROUP_ATLAS_ADMIN",
+                "GROUP_AUTOMATION_ADMIN",
+                "GROUP_BACKUP_ADMIN",
+                "GROUP_MONITORING_ADMIN",
+                "GROUP_OWNER","GROUP_READ_ONLY",
+                "GROUP_USER_ADMIN",
+                "GROUP_BILLING_ADMIN",
+                "GROUP_DATA_ACCESS_ADMIN",
+                "GROUP_DATA_ACCESS_READ_ONLY",
+                "GROUP_DATA_ACCESS_READ_WRITE",
+                "GROUP_CHARTS_ADMIN",
+                "GROUP_CLUSTER_MANAGER",
+                "GROUP_SEARCH_INDEX_EDITOR"
+          ],
+            "insertionOrder": false,
+            "uniqueItems": true
+        },
+        "ListOptions": {
+            "$ref": "#/definitions/ListOptions"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrgId",
+        "Description"
+    ],
+    "readOnlyProperties": [
+        "/properties/Links",
+        "/properties/PrivateKey",
+        "/properties/PublicKey",
+        "/properties/Id"
+    ],
+    "writeOnlyProperties": [
+        "/properties/ListOptions/IncludeCount",
+        "/properties/ListOptions/ItemsPerPage",
+        "/properties/ListOptions/PageNum"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrgId",
+        "/properties/ProjectId",
+        "/properties/Profile",
+        "/properties/Roles"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrgId",
+        "/properties/ProjectId",
+        "/properties/Profile",
+        "/properties/Id"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
+    }
+}

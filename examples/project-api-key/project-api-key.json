@@ -1,0 +1,64 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This templates Creates one API key for the specified MongoDB Atlas Project.",
+  "Parameters": {
+    "OrgId": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Organization ID"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Project ID"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+      "Default": "default"
+    },
+    "Roles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "Default": "ORG_TEAM_MEMBERS_ADMIN,ORG_GROUP_CREATOR",
+      "ConstraintDescription": "Comma Seperated String with Role names"
+    },
+    "Description": {
+      "Type": "String",
+      "Description": "Purpose or explanation provided when someone created this project API key.",
+      "Default": "for cfn project key testing..."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "ProjectAPIKey": {
+      "Type": "MongoDB::Atlas::ProjectAPIKey",
+      "Properties": {
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Roles": { "Ref": "Roles" },
+        "Description": {"Ref": "Description"},
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ProjectAPIKeyID": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectAPIKey",
+          "Id"
+        ]
+      }
+    },
+    "ProjectAPIKeyPublicKey": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ProjectAPIKey",
+          "PublicKey"
+        ]
+      }
+    }
+  }
+}

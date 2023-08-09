@@ -1,0 +1,11 @@
+{
+    "Profile": "default",
+    "OrgId": "",
+    "ProjectId": "",
+    "Roles": [
+        "GROUP_DATA_ACCESS_READ_ONLY",
+        "GROUP_DATA_ACCESS_READ_WRITE",
+        "GROUP_READ_ONLY"
+    ],
+    "Description": "cfn project apikey testing"
+}

@@ -231,14 +231,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.ListProjectApiKeys(
-		context.Background(),
-		*currentModel.ProjectId,
-	)
 
-	pageNumber := 1
-	itemsPerPage := 100
-	apiKeyRequest = apiKeyRequest.ItemsPerPage(itemsPerPage).PageNum(pageNumber)
+	apiKeyRequest := createListAPIKeysRequest(atlas, currentModel)
 
 	pagedApiKeysList, response, err := apiKeyRequest.Execute()
 	defer closeResponse(response)
@@ -246,17 +240,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(response, LIST, err)
 	}
 	apiKeyList := pagedApiKeysList.Results
-
-	defer closeResponse(response)
-	for *pagedApiKeysList.TotalCount > len(apiKeyList) {
-		pageNumber++
-		apiKeyRequest = apiKeyRequest.PageNum(pageNumber)
-		nextPageResults, response, err := apiKeyRequest.Execute()
-		if err != nil {
-			return handleError(response, LIST, err)
-		}
-		apiKeyList = append(apiKeyList, nextPageResults.Results...)
-	}
 
 	apiKeys := make([]interface{}, len(apiKeyList))
 	for i := range apiKeyList {
@@ -271,6 +254,25 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "List Completed",
 		ResourceModels:  apiKeys}, nil
+}
+
+func createListAPIKeysRequest(atlas *util.MongoDBClient, currentModel *Model) atlasSDK.ListProjectApiKeysApiRequest {
+	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.ListProjectApiKeys(
+		context.Background(),
+		*currentModel.ProjectId,
+	)
+	if currentModel.ListOptions.PageNum != nil {
+		apiKeyRequest = apiKeyRequest.PageNum(*currentModel.ListOptions.PageNum)
+	}
+	// For CFN Test if the no.of keys are more we have to increase the ItemsPerPage value and test
+	// So that it fetches all the keys and passes create_list test case.
+	if currentModel.ListOptions.ItemsPerPage != nil {
+		apiKeyRequest = apiKeyRequest.ItemsPerPage(*currentModel.ListOptions.ItemsPerPage)
+	}
+	if currentModel.ListOptions.IncludeCount != nil {
+		apiKeyRequest = apiKeyRequest.IncludeCount(*currentModel.ListOptions.IncludeCount)
+	}
+	return apiKeyRequest
 }
 
 func closeResponse(response *http.Response) {

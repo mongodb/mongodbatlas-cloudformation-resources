@@ -19,19 +19,20 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+MONGODB_ATLAS_ORG_ID="63350255419cf25e3d511c95"
 #set profile
 profile="default"
 if [ ${MONGODB_ATLAS_PROFILE+x} ];then
     echo "profile set to ${MONGODB_ATLAS_PROFILE}"
     profile=${MONGODB_ATLAS_PROFILE}
 fi
-# Check ATLAS_ORG_ID is set
-if [ -z "${ATLAS_ORG_ID+x}" ];then
-  echo "ATLAS_ORG_ID must be set"
+# Check MONGODB_ATLAS_ORG_ID is set
+if [ -z "${MONGODB_ATLAS_ORG_ID+x}" ];then
+  echo "MONGODB_ATLAS_ORG_ID must be set"
   exit 1
 fi
 
-orgId="${ATLAS_ORG_ID}"
+orgId="${MONGODB_ATLAS_ORG_ID}"
 
 
 jq --arg orgId "$orgId" \

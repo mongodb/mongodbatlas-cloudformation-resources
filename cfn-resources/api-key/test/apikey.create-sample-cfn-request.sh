@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 
 profile="default"
-orgId="${ATLAS_ORG_ID}"
+orgId="${MONGODB_ATLAS_ORG_ID}"
 
 jq --arg orgId "$orgId" \
     --arg profile "$profile" \

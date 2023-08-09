@@ -170,6 +170,13 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "SRVShardOptimizedConnectionString": {
+                    "type": "array",
+                    "description": "Private endpoint-aware connection string optimized for sharded clusters that uses the `mongodb+srv://` protocol to connect to MongoDB Cloud through a private endpoint. If the connection string uses this Uniform Resource Identifier (URI) format, you don't need to change the Uniform Resource Identifier (URI) if the nodes change. Use this Uniform Resource Identifier (URI) format if your application and Atlas cluster supports it. If it doesn't, use and consult the documentation for connectionStrings.privateEndpoint[n].srvConnectionString.",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false
@@ -408,6 +415,7 @@
         "/properties/ConnectionStrings/PrivateSrv",
         "/properties/ConnectionStrings/PrivateEndpoints",
         "/properties/ConnectionStrings/PrivateEndpointsSrv",
+        "/properties/ConnectionStrings/SRVShardOptimizedConnectionString",
         "/properties/StateName",
         "/properties/MongoDBVersion",
         "/properties/CreatedDate",

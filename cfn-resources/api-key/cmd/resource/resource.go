@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	//Set the roles from model
+	// Set the roles from model
 	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
 		Roles: currentModel.Roles,
@@ -84,7 +84,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, CREATE, err)
 	}
 
-	//Read response
+	// Read response
 	model := currentModel.readAPIKeyDetails(apiKeyUserDetails)
 
 	return handler.ProgressEvent{
@@ -150,7 +150,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	//Set the roles from model
+	// Set the roles from model
 	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
 		Roles: currentModel.Roles,
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, UPDATE, err)
 	}
 
-	//Read response
+	// Read response
 	model := currentModel.readAPIKeyDetails(apiKeyUserDetails)
 
 	return handler.ProgressEvent{
@@ -234,27 +234,23 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		*currentModel.OrgId,
 	)
 
-	pageNumber := 1
-	itemsPerPage := 100
-	apiKeyRequest = apiKeyRequest.ItemsPerPage(itemsPerPage).PageNum(pageNumber)
-
-	pagedApiKeysList, response, err := apiKeyRequest.Execute()
+	if currentModel.ListOptions.PageNum != nil {
+		apiKeyRequest = apiKeyRequest.PageNum(*currentModel.ListOptions.PageNum)
+	}
+	// For CFN Test if the no.of keys are more we have to increase the ItemsPerPage value and test
+	// So that it fetches all the keys and passes create_list test case.
+	if currentModel.ListOptions.ItemsPerPage != nil {
+		apiKeyRequest = apiKeyRequest.ItemsPerPage(*currentModel.ListOptions.ItemsPerPage)
+	}
+	if currentModel.ListOptions.IncludeCount != nil {
+		apiKeyRequest = apiKeyRequest.IncludeCount(*currentModel.ListOptions.IncludeCount)
+	}
+	pagedAPIKeysList, response, err := apiKeyRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, LIST, err)
 	}
-	apiKeyList := pagedApiKeysList.Results
-
-	defer closeResponse(response)
-	for *pagedApiKeysList.TotalCount > len(apiKeyList) {
-		pageNumber++
-		apiKeyRequest = apiKeyRequest.PageNum(pageNumber)
-		nextPageResults, response, err := apiKeyRequest.Execute()
-		if err != nil {
-			return handleError(response, LIST, err)
-		}
-		apiKeyList = append(apiKeyList, nextPageResults.Results...)
-	}
+	apiKeyList := pagedAPIKeysList.Results
 
 	apiKeys := make([]interface{}, len(apiKeyList))
 	for i := range apiKeyList {

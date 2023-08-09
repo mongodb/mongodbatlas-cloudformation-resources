@@ -33,8 +33,8 @@ import (
 )
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType, constants.InstanceType, constants.InstanceName}
-var ReadDeleteRequiredFields = []string{constants.ID}
-var ListRequiredFields = []string{constants.ProjectID}
+var ReadDeleteRequiredFields = []string{constants.ID, constants.InstanceType, constants.InstanceName}
+var ListRequiredFields = []string{constants.ProjectID, constants.InstanceType, constants.InstanceName}
 
 const (
 	defaultBackSeconds            = 30
@@ -119,7 +119,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		PointInTimeUTCSeconds: cast.ToInt64(currentModel.PointInTimeUtcSeconds),
 	}
 
-	if clusterName != "" {
+	if *currentModel.InstanceType == clusterInstanceType {
 		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
 			GroupID:     cast.ToString(currentModel.ProjectId),
 			SnapshotID:  snapshotID,
@@ -267,29 +267,27 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	jobID := *currentModel.Id
-	clusterName := cast.ToString(currentModel.InstanceName)
-	if clusterName != "" {
-		// Check if delivery type is automated
-		if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Failed,
-				Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
-				ResourceModel:   currentModel,
-			}, nil
-		}
 
-		// Create API Request Object
-		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
-			GroupID:     projectID,
-			ClusterName: cast.ToString(currentModel.InstanceName),
-			JobID:       jobID,
-		}
+	// Check if delivery type is automated
+	if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
+			ResourceModel:   currentModel,
+		}, nil
+	}
 
-		// API call to delete
-		_, err := client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
-		if err != nil {
-			return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
-		}
+	// Create API Request Object
+	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     projectID,
+		ClusterName: cast.ToString(currentModel.InstanceName),
+		JobID:       jobID,
+	}
+
+	// API call to delete
+	_, err := client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 	}
 
 	return handler.ProgressEvent{
@@ -335,14 +333,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
-	}
-
-	if clusterName == "" && instanceName == "" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Error - creating cloud backup  snapshot restore job: cluster name or instance name must be set ",
-			ResourceModel:   currentModel,
-		}, nil
 	}
 
 	if clusterName != "" {

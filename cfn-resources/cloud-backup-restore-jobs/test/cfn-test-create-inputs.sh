@@ -38,15 +38,7 @@ jq --arg org "$ATLAS_ORG_ID" \
 	--arg ClusterName "$ClusterName" \
 	--arg group_id "$projectId" \
 	--arg SnapshotId "$SnapshotId" \
-	'.SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+	'.SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .InstanceName?|=$ClusterName' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-jq --arg org "$ATLAS_ORG_ID" \
-	--arg region "${region}- more B@d chars !@(!(@====*** ;;::" \
-	--arg group_id "$projectId" \
-	--arg ClusterName "$ClusterName" \
-	--arg SnapshotId "$SnapshotId" \
-	'.SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

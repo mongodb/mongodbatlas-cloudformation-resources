@@ -15,7 +15,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#private" title="Private">Private</a>" : <i>String</i>,
     "<a href="#privatesrv" title="PrivateSrv">PrivateSrv</a>" : <i>String</i>,
     "<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>" : <i>[ String, ... ]</i>,
-    "<a href="#privateendpointssrv" title="PrivateEndpointsSrv">PrivateEndpointsSrv</a>" : <i>[ String, ... ]</i>
+    "<a href="#privateendpointssrv" title="PrivateEndpointsSrv">PrivateEndpointsSrv</a>" : <i>[ String, ... ]</i>,
+    "<a href="#srvshardoptimizedconnectionstring" title="SRVShardOptimizedConnectionString">SRVShardOptimizedConnectionString</a>" : <i>[ String, ... ]</i>
 }
 </pre>
 
@@ -29,6 +30,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>: <i>
       - String</i>
 <a href="#privateendpointssrv" title="PrivateEndpointsSrv">PrivateEndpointsSrv</a>: <i>
+      - String</i>
+<a href="#srvshardoptimizedconnectionstring" title="SRVShardOptimizedConnectionString">SRVShardOptimizedConnectionString</a>: <i>
       - String</i>
 </pre>
 
@@ -87,6 +90,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### PrivateEndpointsSrv
 
 Private endpoint-aware connection strings that use AWS-hosted clusters with Amazon Web Services (AWS) PrivateLink. Each key identifies an Amazon Web Services (AWS) interface endpoint. Each value identifies the related mongodb:// connection string that you use to connect to Atlas through the interface endpoint that the key names.
+
+_Required_: No
+
+_Type_: List of String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SRVShardOptimizedConnectionString
+
+Private endpoint-aware connection string optimized for sharded clusters that uses the `mongodb+srv://` protocol to connect to MongoDB Cloud through a private endpoint. If the connection string uses this Uniform Resource Identifier (URI) format, you don't need to change the Uniform Resource Identifier (URI) if the nodes change. Use this Uniform Resource Identifier (URI) format if your application and Atlas cluster supports it. If it doesn't, use and consult the documentation for connectionStrings.privateEndpoint[n].srvConnectionString.
 
 _Required_: No
 

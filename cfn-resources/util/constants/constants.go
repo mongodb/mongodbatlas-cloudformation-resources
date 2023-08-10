@@ -128,4 +128,6 @@ const (
 	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"
 	DataProcessRegion          = "DataProcessRegion.Region"
 	SkipRoleValidation         = "SkipRoleValidation"
+	LimitName                  = "LimitName"
+	Value                      = "Value"
 )

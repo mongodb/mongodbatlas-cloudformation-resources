@@ -1,0 +1,64 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Query limit for one federated database instance.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default"
+    },
+    "ProjectId": {
+      "Type": "String"
+    },
+    "TenantName": {
+      "Type": "String"
+    },
+    "LimitName": {
+      "Type": "String",
+      "Default": "bytesProcessed.monthly"
+    },
+    "Value": {
+      "Type": "String",
+      "Default": "5000000000"
+    },
+    "OverrunPolicy": {
+      "Type": "String",
+      "Default": "BLOCK"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "FederatedQueryLimit": {
+      "Type": "MongoDB::Atlas::FederatedQueryLimit",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "TenantName": {
+          "Ref": "TenantName"
+        },
+        "LimitName": {
+          "Ref": "LimitName"
+        },
+        "OverrunPolicy": {
+          "Ref": "OverrunPolicy"
+        },
+        "Value": {
+          "Ref": "Value"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "FederatedQueryLimitUsage": {
+      "Value": {
+        "Fn::GetAtt": [
+          "FederatedQueryLimit",
+          "CurrentUsage"
+        ]
+      }
+    }
+  }
+}

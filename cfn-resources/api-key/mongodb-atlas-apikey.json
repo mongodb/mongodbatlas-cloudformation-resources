@@ -33,8 +33,33 @@
                     "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
                 }
             }
+        },
+        "ProjectAssignment": {
+            "additionalProperties": false,
+            "properties": {
+                "Roles": {
+                    "type": "array",
+                    "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "enum": [
+                        "ORG_OWNER",
+                        "ORG_MEMBER",
+                        "ORG_GROUP_CREATOR",
+                        "ORG_BILLING_ADMIN",
+                        "ORG_READ_ONLY",
+                        "ORG_TEAM_MEMBERS_ADMIN"
+                    ],
+                    "insertionOrder": false,
+                    "uniqueItems": true
+                },
+                "ProjectId": {
+                    "type": "string",
+                    "description": "Unique 24-hexadecimal digit string that identifies the project in an organization."
+                }
+            }
         }
-
     },
     "properties": {
         "Description": {
@@ -88,6 +113,15 @@
                 "ORG_READ_ONLY",
                 "ORG_TEAM_MEMBERS_ADMIN"
             ],
+            "insertionOrder": false,
+            "uniqueItems": true
+        },
+        "ProjectAssignments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/ProjectAssignment"
+            },
             "insertionOrder": false,
             "uniqueItems": true
         },

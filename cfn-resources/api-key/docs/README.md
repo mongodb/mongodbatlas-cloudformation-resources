@@ -16,6 +16,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ String, ... ]</i>,
+        "<a href="#projectassignments" title="ProjectAssignments">ProjectAssignments</a>" : <i>[ <a href="projectassignment.md">ProjectAssignment</a>, ... ]</i>,
         "<a href="#listoptions" title="ListOptions">ListOptions</a>" : <i><a href="listoptions.md">ListOptions</a></i>
     }
 }
@@ -31,6 +32,8 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
       - String</i>
+    <a href="#projectassignments" title="ProjectAssignments">ProjectAssignments</a>: <i>
+      - <a href="projectassignment.md">ProjectAssignment</a></i>
     <a href="#listoptions" title="ListOptions">ListOptions</a>: <i><a href="listoptions.md">ListOptions</a></i>
 </pre>
 
@@ -83,6 +86,14 @@ _Type_: List of String
 _Allowed Values_: <code>ORG_OWNER</code> | <code>ORG_MEMBER</code> | <code>ORG_GROUP_CREATOR</code> | <code>ORG_BILLING_ADMIN</code> | <code>ORG_READ_ONLY</code> | <code>ORG_TEAM_MEMBERS_ADMIN</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### ProjectAssignments
+
+_Required_: No
+
+_Type_: List of <a href="projectassignment.md">ProjectAssignment</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ListOptions
 

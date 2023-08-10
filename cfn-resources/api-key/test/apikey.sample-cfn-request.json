@@ -1,13 +1,33 @@
 {
   "desiredResourceState": {
     "OrgId": "63350255419cf25e3d511c95",
+    "Id": "64d3e33109398a3c5fd90d1f",
     "Profile": "default",
-    "Id": "64d2af972af5417d71d268b5",
     "Roles": [
-      "ORG_GROUP_CREATOR",
-      "ORG_TEAM_MEMBERS_ADMIN"
+      "ORG_MEMBER",
+      "ORG_GROUP_CREATOR"
     ],
-    "Description": "cfn test create sample keys"
+    "ProjectAssignments": [
+      {
+        "ProjectId": "64c987856705283a58870048",
+        "Roles": [
+          "GROUP_READ_ONLY",
+          "GROUP_CLUSTER_MANAGER"
+        ]
+      },
+      {
+        "ProjectId": "64c1947fdfd1a05759299ab9",
+        "Roles": [
+          "GROUP_READ_ONLY",
+          "GROUP_CLUSTER_MANAGER"
+        ]
+      }
+    ],
+    "ListOptions": {
+      "PageNum": 1,
+      "ItemsPerPage": 300
+    },
+    "Description": "cfn test create sample keys - updated"
   },
   "providerLogGroupName": "mongodb-atlas-auditing-logs-updated",
   "previousResourceState": {}

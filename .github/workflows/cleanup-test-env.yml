@@ -1,0 +1,31 @@
+name: 'Cleanup test env'
+
+on:
+  workflow_dispatch: {} # workflow can be run manually
+  schedule:
+    - cron: "0 3 * * *" # workflow runs every day at 03:00 AM
+
+jobs:  
+  clenup-test-env-general:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Atlas CLI
+        uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+        with:
+          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            scripts
+      - name: Cleanup cloud-dev
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          PROJECT_TO_NOT_DELETE: ${{ vars.CLOUD_DEV_PROJECT_ID }}
+        run: ./scripts/cleanup-test-env.sh      

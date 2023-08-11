@@ -33,9 +33,9 @@ import (
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Description}
-var UpdateRequiredFields = []string{constants.OrgID, constants.APIUserId}
-var ReadRequiredFields = []string{constants.OrgID, constants.APIUserId}
-var DeleteRequiredFields = []string{constants.OrgID, constants.APIUserId}
+var UpdateRequiredFields = []string{constants.OrgID, constants.APIUserID, constants.Description}
+var ReadRequiredFields = []string{constants.OrgID, constants.APIUserID}
+var DeleteRequiredFields = []string{constants.OrgID, constants.APIUserID}
 var ListRequiredFields = []string{constants.OrgID}
 
 const (

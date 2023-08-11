@@ -4,18 +4,11 @@
   "Parameters": {
     "OrgId": {
       "Type": "String",
-      "Description": "MongoDB Atlas Organization ID",
-      "Default":"63350255419cf25e3d511c95"
+      "Description": "MongoDB Atlas Organization ID"
     },
     "ProjectId": {
       "Type": "String",
-      "Description": "MongoDB Atlas Project ID",
-      "Default": "64d5087aabbb8940f6e4a8d4"
-    },
-    "ProjectId2": {
-      "Type": "String",
-      "Description": "MongoDB Atlas Project ID",
-      "Default": "64d5087dd22872333d099c6e"
+      "Description": "MongoDB Atlas Project ID"
     },
     "Profile": {
       "Type": "String",
@@ -32,12 +25,6 @@
       "Type": "List<String>",
       "Description": "Role names",
       "Default": "GROUP_READ_ONLY,GROUP_SEARCH_INDEX_EDITOR,GROUP_CLUSTER_MANAGER",
-      "ConstraintDescription": "Comma Seperated String with Role names"
-    },
-    "Project2Roles": {
-      "Type": "List<String>",
-      "Description": "Role names",
-      "Default": "GROUP_READ_ONLY",
       "ConstraintDescription": "Comma Seperated String with Role names"
     },
     "Description": {
@@ -63,10 +50,6 @@
           {
             "ProjectId": {"Ref": "ProjectId"},
             "Roles": {"Ref": "ProjectRoles"}
-          },
-          {
-            "ProjectId": {"Ref": "ProjectId2"},
-            "Roles": {"Ref": "Project2Roles"}
           }
         ]
       }

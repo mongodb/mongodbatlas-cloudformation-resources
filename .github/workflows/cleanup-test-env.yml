@@ -12,9 +12,9 @@ jobs:
       - name: setup Atlas CLI
         uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
         with:
-          public-key: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY_CLOUD_DEV }}
-          private-key: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY_CLOUD_DEV }}
-          org-id: ${{ vars.MONGODB_ATLAS_ORG_ID_CLOUD_DEV }}
+          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -26,6 +26,6 @@ jobs:
           MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_OPS_MANAGER_URL: ${{vars.MONGODB_ATLAS_BASE_URL}}
-          PROJECT_TO_NOT_DELETE: ${{vars.CLOUD_DEV_PROJECT_ID}}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          PROJECT_TO_NOT_DELETE: ${{ vars.CLOUD_DEV_PROJECT_I }}
         run: ./scripts/cleanup-test-env.sh      

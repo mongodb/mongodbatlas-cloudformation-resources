@@ -1,0 +1,163 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates one federated database instance in the specified MongoDB Atlas project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id",
+    },
+    "RoleID": {
+      "Type": "String",
+      "Description": "Unique identifier of the role that the federated database instance can use to access S3 Buckets. If necessary, use the Atlas API to retrieve the role ID. You must also specify the testS3Bucket",
+      "ConstraintDescription": ""
+    },
+    "TestS3Bucket": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": "Name of the S3 data bucket that the provided role ID is authorized to access. You must also specify the roleId"
+    },
+    "TenantName": {
+      "Type": "String",
+      "Description": "",
+      "ConstraintDescription": ""
+    },
+    "Region": {
+      "Type": "String",
+      "Description": "Name of the region to which Data Federation routes client connections for data processing",
+      "Default": "VIRGINIA_USA",
+      "ConstraintDescription": ""
+    },
+    "Cluster1": {
+      "Type": "String",
+      "Description": "Name of the cluster",
+      "ConstraintDescription": ""
+    },
+    "Cluster2": {
+      "Type": "String",
+      "Description": "Name of the cluster",
+      "ConstraintDescription": ""
+    },
+    "DBName": {
+      "Type": "String",
+      "Default": "sample_airbnb"
+    },
+    "MaxWildcardCollections": {
+      "Type": "String",
+      "Default": "100"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "FederatedDatabaseInstance": {
+      "Type": "MongoDB::Atlas::FederatedDatabaseInstance",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "TenantName": {
+          "Ref": "TenantName"
+        },
+        "CloudProviderConfig": {
+          "RoleId": {
+            "Ref": "RoleID"
+          },
+          "TestS3Bucket": {
+            "Ref": "TestS3Bucket"
+          }
+        },
+        "DataProcessRegion": {
+          "CloudProvider": "AWS",
+          "Region": {
+            "Ref": "Region"
+          }
+        },
+        "SkipRoleValidation": "true",
+        "Storage": {
+          "Databases": [
+            {
+              "MaxWildcardCollections": {
+                "Ref": "MaxWildcardCollections"
+              },
+              "Name": "sample_airbnb",
+              "Collections": [
+                {
+                  "DataSources": [
+                    {
+                      "Collection": "listingsAndReviews",
+                      "Database": {
+                        "Ref": "DBName"
+                      },
+                      "StoreName": {
+                        "Ref": "Cluster1"
+                      }
+                    },
+                    {
+                      "Collection": "listingsAndReviews",
+                      "Database": {
+                        "Ref": "DBName"
+                      },
+                      "StoreName": {
+                        "Ref": "Cluster2"
+                      }
+                    }
+                  ],
+                  "Name": "virtual-dbs"
+                }
+              ]
+            }
+          ],
+          "Stores": [
+            {
+              "Provider": "atlas",
+              "ClusterName": {
+                "Ref": "Cluster1"
+              },
+              "Name": {
+                "Ref": "Cluster1"
+              },
+              "ProjectId": {
+                "Ref": "ProjectId"
+              }
+            },
+            {
+              "Provider": "atlas",
+              "ClusterName": {
+                "Ref": "Cluster2"
+              },
+              "Name": {
+                "Ref": "Cluster2"
+              },
+              "ProjectId": {
+                "Ref": "ProjectId"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "FederatedDatabaseInstance": {
+      "Description": "Data Federation",
+      "Value": {
+        "Fn::Select": [
+          0,
+          {
+            "Fn::GetAtt": [
+              "FederatedDatabaseInstance",
+              "HostNames"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

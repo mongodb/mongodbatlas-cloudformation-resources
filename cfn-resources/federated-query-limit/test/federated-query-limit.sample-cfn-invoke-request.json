@@ -1,0 +1,9 @@
+{
+    "desiredResourceState" : {
+        "ProjectId": "",
+        "TenantName": "cfn-data-federation-tenant-4",
+        "LimitName": "bytesProcessed.monthly",
+        "Value": "6000000000"
+    },
+    "previousResourceState": {}
+}

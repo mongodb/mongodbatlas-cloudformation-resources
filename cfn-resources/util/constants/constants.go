@@ -122,8 +122,14 @@ const (
 	ExportID                   = "ExportId"
 	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
 
-	ExternalGroupName = "ExternalGroupName"
-	RoleAssignments   = "RoleAssignments"
-	Description       = "Description"
-	APIUserId         = "APIUserId"
+	ExternalGroupName          = "ExternalGroupName"
+	RoleAssignments            = "RoleAssignments"
+	Description                = "Description"
+	APIUserId                  = "APIUserId"
+	DataFederationRoleID       = "CloudProviderConfig.RoleId"
+	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"
+	DataProcessRegion          = "DataProcessRegion.Region"
+	SkipRoleValidation         = "SkipRoleValidation"
+	LimitName                  = "LimitName"
+	Value                      = "Value"
 )

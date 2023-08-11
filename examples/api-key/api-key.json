@@ -4,17 +4,40 @@
   "Parameters": {
     "OrgId": {
       "Type": "String",
-      "Description": "MongoDB Atlas Organization ID"
+      "Description": "MongoDB Atlas Organization ID",
+      "Default":"63350255419cf25e3d511c95"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Project ID",
+      "Default": "64d5087aabbb8940f6e4a8d4"
+    },
+    "ProjectId2": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Project ID",
+      "Default": "64d5087dd22872333d099c6e"
     },
     "Profile": {
       "Type": "String",
       "Description": "Your MongoDB Atlas Profile Name created in secret manager",
       "Default": "default"
     },
-    "Roles": {
+    "OrgRoles": {
       "Type": "List<String>",
       "Description": "Role names",
       "Default": "ORG_TEAM_MEMBERS_ADMIN,ORG_GROUP_CREATOR",
+      "ConstraintDescription": "Comma Seperated String with Role names"
+    },
+    "ProjectRoles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "Default": "GROUP_READ_ONLY,GROUP_SEARCH_INDEX_EDITOR,GROUP_CLUSTER_MANAGER",
+      "ConstraintDescription": "Comma Seperated String with Role names"
+    },
+    "Project2Roles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "Default": "GROUP_READ_ONLY",
       "ConstraintDescription": "Comma Seperated String with Role names"
     },
     "Description": {
@@ -31,11 +54,21 @@
         "OrgId": {
           "Ref": "OrgId"
         },
-        "Roles": { "Ref": "Roles" },
+        "Roles": { "Ref": "OrgRoles" },
         "Description": {"Ref": "Description"},
         "Profile": {
           "Ref": "Profile"
-        }
+        },
+        "ProjectAssignments": [
+          {
+            "ProjectId": {"Ref": "ProjectId"},
+            "Roles": {"Ref": "ProjectRoles"}
+          },
+          {
+            "ProjectId": {"Ref": "ProjectId2"},
+            "Roles": {"Ref": "Project2Roles"}
+          }
+        ]
       }
     }
   },
@@ -44,7 +77,7 @@
       "Value": {
         "Fn::GetAtt": [
           "APIKey",
-          "Id"
+          "APIUserId"
         ]
       }
     },

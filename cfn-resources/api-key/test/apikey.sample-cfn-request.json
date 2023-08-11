@@ -1,34 +1,30 @@
 {
-  "desiredResourceState": {
+    "Description": "for cfn test api-key resource testing.",
+    "ListOptions": {
+      "PageNum": "1",
+      "ItemsPerPage": "300"
+    },
+    "APIUserId": "64d55be5f0611b36f91a91d4",
     "OrgId": "63350255419cf25e3d511c95",
-    "Id": "64d3e33109398a3c5fd90d1f",
     "Profile": "default",
-    "Roles": [
-      "ORG_MEMBER",
-      "ORG_GROUP_CREATOR"
-    ],
     "ProjectAssignments": [
       {
-        "ProjectId": "64c987856705283a58870048",
+        "ProjectId": "64d5445bf1199307dbb17980",
         "Roles": [
-          "GROUP_READ_ONLY",
-          "GROUP_CLUSTER_MANAGER"
+          "GROUP_READ_ONLY"
         ]
       },
       {
-        "ProjectId": "64c1947fdfd1a05759299ab9",
+        "ProjectId": "64d544647019875c2e316f27",
         "Roles": [
-          "GROUP_READ_ONLY",
-          "GROUP_CLUSTER_MANAGER"
+          "GROUP_SEARCH_INDEX_EDITOR",
+          "GROUP_OWNER",
+          "GROUP_READ_ONLY"
         ]
       }
     ],
-    "ListOptions": {
-      "PageNum": 1,
-      "ItemsPerPage": 300
-    },
-    "Description": "cfn test create sample keys - updated"
-  },
-  "providerLogGroupName": "mongodb-atlas-auditing-logs-updated",
-  "previousResourceState": {}
+    "Roles": [
+      "ORG_MEMBER",
+      "ORG_GROUP_CREATOR"
+    ]
 }

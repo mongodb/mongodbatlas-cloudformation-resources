@@ -1,0 +1,13 @@
+{
+  "OrgId": "",
+  "Profile": "default",
+  "Roles": [
+    "ORG_MEMBER",
+    "ORG_GROUP_CREATOR"
+  ],
+  "ListOptions": {
+    "PageNum": "1",
+    "ItemsPerPage": "300"
+  },
+  "Description":  "for cfn test api-key resource testing."
+}

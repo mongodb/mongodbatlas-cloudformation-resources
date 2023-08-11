@@ -18,7 +18,7 @@
             "additionalProperties": false
         },
         "ListOptions": {
-            "additionalProperties": false,
+            "type": "object",
             "properties": {
                 "PageNum": {
                     "type": "integer",
@@ -32,10 +32,11 @@
                     "type": "boolean",
                     "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
                 }
-            }
+            },
+            "additionalProperties": false
         },
         "ProjectAssignment": {
-            "additionalProperties": false,
+            "type": "object",
             "properties": {
                 "Roles": {
                     "type": "array",
@@ -44,21 +45,29 @@
                         "type": "string"
                     },
                     "enum": [
-                        "ORG_OWNER",
-                        "ORG_MEMBER",
-                        "ORG_GROUP_CREATOR",
-                        "ORG_BILLING_ADMIN",
-                        "ORG_READ_ONLY",
-                        "ORG_TEAM_MEMBERS_ADMIN"
+                        "GROUP_ATLAS_ADMIN",
+                        "GROUP_AUTOMATION_ADMIN",
+                        "GROUP_BACKUP_ADMIN",
+                        "GROUP_MONITORING_ADMIN",
+                        "GROUP_OWNER",
+                        "GROUP_READ_ONLY",
+                        "GROUP_USER_ADMIN",
+                        "GROUP_BILLING_ADMIN",
+                        "GROUP_DATA_ACCESS_ADMIN",
+                        "GROUP_DATA_ACCESS_READ_ONLY",
+                        "GROUP_DATA_ACCESS_READ_WRITE",
+                        "GROUP_CHARTS_ADMIN",
+                        "GROUP_CLUSTER_MANAGER",
+                        "GROUP_SEARCH_INDEX_EDITOR"
                     ],
-                    "insertionOrder": false,
-                    "uniqueItems": true
+                    "insertionOrder": false
                 },
                 "ProjectId": {
                     "type": "string",
                     "description": "Unique 24-hexadecimal digit string that identifies the project in an organization."
                 }
-            }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
@@ -66,7 +75,7 @@
             "type": "string",
             "description": "Purpose or explanation provided when someone created this organization API key."
         },
-        "Id": {
+        "APIUserId": {
             "type": "string",
             "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.",
             "pattern": "^([a-f0-9]{24})$"
@@ -113,8 +122,7 @@
                 "ORG_READ_ONLY",
                 "ORG_TEAM_MEMBERS_ADMIN"
             ],
-            "insertionOrder": false,
-            "uniqueItems": true
+            "insertionOrder": false
         },
         "ProjectAssignments": {
             "type": "array",
@@ -122,8 +130,7 @@
                 "type": "object",
                 "$ref": "#/definitions/ProjectAssignment"
             },
-            "insertionOrder": false,
-            "uniqueItems": true
+            "insertionOrder": false
         },
         "ListOptions": {
             "$ref": "#/definitions/ListOptions"
@@ -138,22 +145,16 @@
         "/properties/Links",
         "/properties/PrivateKey",
         "/properties/PublicKey",
-        "/properties/Id"
-    ],
-    "writeOnlyProperties": [
-        "/properties/ListOptions/IncludeCount",
-        "/properties/ListOptions/ItemsPerPage",
-        "/properties/ListOptions/PageNum"
+        "/properties/APIUserId"
     ],
     "createOnlyProperties": [
         "/properties/OrgId",
-        "/properties/Profile",
-        "/properties/Roles"
+        "/properties/Profile"
     ],
     "primaryIdentifier": [
         "/properties/OrgId",
         "/properties/Profile",
-        "/properties/Id"
+        "/properties/APIUserId"
     ],
     "handlers": {
         "create": {

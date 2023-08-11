@@ -12,5 +12,17 @@ function usage {
 	echo "usage:$0 "
 }
 
-# DO NOT DELETE THIS FILE
-echo "this resource doesn't create any extra resources"
+projectIds=()
+projectIds["${#projectIds[@]}"]=$(jq -r '.ProjectAssignments[0].ProjectId' ./inputs/inputs_1_create.json)
+projectIds["${#projectIds[@]}"]=$(jq -r '.ProjectAssignments[1].ProjectId' ./inputs/inputs_1_create.json)
+projectIds["${#projectIds[@]}"]=$(jq -r '.ProjectAssignments[1].ProjectId' ./inputs/inputs_1_update.json)
+
+for projectId in "${projectIds[@]}"
+do
+  #delete project
+  if atlas projects delete "$projectId" --force; then
+    echo "$projectId project deletion OK"
+  else
+    (echo "Failed cleaning project:$projectId" && exit 1)
+  fi
+done

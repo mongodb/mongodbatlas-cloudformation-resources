@@ -85,7 +85,7 @@ _Type_: List of String
 
 _Allowed Values_: <code>ORG_OWNER</code> | <code>ORG_MEMBER</code> | <code>ORG_GROUP_CREATOR</code> | <code>ORG_BILLING_ADMIN</code> | <code>ORG_READ_ONLY</code> | <code>ORG_TEAM_MEMBERS_ADMIN</code>
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ProjectAssignments
 
@@ -123,7 +123,7 @@ Purpose or explanation provided when someone created this organization API key.
 
 Public API key value set for the specified organization API key.
 
-#### Id
+#### APIUserId
 
 Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.
 

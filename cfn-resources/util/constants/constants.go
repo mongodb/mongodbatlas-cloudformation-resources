@@ -125,4 +125,5 @@ const (
 	ExternalGroupName = "ExternalGroupName"
 	RoleAssignments   = "RoleAssignments"
 	Description       = "Description"
+	APIUserId         = "APIUserId"
 )

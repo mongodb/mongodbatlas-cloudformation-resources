@@ -180,10 +180,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, UPDATE, err)
 	}
 
-	// Read from server to find the diff
-
-	apiKeyUserDetails, response, err = getAPIkeyDetails(atlas, currentModel)
-
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, READ, err)
@@ -518,7 +514,5 @@ func (model *Model) readAPIKeyDetails(apikey atlasSDK.ApiKeyUserDetails) Model {
 		links = append(links, link)
 	}
 	model.Links = links
-
-	//Don't return writeOnly Properties
 	return *model
 }

@@ -1,21 +1,21 @@
 {
+  "desiredResourceState": {
     "Description": "for cfn test api-key resource testing.",
     "ListOptions": {
       "PageNum": "1",
       "ItemsPerPage": "300"
     },
-    "APIUserId": "64d55be5f0611b36f91a91d4",
-    "OrgId": "63350255419cf25e3d511c95",
-    "Profile": "default",
+    "OrgId": "",
+    "Profile": "",
     "ProjectAssignments": [
       {
-        "ProjectId": "64d5445bf1199307dbb17980",
+        "ProjectId": "",
         "Roles": [
           "GROUP_READ_ONLY"
         ]
       },
       {
-        "ProjectId": "64d544647019875c2e316f27",
+        "ProjectId": "",
         "Roles": [
           "GROUP_SEARCH_INDEX_EDITOR",
           "GROUP_OWNER",
@@ -27,4 +27,6 @@
       "ORG_MEMBER",
       "ORG_GROUP_CREATOR"
     ]
+  },
+  "previousResourceState": {}
 }

@@ -1,0 +1,104 @@
+{
+    "typeName": "MongoDB::Atlas::ServerlessPrivateEndpoint",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+    },
+    "properties": {
+        "Id": {
+            "description": "Unique 24-hexadecimal digit string that identifies the private endpoint.",
+            "type": "string"
+        },
+        "ProjectId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string"
+        },
+        "InstanceName": {
+            "description": "Human-readable label that identifies the serverless instance for which the tenant endpoint will be created.",
+            "type": "string"
+        },
+        "Comment": {
+            "description": "Human-readable comment associated with the private endpoint.",
+            "type": "string"
+        },
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used"
+        },
+        "EndpointServiceName": {
+            "type": "string",
+            "description": "Unique string that identifies the Amazon Web Services (AWS) PrivateLink endpoint service. MongoDB Cloud returns null while it creates the endpoint service."
+        },
+        "ErrorMessage" : {
+            "type": "string",
+            "description": "Human-readable error message that indicates error condition associated with establishing the private endpoint connection."
+        },
+        "ProviderName" : {
+            "type": "string",
+            "description": "Human-readable error message that indicates error condition associated with establishing the private endpoint connection.",
+            "enum" : ["AWS", "AZURE"]
+        },
+        "Status" : {
+            "type": "string",
+            "description": "Human-readable error message that indicates error condition associated with establishing the private endpoint connection."
+        },
+        "CloudProviderEndpointId" : {
+            "type": "string",
+            "description": "Unique string that identifies the private endpoint's network interface."
+        },
+        "PrivateEndpointIpAddress" : {
+            "type": "string",
+            "description": "IPv4 address of the private endpoint in your Azure VNet that someone added to this private endpoint service."
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "InstanceName"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id",
+        "/properties/ProjectId",
+        "/properties/InstanceName",
+        "/properties/Profile"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/InstanceName",
+        "/properties/Profile"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/EndpointServiceName",
+        "/properties/ErrorMessage",
+        "/properties/ProviderName",
+        "/properties/Status"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "initech:CreateReport"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "initech:DescribeReport"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "initech:UpdateReport"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "initech:DeleteReport"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "initech:ListReports"
+            ]
+        }
+    }
+}

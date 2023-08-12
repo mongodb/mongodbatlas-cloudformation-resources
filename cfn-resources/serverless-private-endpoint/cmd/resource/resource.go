@@ -274,11 +274,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List Completed",
-		ResourceModels:  ConvertListToModelList(serverlessPrivateEndpoints, currentModel.Profile)}, nil
+		ResourceModels:  ConvertListToModelList(serverlessPrivateEndpoints, currentModel.Profile, currentModel.ProjectId, currentModel.InstanceName)}, nil
 }
 
-func ConvertListToModelList(endpoints []admin.ServerlessTenantEndpoint, profile *string) []interface{} {
-	var models []interface{}
+func ConvertListToModelList(endpoints []admin.ServerlessTenantEndpoint, profile, projectId, instanceName *string) []interface{} {
+	models := make([]interface{}, 0)
 
 	for _, endpoint := range endpoints {
 		model := Model{
@@ -288,8 +288,10 @@ func ConvertListToModelList(endpoints []admin.ServerlessTenantEndpoint, profile 
 			ErrorMessage:             endpoint.ErrorMessage,
 			ProviderName:             endpoint.ProviderName,
 			Status:                   endpoint.Status,
+			InstanceName:             instanceName,
 			CloudProviderEndpointId:  endpoint.CloudProviderEndpointId,
 			PrivateEndpointIpAddress: endpoint.PrivateEndpointIpAddress,
+			ProjectId:                projectId,
 			Profile:                  profile,
 		}
 		models = append(models, model)

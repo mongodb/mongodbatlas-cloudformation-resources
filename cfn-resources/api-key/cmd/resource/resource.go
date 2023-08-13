@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"net/http"
 	"sort"
 
@@ -30,6 +29,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 )
@@ -48,7 +48,7 @@ const (
 	LIST   = "LIST"
 )
 
-type ApiKeySecret struct {
+type APIKeySecret struct {
 	PublicKey  string `json:"PublicKey"`
 	PrivateKey string
 }
@@ -96,7 +96,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.APIUserId = apiKeyUserDetails.Id
 
 	// Save PrivateKey in AWS SecretManager
-	secret := ApiKeySecret{PublicKey: *apiKeyUserDetails.PublicKey, PrivateKey: *apiKeyUserDetails.PrivateKey}
+	secret := APIKeySecret{PublicKey: *apiKeyUserDetails.PublicKey, PrivateKey: *apiKeyUserDetails.PrivateKey}
 	_, err = secrets.Create(&req, *currentModel.APIUserId, secret, currentModel.Description)
 	if err != nil {
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
@@ -376,7 +376,7 @@ func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentMo
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return nil, response, err
 	}
-	var apiKeySecret ApiKeySecret
+	var apiKeySecret APIKeySecret
 	if err := json.Unmarshal([]byte(*secretValue), &apiKeySecret); err != nil {
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return nil, response, err

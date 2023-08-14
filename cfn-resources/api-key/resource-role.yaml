@@ -23,6 +23,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                - "secretsmanager:Create*"
+                - "secretsmanager:Delete*"
                 - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:

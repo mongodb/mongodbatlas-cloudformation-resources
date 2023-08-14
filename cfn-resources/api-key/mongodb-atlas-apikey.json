@@ -43,24 +43,7 @@
                     "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
                     "items": {
                         "type": "string"
-                    },
-                    "enum": [
-                        "GROUP_ATLAS_ADMIN",
-                        "GROUP_AUTOMATION_ADMIN",
-                        "GROUP_BACKUP_ADMIN",
-                        "GROUP_MONITORING_ADMIN",
-                        "GROUP_OWNER",
-                        "GROUP_READ_ONLY",
-                        "GROUP_USER_ADMIN",
-                        "GROUP_BILLING_ADMIN",
-                        "GROUP_DATA_ACCESS_ADMIN",
-                        "GROUP_DATA_ACCESS_READ_ONLY",
-                        "GROUP_DATA_ACCESS_READ_WRITE",
-                        "GROUP_CHARTS_ADMIN",
-                        "GROUP_CLUSTER_MANAGER",
-                        "GROUP_SEARCH_INDEX_EDITOR"
-                    ],
-                    "insertionOrder": false
+                    }
                 },
                 "ProjectId": {
                     "type": "string",
@@ -114,14 +97,6 @@
             "items": {
                 "type": "string"
             },
-            "enum": [
-                "ORG_OWNER",
-                "ORG_MEMBER",
-                "ORG_GROUP_CREATOR",
-                "ORG_BILLING_ADMIN",
-                "ORG_READ_ONLY",
-                "ORG_TEAM_MEMBERS_ADMIN"
-            ],
             "insertionOrder": false
         },
         "ProjectAssignments": {
@@ -159,6 +134,7 @@
     "handlers": {
         "create": {
             "permissions": [
+                "secretsmanager:Create*",
                 "secretsmanager:GetSecretValue"
             ]
         },
@@ -174,7 +150,8 @@
         },
         "delete": {
             "permissions": [
-                "secretsmanager:GetSecretValue"
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:Delete*"
             ]
         },
         "list": {

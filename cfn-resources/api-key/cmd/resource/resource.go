@@ -113,13 +113,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	apiKeyUserDetails, response, err = getAPIkeyDetails(&req, atlas, currentModel)
-	defer closeResponse(response)
-	if err != nil {
-		return handleError(response, READ, err)
-	}
-
-	currentModel.readAPIKeyDetails(*apiKeyUserDetails)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -209,15 +202,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		return handleError(response, UPDATE, err)
 	}
-
-	apiKeyUserDetails, response, err = getAPIkeyDetails(&req, atlas, currentModel)
-
-	defer closeResponse(response)
-	if err != nil {
-		return handleError(response, READ, err)
-	}
-	// Read response
-	currentModel.readAPIKeyDetails(*apiKeyUserDetails)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

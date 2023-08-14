@@ -16,11 +16,12 @@ package secrets
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"log"
 )
 
 func Create(req *handler.Request, secretName string, data interface{}, description *string) (*string, error) {

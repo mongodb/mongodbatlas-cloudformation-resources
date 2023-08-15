@@ -25,9 +25,9 @@ else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-username="inboxgovardhan@gmail.com"
+username=""
 mobileNumber="1234567890"
-password="Cayman@2023"
+password=""
 
 jq --arg orgId "${orgId}" \
    --arg profile "${profile}" \

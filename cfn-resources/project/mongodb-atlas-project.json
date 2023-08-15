@@ -139,6 +139,11 @@
             "type": "array",
             "description": "API keys that you assigned to the specified project.",
             "uniqueItems": true
+        },
+        "RegionUsageRestrictions": {
+            "type": "string",
+            "description": "Region usage restrictions that designate the project's AWS region.Enum: \"GOV_REGIONS_ONLY\" \"COMMERCIAL_FEDRAMP_REGIONS_ONLY\" \"NONE\"",
+            "default": "NONE"
         }
     },
     "additionalProperties": false,

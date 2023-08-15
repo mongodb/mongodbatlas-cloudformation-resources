@@ -1,0 +1,18 @@
+{
+  "Profile": "default",
+  "Username": "",
+  "EmailAddress": "",
+  "FirstName":"CFN",
+  "LastName": "BOT",
+  "Country": "INDIA",
+  "MobileNumber": "",
+  "Password": "",
+  "OrgId": "",
+  "Roles": [],
+  "ProjectAssignments": [
+    {
+      "ProjectId": "",
+      "RoleName": "GROUP_OWNER"
+    }
+  ]
+}

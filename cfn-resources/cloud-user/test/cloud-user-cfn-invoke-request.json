@@ -1,0 +1,23 @@
+{
+  "desiredResourceState": {
+    "Profile": "default",
+    "Username": "inboxgovardhan@gmail.com",
+    "EmailAddress": "inboxgovardhan@gmail.com",
+    "FirstName": "CFN",
+    "LastName": "BOT",
+    "Country": "KY",
+    "MobileNumber": "1234567890",
+    "Password": "Cayman@2023",
+    "OrgId": "63350255419cf25e3d511c95",
+    "Roles": [
+      "ORG_MEMBER"
+    ],
+    "ProjectAssignments": [
+      {
+        "ProjectId": "64dac4e1531f860dc8164dfd",
+        "RoleName": "GROUP_OWNER"
+      }
+    ]
+  },
+  "previousResourceState": {}
+}

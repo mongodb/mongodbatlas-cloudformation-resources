@@ -108,8 +108,8 @@ github.com/ugorji/go/codec v1.2.7 h1:YPXUKf7fYbp/y8xloBqZOw2qaVggbfwMlI8WM3wZUJ0
 github.com/ugorji/go/codec v1.2.7/go.mod h1:WGN1fab3R1fzQlVQTkfxVtIBhWDRqOviHU95kRgeqEY=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.mongodb.org/atlas v0.12.0/go.mod h1:wVCnHcm/7/IfTjEB6K8K35PLG70yGz8BdkRwX0oK9/M=
-go.mongodb.org/atlas v0.32.0 h1:6uHwus8Bz+h1Ax75Pf3qo3kWCwnaUYav+SxSMU2RGiQ=
-go.mongodb.org/atlas v0.32.0/go.mod h1:L4BKwVx/OeEhOVjCSdgo90KJm4469iv7ZLzQms/EPTg=
+go.mongodb.org/atlas v0.33.0 h1:qJhkEuJufh7sVDVHorTF/D7G7naQ1EJAzqf1aV29JWs=
+go.mongodb.org/atlas v0.33.0/go.mod h1:L4BKwVx/OeEhOVjCSdgo90KJm4469iv7ZLzQms/EPTg=
 go.mongodb.org/atlas-sdk/v20230201002 v20230201002.0.0 h1:ANYyIzbdxSdwwbragGKDuAg+3bmr940rbxCvZdIwnPk=
 go.mongodb.org/atlas-sdk/v20230201002 v20230201002.0.0/go.mod h1:SG7r2T7R595Z/+x/miXGR89ZsinqXG/P6k0p+CSNBPY=
 go.mongodb.org/realm v0.1.0 h1:zJiXyLaZrznQ+Pz947ziSrDKUep39DO4SfA0Fzx8M4M=

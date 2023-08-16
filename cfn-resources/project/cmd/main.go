@@ -4,9 +4,14 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"io/ioutil"
 	"log"
+	"os"
 
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
+	//"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
+	"github.com/aws/aws-sdk-go/aws"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 )
@@ -40,8 +45,34 @@ func (r *Handler) List(req handler.Request) handler.ProgressEvent {
 }
 
 // main is the entry point of the application.
+//func main() {
+//	cfn.Start(&Handler{})
+//}
+
 func main() {
-	cfn.Start(&Handler{})
+	//cfn.Start(&Handler{})
+	h := &Handler{}
+	dir := "/project/inputs/inputs_1_create.json"
+
+	path, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(path)
+	dir = path + dir
+	data, err := ioutil.ReadFile(dir)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-east-1")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	req := handler.NewRequest("id", map[string]interface{}{}, handler.RequestContext{}, sess, nil, data, data)
+	h.Create(req)
+
 }
 
 type handlerFunc func(handler.Request, *resource.Model, *resource.Model) (handler.ProgressEvent, error)
@@ -56,7 +87,6 @@ func wrap(req handler.Request, f handlerFunc) (response handler.ProgressEvent) {
 			}
 
 			log.Printf("Trapped error in handler: %v", err)
-
 			response = handler.NewFailedEvent(err)
 		}
 	}()

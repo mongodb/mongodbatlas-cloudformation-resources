@@ -75,6 +75,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Name:                      *currentModel.Name,
 		OrgID:                     *currentModel.OrgId,
 		WithDefaultAlertsSettings: currentModel.WithDefaultAlertsSettings,
+		RegionUsageRestrictions:   *currentModel.RegionUsageRestrictions,
 	}, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerID})
 	if err != nil {
 		_, _ = logger.Debugf("Create - error: %+v", err)
@@ -376,7 +377,7 @@ func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 	currentModel.Id = &project.ID
-
+	currentModel.RegionUsageRestrictions = &project.RegionUsageRestrictions
 	return handler.ProgressEvent{}, currentModel, nil
 }
 

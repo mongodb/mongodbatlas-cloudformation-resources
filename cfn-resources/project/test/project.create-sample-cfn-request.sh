@@ -18,10 +18,10 @@ if [[ "$*" == help ]]; then usage; fi
 
 name="${1}"
 regionUsageRestrictions="GOV_REGIONS_ONLY"
-jq --arg profile "$ATLAS_PROFILE" \
-   --arg org "$ATLAS_ORG_ID" \
+jq --arg profile "$MONGODB_ATLAS_PROFILE" \
+   --arg org "$MONGODB_ATLAS_ORG_ID" \
    --arg name "$name" \
-   --arg regionUsageRestrictions "${regionUsageRestrictions}"
+   --arg regionUsageRestrictions "${regionUsageRestrictions}" \
    '.desiredResourceState.properties.OrgId?|=$org
    | .desiredResourceState.properties.Profile?|=$profile
    | .desiredResourceState.properties.Name?|=$name

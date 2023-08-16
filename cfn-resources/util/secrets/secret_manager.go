@@ -25,7 +25,6 @@ import (
 )
 
 func Create(req *handler.Request, secretName string, data interface{}, description *string) (*string, error) {
-
 	secretString, err := json.Marshal(data)
 	if err != nil {
 		return nil, err

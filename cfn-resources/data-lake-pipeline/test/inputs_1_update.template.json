@@ -1,0 +1,25 @@
+{
+  "Id": "dc222ee6bd7dd355dcbf5e67",
+  "ProjectId": "",
+  "Profile": "default",
+  "Name": "test-data-lake-pipeline1",
+  "Sink": {
+    "PartitionFields": [
+      {
+        "FieldName": "testpartition2",
+        "Order": "0"
+      }
+    ]
+  },
+  "Source": {
+    "ClusterName": "",
+    "CollectionName": "testcollection3",
+    "DatabaseName": "testdatabase4"
+  },
+  "Transformations": [
+    {
+      "Field": "testtransform50",
+      "Type": "EXCLUDE"
+    }
+  ]
+}

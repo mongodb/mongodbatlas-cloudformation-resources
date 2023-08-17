@@ -2,8 +2,8 @@ github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0 h1:NHNKs4hOKBz
 github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0/go.mod h1:u3nqs3hHrn8D51m7+N+6ya7Sksyd6OG3xK3RpXdRb1g=
 github.com/aws/aws-lambda-go v1.37.0 h1:WXkQ/xhIcXZZ2P5ZBEw+bbAKeCEcb5NtiYpSwVVzIXg=
 github.com/aws/aws-lambda-go v1.37.0/go.mod h1:jwFe2KmMsHmffA1X2R09hH6lFzJQxzI8qK17ewzbQMM=
-github.com/aws/aws-sdk-go v1.44.318 h1:Yl66rpbQHFUbxe9JBKLcvOvRivhVgP6+zH0b9KzARX8=
-github.com/aws/aws-sdk-go v1.44.318/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
+github.com/aws/aws-sdk-go v1.44.323 h1:97/dn93DWrN1VfhAWQ2tV+xuE6oO/LO9rSsEsuC4PLU=
+github.com/aws/aws-sdk-go v1.44.323/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
 github.com/aws/aws-sdk-go-v2 v1.20.1 h1:rZBf5DWr7YGrnlTK4kgDQGn1ltqOg5orCYb/UhOFZkg=
 github.com/aws/aws-sdk-go-v2 v1.20.1/go.mod h1:NU06lETsFm8fUC6ZjhgDpVBcGZTFQ6XM+LZWZxMI4ac=
 github.com/aws/aws-sdk-go-v2/config v1.18.33 h1:JKcw5SFxFW/rpM4mOPjv0VQ11E2kxW13F3exWOy7VZU=
@@ -30,8 +30,8 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.21.2 h1:ympg1+Lnq33XLhcK/xTG4yZHPs1O
 github.com/aws/aws-sdk-go-v2/service/sts v1.21.2/go.mod h1:FQ/DQcOfESELfJi5ED+IPPAjI5xC6nxtSolVVB773jM=
 github.com/aws/smithy-go v1.14.1 h1:EFKMUmH/iHMqLiwoEDx2rRjRQpI1YCn5jTysoaDujFs=
 github.com/aws/smithy-go v1.14.1/go.mod h1:Tg+OJXh4MB2R/uN61Ko2f6hTZwB/ZYGOtib8J3gBHzA=
-github.com/dave/jennifer v1.6.1 h1:T4T/67t6RAA5AIV6+NP8Uk/BIsXgDoqEowgycdQQLuk=
-github.com/dave/jennifer v1.6.1/go.mod h1:nXbxhEmQfOZhWml3D1cDK5M1FLnMSozpbFN/m3RmGZc=
+github.com/dave/jennifer v1.7.0 h1:uRbSBH9UTS64yXbh4FrMHfgfY762RD+C7bUPKODpSJE=
+github.com/dave/jennifer v1.7.0/go.mod h1:nXbxhEmQfOZhWml3D1cDK5M1FLnMSozpbFN/m3RmGZc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -108,8 +108,8 @@ github.com/ugorji/go/codec v1.2.7 h1:YPXUKf7fYbp/y8xloBqZOw2qaVggbfwMlI8WM3wZUJ0
 github.com/ugorji/go/codec v1.2.7/go.mod h1:WGN1fab3R1fzQlVQTkfxVtIBhWDRqOviHU95kRgeqEY=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.mongodb.org/atlas v0.12.0/go.mod h1:wVCnHcm/7/IfTjEB6K8K35PLG70yGz8BdkRwX0oK9/M=
-go.mongodb.org/atlas v0.31.0 h1:NgLqsNYm6wDYeDUO90etw1sl8T1U2DUKu36eUdnrFSI=
-go.mongodb.org/atlas v0.31.0/go.mod h1:L4BKwVx/OeEhOVjCSdgo90KJm4469iv7ZLzQms/EPTg=
+go.mongodb.org/atlas v0.33.0 h1:qJhkEuJufh7sVDVHorTF/D7G7naQ1EJAzqf1aV29JWs=
+go.mongodb.org/atlas v0.33.0/go.mod h1:L4BKwVx/OeEhOVjCSdgo90KJm4469iv7ZLzQms/EPTg=
 go.mongodb.org/atlas-sdk/v20230201002 v20230201002.0.0 h1:ANYyIzbdxSdwwbragGKDuAg+3bmr940rbxCvZdIwnPk=
 go.mongodb.org/atlas-sdk/v20230201002 v20230201002.0.0/go.mod h1:SG7r2T7R595Z/+x/miXGR89ZsinqXG/P6k0p+CSNBPY=
 go.mongodb.org/realm v0.1.0 h1:zJiXyLaZrznQ+Pz947ziSrDKUep39DO4SfA0Fzx8M4M=

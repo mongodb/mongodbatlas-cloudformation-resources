@@ -4,11 +4,11 @@ go 1.20
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
-	github.com/aws/aws-sdk-go v1.44.318
+	github.com/aws/aws-sdk-go v1.44.323
 	github.com/aws/aws-sdk-go-v2 v1.20.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.33
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.34.2
-	github.com/dave/jennifer v1.6.1
+	github.com/dave/jennifer v1.7.0
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/mongodb-forks/digest v1.0.4
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/pretty v1.2.1
-	go.mongodb.org/atlas v0.31.0
+	go.mongodb.org/atlas v0.33.0
 	go.mongodb.org/atlas-sdk/v20230201002 v20230201002.0.0
 	go.mongodb.org/realm v0.1.0
 )

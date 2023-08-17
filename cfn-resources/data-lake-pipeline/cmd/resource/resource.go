@@ -35,28 +35,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
-		print("Model validation failed")
 		return *modelValidation, nil
 	}
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		print("Setting default profile")
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	atlasClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
-		print("error in creating the atlas client")
 		return *peErr, nil
 	}
 
-	groupId := *currentModel.ProjectId
-	println(groupId)
+	groupID := *currentModel.ProjectId
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
-	println(dataLakeIntegrationPipeline)
 
-	createRequest := atlasClient.AtlasV2.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupId, dataLakeIntegrationPipeline)
+	createRequest := atlasClient.AtlasV2.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline)
 
 	pe, response, err := createRequest.Execute()
 
@@ -134,10 +129,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	groupId := *currentModel.ProjectId
+	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	readRequest := atlasClient.AtlasV2.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupId, pipelineName)
+	readRequest := atlasClient.AtlasV2.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName)
 	pe, response, err := readRequest.Execute()
 
 	defer closeResponse(response)
@@ -201,10 +196,8 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 			Transformations: transformationsArr,
 		}
 		return &models
-	} else {
-		models := Model{}
-		return &models
 	}
+	return &Model{}
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -226,15 +219,21 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	groupId := *currentModel.ProjectId
+	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	updateRequest := atlasClient.AtlasV2.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupId, pipelineName, dataLakeIntegrationPipeline)
+	updateRequest := atlasClient.AtlasV2.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline)
 	pe, response, err := updateRequest.Execute()
 
 	defer closeResponse(response)
 	if err != nil {
+		if response.StatusCode == http.StatusBadRequest {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+		}
 		return handleError(response, err)
 	}
 
@@ -265,10 +264,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	groupId := *currentModel.ProjectId
+	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	deleteRequest := atlasClient.AtlasV2.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupId, pipelineName)
+	deleteRequest := atlasClient.AtlasV2.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName)
 	_, response, err := deleteRequest.Execute()
 
 	defer closeResponse(response)
@@ -300,8 +299,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	groupId := *currentModel.ProjectId
-	readAllRequest := atlasClient.AtlasV2.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupId)
+	groupID := *currentModel.ProjectId
+	readAllRequest := atlasClient.AtlasV2.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID)
 
 	pe, response, err := readAllRequest.Execute()
 	defer closeResponse(response)

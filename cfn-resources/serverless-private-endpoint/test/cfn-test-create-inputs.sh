@@ -27,7 +27,7 @@ else
   region=$AWS_DEFAULT_REGION
 fi
 
-atlasRegion=$(echo "$region" | tr 'a-z' 'A-Z' | tr '-' '_')
+atlasRegion=$(echo "$region" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -44,7 +44,7 @@ if atlas serverless describe "${projectName}" --projectId "${projectId}"; then
   echo "Serverless found"
 else
   echo "Serverless not found, creating..."
-  atlas serverless create $projectName --provider AWS --region $atlasRegion --projectId $projectId
+  atlas serverless create "$projectName" --provider AWS --region "$atlasRegion" --projectId "$projectId"
   atlas serverless watch "${projectName}" --projectId "${projectId}"
   echo -e "Created Serverless \"${projectName}\""
 fi

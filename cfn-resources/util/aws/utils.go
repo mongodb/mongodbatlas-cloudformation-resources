@@ -40,7 +40,6 @@ func CreatePrivateEndpoint(req handler.Request, endpointServiceName string, regi
 	subnetIds := make([]PrivateEndpointOutput, len(privateEndpointInputs))
 
 	for i, pe := range privateEndpointInputs {
-
 		subnetIdsIn := make([]*string, len(pe.SubnetIDs))
 
 		for i := range pe.SubnetIDs {

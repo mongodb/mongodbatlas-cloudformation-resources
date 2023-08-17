@@ -22,7 +22,7 @@ projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 delete_output=$(atlas serverless delete "$instanceName" --projectId "$projectId" --force 2>&1)
 
 # Check if the instance deletion was initiated successfully
-if [[ $delete_output =~ "Serverless instance '$instanceName' deleted" ]]; then
+if [[ $delete_output =~ Serverless\ instance\ '$instanceName'\ deleted ]]; then
     echo "Deletion initiated for instance $instanceName."
 
     # Loop until the instance is deleted

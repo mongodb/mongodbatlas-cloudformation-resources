@@ -3,6 +3,9 @@ package resource
 import (
 	ctx "context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -12,8 +15,6 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201002/admin"
-	"net/http"
-	"time"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Name, constants.Sink}

@@ -16,8 +16,11 @@ import (
 	"time"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID}
-var ReadRequiredFields = []string{constants.ProjectID}
+var CreateRequiredFields = []string{constants.ProjectID, constants.Name, constants.Sink}
+var ReadRequiredFields = []string{constants.ProjectID, constants.Name}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.Name, constants.Sink}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+var ListRequiredFields = []string{constants.ProjectID}
 
 const (
 	AlreadyExists = "already exists"
@@ -160,10 +163,10 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 			GroupId:        pe.Source.GroupId,
 		}
 
-		partitionArr := []PartitionField{}
+		partitionArr := []PartitionFields{}
 
 		for i := range pe.Sink.PartitionFields {
-			partitionField := PartitionField{
+			partitionField := PartitionFields{
 				FieldName: &pe.Sink.PartitionFields[i].FieldName,
 				Order:     &pe.Sink.PartitionFields[i].Order,
 			}
@@ -208,7 +211,7 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -247,7 +250,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -282,7 +285,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
+	modelValidation := validator.ValidateModel(ListRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}

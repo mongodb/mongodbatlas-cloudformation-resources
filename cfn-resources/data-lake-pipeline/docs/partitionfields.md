@@ -1,4 +1,4 @@
-# MongoDB::Atlas::DataLakePipeline partitionField
+# MongoDB::Atlas::DataLakePipeline partitionFields
 
 Ordered fields used to physically organize data in the destination.
 

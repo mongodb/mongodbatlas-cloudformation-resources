@@ -54,15 +54,9 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Unique 24-hexadecimal digit string that identifies your project.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
-
-_Minimum Length_: <code>24</code>
-
-_Maximum Length_: <code>24</code>
-
-_Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -90,7 +84,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Ingestion destination of a Data Lake Pipeline.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="sink.md">sink</a>
 

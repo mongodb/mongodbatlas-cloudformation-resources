@@ -24,9 +24,10 @@
                 },
                 "PartitionFields" : {
                     "type": "array",
+                    "insertionOrder": false,
                     "description": "Ordered fields used to physically organize data in the destination.",
                     "items": {
-                        "$ref": "#/definitions/partitionField"
+                        "$ref": "#/definitions/partitionFields"
                     }
                 }
             },
@@ -66,7 +67,7 @@
             },
             "additionalProperties": false
         },
-        "partitionField": {
+        "partitionFields": {
             "type" : "object",
             "description" : "Ordered fields used to physically organize data in the destination.",
             "properties" : {
@@ -76,14 +77,14 @@
                 },
                 "Order" : {
                     "type": "integer",
-                    "description": "Sequence in which MongoDB Cloud slices the collection data to create partitions. The resource expresses this sequence starting with zero.",
-                    "default" : 0
+                    "description": "Sequence in which MongoDB Cloud slices the collection data to create partitions. The resource expresses this sequence starting with zero."
                 }
             },
             "additionalProperties": false
         },
         "transformations": {
             "type" : "object",
+            "insertionOrder": false,
             "description" : "Ordered fields used to physically organize data in the destination.",
             "properties" : {
                 "Field" : {
@@ -113,10 +114,7 @@
         },
         "ProjectId": {
             "type": "string",
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "maxLength": 24,
-            "minLength": 24,
-            "pattern": "^([a-f0-9]{24})$"
+            "description": "Unique 24-hexadecimal digit string that identifies your project."
         },
         "State":{
             "type": "string",
@@ -150,9 +148,9 @@
     },
     "additionalProperties": false,
     "required": [
-        "projectId",
-        "Sink/partitionField",
+        "ProjectId",
         "Transformations",
+        "Sink",
         "Name"
     ],
 "createOnlyProperties" : [

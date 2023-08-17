@@ -13,7 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#type" title="Type">Type</a>" : <i>String</i>,
     "<a href="#metadataprovider" title="MetadataProvider">MetadataProvider</a>" : <i>String</i>,
     "<a href="#metadataregion" title="MetadataRegion">MetadataRegion</a>" : <i>String</i>,
-    "<a href="#partitionfields" title="PartitionFields">PartitionFields</a>" : <i>[ <a href="partitionfield.md">partitionField</a>, ... ]</i>
+    "<a href="#partitionfields" title="PartitionFields">PartitionFields</a>" : <i>[ <a href="partitionfields.md">partitionFields</a>, ... ]</i>
 }
 </pre>
 
@@ -24,7 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#metadataprovider" title="MetadataProvider">MetadataProvider</a>: <i>String</i>
 <a href="#metadataregion" title="MetadataRegion">MetadataRegion</a>: <i>String</i>
 <a href="#partitionfields" title="PartitionFields">PartitionFields</a>: <i>
-      - <a href="partitionfield.md">partitionField</a></i>
+      - <a href="partitionfields.md">partitionFields</a></i>
 </pre>
 
 ## Properties
@@ -67,7 +67,7 @@ Ordered fields used to physically organize data in the destination.
 
 _Required_: No
 
-_Type_: List of <a href="partitionfield.md">partitionField</a>
+_Type_: List of <a href="partitionfields.md">partitionFields</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

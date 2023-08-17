@@ -57,25 +57,25 @@
     "DataLakePipeline": {
       "Type": "MongoDB::Atlas::DataLakePipeline",
       "Properties": {
-        "ProjectId": "64dd50a1bb8f002a4460350f",
-        "Name": "testdatalakepipeline44",
-        "Profile": "default",
+        "ProjectId": {"Ref" : "ProjectId"},
+        "Name": {"Ref" : "Name"},
+        "Profile": {"Ref" : "Profile"},
         "Sink": {
           "PartitionFields": [
             {
-              "FieldName": "datalakepartitionfieldName5",
+              "FieldName": {"Ref" : "FieldName"},
               "Order": "0"
             }
           ]
         },
         "Source": {
           "ClusterName": "testdatalakepipeline1",
-          "CollectionName": "testcollectiondatalake5",
-          "DatabaseName": "testdatalakeDB5"
+          "CollectionName": {"Ref" : "CollectionName"},
+          "DatabaseName": {"Ref" : "DatabaseName"}
         },
         "Transformations": [
           {
-            "Field" :"testtransformFeild5",
+            "Field" :{"Ref" : "TransformationField"},
             "Type": "EXCLUDE"
           }
         ]

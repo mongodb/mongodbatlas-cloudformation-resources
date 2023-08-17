@@ -1,13 +1,22 @@
 # MongoDB::Atlas::ServerlessPrivateEndpoint
 
-Congratulations on starting development!
+Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Serverless-Private-Endpoints).
 
-Next steps:
+If the CreateAndAssignAWSPrivateEndpoint Only the Atlas private endpoint will be deleted, the AWS private endpoint will remain and might need to be deleted manually
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-serverlessprivateendpoint.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
+## Requirements
 
-Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
+
+## Attributes and Parameters
+
+See the [resource docs](docs/README.md).
+
+## Cloudformation Examples
+
+### With AWS private endpoint
+See the examples [CFN Template](/examples/serverless-private-endpoint/serverless-private-endpoint-with-aws-private-endpoint.json) for example resource.
+
+### Without AWS private endpoint
+See the examples [CFN Template](/examples/serverless-private-endpoint/serverless-private-endpoint-without-aws-private-endpoint.json) for example resource.

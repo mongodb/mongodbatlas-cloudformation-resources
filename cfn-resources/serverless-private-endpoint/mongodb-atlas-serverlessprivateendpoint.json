@@ -1,8 +1,38 @@
 {
     "typeName": "MongoDB::Atlas::ServerlessPrivateEndpoint",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "description": "Returns, adds, edits, and removes private endpoints for serverless instances. To learn more, see the Atlas Administration API tab on the following tutorial.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
+        "awsPrivateEndpointConfig": {
+            "type": "object",
+            "description": "AWS Private endpoint configuration properties",
+            "properties": {
+                "VpcId": {
+                    "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "type": "string"
+                },
+                "SubnetIds": {
+                    "type": "array",
+                    "description": "List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "InterfaceEndpointId": {
+                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+                    "type": "string"
+                },
+                "AWSPrivateEndpointStatus": {
+                    "description": "Status of the AWS PrivateEndpoint connection.",
+                    "type": "string"
+                },
+                "Region": {
+                    "description": "Aws Region",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
     },
     "properties": {
         "Id": {
@@ -49,6 +79,14 @@
         "PrivateEndpointIpAddress" : {
             "type": "string",
             "description": "IPv4 address of the private endpoint in your Azure VNet that someone added to this private endpoint service."
+        },
+        "CreateAndAssignAWSPrivateEndpoint": {
+            "type": "boolean",
+            "description": "If true the resource will create the aws private endpoint and assign the Endpoint ID"
+        },
+        "AwsPrivateEndpointConfigurationProperties": {
+            "description": "Properties used to configure Aws private endpoint",
+            "$ref": "#/definitions/awsPrivateEndpointConfig"
         }
     },
     "additionalProperties": false,
@@ -75,29 +113,27 @@
         "/properties/Status"
     ],
     "handlers": {
+
         "create": {
             "permissions": [
-                "initech:CreateReport"
+                "ec2:CreateVpcEndpoint",
+                "secretsmanager:GetSecretValue"
             ]
         },
         "read": {
             "permissions": [
-                "initech:DescribeReport"
-            ]
-        },
-        "update": {
-            "permissions": [
-                "initech:UpdateReport"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "delete": {
             "permissions": [
-                "initech:DeleteReport"
+                "ec2:DeleteVpcEndpoints",
+                "secretsmanager:GetSecretValue"
             ]
         },
         "list": {
             "permissions": [
-                "initech:ListReports"
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

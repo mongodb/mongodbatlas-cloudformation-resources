@@ -21,6 +21,14 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+if ! test -v AWS_DEFAULT_REGION; then
+    region=$(aws configure get region)
+else
+  region=$AWS_DEFAULT_REGION
+fi
+
+atlasRegion=$(echo "$region" | tr 'a-z' 'A-Z' | tr '-' '_')
+
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -31,31 +39,24 @@ else
     echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-echo "Check if a project is created $projectId"
-
-region="us-east-1"
-
-clusterName="${projectName}"
+# Check if the instance already exists
+if atlas serverless describe "${projectName}" --projectId "${projectId}"; then
+  echo "Serverless found"
+else
+  echo "Serverless not found, creating..."
+  atlas serverless create $projectName --provider AWS --region $atlasRegion --projectId $projectId
+  atlas serverless watch "${projectName}" --projectId "${projectId}"
+  echo -e "Created Serverless \"${projectName}\""
+fi
 
 jq --arg region "$region" \
-   --arg clusterName "$clusterName" \
+   --arg instanceName "$projectName" \
    --arg projectId "$projectId" \
-   '.Name?|=$clusterName | .ProjectId?|=$projectId ' \
+   '.InstanceName?|=$instanceName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg region "$region" \
-   --arg clusterName "$clusterName" \
+   --arg instanceName "$projectName" \
    --arg projectId "$projectId" \
-   '.Name?|=$clusterName | .ProjectId?|=$projectId ' \
+   '.InstanceName?|=$instanceName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
-
-#SET INVALID NAME
-clusterName="^%LKJ)(*J_ {+_+O_)"
-
-jq --arg region "$region" \
-   --arg clusterName "$clusterName" \
-   --arg projectId "$projectId" \
-   '.Name?|=$clusterName | .ProjectId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
-
-

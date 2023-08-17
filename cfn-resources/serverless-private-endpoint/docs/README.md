@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ServerlessPrivateEndpoint
 
-An example resource schema demonstrating some basic constructs and validation rules.
+Returns, adds, edits, and removes private endpoints for serverless instances. To learn more, see the Atlas Administration API tab on the following tutorial.
 
 ## Syntax
 
@@ -17,7 +17,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#comment" title="Comment">Comment</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#cloudproviderendpointid" title="CloudProviderEndpointId">CloudProviderEndpointId</a>" : <i>String</i>,
-        "<a href="#privateendpointipaddress" title="PrivateEndpointIpAddress">PrivateEndpointIpAddress</a>" : <i>String</i>
+        "<a href="#privateendpointipaddress" title="PrivateEndpointIpAddress">PrivateEndpointIpAddress</a>" : <i>String</i>,
+        "<a href="#createandassignawsprivateendpoint" title="CreateAndAssignAWSPrivateEndpoint">CreateAndAssignAWSPrivateEndpoint</a>" : <i>Boolean</i>,
+        "<a href="#awsprivateendpointconfigurationproperties" title="AwsPrivateEndpointConfigurationProperties">AwsPrivateEndpointConfigurationProperties</a>" : <i><a href="awsprivateendpointconfig.md">awsPrivateEndpointConfig</a></i>
     }
 }
 </pre>
@@ -33,6 +35,8 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#cloudproviderendpointid" title="CloudProviderEndpointId">CloudProviderEndpointId</a>: <i>String</i>
     <a href="#privateendpointipaddress" title="PrivateEndpointIpAddress">PrivateEndpointIpAddress</a>: <i>String</i>
+    <a href="#createandassignawsprivateendpoint" title="CreateAndAssignAWSPrivateEndpoint">CreateAndAssignAWSPrivateEndpoint</a>: <i>Boolean</i>
+    <a href="#awsprivateendpointconfigurationproperties" title="AwsPrivateEndpointConfigurationProperties">AwsPrivateEndpointConfigurationProperties</a>: <i><a href="awsprivateendpointconfig.md">awsPrivateEndpointConfig</a></i>
 </pre>
 
 ## Properties
@@ -94,6 +98,26 @@ IPv4 address of the private endpoint in your Azure VNet that someone added to th
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### CreateAndAssignAWSPrivateEndpoint
+
+If true the resource will create the aws private endpoint and assign the Endpoint ID
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AwsPrivateEndpointConfigurationProperties
+
+AWS Private endpoint configuration properties
+
+_Required_: No
+
+_Type_: <a href="awsprivateendpointconfig.md">awsPrivateEndpointConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

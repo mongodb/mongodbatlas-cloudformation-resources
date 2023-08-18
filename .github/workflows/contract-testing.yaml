@@ -31,8 +31,6 @@ jobs:
           - 'cfn-resources/federated-query-limit/**'
         auditing:
           - 'cfn-resources/auditing/**'
-        api-key:
-          - 'cfn-resources/api-key/**'
         privatelink-endpoint-service-data-federation-online-archive:
           - 'cfn-resources/privatelink-endpoint-service-data-federation-online-archive/**'
   federated-database-instance:

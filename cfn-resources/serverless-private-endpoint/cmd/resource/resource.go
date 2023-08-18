@@ -352,7 +352,6 @@ func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.M
 		return &pe
 	}
 
-	//cloudProviderEndpointId
 	interfaceEndpoint := []string{
 		*serverlessPrivateEndpoint.CloudProviderEndpointId,
 	}
@@ -568,7 +567,7 @@ func getProcessStatus(req handler.Request) (enums.EventStatus, *handler.Progress
 	return eventStatus, nil
 }
 
-func unmarshallAwsMetadata(input string) (bool, *string) {
+func unmarshallAwsMetadata(input string) (createAwsPrivateEndpoint bool, region *string) {
 	parts := strings.Split(input, "/")
 	if len(parts) != 2 {
 		return false, nil

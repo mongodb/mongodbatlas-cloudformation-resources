@@ -27,8 +27,6 @@ else
   region=$AWS_DEFAULT_REGION
 fi
 
-atlasRegion=$(echo "$region" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
-
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then

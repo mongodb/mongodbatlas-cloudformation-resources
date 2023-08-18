@@ -15,7 +15,6 @@
         "endpoint_url": null,
         "region": null,
         "target_schemas": [],
-        "profile": null,
         "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/data-lake-pipeline",
         "protocolVersion": "2.0.0",
         "pluginVersion": "2.0.4"

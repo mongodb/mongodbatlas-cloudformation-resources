@@ -52,7 +52,6 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-serverless-private-endpoint")
 }
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -128,7 +127,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -172,7 +170,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModel:   currentModel}, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -291,7 +288,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return progressevents.GetInProgressProgressEvent("Create in progress", getCallbackContext(*currentModel.Id, aws.String("")), currentModel, callbackDelayInSeconds), nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -445,18 +441,12 @@ func ConvertListToModelList(endpoints []admin.ServerlessTenantEndpoint, profileN
 
 	for _, endpoint := range endpoints {
 		model := Model{
-			Id:                       endpoint.Id,
-			Comment:                  endpoint.Comment,
-			EndpointServiceName:      endpoint.EndpointServiceName,
-			ErrorMessage:             endpoint.ErrorMessage,
-			ProviderName:             endpoint.ProviderName,
-			Status:                   endpoint.Status,
-			InstanceName:             instanceName,
-			CloudProviderEndpointId:  endpoint.CloudProviderEndpointId,
-			PrivateEndpointIpAddress: endpoint.PrivateEndpointIpAddress,
-			ProjectId:                projectID,
-			Profile:                  profileName,
+			InstanceName: instanceName,
+			ProjectId:    projectID,
+			Profile:      profileName,
 		}
+
+		model.completeWithAtlasModel(endpoint)
 		models = append(models, model)
 	}
 
@@ -525,13 +515,7 @@ func (currentModel *Model) completeWithAtlasModel(atlasModel admin.ServerlessTen
 	currentModel.ProviderName = atlasModel.ProviderName
 	currentModel.ErrorMessage = atlasModel.ErrorMessage
 	currentModel.EndpointServiceName = atlasModel.EndpointServiceName
-
-	//Configure the aws metadata
-	result := fmt.Sprintf("%v/", currentModel.CreateAndAssignAWSPrivateEndpoint != nil && *currentModel.CreateAndAssignAWSPrivateEndpoint)
-	if currentModel.AwsPrivateEndpointConfigurationProperties != nil && currentModel.AwsPrivateEndpointConfigurationProperties.Region != nil {
-		result += *currentModel.AwsPrivateEndpointConfigurationProperties.Region
-	}
-	currentModel.AwsPrivateEndpointMetaData = &result
+	currentModel.completeAwsPrivateEndpointMetaData()
 }
 
 func (currentModel *Model) validateAwsPrivateEndpointProperties() *handler.ProgressEvent {
@@ -597,4 +581,12 @@ func unmarshallAwsMetadata(input string) (bool, *string) {
 
 	stringValue := parts[1]
 	return boolValue, &stringValue
+}
+
+func (currentModel *Model) completeAwsPrivateEndpointMetaData() {
+	result := fmt.Sprintf("%v/", currentModel.CreateAndAssignAWSPrivateEndpoint != nil && *currentModel.CreateAndAssignAWSPrivateEndpoint)
+	if currentModel.AwsPrivateEndpointConfigurationProperties != nil && currentModel.AwsPrivateEndpointConfigurationProperties.Region != nil {
+		result += *currentModel.AwsPrivateEndpointConfigurationProperties.Region
+	}
+	currentModel.AwsPrivateEndpointMetaData = &result
 }

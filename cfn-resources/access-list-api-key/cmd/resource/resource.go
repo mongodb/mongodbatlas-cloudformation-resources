@@ -32,10 +32,10 @@ import (
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 )
 
-var CreateRequiredFields = []string{constants.OrgID, constants.ApiUserID}
-var ReadRequiredFields = []string{constants.OrgID, constants.ApiUserID, constants.IpAddress}
-var DeleteRequiredFields = []string{constants.OrgID, constants.ApiUserID, constants.IpAddress}
-var ListRequiredFields = []string{constants.OrgID, constants.IpAddress, constants.ApiUserID}
+var CreateRequiredFields = []string{constants.OrgID, constants.APIUserID}
+var ReadRequiredFields = []string{constants.OrgID, constants.APIUserID}
+var DeleteRequiredFields = []string{constants.OrgID, constants.APIUserID}
+var ListRequiredFields = []string{constants.OrgID, constants.APIUserID}
 
 const (
 	CREATE = "CREATE"

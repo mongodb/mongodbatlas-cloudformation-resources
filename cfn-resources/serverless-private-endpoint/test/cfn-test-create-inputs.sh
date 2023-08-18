@@ -44,7 +44,7 @@ if atlas serverless describe "${projectName}" --projectId "${projectId}"; then
   echo "Serverless found"
 else
   echo "Serverless not found, creating..."
-  atlas serverless create "$projectName" --provider AWS --region "US_EAST_1" --projectId "$projectId"
+  atlas serverless create "$projectName" --provider AWS --region US_EAST_1 --projectId "$projectId"
   atlas serverless watch "${projectName}" --projectId "${projectId}"
   echo -e "Created Serverless \"${projectName}\""
 fi

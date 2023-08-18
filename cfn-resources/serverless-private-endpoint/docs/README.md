@@ -149,3 +149,7 @@ Human-readable error message that indicates error condition associated with esta
 
 Human-readable error message that indicates error condition associated with establishing the private endpoint connection.
 
+#### AwsPrivateEndpointMetaData
+
+Metadata used to track information about the aws private endpoint
+

@@ -28,6 +28,7 @@ type Model struct {
 	ProviderName                              *string                   `json:",omitempty"`
 	Status                                    *string                   `json:",omitempty"`
 	CloudProviderEndpointId                   *string                   `json:",omitempty"`
+	AwsPrivateEndpointMetaData                *string                   `json:",omitempty"`
 	PrivateEndpointIpAddress                  *string                   `json:",omitempty"`
 	CreateAndAssignAWSPrivateEndpoint         *bool                     `json:",omitempty"`
 	AwsPrivateEndpointConfigurationProperties *AwsPrivateEndpointConfig `json:",omitempty"`

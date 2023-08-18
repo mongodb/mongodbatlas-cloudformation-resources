@@ -76,6 +76,10 @@
             "type": "string",
             "description": "Unique string that identifies the private endpoint's network interface."
         },
+        "AwsPrivateEndpointMetaData" :{
+            "type": "string",
+            "description": "Metadata used to track information about the aws private endpoint"
+        },
         "PrivateEndpointIpAddress" : {
             "type": "string",
             "description": "IPv4 address of the private endpoint in your Azure VNet that someone added to this private endpoint service."
@@ -98,7 +102,8 @@
         "/properties/Id",
         "/properties/ProjectId",
         "/properties/InstanceName",
-        "/properties/Profile"
+        "/properties/Profile",
+        "/properties/AwsPrivateEndpointMetaData"
     ],
     "createOnlyProperties": [
         "/properties/ProjectId",
@@ -110,7 +115,8 @@
         "/properties/EndpointServiceName",
         "/properties/ErrorMessage",
         "/properties/ProviderName",
-        "/properties/Status"
+        "/properties/Status",
+        "/properties/AwsPrivateEndpointMetaData"
     ],
     "handlers": {
 

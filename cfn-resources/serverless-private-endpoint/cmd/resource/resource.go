@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -35,15 +36,16 @@ import (
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 var ReadRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ID}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ID, AwsPrivateEndpointMetaData}
 var UpdateRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ID}
 var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 
 const (
-	id                     = "id"
-	stateName              = "StateName"
-	endpointServiceName    = "endpoint_service_name"
-	callbackDelayInSeconds = 5
+	id                         = "id"
+	stateName                  = "StateName"
+	endpointServiceName        = "endpoint_service_name"
+	callbackDelayInSeconds     = 5
+	AwsPrivateEndpointMetaData = "AwsPrivateEndpointMetaData"
 )
 
 func setup() {
@@ -257,6 +259,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
+	createAndAssignAWSPrivateEndpoint, region := unmarshallAwsMetadata(*currentModel.AwsPrivateEndpointMetaData)
+	if !isRequestInProgress(req) && createAndAssignAWSPrivateEndpoint {
+		if region == nil {
+			return progressevents.GetFailedEventByCode("Error deleting aws private Endpoint region is null", cloudformation.HandlerErrorCodeServiceInternalError), nil
+		}
+		errPe := deleteAwsPrivateEndpoint(currentModel, *region, client, req)
+		if errPe != nil {
+			return *errPe, nil
+		}
+	}
+
 	// Make the API call to delete the serverless private endpoint
 	deleteServerlessPrivateEndpointRequest := client.AtlasV2.ServerlessPrivateEndpointsApi.DeleteServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
@@ -326,6 +339,35 @@ func createAwsPrivateEndpoint(currentModel *Model, req handler.Request) (*aws_ut
 	}
 
 	return &output[0], nil
+}
+
+func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.MongoDBClient, req handler.Request) *handler.ProgressEvent {
+	createServerlessPrivateEndpointRequest := client.AtlasV2.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
+		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
+	serverlessPrivateEndpoint, response, err := createServerlessPrivateEndpointRequest.Execute()
+	defer response.Body.Close()
+	if err != nil {
+		if isTenantPrivateEndpointNotFound(response) {
+			pe := progressevents.GetFailedEventByCode(fmt.Sprintf("error getting Serverless Private Endpoint %s", err.Error()), cloudformation.HandlerErrorCodeNotFound)
+			return &pe
+		}
+		pe := progressevents.GetFailedEventByResponse(fmt.Sprintf("error getting Serverless Private Endpoint %s",
+			err.Error()), response)
+		return &pe
+	}
+
+	//cloudProviderEndpointId
+	interfaceEndpoint := []string{
+		*serverlessPrivateEndpoint.CloudProviderEndpointId,
+	}
+
+	errorProgressEvent := aws_utils.DeletePrivateEndpoint(req, interfaceEndpoint, region)
+
+	if errorProgressEvent != nil {
+		return errorProgressEvent
+	}
+
+	return nil
 }
 
 func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient) (*admin.ServerlessTenantEndpoint, *handler.ProgressEvent) {
@@ -483,6 +525,13 @@ func (currentModel *Model) completeWithAtlasModel(atlasModel admin.ServerlessTen
 	currentModel.ProviderName = atlasModel.ProviderName
 	currentModel.ErrorMessage = atlasModel.ErrorMessage
 	currentModel.EndpointServiceName = atlasModel.EndpointServiceName
+
+	//Configure the aws metadata
+	result := fmt.Sprintf("%v/", currentModel.CreateAndAssignAWSPrivateEndpoint != nil && *currentModel.CreateAndAssignAWSPrivateEndpoint)
+	if currentModel.AwsPrivateEndpointConfigurationProperties != nil && currentModel.AwsPrivateEndpointConfigurationProperties.Region != nil {
+		result += *currentModel.AwsPrivateEndpointConfigurationProperties.Region
+	}
+	currentModel.AwsPrivateEndpointMetaData = &result
 }
 
 func (currentModel *Model) validateAwsPrivateEndpointProperties() *handler.ProgressEvent {
@@ -533,4 +582,19 @@ func getProcessStatus(req handler.Request) (enums.EventStatus, *handler.Progress
 	}
 
 	return eventStatus, nil
+}
+
+func unmarshallAwsMetadata(input string) (bool, *string) {
+	parts := strings.Split(input, "/")
+	if len(parts) != 2 {
+		return false, nil
+	}
+
+	boolValue := parts[0] == "true"
+	if parts[1] == "" {
+		return boolValue, nil
+	}
+
+	stringValue := parts[1]
+	return boolValue, &stringValue
 }

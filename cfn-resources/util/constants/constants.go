@@ -130,4 +130,6 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	ApiUserID                  = "ApiUserId"
+	IpAddress                  = "IpAddress"
 )

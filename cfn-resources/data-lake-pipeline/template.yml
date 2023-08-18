@@ -24,4 +24,6 @@ Resources:
       Environment: 
         Variables: 
           MODE: Test
+          LOG_LEVEL: debug
+          MONGODB_ATLAS_BASE_URL:
 

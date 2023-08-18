@@ -19,7 +19,6 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-#project_id
 #set profile
 Profile="default"
 if [ ${MONGODB_ATLAS_PROFILE+x} ];then

@@ -51,7 +51,7 @@
         },
         "AwsSecretName": {
             "type": "string",
-            "description": "Name of the AWS Secrets Manager secret that stores the API key. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name."
+            "description": "Name of the AWS Secrets Manager secret that stores the API key Details. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name."
         },
         "OrgId": {
             "type": "string",
@@ -62,7 +62,8 @@
         },
         "Profile": {
             "type": "string",
-            "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "PublicKey": {
             "type": "string",
@@ -70,7 +71,7 @@
         },
         "PrivateKey": {
             "type": "string",
-            "description": "Purpose or explanation provided when someone created this organization API key."
+            "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
         },
         "Roles": {
             "type": "array",

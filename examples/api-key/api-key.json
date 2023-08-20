@@ -15,6 +15,10 @@
       "Description": "Your MongoDB Atlas Profile Name created in secret manager",
       "Default": "default"
     },
+    "AwsSecretName": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager"
+    },
     "OrgRoles": {
       "Type": "List<String>",
       "Description": "Role names",
@@ -46,6 +50,9 @@
         "Profile": {
           "Ref": "Profile"
         },
+        "AwsSecretName": {
+          "Ref": "AwsSecretName"
+        },
         "ProjectAssignments": [
           {
             "ProjectId": {"Ref": "ProjectId"},
@@ -61,14 +68,6 @@
         "Fn::GetAtt": [
           "APIKey",
           "APIUserId"
-        ]
-      }
-    },
-    "APIKeyPublicKey": {
-      "Value": {
-        "Fn::GetAtt": [
-          "APIKey",
-          "PublicKey"
         ]
       }
     }

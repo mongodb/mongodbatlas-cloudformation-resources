@@ -53,7 +53,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### AwsSecretName
 
-Name of the AWS Secrets Manager secret that stores the API key. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name.
+Name of the AWS Secrets Manager secret that stores the API key Details. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name.
 
 _Required_: No
 
@@ -79,7 +79,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### Profile
 
-Redacted private key returned for this organization API key. This key displays unredacted when first created.
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: No
 
@@ -123,7 +123,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### PrivateKey
 
-Purpose or explanation provided when someone created this organization API key.
+Redacted private key returned for this organization API key. This key displays unredacted when first created.
 
 #### PublicKey
 

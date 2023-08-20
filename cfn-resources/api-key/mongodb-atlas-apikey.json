@@ -3,20 +3,6 @@
     "description": "Creates one API key for the specified organization. An organization API key grants programmatic access to an organization.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
-        "Link": {
-            "type": "object",
-            "properties": {
-                "Href": {
-                    "type": "string",
-                    "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with https://cloud.mongodb.com/api/atlas."
-                },
-                "Rel": {
-                    "type": "string",
-                    "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with https://cloud.mongodb.com/api/atlas."
-                }
-            },
-            "additionalProperties": false
-        },
         "ListOptions": {
             "type": "object",
             "properties": {
@@ -63,14 +49,9 @@
             "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "Links": {
-            "type": "array",
-            "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-            "items": {
-                "$ref": "#/definitions/Link",
-                "type": "object"
-            },
-            "insertionOrder": false
+        "AwsSecretName": {
+            "type": "string",
+            "description": "Name of the AWS Secrets Manager secret that stores the API key. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name."
         },
         "OrgId": {
             "type": "string",
@@ -117,7 +98,6 @@
         "Description"
     ],
     "readOnlyProperties": [
-        "/properties/Links",
         "/properties/PrivateKey",
         "/properties/PublicKey",
         "/properties/APIUserId"

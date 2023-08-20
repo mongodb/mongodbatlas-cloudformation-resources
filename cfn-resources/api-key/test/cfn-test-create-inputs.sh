@@ -33,7 +33,6 @@ fi
 
 orgId="${MONGODB_ATLAS_ORG_ID}"
 
-projectName="cfn-bot-apikey-test"
 # create ProjectId
 projectName="${1}"
 if [ ${#projectName} -gt 22 ];then
@@ -74,7 +73,9 @@ jq --arg orgId "$orgId" \
   --arg profile "$profile" \
   --arg projectId1 "$projectId1" \
   --arg projectId2 "$projectId2" \
-	'.OrgId?|=$orgId | .Profile?|=$profile | .ProjectAssignments[0].ProjectId?|=$projectId1 | .ProjectAssignments[1].ProjectId?|=$projectId2' \
+	'.OrgId?|=$orgId | .Profile?|=$profile |
+	 .ProjectAssignments[0].ProjectId?|=$projectId1 |
+	 .ProjectAssignments[1].ProjectId?|=$projectId2' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 # Invalid
@@ -89,9 +90,10 @@ jq --arg orgId "$orgId" \
 	--arg profile "$profile" \
 	--arg projectId2 "$projectId2" \
 	--arg projectId3 "$projectId3" \
-  	'.OrgId?|=$orgId | .Profile?|=$profile | .ProjectAssignments[0].ProjectId?|=$projectId2 | .ProjectAssignments[1].ProjectId?|=$projectId3' \
+  	'.OrgId?|=$orgId | .Profile?|=$profile |
+  	 .ProjectAssignments[0].ProjectId?|=$projectId2 |
+  	 .ProjectAssignments[1].ProjectId?|=$projectId3' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
-
 
 
 ls -l inputs

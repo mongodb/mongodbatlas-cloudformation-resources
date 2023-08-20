@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::APIKey",
     "Properties" : {
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
+        "<a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ String, ... ]</i>,
@@ -28,6 +29,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::APIKey
 Properties:
     <a href="#description" title="Description">Description</a>: <i>String</i>
+    <a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
@@ -44,6 +46,16 @@ Properties:
 Purpose or explanation provided when someone created this organization API key.
 
 _Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AwsSecretName
+
+Name of the AWS Secrets Manager secret that stores the API key. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name.
+
+_Required_: No
 
 _Type_: String
 
@@ -108,10 +120,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
-
-#### Links
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
 
 #### PrivateKey
 

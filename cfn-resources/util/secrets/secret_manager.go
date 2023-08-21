@@ -24,10 +24,10 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func Create(req *handler.Request, secretName string, data interface{}, description *string) (*string, error) {
+func Create(req *handler.Request, secretName string, data interface{}, description *string) (*string, *string, error) {
 	secretString, err := json.Marshal(data)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Create service client value configured for credentials
@@ -44,21 +44,21 @@ func Create(req *handler.Request, secretName string, data interface{}, descripti
 		// Print the error, cast err to awserr. Error to get the Code and
 		// Message from an error.
 		log.Printf("error create secret: %+v", err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 	log.Printf("Created secret result:%+v", result)
-	return result.Name, nil
+	return result.Name, result.ARN, nil
 }
 
-func Get(req *handler.Request, secretName string) (*string, error) {
+func Get(req *handler.Request, secretName string) (*string, *string, error) {
 	sm := secretsmanager.New(req.Session)
 	output, err := sm.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretName})
 	if err != nil {
 		log.Printf("Error --- %v", err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 
-	return output.SecretString, nil
+	return output.SecretString, output.ARN, nil
 }
 
 func Delete(req *handler.Request, secretName string) error {

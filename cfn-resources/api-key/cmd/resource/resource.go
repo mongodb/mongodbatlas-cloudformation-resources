@@ -16,6 +16,7 @@ package resource
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sort"
@@ -89,18 +90,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Save PrivateKey in AWS SecretManager
 	secret := APIKeySecret{APIUserID: *currentModel.APIUserId, PublicKey: *apiKeyUserDetails.PublicKey, PrivateKey: *apiKeyUserDetails.PrivateKey}
-	secretName := *currentModel.APIUserId
+	secretName := formatSecretName(*currentModel.APIUserId)
 	if currentModel.AwsSecretName != nil {
 		secretName = *currentModel.AwsSecretName
 	}
-	_, err = secrets.Create(&req, secretName, secret, currentModel.Description)
+	_, arn, err := secrets.Create(&req, secretName, secret, currentModel.Description)
 	if err != nil {
 		// Delete the APIKey from Atlas
 		_, _ = Delete(req, prevModel, currentModel)
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return handleError(response, constants.CREATE, err)
 	}
-
+	currentModel.AwsSecretName = &secretName
+	currentModel.AwsSecretArn = arn
 	// Assign Org APIKey to given projects i.e. projectAssignments
 	if len(currentModel.ProjectAssignments) > 0 {
 		for i := range currentModel.ProjectAssignments {
@@ -115,6 +117,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
 		ResourceModel:   currentModel}, nil
+}
+
+func formatSecretName(secretName string) string {
+	return fmt.Sprintf("mongodb/atlas/apikey/%s", secretName)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -136,13 +142,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	apiKeyUserDetails, response, err := getAPIkeyDetails(&req, atlas, currentModel)
+	apiKeyUserDetails, arn, response, err := getAPIkeyDetails(&req, atlas, currentModel)
 
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
-
+	currentModel.AwsSecretArn = arn
 	currentModel.readAPIKeyDetails(*apiKeyUserDetails)
 	_, _ = logger.Debugf("Read Response: %+v", currentModel)
 
@@ -237,16 +243,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Delete Secret from AWS Secret Manager
-	secretName := *currentModel.APIUserId
+	secretName := formatSecretName(*currentModel.APIUserId)
 	if currentModel.AwsSecretName != nil {
 		secretName = *currentModel.AwsSecretName
 	}
 
 	if err := secrets.Delete(&req, secretName); err != nil {
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
-		if err != nil {
-			return handleError(response, constants.DELETE, err)
-		}
+		return handleError(response, constants.DELETE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -350,7 +354,7 @@ func assignProjects(atlasClient *util.MongoDBClient, project ProjectAssignment, 
 	return handler.ProgressEvent{}, err
 }
 
-func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
+func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *string, *http.Response, error) {
 	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
@@ -359,10 +363,27 @@ func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentMo
 	apiKeyUserDetails, response, err := apiKeyRequest.Execute()
 
 	if err != nil {
-		return apiKeyUserDetails, response, err
+		return apiKeyUserDetails, nil, response, err
+	}
+	secretName := formatSecretName(*currentModel.APIUserId)
+	if currentModel.AwsSecretName != nil {
+		secretName = *currentModel.AwsSecretName
 	}
 
-	return apiKeyUserDetails, response, err
+	var arn *string
+	// Get PrivateKey from AWS SecretManager and assign back
+	secretValue, arn, err := secrets.Get(req, secretName)
+	if err != nil {
+		response = &http.Response{StatusCode: http.StatusInternalServerError}
+		return nil, arn, response, err
+	}
+	var apiKeySecret APIKeySecret
+	if err := json.Unmarshal([]byte(*secretValue), &apiKeySecret); err != nil {
+		response = &http.Response{StatusCode: http.StatusInternalServerError}
+		return nil, arn, response, err
+	}
+
+	return apiKeyUserDetails, arn, response, err
 }
 
 func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, atlas *util.MongoDBClient, orgKeyID *string) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {

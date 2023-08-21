@@ -73,6 +73,10 @@
             "type": "string",
             "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
         },
+        "AwsSecretArn": {
+            "type": "string",
+            "description": "ARN of the AWS Secrets Manager secret that stores the API key Details"
+        },
         "Roles": {
             "type": "array",
             "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
@@ -101,21 +105,24 @@
     "readOnlyProperties": [
         "/properties/PrivateKey",
         "/properties/PublicKey",
-        "/properties/APIUserId"
+        "/properties/APIUserId",
+        "/properties/AwsSecretArn"
     ],
     "createOnlyProperties": [
         "/properties/OrgId",
-        "/properties/Profile"
+        "/properties/Profile",
+        "/properties/AwsSecretName/"
     ],
     "primaryIdentifier": [
         "/properties/OrgId",
         "/properties/Profile",
-        "/properties/APIUserId"
+        "/properties/APIUserId",
+        "/properties/AwsSecretName/"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:Create*",
+                "secretsmanager:CreateSecret",
                 "secretsmanager:GetSecretValue"
             ]
         },
@@ -132,7 +139,7 @@
         "delete": {
             "permissions": [
                 "secretsmanager:GetSecretValue",
-                "secretsmanager:Delete*"
+                "secretsmanager:DeleteSecret"
             ]
         },
         "list": {

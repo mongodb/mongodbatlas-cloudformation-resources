@@ -11,6 +11,7 @@ type Model struct {
 	Profile            *string             `json:",omitempty"`
 	PublicKey          *string             `json:",omitempty"`
 	PrivateKey         *string             `json:",omitempty"`
+	AwsSecretArn       *string             `json:",omitempty"`
 	Roles              []string            `json:",omitempty"`
 	ProjectAssignments []ProjectAssignment `json:",omitempty"`
 	ListOptions        *ListOptions        `json:",omitempty"`

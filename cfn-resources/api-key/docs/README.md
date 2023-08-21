@@ -133,3 +133,7 @@ Public API key value set for the specified organization API key.
 
 Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.
 
+#### AwsSecretArn
+
+ARN of the AWS Secrets Manager secret that stores the API key Details
+

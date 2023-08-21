@@ -73,8 +73,8 @@ echo -e "--------------------------------Mongo CLI Role creation ends ----------
 
 
 echo -e "--------------------------------create key and key policy document starts ----------------------------\n"
-roleName="cfn-boto-df-role-${keyRegionUnderScore}"
-policyName="cfn-boto-df-bucket-role-policy-${keyRegionUnderScore}"
+roleName="mongodb-atlas-df-role-${keyRegionUnderScore}"
+policyName="mongodb-atlas-df-bucket-role-policy-${keyRegionUnderScore}"
 echo "roleName: ${roleName} , policyName: ${policyName}"
 
 atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAWSAccountArn')

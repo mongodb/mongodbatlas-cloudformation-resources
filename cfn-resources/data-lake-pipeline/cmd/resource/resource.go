@@ -82,7 +82,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	model := ReadResponseModelGeneration(pe)
-	model.Profile = currentModel.Profile
+	if model != nil {
+		model.Profile = currentModel.Profile
+	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -156,7 +158,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	model := ReadResponseModelGeneration(pe)
-	model.Profile = currentModel.Profile
+	if model != nil {
+		model.Profile = currentModel.Profile
+	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Completed",
@@ -174,29 +178,33 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 		}
 
 		partitionArr := []PartitionFields{}
+		sink := Sink{}
 
-		for i := range pe.Sink.PartitionFields {
-			partitionField := PartitionFields{
-				FieldName: &pe.Sink.PartitionFields[i].FieldName,
-				Order:     &pe.Sink.PartitionFields[i].Order,
+		if pe.Sink.PartitionFields != nil {
+			for i := range pe.Sink.PartitionFields {
+				partitionField := PartitionFields{
+					FieldName: &pe.Sink.PartitionFields[i].FieldName,
+					Order:     &pe.Sink.PartitionFields[i].Order,
+				}
+				partitionArr = append(partitionArr, partitionField)
 			}
-			partitionArr = append(partitionArr, partitionField)
-		}
-		sink := Sink{
-			Type:             pe.Sink.Type,
-			MetadataProvider: pe.Sink.MetadataProvider,
-			MetadataRegion:   pe.Sink.MetadataRegion,
-			PartitionFields:  partitionArr,
-		}
+			sink.Type = pe.Sink.Type
+			sink.MetadataProvider = pe.Sink.MetadataProvider
+			sink.MetadataRegion = pe.Sink.MetadataRegion
+			sink.PartitionFields = partitionArr
 
+		}
 		transformationsArr := []Transformations{}
-		for i := range pe.Transformations {
-			transformations := Transformations{
-				Field: pe.Transformations[i].Field,
-				Type:  pe.Transformations[i].Type,
+		if pe.Transformations != nil {
+			for i := range pe.Transformations {
+				transformations := Transformations{
+					Field: pe.Transformations[i].Field,
+					Type:  pe.Transformations[i].Type,
+				}
+				transformationsArr = append(transformationsArr, transformations)
 			}
-			transformationsArr = append(transformationsArr, transformations)
 		}
+
 		createdStr := pe.CreatedDate.Format(time.RFC3339)
 		lastUpdatedStr := pe.LastUpdatedDate.Format(time.RFC3339)
 
@@ -208,11 +216,12 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 			LastUpdatedDate: &lastUpdatedStr,
 			Sink:            &sink,
 			Source:          &source,
+			State:           pe.State,
 			Transformations: transformationsArr,
 		}
 		return &models
 	}
-	return &Model{}
+	return nil
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -244,16 +253,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	defer closeResponse(response)
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error Updating resource: %s", err.Error()),
+				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 		return handleError(response, err)
 	}
 
 	model := ReadResponseModelGeneration(pe)
-	model.Profile = currentModel.Profile
+	if model != nil {
+		model.Profile = currentModel.Profile
+	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Completed",
@@ -326,7 +335,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var list = make([]interface{}, 0)
 	for ind := range pe {
 		model := ReadResponseModelGeneration(&pe[ind])
-		model.Profile = currentModel.Profile
+		if model != nil {
+			model.Profile = currentModel.Profile
+		}
 		list = append(list, *model)
 	}
 

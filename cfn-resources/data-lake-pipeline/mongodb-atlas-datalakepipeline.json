@@ -165,7 +165,7 @@
         "/properties/Source/GroupId"
     ],
     "primaryIdentifier": [
-        "/properties/Source/ClusterName",
+        "/properties/ProjectId",
         "/properties/Name",
         "/properties/Profile"
     ],

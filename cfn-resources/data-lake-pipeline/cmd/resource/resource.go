@@ -82,9 +82,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	model := ReadResponseModelGeneration(pe)
-	if model != nil {
-		model.Profile = currentModel.Profile
+	if model == nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
 	}
+	model.Profile = currentModel.Profile
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -158,9 +159,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	model := ReadResponseModelGeneration(pe)
-	if model != nil {
-		model.Profile = currentModel.Profile
+	if model == nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
 	}
+	model.Profile = currentModel.Profile
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Completed",
@@ -260,9 +262,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	model := ReadResponseModelGeneration(pe)
-	if model != nil {
-		model.Profile = currentModel.Profile
+	if model == nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
 	}
+	model.Profile = currentModel.Profile
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Completed",
@@ -335,9 +338,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var list = make([]interface{}, 0)
 	for ind := range pe {
 		model := ReadResponseModelGeneration(&pe[ind])
-		if model != nil {
-			model.Profile = currentModel.Profile
+		if model == nil {
+			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
 		}
+		model.Profile = currentModel.Profile
 		list = append(list, *model)
 	}
 

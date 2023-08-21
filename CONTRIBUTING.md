@@ -21,7 +21,7 @@ We have a `/test/README.md` for every resource in `cfn-resources`. Please follow
 - See for example, [/test/README.md for LDAP Configuration]( https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/ldap-configuration/test/README.md) and [/test/README.md for Cloud Backup Snapshot](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-snapshot/test/README.md).
 
 **When creating pull request:**
-- Please include screenshots of any testing performed. Following screenshots should be included:
+- Please include screenshots of any testing performed in the description. Following screenshots should be included:
   - Stack creation with the resource in AWS console showing successful create, update and delete operations.
   - Corresponding change reflected in Atlas UI.
   - Successful contract testing when run locally.

@@ -51,7 +51,7 @@
         },
         "AwsSecretName": {
             "type": "string",
-            "description": "Name of the AWS Secrets Manager secret that stores the API key Details. The secret name must be unique to the AWS account and region. If you don't specify a name, AWS CloudFormation use APIUserId for the secret name."
+            "description": "Name of the AWS Secrets Manager secret that stores the API key Details."
         },
         "OrgId": {
             "type": "string",
@@ -106,18 +106,17 @@
         "/properties/PrivateKey",
         "/properties/PublicKey",
         "/properties/APIUserId",
+        "/properties/AwsSecretName",
         "/properties/AwsSecretArn"
     ],
     "createOnlyProperties": [
         "/properties/OrgId",
-        "/properties/Profile",
-        "/properties/AwsSecretName/"
+        "/properties/Profile"
     ],
     "primaryIdentifier": [
         "/properties/OrgId",
         "/properties/Profile",
-        "/properties/APIUserId",
-        "/properties/AwsSecretName/"
+        "/properties/APIUserId"
     ],
     "handlers": {
         "create": {
@@ -140,11 +139,6 @@
             "permissions": [
                 "secretsmanager:GetSecretValue",
                 "secretsmanager:DeleteSecret"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
             ]
         }
     }

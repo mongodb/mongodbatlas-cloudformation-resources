@@ -70,6 +70,22 @@
           "APIUserId"
         ]
       }
+    },
+    "APIKeySecretName": {
+      "Value": {
+        "Fn::GetAtt": [
+          "APIKey",
+          "AwsSecretName"
+        ]
+      }
+    },
+    "APIKeySecretArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "APIKey",
+          "AwsSecretArn"
+        ]
+      }
     }
   }
 }

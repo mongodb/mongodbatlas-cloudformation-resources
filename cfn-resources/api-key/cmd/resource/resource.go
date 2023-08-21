@@ -91,9 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Save PrivateKey in AWS SecretManager
 	secret := APIKeySecret{APIUserID: *currentModel.APIUserId, PublicKey: *apiKeyUserDetails.PublicKey, PrivateKey: *apiKeyUserDetails.PrivateKey}
 	secretName := formatSecretName(*currentModel.APIUserId)
-	if currentModel.AwsSecretName != nil {
-		secretName = *currentModel.AwsSecretName
-	}
+
 	_, arn, err := secrets.Create(&req, secretName, secret, currentModel.Description)
 	if err != nil {
 		// Delete the APIKey from Atlas
@@ -101,8 +99,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return handleError(response, constants.CREATE, err)
 	}
-	currentModel.AwsSecretName = &secretName
 	currentModel.AwsSecretArn = arn
+	currentModel.AwsSecretName = &secretName
 	// Assign Org APIKey to given projects i.e. projectAssignments
 	if len(currentModel.ProjectAssignments) > 0 {
 		for i := range currentModel.ProjectAssignments {
@@ -149,6 +147,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(response, constants.READ, err)
 	}
 	currentModel.AwsSecretArn = arn
+	currentModel.AwsSecretName = util.Pointer(formatSecretName(*currentModel.APIUserId))
 	currentModel.readAPIKeyDetails(*apiKeyUserDetails)
 	_, _ = logger.Debugf("Read Response: %+v", currentModel)
 
@@ -244,9 +243,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Delete Secret from AWS Secret Manager
 	secretName := formatSecretName(*currentModel.APIUserId)
-	if currentModel.AwsSecretName != nil {
-		secretName = *currentModel.AwsSecretName
-	}
 
 	if err := secrets.Delete(&req, secretName); err != nil {
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
@@ -306,6 +302,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		var model Model
 		model.readAPIKeyDetails(apiKeyList[i])
 		model.Profile = currentModel.Profile
+		model.AwsSecretName = util.Pointer(formatSecretName(*model.APIUserId))
 		model.OrgId = currentModel.OrgId
 		model.ListOptions = currentModel.ListOptions
 		apiKeys[i] = model
@@ -365,14 +362,10 @@ func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentMo
 	if err != nil {
 		return apiKeyUserDetails, nil, response, err
 	}
-	secretName := formatSecretName(*currentModel.APIUserId)
-	if currentModel.AwsSecretName != nil {
-		secretName = *currentModel.AwsSecretName
-	}
-
+	currentModel.AwsSecretName = util.Pointer(formatSecretName(*currentModel.APIUserId))
 	var arn *string
 	// Get PrivateKey from AWS SecretManager and assign back
-	secretValue, arn, err := secrets.Get(req, secretName)
+	secretValue, arn, err := secrets.Get(req, *currentModel.AwsSecretName)
 	if err != nil {
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return nil, arn, response, err

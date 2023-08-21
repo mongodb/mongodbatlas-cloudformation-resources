@@ -38,6 +38,7 @@ projectName="${1}"
 if [ ${#projectName} -gt 22 ];then
   projectName=${projectName:0:21}
 fi
+awsSecretName="mongodb/atlas/apikey/${projectName}"
 
 project1="${projectName}-1"
 project2="${projectName}-2"
@@ -71,9 +72,10 @@ fi
 # Create assigns 2 projects
 jq --arg orgId "$orgId" \
   --arg profile "$profile" \
+  --arg awsSecretName "$awsSecretName" \
   --arg projectId1 "$projectId1" \
   --arg projectId2 "$projectId2" \
-	'.OrgId?|=$orgId | .Profile?|=$profile |
+	'.OrgId?|=$orgId | .Profile?|=$profile | .AwsSecretName?|=$awsSecretName |
 	 .ProjectAssignments[0].ProjectId?|=$projectId1 |
 	 .ProjectAssignments[1].ProjectId?|=$projectId2' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
@@ -88,9 +90,10 @@ jq --arg orgId " ( *&lkd" \
 # Update with un-assign 1, update 1 and assign 1 Project.
 jq --arg orgId "$orgId" \
 	--arg profile "$profile" \
+  --arg awsSecretName "$awsSecretName" \
 	--arg projectId2 "$projectId2" \
 	--arg projectId3 "$projectId3" \
-  	'.OrgId?|=$orgId | .Profile?|=$profile |
+  	'.OrgId?|=$orgId | .Profile?|=$profile |.AwsSecretName?|=$awsSecretName |
   	 .ProjectAssignments[0].ProjectId?|=$projectId2 |
   	 .ProjectAssignments[1].ProjectId?|=$projectId3' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"

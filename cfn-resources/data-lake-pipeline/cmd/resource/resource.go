@@ -83,7 +83,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	model := ReadResponseModelGeneration(pe)
 	if model == nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
+		errorMsg := "Response model from the API is empty or nil "
+		return progress_events.GetFailedEventByResponse(errorMsg, response), nil
 	}
 	model.Profile = currentModel.Profile
 	return handler.ProgressEvent{
@@ -160,7 +161,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	model := ReadResponseModelGeneration(pe)
 	if model == nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
+		errorMsg := "Response model from the API is empty or nil "
+		return progress_events.GetFailedEventByResponse(errorMsg, response), nil
 	}
 	model.Profile = currentModel.Profile
 	return handler.ProgressEvent{
@@ -194,7 +196,6 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 			sink.MetadataProvider = pe.Sink.MetadataProvider
 			sink.MetadataRegion = pe.Sink.MetadataRegion
 			sink.PartitionFields = partitionArr
-
 		}
 		transformationsArr := []Transformations{}
 		if pe.Transformations != nil {
@@ -255,7 +256,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	defer closeResponse(response)
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
-			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error Updating resource: %s", err.Error()),
+			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error during execution : %s", err.Error()),
 				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 		return handleError(response, err)
@@ -263,7 +264,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	model := ReadResponseModelGeneration(pe)
 	if model == nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
+		errorMsg := "Response model from the API is empty or nil "
+		return progress_events.GetFailedEventByResponse(errorMsg, response), nil
 	}
 	model.Profile = currentModel.Profile
 	return handler.ProgressEvent{
@@ -339,7 +341,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for ind := range pe {
 		model := ReadResponseModelGeneration(&pe[ind])
 		if model == nil {
-			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Response model from the API is empty or nil "), response), nil
+			errorMsg := "Response model from the API is empty or nil "
+			return progress_events.GetFailedEventByResponse(errorMsg, response), nil
 		}
 		model.Profile = currentModel.Profile
 		list = append(list, *model)

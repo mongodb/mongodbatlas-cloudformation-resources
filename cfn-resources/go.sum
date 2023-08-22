@@ -2,8 +2,8 @@ github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0 h1:NHNKs4hOKBz
 github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0/go.mod h1:u3nqs3hHrn8D51m7+N+6ya7Sksyd6OG3xK3RpXdRb1g=
 github.com/aws/aws-lambda-go v1.37.0 h1:WXkQ/xhIcXZZ2P5ZBEw+bbAKeCEcb5NtiYpSwVVzIXg=
 github.com/aws/aws-lambda-go v1.37.0/go.mod h1:jwFe2KmMsHmffA1X2R09hH6lFzJQxzI8qK17ewzbQMM=
-github.com/aws/aws-sdk-go v1.44.323 h1:97/dn93DWrN1VfhAWQ2tV+xuE6oO/LO9rSsEsuC4PLU=
-github.com/aws/aws-sdk-go v1.44.323/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
+github.com/aws/aws-sdk-go v1.44.328 h1:WBwlf8ym9SDQ/GTIBO9eXyvwappKJyOetWJKl4mT7ZU=
+github.com/aws/aws-sdk-go v1.44.328/go.mod h1:aVsgQcEevwlmQ7qHE9I3h+dtQgpqhFB+i8Phjh7fkwI=
 github.com/aws/aws-sdk-go-v2 v1.20.1 h1:rZBf5DWr7YGrnlTK4kgDQGn1ltqOg5orCYb/UhOFZkg=
 github.com/aws/aws-sdk-go-v2 v1.20.1/go.mod h1:NU06lETsFm8fUC6ZjhgDpVBcGZTFQ6XM+LZWZxMI4ac=
 github.com/aws/aws-sdk-go-v2/config v1.18.33 h1:JKcw5SFxFW/rpM4mOPjv0VQ11E2kxW13F3exWOy7VZU=

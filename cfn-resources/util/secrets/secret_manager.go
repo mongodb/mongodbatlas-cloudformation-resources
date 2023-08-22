@@ -24,7 +24,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func Create(req *handler.Request, secretName string, data interface{}, description *string) (*string, *string, error) {
+func Create(req *handler.Request, secretName string, data interface{}, description *string) (name *string, arn *string, err error) {
 	secretString, err := json.Marshal(data)
 	if err != nil {
 		return nil, nil, err
@@ -50,7 +50,7 @@ func Create(req *handler.Request, secretName string, data interface{}, descripti
 	return result.Name, result.ARN, nil
 }
 
-func Get(req *handler.Request, secretName string) (*string, *string, error) {
+func Get(req *handler.Request, secretName string) (name *string, arn *string, err error) {
 	sm := secretsmanager.New(req.Session)
 	output, err := sm.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretName})
 	if err != nil {
@@ -61,9 +61,9 @@ func Get(req *handler.Request, secretName string) (*string, *string, error) {
 	return output.SecretString, output.ARN, nil
 }
 
-func Delete(req *handler.Request, secretName string) error {
+func Delete(req *handler.Request, secretName string) (err error) {
 	sm := secretsmanager.New(req.Session)
-	_, err := sm.DeleteSecret(&secretsmanager.DeleteSecretInput{SecretId: &secretName, ForceDeleteWithoutRecovery: util.Pointer(true)})
+	_, err = sm.DeleteSecret(&secretsmanager.DeleteSecretInput{SecretId: &secretName, ForceDeleteWithoutRecovery: util.Pointer(true)})
 	if err != nil {
 		log.Printf("error delete secret: %v", err.Error())
 		return err

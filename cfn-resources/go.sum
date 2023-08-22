@@ -70,8 +70,8 @@ github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 h1:RWengNIwukTxcDr9M+97sNutRR1RKhG96O6jWumTTnw=
 github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826/go.mod h1:TaXosZuwdSHYgviHp1DAtfrULt5eUgsSMsZf+YrPgl8=
-github.com/mongodb-forks/digest v1.0.4 h1:9FrGTc7MGAchgaQBcXBnEwUM/Oo8obW7OGWxnsSvZ64=
-github.com/mongodb-forks/digest v1.0.4/go.mod h1:eHRfgovT+dvSFfltrOa27hy1oR/rcwyDdp5H1ZQxEMA=
+github.com/mongodb-forks/digest v1.0.5 h1:EJu3wtLZcA0HCvsZpX5yuD193/sW9tHiNvrEM5apXMk=
+github.com/mongodb-forks/digest v1.0.5/go.mod h1:rb+EX8zotClD5Dj4NdgxnJXG9nwrlx3NWKJ8xttz1Dg=
 github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249 h1:NHrXEjTNQY7P0Zfx1aMrNhpgxHmow66XQtm0aQLY0AE=
 github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249/go.mod h1:mpRZBD8SJ55OIICQ3iWH0Yz3cjzA61JdqMLoWXeB2+8=
 github.com/openlyinc/pointy v1.1.2/go.mod h1:w2Sytx+0FVuMKn37xpXIAyBNhFNBIJGR/v2m7ik1WtM=

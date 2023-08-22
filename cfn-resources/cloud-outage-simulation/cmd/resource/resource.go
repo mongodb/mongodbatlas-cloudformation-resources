@@ -4,25 +4,30 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	localconstants "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-outage-simulation/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
-
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"log"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
+)
 
-	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+const (
+	Simulating        = "SIMULATING"
+	Starting          = "STARTING"
+	StartingRequested = "START_REQUESTED"
+	Complete          = "COMPLETE"
 )
 
 var RequiredFields = []string{constants.ClusterName, constants.ProjectID}
-var SimulationStatus = []string{localconstants.Simulating, localconstants.Starting, localconstants.StartingRequested}
+var SimulationStatus = []string{Simulating, Starting, StartingRequested}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -52,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := cast.ToString(currentModel.ProjectId)
 
 	// check if already exist in active state
-	active, _, err := isActive(atlas, projectID, clusterName, "nil")
+	active, _, _ := isActive(atlas, projectID, clusterName, "nil")
 	if active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -84,7 +89,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"project_id":   simulationObject.GroupId,
 		},
 	}, nil
-
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -113,7 +117,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	// check if simulation is in active state
-	if util.Contains(SimulationStatus, *outageSimulation.State) == false {
+	if !util.Contains(SimulationStatus, *outageSimulation.State) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -126,7 +130,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
 	}, nil
-
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -153,8 +156,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 
-	active, _, err := isActive(atlas, projectID, clusterName, "nil")
-	if active == false {
+	active, _, _ := isActive(atlas, projectID, clusterName, "nil")
+	if !active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -204,12 +207,10 @@ func newOutageFilters(currentModel *Model) []atlasSDK.AtlasClusterOutageSimulati
 		outageFilters = append(outageFilters, mMatcher)
 	}
 	return outageFilters
-
 }
 
 // function to track snapshot creation status
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 	isReady, state, err := isCompleted(client, projectID, clusterName, targetState)
@@ -232,7 +233,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	}
 
 	p := handler.NewProgressEvent()
-	if targetState != localconstants.Complete {
+	if targetState != Complete {
 		p.ResourceModel = currentModel
 	} else {
 		p.ResourceModel = nil
@@ -244,7 +245,6 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 
 // function to check if resource action is completed
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-
 	outageSimulation, resp, err := client.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == 404 {
@@ -256,7 +256,6 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 		log.Printf("[DEBUG] status for MongoDB cluster outage simulation: %s: %s", clusterName, *outageSimulation.State)
 	}
 	return *outageSimulation.State == targetState, *outageSimulation.State, nil
-
 }
 
 // function to check if resource action is active
@@ -268,11 +267,10 @@ func isActive(client *util.MongoDBClient, projectID, clusterName, targetState st
 		}
 		return false, "", err
 	}
-	if util.Contains(SimulationStatus, *outageSimulation.State) == false {
+	if !util.Contains(SimulationStatus, *outageSimulation.State) {
 		return false, "COMPLETED", nil
 	}
 	return true, "COMPLETED", nil
-
 }
 
 // logger setup function
@@ -285,7 +283,6 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, currentModel *Model) *Model {
-
 	currentModel.SimulationId = outageSimulation.Id
 
 	if outageSimulation.StartRequestDate != nil {

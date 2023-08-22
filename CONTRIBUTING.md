@@ -12,6 +12,22 @@ After the above 2 steps are completed and we've agreed on a path forward:
 4. Commit and push your changes to your branch then submit a pull request against the current release branch, not master. The naming scheme of the branch is `release-staging-v#.#.#`. **Note**: There will only be one release branch at a time.  
 5. A repo maintainer will review the your pull request, and may either request additional changes or merge the pull request.
 
+## Testing
+We have a `/test/README.md` for every resource in `cfn-resources`. Please follow below guidelines for testing to ensure quality:
+
+**When adding a new feature:**
+- `/test/README.md` file must be created and must include detailed pre-requisites (if any) and steps to test a resource.
+- The file should include screenshots of how the resource is tested and how the changes reflect in Atlas UI.
+- See for example, [/test/README.md for LDAP Configuration]( https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/ldap-configuration/test/README.md) and [/test/README.md for Cloud Backup Snapshot](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-snapshot/test/README.md).
+
+**When creating pull request:**
+- Please include screenshots of any testing performed in the description. Following screenshots should be included:
+  - Stack creation with the resource in AWS console showing successful create, update and delete operations.
+  - Corresponding change reflected in Atlas UI.
+  - Successful contract testing when run locally.
+  - See [#669](https://github.com/mongodb/mongodbatlas-cloudformation-resources/pull/669) for example pull request.
+
+
 ## PR Title Format
 We use [*Conventional Commits*](https://www.conventionalcommits.org/):
 - `fix: description of the PR`: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).

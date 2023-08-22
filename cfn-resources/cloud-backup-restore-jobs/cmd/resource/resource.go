@@ -138,7 +138,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = &restoreJob.ID
 	}
 
-	if flowIsAsynchronous(currentModel) {
+	if flowIsSynchronous(currentModel) {
 		return progressevents.GetInProgressProgressEvent(
 				"Create in progress",
 				map[string]interface{}{
@@ -386,7 +386,7 @@ func (model *Model) validateAsynchronousProperties() error {
 	return nil
 }
 
-func flowIsAsynchronous(model *Model) bool {
+func flowIsSynchronous(model *Model) bool {
 	return model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation
 }
 

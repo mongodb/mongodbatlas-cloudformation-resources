@@ -1,0 +1,41 @@
+{
+  "clusterType":"REPLICASET",
+  "replicationSpecs":[
+    {
+      "regionConfigs":[
+        {
+          "electableSpecs":{
+            "instanceSize":"M10",
+            "nodeCount":3
+          },
+          "priority":7,
+          "providerName":"AWS",
+          "regionName":"US_EAST_1"
+        },
+        {
+          "electableSpecs":{
+            "instanceSize":"M10",
+            "nodeCount":2
+          },
+          "priority":6,
+          "providerName":"AWS",
+          "regionName":"US_EAST_2"
+        },
+        {
+          "electableSpecs":{
+            "instanceSize":"M10",
+            "nodeCount":2
+          },
+
+          "readOnlySpecs":{
+            "instanceSize":"M10",
+            "nodeCount":2
+          },
+          "priority":5,
+          "providerName":"AWS",
+          "regionName":"US_WEST_1"
+        }
+      ]
+    }
+  ]
+}

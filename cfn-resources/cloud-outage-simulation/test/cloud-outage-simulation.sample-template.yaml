@@ -1,0 +1,40 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::CloudBackupSnapshot
+Parameters:
+  Profile:
+    Description: "Your MongoDB Atlas Profile"
+    Type: String
+    Default: ""
+  ProjectId:
+    Description: "Your Project Id"
+    Type: String
+    Default: ""
+  ClusterName:
+    Description: "The name of the Atlas cluster that contains the snapshots you want to retrieve."
+    Type: String
+    Default: ""
+  Description:
+    Description: "Description of the snapshot."
+    Type: String
+    Default: ""
+  RetentionInDays:
+    Description: "The number of days that Atlas should retain the on-demand snapshot."
+    Type: String
+    Default: ""
+Resources:
+  BackupSnapshot:
+    Type: MongoDB::Atlas::CloudBackupSnapshot
+    Properties:
+      Profile: !Ref "Profile"
+      ProjectId: !Ref "ProjectId"
+      ClusterName: !Ref "ClusterName"
+      Description: !Ref "Description"
+      RetentionInDays: !Ref "RetentionInDays"
+Outputs:
+  SnapshotId:
+    Description: "Info on your CloudBackUp"
+    Value: !Ref BackupSnapshot
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","BackupSnapshot" ] ]
+

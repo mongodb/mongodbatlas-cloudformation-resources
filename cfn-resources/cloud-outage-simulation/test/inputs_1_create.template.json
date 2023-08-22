@@ -1,0 +1,12 @@
+{
+  "ProjectId": "",
+  "ClusterName": "",
+  "OutageFilters": [
+    {
+      "CloudProvider": "AWS",
+      "Region": "US_WEST_1",
+      "Type": "REGION"
+    }
+  ],
+  "Profile": "default"
+}

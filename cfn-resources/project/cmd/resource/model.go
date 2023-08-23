@@ -21,6 +21,7 @@ type Model struct {
 type ProjectSettings struct {
 	IsCollectDatabaseSpecificsStatisticsEnabled *bool `json:",omitempty"`
 	IsDataExplorerEnabled                       *bool `json:",omitempty"`
+	IsExtendedStorageSizesEnabled               *bool `json:",omitempty"`
 	IsPerformanceAdvisorEnabled                 *bool `json:",omitempty"`
 	IsRealtimePerformancePanelEnabled           *bool `json:",omitempty"`
 	IsSchemaAdvisorEnabled                      *bool `json:",omitempty"`

@@ -270,6 +270,18 @@ Returns the <code>Private</code> value.
 
 Returns the <code>PrivateSrv</code> value.
 
+#### PrivateEndpoints
+
+Returns the <code>PrivateEndpoints</code> value.
+
+#### PrivateEndpointsSrv
+
+Returns the <code>PrivateEndpointsSrv</code> value.
+
+#### SRVShardOptimizedConnectionString
+
+Returns the <code>SRVShardOptimizedConnectionString</code> value.
+
 #### StateName
 
 Current state of the cluster.

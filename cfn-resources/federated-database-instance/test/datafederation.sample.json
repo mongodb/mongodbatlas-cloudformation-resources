@@ -1,0 +1,25 @@
+{
+  "desiredResourceState":{
+    "Name": "",
+    "ProjectId": "",
+    "Profile": "default",
+    "CloudProviderConfig": {
+      "RoleId": "",
+      "TestS3Bucket": ""
+    },
+    "DataProcessRegion": {
+      "Region": "VIRGINIA_USA"
+    },
+    "SkipRoleValidation": "true",
+    "Storage": {
+      "Databases": [
+        {
+          "MaxWildcardCollections": "500",
+          "Name": "cfn-df-dbs"
+        }
+      ]
+    }
+  },
+  "providerLogGroupName" : "mongodb-atlas-data-federation",
+  "previousResourceState": { }
+}

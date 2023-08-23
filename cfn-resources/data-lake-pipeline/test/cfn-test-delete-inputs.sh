@@ -28,7 +28,7 @@ function usage {
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 pipelineName=$(jq -r '.Name' ./inputs/inputs_1_create.json)
-clusterName=$(jq -r '.Source/ClusterName' ./inputs/inputs_1_create.json)
+clusterName=$(jq -r '.Source.ClusterName' ./inputs/inputs_1_create.json)
 #delete project
 if  atlas dataLakePipelines delete "$pipelineName" --force; then
 	echo "$pipelineName project deletion OK"

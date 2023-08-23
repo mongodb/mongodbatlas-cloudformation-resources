@@ -73,7 +73,6 @@ jobs:
         run: |
           pushd cfn-resources/federated-database-instance
           make create-test-resources
-
   project:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project == 'true' }}

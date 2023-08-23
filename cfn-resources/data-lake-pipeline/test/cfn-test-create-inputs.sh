@@ -36,6 +36,13 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -59,20 +66,13 @@ echo -e "Created Cluster \"${clusterName}\""
 jq --arg region "$region" \
    --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
-   '.Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile | .Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg region "$region" \
    --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
-   '.Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile | .Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
-
-#SET INVALID NAME
-clusterName="^%LKJ)(*J_ {+_+O_)"
-
-jq --arg region "$region" \
-   --arg clusterName "$clusterName" \
-   --arg projectId "$projectId" \
-   '.Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"

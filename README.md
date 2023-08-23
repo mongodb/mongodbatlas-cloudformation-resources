@@ -16,7 +16,7 @@ See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/
 ## Limitations
 1. [Resource import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html) is not supported for third-party resources.
 
-2. CloudFormation support for any third-party resource requires that the third-party resource support all CRUD operations. For this reason, the following resources are not supported: 
+2. Any third-party resource you integrate must support all CRUD operations. CloudFormation does not support the following resources because they do not support all CRUD operations: 
 
 * cloud-backup-snapshot-export-job
 * cloud-provider-access

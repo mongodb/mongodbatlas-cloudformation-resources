@@ -17,6 +17,14 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 region="us-east-1"
 
 projectName="${1}"
@@ -38,7 +46,8 @@ jq --arg org "$ATLAS_ORG_ID" \
 	--arg ClusterName "$ClusterName" \
 	--arg group_id "$projectId" \
 	--arg SnapshotId "$SnapshotId" \
-	'.SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg org "$ATLAS_ORG_ID" \
@@ -46,7 +55,8 @@ jq --arg org "$ATLAS_ORG_ID" \
 	--arg group_id "$projectId" \
 	--arg ClusterName "$ClusterName" \
 	--arg SnapshotId "$SnapshotId" \
-	'.SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+  --arg profile "$profile" \
+	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

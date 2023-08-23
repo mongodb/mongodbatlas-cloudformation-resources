@@ -55,23 +55,19 @@ fi
 
 echo "Check if a project is created $projectId"
 
-region="us-east-1"
-
 clusterName="${projectName}"
 
 atlas clusters create "${clusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
 
-jq --arg region "$region" \
-   --arg clusterName "$clusterName" \
+jq --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
    --arg profile "$profile" \
    '.Profile?|=$profile | .Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
-jq --arg region "$region" \
-   --arg clusterName "$clusterName" \
+jq --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
    --arg profile "$profile" \
    '.Profile?|=$profile | .Source.ClusterName?|=$clusterName | .ProjectId?|=$projectId ' \

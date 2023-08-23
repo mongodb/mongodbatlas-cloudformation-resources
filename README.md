@@ -13,6 +13,16 @@ See the [`cfn` examples](examples/README.md) to setup prerequisites and get star
 ### MongoDB Atlas AWS CDK
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
 
+## Limitations
+1. [Resource import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html) is not supported for third-party resources.
+
+2. CloudFormation support for any third-party resource requires that the third-party resource support all CRUD operations. For this reason, the following resources are not supported: 
+
+* cloud-backup-snapshot-export-job
+* cloud-provider-access
+* federated-settings-identity-provider
+* federated-settings-org-configs
+
 ## Support, Bugs, Feature Requests
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
 

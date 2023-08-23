@@ -250,7 +250,7 @@ jobs:
           make delete-test-resources
   cloud-backup-restore-jobs:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.  cloud-backup-restore-jobs == 'true' }}
+    if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI

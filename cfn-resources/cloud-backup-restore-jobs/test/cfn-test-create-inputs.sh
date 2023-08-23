@@ -31,9 +31,9 @@ projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
 	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-	echo -e "Cant find project \"${projectName}\"\n"
+	echo -e "New project created \"${projectName}\"\n"
 fi
-export MCLI_PROJECT_ID=$projectId
+
 ClusterName=$projectName
 atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
 atlas clusters watch "${ClusterName}" --projectId "${projectId}"

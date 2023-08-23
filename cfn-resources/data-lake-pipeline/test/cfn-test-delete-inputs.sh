@@ -31,9 +31,24 @@ projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 clusterName=$(jq -r '.Source.ClusterName' ./inputs/inputs_1_create.json)
 
 #delete Cluster
-atlas clusters delete "$clusterName" --projectId "${projectId}" --force
-atlas clusters watch "${clusterName}" --projectId "${projectId}"
-echo -e "Cluster Deleted \"${clusterName}\""
+if atlas clusters delete "$clusterName" --projectId "${projectId}" --force; then
+	echo "$clusterName cluster deletion OK"
+else
+	(echo "Failed cleaning cluster:$clusterName" && exit 1)
+fi
+
+status="DELETING"
+echo "Waiting for cluster to get deleted"
+while [[ "${status}" == "DELETING" ]]; do
+	sleep 60
+	if atlas clusters describe "${clusterName}" --projectId "${projectId}"; then
+		status=$(atlas clusters describe "${clusterName}" --projectId "${projectId}" --output=json | jq -r '.stateName')
+	else
+		status="DELETED"
+	fi
+	echo "status: ${status}"
+done
+
 
 #delete Project
 if atlas projects delete "$projectId"  -- force; then

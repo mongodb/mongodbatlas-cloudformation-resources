@@ -51,7 +51,7 @@ done
 
 
 #delete Project
-if atlas projects delete "$projectId"  -- force; then
+if atlas projects delete "$projectId"  --force; then
   echo "$projectId is deleted"
 else
   (echo "Failed cleaning project:$projectId" && exit 1)

@@ -39,7 +39,7 @@ atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --pro
 atlas clusters watch "${ClusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${ClusterName}\""
 
-SnapshotId=$(atlas backup snapshots create "${ClusterName}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
+SnapshotId=$(atlas backup snapshots create "${ClusterName}" --projectId "${projectId}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
 sleep 300
 
 jq --arg org "$ATLAS_ORG_ID" \

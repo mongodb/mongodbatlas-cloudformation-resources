@@ -35,7 +35,7 @@ jobs:
         privatelink-endpoint-service-data-federation-online-archive:
           - 'cfn-resources/privatelink-endpoint-service-data-federation-online-archive/**'
         cloud-backup-restore-jobs:
-          - 'cfn-resources/loud-backup-restore-jobs/**'
+          - 'cfn-resources/cloud-backup-restore-jobs/**'
   federated-database-instance:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}

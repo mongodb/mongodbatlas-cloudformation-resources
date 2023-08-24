@@ -16,7 +16,7 @@ See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/
 ## Limitations
 1. [Resource import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html) is not supported for third-party resources.
 
-2. Any third-party resource you integrate must support all CRUD operations. CloudFormation does not support the following resources because they do not support all CRUD operations: 
+2. Any third-party resource must support all CRUD operations. MongoDB Atlas for CloudFormation does not support the following MongoDB Atlas resources because they do not support all CRUD operations: 
 
 * cloud-backup-snapshot-export-job
 * cloud-provider-access

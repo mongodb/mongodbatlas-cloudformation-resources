@@ -15,7 +15,7 @@ Resources:
             Principal:
               Service: resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
-        Path: "/"
+      Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:
@@ -23,7 +23,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                - "secretsmanager:GetSecretValue"
+                  - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

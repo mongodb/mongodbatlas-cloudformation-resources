@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := cast.ToString(currentModel.ProjectId)
 
 	// check if already exist in active state
-	active, _, err := isActive(atlas, projectID, clusterName, "nil")
+	active, _, _ := isActive(atlas, projectID, clusterName, "nil")
 	if active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -142,7 +142,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	// check if simulation is in active state
-	if contains(SimulationStatus, *outageSimulation.State) == false {
+	if !contains(SimulationStatus, *outageSimulation.State) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -193,8 +193,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 
-	active, _, err := isActive(atlas, projectID, clusterName, "nil")
-	if active == false {
+	active, _, _ := isActive(atlas, projectID, clusterName, "nil")
+	if !active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -281,7 +281,7 @@ func isActive(client *util.MongoDBClient, projectID, clusterName, targetState st
 		}
 		return false, "", err
 	}
-	if contains(SimulationStatus, *outageSimulation.State) == false {
+	if !contains(SimulationStatus, *outageSimulation.State) {
 		return false, "COMPLETED", nil
 	}
 	return true, "COMPLETED", nil

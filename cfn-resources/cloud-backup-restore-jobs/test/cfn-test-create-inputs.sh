@@ -25,8 +25,6 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ];then
     profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-region="us-east-1"
-
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then

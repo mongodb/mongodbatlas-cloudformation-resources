@@ -155,7 +155,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
 	}, nil
-
 }
 
 // contains checks if a string is present in a slice

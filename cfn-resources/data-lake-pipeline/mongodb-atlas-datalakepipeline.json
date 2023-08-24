@@ -156,13 +156,13 @@
     "createOnlyProperties" : [
         "/properties/Name",
         "/properties/Source/ClusterName",
-        "/properties/Profile"
+        "/properties/Profile",
+        "/properties/ProjectId"
     ],
     "readOnlyProperties" : [
         "/properties/CreatedDate",
         "/properties/Id",
-        "/properties/LastUpdatedDate",
-        "/properties/Source/GroupId"
+        "/properties/LastUpdatedDate"
     ],
     "primaryIdentifier": [
         "/properties/ProjectId",

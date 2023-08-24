@@ -19,7 +19,7 @@
     "FieldName": {
       "Type": "String",
       "Description": "Identifies the field name used to partition data.",
-      "Default": "Test-partition-Feild-Name-1"
+      "Default": "TestpartitionFeildName-1"
     },
     "Order": {
       "Type": "String",
@@ -84,10 +84,13 @@
   },
   "Outputs": {
     "Id": {
-      "description": "Ingestion destination of a Data Lake Pipeline.",
+      "Description": "Id of the project",
       "Value": {
-        "Ref": "Id"
+        "Fn::GetAtt": [
+          "DataLakePipeline",
+          "Id"
+        ]
+      }
       }
     }
   }
-}

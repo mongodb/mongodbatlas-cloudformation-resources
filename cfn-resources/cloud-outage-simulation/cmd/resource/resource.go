@@ -75,11 +75,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          "Already Exist",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-
 	requestBody := atlasSDK.ClusterOutageSimulation{
 		OutageFilters: newOutageFilters(currentModel),
 	}
-
 	_, _ = logger.Debugf("requestBody - : %+v", requestBody)
 	atlas.AtlasV2.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
 	simulationObject, res, err := atlas.AtlasV2.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
@@ -148,9 +146,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
 	convertToUIModel(*outageSimulation, currentModel)
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -222,14 +218,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // function to track snapshot creation status
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 	isReady, state, err := isCompleted(client, projectID, clusterName, targetState)
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}
-
 	if !isReady {
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
@@ -243,7 +237,6 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		}
 		return p, nil
 	}
-
 	p := handler.NewProgressEvent()
 	if targetState != localconstants.Complete {
 		p.ResourceModel = currentModel
@@ -296,12 +289,10 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 }
 func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, currentModel *Model) *Model {
 	currentModel.SimulationId = outageSimulation.Id
-
 	if outageSimulation.StartRequestDate != nil {
 		dateStr := outageSimulation.StartRequestDate.String()
 		currentModel.StartRequestDate = &dateStr
 	}
-
 	if *outageSimulation.State != "" {
 		currentModel.State = outageSimulation.State
 	}
@@ -311,7 +302,6 @@ func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, current
 
 func convertOutageFiltersToModel(outageFilters []atlasSDK.AtlasClusterOutageSimulationOutageFilter) []Filter {
 	outageFilterList := make([]Filter, 0)
-
 	for ind := range outageFilters {
 		outageFilterList = append(outageFilterList, Filter{
 			CloudProvider: outageFilters[ind].CloudProvider,

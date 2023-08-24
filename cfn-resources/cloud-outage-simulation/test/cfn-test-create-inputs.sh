@@ -33,6 +33,12 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 projectName="${1}"
 clusterName=${projectName}
@@ -53,7 +59,8 @@ rm -rf inputs
 mkdir inputs
 jq --arg group_id "$projectId" \
    --arg clusterName "$clusterName" \
-   '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
+   --arg profile "$profile" \
+   '.Profile?|=$profile |.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 clusterName="${clusterName}- more B@d chars !@(!(@====*** ;;::"

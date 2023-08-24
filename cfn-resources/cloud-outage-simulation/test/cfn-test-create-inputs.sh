@@ -45,7 +45,7 @@ if [ -z "$projectId" ]; then
 	echo -e "Cant find project \"${projectName}\"\n"
 fi
 
-atlas clusters create "${clusterName}" --projectId "${projectId}"  -f $SCRIPTDIR/cluster.json --output=json
+atlas clusters create "${clusterName}" --projectId "${projectId}"  -f "$SCRIPTDIR"/cluster.json --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
 

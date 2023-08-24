@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	localconstants "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-outage-simulation/cmd/constants"
@@ -25,12 +26,13 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
 
+	"log"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 )
@@ -98,7 +100,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			"project_id":   simulationObject.GroupId,
 		},
 	}, nil
-
 }
 
 func newOutageFilters(currentModel *Model) []atlasSDK.AtlasClusterOutageSimulationOutageFilter {
@@ -113,7 +114,6 @@ func newOutageFilters(currentModel *Model) []atlasSDK.AtlasClusterOutageSimulati
 		outageFilters = append(outageFilters, mMatcher)
 	}
 	return outageFilters
-
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -259,7 +259,6 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 
 // function to check if resource action is completed
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-
 	outageSimulation, resp, err := client.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == 404 {
@@ -271,7 +270,6 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 		log.Printf("[DEBUG] status for MongoDB cluster outage simulation: %s: %s", clusterName, *outageSimulation.State)
 	}
 	return *outageSimulation.State == targetState, *outageSimulation.State, nil
-
 }
 
 // function to check if resource action is active
@@ -287,7 +285,6 @@ func isActive(client *util.MongoDBClient, projectID, clusterName, targetState st
 		return false, "COMPLETED", nil
 	}
 	return true, "COMPLETED", nil
-
 }
 
 // logger setup function
@@ -300,7 +297,6 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, currentModel *Model) *Model {
-
 	currentModel.SimulationId = outageSimulation.Id
 
 	if outageSimulation.StartRequestDate != nil {

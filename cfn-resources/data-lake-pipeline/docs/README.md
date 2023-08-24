@@ -130,7 +130,3 @@ Unique 24-hexadecimal digit string that identifies your project.
 
 Timestamp that indicates the last time that the Data Lake Pipeline was updated.
 
-#### GroupId
-
-Returns the <code>GroupId</code> value.
-

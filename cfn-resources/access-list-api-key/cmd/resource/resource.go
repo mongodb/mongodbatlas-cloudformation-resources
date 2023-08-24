@@ -42,7 +42,10 @@ const (
 	READ   = "READ"
 	DELETE = "DELETE"
 	LIST   = "LIST"
+	MutualExclusiveMessage = "Only one of IpAddress or CidrBlock is required"
+	EitherOrMessage = "Either IpAddress or CidrBlock is required"
 )
+
 
 // validateModel to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
@@ -70,14 +73,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.CidrBlock == nil && currentModel.IpAddress == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Either IpAddress or CidrBlock is required",
+			Message:          EitherOrMessage,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	if currentModel.CidrBlock != nil && currentModel.IpAddress != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "IpAddress and CidrBlock are mutually exclusive",
+			Message:          MutualExclusiveMessage,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
@@ -128,14 +131,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.CidrBlock == nil && currentModel.IpAddress == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Either IpAddress or CidrBlock is required",
+			Message:          EitherOrMessage,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	if currentModel.CidrBlock != nil && currentModel.IpAddress != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "IpAddress and CidrBlock are mutually exclusive",
+			Message:          MutualExclusiveMessage,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
@@ -185,14 +188,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.CidrBlock == nil && currentModel.IpAddress == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Either IpAddress or CidrBlock is required",
+			Message:          EitherOrMessage,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
 	if currentModel.CidrBlock != nil && currentModel.IpAddress != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "IpAddress and CidrBlock are mutually exclusive",
+			Message:          MutualExclusiveMessage,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 

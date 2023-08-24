@@ -81,5 +81,13 @@
         ]
       }
     }
+  },
+  "Outputs": {
+    "Id": {
+      "description": "Ingestion destination of a Data Lake Pipeline.",
+      "Value": {
+        "Ref": "Id"
+      }
+    }
   }
 }

@@ -153,11 +153,11 @@
         "Sink",
         "Name"
     ],
-"createOnlyProperties" : [
-    "/properties/Name",
-    "/properties/Source/ClusterName",
-    "/properties/Profile"
-],
+    "createOnlyProperties" : [
+        "/properties/Name",
+        "/properties/Source/ClusterName",
+        "/properties/Profile"
+    ],
     "readOnlyProperties" : [
         "/properties/CreatedDate",
         "/properties/Id",

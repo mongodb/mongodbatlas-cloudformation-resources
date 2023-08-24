@@ -189,7 +189,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus:      handler.InProgress,
 		Message:              constants.DeleteInProgress,
 		ResourceModel:        currentModel,
-		CallbackDelaySeconds: 65,
+		CallbackDelaySeconds: 60,
 		CallbackContext: map[string]interface{}{
 			"status":       simulationObject.State,
 			"cluster_name": simulationObject.ClusterName,

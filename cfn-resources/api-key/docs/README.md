@@ -13,8 +13,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::APIKey",
     "Properties" : {
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
+        "<a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
+        "<a href="#awssecretarn" title="AwsSecretArn">AwsSecretArn</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ String, ... ]</i>,
         "<a href="#projectassignments" title="ProjectAssignments">ProjectAssignments</a>" : <i>[ <a href="projectassignment.md">ProjectAssignment</a>, ... ]</i>,
         "<a href="#listoptions" title="ListOptions">ListOptions</a>" : <i><a href="listoptions.md">ListOptions</a></i>
@@ -28,8 +30,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::APIKey
 Properties:
     <a href="#description" title="Description">Description</a>: <i>String</i>
+    <a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
+    <a href="#awssecretarn" title="AwsSecretArn">AwsSecretArn</a>: <i>String</i>
     <a href="#roles" title="Roles">Roles</a>: <i>
       - String</i>
     <a href="#projectassignments" title="ProjectAssignments">ProjectAssignments</a>: <i>
@@ -42,6 +46,16 @@ Properties:
 #### Description
 
 Purpose or explanation provided when someone created this organization API key.
+
+_Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AwsSecretName
+
+Name of the AWS Secrets Manager secret that stores the API key Details.
 
 _Required_: Yes
 
@@ -74,6 +88,16 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### AwsSecretArn
+
+ARN of the AWS Secrets Manager secret that stores the API key Details
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Roles
 
@@ -120,12 +144,4 @@ Public API key value set for the specified organization API key.
 #### APIUserId
 
 Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.
-
-#### AwsSecretName
-
-Name of the AWS Secrets Manager secret that stores the API key Details.
-
-#### AwsSecretArn
-
-ARN of the AWS Secrets Manager secret that stores the API key Details
 

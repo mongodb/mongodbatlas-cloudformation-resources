@@ -39,6 +39,14 @@
   },
   "Mappings": {},
   "Resources": {
+    "APIKeySecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": {"Ref":"AwsSecretName"},
+        "Description": "APIKey will store as Secret in AWS Secrets Manager.",
+        "SecretString": "{\"key\":\"value\"}"
+      }
+    },
     "APIKey": {
       "Type": "MongoDB::Atlas::APIKey",
       "Properties": {
@@ -68,22 +76,6 @@
         "Fn::GetAtt": [
           "APIKey",
           "APIUserId"
-        ]
-      }
-    },
-    "APIKeySecretName": {
-      "Value": {
-        "Fn::GetAtt": [
-          "APIKey",
-          "AwsSecretName"
-        ]
-      }
-    },
-    "APIKeySecretArn": {
-      "Value": {
-        "Fn::GetAtt": [
-          "APIKey",
-          "AwsSecretArn"
         ]
       }
     }

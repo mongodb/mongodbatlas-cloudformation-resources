@@ -50,6 +50,31 @@ func Create(req *handler.Request, secretName string, data interface{}, descripti
 	return result.Name, result.ARN, nil
 }
 
+func PutSecret(req *handler.Request, secretName string, data interface{}, description *string) (name *string, arn *string, err error) {
+	secretString, err := json.Marshal(data)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Create service client value configured for credentials
+	// from assumed role.
+	svc := secretsmanager.New(req.Session)
+	input := &secretsmanager.PutSecretValueInput{
+		SecretId:     aws.String(secretName),
+		SecretString: aws.String(string(secretString)),
+	}
+
+	result, err := svc.PutSecretValue(input)
+	if err != nil {
+		// Print the error, cast err to awserr. Error to get the Code and
+		// Message from an error.
+		log.Printf("error during put secret: %+v", err.Error())
+		return nil, nil, err
+	}
+	log.Printf("Created secret result:%+v", result)
+	return result.Name, result.ARN, nil
+}
+
 func Get(req *handler.Request, secretName string) (name *string, arn *string, err error) {
 	sm := secretsmanager.New(req.Session)
 	output, err := sm.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretName})

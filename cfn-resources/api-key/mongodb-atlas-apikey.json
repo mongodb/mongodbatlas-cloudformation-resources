@@ -100,18 +100,20 @@
     "additionalProperties": false,
     "required": [
         "OrgId",
-        "Description"
+        "Description",
+        "AwsSecretName"
     ],
     "readOnlyProperties": [
         "/properties/PrivateKey",
         "/properties/PublicKey",
-        "/properties/APIUserId",
-        "/properties/AwsSecretName",
-        "/properties/AwsSecretArn"
+        "/properties/APIUserId"
     ],
     "createOnlyProperties": [
         "/properties/OrgId",
         "/properties/Profile"
+        ],
+    "writeOnlyProperties": [
+        "/properties/AwsSecretName"
     ],
     "primaryIdentifier": [
         "/properties/OrgId",
@@ -121,7 +123,7 @@
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:CreateSecret",
+                "secretsmanager:PutSecretValue",
                 "secretsmanager:GetSecretValue"
             ]
         },
@@ -137,8 +139,12 @@
         },
         "delete": {
             "permissions": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DeleteSecret"
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
             ]
         }
     }

@@ -135,6 +135,7 @@ const (
 	ExternalGroupName          = "ExternalGroupName"
 	RoleAssignments            = "RoleAssignments"
 	Description                = "Description"
+	AwsSecretName              = "AwsSecretName"
 	APIUserID                  = "APIUserId"
 	DataFederationRoleID       = "CloudProviderConfig.RoleId"
 	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"

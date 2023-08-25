@@ -38,7 +38,17 @@ projectName="${1}"
 if [ ${#projectName} -gt 22 ];then
   projectName=${projectName:0:21}
 fi
+
+# create aws secret key
 awsSecretName="mongodb/atlas/apikey/${projectName}"
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here";then
+  echo "aws secret created with name : ${awsSecretName}"
+else
+  echo "aws secret create failed with name : ${awsSecretName}"
+  exit 1
+fi
+
+
 
 project1="${projectName}-1"
 project2="${projectName}-2"
@@ -68,7 +78,6 @@ else
 	echo -e "FOUND project \"${project3}\" with id: ${projectId3}\n"
 fi
 
-## TEST-1
 # Create assigns 2 projects
 jq --arg orgId "$orgId" \
   --arg profile "$profile" \
@@ -80,20 +89,13 @@ jq --arg orgId "$orgId" \
 	 .ProjectAssignments[1].ProjectId?|=$projectId2' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
-# Invalid
-jq --arg orgId " ( *&lkd" \
-	--arg profile "$profile" \
-	--arg projectId2 "$projectId2" \
-  	'.OrgId?|=$orgId | .Profile?|=$profile' \
-	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"
 
 # Update with un-assign 1, update 1 and assign 1 Project.
 jq --arg orgId "$orgId" \
 	--arg profile "$profile" \
-  --arg awsSecretName "$awsSecretName" \
 	--arg projectId2 "$projectId2" \
 	--arg projectId3 "$projectId3" \
-  	'.OrgId?|=$orgId | .Profile?|=$profile |.AwsSecretName?|=$awsSecretName |
+  	'.OrgId?|=$orgId | .Profile?|=$profile |
   	 .ProjectAssignments[0].ProjectId?|=$projectId2 |
   	 .ProjectAssignments[1].ProjectId?|=$projectId3' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"

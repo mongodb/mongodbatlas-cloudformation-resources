@@ -1,6 +1,7 @@
 {
   "OrgId": "",
   "Profile": "default",
+  "AwsSecretName": "",
   "Roles": [
     "ORG_MEMBER",
     "ORG_GROUP_CREATOR"

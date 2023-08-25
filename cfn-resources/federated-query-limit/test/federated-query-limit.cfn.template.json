@@ -1,0 +1,58 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Federated Settings Org Role Mapping on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Default": ""
+    },
+    "TenantName": {
+      "Type": "String",
+      "Default": ""
+    },
+    "LimitName": {
+      "Type": "String",
+      "Default": "bytesProcessed.monthly"
+    },
+    "Value": {
+      "Type": "String",
+      "Default": "5000000000"
+    },
+    "OverrunPolicy": {
+      "Type": "String",
+      "Default": "BLOCK"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "FederatedQueryLimit": {
+      "Type": "MongoDB::Atlas::FederatedQueryLimit",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "TenantName": {
+          "Ref": "TenantName"
+        },
+        "LimitName": {
+          "Ref": "LimitName"
+        },
+        "OverrunPolicy": {
+          "Ref": "OverrunPolicy"
+        },
+        "Value": {
+          "Ref": "Value"
+        }
+      }
+    }
+  },
+  "Outputs": {
+  }
+}

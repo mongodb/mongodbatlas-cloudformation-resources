@@ -36,3 +36,24 @@ These Atlas federated setting ID must be manually created.
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication/operation/createRoleMapping)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security/manage-role-mapping/#role-mapping-process)
+
+## Unit Testing Locally
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/federated-setting-org-role-mapping
+./test/federated-setting-org-role-mapping.create-sample-cfn-request.sh Your Connected OrgID FederationSettingId > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke UPDATE test.request.json 
+cfn invoke DELETE test.request.json 
+```
+
+Both UPDATE & DELETE tests must pass.

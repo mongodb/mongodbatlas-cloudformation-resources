@@ -1,0 +1,361 @@
+{
+    "additionalProperties": false,
+    "definitions": {
+        "CloudProviderConfig" : {
+            "type": "object",
+            "description": "Cloud provider linked to this data lake..",
+            "properties": {
+                "ExternalId": {
+                    "type": "string",
+                    "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
+                },
+                "IamAssumedRoleARN": {
+                    "type": "string",
+                    "description": "Amazon Resource Name (ARN) of the Identity and Access Management (IAM) role that the data lake assumes when accessing data stores."
+                },
+                "IamUserARN": {
+                    "type": "string",
+                    "description": "Amazon Resource Name (ARN) of the user that the data lake assumes when accessing data stores."
+                },
+                "RoleId": {
+                    "type": "string",
+                    "description": "Unique identifier of the role that the data lake can use to access the data stores.Required if specifying cloudProviderConfig."
+                },
+                "TestS3Bucket": {
+                    "type": "string",
+                    "description": "Name of the S3 data bucket that the provided role ID is authorized to access.Required if specifying cloudProviderConfig."
+                }
+            },
+            "additionalProperties": false
+        },
+        "DataProcessRegion": {
+            "type": "object",
+            "description": "Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.",
+            "properties": {
+                "CloudProvider": {
+                    "type": "string",
+                    "description": "Name of the cloud service that hosts the data lake's data stores."
+                },
+                "Region": {
+                    "type": "string",
+                    "description": "Name of the region to which the data lake routes client connections."
+                }
+            },
+            "additionalProperties": false
+        },
+        "Storage": {
+            "type": "object",
+            "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
+            "properties": {
+                "Databases": {
+                    "type": "array",
+                    "insertionOrder": false,
+                    "description": "Array that contains the queryable databases and collections for this data lake.",
+                    "items": {
+                        "$ref": "#/definitions/Database",
+                        "type": "object"
+                    }
+                },
+                "Stores": {
+                    "type": "array",
+                    "insertionOrder": false,
+                    "description": "Array that contains the data stores for the data lake.",
+                    "items": {
+                        "$ref": "#/definitions/Store",
+                        "type": "object"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Database": {
+            "type": "object",
+            "properties": {
+                "Collections": {
+                    "type":"array",
+                    "description": "Array of collections and data sources that map to a stores data store.",
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/Collection",
+                        "type": "object"
+                    }
+                },
+                "MaxWildcardCollections": {
+                    "type": "string",
+                    "description": "Maximum number of wildcard collections in the database. This only applies to S3 data sources."
+                },
+                "Name": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the database to which the data lake maps data."
+                },
+                "Views": {
+                    "type":"array",
+                    "description": "Array of aggregation pipelines that apply to the collection. This only applies to S3 data sources.",
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/View",
+                        "type": "object"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Store": {
+            "type": "object",
+            "description": "Array that contains the data stores for the data lake.",
+            "properties": {
+                "Name": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the data store. The databases.[n].collections.[n].dataSources.[n].storeName field references this values as part of the mapping configuration. To use MongoDB Cloud as a data store, the data lake requires a serverless instance or an M10 or higher cluster."
+                },
+                "Provider": {
+                    "type":"string",
+                    "description": "Allowed values atlas, http, online_archive, s3 and DataLakeAzureBlobStore."
+                },
+                "ClusterName": {
+                    "type":"string",
+                    "description": "Human-readable label of the MongoDB Cloud cluster on which the store is based."
+                },
+                "ProjectId": {
+                    "type":"string",
+                    "description": "Unique 24-hexadecimal digit string that identifies the project.Regex ^([a-f0-9]{24})$ ."
+                },
+                "ReadPreference": {
+                    "type":"object",
+                    "description": "MongoDB Cloud cluster read preference, which describes how to route read requests to the cluster.",
+                    "$ref": "#/definitions/ReadPreference"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Collection": {
+            "type":"object",
+            "description": "Array of collections and data sources that map to a stores data store.",
+            "properties": {
+                "DataSources": {
+                    "type":"array",
+                    "description": "Array that contains the data stores that map to a collection for this data lake.",
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/DataSource",
+                        "type": "object"
+                    }
+                },
+                "Name": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "DataSource": {
+            "type":"object",
+            "properties": {
+                "AllowInsecure": {
+                    "type": "boolean",
+                    "description": "Flag that validates the scheme in the specified URLs. If true, allows insecure HTTP scheme, doesn't verify the server's certificate chain and hostname, and accepts any certificate with any hostname presented by the server. If false, allows secure HTTPS scheme only."
+                },
+                "Collection": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the collection in the database. For creating a wildcard (*) collection, you must omit this parameter."
+                },
+                "CollectionRegex": {
+                    "type":"string",
+                    "description": "Regex pattern to use for creating the wildcard (*) collection. To learn more about the regex syntax, see Go programming language.( https://pkg.go.dev/regexp )."
+                },
+                "Database": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the database, which contains the collection in the cluster. You must omit this parameter to generate wildcard (*) collections for dynamically generated databases."
+                },
+                "DatabaseRegex": {
+                    "type":"string",
+                    "description": "Regex pattern to use for creating the wildcard (*) collection. To learn more about the regex syntax, see Go programming language.( https://pkg.go.dev/regexp )."
+                },
+                "DefaultFormat": {
+                    "type": "string",
+                    "description": "File format that MongoDB Cloud uses if it encounters a file without a file extension while searching storeName.Enum: \".avro\" \".avro.bz2\" \".avro.gz\" \".bson\" \".bson.bz2\" \".bson.gz\" \".bsonx\" \".csv\" \".csv.bz2\" \".csv.gz\" \".json\" \".json.bz2\" \".json.gz\" \".orc\" \".parquet\" \".tsv\" \".tsv.bz2\" \".tsv.gz\"",
+                    "default" : ".avro"
+                },
+                "Path": {
+                    "type":"string",
+                    "description": "File path that controls how MongoDB Cloud searches for and parses files in the storeName before mapping them to a collection.Specify / to capture all files and folders from the prefix path."
+                },
+                "ProvenanceFieldName": {
+                    "type":"string",
+                    "description": "Name for the field that includes the provenance of the documents in the results. MongoDB Cloud returns different fields in the results for each supported provider."
+                },
+                "StoreName": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the data store that MongoDB Cloud maps to the collection."
+                },
+                "Urls": {
+                    "type": "array",
+                    "description": "URLs of the publicly accessible data files. You can't specify URLs that require authentication. Atlas Data Lake creates a partition for each URL. If empty or omitted, Data Lake uses the URLs from the store specified in the dataSources.storeName parameter.",
+                    "insertionOrder": false,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "View": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the view, which corresponds to an aggregation pipeline on a collection."
+                },
+                "Pipeline": {
+                    "type":"string",
+                    "description": "Aggregation pipeline stages to apply to the source collection."
+                },
+                "Source": {
+                    "type":"string",
+                    "description": "Human-readable label that identifies the source collection for the view."
+                }
+            },
+            "additionalProperties": false
+        },
+        "ReadPreference": {
+            "type": "object",
+            "properties": {
+                "Mode": {
+                    "type": "string",
+                    "description": "\"primary\" \"primaryPreferred\" \"secondary\" \"secondaryPreferred\" \"nearest\"\nRead preference mode that specifies to which replica set member to route the read requests."
+                },
+                "MaxStalenessSeconds": {
+                    "type": "string",
+                    "description": "Maximum replication lag, or staleness, for reads from secondaries."
+                },
+                "TagSets": {
+                    "type": "array",
+                    "description": "List that contains tag sets or tag specification documents. If specified, Atlas Data Lake routes read requests to replica set member or members that are associated with the specified tags.",
+                    "insertionOrder": false,
+                    "items": {
+                        "$ref": "#/definitions/ReadReferenceTags"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "ReadReferenceTags": {
+            "type": "array",
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/TagSet"
+            },
+            "additionalProperties": false
+        },
+        "TagSet": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string",
+                    "description": "Human-readable label of the tag."
+                },
+                "Value": {
+                    "type": "string",
+                    "description": "Human-readable label of the tag."
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "description": "Returns, adds, edits, and removes Federated Database Instances.",
+    "handlers": {
+        "create": {
+            "permissions": ["secretsmanager:GetSecretValue"]
+        },
+        "read": {
+            "permissions": ["secretsmanager:GetSecretValue"]
+        },
+        "update": {
+            "permissions": ["secretsmanager:GetSecretValue"]
+        },
+        "delete": {
+            "permissions": ["secretsmanager:GetSecretValue"]
+        },
+        "list": {
+            "permissions": ["secretsmanager:GetSecretValue"]
+        }
+    },
+    "properties": {
+        "CloudProviderConfig": {
+            "type": "object",
+            "description": "Cloud provider linked to this data lake.",
+            "$ref": "#/definitions/CloudProviderConfig"
+        },
+        "DataProcessRegion": {
+            "type": "object",
+            "description": "Information about the cloud provider region to which the data lake routes client connections. MongoDB Cloud supports AWS only.",
+            "$ref": "#/definitions/DataProcessRegion"
+        },
+        "ProjectId": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "maxLength": 24,
+            "minLength": 24,
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "TenantName": {
+            "type": "string",
+            "description": "Human-readable label that identifies the data federation."
+        },
+        "SkipRoleValidation": {
+            "type": "boolean",
+            "description": "Flag that indicates whether this request should check if the requesting IAM role can read from the S3 bucket. AWS checks if the role can list the objects in the bucket before writing to it. Some IAM roles only need write permissions. This flag allows you to skip that check."
+        },
+        "Storage": {
+            "type": "object",
+            "description": "Configuration information for each data store and its mapping to MongoDB Cloud databases.",
+            "$ref": "#/definitions/Storage"
+        },
+        "State": {
+            "type": "string",
+            "description": "Type of Federated Database Instances to return."
+        },
+        "HostNames": {
+            "type": "array",
+            "insertionOrder": false,
+            "description": "Type of Federated Database Instances to return.",
+            "items": {
+                "type": "string"
+            }
+        },
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+            "default": "default"
+        }
+    },
+    "readOnlyProperties": [
+        "/properties/CloudProviderConfig/ExternalId",
+        "/properties/CloudProviderConfig/IamAssumedRoleARN",
+        "/properties/CloudProviderConfig/IamUserARN",
+        "/properties/HostNames",
+        "/properties/State"
+    ],
+    "writeOnlyProperties": [
+        "/properties/CloudProviderConfig/TestS3Bucket",
+        "/properties/SkipRoleValidation"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/TenantName",
+        "/properties/Profile"
+    ],
+    "required": [
+        "ProjectId",
+        "TenantName",
+        "CloudProviderConfig/RoleId",
+        "CloudProviderConfig/TestS3Bucket",
+        "DataProcessRegion/Region"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/TenantName",
+        "/properties/Profile"
+    ],
+    "typeName": "MongoDB::Atlas::FederatedDatabaseInstance",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

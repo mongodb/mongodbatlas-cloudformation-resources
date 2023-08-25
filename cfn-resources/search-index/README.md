@@ -1,7 +1,7 @@
 # MongoDB::Atlas::SearchIndex
 
 ## Description
-Returns, adds, edits, and removes [Atlas Search](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams) indexes.
+Resource for managing [Atlas Search](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams) indexes.
 Also returns and updates user-defined analyzers.
 
 ## Requirements

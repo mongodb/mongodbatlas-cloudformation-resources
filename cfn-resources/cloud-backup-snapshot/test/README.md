@@ -26,3 +26,24 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/backup/cloud-backup/restore-from-snapshot/)
+
+## Unit Testing Locally
+
+The local tests are integrated with the AWS `sam local` and `cfn invoke` tooling features:
+
+```
+sam local start-lambda --skip-pull-image
+```
+then in another shell:
+```bash
+repo_root=$(git rev-parse --show-toplevel)
+source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
+cd ${repo_root}/cfn-resources/cloud-backup-snapshot
+./test/cloud-backup-snapshot.create-sample-cfn-request.sh YourProjectID ClusterName > test.request.json 
+echo "Sample request:"
+cat test.request.json
+cfn invoke CREATE test.request.json 
+cfn invoke DELETE test.request.json 
+```
+
+Both CREATE & DELETE tests must pass.

@@ -1,0 +1,23 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "MongoDB::Atlas::FederatedQueryLimit",
+    "language": "go",
+    "runtime": "go1.x",
+    "entrypoint": "handler",
+    "testEntrypoint": "handler",
+    "settings": {
+        "version": false,
+        "subparser_name": null,
+        "verbose": 0,
+        "force": false,
+        "type_name": "MongoDB::Atlas::FederatedQueryLimit",
+        "artifact_type": "r",
+        "endpoint_url": null,
+        "region": null,
+        "target_schemas": [],
+        "profile": null,
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/federated-query-limit",
+        "protocolVersion": "2.0.0",
+        "pluginVersion": "2.0.4"
+    }
+}

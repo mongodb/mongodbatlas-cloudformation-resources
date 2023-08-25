@@ -16,6 +16,7 @@ package awsvpcendpoint
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -40,8 +41,12 @@ type AwsPrivateEndpointOutput struct {
 	InterfaceEndpointID string
 }
 
+func convertToAWSRegion(region string) string {
+	return strings.ReplaceAll(strings.ToLower(region), "_", "-")
+}
+
 func Create(req handler.Request, endpointServiceName string, region string, privateEndpointInputs []AwsPrivateEndpointInput) ([]AwsPrivateEndpointOutput, *handler.ProgressEvent) {
-	svc := newEc2Client(region, req)
+	svc := newEc2Client(convertToAWSRegion(region), req)
 
 	vcpType := "Interface"
 
@@ -79,7 +84,7 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 }
 
 func Delete(req handler.Request, interfaceEndpoints []string, region string) *handler.ProgressEvent {
-	svc := newEc2Client(region, req)
+	svc := newEc2Client(convertToAWSRegion(region), req)
 
 	vpcEndpointIds := make([]*string, 0)
 

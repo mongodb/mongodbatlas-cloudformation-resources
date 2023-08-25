@@ -98,7 +98,3 @@ Returns the <code>StartRequestDate</code> value.
 
 Returns the <code>State</code> value.
 
-#### ClusterType
-
-Returns the <code>ClusterType</code> value.
-

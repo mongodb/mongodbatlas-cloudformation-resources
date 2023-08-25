@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -37,6 +38,8 @@ const (
 	Starting          = "STARTING"
 	StartingRequested = "START_REQUESTED"
 	Complete          = "COMPLETE"
+	AlreadyExist      = "Already Exist"
+	EmptyString       = ""
 )
 
 var RequiredFields = []string{constants.ClusterName, constants.ProjectID}
@@ -52,7 +55,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if currentModel.Profile == nil || *currentModel.Profile == EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
@@ -63,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if req.CallbackContext != nil {
-		return validateProgress(atlas, currentModel, "SIMULATING")
+		return validateProgress(atlas, currentModel, Simulating)
 	}
 
 	clusterName := cast.ToString(currentModel.ClusterName)
@@ -74,7 +77,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Already Exist",
+			Message:          AlreadyExist,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
@@ -114,7 +117,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if currentModel.Profile == nil || *currentModel.Profile == EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
@@ -133,7 +136,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if !util.Contains(SimulationStatus, *outageSimulation.State) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
+			Message:          constants.ResourceNotFound,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
@@ -154,7 +157,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if currentModel.Profile == nil || *currentModel.Profile == EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
@@ -163,7 +166,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if req.CallbackContext != nil {
-		return validateProgress(atlas, currentModel, "COMPLETE")
+		return validateProgress(atlas, currentModel, Complete)
 	}
 
 	clusterName := cast.ToString(currentModel.ClusterName)
@@ -173,7 +176,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if !active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
+			Message:          constants.ResourceNotFound,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
@@ -236,7 +239,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		p.ResourceModel = currentModel
 		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = 65
-		p.Message = "Pending"
+		p.Message = constants.Pending
 		p.CallbackContext = map[string]interface{}{
 			"status":       state,
 			"cluster_name": *currentModel.ClusterName,
@@ -252,7 +255,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		p.ResourceModel = nil
 	}
 	p.OperationStatus = handler.Success
-	p.Message = "Complete"
+	p.Message = constants.Complete
 	return p, nil
 }
 
@@ -260,12 +263,12 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
 	outageSimulation, resp, err := client.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if resp.StatusCode == 404 {
-			return true, "COMPLETED", nil
+		if resp.StatusCode == http.StatusNotFound {
+			return true, Complete, nil
 		}
-		return false, "", err
+		return false, EmptyString, err
 	}
-	if *outageSimulation.State != "" {
+	if *outageSimulation.State != EmptyString {
 		log.Printf("[DEBUG] status for MongoDB cluster outage simulation: %s: %s", clusterName, *outageSimulation.State)
 	}
 	return *outageSimulation.State == targetState, *outageSimulation.State, nil
@@ -275,20 +278,20 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 func isActive(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
 	outageSimulation, resp, err := client.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if resp.StatusCode == 404 {
-			return false, "COMPLETED", nil
+		if resp.StatusCode == http.StatusNotFound {
+			return false, Complete, nil
 		}
-		return false, "", err
+		return false, EmptyString, err
 	}
 	if !util.Contains(SimulationStatus, *outageSimulation.State) {
-		return false, "COMPLETED", nil
+		return false, Complete, nil
 	}
-	return true, "COMPLETED", nil
+	return true, Complete, nil
 }
 
 // logger setup function
 func setup() {
-	util.SetupLogger("mongodb-atlas-backup-snapshot")
+	util.SetupLogger("mongodb-atlas-cloud-outage")
 }
 
 // function to validate inputs to all actions
@@ -303,7 +306,7 @@ func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, current
 		currentModel.StartRequestDate = &dateStr
 	}
 
-	if *outageSimulation.State != "" {
+	if outageSimulation.State != nil {
 		currentModel.State = outageSimulation.State
 	}
 	currentModel.OutageFilters = convertOutageFiltersToModel(outageSimulation.OutageFilters)

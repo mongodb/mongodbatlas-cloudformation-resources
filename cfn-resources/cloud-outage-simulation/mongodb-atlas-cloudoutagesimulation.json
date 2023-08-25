@@ -9,9 +9,6 @@
         "ClusterName": {
             "type": "string"
         },
-        "ClusterType": {
-            "type": "string"
-        },
         "StartRequestState": {
             "type": "string"
         },
@@ -86,10 +83,6 @@
             "SimulationId": {
                 "type": "string"
 
-            },
-            "ClusterType": {
-                "type": "string"
-
             }
         },
         "required": [
@@ -101,8 +94,7 @@
         "readOnlyProperties": [
             "/properties/SimulationId",
             "/properties/StartRequestDate",
-            "/properties/State",
-            "/properties/ClusterType"
+            "/properties/State"
         ],
     "createOnlyProperties": [
         "/properties/ProjectId",
@@ -111,7 +103,8 @@
     ],
         "primaryIdentifier": [
             "/properties/ProjectId",
-            "/properties/ClusterName"
+            "/properties/ClusterName",
+            "/properties/Profile"
         ],
         "handlers": {
             "create": {

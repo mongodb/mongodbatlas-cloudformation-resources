@@ -38,14 +38,13 @@ var DeleteRequiredFields = []string{constants.OrgID, constants.APIUserID}
 var ListRequiredFields = []string{constants.OrgID, constants.APIUserID}
 
 const (
-	CREATE = "CREATE"
-	READ   = "READ"
-	DELETE = "DELETE"
-	LIST   = "LIST"
+	CREATE                 = "CREATE"
+	READ                   = "READ"
+	DELETE                 = "DELETE"
+	LIST                   = "LIST"
 	MutualExclusiveMessage = "Only one of IpAddress or CidrBlock is required"
-	EitherOrMessage = "Either IpAddress or CidrBlock is required"
+	EitherOrMessage        = "Either IpAddress or CidrBlock is required"
 )
-
 
 // validateModel to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {

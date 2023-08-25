@@ -130,4 +130,7 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+
+	AlreadyExist = "Already Exist"
+	EmptyString  = ""
 )

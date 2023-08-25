@@ -38,8 +38,6 @@ const (
 	Starting          = "STARTING"
 	StartingRequested = "START_REQUESTED"
 	Complete          = "COMPLETE"
-	AlreadyExist      = "Already Exist"
-	EmptyString       = ""
 )
 
 var RequiredFields = []string{constants.ClusterName, constants.ProjectID}
@@ -55,7 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == EmptyString {
+	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
@@ -77,7 +75,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          AlreadyExist,
+			Message:          constants.AlreadyExist,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
@@ -93,6 +91,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = logger.Debugf("currentModel - error: %+v", currentModel)
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+	log.Println("[INFO] Waiting for MongoDB Cluster Outage Simulation to start")
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -117,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == EmptyString {
+	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
@@ -141,6 +144,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	convertToUIModel(*outageSimulation, currentModel)
+	_, _ = logger.Debugf("currentModel - error: %+v", currentModel)
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -157,7 +164,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == EmptyString {
+	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
@@ -184,6 +191,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
 	}
 
 	log.Println("[INFO] Waiting for MongoDB Cluster Outage Simulation to end")
@@ -266,10 +277,13 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 		if resp.StatusCode == http.StatusNotFound {
 			return true, Complete, nil
 		}
-		return false, EmptyString, err
+		return false, constants.EmptyString, err
 	}
-	if *outageSimulation.State != EmptyString {
+	if *outageSimulation.State != constants.EmptyString {
 		log.Printf("[DEBUG] status for MongoDB cluster outage simulation: %s: %s", clusterName, *outageSimulation.State)
+	}
+	if resp.Body != nil {
+		defer resp.Body.Close()
 	}
 	return *outageSimulation.State == targetState, *outageSimulation.State, nil
 }
@@ -281,10 +295,13 @@ func isActive(client *util.MongoDBClient, projectID, clusterName, targetState st
 		if resp.StatusCode == http.StatusNotFound {
 			return false, Complete, nil
 		}
-		return false, EmptyString, err
+		return false, constants.EmptyString, err
 	}
 	if !util.Contains(SimulationStatus, *outageSimulation.State) {
 		return false, Complete, nil
+	}
+	if resp.Body != nil {
+		defer resp.Body.Close()
 	}
 	return true, Complete, nil
 }

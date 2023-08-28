@@ -36,7 +36,7 @@ jq --arg orgID "$ATLAS_ORG_ID" \
 	'.OrgId?|=$orgID |.TeamIds[0]?|=$team_id |.Username?|=$username' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
-#inputs_1_invalid.json
+#inputs_2_invalid.json
 username="(*&)(*&*&)(*&(*&"
 jq --arg orgID "$ATLAS_ORG_ID" \
 	--arg team_id "$team_id" \

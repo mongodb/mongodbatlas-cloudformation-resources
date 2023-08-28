@@ -10,9 +10,6 @@ set -o pipefail
 
 set -x
 
-echo "$ATLAS_PUBLIC_KEY"
-echo "$ATLAS_PRIVATE_KEY"
-
 function usage {
 	echo "Creates a new customdb role for the test"
 }
@@ -22,6 +19,13 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
+
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -35,27 +39,27 @@ fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
 
 jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_invalid.json" >"inputs/inputs_2_invalid.json"
 
 ls -l inputs

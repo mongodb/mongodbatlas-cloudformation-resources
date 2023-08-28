@@ -39,26 +39,32 @@ fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
 
 jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_invalid.json" >"inputs/inputs_2_invalid.json"
 

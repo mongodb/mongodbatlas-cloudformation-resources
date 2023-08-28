@@ -143,5 +143,4 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
-	APIUserID                  = "ApiUserId"
 )

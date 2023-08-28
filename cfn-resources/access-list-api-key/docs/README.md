@@ -13,7 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::AccessListAPIKey",
     "Properties" : {
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
-        "<a href="#apiuserid" title="ApiUserId">ApiUserId</a>" : <i>String</i>,
+        "<a href="#apiuserid" title="APIUserId">APIUserId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#cidrblock" title="CidrBlock">CidrBlock</a>" : <i>String</i>,
         "<a href="#ipaddress" title="IpAddress">IpAddress</a>" : <i>String</i>,
@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::AccessListAPIKey
 Properties:
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
-    <a href="#apiuserid" title="ApiUserId">ApiUserId</a>: <i>String</i>
+    <a href="#apiuserid" title="APIUserId">APIUserId</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#cidrblock" title="CidrBlock">CidrBlock</a>: <i>String</i>
     <a href="#ipaddress" title="IpAddress">IpAddress</a>: <i>String</i>
@@ -47,15 +47,15 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### ApiUserId
+#### APIUserId
 
 Unique 24-hexadecimal digit string that identifies this organization API key for which you want to return access list entries.
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Profile
 

@@ -12,7 +12,7 @@
       "Description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects.",
       "Default": ""
     },
-    "ApiUserId": {
+    "APIUserId": {
       "Type": "String",
       "Description": "Unique 24-hexadecimal digit string that identifies this organization API key for which you want to return access list entries.",
       "Default": ""
@@ -33,8 +33,8 @@
         "OrgId": {
           "Ref": "OrgId"
         },
-        "ApiUserId": {
-          "Ref": "ApiUserId"
+        "APIUserId": {
+          "Ref": "APIUserId"
         },
         "IpAddress": {
           "Ref": "IpAddress"

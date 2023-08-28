@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	orgID := *currentModel.OrgId
-	apiKeyID := *currentModel.ApiUserId
+	apiKeyID := *currentModel.APIUserId
 
 	if currentModel.CidrBlock == nil && currentModel.IpAddress == nil {
 		return handler.ProgressEvent{
@@ -126,7 +126,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	orgID := *currentModel.OrgId
-	apiKeyID := *currentModel.ApiUserId
+	apiKeyID := *currentModel.APIUserId
 	if currentModel.CidrBlock == nil && currentModel.IpAddress == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -183,7 +183,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	orgID := *currentModel.OrgId
-	apiKeyID := *currentModel.ApiUserId
+	apiKeyID := *currentModel.APIUserId
 	if currentModel.CidrBlock == nil && currentModel.IpAddress == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -237,7 +237,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	orgID := *currentModel.OrgId
-	apiKeyID := *currentModel.ApiUserId
+	apiKeyID := *currentModel.APIUserId
 
 	listAccessListAPIKey := atlas.AtlasV2.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID)
 
@@ -255,7 +255,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		l := accessListResponse.Results[i]
 		label := Model{
 			CidrBlock: l.CidrBlock,
-			ApiUserId: currentModel.ApiUserId,
+			APIUserId: currentModel.APIUserId,
 			OrgId:     currentModel.OrgId,
 			Profile:   currentModel.Profile,
 			IpAddress: l.IpAddress,

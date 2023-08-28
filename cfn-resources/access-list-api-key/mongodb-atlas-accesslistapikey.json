@@ -9,7 +9,7 @@
             "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects",
             "type": "string"
         },
-        "ApiUserId": {
+        "APIUserId": {
             "description": "Unique 24-hexadecimal digit string that identifies this organization API key for which you want to return access list entries.",
             "type": "string"
         },
@@ -42,7 +42,7 @@
     ],
     "primaryIdentifier": [
         "/properties/OrgId",
-        "/properties/ApiUserId",
+        "/properties/APIUserId",
         "/properties/Profile"
     ],
     "handlers": {

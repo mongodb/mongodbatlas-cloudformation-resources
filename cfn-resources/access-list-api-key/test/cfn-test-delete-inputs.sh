@@ -13,12 +13,12 @@ function usage {
 }
 
 OrgId=$(jq -r '.OrgId' ./inputs/inputs_1_create.json)
-ApiUserId=$(jq -r '.ApiUserId' ./inputs/inputs_1_create.json)
+APIUserId=$(jq -r '.APIUserId' ./inputs/inputs_1_create.json)
 
 
 
 #delete access list entry
-if atlas organizations apiKeys delete "$ApiUserId" --orgId "$OrgId" --force; then
+if atlas organizations apiKeys delete "$APIUserId" --orgId "$OrgId" --force; then
 	echo "$OrgId access list deletion OK"
 else
 	(echo "Failed cleaning organizations:$OrgId" && exit 1)

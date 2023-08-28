@@ -35,14 +35,14 @@ OrgId="${MONGODB_ATLAS_ORG_ID}"
 
 IpAddress="203.0.113.11"
 # Create an organization API key with organization owner access in the organization with the ID 5a1b39eec902201990f12345:
-ApiUserId=$(atlas organizations apiKeys create --role ORG_READ_ONLY --desc "cfn bot access-list testing" --orgId "${OrgId}" --output json | jq -r '.id')
+APIUserId=$(atlas organizations apiKeys create --role ORG_READ_ONLY --desc "cfn bot access-list testing" --orgId "${OrgId}" --output json | jq -r '.id')
 
 
 jq  --arg OrgId "$OrgId" \
   	--arg IpAddress "$IpAddress" \
-  	--arg ApiUserId "$ApiUserId" \
+  	--arg APIUserId "$APIUserId" \
   	--arg Profile "$Profile" \
-  	'.OrgId?|=$OrgId | .IpAddress?|=$IpAddress | .ApiUserId?|=$ApiUserId | .Profile?|=$Profile' \
+  	'.OrgId?|=$OrgId | .IpAddress?|=$IpAddress | .APIUserId?|=$APIUserId | .Profile?|=$Profile' \
 	"$(dirname "$0")/input_1_create.json" >"inputs/inputs_1_create.json"
 
 ls -l inputs

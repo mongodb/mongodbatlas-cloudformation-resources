@@ -1,0 +1,151 @@
+{
+    "typeName": "MongoDB::Atlas::APIKey",
+    "description": "Creates one API key for the specified organization. An organization API key grants programmatic access to an organization.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+        "ListOptions": {
+            "type": "object",
+            "properties": {
+                "PageNum": {
+                    "type": "integer",
+                    "description": "Number of the page that displays the current set of the total objects that the response returns."
+                },
+                "ItemsPerPage": {
+                    "type": "integer",
+                    "description": "Number of items that the response returns per page."
+                },
+                "IncludeCount": {
+                    "type": "boolean",
+                    "description": "Flag that indicates whether the response returns the total number of items (totalCount) in the response."
+                }
+            },
+            "additionalProperties": false
+        },
+        "ProjectAssignment": {
+            "type": "object",
+            "properties": {
+                "Roles": {
+                    "type": "array",
+                    "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ProjectId": {
+                    "type": "string",
+                    "description": "Unique 24-hexadecimal digit string that identifies the project in an organization."
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Description": {
+            "type": "string",
+            "description": "Purpose or explanation provided when someone created this organization API key."
+        },
+        "APIUserId": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "AwsSecretName": {
+            "type": "string",
+            "description": "Name of the AWS Secrets Manager secret that stores the API key Details."
+        },
+        "OrgId": {
+            "type": "string",
+            "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects. Use the /orgs endpoint to retrieve all organizations to which the authenticated user has access.",
+            "maxLength": 24,
+            "minLength": 24,
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "Profile": {
+            "type": "string",
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
+        },
+        "PublicKey": {
+            "type": "string",
+            "description": "Public API key value set for the specified organization API key."
+        },
+        "PrivateKey": {
+            "type": "string",
+            "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
+        },
+        "AwsSecretArn": {
+            "type": "string",
+            "description": "ARN of the AWS Secrets Manager secret that stores the API key Details"
+        },
+        "Roles": {
+            "type": "array",
+            "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
+            "items": {
+                "type": "string"
+            },
+            "insertionOrder": false
+        },
+        "ProjectAssignments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/ProjectAssignment"
+            },
+            "insertionOrder": false
+        },
+        "ListOptions": {
+            "$ref": "#/definitions/ListOptions"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrgId",
+        "Description",
+        "AwsSecretName"
+    ],
+    "readOnlyProperties": [
+        "/properties/PrivateKey",
+        "/properties/PublicKey",
+        "/properties/APIUserId"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrgId",
+        "/properties/Profile"
+        ],
+    "writeOnlyProperties": [
+        "/properties/AwsSecretName"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrgId",
+        "/properties/Profile",
+        "/properties/APIUserId"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
+    }
+}

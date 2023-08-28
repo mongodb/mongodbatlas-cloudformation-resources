@@ -71,11 +71,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.ProjectOwnerId != nil {
 		projectOwnerID = *currentModel.ProjectOwnerId
 	}
-	project, res, err := client.Projects.Create(context.Background(), &mongodbatlas.Project{
+	projectInput := &mongodbatlas.Project{
 		Name:                      *currentModel.Name,
 		OrgID:                     *currentModel.OrgId,
 		WithDefaultAlertsSettings: currentModel.WithDefaultAlertsSettings,
-	}, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerID})
+	}
+	if currentModel.RegionUsageRestrictions != nil {
+		projectInput.RegionUsageRestrictions = *currentModel.RegionUsageRestrictions
+	}
+
+	project, res, err := client.Projects.Create(context.Background(), projectInput, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerID})
 	if err != nil {
 		_, _ = logger.Debugf("Create - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
@@ -376,7 +381,7 @@ func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 	currentModel.Id = &project.ID
-
+	currentModel.RegionUsageRestrictions = &project.RegionUsageRestrictions
 	return handler.ProgressEvent{}, currentModel, nil
 }
 

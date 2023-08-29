@@ -51,8 +51,13 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
+func setup() {
+	util.SetupLogger("mongodb-atlas-access-list-api-key")
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -112,6 +117,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
 	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -169,6 +176,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -223,6 +232,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
 	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -271,13 +282,23 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func closeResponse(response *http.Response) {
 	if response != nil {
-		response.Body.Close()
+		err := response.Body.Close()
+		if err != nil {
+			return
+		}
 	}
 }
 
 func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 	_, _ = logger.Warn(errMsg)
+	if response == nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errMsg,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure}, nil
+	}
+
 	if response.StatusCode == http.StatusConflict {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,

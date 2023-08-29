@@ -33,11 +33,11 @@
     "additionalProperties": false,
     "required": [
         "OrgId",
-        "ApiUserId"
+        "APIUserId"
     ],
     "createOnlyProperties": [
         "/properties/OrgId",
-        "/properties/ApiUserId",
+        "/properties/APIUserId",
         "/properties/Profile"
     ],
     "primaryIdentifier": [

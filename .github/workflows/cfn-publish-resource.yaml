@@ -1,21 +1,22 @@
-name: Cfn Publishing
+name: Atlas CFN Resource Publish
 on:
   workflow_dispatch:
     inputs:
       regions:
-        description: "comma seperated AWS regions"
-        default: "us-east-1"
+        description: "comma seperated AWS regions."
+        default: "us-east-1,us-west-1"
         required: true
-      resourceName:
-        description: "the folder name of the Resource in this Repo"
-        default: ""
+      resourceNames:
+        description: "the folder name of the Resource in this Repo."
+        default: "custom-db-role,maintenance-window"
         required: true
 jobs:
   publish-mongodb-atlas-resource:
     name: publish-mongodb-atlas-resource
     runs-on: ubuntu-20.04
+
     env:
-      RESOURCE_NAME: ${{ github.event.inputs.resourceName }}
+      RESOURCES: ${{ github.event.inputs.resourceNames }}
       OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
       REGIONS: ${{ github.event.inputs.regions }}
       ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
@@ -24,9 +25,21 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          sudo pip3 install awscli
+          aws --version
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: actions/checkout@v3
       - name: Run publishing script
         run: |
-          ./.github/scripts/cfn-publish.sh
+          cd .github/scripts
+          chmod +x cfn-publish.sh
+          ./cfn-publish.sh
 

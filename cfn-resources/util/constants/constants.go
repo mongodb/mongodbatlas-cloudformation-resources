@@ -16,6 +16,16 @@ package constants
 
 type Event string
 
+type CfnFunctions string
+
+const (
+	CREATE CfnFunctions = "CREATE"
+	LIST   CfnFunctions = "LIST"
+	READ   CfnFunctions = "READ"
+	UPDATE CfnFunctions = "UPDATE"
+	DELETE CfnFunctions = "DELETE"
+)
+
 const (
 	Profile             = "Profile"
 	PubKey              = "ApiKeys.PublicKey"
@@ -67,6 +77,7 @@ const (
 	Automated                        = "automated"
 	Download                         = "download"
 	ClusterName                      = "ClusterName"
+	InstanceName                     = "InstanceName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
@@ -124,10 +135,23 @@ const (
 
 	ExternalGroupName          = "ExternalGroupName"
 	RoleAssignments            = "RoleAssignments"
+	Description                = "Description"
+	AwsSecretName              = "AwsSecretName"
+	APIUserID                  = "APIUserId"
 	DataFederationRoleID       = "CloudProviderConfig.RoleId"
 	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"
 	DataProcessRegion          = "DataProcessRegion.Region"
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+)
+
+type CfnFunctions string
+
+const (
+	CREATE CfnFunctions = "CREATE"
+	LIST   CfnFunctions = "LIST"
+	READ   CfnFunctions = "READ"
+	UPDATE CfnFunctions = "UPDATE"
+	DELETE CfnFunctions = "DELETE"
 )

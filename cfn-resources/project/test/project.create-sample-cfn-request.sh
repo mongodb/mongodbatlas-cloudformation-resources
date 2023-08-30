@@ -17,8 +17,10 @@ if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 name="${1}"
-jq --arg profile "$ATLAS_PROFILE" \
-   --arg org "$ATLAS_ORG_ID" \
+jq --arg profile "$MONGODB_ATLAS_PROFILE" \
+   --arg org "$MONGODB_ATLAS_ORG_ID" \
    --arg name "$name" \
-   '.desiredResourceState.properties.OrgId?|=$org | .desiredResourceState.properties.Profile?|=$profile | .desiredResourceState.properties.Name?|=$name' \
+   '.desiredResourceState.properties.OrgId?|=$org
+   | .desiredResourceState.properties.Profile?|=$profile
+   | .desiredResourceState.properties.Name?|=$name' \
    "$(dirname "$0")/project.sample-cfn-request.json"

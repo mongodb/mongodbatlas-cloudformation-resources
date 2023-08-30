@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -424,6 +425,26 @@ func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
 	return &args
 }
 
+func flattenTags(clusterTags []*mongodbatlas.Tag) (tags []Tag) {
+	for ind := range clusterTags {
+		tags = append(tags, Tag{
+			Key:   util.Pointer(clusterTags[ind].Key),
+			Value: util.Pointer(clusterTags[ind].Value),
+		})
+	}
+	return
+}
+
+func expandTags(tags []Tag) (clusterTags []*mongodbatlas.Tag) {
+	for ind := range tags {
+		clusterTags = append(clusterTags, &mongodbatlas.Tag{
+			Key:   *tags[ind].Key,
+			Value: *tags[ind].Value,
+		})
+	}
+	return
+}
+
 func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) {
 	if cluster == nil {
 		return
@@ -480,6 +501,7 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 	}
 
 	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
+	currentModel.Tags = flattenTags(cluster.Tags)
 }
 
 func setClusterRequest(currentModel *Model) (*mongodbatlas.AdvancedCluster, handler.ProgressEvent, error) {
@@ -528,6 +550,7 @@ func setClusterRequest(currentModel *Model) (*mongodbatlas.AdvancedCluster, hand
 	if currentModel.RootCertType != nil {
 		clusterRequest.RootCertType = *currentModel.RootCertType
 	}
+	clusterRequest.Tags = expandTags(currentModel.Tags)
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 	return clusterRequest, handler.ProgressEvent{}, nil

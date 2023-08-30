@@ -42,7 +42,6 @@ const (
 var defaultLabel = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Name}
-var ReadRequiredFields = []string{constants.Name}
 var UpdateRequiredFields = []string{constants.ProjectID, constants.Name}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 var ListRequiredFields = []string{constants.ProjectID}

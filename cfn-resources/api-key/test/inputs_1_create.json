@@ -1,0 +1,30 @@
+{
+  "OrgId": "",
+  "Profile": "default",
+  "AwsSecretName": "",
+  "Roles": [
+    "ORG_MEMBER",
+    "ORG_GROUP_CREATOR"
+  ],
+  "ProjectAssignments": [
+    {
+      "ProjectId": "",
+      "Roles": [
+        "GROUP_READ_ONLY"
+      ]
+    },
+    {
+      "ProjectId": "",
+      "Roles": [
+        "GROUP_READ_ONLY",
+        "GROUP_SEARCH_INDEX_EDITOR",
+        "GROUP_CLUSTER_MANAGER"
+      ]
+    }
+  ],
+  "ListOptions": {
+    "PageNum": "1",
+    "ItemsPerPage": "300"
+  },
+  "Description":  "for cfn test api-key resource testing."
+}

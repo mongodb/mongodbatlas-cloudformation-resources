@@ -1,0 +1,83 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This templates Creates one API key for the specified MongoDB Atlas organization. An organization API key grants programmatic access to an organization.",
+  "Parameters": {
+    "OrgId": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Organization ID"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Project ID"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+      "Default": "default"
+    },
+    "AwsSecretName": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager"
+    },
+    "OrgRoles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "Default": "ORG_TEAM_MEMBERS_ADMIN,ORG_GROUP_CREATOR",
+      "ConstraintDescription": "Comma Seperated String with Role names"
+    },
+    "ProjectRoles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "Default": "GROUP_READ_ONLY,GROUP_SEARCH_INDEX_EDITOR,GROUP_CLUSTER_MANAGER",
+      "ConstraintDescription": "Comma Seperated String with Role names"
+    },
+    "Description": {
+      "Type": "String",
+      "Description": "Purpose or explanation provided when someone created this organization API key.",
+      "Default": "for cfn testing..."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "APIKeySecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": {"Ref":"AwsSecretName"},
+        "Description": "APIKey will store as Secret in AWS Secrets Manager.",
+        "SecretString": "{\"key\":\"value\"}"
+      }
+    },
+    "APIKey": {
+      "Type": "MongoDB::Atlas::APIKey",
+      "Properties": {
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Roles": { "Ref": "OrgRoles" },
+        "Description": {"Ref": "Description"},
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "AwsSecretName": {
+          "Ref": "AwsSecretName"
+        },
+        "ProjectAssignments": [
+          {
+            "ProjectId": {"Ref": "ProjectId"},
+            "Roles": {"Ref": "ProjectRoles"}
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "APIKeyID": {
+      "Value": {
+        "Fn::GetAtt": [
+          "APIKey",
+          "APIUserId"
+        ]
+      }
+    }
+  }
+}

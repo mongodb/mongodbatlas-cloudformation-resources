@@ -14,6 +14,13 @@ function usage {
 	echo "usage:$0 <project_name>"
 }
 
+#set profile
+profile="federation"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -36,7 +43,8 @@ for inputFile in inputs_*; do
 	jq --arg org "$ATLAS_ORG_ID" \
 		--arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
 		--arg projectId "$projectId" \
-		'.FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .RoleAssignments[0].ProjectId?|=$projectId' \
+		--arg profile "$profile" \
+		'.Profile?|=$profile | .FederationSettingsId?|=$FederationSettingsId | .OrgId?|=$org | .RoleAssignments[0].ProjectId?|=$projectId' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

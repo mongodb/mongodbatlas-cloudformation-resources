@@ -145,13 +145,3 @@ const (
 	LimitName                  = "LimitName"
 	Value                      = "Value"
 )
-
-type CfnFunctions string
-
-const (
-	CREATE CfnFunctions = "CREATE"
-	LIST   CfnFunctions = "LIST"
-	READ   CfnFunctions = "READ"
-	UPDATE CfnFunctions = "UPDATE"
-	DELETE CfnFunctions = "DELETE"
-)

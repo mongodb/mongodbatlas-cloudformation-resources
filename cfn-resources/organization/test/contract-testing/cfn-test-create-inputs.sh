@@ -13,12 +13,12 @@ set -x
 # setting projectName
 orgName="cfn-bot-org-test-$((1 + RANDOM % 1000))"
 
-if [ "${MONGODB_ATLAS_ORG_OWNER_ID+x}" ];then
+if [ -z "${MONGODB_ATLAS_ORG_OWNER_ID+x}" ];then
   echo "MONGODB_ATLAS_ORG_OWNER_ID is not set, exiting..."
   exit 1
 fi
 
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+if [ -z ${MONGODB_ATLAS_PROFILE+x} ];then
     echo "MONGODB_ATLAS_PROFILE is not set, exiting..."
     exit 1
 fi

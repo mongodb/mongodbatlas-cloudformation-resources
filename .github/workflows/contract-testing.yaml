@@ -118,7 +118,7 @@ jobs:
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
-          MONGODB_ATLAS_ORG_OWNER_ID: 5f9a1a9a0f2912c554080adc
+          MONGODB_ATLAS_ORG_OWNER_ID: 5e4bc367c6b0f41bb9bbb178
         run: |
           pushd cfn-resources/organization
           make create-test-resources

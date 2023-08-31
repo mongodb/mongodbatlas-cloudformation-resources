@@ -225,7 +225,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
 	// we need to make the call in a goroutine and return a progress event
-	// after 10 Seconds. Reason for 10 Seconds wait is that the Delete API
+	// after 10 Seconds. Reason for wait is that the Delete API
 	// may throw error immediately if the resource is not found.
 
 	responseChan := make(chan DeleteResponse, 1)
@@ -242,8 +242,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
 		}
 
-	case <-time.After(10 * time.Second):
-		// If the Delete is not completed in 10 seconds,
+	case <-time.After(30 * time.Second):
+		// If the Delete is not completed in the above time,
 		// we return a progress event with inProgress status and callback context
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,

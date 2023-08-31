@@ -51,6 +51,11 @@ type OrgProfile struct {
 	BaseUrl    string
 }
 
+type DeleteResponse struct {
+	Error    error
+	Response *http.Response
+}
+
 func setup() {
 	util.SetupLogger("mongodb-atlas-organization")
 }
@@ -162,22 +167,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModel:   apiKeyUserDetails}, nil
 }
 
-func (model *Model) getOrgDetails(atlas *util.MongoDBClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
-	orgCreateRequest := atlas.AtlasV2.OrganizationsApi.GetOrganization(
-		context.Background(),
-		*currentModel.OrgId,
-	)
-	org, response, err := orgCreateRequest.Execute()
-	defer closeResponse(response)
-	if err != nil {
-		return nil, response, err
-	}
-	model.Name = util.Pointer(org.Name)
-	model.OrgId = org.Id
-	model.IsDeleted = org.IsDeleted
-	return model, response, nil
-}
-
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -238,23 +227,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		context.Background(),
 		*currentModel.OrgId,
 	)
-
-	//_, response, err := deleteRequest.Execute()
-	//defer closeResponse(response)
-	//if err != nil {
-	//	if response.StatusCode == http.StatusUnauthorized {
-	//		return handler.ProgressEvent{
-	//			OperationStatus:  handler.Failed,
-	//			Message:          "Not found",
-	//			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	//	}
-	//	return handleError(response, constants.DELETE, err)
-	//}
-
-	type DeleteResponse struct {
-		Error    error
-		Response *http.Response
-	}
 
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
@@ -328,6 +300,22 @@ func deleteCallback(atlas *util.MongoDBClient, currentModel *Model) (handler.Pro
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
+func (model *Model) getOrgDetails(atlas *util.MongoDBClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
+	orgCreateRequest := atlas.AtlasV2.OrganizationsApi.GetOrganization(
+		context.Background(),
+		*currentModel.OrgId,
+	)
+	org, response, err := orgCreateRequest.Execute()
+	defer closeResponse(response)
+	if err != nil {
+		return nil, response, err
+	}
+	model.Name = util.Pointer(org.Name)
+	model.OrgId = org.Id
+	model.IsDeleted = org.IsDeleted
+	return model, response, nil
 }
 
 func closeResponse(response *http.Response) {

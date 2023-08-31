@@ -1,0 +1,72 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This templates Creates one API key for the specified MongoDB Atlas organization. An organization API key grants programmatic access to an organization.",
+  "Parameters": {
+    "OrgName": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Organization Name"
+    },
+    "OrgOwnerId": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Organization Owner ID"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager"
+    },
+    "AwsSecretName": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager"
+    },
+    "OrgRoles": {
+      "Type": "List<String>",
+      "Description": "Role names",
+      "Default": "ORG_TEAM_MEMBERS_ADMIN,ORG_OWNER",
+      "ConstraintDescription": "Comma Seperated String with Role names"
+    },
+    "Description": {
+      "Type": "String",
+      "Description": "Purpose or explanation provided when someone created this organization API key."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "APIKeySecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": {"Ref":"AwsSecretName"},
+        "Description": "Atlas Organization APIKeys Profile will store as Secret in AWS Secrets Manager.",
+        "SecretString": "{\"key\":\"value\"}"
+      }
+    },
+    "Organization": {
+      "Type": "MongoDB::Atlas::Organization",
+      "Properties": {
+        "OrgOwnerId": {
+          "Ref": "OrgOwnerId"
+        },
+        "Name": {"Ref":"OrgName"},
+        "APIKey": {
+          "Roles": { "Ref": "OrgRoles" },
+          "Description": {"Ref": "Description"}
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "AwsSecretName": {
+          "Ref": "APIKeySecret"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "OrgID": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Organization",
+          "OrgId"
+        ]
+      }
+    }
+  }
+}

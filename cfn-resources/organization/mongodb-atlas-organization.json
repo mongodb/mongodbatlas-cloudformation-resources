@@ -66,10 +66,7 @@
     "additionalProperties": false,
     "required": [
         "OrgOwnerId",
-        "Description",
         "Name",
-        "APIKey/Roles",
-        "APIKey/Description",
         "AwsSecretName"
     ],
     "readOnlyProperties": [

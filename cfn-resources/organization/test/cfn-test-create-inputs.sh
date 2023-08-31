@@ -19,17 +19,23 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-#set profile
+
+orgName="${1}"
+
 profile="dev-cloud-profile"
-#if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-#    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-#    profile=${MONGODB_ATLAS_PROFILE}
-#fi
+
+#set profile (workflow)
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
+
+if [ "${MONGODB_ATLAS_ORG_OWNER_ID+x}" ];then
+  echo "MONGODB_ATLAS_ORG_OWNER_ID is not set, exiting..."
+  exit 1
+fi
 
 orgOwnerId="${MONGODB_ATLAS_ORG_OWNER_ID}"
-
-# create ProjectId
-orgName="${1}"
 
 # create aws secret key
 awsSecretName="cfn/atlas/profile/${orgName}"

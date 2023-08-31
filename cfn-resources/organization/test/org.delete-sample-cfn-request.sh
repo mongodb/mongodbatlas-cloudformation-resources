@@ -21,5 +21,5 @@ jq --arg empty "" \
 	 .desiredResourceState.Profile?|=$empty |
 	 .desiredResourceState.Name?|= $empty |
 	 .desiredResourceState.AwsSecretName?|=$empty' \
-	"$(dirname "$0")/apikey.sample-cfn-request.json" > sample.temp && mv sample.temp org.sample-cfn-request.json
+	"$(dirname "$0")/org.sample-cfn-request.json" > sample.temp && mv sample.temp org.sample-cfn-request.json
 

@@ -50,6 +50,7 @@ const (
 type MongoDBClient struct {
 	Atlas   *mongodbatlas.Client
 	AtlasV2 *atlasSDK.APIClient
+	Config  *Config
 }
 
 type Config struct {
@@ -220,6 +221,7 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 	clients := &MongoDBClient{
 		Atlas:   atlasClient,
 		AtlasV2: sdkV2Client,
+		Config:  &c,
 	}
 
 	return clients, nil

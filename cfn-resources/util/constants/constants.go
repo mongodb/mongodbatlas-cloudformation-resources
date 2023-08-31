@@ -27,6 +27,7 @@ const (
 )
 
 const (
+	ProfileNamePrefix   = "cfn/atlas/profile"
 	Profile             = "Profile"
 	PubKey              = "ApiKeys.PublicKey"
 	PvtKey              = "ApiKeys.PrivateKey"
@@ -144,14 +145,8 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
-)
 
-type CfnFunctions string
-
-const (
-	CREATE CfnFunctions = "CREATE"
-	LIST   CfnFunctions = "LIST"
-	READ   CfnFunctions = "READ"
-	UPDATE CfnFunctions = "UPDATE"
-	DELETE CfnFunctions = "DELETE"
+	OrgOwnerID        = "OrgOwnerId"
+	APIKeyRoles       = "APIKey.Roles"
+	APIKeyDescription = "APIKey.Description"
 )

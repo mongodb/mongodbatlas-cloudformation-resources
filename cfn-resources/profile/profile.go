@@ -17,7 +17,9 @@ package profile
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"os"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,8 +27,7 @@ import (
 )
 
 const (
-	DefaultProfile    = "default"
-	profileNamePrefix = "cfn/atlas/profile"
+	DefaultProfile = "default"
 )
 
 type Profile struct {
@@ -41,7 +42,11 @@ func NewProfile(req *handler.Request, profileName *string) (*Profile, error) {
 	}
 
 	secretsManagerClient := secretsmanager.New(req.Session)
-	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: aws.String(fmt.Sprintf("%s/%s", profileNamePrefix, *profileName))})
+	secretId := *profileName
+	if !strings.Contains(*profileName, constants.ProfileNamePrefix) {
+		secretId = ProfileNameWithPrefix(*profileName)
+	}
+	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretId})
 	if err != nil {
 		return nil, err
 	}
@@ -81,4 +86,8 @@ func (p *Profile) NewPrivateKey() string {
 
 func (p *Profile) AreKeysAvailable() bool {
 	return p.NewPublicKey() == "" || p.PrivateKey == ""
+}
+
+func ProfileNameWithPrefix(name string) string {
+	return fmt.Sprintf("%s/%s", constants.ProfileNamePrefix, name)
 }

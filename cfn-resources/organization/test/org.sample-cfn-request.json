@@ -1,0 +1,17 @@
+{
+  "desiredResourceState": {
+    "OrgOwnerId": "5e4bc367c6b0f41bb9bbb178",
+    "Profile": "dev-cloud-profile",
+    "Name": "cfn-bot-org-test2-updated",
+    "AwsSecretName": "cfn/atlas/profile/cfn-bot-org-test2",
+    "APIKey": {
+      "Description": "for cfn test api-key resource testing.",
+      "Roles": [
+        "ORG_OWNER",
+        "ORG_GROUP_CREATOR"
+      ]
+    },
+    "OrgId": "64efd0cd257b2b7a921202c6"
+  },
+  "previousResourceState": {}
+}

@@ -11,7 +11,7 @@ set -o pipefail
 profile="dev-cloud-profile"
 orgOwnerId="${MONGODB_ATLAS_ORG_OWNER_ID}"
 
-orgName="cfn-bot-org-test"
+orgName="${1}"
 
 # create aws secret key
 awsSecretName="mongodb/atlas/apikey/${orgName}"
@@ -23,6 +23,7 @@ else
   echo "aws secret create failed with name : ${awsSecretName}"
   exit 1
 fi
+
 ## TEST-1
 jq --arg orgOwnerId "$orgOwnerId" \
   --arg profile "$profile" \

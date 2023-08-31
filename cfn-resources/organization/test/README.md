@@ -7,7 +7,7 @@ The following components use this resource and are potentially impacted by any c
 
 ## Prerequisites 
 ### Resources needed to run the manual QA
-- Atlas Project
+- Atlas Organization
 
 All resources are created as part of `cfn-testing-helper.sh`
 
@@ -15,13 +15,8 @@ All resources are created as part of `cfn-testing-helper.sh`
 Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 
 
-### Success criteria when testing the resource
-- Database Auditing Setting for the respective Project in Atlas should be correctly configured:
-![image](https://user-images.githubusercontent.com/5663078/227519864-2d147a0b-4e57-48f8-8de8-48370f1cd037.png)
-
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Auditing)
-- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/database-auditing/)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Organizations)
 
 ## Local Testing
 
@@ -35,11 +30,16 @@ then in another shell:
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
 cd ${repo_root}/cfn-resources/organization
-./test/project.create-sample-cfn-request.sh YourProjectName > test.request.json 
+./test/org.create-sample-cfn-request.sh YourOrgName > org.sample-cfn-request.json
 echo "Sample request:"
 cat test.request.json
-cfn invoke CREATE test.request.json 
-cfn invoke DELETE test.request.json 
+cfn invoke resource CREATE /test/org.sample-cfn-request.json
+cfn invoke resource DELETE /test/org.sample-cfn-request.json 
+```
+Once tested you can clean up by running [org.delete-sample-cfn-request.sh](org.delete-sample-cfn-request.sh)
+
+```
+./test/org.delete-sample-cfn-request.sh 
 ```
 
 Both CREATE & DELETE tests must pass.

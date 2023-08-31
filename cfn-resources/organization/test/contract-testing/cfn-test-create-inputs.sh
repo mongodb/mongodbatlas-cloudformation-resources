@@ -11,6 +11,6 @@ set -x
 
 
 # setting projectName
-orgName="cfn-bot-org-test-$((1 + RANDOM % 10000))"
+orgName="cfn-bot-org-test-$((1 + RANDOM % 1000))"
 
 ./test/cfn-test-create-inputs.sh $orgName

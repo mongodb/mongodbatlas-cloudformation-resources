@@ -17,13 +17,12 @@ package profile
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"os"
-	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 )
 
 const (
@@ -36,15 +35,15 @@ type Profile struct {
 	BaseURL    string `json:"BaseUrl,omitempty"`
 }
 
-func NewProfile(req *handler.Request, profileName *string) (*Profile, error) {
+func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) (*Profile, error) {
 	if profileName == nil || *profileName == "" {
 		profileName = aws.String(DefaultProfile)
 	}
 
 	secretsManagerClient := secretsmanager.New(req.Session)
 	secretId := *profileName
-	if !strings.Contains(*profileName, constants.ProfileNamePrefix) {
-		secretId = ProfileNameWithPrefix(*profileName)
+	if prefixRequired {
+		secretId = SecretNameWithPrefix(*profileName)
 	}
 	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretId})
 	if err != nil {
@@ -88,6 +87,6 @@ func (p *Profile) AreKeysAvailable() bool {
 	return p.NewPublicKey() == "" || p.PrivateKey == ""
 }
 
-func ProfileNameWithPrefix(name string) string {
+func SecretNameWithPrefix(name string) string {
 	return fmt.Sprintf("%s/%s", constants.ProfileNamePrefix, name)
 }

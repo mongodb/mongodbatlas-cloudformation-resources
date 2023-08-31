@@ -1,13 +1,17 @@
 # MongoDB::Atlas::Organization
 
-Congratulations on starting development!
+## Description
+Resource for managing [Organizations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Organizations).
 
-Next steps:
+## Requirements
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-organization.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
 
-Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
+## Attributes and Parameters
+
+See the [resource docs](docs/README.md).
+
+## Cloudformation Examples
+
+See the examples [CFN Template](/examples/organization/organization.json) for example resource.

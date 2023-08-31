@@ -18,6 +18,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
@@ -28,11 +31,9 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
-	"net/http"
-	"time"
 )
 
-var CreateRequiredFields = []string{constants.OrgOwnerID, constants.Name, constants.AwsSecretName, constants.APIKeyDescription, constants.APIKeyRoles}
+var CreateRequiredFields = []string{constants.OrgOwnerID, constants.Name, constants.AwsSecretName, constants.OrgKeyDescription, constants.OrgKeyRoles}
 var UpdateRequiredFields = []string{constants.OrgID, constants.Name, constants.AwsSecretName}
 var ReadRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
 var DeleteRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
@@ -40,15 +41,17 @@ var DeleteRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
 //var ListRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
 
 const (
-	CallBackSeconds = 20
-	DeletingState   = "Deleting"
+	CallBackSeconds  = 20
+	DeletingState    = "Deleting"
+	DeleteInProgress = "Delete Organization is in progress"
+	DeleteCompleted  = "Delete Organization is completed"
 )
 
 type OrgProfile struct {
 	OrgID      string
 	PublicKey  string
 	PrivateKey string
-	BaseUrl    string
+	BaseURL    string
 }
 
 type DeleteResponse struct {
@@ -82,7 +85,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, _, err := secrets.Get(&req, *currentModel.AwsSecretName)
 	if err != nil {
 		// Delete the APIKey from Atlas
-		_, _ = logger.Warnf("error : get Secret with %s", *currentModel.AwsSecretName)
+		_, _ = logger.Warnf("error : no Secret exists with %s", *currentModel.AwsSecretName)
 		response := &http.Response{StatusCode: http.StatusBadRequest}
 		return handleError(response, constants.CREATE, err)
 	}
@@ -103,8 +106,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		orgInput,
 	)
 	org, response, err := orgCreateRequest.Execute()
-	_, _ = logger.Debugf(" Response from Atlas: %+v\n", org)
-	_, _ = logger.Warnf("CREATE Response from Atlas: %+v\n", org)
+
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, constants.CREATE, err)
@@ -114,20 +116,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.OrgId = org.Organization.Id
 
 	// Save PrivateKey in AWS SecretManager
-	secret := OrgProfile{OrgID: *currentModel.OrgId, PublicKey: *org.ApiKey.PublicKey, PrivateKey: *org.ApiKey.PrivateKey, BaseUrl: atlas.Config.BaseURL}
-	//secretName := profile.ProfileNameWithPrefix(*currentModel.Name)
-	secretName := *currentModel.AwsSecretName
-	_, _, err = secrets.PutSecret(&req, secretName, secret, currentModel.APIKey.Description)
-	_, _ = logger.Warnf("Created Org %s", *currentModel.OrgId)
-
+	secret := OrgProfile{OrgID: *currentModel.OrgId, PublicKey: *org.ApiKey.PublicKey, PrivateKey: *org.ApiKey.PrivateKey, BaseURL: atlas.Config.BaseURL}
+	_, _, err = secrets.PutSecret(&req, *currentModel.AwsSecretName, secret, currentModel.APIKey.Description)
 	if err != nil {
 		// Delete the APIKey from Atlas
-		_, _ = logger.Warnf("deleting Org %s", *currentModel.OrgId)
-		_, _ = Delete(req, prevModel, currentModel)
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return handleError(response, constants.CREATE, err)
 	}
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -143,7 +138,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.AwsSecretName)
+	atlas, peErr := util.NewAtlasV2OnlyClient(&req, currentModel.AwsSecretName, false)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -175,7 +170,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.AwsSecretName)
+	atlas, peErr := util.NewAtlasV2OnlyClient(&req, currentModel.AwsSecretName, false)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -206,7 +201,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.AwsSecretName)
+	atlas, peErr := util.NewAtlasV2OnlyClient(&req, currentModel.AwsSecretName, false)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -228,6 +223,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		*currentModel.OrgId,
 	)
 
+	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
+	// we need to make the call in a goroutine and return a progress event
+	// after 10 Seconds. Reason for 10 Seconds wait is that the Delete API
+	// may throw error immediately if the resource is not found.
+
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
 		_, response, err := deleteRequest.Execute()
@@ -241,10 +241,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if responseMsg.Error != nil {
 			return handleError(responseMsg.Response, constants.DELETE, responseMsg.Error)
 		}
+
 	case <-time.After(10 * time.Second):
+		// If the Delete is not completed in 10 seconds,
+		// we return a progress event with inProgress status and callback context
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Delete Organization is in progress"),
+			Message:              DeleteInProgress,
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: CallBackSeconds,
 			CallbackContext: map[string]interface{}{
@@ -255,25 +258,20 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Delete Completed",
+		Message:         DeleteCompleted,
 		ResourceModel:   nil}, nil
 }
 
 func deleteCallback(atlas *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
-	if *currentModel.IsDeleted {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "Delete Completed",
-			ResourceModel:   nil}, nil
-	}
 
+	// Read before delete
 	org, response, err := currentModel.getOrgDetails(atlas, currentModel)
 	defer closeResponse(response)
 	if err != nil {
 		if response.StatusCode == http.StatusUnauthorized {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
-				Message:         "Delete Completed",
+				Message:         DeleteCompleted,
 				ResourceModel:   nil}, nil
 		}
 		return handleError(response, constants.DELETE, err)
@@ -282,13 +280,13 @@ func deleteCallback(atlas *util.MongoDBClient, currentModel *Model) (handler.Pro
 	if *org.IsDeleted {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
-			Message:         "Delete Completed",
+			Message:         DeleteCompleted,
 			ResourceModel:   nil}, nil
 	}
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Delete Organization is in progress"),
+		Message:              DeleteInProgress,
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{

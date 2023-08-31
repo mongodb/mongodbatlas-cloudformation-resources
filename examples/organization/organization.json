@@ -10,6 +10,10 @@
       "Type": "String",
       "Description": "MongoDB Atlas Organization Owner ID"
     },
+    "FederatedSettingsId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the federation to link the newly created organization to. If specified, the proposed Organization Owner of the new organization must have the Organization Owner role in an organization associated with the federation."
+    },
     "Profile": {
       "Type": "String",
       "Description": "Your MongoDB Atlas Profile Name created in secret manager"
@@ -31,11 +35,20 @@
   },
   "Mappings": {},
   "Resources": {
-    "APIKeySecret": {
+    "OrgSecret": {
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
-        "Name": {"Ref":"AwsSecretName"},
-        "Description": "Atlas Organization APIKeys Profile will store as Secret in AWS Secrets Manager.",
+        "Name": {
+          "Fn::Sub": [
+            "cfn/atlas/profile/${SecretName}",
+            {
+              "SecretName": {
+                "Ref": "AwsSecretName"
+              }
+            }
+          ]
+        },
+        "Description": "APIKeys Profile will store as Secret in AWS Secrets Manager.",
         "SecretString": "{\"key\":\"value\"}"
       }
     },
@@ -54,7 +67,7 @@
           "Ref": "Profile"
         },
         "AwsSecretName": {
-          "Ref": "APIKeySecret"
+          "Ref": "OrgSecret"
         }
       }
     }
@@ -67,6 +80,19 @@
           "OrgId"
         ]
       }
+    },
+    "OrgSecretName": {
+      "Value": {
+        "Fn::Sub": [
+          "cfn/atlas/profile/${SecretName}",
+          {
+            "SecretName": {
+              "Ref": "AwsSecretName"
+            }
+          }
+        ]
+      }
     }
+
   }
 }

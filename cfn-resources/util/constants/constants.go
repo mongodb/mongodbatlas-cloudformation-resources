@@ -147,6 +147,6 @@ const (
 	Value                      = "Value"
 
 	OrgOwnerID        = "OrgOwnerId"
-	APIKeyRoles       = "APIKey.Roles"
-	APIKeyDescription = "APIKey.Description"
+	OrgKeyRoles       = "APIKey.Roles"
+	OrgKeyDescription = "APIKey.Description"
 )

@@ -17,7 +17,6 @@ jobs:
 
     env:
       RESOURCES: ${{ github.event.inputs.resourceNames }}
-      OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
       REGIONS: ${{ github.event.inputs.regions }}
       ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
       ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}

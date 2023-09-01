@@ -45,6 +45,8 @@ const (
 	HostName            = "HostName"
 	Port                = "Port"
 	ContainerID         = "ContainerId"
+	Sink                = "Sink"
+	Transformations     = "transformations"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -146,6 +148,7 @@ const (
 	Value                      = "Value"
 )
 
+/*Commented as it is declared twice
 type CfnFunctions string
 
 const (
@@ -154,4 +157,4 @@ const (
 	READ   CfnFunctions = "READ"
 	UPDATE CfnFunctions = "UPDATE"
 	DELETE CfnFunctions = "DELETE"
-)
+)*/

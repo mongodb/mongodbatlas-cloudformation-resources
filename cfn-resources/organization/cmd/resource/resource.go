@@ -38,8 +38,6 @@ var UpdateRequiredFields = []string{constants.OrgID, constants.Name, constants.A
 var ReadRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
 var DeleteRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
 
-//var ListRequiredFields = []string{constants.OrgID, constants.AwsSecretName}
-
 const (
 	CallBackSeconds  = 20
 	DeletingState    = "Deleting"
@@ -263,7 +261,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func deleteCallback(atlas *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
-
 	// Read before delete
 	org, response, err := currentModel.getOrgDetails(atlas, currentModel)
 	defer closeResponse(response)

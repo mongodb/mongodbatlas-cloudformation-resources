@@ -250,11 +250,6 @@ func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileName
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
 	}
 
-	optsAtlas := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
-	if prof.BaseURL != "" {
-		optsAtlas = append(optsAtlas, mongodbatlas.SetBaseURL(prof.BaseURL))
-	}
-
 	c := Config{BaseURL: prof.BaseURL}
 	// New SDK Client
 	sdkV2Client, err := c.newSDKV2Client(client)

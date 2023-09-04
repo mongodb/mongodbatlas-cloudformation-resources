@@ -12,6 +12,9 @@ function usage {
 	echo "usage:$0 "
 }
 
+bucketName=$(jq -r '.CloudProviderConfig.TestS3Bucket' ./inputs/inputs_1_create.json)
+aws s3 rb "s3://${bucketName}" --force
+
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 
 #delete project

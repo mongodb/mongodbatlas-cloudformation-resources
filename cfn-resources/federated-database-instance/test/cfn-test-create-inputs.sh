@@ -63,7 +63,7 @@ echo "$keyRegion"
 
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
-bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
+bucketName="mongodb-atlas-cfn-test-df-${keyRegion}-$(openssl rand -base64 6 | tr -dc 'a-zA-Z' | head -c 6)"
 aws s3 rb "s3://${bucketName}" --force
 aws s3 mb "s3://${bucketName}" --output json
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"

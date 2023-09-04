@@ -123,9 +123,8 @@ jobs:
           MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
-          MONGODB_ATLAS_ORG_OWNER_ID: 5e4bc367c6b0f41bb9bbb178
+          MONGODB_ATLAS_ORG_OWNER_ID: ${{ secrets.CLOUD_DEV_ORG_OWNER_ID }}
         run: |
           pushd cfn-resources/organization
           make create-test-resources

@@ -242,7 +242,11 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	clusterName := *currentModel.ClusterName
 	isReady, state, err := isCompleted(client, projectID, clusterName, targetState)
 	if err != nil {
-		return handler.ProgressEvent{}, err
+		_, _ = logger.Debugf("ERROR Cluster outage validateProgress() err:%+v", err)
+		return handler.ProgressEvent{
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
 	if !isReady {

@@ -145,6 +145,7 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	Sink                       = "Sink"
 
 	OrgOwnerID        = "OrgOwnerId"
 	OrgKeyRoles       = "APIKey.Roles"

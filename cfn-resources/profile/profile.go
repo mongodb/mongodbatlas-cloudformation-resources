@@ -41,11 +41,11 @@ func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) 
 	}
 
 	secretsManagerClient := secretsmanager.New(req.Session)
-	secretId := *profileName
+	secretID := *profileName
 	if prefixRequired {
-		secretId = SecretNameWithPrefix(*profileName)
+		secretID = SecretNameWithPrefix(*profileName)
 	}
-	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretId})
+	resp, err := secretsManagerClient.GetSecretValue(&secretsmanager.GetSecretValueInput{SecretId: &secretID})
 	if err != nil {
 		return nil, err
 	}

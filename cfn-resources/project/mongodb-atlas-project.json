@@ -51,6 +51,7 @@
                         "$ref": "#/definitions/Roles"
                     },
                     "type": "array",
+                    "insertionOrder": false,
                     "uniqueItems": true
                 }
             },
@@ -69,6 +70,7 @@
                         "$ref": "#/definitions/Roles"
                     },
                     "type": "array",
+                    "insertionOrder": false,
                     "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this project.Items Enum: \"ORG_OWNER\" \"ORG_MEMBER\" \"ORG_GROUP_CREATOR\" \"ORG_BILLING_ADMIN\" \"ORG_READ_ONLY\" \"ORG_TEAM_MEMBERS_ADMIN\" \"GROUP_ATLAS_ADMIN\" \"GROUP_AUTOMATION_ADMIN\" \"GROUP_BACKUP_ADMIN\" \"GROUP_MONITORING_ADMIN\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\" \"GROUP_USER_ADMIN\" \"GROUP_BILLING_ADMIN\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_CHARTS_ADMIN\" \"GROUP_CLUSTER_MANAGER\" \"GROUP_SEARCH_INDEX_EDITOR\"",
                     "uniqueItems": true
                 }
@@ -129,6 +131,7 @@
                 "$ref": "#/definitions/projectTeam"
             },
             "type": "array",
+            "insertionOrder": false,
             "description": "Teams to which the authenticated user has access in the project specified using its unique 24-hexadecimal digit identifier.",
             "uniqueItems": true
         },
@@ -137,8 +140,14 @@
                 "$ref": "#/definitions/projectApiKey"
             },
             "type": "array",
+            "insertionOrder": false,
             "description": "API keys that you assigned to the specified project.",
             "uniqueItems": true
+        },
+        "RegionUsageRestrictions": {
+            "type": "string",
+            "description": "Region usage restrictions that designate the project's AWS region.Enum: \"GOV_REGIONS_ONLY\" \"COMMERCIAL_FEDRAMP_REGIONS_ONLY\" \"NONE\"",
+            "default": "NONE"
         }
     },
     "additionalProperties": false,

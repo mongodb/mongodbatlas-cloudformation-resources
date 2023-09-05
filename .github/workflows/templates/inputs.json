@@ -1,0 +1,6 @@
+{
+  "inputs": {
+    "regions": "me-south-1",
+    "resourceNames": "third-party-integration"
+  }
+}

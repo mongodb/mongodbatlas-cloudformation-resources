@@ -8,8 +8,12 @@ on:
         required: true
       resourceNames:
         description: "the folder name of the Resource in this Repo."
-        default: "custom-db-role,maintenance-window"
+        default: ""
         required: true
+      otherParams:
+        description: "Resource specific environment variables used for cfn test "
+        default: ""
+        required: false
 jobs:
   publish-mongodb-atlas-resource:
     name: publish-mongodb-atlas-resource
@@ -18,11 +22,16 @@ jobs:
     env:
       RESOURCES: ${{ github.event.inputs.resourceNames }}
       REGIONS: ${{ github.event.inputs.regions }}
+      OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
       ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
       ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
       ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID }}
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD }}
+      LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME }}
+      LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME }}
+
     steps:
       - name: Install AWS CLI
         run: |
@@ -35,10 +44,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Run publishing script
         run: |
-          cd .github/scripts
           chmod +x cfn-publish.sh
           ./cfn-publish.sh
 

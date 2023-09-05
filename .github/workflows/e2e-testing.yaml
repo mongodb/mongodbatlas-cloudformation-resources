@@ -13,7 +13,7 @@ jobs:
     outputs:
       project: ${{ steps.filter.outputs.project }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ github.event_name == 'push' }}
       - uses: dorny/paths-filter@v2
         id: filter
@@ -26,7 +26,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'

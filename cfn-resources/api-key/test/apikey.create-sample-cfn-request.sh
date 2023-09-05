@@ -57,7 +57,7 @@ jq --arg orgId "$orgId" \
 	.desiredResourceState.AwsSecretName?|=$awsSecretName |
 	.desiredResourceState.ProjectAssignments[0].ProjectId?|=$projectId1 |
 	 .desiredResourceState.ProjectAssignments[1].ProjectId?|=$projectId2' \
-	"$(dirname "$0")/apikey.sample-cfn-request.json" > sample.temp && mv sample.temp apikey.sample-cfn-request.json
+	"$(dirname "$0")/apikey.sample-cfn-request.json"
 
 
 echo " NOTE: Delete the projects once tested using apikey.delete-sample-cfn-request.sh."

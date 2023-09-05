@@ -19,7 +19,7 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 ### Success criteria when testing the resource
 - A new api-key in Atlas Organization should be correctly configured:
 
-[//]: # (TODO: Image has to be updated)
+[//]: # (TODO: Image to be updated)
 ![image]()
 
 ## Important Links

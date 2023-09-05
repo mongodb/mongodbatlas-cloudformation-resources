@@ -29,7 +29,6 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ];then
     echo "profile set to ${MONGODB_ATLAS_PROFILE}"
     profile=${MONGODB_ATLAS_PROFILE}
 fi
-profile="dev-cloud-profile"
 
 if [ -z "${MONGODB_ATLAS_ORG_OWNER_ID+x}" ];then
   echo "MONGODB_ATLAS_ORG_OWNER_ID is not set, exiting..."

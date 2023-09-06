@@ -1,5 +1,5 @@
 {
-    "typeName": "MongoDB::Atlas::PrivateEndpoint",
+    "typeName": "MongoDB::Atlas::PrivateEndpointService",
     "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
     "definitions": {
         "PrivateEndpoint": {
@@ -86,7 +86,8 @@
     ],
     "readOnlyProperties": [
         "/properties/Id",
-        "/properties/InterfaceEndpoints"
+        "/properties/InterfaceEndpoints",
+        "/properties/EndpointServiceName"
     ],
     "createOnlyProperties": [
         "/properties/GroupId",

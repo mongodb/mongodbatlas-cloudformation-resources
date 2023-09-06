@@ -1,4 +1,4 @@
-# MongoDB::Atlas::PrivateEndpoint
+# MongoDB::Atlas::PrivateEndpointService
 
 The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::PrivateEndpoint",
+    "Type" : "MongoDB::Atlas::PrivateEndpointService",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#endpointservicename" title="EndpointServiceName">EndpointServiceName</a>" : <i>String</i>,
@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::PrivateEndpoint
+Type: MongoDB::Atlas::PrivateEndpointService
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#endpointservicename" title="EndpointServiceName">EndpointServiceName</a>: <i>String</i>
@@ -42,7 +42,7 @@ Properties:
 
 #### Profile
 
-The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)
 
 _Required_: No
 

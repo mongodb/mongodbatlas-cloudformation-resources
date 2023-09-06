@@ -23,7 +23,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"go.mongodb.org/atlas/mongodbatlas"
 )

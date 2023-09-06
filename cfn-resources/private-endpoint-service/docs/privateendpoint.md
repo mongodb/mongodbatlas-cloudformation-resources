@@ -1,4 +1,4 @@
-# MongoDB::Atlas::PrivateEndpoint PrivateEndpoint
+# MongoDB::Atlas::PrivateEndpointService PrivateEndpoint
 
 ## Syntax
 

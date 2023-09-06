@@ -216,6 +216,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, constants.DELETE, err)
 	}
 
+	// If exists
+	_, response, err = currentModel.getOrgDetails(atlas, currentModel)
+	if err != nil && response.StatusCode == http.StatusUnauthorized {
+		return handleError(response, constants.DELETE, err)
+	}
+
 	deleteRequest := atlas.AtlasV2.OrganizationsApi.DeleteOrganization(
 		context.Background(),
 		*currentModel.OrgId,

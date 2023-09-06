@@ -218,6 +218,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// If exists
 	_, response, err = currentModel.getOrgDetails(atlas, currentModel)
+	defer closeResponse(response)
 	if err != nil && response.StatusCode == http.StatusUnauthorized {
 		return handleError(response, constants.DELETE, err)
 	}

@@ -1,6 +1,7 @@
 {
   "inputs": {
-    "regions": "me-south-1",
-    "resourceNames": "third-party-integration"
+    "regions": "me-south-1,ap-south-2",
+    "resourceNames": "ldap-configuration,federated-settings-org-role-mapping",
+    "otherParams": ""
   }
 }

@@ -11,13 +11,15 @@
 # for local dev testing
 run the below command to run the workflow locally
 
+For dev testing using act tool. For more info refer https://github.com/nektos/act
+
 ```
 cd .githib/workflows
 act -W ./cfn-publish-resource.yaml -P ubuntu-latest=ubuntu:latest --secret-file templates/params.secrets -e templates/inputs.json --pull=false
 ```
 
 ## inputs.json 
-    For dev testing using act tool. For more info refer https://github.com/nektos/act
+    inputs.json file is used to specify the input parameters for the workflow. i.e. github.event.inputs.<varName>
     eg:
 ```
         {

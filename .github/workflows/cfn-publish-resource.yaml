@@ -3,16 +3,24 @@ on:
   workflow_dispatch:
     inputs:
       regions:
-        description: "comma seperated AWS regions."
-        default: "us-east-1,us-west-1"
+        description: "comma seperated AWS regions.Default is all regions."
+        default: "us-east-1,us-west-1,us-west-2,eu-west-1,eu-central-1,ap-southeast-1,ap-southeast-2,ap-northeast-1,ap-northeast-2,sa-east-1,ca-central-1,eu-west-2,eu-west-3,eu-north-1,ap-south-1,ap-east-1,me-south-1,af-south-1,us-east-2,us-west-1,us-west-2,eu-west-1,eu-central-1,ap-southeast-1,ap-southeast-2,ap-northeast-1,ap-northeast-2,sa-east-1,ca-central-1,eu-west-2,eu-west-3,eu-north-1,ap-south-1,ap-east-1,me-south-1,af-south-1,us-east-2"
         required: true
       resourceNames:
         description: "the folder name of the Resource in this Repo."
         default: ""
         required: true
       otherParams:
-        description: "Resource specific environment variables used for cfn test "
+        description: "Resource specific environment variables used for cfn test."
         default: ""
+        required: false
+      targetLocationsMaxConcurrency:
+        description: "The maximum number of target locations to be updated concurrently. Default is 30."
+        default: "30"
+        required: false
+      branchName:
+        description: "The branch name to be used for the resource. Default is master."
+        default: "master"
         required: false
 jobs:
   publish-mongodb-atlas-resource:
@@ -20,24 +28,31 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
+
       RESOURCES: ${{ github.event.inputs.resourceNames }}
       REGIONS: ${{ github.event.inputs.regions }}
       OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
+      TARGET_LOCATIONS_MAX_CONCURRENCY: ${{ github.event.inputs.targetLocationsMaxConcurrency }}
+      BRANCH_NAME: ${{ github.event.inputs.branchName }}
 
+      # Atlas
       ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
       ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
       ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID }}
+      ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID }}
+      ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID }}
 
+      # AWS
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
 
+      #LDAP
       LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD }}
       LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME }}
       LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME }}
 
-      ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID }}
-
+      #third party integration
       WEBHOOK_CREATE_URL: ${{ secrets.WEBHOOK_CREATE_URL }}
       WEBHOOK_UPDATE_URL: ${{ secrets.WEBHOOK_UPDATE_URL }}
       WEBHOOK_UPDATE_SECRET: ${{ secrets.WEBHOOK_UPDATE_SECRET }}

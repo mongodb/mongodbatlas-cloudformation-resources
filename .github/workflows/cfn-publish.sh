@@ -17,23 +17,18 @@
 set -x
 set -Eeou pipefail
 
-AWS_SSM_Document_Name="CFN-MongoDB-Atlas-Resource-Register"
-BuilderRole="DevOpsIntegrationsContractors-CodeBuild"
+# sort these by alphabetical order
+AwsSsmDocumentName="CFN-MongoDB-Atlas-Resource-Register"
 AssumeRole="arn:aws:iam::${AWS_ACCOUNT_ID}:role/DevOpsIntegrationsContractorsSSM"
+AccountIds="${AWS_ACCOUNT_ID}"
+BuilderRole="DevOpsIntegrationsContractors-CodeBuild"
+DocumentVersion="\$DEFAULT"
+DocumentRegion="us-east-1"
+ExecutionRoleName="DevOpsIntegrationsContractorsSSM"
 LogDeliveryBucket="atlascfnpublishing"
 Repository="https://github.com/mongodb/mongodbatlas-cloudformation-resources"
-BranchName="master"
-ExecutionRoleName="DevOpsIntegrationsContractorsSSM"
-Document_Region="us-east-1"
-AccountIds="${AWS_ACCOUNT_ID}"
-TargetLocationsMaxConcurrency="30"
-Document_Version="\$DEFAULT"
 
-# declare OTHER_PARAMS will be used for CFN TEST input creation.
-# This script will update these params for  Few Resources.
-# Note: OtherParams is expected in the below format.
-OtherParams="'{\"param\":\"value\"}'"
-
+# improve this code
 if [ -z "${REGIONS+x}" ];then
   echo "REGIONS must be set"
   exit 1
@@ -43,6 +38,12 @@ if [ -z "${RESOURCES+x}" ];then
   echo "At least one RESOURCES must be set"
   exit 1
 fi
+
+
+# declare OTHER_PARAMS will be used for CFN TEST input creation.
+# This script will update these params for  Few Resources.
+# Note: OtherParams is expected in the below format.
+OtherParams="'{\"param\":\"value\"}'"
 
 echo "resources: ${RESOURCES}"
 echo "regions: ${REGIONS}"
@@ -62,10 +63,15 @@ for ResourceName in "${ResourceNames[@]}"; do
      else
        case "$ResourceName" in
          "federated-settings-org-role-mapping")
+         # atlas details will change for federated_settings-org-role-mapping
+          ATLAS_ORG_ID="${ATLAS_ORG_ID_FOR_FEDERATION}"
+          ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_FOR_FEDERATION}"
+          ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_FOR_FEDERATION}"
+
           echo "setting up other params for federated-settings-org-role-mapping"
           jq --arg ATLAS_FEDERATED_SETTINGS_ID "${ATLAS_FEDERATED_SETTINGS_ID}" \
              '.ATLAS_FEDERATED_SETTINGS_ID |= $ATLAS_FEDERATED_SETTINGS_ID' \
-              "$(dirname "$0")/templates/federated-settings-org-role-mapping.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/templates/federated-settings-org-role-mapping.json"
+              "$(dirname "$0")/templates/federated-settings-org-role-mapping.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/templates/federated-settings-org-role-mapping-temp.json"
           OtherParams=$(jq -c . "$(dirname "$0")"/templates/federated-settings-org-role-mapping-temp.json | tr -d '\n\t')
           OtherParams_string="'$OtherParams'"
           ;;
@@ -84,7 +90,7 @@ for ResourceName in "${ResourceNames[@]}"; do
           ;;
 
           "organization")
-          jq --arg MONGODB_ATLAS_ORG_OWNER_ID "${MONGODB_ATLAS_ORG_OWNER_ID}" \
+          jq --arg MONGODB_ATLAS_ORG_OWNER_ID "${ATLAS_ORG_OWNER_ID}" \
                '.MONGODB_ATLAS_ORG_OWNER_ID |= $MONGODB_ATLAS_ORG_OWNER_ID' \
                 "$(dirname "$0")/templates/organization.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/templates/organization-temp.json"
 
@@ -132,7 +138,7 @@ Path="cfn-resources/${ResourceName}/"
 CodeBuild_Project_Name="${ResourceName}-proj-$((1 + RANDOM % 1000))"
 
 jq --arg ExecutionRoleName "${ExecutionRoleName}" \
-    --arg TargetLocationsMaxConcurrency "${TargetLocationsMaxConcurrency}" \
+    --arg TargetLocationsMaxConcurrency "${TARGET_LOCATIONS_MAX_CONCURRENCY}" \
     --arg AccountIds "${AccountIds}" \
     --arg Regions "${REGIONS}" \
     '.[0].ExecutionRoleName?|=$ExecutionRoleName |
@@ -147,7 +153,7 @@ jq --arg Repository "${Repository}" \
    --arg OrgID "${ATLAS_ORG_ID}" \
    --arg PubKey "${ATLAS_PUBLIC_KEY}" \
    --arg PvtKey "${ATLAS_PRIVATE_KEY}" \
-   --arg BranchName "${BranchName}" \
+   --arg BranchName "${BRANCH_NAME}" \
    --arg ProjectName "${CodeBuild_Project_Name}" \
    --arg OtherParams "${OtherParams_string}" \
    --arg Path "${Path}" \
@@ -169,18 +175,18 @@ jq --arg Repository "${Repository}" \
   "$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/params-temp.json"
 
 
-params_json_content=$(cat "$(dirname "$0")"/params-temp.json)
-locations_json_content=$(cat "$(dirname "$0")"/locations-temp.json)
+ParamsJsonContent=$(cat "$(dirname "$0")"/params-temp.json)
+LocationsJsonContent=$(cat "$(dirname "$0")"/locations-temp.json)
 
 # aws cli to start the automation execution
 aws ssm start-automation-execution \
-    --document-name  ${AWS_SSM_Document_Name}\
-    --document-version ${Document_Version} \
-    --parameters "${params_json_content}" \
-    --target-locations "${locations_json_content}" \
-    --region "${Document_Region}"
+    --document-name  ${AwsSsmDocumentName}\
+    --document-version ${DocumentVersion} \
+    --parameters "${ParamsJsonContent}" \
+    --target-locations "${LocationsJsonContent}" \
+    --region "${DocumentRegion}"
 echo "automation document started successfully for ${ResourceName} resource"
 
 done
 
-echo "automation document started successfully for all resources"
+echo "automation document started for all resources"

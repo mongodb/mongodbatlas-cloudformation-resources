@@ -11,7 +11,7 @@
 # for local dev testing
 run the below command to run the workflow locally
 
-For dev testing using act tool. For more info refer https://github.com/nektos/act
+For dev testing using **act** tool. For more info refer https://github.com/nektos/act
 
 ```
 cd .githib/workflows

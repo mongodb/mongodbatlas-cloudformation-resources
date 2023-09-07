@@ -70,6 +70,12 @@
         "PitEnabled": {
           "Ref": "PitEnabled"
         },
+        "Tags": [
+          {
+            "Key": "env",
+            "Value": "development"
+          }
+        ],
         "BiConnector": {
           "ReadPreference": "secondary",
           "Enabled": "false"

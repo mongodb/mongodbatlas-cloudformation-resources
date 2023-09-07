@@ -1,6 +1,6 @@
 {
   "desiredResourceState": {
-    "Name": "cfn-test-bot-a1e5f5-projec",
+    "Name": "cfn-test-bot-a1e5f5-project",
     "OrgId": "",
     "Profile": "default",
     "ProjectSettings": {
@@ -25,7 +25,8 @@
           "GROUP_OWNER"
         ]
       }
-    ]
+    ],
+    "RegionUsageRestrictions": ""
   },
     "providerLogGroupName" : "mongodb-atlas-project-logs",
     "previousResourceState": { }

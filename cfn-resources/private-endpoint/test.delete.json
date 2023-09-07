@@ -1,0 +1,12 @@
+{
+    "desiredResourceState" : {
+        "ProjectId" : "64bad960538ae76ec5c70050",
+        "EndpointServiceId" : "64f8bf5aca92ae5a6be7351a",
+        "Profile" : "default",
+        "InterfaceEndpointId": "vpce-036f3e5a7efb4da44",
+        "CloudProvider" : "AWS",
+        "EndpointId" : "vpce-04eed70fe7776da1b"
+    },
+    "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
+    "previousResourceState": { }
+}

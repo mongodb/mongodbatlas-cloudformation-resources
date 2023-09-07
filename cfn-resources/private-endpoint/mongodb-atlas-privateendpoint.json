@@ -1,0 +1,74 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndpoint",
+    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
+    "properties": {
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)",
+            "default": "default"
+        },
+        "ProjectId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "EndpointServiceId": {
+            "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "InterfaceEndpointId" : {
+            "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "CloudProvider": {
+            "type": "string",
+            "description": "Cloud service provider that manages this private endpoint."
+        },
+        "EndpointId" : {
+            "description": "Unique string that identifies the private endpoint you want to return. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "GroupId",
+        "Region"
+    ],
+    "readOnlyProperties": [
+        "/properties/EndpointId"
+    ],
+    "createOnlyProperties": [
+        "/properties/GroupId",
+        "/properties/Profile"
+    ],
+    "primaryIdentifier": [
+        "/properties/GroupId",
+        "/properties/EndpointId",
+        "/properties/Profile"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
+    }
+}

@@ -21,7 +21,7 @@ jobs:
      serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      data-lake-pipeline: ${{ steps.filter.outputs.data-lake-pipeline }}
    steps:
-   - uses: actions/checkout@v3
+   - uses: actions/checkout@v4
      if: ${{ github.event_name == 'push' }}
    - uses: dorny/paths-filter@v2
      id: filter
@@ -56,7 +56,7 @@ jobs:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
@@ -99,7 +99,7 @@ jobs:
        public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
@@ -143,7 +143,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
@@ -185,7 +185,7 @@ jobs:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
@@ -224,7 +224,7 @@ jobs:
          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
          use-installer: true
@@ -266,7 +266,7 @@ jobs:
        public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
@@ -310,7 +310,7 @@ jobs:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
@@ -353,7 +353,7 @@ jobs:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
@@ -398,7 +398,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true

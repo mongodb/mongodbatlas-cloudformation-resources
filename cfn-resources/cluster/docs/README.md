@@ -29,7 +29,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="advancedreplicationspec.md">advancedReplicationSpec</a>, ... ]</i>,
         "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>,
         "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
-        "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>
+        "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>,
+        "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">tag</a>, ... ]</i>
     }
 }
 </pre>
@@ -60,6 +61,8 @@ Properties:
     <a href="#rootcerttype" title="RootCertType">RootCertType</a>: <i>String</i>
     <a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>: <i>String</i>
     <a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>: <i>Boolean</i>
+    <a href="#tags" title="Tags">Tags</a>: <i>
+      - <a href="tag.md">tag</a></i>
 </pre>
 
 ## Properties
@@ -246,6 +249,16 @@ _Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Tags
+
+List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.
+
+_Required_: No
+
+_Type_: List of <a href="tag.md">tag</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 ## Return Values
 
 ### Fn::GetAtt
@@ -269,6 +282,18 @@ Returns the <code>Private</code> value.
 #### PrivateSrv
 
 Returns the <code>PrivateSrv</code> value.
+
+#### PrivateEndpoints
+
+Returns the <code>PrivateEndpoints</code> value.
+
+#### PrivateEndpointsSrv
+
+Returns the <code>PrivateEndpointsSrv</code> value.
+
+#### SRVShardOptimizedConnectionString
+
+Returns the <code>SRVShardOptimizedConnectionString</code> value.
 
 #### StateName
 

@@ -45,6 +45,13 @@ const (
 	serverlessInstanceType        = "serverless"
 )
 
+const (
+	defaultBackSeconds            = 30
+	defaultTimeOutInSeconds       = 1200
+	defaultReturnSuccessIfTimeOut = false
+	timeLayout                    = "2006-01-02 15:04:05"
+)
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
@@ -140,7 +147,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = &restoreJob.ID
 	}
 
-	if flowIsAsynchronous(currentModel) {
+	if flowIsSynchronous(currentModel) {
 		return progressevents.GetInProgressProgressEvent(
 				"Create in progress",
 				map[string]interface{}{
@@ -392,7 +399,7 @@ func (model *Model) validateAsynchronousProperties() error {
 	return nil
 }
 
-func flowIsAsynchronous(model *Model) bool {
+func flowIsSynchronous(model *Model) bool {
 	return model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation
 }
 

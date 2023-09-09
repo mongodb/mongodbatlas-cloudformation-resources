@@ -1,0 +1,55 @@
+{
+  "desiredResourceState":{
+    "Name": "cfn-test-data-federation-2",
+    "ProjectId": "",
+    "CloudProviderConfig": {
+      "RoleId": "",
+      "TestS3Bucket": ""
+    },
+    "DataProcessRegion":{
+      "Region": "VIRGINIA_USA"
+    },
+    "Storage": {
+      "Databases": [
+        {
+          "Collections": [
+            {
+              "DataSources": [
+                {
+                  "Database": "sample_airbnb",
+                  "StoreName": "cfn-df-test-4-cluster1"
+                },
+                {
+                  "Database": "sample_airbnb",
+                  "StoreName": "cfn-df-test-4-cluster2"
+                }
+              ]
+            }
+          ],
+          "MaxWildcardCollections": "50",
+          "Name": "virtualCollection0"
+        }
+      ],
+      "Stores": [
+        {
+          "Name": "cfn-df-test-4-cluster1",
+          "ClusterName": "",
+          "Provider": "atlas",
+          "ReadPreference": {
+            "Mode": "secondary"
+          }
+        },
+        {
+          "Name": "cfn-df-test-4-cluster2",
+          "ClusterName": "",
+          "Provider": "atlas",
+          "ReadPreference": {
+            "Mode": "secondary"
+          }
+        }
+      ]
+    }
+  },
+  "providerLogGroupName" : "mongodb-atlas-data-federation",
+  "previousResourceState": { }
+}

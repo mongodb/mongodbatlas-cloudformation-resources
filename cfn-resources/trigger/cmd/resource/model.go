@@ -26,6 +26,7 @@ type DatabaseConfig struct {
 	Collection               *string  `json:",omitempty"`
 	OperationTypes           []string `json:",omitempty"`
 	Match                    *string  `json:",omitempty"`
+	Project                  *string  `json:",omitempty"`
 	FullDocument             *bool    `json:",omitempty"`
 	FullDocumentBeforeChange *bool    `json:",omitempty"`
 	SkipCatchupEvents        *bool    `json:",omitempty"`

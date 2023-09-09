@@ -1,0 +1,30 @@
+{
+  "OrgId": "",
+  "Profile": "default",
+  "Roles": [
+    "ORG_MEMBER",
+    "ORG_GROUP_CREATOR"
+  ],
+  "ProjectAssignments": [
+    {
+      "ProjectId": "",
+      "Roles": [
+        "GROUP_READ_ONLY",
+        "GROUP_CLUSTER_MANAGER"
+      ]
+    },
+    {
+      "ProjectId": "",
+      "Roles": [
+        "GROUP_SEARCH_INDEX_EDITOR",
+        "GROUP_OWNER",
+        "GROUP_READ_ONLY"
+      ]
+    }
+  ],
+  "ListOptions": {
+    "PageNum": "1",
+    "ItemsPerPage": "300"
+  },
+  "Description":  "for cfn test api-key resource testing."
+}

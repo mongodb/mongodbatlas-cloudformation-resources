@@ -1,4 +1,4 @@
-# MongoDB::Atlas::Cluster endpoint
+# MongoDB::Atlas::FederatedDatabaseInstance View
 
 ## Syntax
 
@@ -8,35 +8,25 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#endpointid" title="EndpointID">EndpointID</a>" : <i>String</i>,
-    "<a href="#providername" title="ProviderName">ProviderName</a>" : <i>String</i>,
-    "<a href="#region" title="Region">Region</a>" : <i>String</i>
+    "<a href="#name" title="Name">Name</a>" : <i>String</i>,
+    "<a href="#pipeline" title="Pipeline">Pipeline</a>" : <i>String</i>,
+    "<a href="#source" title="Source">Source</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#endpointid" title="EndpointID">EndpointID</a>: <i>String</i>
-<a href="#providername" title="ProviderName">ProviderName</a>: <i>String</i>
-<a href="#region" title="Region">Region</a>: <i>String</i>
+<a href="#name" title="Name">Name</a>: <i>String</i>
+<a href="#pipeline" title="Pipeline">Pipeline</a>: <i>String</i>
+<a href="#source" title="Source">Source</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### EndpointID
+#### Name
 
-Unique string that the cloud provider uses to identify the private endpoint.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ProviderName
-
-Cloud provider in which MongoDB Cloud deploys the private endpoint.
+Human-readable label that identifies the view, which corresponds to an aggregation pipeline on a collection.
 
 _Required_: No
 
@@ -44,9 +34,19 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Region
+#### Pipeline
 
-Region in which MongoDB Cloud deploys the private endpoint.
+Aggregation pipeline stages to apply to the source collection.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Source
+
+Human-readable label that identifies the source collection for the view.
 
 _Required_: No
 

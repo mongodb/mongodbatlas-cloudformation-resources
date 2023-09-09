@@ -71,11 +71,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.ProjectOwnerId != nil {
 		projectOwnerID = *currentModel.ProjectOwnerId
 	}
-	project, res, err := client.Projects.Create(context.Background(), &mongodbatlas.Project{
+	projectInput := &mongodbatlas.Project{
 		Name:                      *currentModel.Name,
 		OrgID:                     *currentModel.OrgId,
 		WithDefaultAlertsSettings: currentModel.WithDefaultAlertsSettings,
-	}, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerID})
+	}
+	if currentModel.RegionUsageRestrictions != nil {
+		projectInput.RegionUsageRestrictions = *currentModel.RegionUsageRestrictions
+	}
+
+	project, res, err := client.Projects.Create(context.Background(), projectInput, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerID})
 	if err != nil {
 		_, _ = logger.Debugf("Create - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
@@ -104,28 +109,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	if currentModel.ProjectSettings != nil {
-		// Update project settings
-		projectSettings := mongodbatlas.ProjectSettings{
-			IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
-			IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
-			IsDataExplorerEnabled:                       currentModel.ProjectSettings.IsDataExplorerEnabled,
-			IsPerformanceAdvisorEnabled:                 currentModel.ProjectSettings.IsPerformanceAdvisorEnabled,
-			IsSchemaAdvisorEnabled:                      currentModel.ProjectSettings.IsSchemaAdvisorEnabled,
-		}
-
-		_, res, err = client.Projects.UpdateProjectSettings(context.Background(), project.ID, &projectSettings)
-		if err != nil {
-			_, _ = logger.Warnf("UpdateProjectSettings Error: %s", err)
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
-				res.Response), nil
-		}
-	}
-
 	currentModel.Id = &project.ID
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 
+	progressEvent, err := updateProjectSettings(currentModel, client)
+	if err != nil {
+		return progressEvent, err
+	}
 	event, proj, err := getProjectWithSettings(client, currentModel)
 	if err != nil {
 		_, _ = logger.Warnf("getProject Error: %s", err)
@@ -137,6 +128,28 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Create Complete",
 		ResourceModel:   proj,
 	}, nil
+}
+
+func updateProjectSettings(currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
+	if currentModel.ProjectSettings != nil {
+		// Update project settings
+		projectSettings := mongodbatlas.ProjectSettings{
+			IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
+			IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
+			IsDataExplorerEnabled:                       currentModel.ProjectSettings.IsDataExplorerEnabled,
+			IsPerformanceAdvisorEnabled:                 currentModel.ProjectSettings.IsPerformanceAdvisorEnabled,
+			IsSchemaAdvisorEnabled:                      currentModel.ProjectSettings.IsSchemaAdvisorEnabled,
+			IsExtendedStorageSizesEnabled:               currentModel.ProjectSettings.IsExtendedStorageSizesEnabled,
+		}
+
+		_, res, err := client.Projects.UpdateProjectSettings(context.Background(), *currentModel.Id, &projectSettings)
+		if err != nil {
+			_, _ = logger.Warnf("UpdateProjectSettings Error: %s", err)
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
+				res.Response), err
+		}
+	}
+	return handler.ProgressEvent{}, nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -290,23 +303,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 	}
 
-	if currentModel.ProjectSettings != nil {
-		// Update project settings
-		projectSettings := mongodbatlas.ProjectSettings{
-			IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
-			IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
-			IsDataExplorerEnabled:                       currentModel.ProjectSettings.IsDataExplorerEnabled,
-			IsPerformanceAdvisorEnabled:                 currentModel.ProjectSettings.IsPerformanceAdvisorEnabled,
-			IsSchemaAdvisorEnabled:                      currentModel.ProjectSettings.IsSchemaAdvisorEnabled,
-		}
-		_, _, err = client.Projects.UpdateProjectSettings(context.Background(), projectID, &projectSettings)
-		if err != nil {
-			_, _ = logger.Warnf("Update - error: %+v", err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Failed to update Project settings",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
+	progressEvent, err := updateProjectSettings(currentModel, client)
+	if err != nil {
+		return progressEvent, err
 	}
 
 	event, project, err := getProjectWithSettings(client, currentModel)
@@ -382,7 +381,7 @@ func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler
 	currentModel.Created = &project.Created
 	currentModel.ClusterCount = &project.ClusterCount
 	currentModel.Id = &project.ID
-
+	currentModel.RegionUsageRestrictions = &project.RegionUsageRestrictions
 	return handler.ProgressEvent{}, currentModel, nil
 }
 
@@ -451,6 +450,7 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 		IsDataExplorerEnabled:                       projectSettings.IsDataExplorerEnabled,
 		IsPerformanceAdvisorEnabled:                 projectSettings.IsPerformanceAdvisorEnabled,
 		IsSchemaAdvisorEnabled:                      projectSettings.IsSchemaAdvisorEnabled,
+		IsExtendedStorageSizesEnabled:               projectSettings.IsExtendedStorageSizesEnabled,
 	}
 
 	// Set teams

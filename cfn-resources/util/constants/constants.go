@@ -16,6 +16,16 @@ package constants
 
 type Event string
 
+type CfnFunctions string
+
+const (
+	CREATE CfnFunctions = "CREATE"
+	LIST   CfnFunctions = "LIST"
+	READ   CfnFunctions = "READ"
+	UPDATE CfnFunctions = "UPDATE"
+	DELETE CfnFunctions = "DELETE"
+)
+
 const (
 	Profile             = "Profile"
 	PubKey              = "ApiKeys.PublicKey"
@@ -35,6 +45,8 @@ const (
 	HostName            = "HostName"
 	Port                = "Port"
 	ContainerID         = "ContainerId"
+	Sink                = "Sink"
+	Transformations     = "transformations"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -124,6 +136,26 @@ const (
 	ExportID                   = "ExportId"
 	UnfinishedOnDemandSnapshot = "UNFINISHED_ON_DEMAND_SNAPSHOT"
 
-	ExternalGroupName = "ExternalGroupName"
-	RoleAssignments   = "RoleAssignments"
+	ExternalGroupName          = "ExternalGroupName"
+	RoleAssignments            = "RoleAssignments"
+	Description                = "Description"
+	AwsSecretName              = "AwsSecretName"
+	APIUserID                  = "APIUserId"
+	DataFederationRoleID       = "CloudProviderConfig.RoleId"
+	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"
+	DataProcessRegion          = "DataProcessRegion.Region"
+	SkipRoleValidation         = "SkipRoleValidation"
+	LimitName                  = "LimitName"
+	Value                      = "Value"
 )
+
+/*Commented as it is declared twice
+type CfnFunctions string
+
+const (
+	CREATE CfnFunctions = "CREATE"
+	LIST   CfnFunctions = "LIST"
+	READ   CfnFunctions = "READ"
+	UPDATE CfnFunctions = "UPDATE"
+	DELETE CfnFunctions = "DELETE"
+)*/

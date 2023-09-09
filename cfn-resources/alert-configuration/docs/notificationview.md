@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#channelname" title="ChannelName">ChannelName</a>" : <i>String</i>,
     "<a href="#datadogapikey" title="DatadogApiKey">DatadogApiKey</a>" : <i>String</i>,
     "<a href="#datadogregion" title="DatadogRegion">DatadogRegion</a>" : <i>String</i>,
-    "<a href="#delaymin" title="DelayMin">DelayMin</a>" : <i>Double</i>,
+    "<a href="#delaymin" title="DelayMin">DelayMin</a>" : <i>Integer</i>,
     "<a href="#emailaddress" title="EmailAddress">EmailAddress</a>" : <i>String</i>,
     "<a href="#emailenabled" title="EmailEnabled">EmailEnabled</a>" : <i>Boolean</i>,
     "<a href="#flowname" title="FlowName">FlowName</a>" : <i>String</i>,
@@ -47,7 +47,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#channelname" title="ChannelName">ChannelName</a>: <i>String</i>
 <a href="#datadogapikey" title="DatadogApiKey">DatadogApiKey</a>: <i>String</i>
 <a href="#datadogregion" title="DatadogRegion">DatadogRegion</a>: <i>String</i>
-<a href="#delaymin" title="DelayMin">DelayMin</a>: <i>Double</i>
+<a href="#delaymin" title="DelayMin">DelayMin</a>: <i>Integer</i>
 <a href="#emailaddress" title="EmailAddress">EmailAddress</a>: <i>String</i>
 <a href="#emailenabled" title="EmailEnabled">EmailEnabled</a>: <i>Boolean</i>
 <a href="#flowname" title="FlowName">FlowName</a>: <i>String</i>
@@ -131,7 +131,7 @@ Number of minutes that MongoDB Cloud waits after detecting an alert condition be
 
 _Required_: No
 
-_Type_: Double
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

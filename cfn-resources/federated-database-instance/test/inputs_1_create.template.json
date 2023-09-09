@@ -1,0 +1,20 @@
+{
+    "TenantName": "cfn-test-data-federation-2",
+    "ProjectId": "",
+    "Profile": "",
+    "CloudProviderConfig": {
+        "RoleId": "",
+        "TestS3Bucket": ""
+    },
+    "DataProcessRegion":{
+        "Region": "VIRGINIA_USA"
+    },
+    "Storage": {
+        "Databases": [
+            {
+                "MaxWildcardCollections": "50",
+                "Name": "cfn-df-dbs"
+            }
+        ]
+    }
+}

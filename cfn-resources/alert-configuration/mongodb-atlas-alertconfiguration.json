@@ -310,7 +310,7 @@
           ]
         },
         "DelayMin": {
-          "type": "number",
+          "type": "integer",
           "description": "Number of minutes that MongoDB Cloud waits after detecting an alert condition before it sends out the first notification."
         },
         "EmailAddress": {

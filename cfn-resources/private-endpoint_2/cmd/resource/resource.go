@@ -1,0 +1,279 @@
+// Copyright 2023 MongoDB Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package resource
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201002/admin"
+	"log"
+	"net/http"
+	"strings"
+)
+
+const (
+	providerName = "AWS"
+)
+
+func setup() {
+	util.SetupLogger("mongodb-atlas-private-endpoint")
+}
+
+const (
+	Available = "AVAILABLE"
+	Rejected  = "REJECTED"
+)
+
+func IsTerminalStatus(status string) bool {
+	// Convert the status to uppercase to handle case-insensitivity
+	status = strings.ToUpper(status)
+
+	// Check if the status is "AVAILABLE" or "REJECTED"
+	return status == Available || status == Rejected
+}
+
+var CreateRequiredFields = []string{constants.ProjectID}
+var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region}
+var UpdateRequiredFields []string
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, "CloudProvider", "EndpointServiceId"}
+var ListRequiredFields = []string{constants.GroupID}
+
+// Create handles the Create event from the Cloudformation service.
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *errEvent, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	if currentModel.EnforceConnectionSuccess == nil {
+		currentModel.EnforceConnectionSuccess = aws.Bool(false)
+	}
+
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	// progress callback setup
+	if _, ok := req.CallbackContext["state"]; ok {
+		//get resource
+		privateEndpoint, response, peError := getPrivateEndpoint(client, currentModel)
+		if peError != nil {
+			return progress_events.GetFailedEventByResponse("Error getting Private Endpoint", response), nil
+		}
+
+		currentModel.setPrimaryIdentifier(*privateEndpoint)
+
+		if IsTerminalStatus(*privateEndpoint.ConnectionStatus) {
+			if currentModel.EnforceConnectionSuccess != nil && *currentModel.EnforceConnectionSuccess &&
+				*privateEndpoint.ConnectionStatus == Rejected {
+				return handler.ProgressEvent{
+					OperationStatus: handler.Failed,
+					Message:         fmt.Sprintf("Connection was Rejected : %s", *privateEndpoint.ErrorMessage),
+					ResourceModel:   currentModel,
+				}, nil
+			}
+
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Create Success",
+				ResourceModel:   currentModel,
+			}, nil
+		}
+
+		status := *privateEndpoint.ConnectionStatus
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Create in progress",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: 20,
+			CallbackContext: map[string]interface{}{
+				"state": status,
+			}}, nil
+	}
+
+	endpointRequest := admin.CreateEndpointRequest{
+		Id: currentModel.InterfaceEndpointId,
+	}
+
+	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
+
+	_, response, err := privateEndpointRequest.Execute()
+	defer response.Body.Close()
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
+				err.Error()), response),
+			nil
+	}
+
+	//currentModel.setPrimaryIdentifier(*privateEndpoint)
+	interfaceEndpointId := *currentModel.InterfaceEndpointId
+	currentModel.Id = &interfaceEndpointId
+	log.Print("ACAAAAAAAAAA puto")
+	log.Print(*currentModel.Id)
+	return handler.ProgressEvent{
+		OperationStatus:      handler.Success,
+		Message:              "Create in progress",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 10,
+		CallbackContext: map[string]interface{}{
+			"state": "Pending",
+		}}, nil
+}
+
+func getPrivateEndpointPrimaryIdentifier(privateEndpoint admin.PrivateLinkEndpoint) string {
+	return *privateEndpoint.InterfaceEndpointId
+}
+
+func (m *Model) setPrimaryIdentifier(privateEndpoint admin.PrivateLinkEndpoint) {
+	id := getPrivateEndpointPrimaryIdentifier(privateEndpoint)
+	m.Id = &id
+}
+
+func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
+	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
+		*model.CloudProvider, *model.InterfaceEndpointId, *model.EndpointServiceId)
+	privateEndpoint, response, err := privateEndpointRequest.Execute()
+	defer response.Body.Close()
+
+	return privateEndpoint, response, err
+}
+
+// Read handles the Read event from the Cloudformation service.
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *errEvent, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	privateEndpoint, response, err := getPrivateEndpoint(client, currentModel)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
+	}
+
+	currentModel.completeByAtlasModel(*privateEndpoint)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func (m *Model) completeByAtlasModel(privateEndpoint admin.PrivateLinkEndpoint) {
+	m.ErrorMessage = privateEndpoint.ErrorMessage
+	m.ConnectionStatus = privateEndpoint.ConnectionStatus
+}
+
+// Update handles the Update event from the Cloudformation service.
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
+}
+
+// Delete handles the Delete event from the Cloudformation service.
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *errEvent, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	// progress callback setup
+	if _, ok := req.CallbackContext["state"]; ok {
+		privateEndpoint, response, peError := getPrivateEndpoint(client, currentModel)
+		if peError != nil {
+			if response.StatusCode == http.StatusNotFound {
+				return handler.ProgressEvent{
+					OperationStatus: handler.Success,
+					Message:         "Create Success",
+					ResourceModel:   currentModel,
+				}, nil
+			}
+			return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
+		}
+
+		currentModel.setPrimaryIdentifier(*privateEndpoint)
+
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Create in progress",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: 20,
+			CallbackContext: map[string]interface{}{
+				"state": "deleting",
+			}}, nil
+	}
+
+	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider, *currentModel.Id, *currentModel.EndpointServiceId)
+	_, response, err := privateEndpointRequest.Execute()
+	defer response.Body.Close()
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
+				err.Error()), response),
+			nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              "Create in progress",
+		CallbackDelaySeconds: 20,
+		CallbackContext: map[string]interface{}{
+			"state": "deleting",
+		}}, nil
+}
+
+// List handles the List event from the Cloudformation service.
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{
+		OperationStatus: handler.Failed,
+		Message:         "List successful"}, nil
+}

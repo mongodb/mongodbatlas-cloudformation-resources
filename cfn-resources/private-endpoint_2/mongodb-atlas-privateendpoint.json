@@ -9,45 +9,56 @@
         },
         "ProjectId": {
             "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
+            "type": "string"
         },
         "EndpointServiceId": {
             "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
+            "type": "string"
         },
         "InterfaceEndpointId" : {
             "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
+            "type": "string"
         },
         "CloudProvider": {
             "type": "string",
             "description": "Cloud service provider that manages this private endpoint."
         },
-        "EndpointId" : {
-            "description": "Unique string that identifies the private endpoint you want to return. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
+        "Id": {
+            "description": "Unique string that identifies the private endpoint. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.",
+            "type": "string"
+        },
+        "EnforceConnectionSuccess": {
+            "description": "If this proper is set to TRUE, the cloud formation resource will return success Only if the private connection is Succeeded",
+            "type": "boolean"
+        },
+        "ConnectionStatus": {
+            "description": "State of the Amazon Web Service PrivateLink connection when MongoDB Cloud received this request.",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "Error message returned when requesting private connection resource. The resource returns null if the request succeeded.",
+            "type": "string"
         }
     },
     "additionalProperties": false,
-    "required": [
-        "GroupId",
-        "Region"
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id",
+        "/properties/Profile",
+        "/properties/EndpointServiceId",
+        "/properties/InterfaceEndpointId",
+        "/properties/CloudProvider"
     ],
     "readOnlyProperties": [
-        "/properties/EndpointId"
+        "/properties/InterfaceEndpoints",
+        "/properties/EndpointServiceName"
     ],
     "createOnlyProperties": [
-        "/properties/GroupId",
-        "/properties/Profile"
-    ],
-    "primaryIdentifier": [
-        "/properties/GroupId",
-        "/properties/EndpointId",
-        "/properties/Profile"
+        "/properties/ProjectId",
+        "/properties/EndpointServiceId",
+        "/properties/Profile",
+        "/properties/InterfaceEndpointId",
+        "/properties/CloudProvider"
     ],
     "handlers": {
         "create": {

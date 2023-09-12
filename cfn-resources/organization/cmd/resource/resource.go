@@ -145,12 +145,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	defer closeResponse(response)
 	if err != nil {
-		if response.StatusCode == http.StatusUnauthorized {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Not found",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
 		return handleError(response, constants.READ, err)
 	}
 

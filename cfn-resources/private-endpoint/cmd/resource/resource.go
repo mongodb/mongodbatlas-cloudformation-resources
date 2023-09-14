@@ -18,6 +18,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"strings"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
@@ -27,13 +31,6 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201002/admin"
-	"log"
-	"net/http"
-	"strings"
-)
-
-const (
-	providerName = "AWS"
 )
 
 func setup() {
@@ -83,7 +80,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// progress callback setup
 	if _, ok := req.CallbackContext["state"]; ok {
-		//get resource
 		privateEndpoint, response, peError := getPrivateEndpoint(client, currentModel)
 		if peError != nil {
 			return progress_events.GetFailedEventByResponse("Error getting Private Endpoint", response), nil
@@ -134,7 +130,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			nil
 	}
 
-	//currentModel.setPrimaryIdentifier(*privateEndpoint)
 	currentModel.setPrimaryIdentifier(*privateEndpoint)
 
 	log.Print(*currentModel.Id)

@@ -13,11 +13,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::PrivateEndpointService",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#endpointservicename" title="EndpointServiceName">EndpointServiceName</a>" : <i>String</i>,
         "<a href="#errormessage" title="ErrorMessage">ErrorMessage</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
+        "<a href="#createandassignawsprivateendpoint" title="CreateAndAssignAWSPrivateEndpoint">CreateAndAssignAWSPrivateEndpoint</a>" : <i>Boolean</i>,
         "<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>" : <i>[ <a href="privateendpoint.md">PrivateEndpoint</a>, ... ]</i>,
     }
 }
@@ -29,11 +29,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::PrivateEndpointService
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
-    <a href="#endpointservicename" title="EndpointServiceName">EndpointServiceName</a>: <i>String</i>
     <a href="#errormessage" title="ErrorMessage">ErrorMessage</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
+    <a href="#createandassignawsprivateendpoint" title="CreateAndAssignAWSPrivateEndpoint">CreateAndAssignAWSPrivateEndpoint</a>: <i>Boolean</i>
     <a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>: <i>
       - <a href="privateendpoint.md">PrivateEndpoint</a></i>
 </pre>
@@ -49,16 +49,6 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### EndpointServiceName
-
-Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ErrorMessage
 
@@ -104,6 +94,16 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
+#### CreateAndAssignAWSPrivateEndpoint
+
+If true the resource will create the aws private endpoint and assign the Endpoint ID
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### PrivateEndpoints
 
 List of private endpoint associated to the service
@@ -129,4 +129,8 @@ The unique identifier of the private endpoint service.
 #### InterfaceEndpoints
 
 List of interface endpoint ids associated to the service
+
+#### EndpointServiceName
+
+Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.
 

@@ -2,7 +2,6 @@
 # cfn-test-create-inputs.sh
 #
 # This tool generates json files in the inputs/ for `cfn test`.
-#
 
 set -o errexit
 set -o nounset
@@ -15,12 +14,12 @@ function usage {
     echo "Creates a new project and cluster by that name for the test"
 }
 
-if [ "$#" -ne 2 ]; then usage; fi
-if [[ "$*" == help ]]; then usage; fi
+if [ "$#" -ne 1 ]; then usage; fi
+if [[ "$1" == help ]]; then usage; fi
 
-#set profile
+# Set profile
 profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+if [ -n "${MONGODB_ATLAS_PROFILE:-}" ]; then
     echo "profile set to ${MONGODB_ATLAS_PROFILE}"
     profile=${MONGODB_ATLAS_PROFILE}
 fi
@@ -80,13 +79,13 @@ check_status() {
 }
 
 # Run the AWS command and capture the output
-output=$(atlas privateEndpoints aws list --projectId ${projectId} --output json)
+output=$(atlas privateEndpoints aws list --projectId "${projectId}" --output json)
 private_endpoint_id=""
 # Check if the output is empty
 if [ "$(echo "$output" | jq -e '. | length == 0')" = true ]; then
   echo "Empty"
   # Execute the create command if the output is empty
-  create_output=$(atlas privateEndpoints aws create --region us-east-1 --projectId ${projectId} --output json)
+  create_output=$(atlas privateEndpoints aws create --region us-east-1 --projectId "${projectId}" --output json)
   private_endpoint_id=$(echo "$create_output" | jq -r '.id')
   echo "Created endpoint with ID: $private_endpoint_id"
 

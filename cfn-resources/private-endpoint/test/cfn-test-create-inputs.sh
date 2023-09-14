@@ -43,7 +43,6 @@ for vpc_id in $vpcs; do
         subnet_ids=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --output json)
 
         # Assign VPC ID, subnet ID 1, and subnet ID 2 to variables
-        vpc_id="$vpc_id"
         subnet_id_1=$(echo "$subnet_ids" | jq -r '.Subnets[0].SubnetId')
         subnet_id_2=$(echo "$subnet_ids" | jq -r '.Subnets[1].SubnetId')
 

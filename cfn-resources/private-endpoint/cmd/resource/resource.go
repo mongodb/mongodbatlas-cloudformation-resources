@@ -81,6 +81,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// progress callback setup
 	if _, ok := req.CallbackContext["state"]; ok {
 		privateEndpoint, response, peError := getPrivateEndpoint(client, currentModel)
+		defer response.Body.Close()
 		if peError != nil {
 			return progress_events.GetFailedEventByResponse("Error getting Private Endpoint", response), nil
 		}
@@ -156,7 +157,6 @@ func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.Privat
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		*model.CloudProvider, *model.InterfaceEndpointId, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
-	defer response.Body.Close()
 
 	return privateEndpoint, response, err
 }
@@ -180,6 +180,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	privateEndpoint, response, err := getPrivateEndpoint(client, currentModel)
+	defer response.Body.Close()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
 	}
@@ -223,6 +224,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// progress callback setup
 	if _, ok := req.CallbackContext["state"]; ok {
 		privateEndpoint, response, peError := getPrivateEndpoint(client, currentModel)
+		defer response.Body.Close()
 		if peError != nil {
 			if response.StatusCode == http.StatusNotFound {
 				return handler.ProgressEvent{

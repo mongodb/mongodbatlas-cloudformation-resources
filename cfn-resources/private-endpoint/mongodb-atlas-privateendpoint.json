@@ -46,12 +46,12 @@
         "/properties/Id",
         "/properties/Profile",
         "/properties/EndpointServiceId",
-        "/properties/InterfaceEndpointId",
         "/properties/CloudProvider"
     ],
     "readOnlyProperties": [
         "/properties/InterfaceEndpoints",
-        "/properties/EndpointServiceName"
+        "/properties/EndpointServiceName",
+        "/properties/Id"
     ],
     "createOnlyProperties": [
         "/properties/ProjectId",
@@ -72,11 +72,6 @@
             ]
         },
         "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "list": {
             "permissions": [
                 "secretsmanager:GetSecretValue"
             ]

@@ -126,7 +126,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
 
-	_, response, err := privateEndpointRequest.Execute()
+	privateEndpoint, response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
@@ -135,12 +135,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	//currentModel.setPrimaryIdentifier(*privateEndpoint)
-	interfaceEndpointId := *currentModel.InterfaceEndpointId
-	currentModel.Id = &interfaceEndpointId
-	log.Print("ACAAAAAAAAAA puto")
+	currentModel.setPrimaryIdentifier(*privateEndpoint)
+
 	log.Print(*currentModel.Id)
 	return handler.ProgressEvent{
-		OperationStatus:      handler.Success,
+		OperationStatus:      handler.InProgress,
 		Message:              "Create in progress",
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 10,
@@ -234,7 +233,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				return handler.ProgressEvent{
 					OperationStatus: handler.Success,
 					Message:         "Create Success",
-					ResourceModel:   currentModel,
 				}, nil
 			}
 			return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
@@ -245,7 +243,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
 			Message:              "Create in progress",
-			ResourceModel:        currentModel,
 			CallbackDelaySeconds: 20,
 			CallbackContext: map[string]interface{}{
 				"state": "deleting",
@@ -266,6 +263,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus:      handler.InProgress,
 		Message:              "Create in progress",
 		CallbackDelaySeconds: 20,
+		ResourceModel:        currentModel,
 		CallbackContext: map[string]interface{}{
 			"state": "deleting",
 		}}, nil

@@ -101,13 +101,6 @@ for res in ${resources}; do
 		echo "Generating network-peering test inputs AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_VPC_ID=${AWS_VPC_ID}"
 		./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_ACCOUNT_ID}" "${AWS_VPC_ID}" &&
 			echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
-	elif [[ "${res}" == "private-endpoint" ]]; then
-		# grab the first vpc-id found to test with,
-		AWS_VPC_ID=$(aws ec2 describe-vpcs --output=json | jq -r '.Vpcs[0].VpcId')
-		AWS_SUBNET_ID=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${AWS_VPC_ID}" --output=json | jq -r '.Subnets[0].SubnetId')
-		echo "Generating private-endpoint test inputs AWS_VPC_ID=${AWS_VPC_ID}, AWS_SUBNET_ID=${AWS_SUBNET_ID}"
-		./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" "${AWS_VPC_ID}" "${AWS_SUBNET_ID}" &&
-			echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED"
 	else
 		./test/cfn-test-create-inputs.sh "${PROJECT_NAME}-${res}" && echo "resource:${res} inputs created OK" || echo "resource:${res} input create FAILED" || exit 1
 		cat ./inputs/inputs_1_create.json

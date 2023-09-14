@@ -25,6 +25,34 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ];then
     profile=${MONGODB_ATLAS_PROFILE}
 fi
 
+# Initialize variables to store VPC ID, subnet ID 1, and subnet ID 2
+vpc_id=""
+subnet_id_1=""
+subnet_id_2=""
+
+# Get a list of VPCs using the AWS CLI
+vpcs=$(aws ec2 describe-vpcs --query "Vpcs[*].[VpcId]" --output text)
+
+# Loop through each VPC
+for vpc_id in $vpcs; do
+    # Get the number of subnets in the VPC
+    subnet_count=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --query "length(Subnets)" --output text)
+
+    # Check if the VPC has at least 2 subnets
+    if [ "$subnet_count" -ge 2 ]; then
+        # Get the IDs of the first two subnets
+        subnet_ids=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --output json)
+
+        # Assign VPC ID, subnet ID 1, and subnet ID 2 to variables
+        vpc_id="$vpc_id"
+        subnet_id_1=$(echo "$subnet_ids" | jq -r '.Subnets[0].SubnetId')
+        subnet_id_2=$(echo "$subnet_ids" | jq -r '.Subnets[1].SubnetId')
+
+        # Exit the loop once we've found a matching VPC
+        break
+    fi
+done
+
 rm -rf inputs
 mkdir inputs
 
@@ -79,24 +107,22 @@ else
 fi
 
 endpoint_service_id=$(atlas privateEndpoints aws describe "$private_endpoint_id" --projectId "$projectId" --output json | jq -r '.endpointServiceName')
-vpc_id=$(aws ec2 describe-vpcs --query 'Vpcs[0].VpcId' --output text)
-subnet_ids=$(aws ec2 describe-subnets --query 'Subnets[0].SubnetId' --output text)
+
 aws_private_endpoint_id=$(aws ec2 create-vpc-endpoint \
   --vpc-id "$vpc_id" \
   --service-name "$endpoint_service_id" \
   --region "$region" \
-  --subnet-ids "$subnet_ids" \
+  --subnet-ids "$subnet_id_1" \
   --vpc-endpoint-type Interface \
   --output json | jq -r '.VpcEndpoint.VpcEndpointId')
 
 atlas privateendpoints aws interfaces create "$private_endpoint_id" --privateEndpointId "$aws_private_endpoint_id" --projectId "$projectId"
 
-subnet_ids2=$(aws ec2 describe-subnets --query 'Subnets[1].SubnetId' --output text)
 aws_private_endpoint_id2=$(aws ec2 create-vpc-endpoint \
   --vpc-id "$vpc_id" \
   --service-name "$endpoint_service_id" \
   --region "$region" \
-  --subnet-ids "$subnet_ids2" \
+  --subnet-ids "$subnet_id_2" \
   --vpc-endpoint-type Interface \
   --output json | jq -r '.VpcEndpoint.VpcEndpointId')
 

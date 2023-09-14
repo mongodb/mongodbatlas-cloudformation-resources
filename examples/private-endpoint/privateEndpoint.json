@@ -28,8 +28,8 @@
   },
   "Mappings": {},
   "Resources": {
-    "PrivateEndpoint": {
-      "Type": "MongoDB::Atlas::PrivateEndpoint",
+    "AtlasPrivateEndpointService": {
+      "Type": "MongoDB::Atlas::PrivateEndpointService",
       "Properties": {
         "GroupId": {
           "Ref": "MongoDBAtlasProjectId"
@@ -37,32 +37,59 @@
         "Region": {
           "Ref": "AWSRegion"
         },
-        "PrivateEndpoints": [
-          {
-            "VpcId": {
-              "Ref": "AWSVpcId"
-            },
-            "SubnetIds": [
-              {
-                "Ref": "AWSSubnetId"
-              }
-            ]
-          }
-        ],
         "Profile": {
           "Ref": "Profile"
+        },
+        "CreateAndAssignAWSPrivateEndpoint": false
+      }
+    },
+    "AWSPrivateEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DependsOn": "AtlasPrivateEndpointService",
+      "Properties": {
+        "ServiceName": {
+          "Fn::GetAtt": [
+            "AtlasPrivateEndpointService",
+            "EndpointServiceName"
+          ]
+        },
+        "SubnetIds": [
+          {
+            "Ref": "AWSSubnetId"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "AWSVpcId"
         }
+      }
+    },
+    "AtlasPrivateEndpoint": {
+      "Type": "MongoDB::Atlas::PrivateEndpoint",
+      "DependsOn": "AWSPrivateEndpoint",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "EndpointServiceId": {
+          "Fn::GetAtt": [
+            "AtlasPrivateEndpointService",
+            "Id"
+          ]
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "InterfaceEndpointId": {
+          "Fn::GetAtt": [
+            "AWSPrivateEndpoint",
+            "Id"
+          ]
+        },
+        "CloudProvider": "AWS"
       }
     }
   },
   "Outputs": {
-    "PrivateEndpointId": {
-      "Value": {
-        "Fn::GetAtt": [
-          "PrivateEndpoint",
-          "Id"
-        ]
-      }
-    }
   }
 }

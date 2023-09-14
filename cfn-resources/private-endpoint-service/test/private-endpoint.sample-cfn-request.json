@@ -3,6 +3,7 @@
         "GroupId" : "$ATLAS_ORG_ID",
         "Region" : "",
         "Profile" : "default",
+        "CreateAndAssignAWSPrivateEndpoint" : false,
         "PrivateEndpoints": [
             {
                 "VpcId": "",

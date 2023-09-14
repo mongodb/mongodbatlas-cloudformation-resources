@@ -23,10 +23,10 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/privateendpointservice"
+	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/resource/steps/awsvpcendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/resource/steps/privateendpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/resource/steps/privateendpointservice"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -102,6 +102,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			*currentModel.GroupId, req)
 		if completionValidation != nil {
 			return addModelToProgressEvent(completionValidation, currentModel), nil
+		}
+
+		if currentModel.CreateAndAssignAWSPrivateEndpoint != nil && !*currentModel.CreateAndAssignAWSPrivateEndpoint {
+			currentModel.EndpointServiceName = &peConnection.EndpointServiceName
+			currentModel.Id = &peConnection.ID
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Create Completed",
+				ResourceModel:   currentModel}, nil
 		}
 
 		awsPrivateEndpointOutput, progressEvent := awsvpcendpoint.Create(req, peConnection.EndpointServiceName, *currentModel.Region,

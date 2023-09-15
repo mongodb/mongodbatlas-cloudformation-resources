@@ -22,8 +22,8 @@ These Atlas federated setting ID must be manually created.
 5. Export ATLAS_ORG_ID and ATLAS_FEDERATED_SETTINGS_ID environment variables.
 
 ### Steps to test:
-1. Ensure prerequisites above for this resource and general [prerequisites](../../../TESTING.md.md#prerequisites) are complete.
-2. Follow [general steps](../../../TESTING.md.md#steps) to test a CFN resource.
+1. Ensure prerequisites above for this resource and general [prerequisites](../../../TESTING.md#prerequisites) are complete.
+2. Follow [general steps](../../../TESTING.md#steps) to test a CFN resource.
 3. Use this URL to view RoleMappings configured for your organization: https://cloud.mongodb.com/v2#/federation/<ATLAS_FEDERATED_SETTINGS_ID>/organizations/<ATLAS_ORG_ID>/roleMappings
 
 ### Success criteria when testing the resource
@@ -31,7 +31,7 @@ These Atlas federated setting ID must be manually created.
 
 ![image](https://user-images.githubusercontent.com/122359335/227274727-bee557f4-8def-467e-ad37-adcae1887911.png)
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Federated-Authentication/operation/createRoleMapping)

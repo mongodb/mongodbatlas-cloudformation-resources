@@ -23,10 +23,10 @@ subnet_id=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --qu
 ```
 
 ### Steps to test:
-1. Follow general [prerequisites](../../../TESTING.md.md#prerequisites) for testing CFN resources.
+1. Follow general [prerequisites](../../../TESTING.md#prerequisites) for testing CFN resources.
 2. In the Atlas Project you plan to use for testing, create a Serverless instance, if not already present.
 3. Update serverless-private-endpoint-with-aws-private-endpoint.json under cfn-resources/examples/serverless-private-endpoint if required.
-4. Follow [general steps](../../../TESTING.md.md#steps) to test CFN resources.
+4. Follow [general steps](../../../TESTING.md#steps) to test CFN resources.
 5. Once the template with required parameters is used to create, update and delete a stack successfully, validate that success criteria is met.
 
 ### Success criteria when testing the resource
@@ -34,7 +34,7 @@ subnet_id=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id" --qu
    ![img.png](img.png)
 2. the aws private endpoint must be created
 ![img_1.png](img_1.png)
-3. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+3. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Serverless-Private-Endpoints)

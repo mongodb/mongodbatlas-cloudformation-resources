@@ -16,7 +16,7 @@ All resources are created as part of `cfn-testing-helper.sh`
 
 
 ## Manual QA
-Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
+Please, follows the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource

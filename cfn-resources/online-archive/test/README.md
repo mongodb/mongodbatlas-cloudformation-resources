@@ -14,7 +14,7 @@ All resources are created as part of `cfn-testing-helper.sh`:
 - Database name and collection name (using sample_airbnb)
 
 ## Manual QA
-Please follow the steps in [TESTING.md](../../../TESTING.md.md).
+Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource

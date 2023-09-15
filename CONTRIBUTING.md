@@ -13,7 +13,7 @@ After the above 2 steps are completed and we've agreed on a path forward:
 5. A repo maintainer will review the your pull request, and may either request additional changes or merge the pull request.
 
 ## Testing
-We have a `/test/README.md` for every resource in `cfn-resources`. Please follow below guidelines for testing to ensure quality:
+We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources. Please follow below guidelines for testing to ensure quality:
 
 **When adding a new feature:**
 - `/test/README.md` file must be created and must include detailed pre-requisites (if any) and steps to test a resource.
@@ -82,7 +82,7 @@ ATLAS_ORG_ID
 
 ## Using the MongoDB Atlas CFN Resources
 
-The fastest way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://aws.amazon.com/solutions/partners/mongodb-atlas/) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
+The fastest way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://aws.amazon.com/solutions/partners/mongodb-atlas/) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/tree/main/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
 
 There are two main parts of this project:
 

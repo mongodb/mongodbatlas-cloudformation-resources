@@ -1,0 +1,70 @@
+{
+    "typeName": "MongoDB::Atlas::AccessListAPIKey",
+    "description": "Creates the access list entries for the specified organization API key.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "definitions": {
+    },
+    "properties": {
+        "OrgId": {
+            "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects",
+            "type": "string"
+        },
+        "APIUserId": {
+            "description": "Unique 24-hexadecimal digit string that identifies this organization API key for which you want to return access list entries.",
+            "type": "string"
+        },
+        "Profile": {
+            "description": "Network address that issued the most recent request to the API.",
+            "type": "string"
+        },
+        "CidrBlock": {
+            "description": "Range of network addresses that you want to add to the access list for the API key.",
+            "type": "string"
+        },
+        "IpAddress": {
+            "description": "Network address that you want to add to the access list for the API key.",
+            "type": "string"
+        },
+        "TotalCount": {
+            "description": "Number of documents returned in this response.",
+            "type": "integer"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrgId",
+        "APIUserId"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrgId",
+        "/properties/APIUserId",
+        "/properties/Profile"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrgId",
+        "/properties/APIUserId",
+        "/properties/Profile"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
+    }
+}

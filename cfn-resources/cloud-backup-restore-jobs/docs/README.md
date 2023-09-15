@@ -22,7 +22,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#pointintimeutcseconds" title="PointInTimeUtcSeconds">PointInTimeUtcSeconds</a>" : <i>Integer</i>,
         "<a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>" : <i>String</i>,
         "<a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>" : <i>String</i>,
-        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
+        "<a href="#enablesynchronouscreation" title="EnableSynchronousCreation">EnableSynchronousCreation</a>" : <i>Boolean</i>,
+        "<a href="#synchronouscreationoptions" title="SynchronousCreationOptions">SynchronousCreationOptions</a>" : <i><a href="synchronouscreationoptions.md">SynchronousCreationOptions</a></i>
     }
 }
 </pre>
@@ -43,6 +45,8 @@ Properties:
     <a href="#targetprojectid" title="TargetProjectId">TargetProjectId</a>: <i>String</i>
     <a href="#targetclustername" title="TargetClusterName">TargetClusterName</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
+    <a href="#enablesynchronouscreation" title="EnableSynchronousCreation">EnableSynchronousCreation</a>: <i>Boolean</i>
+    <a href="#synchronouscreationoptions" title="SynchronousCreationOptions">SynchronousCreationOptions</a>: <i><a href="synchronouscreationoptions.md">SynchronousCreationOptions</a></i>
 </pre>
 
 ## Properties
@@ -158,6 +162,26 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### EnableSynchronousCreation
+
+If set to true, the CloudFormation resource will wait until the job is completed, WARNING: if the snapshot has a big load of data, the cloud formation resource might take a long time to finish leading to high costs
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SynchronousCreationOptions
+
+Options that needs to be set to control the synchronous creation flow, this options need to be set if EnableSynchronousCreation is se to TRUE
+
+_Required_: No
+
+_Type_: <a href="synchronouscreationoptions.md">SynchronousCreationOptions</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
 

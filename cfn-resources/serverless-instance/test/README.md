@@ -16,8 +16,8 @@ The following components use this resource and are potentially impacted by any c
 2. Export ATLAS_ORG_ID environment variable with OrgId from #1.
 
 ### Steps to test:
-1. Ensure prerequisites above for this resource and general [prerequisites](../../../TESTING.md.md#prerequisites) are complete.
-2. Follow [general steps](../../../TESTING.md.md#steps) to test a CFN resource.
+1. Ensure prerequisites above for this resource and general [prerequisites](../../../TESTING.md#prerequisites) are complete.
+2. Follow [general steps](../../../TESTING.md#steps) to test a CFN resource.
 
 
 ### Success criteria when testing the resource
@@ -25,7 +25,7 @@ The following components use this resource and are potentially impacted by any c
 
 ![image](https://user-images.githubusercontent.com/122359335/228200365-6e5950d8-1284-426c-97c8-57a6b24181d6.png)
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Serverless-Instances)

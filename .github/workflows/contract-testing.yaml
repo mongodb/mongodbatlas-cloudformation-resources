@@ -20,6 +20,7 @@ jobs:
      privatelink-endpoint-service-data-federation-online-archive: ${{ steps.filter.outputs.privatelink-endpoint-service-data-federation-online-archive }}
      serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      data-lake-pipeline: ${{ steps.filter.outputs.data-lake-pipeline }}
+     private-endpoint: ${{ steps.filter.outputs.private-endpoint }}
    steps:
    - uses: actions/checkout@v3
      if: ${{ github.event_name == 'push' }}
@@ -45,6 +46,8 @@ jobs:
           - 'cfn-resources/data-lake-pipeline/**'
         serverless-private-endpoint:
           - 'cfn-resources/serverless-private-endpoint/**'
+        private-endpoint:
+          - 'cfn-resources/private-endpoint/**'
   federated-database-instance:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
@@ -87,7 +90,7 @@ jobs:
           
           make run-contract-testing
           make delete-test-resources
-          
+
   project:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project == 'true' }}
@@ -384,8 +387,6 @@ jobs:
           
           make run-contract-testing
           make delete-test-resources
-        
-
   serverless-private-endpoint:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.  serverless-private-endpoint == 'true' }}
@@ -428,5 +429,49 @@ jobs:
           cat inputs/inputs_1_create.json
           cat inputs/inputs_1_update.json
           
+          make run-contract-testing
+          make delete-test-resources
+
+  private-endpoint:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.private-endpoint == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Atlas CLI
+        uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+        with:
+          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          version: v1.10.0
+      - uses: actions/checkout@v3
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
+          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          pushd cfn-resources/private-endpoint
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
+
           make run-contract-testing
           make delete-test-resources

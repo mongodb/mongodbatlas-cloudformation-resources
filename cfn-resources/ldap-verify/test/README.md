@@ -19,15 +19,15 @@ These LDAP resources must be manually created.
 2. Export environment variables LDAP_BIND_PASSWORD, LDAP_BIND_USER_NAME, LDAP_HOST_NAME.
 
 ### Steps to test:
-1. Follow general [prerequisites](../../../TESTING.md.md#prerequisites) for testing CFN resources. Note that running ./cfn-testing-helper creates an Atlas Project with an M10 cluster to create test parameters.
+1. Follow general [prerequisites](../../../TESTING.md#prerequisites) for testing CFN resources. Note that running ./cfn-testing-helper creates an Atlas Project with an M10 cluster to create test parameters.
 2. Update LDAPVerify.json under cfn-resources/examples/ if required.
-3. Follow [general steps](../../../TESTING.md.md#steps) to test CFN resources.
+3. Follow [general steps](../../../TESTING.md#steps) to test CFN resources.
 
 ### Success criteria when testing the resource
 1. In the AWS CloudFormation stack, Output parameters should be correct as per LDAP configuration in your Atlas Project.
    ![image](https://user-images.githubusercontent.com/122359335/227264049-b1e44366-553c-417a-b541-15589a636037.png)
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api/ldaps-configuration-request-verification/)

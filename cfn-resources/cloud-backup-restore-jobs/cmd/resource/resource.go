@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -35,6 +36,13 @@ var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType
 var ReadDeleteRequiredFields = []string{constants.ID}
 var ListRequiredFields = []string{constants.ProjectID}
 
+const (
+	defaultBackSeconds            = 30
+	defaultTimeOutInSeconds       = 1200
+	defaultReturnSuccessIfTimeOut = false
+	timeLayout                    = "2006-01-02 15:04:05"
+)
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
@@ -43,6 +51,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
+
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
@@ -51,6 +60,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
+	}
+
+	err := currentModel.validateAsynchronousProperties()
+	if err != nil {
+		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
+	}
+
+	// Callback
+	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
+		id := req.CallbackContext["id"]
+		startTime := req.CallbackContext["startTime"]
+		return createCallback(client, currentModel, cast.ToString(id), cast.ToString(startTime)), nil
 	}
 
 	targetClusterName := cast.ToString(currentModel.TargetClusterName)
@@ -117,6 +138,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Id = &restoreJob.ID
 	}
 
+	if flowIsSynchronous(currentModel) {
+		return progressevents.GetInProgressProgressEvent(
+				"Create in progress",
+				map[string]interface{}{
+					constants.StateName: "in_progress",
+					"id":                currentModel.Id,
+					"startTime":         time.Now().Format(timeLayout),
+				},
+				currentModel,
+				int64(*currentModel.SynchronousCreationOptions.CallbackDelaySeconds)),
+			nil
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -145,8 +179,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.ProjectId)
-	jobID := cast.ToString(currentModel.Id)
 
 	if clusterName == "" && instanceName == "" {
 		return handler.ProgressEvent{
@@ -155,39 +187,31 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			ResourceModel:   currentModel,
 		}, nil
 	}
+
 	// Check if job already exist
-	if !isRestoreJobExist(client, currentModel) {
-		_, _ = logger.Warnf(constants.ErrorReadCloudBackUpRestoreJob, *currentModel.Id)
+	job, peError := getRestoreJob(client, currentModel)
+	if peError != nil {
+		return *peError, nil
+	}
+
+	if isJobFinished(*job) {
+		_, _ = logger.Warnf("restore job not fund for id :%s", *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
+			Message:          "Job is finished, cancelled, failed or expired",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
 	// Create Atlas API Request Object
-	if clusterName != "" {
-		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
-			GroupID:     projectID,
-			ClusterName: cast.ToString(currentModel.ClusterName),
-			JobID:       jobID,
-		}
-		restoreJob, resp, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), requestParameters)
-		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("error reading restore job with id(project: %s, job: %s): %+v", projectID, jobID, err), resp.Response), nil
-		}
-		currentModel = convertToUIModel(restoreJob, currentModel)
-	} else {
-		// API call to create job
-		restoreJob, resp, err := client.CloudProviderSnapshotRestoreJobs.GetForServerlessBackupRestore(context.Background(), projectID, instanceName, jobID)
-		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("error reading restore job for serverless instance with id(project: %s, job: %s): %+v", projectID, jobID, err), resp.Response), nil
-		}
-		currentModel = convertToUIModel(restoreJob, currentModel)
+	restoreJob, progressEvent := getRestoreJob(client, currentModel)
+	if progressEvent != nil {
+		return *progressEvent, nil
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read complete",
-		ResourceModel:   currentModel,
+		ResourceModel:   convertToUIModel(restoreJob, currentModel),
 	}, nil
 }
 
@@ -220,12 +244,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	// Check if job already exist
-	if !isRestoreJobExist(client, currentModel) {
+	job, peError := getRestoreJob(client, currentModel)
+	if peError != nil {
+		return *peError, nil
+	}
+
+	if isJobFinished(*job) {
 		_, _ = logger.Warnf("restore job not fund for id :%s", *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
+			Message:          "Job is finished, cancelled, failed or expired",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
@@ -237,7 +265,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
-				Message:         "Automated restore cannot be cancelled",
+				Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
 				ResourceModel:   currentModel,
 			}, nil
 		}
@@ -255,6 +283,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 		}
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete complete",
@@ -335,39 +364,121 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// function to check id restore job already exist
-func isRestoreJobExist(client *mongodbatlas.Client, currentModel *Model) (isExist bool) {
-	var restoreJobs *mongodbatlas.CloudProviderSnapshotRestoreJobs
-	var err error
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.ProjectId)
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
+func (model *Model) validateAsynchronousProperties() error {
+	if model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation {
+		if model.SynchronousCreationOptions == nil {
+			model.SynchronousCreationOptions = &SynchronousCreationOptions{}
+		}
+
+		if model.SynchronousCreationOptions.CallbackDelaySeconds == nil {
+			model.SynchronousCreationOptions.CallbackDelaySeconds = aws.Int(defaultBackSeconds)
+		}
+
+		if model.SynchronousCreationOptions.TimeOutInSeconds == nil {
+			model.SynchronousCreationOptions.TimeOutInSeconds = aws.Int(defaultTimeOutInSeconds)
+		}
+
+		if model.SynchronousCreationOptions.ReturnSuccessIfTimeOut == nil {
+			model.SynchronousCreationOptions.ReturnSuccessIfTimeOut = aws.Bool(defaultReturnSuccessIfTimeOut)
+		}
 	}
 
-	if clusterName != "" {
-		snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-			GroupID:     projectID,
-			ClusterName: clusterName,
-		}
-		// API call to list dedicated cluster restore jobs
-		restoreJobs, _, err = client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest, params)
-	} else {
-		// API call to list serverless instance jobs
-		restoreJobs, _, err = client.CloudProviderSnapshotRestoreJobs.ListForServerlessBackupRestore(context.Background(), *currentModel.ProjectId, instanceName, params)
+	return nil
+}
+
+func flowIsSynchronous(model *Model) bool {
+	return model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation
+}
+
+func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID, startTime string) handler.ProgressEvent {
+	restoreJob, progressEvent := getRestoreJob(client, currentModel)
+	if progressEvent != nil {
+		return *progressEvent
 	}
+
+	currentModel.Id = &jobID
+
+	if restoreJob.FinishedAt != "" {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create Complete",
+			ResourceModel:   currentModel,
+		}
+	}
+
+	if isTimeOutReached(startTime, *currentModel.SynchronousCreationOptions.TimeOutInSeconds) {
+		if *currentModel.SynchronousCreationOptions.ReturnSuccessIfTimeOut {
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				Message:         "Create Complete - the resource was completed with timeout",
+				ResourceModel:   currentModel,
+			}
+		}
+
+		return progressevents.GetFailedEventByCode("Create failed with Timout", cloudformation.HandlerErrorCodeInternalFailure)
+	}
+
+	return progressevents.GetInProgressProgressEvent(
+		"Create in progress",
+		map[string]interface{}{
+			constants.StateName: "in_progress",
+			"id":                currentModel.Id,
+			"startTime":         startTime,
+		},
+		currentModel,
+		int64(*currentModel.SynchronousCreationOptions.CallbackDelaySeconds))
+}
+
+func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
+	startDateTime, err := time.Parse(timeLayout, startTime)
 	if err != nil {
-		return false
+		return false // If there's an error parsing the start time, assume timeout is not reached
 	}
-	for _, restoreJob := range restoreJobs.Results {
-		_, _ = logger.Debugf("Read - Restore Job with id(%s): %s", restoreJob.ID, *currentModel.Id)
-		if restoreJob.ID == *currentModel.Id && !restoreJob.Expired && !restoreJob.Cancelled {
-			return true
+
+	// Calculate the timeout time by adding timeOutInSeconds to the startDateTime
+	timeoutTime := startDateTime.Add(time.Duration(timeOutInSeconds) * time.Second)
+
+	// Get the current time
+	currentTime := time.Now()
+
+	// Compare the current time with the timeout time
+	return currentTime.After(timeoutTime)
+}
+
+func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbatlas.CloudProviderSnapshotRestoreJob, *handler.ProgressEvent) {
+	if currentModel.isServerlessJob() {
+		/*projectID, instanceName, jobID*/
+		restoreJobs, resp, err := client.CloudProviderSnapshotRestoreJobs.GetForServerlessBackupRestore(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
+		if err != nil {
+			pe := progressevents.GetFailedEventByResponse("Error getting response job", resp.Response)
+			return nil, &pe
 		}
+		return restoreJobs, nil
 	}
-	return false
+
+	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     *currentModel.ProjectId,
+		ClusterName: *currentModel.ClusterName,
+		JobID:       *currentModel.Id,
+	}
+
+	restoreJobs, resp, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), snapshotRequest)
+	if err != nil {
+		pe := progressevents.GetFailedEventByResponse("Error getting response job", resp.Response)
+		return nil, &pe
+	}
+	return restoreJobs, nil
+}
+
+func (model *Model) isServerlessJob() bool {
+	return model.ClusterName == nil || *model.ClusterName == ""
+}
+
+func isJobFinished(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
+	failed := job.Failed != nil && *job.Failed
+	finished := job.FinishedAt != ""
+
+	return failed || job.Cancelled || job.Expired || finished
 }
 
 // convert mongodb links to model links

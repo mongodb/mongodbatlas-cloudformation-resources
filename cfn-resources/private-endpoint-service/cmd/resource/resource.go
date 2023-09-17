@@ -42,11 +42,11 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint")
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.Region, constants.Profile}
-var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.Region, constants.Profile}
+var CreateRequiredFields = []string{constants.ProjectID, constants.Region}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.Region}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.Profile}
-var ListRequiredFields = []string{constants.ProjectID, constants.Profile}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

@@ -49,8 +49,6 @@
         "/properties/CloudProvider"
     ],
     "readOnlyProperties": [
-        "/properties/InterfaceEndpoints",
-        "/properties/EndpointServiceName",
         "/properties/Id"
     ],
     "createOnlyProperties": [

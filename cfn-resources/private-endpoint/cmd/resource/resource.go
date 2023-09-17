@@ -72,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if currentModel.EnforceConnectionSuccess == nil {
-		currentModel.EnforceConnectionSuccess = aws.Bool(false)
+		currentModel.EnforceConnectionSuccess = aws.Bool(true)
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)

@@ -61,8 +61,8 @@ fi
 
 echo "Created project \"${projectName}\" with id: ${projectId}"
 
-jq --arg groupId "$projectId" \
+jq --arg projectId "$projectId" \
 	--arg region "$region" \
 	--arg profile "$profile" \
-	'.GroupId?|=$groupId | .Region?|=$region | .Profile?|=$profile' \
+	'.ProjectId?|=$projectId | .Region?|=$region | .Profile?|=$profile' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"

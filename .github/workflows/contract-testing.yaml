@@ -558,7 +558,7 @@ jobs:
           MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
-          pushd cfn-resources/private-endpoint
+          pushd cfn-resources/private-endpoint-service
           make create-test-resources
 
           cat inputs/inputs_1_create.json

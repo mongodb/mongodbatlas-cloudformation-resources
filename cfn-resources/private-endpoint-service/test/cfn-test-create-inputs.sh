@@ -35,8 +35,13 @@ rm -rf inputs
 mkdir inputs
 
 projectName="${1:-$PROJECT_NAME}"
-vpcId="${2:-$AWS_VPC_ID}"
-subnetId="${3:-$AWS_SUBNET_ID}"
+
+# Set profile
+profile="default"
+if [ -n "${MONGODB_ATLAS_PROFILE:-}" ]; then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 if ! test -v AWS_DEFAULT_REGION; then
     region=$(aws configure get region)
@@ -58,9 +63,6 @@ echo "Created project \"${projectName}\" with id: ${projectId}"
 
 jq --arg groupId "$projectId" \
 	--arg region "$region" \
-	--arg vpcId "$vpcId" \
-	--arg subnetId "$subnetId" \
-	'.GroupId?|=$groupId | .Region?|=$region | .PrivateEndpoints[0].VpcId?|=$vpcId | .PrivateEndpoints[0].SubnetIds[0]?|=$subnetId' \
+	--arg profile "$profile" \
+	'.GroupId?|=$groupId | .Region?|=$region | .Profile?|=$profile' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-echo "mongocli iam projects delete ${projectId} --force"

@@ -64,17 +64,6 @@
             "description": "Aws Region",
             "type": "string"
         },
-        "CreateAndAssignAWSPrivateEndpoint": {
-            "type": "boolean",
-            "description": "If true the resource will create the aws private endpoint and assign the Endpoint ID"
-        },
-        "PrivateEndpoints": {
-            "type": "array",
-            "description": "List of private endpoint associated to the service",
-            "items": {
-                "$ref": "#/definitions/PrivateEndpoint"
-            }
-        },
         "InterfaceEndpoints": {
             "type": "array",
             "description": "List of interface endpoint ids associated to the service",

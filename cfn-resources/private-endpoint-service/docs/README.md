@@ -17,8 +17,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
-        "<a href="#createandassignawsprivateendpoint" title="CreateAndAssignAWSPrivateEndpoint">CreateAndAssignAWSPrivateEndpoint</a>" : <i>Boolean</i>,
-        "<a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>" : <i>[ <a href="privateendpoint.md">PrivateEndpoint</a>, ... ]</i>,
     }
 }
 </pre>
@@ -33,9 +31,6 @@ Properties:
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
-    <a href="#createandassignawsprivateendpoint" title="CreateAndAssignAWSPrivateEndpoint">CreateAndAssignAWSPrivateEndpoint</a>: <i>Boolean</i>
-    <a href="#privateendpoints" title="PrivateEndpoints">PrivateEndpoints</a>: <i>
-      - <a href="privateendpoint.md">PrivateEndpoint</a></i>
 </pre>
 
 ## Properties
@@ -93,26 +88,6 @@ _Required_: Yes
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### CreateAndAssignAWSPrivateEndpoint
-
-If true the resource will create the aws private endpoint and assign the Endpoint ID
-
-_Required_: No
-
-_Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### PrivateEndpoints
-
-List of private endpoint associated to the service
-
-_Required_: No
-
-_Type_: List of <a href="privateendpoint.md">PrivateEndpoint</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 ## Return Values
 

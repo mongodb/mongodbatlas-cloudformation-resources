@@ -55,7 +55,7 @@
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "GroupId": {
+        "ProjectId": {
             "description": "Unique 24-hexadecimal digit string that identifies your project.",
             "type": "string",
             "pattern": "^([a-f0-9]{24})$"
@@ -74,7 +74,7 @@
     },
     "additionalProperties": false,
     "required": [
-        "GroupId",
+        "ProjectId",
         "Region"
     ],
     "readOnlyProperties": [
@@ -83,13 +83,13 @@
         "/properties/EndpointServiceName"
     ],
     "createOnlyProperties": [
-        "/properties/GroupId",
+        "/properties/ProjectId",
         "/properties/Region",
         "/properties/Profile"
     ],
     "primaryIdentifier": [
         "/properties/Id",
-        "/properties/GroupId",
+        "/properties/ProjectId",
         "/properties/Region",
         "/properties/Profile"
     ],

@@ -15,7 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#errormessage" title="ErrorMessage">ErrorMessage</a>" : <i>String</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
-        "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
     }
 }
@@ -29,7 +29,7 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#errormessage" title="ErrorMessage">ErrorMessage</a>: <i>String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
-    <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
 </pre>
 
@@ -67,7 +67,7 @@ _Pattern_: <code>^([a-f0-9]{24})$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### GroupId
+#### ProjectId
 
 Unique 24-hexadecimal digit string that identifies your project.
 

@@ -9,7 +9,7 @@ type Model struct {
 	EndpointServiceName *string  `json:",omitempty"`
 	ErrorMessage        *string  `json:",omitempty"`
 	Status              *string  `json:",omitempty"`
-	GroupId             *string  `json:",omitempty"`
+	ProjectId           *string  `json:",omitempty"`
 	Region              *string  `json:",omitempty"`
 	InterfaceEndpoints  []string `json:",omitempty"`
 }

@@ -95,11 +95,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create
 	var res *http.Response
 	alertConfig, res, err := atlasV2.AlertConfigurationsApi.CreateAlertConfiguration(context.Background(), projectID, &alertConfigRequest).Execute()
+	defer res.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	currentModel = convertToUIModel(alertConfig, currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -136,6 +138,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	// API call to read resource
 	alertConfig, resp, err := atlasV2.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	defer resp.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -203,12 +206,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	} else {
 		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfiguration(context.Background(), projectID, id, alertReq).Execute()
 	}
+	defer res.Body.Close()
 
 	if err != nil {
 		_, _ = logger.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	currentModel = convertToUIModel(alertModel, currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel}, nil

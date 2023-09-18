@@ -322,14 +322,12 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 
 	for ind := range notificationList {
 		notification := atlasSDK.AlertsNotificationRootForGroup{
-			ApiToken:      notificationList[ind].ApiToken,
-			ChannelName:   notificationList[ind].ChannelName,
-			DatadogApiKey: notificationList[ind].DatadogApiKey,
-			DatadogRegion: notificationList[ind].DatadogRegion,
-			EmailAddress:  notificationList[ind].EmailAddress,
-			EmailEnabled:  notificationList[ind].EmailEnabled,
-			//FlowdockAPIToken: cast.ToString(notificationList[ind].FlowdockApiToken),
-			//FlowName:         cast.ToString(notificationList[ind].FlowName),
+			ApiToken:            notificationList[ind].ApiToken,
+			ChannelName:         notificationList[ind].ChannelName,
+			DatadogApiKey:       notificationList[ind].DatadogApiKey,
+			DatadogRegion:       notificationList[ind].DatadogRegion,
+			EmailAddress:        notificationList[ind].EmailAddress,
+			EmailEnabled:        notificationList[ind].EmailEnabled,
 			IntervalMin:         util.Pointer(int(*notificationList[ind].IntervalMin)),
 			MobileNumber:        notificationList[ind].MobileNumber,
 			OpsGenieApiKey:      notificationList[ind].OpsGenieApiKey,

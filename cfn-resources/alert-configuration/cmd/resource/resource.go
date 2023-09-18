@@ -95,7 +95,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create
 	var res *http.Response
 	alertConfig, res, err := atlasV2.AlertConfigurationsApi.CreateAlertConfiguration(context.Background(), projectID, &alertConfigRequest).Execute()
-	//alertConfig, res, err := client.AlertConfigurations.Create(context.Background(), projectID, alertConfigRequest)
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -127,7 +126,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	atlasV2 := client.AtlasV2
 
 	// Check if  already exist
-	if !isExist(currentModel, client.AtlasV2) {
+	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -192,9 +191,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	alertReq = convertToMongoModel(alertReq, currentModel)
 
 	// Removing the computed attributes to recreate the original request
-	//alertReq.GroupID = ""
-	//alertReq.Created = ""
-	//alertReq.Updated = ""
+	alertReq.Created = nil
+	alertReq.Updated = nil
 	var alertModel *atlasSDK.GroupAlertsConfig
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
@@ -332,11 +330,10 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 			EmailEnabled:  notificationList[ind].EmailEnabled,
 			//FlowdockAPIToken: cast.ToString(notificationList[ind].FlowdockApiToken),
 			//FlowName:         cast.ToString(notificationList[ind].FlowName),
-			IntervalMin:    util.Pointer(int(*notificationList[ind].IntervalMin)),
-			MobileNumber:   notificationList[ind].MobileNumber,
-			OpsGenieApiKey: notificationList[ind].OpsGenieApiKey,
-			OpsGenieRegion: notificationList[ind].OpsGenieRegion,
-			//OrgName:             cast.ToString(notificationList[ind].OrgName),
+			IntervalMin:         util.Pointer(int(*notificationList[ind].IntervalMin)),
+			MobileNumber:        notificationList[ind].MobileNumber,
+			OpsGenieApiKey:      notificationList[ind].OpsGenieApiKey,
+			OpsGenieRegion:      notificationList[ind].OpsGenieRegion,
 			ServiceKey:          notificationList[ind].ServiceKey,
 			SmsEnabled:          notificationList[ind].SmsEnabled,
 			TeamId:              notificationList[ind].TeamId,

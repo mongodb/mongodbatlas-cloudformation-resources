@@ -48,6 +48,22 @@ Examples:
   - If the PR has `BREAKING CHANGE`: in its description is a breaking change
 - `remove!: description of the PR`: The commit removes a feature from the product. Typically features are deprecated first for a period of time before being removed. Removing a feature is a breaking change (correlating with MAJOR in Semantic Versioning).
 
+## Discovering New API features
+
+Most of the new features of the provider are using [atlas-sdk](https://github.com/mongodb/atlas-sdk-go)
+SDK is updated automatically, tracking all new Atlas features.
+
+### Updating Atlas SDK
+
+To update Atlas SDK run:
+
+```bash
+cd cfn-resources/
+make update-atlas-sdk
+```
+
+> NOTE: Update mechanism is only needed for major releases. Any other releases will be supported by dependabot.
+> NOTE: Command can make import changes to +500 files. Please make sure that you perform update on main branch without any uncommited changes.
 
 ## Autoclose stale issues and PRs
 - After 30 days of no activity (no comments or commits are on an issue or PR) we automatically tag it as “stale” and add a message: "This issue has gone 30 days without any activity and meets the project’s definition of ‘stale’. This will be auto-closed if there is no new activity over the next 30 days. If the issue is still relevant and active, you can simply comment with a “bump” to keep it open, or add the “[Status] Not Stale” label. Thanks for keeping our repository healthy!"

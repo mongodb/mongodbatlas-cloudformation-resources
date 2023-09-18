@@ -206,12 +206,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	} else {
 		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfiguration(context.Background(), projectID, id, alertReq).Execute()
 	}
-	defer res.Body.Close()
 
 	if err != nil {
 		_, _ = logger.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
+	defer res.Body.Close()
+
 	currentModel = convertToUIModel(alertModel, currentModel)
 
 	return handler.ProgressEvent{

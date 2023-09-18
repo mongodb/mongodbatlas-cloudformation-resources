@@ -30,6 +30,7 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
@@ -70,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Set the roles from model
 	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
-		Desc:  currentModel.Description,
+		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
 	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.CreateApiKey(
@@ -168,7 +169,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 	// Set the roles from model
-	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
+	apiKeyInput := atlasSDK.UpdateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
 		Roles: currentModel.Roles,
 	}
@@ -352,7 +353,7 @@ func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentMo
 
 func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, atlas *util.MongoDBClient, orgKeyID *string) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
 	// Set the roles from model
-	projectAPIKeyInput := atlasSDK.CreateAtlasProjectApiKey{
+	projectAPIKeyInput := atlasSDK.UpdateAtlasProjectApiKey{
 		Roles: projectAssignment.Roles,
 	}
 	assignAPIRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(

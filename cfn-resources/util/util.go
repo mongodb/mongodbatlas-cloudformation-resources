@@ -322,3 +322,10 @@ func buildKey(keyID, storePrefix string) string {
 	// moreover changing this might cause pollution in parameter store -  be sure you know what you are doing
 	return fmt.Sprintf("%s-%s", storePrefix, keyID)
 }
+
+func SafeString(s *string) string {
+	if s != nil {
+		return *s
+	}
+	return ""
+}

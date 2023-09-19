@@ -20,17 +20,17 @@ These LDAP resources must be manually created.
 2. Export environment variables LDAP_BIND_PASSWORD,LDAP_BIND_USER_NAME, LDAP_HOST_NAME.
 
 ### Steps to test:
-1. Follow general [prerequisites](../../../TESTING.md.md#prerequisites) for testing CFN resources.
+1. Follow general [prerequisites](../../../TESTING.md#prerequisites) for testing CFN resources.
 2. In the Atlas Project you plan to use for testing, create an M10 Atlas Cluster or higher, if not already present.
 3. Update LDAPConfiguration.json under cfn-resources/examples/ if required.
-4. Follow [general steps](../../../TESTING.md.md#steps) to test CFN resources.
+4. Follow [general steps](../../../TESTING.md#steps) to test CFN resources.
 5. Once the template with required parameters is used to create, update and delete a stack successfully, validate that success criteria is met.
 
 ### Success criteria when testing the resource
 1. LDAP Authentication (under Advanced section) should be correctly set up in your Atlas Project as per configuration specified in the inputs/example:
    ![image](https://user-images.githubusercontent.com/122359335/227264049-b1e44366-553c-417a-b541-15589a636037.png)
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/LDAP-Configuration)

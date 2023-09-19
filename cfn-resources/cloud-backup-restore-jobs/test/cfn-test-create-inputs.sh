@@ -17,36 +17,41 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-region="us-east-1"
+
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
 	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
-	echo -e "Cant find project \"${projectName}\"\n"
+	echo -e "New project created \"${projectName}\"\n"
 fi
-export MCLI_PROJECT_ID=$projectId
+
 ClusterName=$projectName
 atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
 atlas clusters watch "${ClusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${ClusterName}\""
 
-SnapshotId=$(atlas backup snapshots create "${ClusterName}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
+SnapshotId=$(atlas backup snapshots create "${ClusterName}" --projectId "${projectId}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
 sleep 300
 
-jq --arg org "$ATLAS_ORG_ID" \
-	--arg ClusterName "$ClusterName" \
+jq --arg ClusterName "$ClusterName" \
 	--arg group_id "$projectId" \
 	--arg SnapshotId "$SnapshotId" \
-	'.SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg org "$ATLAS_ORG_ID" \
-	--arg region "${region}- more B@d chars !@(!(@====*** ;;::" \
-	--arg group_id "$projectId" \
+jq --arg group_id "$projectId" \
 	--arg ClusterName "$ClusterName" \
 	--arg SnapshotId "$SnapshotId" \
-	'.SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+  --arg profile "$profile" \
+	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

@@ -16,7 +16,7 @@ These resources are created as part of `cfn-testing-helper.sh`
 1. In your Atlas Cluster, ensure `Global Cluster Configuration` is enabled (found under `Edit Configuration` setting for the cluster)
 
 ### Steps to test:
-Please follow the steps in [TESTING.md](../../../TESTING.md.md).
+Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource

@@ -70,7 +70,7 @@ for resource in ${resources}; do
 	echo "res_type=${res_type}"
 	version=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)' | jq -r '.DefaultVersionId')
 	echo "version from cfn-publishing-helper=${version}"
-	arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
+	arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
 	echo "arn from cfn-publishing-helper=${arn}"
 
 	echo "********** Initiated test-type command ***********"
@@ -82,7 +82,7 @@ for resource in ${resources}; do
 	# sometime the status is not_tested after triggering the test, so keeping delay
 	status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
 	if [[ "$status" == "NOT_TESTED" ]]; then
-		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}")
 		arn=$(echo "${test_type_resp}" | jq -r '.TypeVersionArn')
 		sleep 60
 	fi

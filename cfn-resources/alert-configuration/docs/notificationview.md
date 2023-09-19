@@ -15,8 +15,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#delaymin" title="DelayMin">DelayMin</a>" : <i>Integer</i>,
     "<a href="#emailaddress" title="EmailAddress">EmailAddress</a>" : <i>String</i>,
     "<a href="#emailenabled" title="EmailEnabled">EmailEnabled</a>" : <i>Boolean</i>,
-    "<a href="#flowname" title="FlowName">FlowName</a>" : <i>String</i>,
-    "<a href="#flowdockapitoken" title="FlowdockApiToken">FlowdockApiToken</a>" : <i>String</i>,
     "<a href="#intervalmin" title="IntervalMin">IntervalMin</a>" : <i>Double</i>,
     "<a href="#microsoftteamswebhookurl" title="MicrosoftTeamsWebhookUrl">MicrosoftTeamsWebhookUrl</a>" : <i>String</i>,
     "<a href="#mobilenumber" title="MobileNumber">MobileNumber</a>" : <i>String</i>,
@@ -50,8 +48,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#delaymin" title="DelayMin">DelayMin</a>: <i>Integer</i>
 <a href="#emailaddress" title="EmailAddress">EmailAddress</a>: <i>String</i>
 <a href="#emailenabled" title="EmailEnabled">EmailEnabled</a>: <i>Boolean</i>
-<a href="#flowname" title="FlowName">FlowName</a>: <i>String</i>
-<a href="#flowdockapitoken" title="FlowdockApiToken">FlowdockApiToken</a>: <i>String</i>
 <a href="#intervalmin" title="IntervalMin">IntervalMin</a>: <i>Double</i>
 <a href="#microsoftteamswebhookurl" title="MicrosoftTeamsWebhookUrl">MicrosoftTeamsWebhookUrl</a>: <i>String</i>
 <a href="#mobilenumber" title="MobileNumber">MobileNumber</a>: <i>String</i>
@@ -163,32 +159,6 @@ Flag that indicates whether MongoDB Cloud should send email notifications. The r
 _Required_: No
 
 _Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### FlowName
-
-Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: 'www.flowdock.com/app/<organization-name>/<flow-name>'. The resource requires this parameter when '"notifications.typeName" : "FLOWDOCK"'.
-
-_Required_: No
-
-_Type_: String
-
-_Minimum Length_: <code>1</code>
-
-_Maximum Length_: <code>100</code>
-
-_Pattern_: <code>^([a-z\-]+)$</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### FlowdockApiToken
-
-Flowdock API token that MongoDB Cloud needs to send alert notifications to Flowdock. The resource requires this parameter when '"notifications.typeName" : "FLOWDOCK"'. If the token later becomes invalid, MongoDB Cloud sends an email to the project owners. If the token remains invalid, MongoDB Cloud removes the token.
-
-_Required_: No
-
-_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

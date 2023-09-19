@@ -37,3 +37,4 @@ pytestdebug.log
 # Tool generated files
 *.idea
 *.iml
+*.secrets

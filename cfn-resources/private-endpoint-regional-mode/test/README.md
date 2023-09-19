@@ -13,7 +13,7 @@ All resources are created as part of `cfn-testing-helper.sh`:
 - Atlas project
 
 ## Manual QA
-Please follow the steps in [TESTING.md](../../../TESTING.md.md).
+Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource
@@ -21,7 +21,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 
    ![image](https://user-images.githubusercontent.com/122359335/227656275-fd32b882-8b7d-4427-af6c-c4dc68fefd76.png)
 
-2. Ensure general [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) for this resource is met.
+2. Ensure general [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
 
 
 ## Important Links

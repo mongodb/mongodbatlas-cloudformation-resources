@@ -21,15 +21,15 @@ The VPD ID and subnet ID is to be manually provided.
 2. Export VPC ID, Subnet ID and AWS Region with environment variables AWS_VPC_ID, AWS_SUBNET_ID, AWS_DEFAULT_REGION respectively.
 
 ### Steps to test:
-1. Follow general [prerequisites](../../../TESTING.md.md#prerequisites) for testing CFN resources.
-2. Follow [general steps](../../../TESTING.md.md#steps) to test CFN resources.
+1. Follow general [prerequisites](../../../TESTING.md#prerequisites) for testing CFN resources.
+2. Follow [general steps](../../../TESTING.md#steps) to test CFN resources.
 
 ### Success criteria when testing the resource
 1. Private Endpoint should be correctly set up in your Atlas Project as per configuration specified in the inputs/example:   
 
 ![image](https://user-images.githubusercontent.com/122359335/227300711-ca08e118-8718-4285-a975-8ec4e01899f9.png)
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services)

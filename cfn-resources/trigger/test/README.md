@@ -53,21 +53,21 @@ https://realm.mongodb.com/api/admin/v3.0/groups/<ProjectId>/apps/<AppId>/service
 
 ```
 ### Steps to test:
-1. Follow general [prerequisites](../../../TESTING.md.md#prerequisites) for testing CFN resources.
+1. Follow general [prerequisites](../../../TESTING.md#prerequisites) for testing CFN resources.
 2. Update trigger.json under cfn-resources/examples/
  - Replace ProjectId, AppId, ServiceId (for DatabaseTrigger only) with your data.
  - If your EventProcessor is an Atlas Function, you will need to create a function and get its FUNC_ID and FUNC_NAME from Atlas UI under App Services in your Project.
  - Alternatively, your EventProcessor can be AWS Eventbridge. Add your AWS AccountId and Region in the example for this.
 3. Set any additional required configuration options as per your needs.
 4. To update test cases, update and run cfn-test-create-inputs.sh with required params from above.
-5. Follow [general steps](../../../TESTING.md.md#steps) to test CFN resources.
+5. Follow [general steps](../../../TESTING.md#steps) to test CFN resources.
 
 ### Success criteria when testing the resource
 1. Trigger should be set up in your Atlas account as per configuration specified in the inputs/example.
 
    ![image](https://user-images.githubusercontent.com/122359335/227495196-59063691-c475-449c-b6b1-f206f4404715.png) 
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/triggers)

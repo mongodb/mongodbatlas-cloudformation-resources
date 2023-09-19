@@ -20,13 +20,13 @@ The Atlas organization must be manually provided.
    which should look like this https://cloud.mongodb.com/v2#/org/<ATLAS_ORG_ID>/projects.
 
 ### Steps to test:
-1. Ensure prerequisites above for this resource and general [prerequisites](/TESTING.md.md#prerequisites) are complete.
-2. Follow [general steps](/TESTING.md.md#steps) to test a CFN resource.
+1. Ensure prerequisites above for this resource and general [prerequisites](/TESTING.md#prerequisites) are complete.
+2. Follow [general steps](/TESTING.md#steps) to test a CFN resource.
 
 ### Success criteria when testing the resource
 1. Atlas Team should show correctly configured in respective Organization's Access Manager (and in Project Access Manager, if applicable):
    ![image](https://user-images.githubusercontent.com/122359335/227534552-a338f068-2e60-4179-91cd-7a634a2dc9b3.png)
-2. General [CFN resource success criteria](/TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](/TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams)

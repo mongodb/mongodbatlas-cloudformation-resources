@@ -43,7 +43,7 @@ fi
 # declare OTHER_PARAMS will be used for CFN TEST input creation.
 # This script will update these params for  Few Resources.
 # Note: OtherParams is expected in the below format.
-OtherParams="'{\"param\":\"value\"}'"
+OtherParams_string="'{\"param\":\"value\"}'"
 
 echo "resources: ${RESOURCES}"
 echo "regions: ${REGIONS}"
@@ -56,7 +56,7 @@ read -ra ResourceNames <<< "$RESOURCES"
 for ResourceName in "${ResourceNames[@]}"; do
     echo "generating required aws ssm params for resource: $ResourceName"
      if [ -n "${OTHER_PARAMS}" ];then
-           OtherParams=${OTHER_PARAMS}
+           OtherParams_string=${OTHER_PARAMS}
      elif [ "$ResourceName" == "trigger" ] && [ -z "${OTHER_PARAMS}" ] ; then
           echo "OTHER_PARAMS required with PROJECT_ID,DB_NAME,COLLECTION_NAME, FUNC_NAME,FUNC_ID,SERVICE_ID and APP_ID"
           exit 1

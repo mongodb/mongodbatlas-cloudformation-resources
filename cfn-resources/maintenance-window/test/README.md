@@ -13,7 +13,7 @@ The following components use this resource and are potentially impacted by any c
 All resources are created as part of `cfn-testing-helper.sh`
 
 ## Manual QA
-Please follow the steps in [TESTING.md](../../../TESTING.md.md).
+Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource
@@ -21,7 +21,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md.md).
 
 ![image](https://user-images.githubusercontent.com/122359335/227540482-6f021ea1-7b7e-4fbf-b883-1d9e0e2eea9a.png)
 
-2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
+2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
 - [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Maintenance-Windows)

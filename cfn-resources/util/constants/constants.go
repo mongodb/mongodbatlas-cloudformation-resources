@@ -27,6 +27,7 @@ const (
 )
 
 const (
+	ProfileNamePrefix   = "cfn/atlas/profile"
 	Profile             = "Profile"
 	PubKey              = "ApiKeys.PublicKey"
 	PvtKey              = "ApiKeys.PrivateKey"
@@ -45,8 +46,6 @@ const (
 	HostName            = "HostName"
 	Port                = "Port"
 	ContainerID         = "ContainerId"
-	Sink                = "Sink"
-	Transformations     = "transformations"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -147,15 +146,9 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	Sink                       = "Sink"
+
+	OrgOwnerID        = "OrgOwnerId"
+	OrgKeyRoles       = "APIKey.Roles"
+	OrgKeyDescription = "APIKey.Description"
 )
-
-/*Commented as it is declared twice
-type CfnFunctions string
-
-const (
-	CREATE CfnFunctions = "CREATE"
-	LIST   CfnFunctions = "LIST"
-	READ   CfnFunctions = "READ"
-	UPDATE CfnFunctions = "UPDATE"
-	DELETE CfnFunctions = "DELETE"
-)*/

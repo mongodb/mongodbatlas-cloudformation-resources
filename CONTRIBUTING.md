@@ -12,6 +12,22 @@ After the above 2 steps are completed and we've agreed on a path forward:
 4. Commit and push your changes to your branch then submit a pull request against the current release branch, not master. The naming scheme of the branch is `release-staging-v#.#.#`. **Note**: There will only be one release branch at a time.  
 5. A repo maintainer will review the your pull request, and may either request additional changes or merge the pull request.
 
+## Testing
+We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources. Please follow below guidelines for testing to ensure quality:
+
+**When adding a new feature:**
+- `/test/README.md` file must be created and must include detailed pre-requisites (if any) and steps to test a resource.
+- The file should include screenshots of how the resource is tested and how the changes reflect in Atlas UI.
+- See for example, [/test/README.md for LDAP Configuration]( https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/ldap-configuration/test/README.md) and [/test/README.md for Cloud Backup Snapshot](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-snapshot/test/README.md).
+
+**When creating pull request:**
+- Please include screenshots of any testing performed in the description. Following screenshots should be included:
+  - Stack creation with the resource in AWS console showing successful create, update and delete operations.
+  - Corresponding change reflected in Atlas UI.
+  - Successful contract testing when run locally.
+  - See [#669](https://github.com/mongodb/mongodbatlas-cloudformation-resources/pull/669) for example pull request.
+
+
 ## PR Title Format
 We use [*Conventional Commits*](https://www.conventionalcommits.org/):
 - `fix: description of the PR`: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).
@@ -32,6 +48,32 @@ Examples:
   - If the PR has `BREAKING CHANGE`: in its description is a breaking change
 - `remove!: description of the PR`: The commit removes a feature from the product. Typically features are deprecated first for a period of time before being removed. Removing a feature is a breaking change (correlating with MAJOR in Semantic Versioning).
 
+## Discovering New API features
+
+Most of the new features of the provider are using [atlas-sdk](https://github.com/mongodb/atlas-sdk-go)
+SDK is updated automatically, tracking all new Atlas features.
+
+### Updating Atlas SDK
+
+To update Atlas SDK run:
+
+```bash
+cd cfn-resources/
+make update-atlas-sdk
+```
+
+> NOTE: Update mechanism is only needed for major releases. Any other releases will be supported by dependabot.
+
+> NOTE: Command can make import changes to +500 files. Please make sure that you perform update on main branch without any uncommited changes.
+
+### SDK Major Release Update Procedure
+
+1. If the SDK update doesn’t cause any compilation issues create a new SDK update PR
+  1. Review [API Changelog](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/changelog) for any deprecated fields and breaking changes.
+2. For SDK updates introducing compilation issues without graceful workaround
+  1. Use the previous major version of the SDK (including the old client) for the affected resource
+  1. Create an issue to identify the root cause and mitigation paths based on changelog information
+  2. If applicable: Make required notice/update to the end users based on the plan.
 
 ## Autoclose stale issues and PRs
 - After 30 days of no activity (no comments or commits are on an issue or PR) we automatically tag it as “stale” and add a message: "This issue has gone 30 days without any activity and meets the project’s definition of ‘stale’. This will be auto-closed if there is no new activity over the next 30 days. If the issue is still relevant and active, you can simply comment with a “bump” to keep it open, or add the “[Status] Not Stale” label. Thanks for keeping our repository healthy!"
@@ -66,7 +108,7 @@ ATLAS_ORG_ID
 
 ## Using the MongoDB Atlas CFN Resources
 
-The fastest way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://aws.amazon.com/solutions/partners/mongodb-atlas/) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
+The fastest way to use the resources is with the official [MongoDB Atlas on AWS Partner Solutions](https://aws.amazon.com/solutions/partners/mongodb-atlas/) CloudFormation templates. The [templates](https://github.com/aws-quickstart/quickstart-mongodb-atlas/tree/main/templates) folder contains concrete CloudFormation templates you can use to start your own projects.
 
 There are two main parts of this project:
 

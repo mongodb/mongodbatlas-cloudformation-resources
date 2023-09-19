@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//         http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"sort"
@@ -31,25 +30,19 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
+
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
-var CreateRequiredFields = []string{constants.OrgID, constants.Description}
+var CreateRequiredFields = []string{constants.OrgID, constants.Description, constants.AwsSecretName}
 var UpdateRequiredFields = []string{constants.OrgID, constants.APIUserID, constants.Description}
 var ReadRequiredFields = []string{constants.OrgID, constants.APIUserID}
 var DeleteRequiredFields = []string{constants.OrgID, constants.APIUserID}
 var ListRequiredFields = []string{constants.OrgID}
 
-const (
-	CREATE = "CREATE"
-	READ   = "READ"
-	UPDATE = "UPDATE"
-	DELETE = "DELETE"
-	LIST   = "LIST"
-)
-
 type APIKeySecret struct {
-	PublicKey  string `json:"PublicKey"`
+	APIUserID  string
+	PublicKey  string
 	PrivateKey string
 }
 
@@ -78,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Set the roles from model
 	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
-		Desc:  currentModel.Description,
+		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
 	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.CreateApiKey(
@@ -89,20 +82,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apiKeyUserDetails, response, err := apiKeyRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, CREATE, err)
+		return handleError(response, constants.CREATE, err)
 	}
 
 	// Read response
 	currentModel.APIUserId = apiKeyUserDetails.Id
 
 	// Save PrivateKey in AWS SecretManager
-	secret := APIKeySecret{PublicKey: *apiKeyUserDetails.PublicKey, PrivateKey: *apiKeyUserDetails.PrivateKey}
-	_, err = secrets.Create(&req, *currentModel.APIUserId, secret, currentModel.Description)
-	if err != nil {
-		response = &http.Response{StatusCode: http.StatusInternalServerError}
-		return handleError(response, CREATE, err)
-	}
+	secret := APIKeySecret{APIUserID: *currentModel.APIUserId, PublicKey: *apiKeyUserDetails.PublicKey, PrivateKey: *apiKeyUserDetails.PrivateKey}
 
+	_, _, err = secrets.PutSecret(&req, *currentModel.AwsSecretName, secret, currentModel.Description)
+	if err != nil {
+		// Delete the APIKey from Atlas
+		_, _ = Delete(req, prevModel, currentModel)
+		response = &http.Response{StatusCode: http.StatusInternalServerError}
+		return handleError(response, constants.CREATE, err)
+	}
 	// Assign Org APIKey to given projects i.e. projectAssignments
 	if len(currentModel.ProjectAssignments) > 0 {
 		for i := range currentModel.ProjectAssignments {
@@ -112,6 +107,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 	}
+	// writeOnly property not supposed to be in the response
+	currentModel.AwsSecretName = nil
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -138,13 +135,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	apiKeyUserDetails, response, err := getAPIkeyDetails(&req, atlas, currentModel)
+	apiKeyUserDetails, arn, response, err := getAPIkeyDetails(&req, atlas, currentModel)
 
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, READ, err)
+		return handleError(response, constants.READ, err)
 	}
-
+	currentModel.AwsSecretArn = arn
 	currentModel.readAPIKeyDetails(*apiKeyUserDetails)
 	_, _ = logger.Debugf("Read Response: %+v", currentModel)
 
@@ -172,7 +169,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 	// Set the roles from model
-	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
+	apiKeyInput := atlasSDK.UpdateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
 		Roles: currentModel.Roles,
 	}
@@ -185,12 +182,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apiKeyUserDetails, response, err := updateRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, UPDATE, err)
+		return handleError(response, constants.UPDATE, err)
 	}
 
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, READ, err)
+		return handleError(response, constants.READ, err)
 	}
 	existingModel := Model{APIUserId: currentModel.APIUserId, OrgId: currentModel.OrgId}
 	// Read response
@@ -200,7 +197,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, response, err = updateProjectAssignments(atlas, currentModel, &existingModel)
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, UPDATE, err)
+		return handleError(response, constants.UPDATE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -235,15 +232,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, response, err := deleteRequest.Execute()
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, DELETE, err)
-	}
-
-	// Delete Secret from AWS Secret Manager
-	if err := secrets.Delete(&req, *currentModel.APIUserId); err != nil {
-		response = &http.Response{StatusCode: http.StatusInternalServerError}
-		if err != nil {
-			return handleError(response, DELETE, err)
-		}
+		return handleError(response, constants.DELETE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -290,7 +279,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	defer closeResponse(response)
 	if err != nil {
-		return handleError(response, LIST, err)
+		return handleError(response, constants.LIST, err)
 	}
 
 	apiKeyList := pagedAPIKeysList.Results
@@ -312,11 +301,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func closeResponse(response *http.Response) {
 	if response != nil {
-		response.Body.Close()
+		err := response.Body.Close()
+		if err != nil {
+			_, _ = logger.Warnf("Error while closing response body: %s", err.Error())
+			return
+		}
 	}
 }
 
-func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
+func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
 	_, _ = logger.Warn(errMsg)
 	if response.StatusCode == http.StatusConflict {
@@ -338,12 +331,12 @@ func assignProjects(atlasClient *util.MongoDBClient, project ProjectAssignment, 
 	_, updateResponse, err := updateOrgKeyProjectRoles(project, atlasClient, apiUserID)
 	defer closeResponse(updateResponse)
 	if err != nil {
-		return handleError(updateResponse, CREATE, err)
+		return handleError(updateResponse, constants.CREATE, err)
 	}
 	return handler.ProgressEvent{}, err
 }
 
-func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
+func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *string, *http.Response, error) {
 	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
@@ -352,28 +345,15 @@ func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentMo
 	apiKeyUserDetails, response, err := apiKeyRequest.Execute()
 
 	if err != nil {
-		return apiKeyUserDetails, response, err
+		return apiKeyUserDetails, nil, response, err
 	}
-	// Get PrivateKey from AWS SecretManager and assign back
-	secretValue, err := secrets.Get(req, *currentModel.APIUserId)
-	if err != nil {
-		response = &http.Response{StatusCode: http.StatusInternalServerError}
-		return nil, response, err
-	}
-	var apiKeySecret APIKeySecret
-	if err := json.Unmarshal([]byte(*secretValue), &apiKeySecret); err != nil {
-		response = &http.Response{StatusCode: http.StatusInternalServerError}
-		return nil, response, err
-	}
-
-	apiKeyUserDetails.PrivateKey = &apiKeySecret.PrivateKey
-
-	return apiKeyUserDetails, response, err
+	var arn *string
+	return apiKeyUserDetails, arn, response, err
 }
 
 func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, atlas *util.MongoDBClient, orgKeyID *string) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
 	// Set the roles from model
-	projectAPIKeyInput := atlasSDK.CreateAtlasProjectApiKey{
+	projectAPIKeyInput := atlasSDK.UpdateAtlasProjectApiKey{
 		Roles: projectAssignment.Roles,
 	}
 	assignAPIRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
@@ -399,8 +379,6 @@ func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, atlas *util.
 func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Model, existingModel *Model) (result interface{}, response *http.Response, err error) {
 	// update projectAssignments
 	newAssignments, updateAssignments, removeAssignments := getChangesInProjectAssignments(currentModel.ProjectAssignments, existingModel.ProjectAssignments)
-
-	// Note: add and update ProjectAssignments uses the same api.
 
 	// Assignment
 	for i := range newAssignments {
@@ -530,14 +508,6 @@ func (model *Model) readAPIKeyDetails(apikey atlasSDK.ApiKeyUserDetails) Model {
 	}
 	model.Roles = roles
 	model.ProjectAssignments = projectAssignments
-	var links []Link
-	for i := range apikey.Links {
-		link := Link{
-			Href: apikey.Links[i].Href,
-			Rel:  apikey.Links[i].Rel,
-		}
-		links = append(links, link)
-	}
-	model.Links = links
+
 	return *model
 }

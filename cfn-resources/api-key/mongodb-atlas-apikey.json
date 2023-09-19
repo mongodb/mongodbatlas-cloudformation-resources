@@ -3,20 +3,6 @@
     "description": "Creates one API key for the specified organization. An organization API key grants programmatic access to an organization.",
     "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions": {
-        "Link": {
-            "type": "object",
-            "properties": {
-                "Href": {
-                    "type": "string",
-                    "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with https://cloud.mongodb.com/api/atlas."
-                },
-                "Rel": {
-                    "type": "string",
-                    "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with https://cloud.mongodb.com/api/atlas."
-                }
-            },
-            "additionalProperties": false
-        },
         "ListOptions": {
             "type": "object",
             "properties": {
@@ -63,14 +49,9 @@
             "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project.",
             "pattern": "^([a-f0-9]{24})$"
         },
-        "Links": {
-            "type": "array",
-            "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-            "items": {
-                "$ref": "#/definitions/Link",
-                "type": "object"
-            },
-            "insertionOrder": false
+        "AwsSecretName": {
+            "type": "string",
+            "description": "Name of the AWS Secrets Manager secret that stores the API key Details."
         },
         "OrgId": {
             "type": "string",
@@ -81,7 +62,8 @@
         },
         "Profile": {
             "type": "string",
-            "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
+            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+            "default": "default"
         },
         "PublicKey": {
             "type": "string",
@@ -89,7 +71,11 @@
         },
         "PrivateKey": {
             "type": "string",
-            "description": "Purpose or explanation provided when someone created this organization API key."
+            "description": "Redacted private key returned for this organization API key. This key displays unredacted when first created."
+        },
+        "AwsSecretArn": {
+            "type": "string",
+            "description": "ARN of the AWS Secrets Manager secret that stores the API key Details"
         },
         "Roles": {
             "type": "array",
@@ -114,10 +100,10 @@
     "additionalProperties": false,
     "required": [
         "OrgId",
-        "Description"
+        "Description",
+        "AwsSecretName"
     ],
     "readOnlyProperties": [
-        "/properties/Links",
         "/properties/PrivateKey",
         "/properties/PublicKey",
         "/properties/APIUserId"
@@ -125,6 +111,9 @@
     "createOnlyProperties": [
         "/properties/OrgId",
         "/properties/Profile"
+        ],
+    "writeOnlyProperties": [
+        "/properties/AwsSecretName"
     ],
     "primaryIdentifier": [
         "/properties/OrgId",
@@ -134,7 +123,7 @@
     "handlers": {
         "create": {
             "permissions": [
-                "secretsmanager:Create*",
+                "secretsmanager:PutSecretValue",
                 "secretsmanager:GetSecretValue"
             ]
         },
@@ -150,8 +139,7 @@
         },
         "delete": {
             "permissions": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:Delete*"
+                "secretsmanager:GetSecretValue"
             ]
         },
         "list": {

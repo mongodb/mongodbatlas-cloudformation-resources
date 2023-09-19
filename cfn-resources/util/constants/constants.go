@@ -16,7 +16,18 @@ package constants
 
 type Event string
 
+type CfnFunctions string
+
 const (
+	CREATE CfnFunctions = "CREATE"
+	LIST   CfnFunctions = "LIST"
+	READ   CfnFunctions = "READ"
+	UPDATE CfnFunctions = "UPDATE"
+	DELETE CfnFunctions = "DELETE"
+)
+
+const (
+	ProfileNamePrefix   = "cfn/atlas/profile"
 	Profile             = "Profile"
 	PubKey              = "ApiKeys.PublicKey"
 	PvtKey              = "ApiKeys.PrivateKey"
@@ -67,6 +78,7 @@ const (
 	Automated                        = "automated"
 	Download                         = "download"
 	ClusterName                      = "ClusterName"
+	InstanceName                     = "InstanceName"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
@@ -125,6 +137,7 @@ const (
 	ExternalGroupName          = "ExternalGroupName"
 	RoleAssignments            = "RoleAssignments"
 	Description                = "Description"
+	AwsSecretName              = "AwsSecretName"
 	APIUserID                  = "APIUserId"
 	DataFederationRoleID       = "CloudProviderConfig.RoleId"
 	DataFederationTestS3Bucket = "CloudProviderConfig.TestS3Bucket"
@@ -132,4 +145,9 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
+	Sink                       = "Sink"
+
+	OrgOwnerID        = "OrgOwnerId"
+	OrgKeyRoles       = "APIKey.Roles"
+	OrgKeyDescription = "APIKey.Description"
 )

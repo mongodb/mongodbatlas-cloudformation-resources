@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+# Copyright 2023 MongoDB Inc
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # project.create-sample-cfn-request.sh
 #
 # This tool generates text for a `cfn invoke` request json message.
@@ -11,7 +25,7 @@ set -o pipefail
 profile="default"
 orgId="${MONGODB_ATLAS_ORG_ID}"
 
-projectName="cfn-bot-apikey-test"
+projectName="cfn-bot-apikey-dev"
 # create ProjectId
 if [ ${#projectName} -gt 22 ];then
   projectName=${projectName:0:21}
@@ -36,14 +50,27 @@ else
 	echo -e "FOUND project \"${project2}\" with id: ${projectId2}\n"
 fi
 
+# create aws secret key
+awsSecretName="mongodb/atlas/apikey/${projectName}"
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here";then
+  echo "aws secret created with name : ${awsSecretName}"
+else
+  echo "aws secret create failed with name : ${awsSecretName}"
+  exit 1
+fi
 
 ## TEST-1
 # Create assigns 2 projects
 jq --arg orgId "$orgId" \
   --arg profile "$profile" \
+   --arg awsSecretName "$awsSecretName" \
   --arg projectId1 "$projectId1" \
   --arg projectId2 "$projectId2" \
-	'.desiredResourceState.OrgId?|=$orgId | .desiredResourceState.Profile?|=$profile | .desiredResourceState.ProjectAssignments[0].ProjectId?|=$projectId1 | .desiredResourceState.ProjectAssignments[1].ProjectId?|=$projectId2' \
+	'.desiredResourceState.OrgId?|=$orgId |
+	.desiredResourceState.Profile?|=$profile |
+	.desiredResourceState.AwsSecretName?|=$awsSecretName |
+	.desiredResourceState.ProjectAssignments[0].ProjectId?|=$projectId1 |
+	 .desiredResourceState.ProjectAssignments[1].ProjectId?|=$projectId2' \
 	"$(dirname "$0")/apikey.sample-cfn-request.json" > sample.temp && mv sample.temp apikey.sample-cfn-request.json
 
 

@@ -275,6 +275,21 @@
                 }
             },
             "additionalProperties": false
+        },
+        "tag": {
+            "type": "object",
+            "description": "List that contains key-value pairs between 1 to 255 characters in length for tagging and categorizing the cluster.",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "description": "Constant that defines the set of the tag. For example, environment in the environment : production tag."
+                },
+                "Value": {
+                    "type": "string",
+                    "description": "Variable that belongs to the set of the tag. For example, production in the environment : production tag."
+                }
+            },
+            "additionalProperties": false
         }
     },
     "properties": {
@@ -401,6 +416,13 @@
         "TerminationProtectionEnabled": {
             "description": "Flag that indicates whether termination protection is enabled on the cluster. If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB Cloud will delete the cluster.",
             "type": "boolean"
+        },
+        "Tags": {
+            "description": "List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/tag"
+            }
         }
     },
     "additionalProperties": false,

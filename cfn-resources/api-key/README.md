@@ -2,7 +2,7 @@
 
 ## Description
 Resource for managing [APIKeys](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Programmatic-API-Keys).
-
+The API keys created as result, will be securely stored in AWS Secret Manager, ensuring the highest level of data protection and access control.
 ## Requirements
 
 Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.

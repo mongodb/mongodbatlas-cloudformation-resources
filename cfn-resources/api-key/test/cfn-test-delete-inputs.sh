@@ -12,6 +12,15 @@ function usage {
 	echo "usage:$0 "
 }
 
+
+awsSecretName=$(jq -r '.AwsSecretName' ./inputs/inputs_1_create.json)
+if aws secretsmanager delete-secret --secret-id "${awsSecretName}" --force-delete-without-recovery;then
+  echo "aws secret deleted with name : ${awsSecretName}"
+else
+  echo "aws secret delete failed with name : ${awsSecretName}"
+  exit 1
+fi
+
 projectIds=()
 projectIds["${#projectIds[@]}"]=$(jq -r '.ProjectAssignments[0].ProjectId' ./inputs/inputs_1_create.json)
 projectIds["${#projectIds[@]}"]=$(jq -r '.ProjectAssignments[1].ProjectId' ./inputs/inputs_1_create.json)

@@ -18,7 +18,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>" : <i><a href="projectsettings.md">projectSettings</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectteams" title="ProjectTeams">ProjectTeams</a>" : <i>[ <a href="projectteam.md">projectTeam</a>, ... ]</i>,
-        "<a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>" : <i>[ <a href="projectapikey.md">projectApiKey</a>, ... ]</i>
+        "<a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>" : <i>[ <a href="projectapikey.md">projectApiKey</a>, ... ]</i>,
+        "<a href="#regionusagerestrictions" title="RegionUsageRestrictions">RegionUsageRestrictions</a>" : <i>String</i>
     }
 }
 </pre>
@@ -37,6 +38,7 @@ Properties:
       - <a href="projectteam.md">projectTeam</a></i>
     <a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>: <i>
       - <a href="projectapikey.md">projectApiKey</a></i>
+    <a href="#regionusagerestrictions" title="RegionUsageRestrictions">RegionUsageRestrictions</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -106,6 +108,16 @@ API keys that you assigned to the specified project.
 _Required_: No
 
 _Type_: List of <a href="projectapikey.md">projectApiKey</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RegionUsageRestrictions
+
+Region usage restrictions that designate the project's AWS region.Enum: "GOV_REGIONS_ONLY" "COMMERCIAL_FEDRAMP_REGIONS_ONLY" "NONE"
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

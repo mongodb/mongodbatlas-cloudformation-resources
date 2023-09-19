@@ -36,7 +36,7 @@ then in another shell:
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
 cd ${repo_root}/cfn-resources/cluster-outage-simulation
-./test/cloud-outage-simulation.create-sample-cfn-request.sh YourProjectID ClusterName > test.request.json 
+./test/cluster-outage-simulation.create-sample-cfn-request.sh YourProjectID ClusterName > test.request.json 
 echo "Sample request:"
 cat test.request.json
 cfn invoke CREATE test.request.json 

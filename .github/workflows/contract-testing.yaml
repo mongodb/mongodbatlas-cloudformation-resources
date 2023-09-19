@@ -219,7 +219,7 @@ jobs:
           MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
-          pushd cfn-resources/cloud-outage-simulation
+          pushd cfn-resources/cluster-outage-simulation
           make create-test-resources
           
           cat inputs/inputs_1_create.json

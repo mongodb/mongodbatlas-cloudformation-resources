@@ -35,7 +35,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -321,4 +321,11 @@ func buildKey(keyID, storePrefix string) string {
 	// this is strictly coupled with permissions for handlers, changing this means changing permissions in handler
 	// moreover changing this might cause pollution in parameter store -  be sure you know what you are doing
 	return fmt.Sprintf("%s-%s", storePrefix, keyID)
+}
+
+func SafeString(s *string) string {
+	if s != nil {
+		return *s
+	}
+	return ""
 }

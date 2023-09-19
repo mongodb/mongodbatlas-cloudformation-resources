@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# cloud-backup-snapshot-export-job.create-sample-cfn-request.sh
 #
 # This tool generates text for a `cfn invoke` request json message.
 #
@@ -20,4 +19,4 @@ jq --arg profile "$ATLAS_PROFILE" \
    --arg projectId "$projectId" \
    --arg clusterName "$clusterName" \
    '.desiredResourceState.Profile?|=$profile |   .desiredResourceState.ClusterName?|=$clusterName  | .desiredResourceState.ProjectId?|=$projectId ' \
-   "$(dirname "$0")/cloud-outage-simulation.sample-cfn-request.json"
+   "$(dirname "$0")/cluster-outage-simulation.sample-cfn-request.json"

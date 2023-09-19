@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudOutageSimulation Filter
+# MongoDB::Atlas::ClusterOutageSimulation Filter
 
 ## Syntax
 

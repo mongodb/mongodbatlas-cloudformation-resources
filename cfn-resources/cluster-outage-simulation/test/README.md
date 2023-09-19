@@ -1,4 +1,4 @@
-# Cloud backup snapshot
+# Cluster outage simulation
 
 ## Impact 
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
@@ -8,9 +8,7 @@ The following components use this resource and are potentially impacted by any c
 ## Prerequisites 
 ### Resources needed to run the manual QA
 - Atlas Project
-- Cluster with backup enabled
-
-
+- Cluster
 
 All resources are created as part of `cfn-testing-helper.sh`
 
@@ -19,13 +17,13 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 
 
 ### Success criteria when testing the resource
-- Backup snapshot for the Atlas Cluster should be shown in the "Snapshots" page:
-![image](https://user-images.githubusercontent.com/5663078/227233348-ea32d93a-bfc6-468a-b111-fb12bc0a50ec.png)
+- Cluster Outage Simulation is created successfully:
+![image](TODO: add image)
 
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups-Schedule)
-- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/backup/cloud-backup/restore-from-snapshot/)
+- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Cluster-Outage-Simulation)
+- [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Cluster-Outage-Simulation)
 
 ## Unit Testing Locally
 
@@ -37,7 +35,7 @@ then in another shell:
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
 source <(${repo_root}/quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
-cd ${repo_root}/cfn-resources/cloud-outage-simulation
+cd ${repo_root}/cfn-resources/cluster-outage-simulation
 ./test/cloud-outage-simulation.create-sample-cfn-request.sh YourProjectID ClusterName > test.request.json 
 echo "Sample request:"
 cat test.request.json

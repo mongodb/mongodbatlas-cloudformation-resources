@@ -1,12 +1,12 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "MongoDB::Atlas::CloudOutageSimulation",
+    "typeName": "MongoDB::Atlas::ClusterOutageSimulation",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-outage-simulation",
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/cluster-outage-simulation",
         "protocolVersion": "2.0.0",
         "pluginVersion": "2.0.4"
     }

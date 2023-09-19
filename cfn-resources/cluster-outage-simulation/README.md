@@ -1,10 +1,10 @@
-# MongoDB::Atlas::CloudOutageSimulation
+# MongoDB::Atlas::ClusterOutageSimulation
 
 Congratulations on starting development!
 
 Next steps:
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-cloudoutagesimulation.json`
+1. Populate the JSON schema describing your resource, `mongodb-atlas-clusteroutagesimulation.json`
 2. The RPDK will automatically generate the correct resource model from the
    schema whenever the project is built via Make.
    You can also do this manually with the following command: `cfn-cli generate`

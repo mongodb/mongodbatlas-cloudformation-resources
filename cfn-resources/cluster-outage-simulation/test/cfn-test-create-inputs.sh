@@ -42,7 +42,7 @@ fi
 
 projectName="${1}"
 clusterName=${projectName}
-echo "Came inside create inputs to test"
+
 SCRIPTDIR="$(dirname "$0")"
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -69,5 +69,4 @@ jq --arg group_id "$projectId" \
    '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
-echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs

@@ -1,4 +1,4 @@
-# MongoDB::Atlas::CloudOutageSimulation
+# MongoDB::Atlas::ClusterOutageSimulation
 
 An example resource schema demonstrating some basic constructs and validation rules.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::CloudOutageSimulation",
+    "Type" : "MongoDB::Atlas::ClusterOutageSimulation",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#outagefilters" title="OutageFilters">OutageFilters</a>" : <i>[ <a href="filter.md">Filter</a>, ... ]</i>,
@@ -23,7 +23,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::CloudOutageSimulation
+Type: MongoDB::Atlas::ClusterOutageSimulation
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#outagefilters" title="OutageFilters">OutageFilters</a>: <i>

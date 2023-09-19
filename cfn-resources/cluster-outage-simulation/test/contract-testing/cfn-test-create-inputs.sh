@@ -16,6 +16,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ];then
 fi
 
 # setting projectName
-projectName="cloud-outage-simulation-limit-$((1 + RANDOM % 10000))"
+projectName="cluster-outage-simulation-limit-$((1 + RANDOM % 10000))"
 
 ./test/cfn-test-create-inputs.sh $projectName

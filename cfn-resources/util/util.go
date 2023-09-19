@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//         http://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -257,9 +257,11 @@ func newHTTPClient(p *profile.Profile) (*http.Client, error) {
 // 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/handler cmd/main.go
 func getLogLevel() logger.Level {
 	levelString, exists := os.LookupEnv(envLogLevel)
+	levelString = "debug"
 	if !exists {
-		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, defaultLogLevel)
-		levelString = defaultLogLevel
+		//_, _ = logger.Warnf("getLogLevel() jhbjhbjbjbjh Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, "debug")
+		//levelString = defaultLogLevel
+		levelString = "debug"
 	}
 	switch levelString {
 	case debug:

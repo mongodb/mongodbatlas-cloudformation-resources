@@ -16,7 +16,9 @@ package resource
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -27,7 +29,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -38,6 +40,7 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	log.Debugf("In CREATE handler...............")
 
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
@@ -51,19 +54,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	var res *mongodbatlas.Response
+	atlasV2 := client.AtlasV2
+	var res *http.Response
 
-	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.ProjectId)
+	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if *atlasAuditing.Enabled {
+	if atlasAuditing.Enabled {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
 			OperationStatus:  handler.Failed,
@@ -72,26 +76,26 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	enabled := true
 
-	auditingInput := mongodbatlas.Auditing{
-		Enabled: &enabled,
+	auditingInput := atlasSDK.AuditLog{
+		Enabled: enabled,
 	}
 
 	if currentModel.AuditAuthorizationSuccess != nil {
-		auditingInput.AuditAuthorizationSuccess = currentModel.AuditAuthorizationSuccess
+		auditingInput.AuditAuthorizationSuccess = *currentModel.AuditAuthorizationSuccess
 	}
 
 	if currentModel.AuditFilter != nil {
 		auditingInput.AuditFilter = *currentModel.AuditFilter
 	}
 
-	atlasAuditing, res, err = client.Auditing.Configure(context.Background(), *currentModel.ProjectId, &auditingInput)
+	atlasAuditing, res, err = atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
 
 	// Response
 	return handler.ProgressEvent{
@@ -102,7 +106,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
+	log.Debugf("In READ handler...............")
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
@@ -115,28 +119,29 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	var res *mongodbatlas.Response
+	atlasV2 := client.AtlasV2
+	var res *http.Response
 
-	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.ProjectId)
+	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if !*atlasAuditing.Enabled {
+	if !atlasAuditing.Enabled {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
 
-	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
 	currentModel.AuditFilter = &atlasAuditing.AuditFilter
-	currentModel.AuditAuthorizationSuccess = atlasAuditing.AuditAuthorizationSuccess
+	currentModel.AuditAuthorizationSuccess = &atlasAuditing.AuditAuthorizationSuccess
 
 	// Response
 	return handler.ProgressEvent{
@@ -148,7 +153,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
+	log.Debugf("\n \n In UPDATE handler...............")
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
@@ -161,12 +166,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
-	resourceEnabled, handlerEvent := isEnabled(*client, *currentModel)
+	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {
 		return *handlerEvent, nil
 	}
@@ -178,15 +184,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	var res *mongodbatlas.Response
+	cm, _ := json.Marshal(currentModel)
+	log.Debugf("\n \n Update current model " + string(cm))
 
-	auditingInput := mongodbatlas.Auditing{}
+	var res *http.Response
+
+	auditingInput := atlasSDK.AuditLog{}
 
 	modified := false
 
 	if currentModel.AuditAuthorizationSuccess != nil {
 		modified = true
-		auditingInput.AuditAuthorizationSuccess = currentModel.AuditAuthorizationSuccess
+		auditingInput.AuditAuthorizationSuccess = *currentModel.AuditAuthorizationSuccess
 	}
 
 	if currentModel.AuditFilter != nil {
@@ -202,20 +211,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.ProjectId, &auditingInput)
-
-	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
+	log.Debugf("\n \n In UPDATE handler...............calling API")
+	atlasAuditing, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
+	res2B, _ := json.Marshal(auditingInput)
+	log.Debugf("\n \n Update request " + string(res2B))
+	res3B, _ := json.Marshal(atlasAuditing)
+	log.Debugf("\n \n Update response " + string(res3B))
 
 	if err != nil {
 		_, _ = log.Debugf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
-	_, _ = log.Debugf("Atlas Client %v", client)
 
-	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
 
 	// Response
 	return handler.ProgressEvent{
@@ -227,7 +235,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
+	log.Debugf("\n \n In DELETE handler..............")
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("DELETE Validation Error")
@@ -239,12 +247,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
-	resourceEnabled, handlerEvent := isEnabled(*client, *currentModel)
+	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {
 		return *handlerEvent, nil
 	}
@@ -256,26 +265,31 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	var res *mongodbatlas.Response
+	cm, _ := json.Marshal(currentModel)
+	log.Debugf("\n \n Delete current model " + string(cm))
 
-	enabled := false
+	var res *http.Response
 
-	auditingInput := mongodbatlas.Auditing{
-		Enabled: &enabled,
+	auditingInput := atlasSDK.AuditLog{
+		Enabled:     false,
+		AuditFilter: *currentModel.AuditFilter,
 	}
 
-	_, res, err := client.Auditing.Configure(context.Background(), *currentModel.ProjectId, &auditingInput)
+	atlasAuditing, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
+	res2B, _ := json.Marshal(auditingInput)
+	log.Debugf("\n \n Delete request " + string(res2B))
+	res3B, _ := json.Marshal(atlasAuditing)
+	log.Debugf("\n \n Delete response " + string(res3B))
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	if err != nil {
 		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
-	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
@@ -283,16 +297,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func isEnabled(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent) {
-	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.ProjectId)
+func isEnabled(client atlasSDK.APIClient, currentModel Model) (bool, *handler.ProgressEvent) {
+	atlasAuditing, res, err := client.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
 		_, _ = log.Debugf("Validating enabled - error: %+v", err)
-		er := progress_events.GetFailedEventByResponse(err.Error(), res.Response)
+		er := progress_events.GetFailedEventByResponse(err.Error(), res)
 		return false, &er
 	}
 
-	return *atlasAuditing.Enabled, nil
+	return atlasAuditing.Enabled, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

@@ -45,13 +45,6 @@ const (
 	serverlessInstanceType        = "serverless"
 )
 
-const (
-	defaultBackSeconds            = 30
-	defaultTimeOutInSeconds       = 1200
-	defaultReturnSuccessIfTimeOut = false
-	timeLayout                    = "2006-01-02 15:04:05"
-)
-
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup

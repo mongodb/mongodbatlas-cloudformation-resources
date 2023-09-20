@@ -300,11 +300,9 @@ func newHTTPClient(p *profile.Profile) (*http.Client, error) {
 // 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/handler cmd/main.go
 func getLogLevel() logger.Level {
 	levelString, exists := os.LookupEnv(envLogLevel)
-	levelString = "debug"
 	if !exists {
-		//_, _ = logger.Warnf("getLogLevel() jhbjhbjbjbjh Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, "debug")
-		//levelString = defaultLogLevel
-		levelString = "debug"
+		_, _ = logger.Warnf("getLogLevel() Environment variable %s not found. Set it in template.yaml (defaultLogLevel=%s)", envLogLevel, defaultLogLevel)
+		levelString = defaultLogLevel
 	}
 	switch levelString {
 	case debug:

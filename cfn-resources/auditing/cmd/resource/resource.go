@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -32,7 +31,7 @@ import (
 	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
-var RequiredFields = []string{constants.ProjectID}
+var RequiredFields = []string{constants.ProjectID, constants.AuditFilter}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-auditing")
@@ -40,7 +39,6 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf("In CREATE handler...............")
 
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
@@ -106,7 +104,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf("In READ handler...............")
+
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
@@ -127,8 +125,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
+		_, _ = log.Debugf("Read - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
@@ -153,7 +152,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf("\n \n In UPDATE handler...............")
+
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
@@ -184,13 +183,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	cm, _ := json.Marshal(currentModel)
-	log.Debugf("\n \n Update current model " + string(cm))
-
 	var res *http.Response
-
-	auditingInput := atlasSDK.AuditLog{}
-
+	auditingInput := atlasSDK.AuditLog{Enabled: true}
 	modified := false
 
 	if currentModel.AuditAuthorizationSuccess != nil {
@@ -211,12 +205,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	log.Debugf("\n \n In UPDATE handler...............calling API")
 	atlasAuditing, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
-	res2B, _ := json.Marshal(auditingInput)
-	log.Debugf("\n \n Update request " + string(res2B))
-	res3B, _ := json.Marshal(atlasAuditing)
-	log.Debugf("\n \n Update response " + string(res3B))
 
 	if err != nil {
 		_, _ = log.Debugf("Update - error: %+v", err)
@@ -235,7 +224,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf("\n \n In DELETE handler..............")
+
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("DELETE Validation Error")
@@ -265,9 +254,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	cm, _ := json.Marshal(currentModel)
-	log.Debugf("\n \n Delete current model " + string(cm))
-
 	var res *http.Response
 
 	auditingInput := atlasSDK.AuditLog{
@@ -275,11 +261,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		AuditFilter: *currentModel.AuditFilter,
 	}
 
-	atlasAuditing, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
-	res2B, _ := json.Marshal(auditingInput)
-	log.Debugf("\n \n Delete request " + string(res2B))
-	res3B, _ := json.Marshal(atlasAuditing)
-	log.Debugf("\n \n Delete response " + string(res3B))
+	_, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
 
 	if err != nil {
 		_, _ = log.Debugf("Create - error: %+v", err)

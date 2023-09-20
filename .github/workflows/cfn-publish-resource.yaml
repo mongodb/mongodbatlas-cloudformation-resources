@@ -36,9 +36,9 @@ jobs:
       BRANCH_NAME: ${{ github.event.inputs.branchName }}
 
       # Atlas Profile
-      ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
-      ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
-      ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID }}
+      ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
+      ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
+      ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
 
       # Organization
       ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID }}
@@ -50,9 +50,9 @@ jobs:
       ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID }}
 
       # AWS
-      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID_PUBLISHING}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING}}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
 
       # ldap-configuration
       LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD }}

@@ -41,7 +41,7 @@ const (
 	Available         = "AVAILABLE"
 	Rejected          = "REJECTED"
 	CloudProvider     = "CloudProvider"
-	EndpointServiceId = "EndpointServiceId"
+	EndpointServiceID = "EndpointServiceId"
 )
 
 func IsTerminalStatus(status string) bool {
@@ -52,10 +52,10 @@ func IsTerminalStatus(status string) bool {
 	return status == Available || status == Rejected
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, CloudProvider, EndpointServiceId}
+var CreateRequiredFields = []string{constants.ProjectID, CloudProvider, EndpointServiceID}
 var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, CloudProvider, EndpointServiceId}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, CloudProvider, EndpointServiceID}
 var ListRequiredFields = []string{constants.GroupID}
 
 // Create handles the Create event from the Cloudformation service.

@@ -321,17 +321,6 @@
           "type": "boolean",
           "description": "Flag that indicates whether MongoDB Cloud should send email notifications. The resource requires this parameter when one of the following values have been set:\n\n- '\"notifications.typeName\" : \"ORG\"'\n- '\"notifications.typeName\" : \"GROUP\"'\n- '\"notifications.typeName\" : \"USER\"'"
         },
-        "FlowName": {
-          "type": "string",
-          "description": "Flowdock flow name to which MongoDB Cloud sends alert notifications. This name appears after the organization name in the Uniform Resource Locator (URL) path: 'www.flowdock.com/app/<organization-name>/<flow-name>'. The resource requires this parameter when '\"notifications.typeName\" : \"FLOWDOCK\"'.",
-          "maxLength": 100,
-          "minLength": 1,
-          "pattern": "^([a-z\\-]+)$"
-        },
-        "FlowdockApiToken": {
-          "type": "string",
-          "description": "Flowdock API token that MongoDB Cloud needs to send alert notifications to Flowdock. The resource requires this parameter when '\"notifications.typeName\" : \"FLOWDOCK\"'. If the token later becomes invalid, MongoDB Cloud sends an email to the project owners. If the token remains invalid, MongoDB Cloud removes the token."
-        },
         "IntervalMin": {
           "type": "number",
           "description": "Number of minutes to wait between successive notifications. MongoDB Cloud sends notifications until someone acknowledges the unacknowledged alert.\n\nPagerDuty, VictorOps, and OpsGenie notifications don't return this element. Configure and manage the notification interval within each of those services."

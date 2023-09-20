@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template Returns, starts, or ends a cluster outage simulation.",
   "Parameters": {
     "ProjectId": {
       "Type": "String",
@@ -10,7 +10,7 @@
     "ClusterName": {
       "Type": "String",
       "Description": "Name to use for your Atlas Cluster",
-      "Default": "ZxeCluster"
+      "Default": "ClusterOutageTest"
     },
     "Profile": {
       "Type": "String",
@@ -21,7 +21,7 @@
   },
   "Resources": {
     "CloudOutageSimulation": {
-      "Type": "MongoDB::Atlas::CloudOutageSimulation",
+      "Type": "MongoDB::Atlas::ClusterOutageSimulation",
       "Properties": {
         "ProjectId": {
           "Ref": "ProjectId"

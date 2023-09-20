@@ -37,7 +37,7 @@ if [ -z "${MONGODB_ATLAS_ORG_ID+x}" ]; then
   fi
 fi
 
-OrgId="${MONGODB_ATLAS_ORG_ID}"
+orgId="${MONGODB_ATLAS_ORG_ID}"
 
 # create ProjectId
 projectName="${1}"

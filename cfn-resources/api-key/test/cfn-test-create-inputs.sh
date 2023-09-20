@@ -25,13 +25,19 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ];then
     echo "profile set to ${MONGODB_ATLAS_PROFILE}"
     profile=${MONGODB_ATLAS_PROFILE}
 fi
+
 # Check MONGODB_ATLAS_ORG_ID is set
 if [ -z "${MONGODB_ATLAS_ORG_ID+x}" ];then
-  echo "MONGODB_ATLAS_ORG_ID must be set"
+  if [ -z "${ATLAS_ORG_ID+x}" ];then
+    if
+    echo "MONGODB_ATLAS_ORG_ID or ATLAS_ORG_ID must be set"
+    exit 1
+  fi
+  MONGODB_ATLAS_ORG_ID = $ATLAS_ORG_ID
   exit 1
 fi
 
-orgId="${MONGODB_ATLAS_ORG_ID}"
+OrgId="${MONGODB_ATLAS_ORG_ID}"
 
 # create ProjectId
 projectName="${1}"

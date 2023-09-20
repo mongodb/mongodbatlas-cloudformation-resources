@@ -26,15 +26,15 @@ echo "profile set to ${MONGODB_ATLAS_PROFILE}"
 Profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-# Check MONGODB_ATLAS_ORG_ID is set
-if [ -z "${MONGODB_ATLAS_ORG_ID+x}" ];then
-  if [ -z "${ATLAS_ORG_ID+x}" ];then
-    if
+# Check if MONGODB_ATLAS_ORG_ID is set
+if [ -z "${MONGODB_ATLAS_ORG_ID+x}" ]; then
+  # Check if ATLAS_ORG_ID is set as a fallback
+  if [ -z "${ATLAS_ORG_ID+x}" ]; then
     echo "MONGODB_ATLAS_ORG_ID or ATLAS_ORG_ID must be set"
     exit 1
+  else
+    MONGODB_ATLAS_ORG_ID="$ATLAS_ORG_ID"
   fi
-  MONGODB_ATLAS_ORG_ID = $ATLAS_ORG_ID
-  exit 1
 fi
 
 OrgId="${MONGODB_ATLAS_ORG_ID}"

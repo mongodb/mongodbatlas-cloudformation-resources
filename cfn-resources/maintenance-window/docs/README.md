@@ -12,7 +12,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::MaintenanceWindow",
     "Properties" : {
-        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#autodeferonceenabled" title="AutoDeferOnceEnabled">AutoDeferOnceEnabled</a>" : <i>Boolean</i>,
         "<a href="#dayofweek" title="DayOfWeek">DayOfWeek</a>" : <i>Integer</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
@@ -27,7 +26,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::MaintenanceWindow
 Properties:
-    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#autodeferonceenabled" title="AutoDeferOnceEnabled">AutoDeferOnceEnabled</a>: <i>Boolean</i>
     <a href="#dayofweek" title="DayOfWeek">DayOfWeek</a>: <i>Integer</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
@@ -36,16 +34,6 @@ Properties:
 </pre>
 
 ## Properties
-
-#### Profile
-
-The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### AutoDeferOnceEnabled
 
@@ -113,4 +101,16 @@ _Required_: No
 _Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+## Return Values
+
+### Fn::GetAtt
+
+The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
+
+For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
+
+#### Profile
+
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
 

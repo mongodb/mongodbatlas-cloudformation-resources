@@ -381,7 +381,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Read project
 func getProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	var project *admin.Group
-	if currentModel.Name != nil && len(*currentModel.Name) > 0 {
+	if util.IsStringPresent(currentModel.Name) {
 		event, project, err = getProjectByName(currentModel.Name, client)
 		if err != nil {
 			return event, nil, err
@@ -474,7 +474,7 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 	// Set teams
 	var teams []ProjectTeam
 	for _, team := range teamsAssigned.Results {
-		if team.TeamId != nil && len(*team.TeamId) > 0 {
+		if util.IsStringPresent(team.TeamId) {
 			teams = append(teams, ProjectTeam{TeamId: team.TeamId, RoleNames: team.RoleNames})
 		}
 	}
@@ -488,10 +488,10 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newTeams []admin.TeamRole,
 	changedTeams []admin.TeamRole, removeTeams []admin.TeamRole) {
 	for _, nTeam := range currentTeams {
-		if nTeam.TeamId != nil && len(*nTeam.TeamId) > 0 {
+		if util.IsStringPresent(nTeam.TeamId) {
 			matched := false
 			for _, oTeam := range oTeams {
-				if nTeam.TeamId != nil && oTeam.TeamId != nil && *nTeam.TeamId == *oTeam.TeamId {
+				if util.AreStringPtrEqual(nTeam.TeamId, oTeam.TeamId) {
 					changedTeams = append(changedTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
 					matched = true
 					break
@@ -505,10 +505,10 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newT
 	}
 
 	for _, oTeam := range oTeams {
-		if oTeam.TeamId != nil && len(*oTeam.TeamId) > 0 {
+		if util.IsStringPresent(oTeam.TeamId) {
 			matched := false
 			for _, nTeam := range currentTeams {
-				if nTeam.TeamId != nil && oTeam.TeamId != nil && *nTeam.TeamId == *oTeam.TeamId {
+				if util.AreStringPtrEqual(nTeam.TeamId, oTeam.TeamId) {
 					matched = true
 					break
 				}
@@ -524,10 +524,10 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newT
 // Get difference in ApiKeys
 func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []admin.ApiKeyUserDetails) (newKeys, changedKeys, removeKeys []UpdateAPIKey) {
 	for _, nKey := range currentKeys {
-		if nKey.Key != nil && len(*nKey.Key) > 0 {
+		if util.IsStringPresent(nKey.Key) {
 			matched := false
 			for _, oKey := range oKeys {
-				if nKey.Key != nil && oKey.Id != nil && *nKey.Key == *oKey.Id {
+				if util.AreStringPtrEqual(nKey.Key, oKey.Id) {
 					changedKeys = append(changedKeys, UpdateAPIKey{Key: *nKey.Key, UpdatePayload: &admin.UpdateAtlasProjectApiKey{Roles: nKey.RoleNames}})
 					matched = true
 					break
@@ -541,10 +541,10 @@ func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []adm
 	}
 
 	for _, oKey := range oKeys {
-		if oKey.Id != nil && len(*oKey.Id) > 0 {
+		if util.IsStringPresent(oKey.Id) {
 			matched := false
 			for _, nKey := range currentKeys {
-				if nKey.Key != nil && *nKey.Key == *oKey.Id {
+				if util.AreStringPtrEqual(nKey.Key, oKey.Id) {
 					matched = true
 					break
 				}
@@ -552,7 +552,7 @@ func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []adm
 			if !matched {
 				for _, role := range oKey.Roles {
 					// Consider only current ProjectRoles
-					if role.GroupId != nil && *role.GroupId == groupID {
+					if util.AreStringPtrEqual(role.GroupId, &groupID) {
 						removeKeys = append(removeKeys, UpdateAPIKey{Key: *oKey.Id})
 					}
 				}
@@ -565,7 +565,7 @@ func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []adm
 func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	var newTeams []admin.TeamRole
 	for _, t := range teams {
-		if t.TeamId != nil && len(*t.TeamId) > 0 {
+		if util.IsStringPresent(t.TeamId) {
 			newTeams = append(newTeams, admin.TeamRole{TeamId: t.TeamId, RoleNames: t.RoleNames})
 		}
 	}

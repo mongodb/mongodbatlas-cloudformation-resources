@@ -398,3 +398,17 @@ func Int64PtrToIntPtr(i64 *int64) *int {
 	i := int(*i64)
 	return &i
 }
+
+func IsStringPresent(strPtr *string) bool {
+	return strPtr != nil && len(*strPtr) > 0
+}
+
+func AreStringPtrEqual(p1, p2 *string) bool {
+	if p1 == nil {
+		return p2 == nil
+	}
+	if p2 == nil {
+		return false
+	}
+	return *p1 == *p2
+}

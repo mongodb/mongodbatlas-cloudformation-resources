@@ -389,3 +389,26 @@ func TimePtrToStringPtr(t *time.Time) *string {
 func TimeToString(t time.Time) string {
 	return t.UTC().Format(time.RFC3339Nano)
 }
+
+func Int64PtrToIntPtr(i64 *int64) *int {
+	if i64 == nil {
+		return nil
+	}
+
+	i := int(*i64)
+	return &i
+}
+
+func IsStringPresent(strPtr *string) bool {
+	return strPtr != nil && len(*strPtr) > 0
+}
+
+func AreStringPtrEqual(p1, p2 *string) bool {
+	if p1 == nil {
+		return p2 == nil
+	}
+	if p2 == nil {
+		return false
+	}
+	return *p1 == *p2
+}

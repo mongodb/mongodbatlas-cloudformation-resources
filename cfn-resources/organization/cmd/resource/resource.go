@@ -352,7 +352,7 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 
 func setAPIkeyInputs(currentModel *Model) (apiKeyInput *atlasSDK.CreateAtlasOrganizationApiKey) {
 	apiKeyInput = &atlasSDK.CreateAtlasOrganizationApiKey{
-		Desc:  *currentModel.APIKey.Description,
+		Desc:  util.SafeString(currentModel.APIKey.Description),
 		Roles: currentModel.APIKey.Roles,
 	}
 	return apiKeyInput

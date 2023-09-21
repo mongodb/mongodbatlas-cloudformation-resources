@@ -21,7 +21,7 @@ This file contains the steps to follow to test any changes to the CFN resources.
 ```
 
    - Open a new terminal session
-   - Generate the cfn test inputs file and required Atlas resources. Each resource may require specific environment variables to be defined, you will find this under `cfn-resources/[resource-folder]/test/cfn-test-create-inputs.sh`
+   - Generate the cfn test inputs file and required Atlas resources. Each resource may require specific environment variables to be defined, you will find this under `cfn-resources/[resource-folder]/test/cfn-test-create-inputs.sh`. Generated input files also assume you have a `default` profile defined which will be used.
 ```bash
    ./../../cfn-testing-helper.sh <resource-folder>
 ```

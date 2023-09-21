@@ -84,7 +84,7 @@ private_endpoint_id=""
 if [ "$(echo "$output" | jq -e '. | length == 0')" = true ]; then
   echo "Empty"
   # Execute the create command if the output is empty
-  create_output=$(atlas privateEndpoints aws create --region us-east-1 --projectId "${projectId}" --output json)
+  create_output=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json)
   private_endpoint_id=$(echo "$create_output" | jq -r '.id')
   echo "Created endpoint with ID: $private_endpoint_id"
 

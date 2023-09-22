@@ -43,8 +43,6 @@ type NotificationView struct {
 	DelayMin                 *int     `json:",omitempty"`
 	EmailAddress             *string  `json:",omitempty"`
 	EmailEnabled             *bool    `json:",omitempty"`
-	FlowName                 *string  `json:",omitempty"`
-	FlowdockApiToken         *string  `json:",omitempty"`
 	IntervalMin              *float64 `json:",omitempty"`
 	MicrosoftTeamsWebhookUrl *string  `json:",omitempty"`
 	MobileNumber             *string  `json:",omitempty"`

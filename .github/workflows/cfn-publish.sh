@@ -90,6 +90,11 @@ for ResourceName in "${ResourceNames[@]}"; do
           ;;
 
           "organization")
+          # currently multi-org-payment-method is setup only in dev atlas account
+          ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_DEV}"
+          ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_DEV}"
+          ATLAS_ORG_ID="${ATLAS_ORG_ID_DEV}"
+
           jq --arg MONGODB_ATLAS_ORG_OWNER_ID "${ATLAS_ORG_OWNER_ID}" \
                '.MONGODB_ATLAS_ORG_OWNER_ID |= $MONGODB_ATLAS_ORG_OWNER_ID' \
                 "$(dirname "$0")/templates/organization.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/templates/organization-temp.json"

@@ -1,0 +1,16 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "",
+    "ClusterName": "",
+    "OutageFilters": [
+      {
+        "CloudProvider": "AWS",
+        "RegionName": "US-EAST-1",
+        "Type": "REGION"
+      }
+    ]
+ ,
+  "Profile": ""
+  },
+  "previousResourceState": {}
+}

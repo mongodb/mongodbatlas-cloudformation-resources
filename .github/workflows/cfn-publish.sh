@@ -189,7 +189,8 @@ aws ssm start-automation-execution \
     --document-version ${DocumentVersion} \
     --parameters "${ParamsJsonContent}" \
     --target-locations "${LocationsJsonContent}" \
-    --region "${DocumentRegion}"
+    --region "${DocumentRegion}" \
+    --timeout-seconds 7200
 echo "automation document started successfully for ${ResourceName} resource"
 
 done

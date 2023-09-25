@@ -210,22 +210,20 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	groupID := *currentModel.ProjectId
+	groupId := *currentModel.ProjectId
+	databaseName := *currentModel.DatabaseName
 	username := *currentModel.Username
-	dbName := *currentModel.DatabaseName
-
-	resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupId, databaseName, username).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
+	cfnid := fmt.Sprintf("%s-%s", username, groupId)
 	currentModel.UserCFNIdentifier = &cfnid
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -241,11 +239,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -254,52 +251,48 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	dbUserModels := make([]interface{}, 0)
 
-	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
+	databaseUsers, resp, err := client.AtlasV2.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if len(databaseUsers) > 0 {
-		for i := range databaseUsers {
-			var model Model
+	for _, databaseUser := range databaseUsers.Results {
+		var model Model
 
-			databaseUser := databaseUsers[i]
-			model.DatabaseName = &databaseUser.DatabaseName
-			model.LdapAuthType = &databaseUser.LDAPAuthType
-			model.X509Type = &databaseUser.X509Type
-			model.Username = &databaseUser.Username
-			model.ProjectId = currentModel.ProjectId
-			var roles []RoleDefinition
+		model.DatabaseName = &databaseUser.DatabaseName
+		model.LdapAuthType = databaseUser.LdapAuthType
+		model.X509Type = databaseUser.X509Type
+		model.Username = &databaseUser.Username
+		model.ProjectId = currentModel.ProjectId
+		var roles []RoleDefinition
 
-			for i := range databaseUser.Roles {
-				r := databaseUser.Roles[i]
-				role := RoleDefinition{
-					CollectionName: &r.CollectionName,
-					DatabaseName:   &r.DatabaseName,
-					RoleName:       &r.RoleName,
-				}
-
-				roles = append(roles, role)
-			}
-			model.Roles = roles
-
-			var labels []LabelDefinition
-
-			for i := range databaseUser.Labels {
-				l := databaseUser.Labels[i]
-				label := LabelDefinition{
-					Key:   &l.Key,
-					Value: &l.Value,
-				}
-				labels = append(labels, label)
+		for i := range databaseUser.Roles {
+			r := databaseUser.Roles[i]
+			role := RoleDefinition{
+				CollectionName: r.CollectionName,
+				DatabaseName:   &r.DatabaseName,
+				RoleName:       &r.RoleName,
 			}
 
-			model.Labels = labels
-
-			model.UserCFNIdentifier = aws.String(fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID))
-			dbUserModels = append(dbUserModels, model)
+			roles = append(roles, role)
 		}
+		model.Roles = roles
+
+		var labels []LabelDefinition
+
+		for i := range databaseUser.Labels {
+			l := databaseUser.Labels[i]
+			label := LabelDefinition{
+				Key:   l.Key,
+				Value: l.Value,
+			}
+			labels = append(labels, label)
+		}
+
+		model.Labels = labels
+
+		model.UserCFNIdentifier = aws.String(fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupId))
+		dbUserModels = append(dbUserModels, model)
 	}
 
 	return handler.ProgressEvent{

@@ -54,11 +54,4 @@ jq --arg ClusterName "$ClusterName" \
 	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg group_id "$projectId" \
-	--arg ClusterName "$ClusterName" \
-	--arg SnapshotId "$SnapshotId" \
-  --arg profile "$profile" \
-	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
 ls -l inputs

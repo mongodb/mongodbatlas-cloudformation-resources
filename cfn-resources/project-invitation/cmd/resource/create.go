@@ -59,6 +59,6 @@ func CreateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   invitationApiRequestToModel(currentModel, invitation),
+		ResourceModel:   invitationAPIRequestToModel(currentModel, invitation),
 	}, nil
 }

@@ -27,7 +27,6 @@ import (
 )
 
 func ListOp(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
 	setup()
 
 	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
@@ -59,7 +58,7 @@ func ListOp(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	var invites []interface{}
 	for i := range invitations {
-		invite := invitationApiRequestToModel(currentModel, &invitations[i])
+		invite := invitationAPIRequestToModel(currentModel, &invitations[i])
 		invites = append(invites, invite)
 	}
 

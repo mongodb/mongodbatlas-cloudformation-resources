@@ -57,6 +57,6 @@ func ReadOp(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   invitationApiRequestToModel(currentModel, invitation),
+		ResourceModel:   invitationAPIRequestToModel(currentModel, invitation),
 	}, nil
 }

@@ -22,7 +22,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Username}
@@ -51,21 +50,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return ListOp(req, prevModel, currentModel)
 }
 
-func invitationToModel(currentModel *Model, invitation *mongodbatlas.Invitation) Model {
-	out := Model{
-		Profile:         currentModel.Profile,
-		ProjectId:       currentModel.ProjectId,
-		Username:        &invitation.Username,
-		Id:              &invitation.ID,
-		Roles:           invitation.Roles,
-		ExpiresAt:       &invitation.ExpiresAt,
-		CreatedAt:       &invitation.CreatedAt,
-		InviterUsername: &invitation.InviterUsername,
-	}
-
-	return out
-}
-
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
@@ -88,7 +72,7 @@ func validateProjectInvitationAlreadyAccepted(ctx context.Context, client *util.
 	return false, nil
 }
 
-func invitationApiRequestToModel(currentModel *Model, invitation *admin.GroupInvitation) Model {
+func invitationAPIRequestToModel(currentModel *Model, invitation *admin.GroupInvitation) Model {
 	out := Model{
 		Profile:         currentModel.Profile,
 		ProjectId:       currentModel.ProjectId,

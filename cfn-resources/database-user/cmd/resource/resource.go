@@ -96,11 +96,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -108,22 +107,21 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
-	databaseUser, resp, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
+	databaseUser, resp2, err := client.AtlasV2.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp2), nil
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
 
 	if currentModel.LdapAuthType != nil {
-		currentModel.LdapAuthType = &databaseUser.LDAPAuthType
+		currentModel.LdapAuthType = databaseUser.LdapAuthType
 	}
 	if currentModel.AWSIAMType != nil {
-		currentModel.AWSIAMType = &databaseUser.AWSIAMType
+		currentModel.AWSIAMType = databaseUser.AwsIAMType
 	}
 	if currentModel.X509Type != nil {
-		currentModel.X509Type = &databaseUser.X509Type
+		currentModel.X509Type = databaseUser.X509Type
 	}
 	currentModel.Username = &databaseUser.Username
 	_, _ = logger.Debugf("databaseUser:%+v", databaseUser)
@@ -132,7 +130,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range databaseUser.Roles {
 		r := databaseUser.Roles[i]
 		role := RoleDefinition{
-			CollectionName: &r.CollectionName,
+			CollectionName: r.CollectionName,
 			DatabaseName:   &r.DatabaseName,
 			RoleName:       &r.RoleName,
 		}
@@ -146,8 +144,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range databaseUser.Labels {
 		l := databaseUser.Labels[i]
 		label := LabelDefinition{
-			Key:   &l.Key,
-			Value: &l.Value,
+			Key:   l.Key,
+			Value: l.Value,
 		}
 
 		labels = append(labels, label)

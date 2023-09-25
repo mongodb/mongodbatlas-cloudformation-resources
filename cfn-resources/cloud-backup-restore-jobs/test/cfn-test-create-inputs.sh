@@ -47,11 +47,11 @@ echo -e "Created Cluster \"${ClusterName}\""
 SnapshotId=$(atlas backup snapshots create "${ClusterName}" --projectId "${projectId}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
 sleep 300
 
-jq --arg ClusterName "$ClusterName" \
+jq --arg cluster_name "$ClusterName" \
 	--arg group_id "$projectId" \
 	--arg SnapshotId "$SnapshotId" \
 	--arg profile "$profile" \
-	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .InstanceName?|=$cluster_name' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 ls -l inputs

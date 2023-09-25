@@ -76,8 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -150,8 +149,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	currentModel.Labels = labels
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         constants.ReadComplete,
@@ -189,8 +188,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -223,8 +221,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", username, groupId)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
@@ -256,14 +254,16 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	for _, databaseUser := range databaseUsers.Results {
-		var model Model
+	for i := range databaseUsers.Results {
+		databaseUser := &databaseUsers.Results[i]
+		var model = Model{
+			DatabaseName: &databaseUser.DatabaseName,
+			LdapAuthType: databaseUser.LdapAuthType,
+			X509Type:     databaseUser.X509Type,
+			Username:     &databaseUser.Username,
+			ProjectId:    currentModel.ProjectId,
+		}
 
-		model.DatabaseName = &databaseUser.DatabaseName
-		model.LdapAuthType = databaseUser.LdapAuthType
-		model.X509Type = databaseUser.X509Type
-		model.Username = &databaseUser.Username
-		model.ProjectId = currentModel.ProjectId
 		var roles []RoleDefinition
 
 		for i := range databaseUser.Roles {
@@ -290,8 +290,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 
 		model.Labels = labels
-
-		model.UserCFNIdentifier = aws.String(fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupId))
+		updateUserCFNIdentifier(&model)
 		dbUserModels = append(dbUserModels, model)
 	}
 
@@ -382,4 +381,9 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 	}
 
 	return user, nil
+}
+
+func updateUserCFNIdentifier(model *Model) {
+	cfnid := fmt.Sprintf("%s-%s", *model.Username, *model.ProjectId)
+	model.UserCFNIdentifier = &cfnid
 }

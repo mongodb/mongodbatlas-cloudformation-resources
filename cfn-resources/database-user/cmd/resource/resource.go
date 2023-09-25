@@ -28,7 +28,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
@@ -54,7 +53,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -63,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	dbUser, err := setModel2(currentModel)
+	dbUser, err := setModel(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -168,11 +166,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -187,11 +184,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbUser)
-
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.UpdateDatabaseUser(context.Background(), groupID, *currentModel.DatabaseName, *currentModel.Username, dbUser).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
@@ -314,95 +309,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
-	user := &mongodbatlas.DatabaseUser{
-		Roles:           roles,
-		GroupID:         groupID,
-		Username:        *currentModel.Username,
-		DatabaseName:    *currentModel.DatabaseName,
-		Labels:          labels,
-		Scopes:          scopes,
-		LDAPAuthType:    *currentModel.LdapAuthType,
-		AWSIAMType:      *currentModel.AWSIAMType,
-		X509Type:        *currentModel.X509Type,
-		DeleteAfterDate: *currentModel.DeleteAfterDate,
-	}
-
-	if currentModel.Password != nil {
-		user.Password = *currentModel.Password
-	}
-
-	return user
-}
-
-func setModel(currentModel *Model) (*mongodbatlas.DatabaseUser, error) {
-	var roles []mongodbatlas.Role
-	for i := range currentModel.Roles {
-		r := currentModel.Roles[i]
-		role := mongodbatlas.Role{}
-		if r.CollectionName != nil {
-			role.CollectionName = *r.CollectionName
-		}
-		if r.DatabaseName != nil {
-			role.DatabaseName = *r.DatabaseName
-		}
-		if r.RoleName != nil {
-			role.RoleName = *r.RoleName
-		}
-		roles = append(roles, role)
-	}
-
-	var labels []mongodbatlas.Label
-	for i := range currentModel.Labels {
-		l := currentModel.Labels[i]
-		label := mongodbatlas.Label{
-			Key:   *l.Key,
-			Value: *l.Value,
-		}
-		labels = append(labels, label)
-	}
-
-	var scopes []mongodbatlas.Scope
-	for i := range currentModel.Scopes {
-		s := currentModel.Scopes[i]
-		scope := mongodbatlas.Scope{
-			Name: *s.Name,
-			Type: *s.Type,
-		}
-		scopes = append(scopes, scope)
-	}
-
-	groupID := *currentModel.ProjectId
-
-	none := "NONE"
-	if currentModel.LdapAuthType == nil {
-		currentModel.LdapAuthType = &none
-	}
-	if currentModel.AWSIAMType == nil {
-		currentModel.AWSIAMType = &none
-	}
-	if currentModel.X509Type == nil {
-		currentModel.X509Type = &none
-	}
-
-	if currentModel.Password == nil {
-		if (*currentModel.LdapAuthType == none) && (*currentModel.AWSIAMType == none) && (*currentModel.X509Type == none) {
-			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509 is not provided")
-			return nil, err
-		}
-		currentModel.Password = aws.String("")
-	}
-
-	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
-		currentModel.DeleteAfterDate = aws.String("")
-	}
-
-	user := getDBUser(roles, groupID, currentModel, labels, scopes)
-
-	return user, nil
-}
-
-func setModel2(currentModel *Model) (*admin.CloudDatabaseUser, error) {
+func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 	var roles []admin.DatabaseUserRole
 	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]

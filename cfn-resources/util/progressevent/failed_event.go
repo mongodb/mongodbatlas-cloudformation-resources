@@ -15,6 +15,8 @@
 package progressevents
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -22,6 +24,10 @@ import (
 )
 
 func getHandlerErrorCode(response *http.Response) string {
+	if response == nil {
+		return cloudformation.HandlerErrorCodeInternalFailure
+	}
+
 	switch response.StatusCode {
 	case http.StatusBadRequest:
 		return cloudformation.HandlerErrorCodeInvalidRequest
@@ -37,6 +43,10 @@ func getHandlerErrorCode(response *http.Response) string {
 }
 
 func GetFailedEventByResponse(message string, response *http.Response) handler.ProgressEvent {
+	print("\n ANDREA \n")
+	res2B, _ := json.Marshal(response)
+
+	fmt.Println(string(res2B))
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          message,

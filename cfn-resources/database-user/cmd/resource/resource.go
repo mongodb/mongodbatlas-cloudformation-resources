@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -74,7 +74,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, res, err := client.DatabaseUsers.Create(context.Background(), groupID, dbUser)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			res.Response), nil
 	}
 
@@ -110,7 +110,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	dbName := *currentModel.DatabaseName
 	databaseUser, resp, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
 	}
 
@@ -158,7 +158,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.UserCFNIdentifier = &cfnid
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
+		Message:         constants.ReadComplete,
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -192,7 +192,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbUser)
 
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
 	}
 
@@ -228,7 +228,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
 	}
 
@@ -263,7 +263,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp.Response), nil
 	}
 

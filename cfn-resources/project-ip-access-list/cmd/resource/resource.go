@@ -338,6 +338,12 @@ func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressE
 	projectID := *model.ProjectId
 
 	if isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, model); isEntryAlreadyInAccessList || err != nil {
+		if err != nil {
+			return handler.ProgressEvent{
+				Message:          fmt.Sprintf("Error validating entries: %s", err.Error()),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
+		}
 		return handler.ProgressEvent{
 			Message:          "Entry already exists in the access list",
 			OperationStatus:  handler.Failed,

@@ -382,12 +382,27 @@ func TimePtrToStringPtr(t *time.Time) *string {
 	return &res
 }
 
-// TimeToString returns a RFC3339 date time string format.
+// TimeToString returns a RFC3339 (nano) date time string format.
 // The resulting format is identical to the format returned by Atlas API, documented as ISO 8601 timestamp format in UTC.
 // It also returns decimals in seconds (up to nanoseconds) if available.
 // Example formats: "2023-07-18T16:12:23Z", "2023-07-18T16:12:23.456Z"
 func TimeToString(t time.Time) string {
 	return t.UTC().Format(time.RFC3339Nano)
+}
+
+// StringToTime parses a string with RFC3339 (nano) format and returns time.Time.
+// It's the opposite function to TimeToString.
+// Returns nil if date can't be parsed.
+func StringToTime(p *string) *time.Time {
+	if !IsStringPresent(p) {
+		return nil
+	}
+	t, err := time.Parse(time.RFC3339Nano, *p)
+	if err != nil {
+		return nil
+	}
+	t = t.UTC()
+	return &t
 }
 
 func Int64PtrToIntPtr(i64 *int64) *int {

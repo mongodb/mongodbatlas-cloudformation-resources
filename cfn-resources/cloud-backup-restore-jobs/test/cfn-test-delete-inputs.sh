@@ -13,7 +13,7 @@ function usage {
 }
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
-clusterName=$(jq -r '.ClusterName' ./inputs/inputs_1_create.json)
+clusterName=$(jq -r '.InstanceName' ./inputs/inputs_1_create.json)
 
 # delete cluster
 if atlas clusters delete "$clusterName" --projectId "${projectId}" --force

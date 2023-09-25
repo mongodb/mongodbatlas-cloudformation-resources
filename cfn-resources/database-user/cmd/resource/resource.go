@@ -213,10 +213,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	groupId := *currentModel.ProjectId
+	groupID := *currentModel.ProjectId
 	databaseName := *currentModel.DatabaseName
 	username := *currentModel.Username
-	_, resp, err := client.AtlasV2.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupId, databaseName, username).Execute()
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupID, databaseName, username).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}

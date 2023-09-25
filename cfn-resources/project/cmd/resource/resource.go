@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
@@ -87,7 +87,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if err != nil {
 		_, _ = logger.Debugf("Create - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
 			res), nil
 	}
 
@@ -99,7 +99,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Assign Key Error: %s", err)
-				return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error while Assigning Key to project : %s", err.Error()),
+				return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error while Assigning Key to project : %s", err.Error()),
 					res), nil
 			}
 		}
@@ -111,7 +111,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _, err := atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), *project.Id, &teams).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("AddTeamsToProject Error: %s", err)
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error while adding teams to project : %s", err.Error()),
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error while adding teams to project : %s", err.Error()),
 				res), nil
 		}
 	}
@@ -154,7 +154,7 @@ func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handl
 		_, res, err := atlasV2.ProjectsApi.UpdateProjectSettings(context.Background(), *currentModel.Id, &projectSettings).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("UpdateProjectSettings Error: %s", err)
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
 				res), err
 		}
 	}
@@ -362,7 +362,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	_, res, err := atlasV2.ProjectsApi.DeleteProject(context.Background(), id).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("####error deleting project with id(%s): %s", id, err)
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
 			res), nil
 	}
 
@@ -422,11 +422,11 @@ func getProjectByName(name *string, client *admin.APIClient) (event handler.Prog
 	project, res, err := client.ProjectsApi.GetProjectByName(context.Background(), *name).Execute()
 	if err != nil {
 		if res.StatusCode == 401 { // cfn test
-			return progressevents.GetFailedEventByCode(
+			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				cloudformation.HandlerErrorCodeNotFound), nil, err
 		}
-		return progressevents.GetFailedEventByResponse(err.Error(),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), project, err
 	}
 	return handler.ProgressEvent{}, project, err
@@ -436,11 +436,11 @@ func getProjectByID(id *string, atlasV2 *admin.APIClient) (event handler.Progres
 	project, res, err := atlasV2.ProjectsApi.GetProject(context.Background(), *id).Execute()
 	if err != nil {
 		if res.StatusCode == 401 { // cfn test
-			return progressevents.GetFailedEventByCode(
+			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by ID. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				cloudformation.HandlerErrorCodeNotFound), nil, err
 		}
-		return progressevents.GetFailedEventByResponse(err.Error(),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), project, err
 	}
 	return handler.ProgressEvent{}, project, err
@@ -451,14 +451,14 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 	teamsAssigned, res, err := atlasV2.TeamsApi.ListProjectTeams(context.Background(), id).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
-		return progressevents.GetFailedEventByResponse(err.Error(),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), nil, err
 	}
 
 	projectSettings, _, err := atlasV2.ProjectsApi.GetProjectSettings(context.Background(), id).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
-		return progressevents.GetFailedEventByResponse(err.Error(),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), nil, err
 	}
 	// Set projectSettings

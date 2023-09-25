@@ -27,6 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -57,12 +58,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	dbUser, err := setModel(currentModel)
+	dbUser, err := setModel2(currentModel)
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -72,10 +73,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, res, err := client.DatabaseUsers.Create(context.Background(), groupID, dbUser)
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.CreateDatabaseUser(context.Background(), groupID, dbUser).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
@@ -107,9 +107,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
-	databaseUser, resp2, err := client.AtlasV2.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
+	databaseUser, resp, err := client.AtlasV2.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp2), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
@@ -398,6 +398,88 @@ func setModel(currentModel *Model) (*mongodbatlas.DatabaseUser, error) {
 	}
 
 	user := getDBUser(roles, groupID, currentModel, labels, scopes)
+
+	return user, nil
+}
+
+func setModel2(currentModel *Model) (*admin.CloudDatabaseUser, error) {
+	var roles []admin.DatabaseUserRole
+	for i := range currentModel.Roles {
+		r := currentModel.Roles[i]
+		role := admin.DatabaseUserRole{}
+		if r.CollectionName != nil {
+			role.CollectionName = r.CollectionName
+		}
+		if r.DatabaseName != nil {
+			role.DatabaseName = *r.DatabaseName
+		}
+		if r.RoleName != nil {
+			role.RoleName = *r.RoleName
+		}
+		roles = append(roles, role)
+	}
+
+	var labels []admin.ComponentLabel
+	for i := range currentModel.Labels {
+		l := currentModel.Labels[i]
+		label := admin.ComponentLabel{
+			Key:   l.Key,
+			Value: l.Value,
+		}
+		labels = append(labels, label)
+	}
+
+	var scopes []admin.UserScope
+	for i := range currentModel.Scopes {
+		s := currentModel.Scopes[i]
+		scope := admin.UserScope{
+			Name: *s.Name,
+			Type: *s.Type,
+		}
+		scopes = append(scopes, scope)
+	}
+
+	groupID := *currentModel.ProjectId
+
+	none := "NONE"
+	if currentModel.LdapAuthType == nil {
+		currentModel.LdapAuthType = &none
+	}
+	if currentModel.AWSIAMType == nil {
+		currentModel.AWSIAMType = &none
+	}
+	if currentModel.X509Type == nil {
+		currentModel.X509Type = &none
+	}
+
+	if currentModel.Password == nil {
+		if (*currentModel.LdapAuthType == none) && (*currentModel.AWSIAMType == none) && (*currentModel.X509Type == none) {
+			err := fmt.Errorf("password cannot be empty if not LDAP or IAM or X509 is not provided")
+			return nil, err
+		}
+		currentModel.Password = aws.String("")
+	}
+
+	if (currentModel.X509Type != &none) || (currentModel.DeleteAfterDate == nil) {
+		currentModel.DeleteAfterDate = aws.String("")
+	}
+
+	user := &admin.CloudDatabaseUser{
+		Roles:           roles,
+		GroupId:         groupID,
+		Username:        *currentModel.Username,
+		DatabaseName:    *currentModel.DatabaseName,
+		Labels:          labels,
+		Scopes:          scopes,
+		LdapAuthType:    currentModel.LdapAuthType,
+		AwsIAMType:      currentModel.AWSIAMType,
+		X509Type:        currentModel.X509Type,
+		DeleteAfterDate: util.StringToTime(currentModel.DeleteAfterDate),
+	}
+
+	if currentModel.Password != nil {
+		user.Password = currentModel.Password
+	}
 
 	return user, nil
 }

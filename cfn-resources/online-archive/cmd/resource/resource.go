@@ -47,15 +47,11 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-online-archive")
 }
 
-func validateModel(fields []string, model interface{}) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
-
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+
+	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -102,63 +98,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func mapToArchivePayload(currentModel *Model) (mongodbatlas.OnlineArchive, *handler.ProgressEvent) {
-	requestInput := mongodbatlas.OnlineArchive{
-		DBName:   *currentModel.DbName,
-		CollName: *currentModel.CollName,
-	}
-	criteria, errHandler := mapCriteria(currentModel)
-	if errHandler != nil {
-		return requestInput, errHandler
-	}
-
-	requestInput.PartitionFields = mapPartitionFields(currentModel)
-
-	requestInput.Criteria = criteria
-	return requestInput, nil
-}
-
-func mapCriteria(currentModel *Model) (*mongodbatlas.OnlineArchiveCriteria, *handler.ProgressEvent) {
-	criteriaModel := *currentModel.Criteria
-	criteriaInput := &mongodbatlas.OnlineArchiveCriteria{
-		Type:            aws.StringValue(criteriaModel.Type),
-		DateField:       aws.StringValue(criteriaModel.DateField),
-		ExpireAfterDays: aws.Float64(float64(aws.IntValue(criteriaModel.ExpireAfterDays))),
-		DateFormat:      aws.StringValue(criteriaModel.DateFormat),
-	}
-	if criteriaInput.Type == "DATE" {
-		requiredInputs := requiredCriteriaType[criteriaInput.Type]
-		criteriaInputDate := validateModel(requiredInputs, criteriaModel)
-		if criteriaInputDate != nil {
-			return nil, criteriaInputDate
-		}
-	}
-	if criteriaInput.Type == "CUSTOM" {
-		criteriaInput.Query = aws.StringValue(criteriaModel.Query)
-	}
-	return criteriaInput, nil
-}
-
-func mapPartitionFields(currentModel *Model) []*mongodbatlas.PartitionFields {
-	partitionFields := make([]*mongodbatlas.PartitionFields, len(currentModel.PartitionFields))
-
-	for i := range currentModel.PartitionFields {
-		partitionField := mongodbatlas.PartitionFields{}
-
-		if currentModel.PartitionFields[i].FieldName != nil {
-			partitionField.FieldName = *currentModel.PartitionFields[i].FieldName
-		}
-
-		if currentModel.PartitionFields[i].Order != nil {
-			partitionField.Order = currentModel.PartitionFields[i].Order
-		}
-
-		partitionFields[i] = &partitionField
-	}
-
-	return partitionFields
-}
-
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if currentModel.ArchiveId == nil {
@@ -167,9 +106,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Message:          "no Id found in currentModel",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+
+	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -208,9 +147,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          "no Id found in currentModel",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+
+	if err := validator.ValidateModel(UpdateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -250,9 +189,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+
+	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -297,9 +236,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+
+	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -334,6 +273,63 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		ResourceModels:  resources,
 	}, nil
+}
+
+func mapToArchivePayload(currentModel *Model) (mongodbatlas.OnlineArchive, *handler.ProgressEvent) {
+	requestInput := mongodbatlas.OnlineArchive{
+		DBName:   *currentModel.DbName,
+		CollName: *currentModel.CollName,
+	}
+	criteria, errHandler := mapCriteria(currentModel)
+	if errHandler != nil {
+		return requestInput, errHandler
+	}
+
+	requestInput.PartitionFields = mapPartitionFields(currentModel)
+
+	requestInput.Criteria = criteria
+	return requestInput, nil
+}
+
+func mapCriteria(currentModel *Model) (*mongodbatlas.OnlineArchiveCriteria, *handler.ProgressEvent) {
+	criteriaModel := *currentModel.Criteria
+	criteriaInput := &mongodbatlas.OnlineArchiveCriteria{
+		Type:            aws.StringValue(criteriaModel.Type),
+		DateField:       aws.StringValue(criteriaModel.DateField),
+		ExpireAfterDays: aws.Float64(float64(aws.IntValue(criteriaModel.ExpireAfterDays))),
+		DateFormat:      aws.StringValue(criteriaModel.DateFormat),
+	}
+	if criteriaInput.Type == "DATE" {
+		requiredInputs := requiredCriteriaType[criteriaInput.Type]
+		criteriaInputDate := validator.ValidateModel(requiredInputs, criteriaModel)
+		if criteriaInputDate != nil {
+			return nil, criteriaInputDate
+		}
+	}
+	if criteriaInput.Type == "CUSTOM" {
+		criteriaInput.Query = aws.StringValue(criteriaModel.Query)
+	}
+	return criteriaInput, nil
+}
+
+func mapPartitionFields(currentModel *Model) []*mongodbatlas.PartitionFields {
+	partitionFields := make([]*mongodbatlas.PartitionFields, len(currentModel.PartitionFields))
+
+	for i := range currentModel.PartitionFields {
+		partitionField := mongodbatlas.PartitionFields{}
+
+		if currentModel.PartitionFields[i].FieldName != nil {
+			partitionField.FieldName = *currentModel.PartitionFields[i].FieldName
+		}
+
+		if currentModel.PartitionFields[i].Order != nil {
+			partitionField.Order = currentModel.PartitionFields[i].Order
+		}
+
+		partitionFields[i] = &partitionField
+	}
+
+	return partitionFields
 }
 
 // Waits for the terminal stage from an intermediate stage

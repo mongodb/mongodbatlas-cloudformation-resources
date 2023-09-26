@@ -153,14 +153,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errHandler != nil {
 		return *errHandler, nil
 	}
-	a, _ := ArchiveExists2(context.Background(), client, currentModel)
-	if *a.State == "DELETED" {
+	ctx := context.Background()
+	if a, _ := ArchiveExists2(ctx, client, currentModel); *a.State == "DELETED" {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
-	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &inputRequest).Execute()
-
-	//	UpdateOnlineArchive(ctx context.Context, groupId string, archiveId string, clusterName string, backupOnlineArchive *BackupOnlineArchive) UpdateOnlineArchiveApiRequest
-
+	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &inputRequest).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -178,18 +175,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
-
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 	ctx := context.Background()
@@ -197,20 +190,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(archiveID)
 		currentModel.ArchiveId = &id
-		return validateProgress(ctx, client, currentModel, "PENDING")
+		return validateProgress2(ctx, client, currentModel, "PENDING")
 	}
 
-	a, _ := ArchiveExists(context.Background(), client, currentModel)
-	if a.State == "DELETED" {
+	if a, _ := ArchiveExists2(ctx, client, currentModel); *a.State == "DELETED" {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 
-	res, err := client.OnlineArchives.Delete(ctx, *currentModel.ProjectId,
-		*currentModel.ClusterName, *currentModel.ArchiveId)
+	_, resp, err := client.AtlasV2.OnlineArchiveApi.DeleteOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
-		_, _ = logger.Debugf("Error deleting archive: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.InProgress,
 		Message:         "Create Complete",

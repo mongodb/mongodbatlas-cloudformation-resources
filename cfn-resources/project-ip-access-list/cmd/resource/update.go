@@ -22,7 +22,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func UpdateOp(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil

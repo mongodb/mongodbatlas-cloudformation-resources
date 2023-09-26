@@ -26,7 +26,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func CreateOp(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {

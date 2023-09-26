@@ -21,7 +21,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func DeleteOp(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil

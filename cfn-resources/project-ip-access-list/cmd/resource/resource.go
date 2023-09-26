@@ -20,15 +20,12 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 func setup() {
@@ -44,89 +41,6 @@ var ListRequiredFields = []string{constants.ProjectID}
 // function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
-}
-
-// Create handles the Create event from the Cloudformation service.
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return CreateOp(req, prevModel, currentModel)
-}
-
-// Read handles the Read event from the Cloudformation service.
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return ReadOp(req, prevModel, currentModel)
-}
-
-// Update handles the Update event from the Cloudformation service.
-// Logic: Atlas does not provide an endpoint to update a single entry in the accesslist.
-// As a result, we delete all the entries in the current model + previous model
-// and then create all the entries in the current model.
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return UpdateOp(req, prevModel, currentModel)
-}
-
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return DeleteOp(req, prevModel, currentModel)
-}
-
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	var pageNum, itemsPerPage int
-	var includeCount bool
-
-	if currentModel.ListOptions != nil {
-		if currentModel.ListOptions.PageNum != nil {
-			pageNum = *currentModel.ListOptions.PageNum
-		}
-		if currentModel.ListOptions.IncludeCount != nil {
-			includeCount = *currentModel.ListOptions.IncludeCount
-		}
-		if currentModel.ListOptions.ItemsPerPage != nil {
-			itemsPerPage = *currentModel.ListOptions.ItemsPerPage
-		}
-	}
-
-	listOptions := &mongodbatlas.ListOptions{
-		PageNum:      pageNum,
-		IncludeCount: includeCount,
-		ItemsPerPage: itemsPerPage,
-	}
-
-	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *currentModel.ProjectId, listOptions)
-	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
-	}
-
-	mm := make([]AccessListDefinition, 0)
-	for i := range result.Results {
-		var m AccessListDefinition
-		m.completeByConnection(result.Results[i])
-		mm = append(mm, m)
-	}
-	currentModel.AccessList = mm
-	// create list with 1
-	models := []interface{}{}
-	models = append(models, currentModel)
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "List Complete",
-		ResourceModels:  models,
-	}, nil
 }
 
 func newPaginatedNetworkAccess(model *Model) (*admin.PaginatedNetworkAccess, error) {
@@ -296,9 +210,9 @@ func newAccessListMap(accessList []admin.NetworkPermissionEntry) map[string]bool
 	return m
 }
 
-func (m *AccessListDefinition) completeByConnection(c mongodbatlas.ProjectIPAccessList) {
-	m.IPAddress = &c.IPAddress
-	m.CIDRBlock = &c.CIDRBlock
-	m.Comment = &c.Comment
-	m.AwsSecurityGroup = &c.AwsSecurityGroup
+func (m *AccessListDefinition) completeByConnection(c admin.NetworkPermissionEntry) {
+	m.IPAddress = c.IpAddress
+	m.CIDRBlock = c.CidrBlock
+	m.Comment = c.Comment
+	m.AwsSecurityGroup = c.AwsSecurityGroup
 }

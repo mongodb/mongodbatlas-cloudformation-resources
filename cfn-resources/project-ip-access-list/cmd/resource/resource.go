@@ -278,7 +278,7 @@ func isEntryInMap(entry AccessListDefinition, accessListMap map[string]bool) boo
 func newAccessListMap(accessList []admin.NetworkPermissionEntry) map[string]bool {
 	m := make(map[string]bool)
 	for _, entry := range accessList {
-		if *entry.CidrBlock != "" {
+		if util.IsStringPresent(entry.CidrBlock) {
 			m[*entry.CidrBlock] = true
 			continue
 		}

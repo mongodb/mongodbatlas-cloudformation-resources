@@ -42,24 +42,22 @@ var requiredCriteriaType = map[string][]string{
 	"CUSTOM": {"Query"},
 }
 
-func setup() {
+func setupLogAndProfile(currentModel *Model) {
 	util.SetupLogger("mongodb-atlas-online-archive")
+	if !util.IsStringPresent(currentModel.Profile) {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
+	setupLogAndProfile(currentModel)
 	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
 		return *err, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
-
 	ctx := context.Background()
 	archiveID, iOK := req.CallbackContext["id"]
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
@@ -93,7 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
+	setupLogAndProfile(currentModel)
 	if currentModel.ArchiveId == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -102,10 +100,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
 		return *err, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
@@ -128,7 +122,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
+	setupLogAndProfile(currentModel)
 	if currentModel.ArchiveId == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -137,10 +131,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	if err := validator.ValidateModel(UpdateRequiredFields, currentModel); err != nil {
 		return *err, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
@@ -172,12 +162,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
+	setupLogAndProfile(currentModel)
 	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
 		return *err, nil
-	}
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
@@ -213,12 +200,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
+	setupLogAndProfile(currentModel)
 	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
 		return *err, nil
-	}
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {

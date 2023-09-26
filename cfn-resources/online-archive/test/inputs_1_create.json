@@ -12,14 +12,12 @@
   "ProjectId": "",
   "PartitionFields": [
     {
-      "FieldName": "firstName",
-      "Order": "0",
-      "FieldType": "string"
+      "FieldName": "created",
+      "Order": "0"
     },
     {
       "FieldName": "lastName",
-      "Order": "1",
-      "FieldType": "string"
+      "Order": "1"
     }
   ]
 }

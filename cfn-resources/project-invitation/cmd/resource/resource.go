@@ -30,26 +30,6 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.ID}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
 var ListRequiredFields = []string{constants.ProjectID}
 
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return CreateOp(req, prevModel, currentModel)
-}
-
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return ReadOp(req, prevModel, currentModel)
-}
-
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return UpdateOp(req, prevModel, currentModel)
-}
-
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return DeleteOp(req, prevModel, currentModel)
-}
-
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return ListOp(req, prevModel, currentModel)
-}
-
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }

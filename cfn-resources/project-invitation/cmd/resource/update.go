@@ -26,7 +26,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
-func UpdateOp(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
 	_, _ = log.Warnf("Update() currentModel:%+v", currentModel)
@@ -36,7 +36,7 @@ func UpdateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 		return *errValidation, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if !util.IsStringPresent(currentModel.Profile) {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 

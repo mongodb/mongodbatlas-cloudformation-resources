@@ -25,7 +25,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func ReadOp(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
@@ -34,7 +34,7 @@ func ReadOp(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errValidation, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if !util.IsStringPresent(currentModel.Profile) {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 

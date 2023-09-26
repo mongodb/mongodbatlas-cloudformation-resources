@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -29,7 +30,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas/mongodbatlas"
+	atlasv2 "go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID}
@@ -47,7 +48,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -59,25 +61,25 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := cast.ToString(currentModel.ProjectId)
 	if teamID == "" {
 		// create new team in organization
-		teamRequest := mongodbatlas.Team{
+		teamResponse, resp, err := atlasV2.TeamsApi.CreateTeam(context.Background(), orgID, &atlasv2.Team{
 			Name:      cast.ToString(currentModel.Name),
 			Usernames: currentModel.Usernames,
-		}
-		teamResponse, resp, err := client.Teams.Create(context.Background(), orgID, &teamRequest)
+		}).Execute()
+
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("unable to create team %v", err), resp.Response), nil
+			return progressevents.GetFailedEventByResponse(fmt.Sprintf("unable to create team %v", err), resp), nil
 		}
-		teamID = teamResponse.ID
+		teamID = util.SafeString(teamResponse.Id)
 		currentModel = convertTeamToModel(teamResponse, currentModel)
 	}
 
 	// add existing team or newly created team to project if project id exist in the request
 	if projectID != "" && len(currentModel.RoleNames) > 0 {
-		createRequest := []*mongodbatlas.ProjectTeam{{
-			TeamID:    teamID,
+		createRequest := []atlasv2.TeamRole{{
+			TeamId:    &teamID,
 			RoleNames: currentModel.RoleNames,
 		}}
-		_, _, err := client.Projects.AddTeamsToProject(context.Background(), projectID, createRequest)
+		_, _, err := atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), projectID, &createRequest).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("error adding Team(%s) to project(%s): reason : %v", teamID, projectID, err)
 		}
@@ -100,7 +102,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -110,34 +113,34 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	teamID := cast.ToString(currentModel.TeamId)
 	orgID := cast.ToString(currentModel.OrgId)
 	teamName := cast.ToString(currentModel.Name)
-	var team *mongodbatlas.Team
-	var resp *mongodbatlas.Response
+	var team *atlasv2.TeamResponse
+	var resp *http.Response
 	var err error
 	// get team by id or name
 	if teamID != "" {
-		team, resp, err = client.Teams.Get(context.Background(), orgID, teamID)
+		team, resp, err = atlasV2.TeamsApi.GetTeamById(context.Background(), orgID, teamID).Execute()
 	} else if teamName != "" {
 		// get team by name
-		team, resp, err = client.Teams.GetOneTeamByName(context.Background(), orgID, teamName)
+		team, resp, err = atlasV2.TeamsApi.GetTeamByName(context.Background(), orgID, teamName).Execute()
 	}
 
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel = convertTeamToModel(team, currentModel)
+	currentModel = convertTeamResponseToModel(team, currentModel)
 
-	// API call to get all users assigned
-	users, _, err := client.Teams.GetTeamUsersAssigned(context.Background(), orgID, *currentModel.TeamId)
+	paginatedResp, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, *currentModel.TeamId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("error getting Team user information: %v", err)
 	}
-	if users != nil {
+	if paginatedResp != nil {
+		usersRespList := paginatedResp.Results
 		var userNames []string
 		var userList []AtlasUser
-		for ind := range users {
-			userNames = append(userNames, users[ind].Username)
-			userList = append(userList, flattenUser(users[ind]))
+		for ind := range usersRespList {
+			userNames = append(userNames, usersRespList[ind].Username)
+			userList = append(userList, newAtlasUser(usersRespList[ind]))
 		}
 		currentModel.Usernames = userNames
 		currentModel.Users = userList
@@ -150,30 +153,30 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func flattenUser(user mongodbatlas.AtlasUser) AtlasUser {
+func newAtlasUser(user atlasv2.CloudAppUser) AtlasUser {
 	return AtlasUser{
 		Country:      &user.Country,
 		EmailAddress: &user.EmailAddress,
 		FirstName:    &user.FirstName,
-		Id:           &user.ID,
+		Id:           user.Id,
 		LastName:     &user.LastName,
 		MobileNumber: &user.MobileNumber,
 		Password:     &user.Password,
-		Roles:        flattenRole(user.Roles),
+		Roles:        newAtlasRoles(user.Roles),
 		TeamIds:      user.TeamIds,
 		Username:     &user.Username,
 	}
 }
-func flattenRole(role []mongodbatlas.AtlasRole) []AtlasRole {
+func newAtlasRoles(roles []atlasv2.CloudAccessRoleAssignment) []AtlasRole {
 	var modelRole []AtlasRole
-	if role == nil {
+	if roles == nil {
 		return modelRole
 	}
-	for ind := range role {
+	for ind := range roles {
 		pe := AtlasRole{
-			RoleName:  &role[ind].RoleName,
-			ProjectId: &role[ind].GroupID,
-			OrgId:     &role[ind].OrgID,
+			RoleName:  roles[ind].RoleName,
+			ProjectId: roles[ind].GroupId,
+			OrgId:     roles[ind].OrgId,
 		}
 		modelRole = append(modelRole, pe)
 	}
@@ -191,25 +194,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	if !isExist(client, currentModel) {
+	team, res, err := getTeam(atlasV2, currentModel)
+	if err != nil && res != nil {
+		_, _ = logger.Debugf("error getting Team information: %s", err)
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+	} else if err != nil {
 		_, _ = logger.Debugf("error getting Team information: %s", *currentModel.TeamId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	// API call
-	team, res, err := client.Teams.Get(context.Background(), *currentModel.OrgId, *currentModel.TeamId)
-	if err != nil {
-		_, _ = logger.Debugf("error getting Team information: %s", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	teamID := cast.ToString(currentModel.TeamId)
@@ -219,19 +220,21 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// add existing team or newly created team to project if project id exist in the request
 	if projectID != "" && len(currentModel.RoleNames) > 0 {
-		createRequest := []*mongodbatlas.ProjectTeam{{
-			TeamID:    teamID,
+		createRequest := []atlasv2.TeamRole{{
+			TeamId:    &teamID,
 			RoleNames: currentModel.RoleNames,
 		}}
-		_, _, err := client.Projects.AddTeamsToProject(context.Background(), projectID, createRequest)
+		_, _, err := atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), projectID, &createRequest).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("error adding Team(%s) to project(%s): reason : %v", teamID, projectID, err)
 		}
 	}
 
 	// rename the team
-	if team.Name != teamName {
-		_, _, err := client.Teams.Rename(context.Background(), orgID, teamID, teamName)
+	if !util.AreStringPtrEqual(team.Name, &teamName) {
+		_, _, err := atlasV2.TeamsApi.RenameTeam(context.Background(), orgID, teamID, &atlasv2.Team{
+			Name: teamName,
+		}).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("error updating Team information: %v", err)
 		}
@@ -239,46 +242,48 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// add/remove user to/from teams
 	if currentModel.Usernames != nil {
-		// get the current  users list for the team
-		users, _, err := client.Teams.GetTeamUsersAssigned(context.Background(), orgID, teamID)
+		// get the current users list for the team
+		paginatedResp, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
 		}
 		usernames := currentModel.Usernames
-		var newUsers []string
+		var newUsers []atlasv2.AddUserToTeam
 		for ind := range usernames {
-			currentUser, isExistingUser := isUserExist(users, usernames[ind])
+			currentUser, isExistingUser := isUserExist(paginatedResp.Results, usernames[ind])
 
 			if isExistingUser {
 				// remove user from team
-				_, err := client.Teams.RemoveUserToTeam(context.Background(), orgID, teamID, currentUser.ID)
+				_, err := atlasV2.TeamsApi.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(currentUser.Id)).Execute()
 				if err != nil {
-					_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", currentUser.ID, teamID, err)
+					_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", util.SafeString(currentUser.Id), teamID, err)
 				}
 			} else {
 				// add user to team
-				user, _, err := client.AtlasUsers.GetByName(context.Background(), usernames[ind])
+				user, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), usernames[ind]).Execute()
 				if err != nil {
 					_, _ = logger.Warnf("Error reading user (%s)  with error (%v) \n", usernames[ind], err)
 				}
 				// if the user exists, we will store its ID so that we can save as user list later
 				if user != nil {
-					newUsers = append(newUsers, user.ID)
+					newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(user.Id)})
 				}
 			}
 		}
 		// save all new users
-		_, _, err = client.Teams.AddUsersToTeam(context.Background(), orgID, teamID, newUsers)
-		if err != nil {
-			_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
+		if len(newUsers) > 0 {
+			atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
+			if err != nil {
+				_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
+			}
 		}
 	}
 
 	// update roles to team
 	roleNames := currentModel.RoleNames
 	if len(roleNames) > 0 && currentModel.ProjectId != nil {
-		teamRequest := &mongodbatlas.TeamUpdateRoles{RoleNames: roleNames}
-		_, _, err = client.Teams.UpdateTeamRoles(context.Background(), projectID, teamID, teamRequest)
+		teamRequest := &atlasv2.TeamRole{RoleNames: roleNames}
+		_, _, err = atlasV2.TeamsApi.UpdateTeamRoles(context.Background(), projectID, teamID, teamRequest).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("update role to team  error (%+v) \n", err)
 		}
@@ -298,7 +303,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -307,20 +313,16 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// Create Atlas API Request Object
 	orgID := cast.ToString(currentModel.OrgId)
 	projectID := cast.ToString(currentModel.ProjectId)
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
 	var models []interface{}
-	var resp *mongodbatlas.Response
+	var resp *http.Response
 	var err error
 	// API call to get teams for project id
 	if projectID != "" {
-		var teamsAssigned *mongodbatlas.TeamsAssigned
-		teamsAssigned, resp, err = client.Projects.GetProjectTeamsAssigned(context.Background(), projectID)
+		var teamsAssigned *atlasv2.PaginatedTeamRole
+		teamsAssigned, resp, err = atlasV2.TeamsApi.ListProjectTeams(context.Background(), projectID).Execute()
 
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+			return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 
 		teamsProjectList := teamsAssigned.Results
@@ -329,15 +331,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 	} else {
 		// API call to get teams from organization
-		var teams []mongodbatlas.Team
-		teams, resp, err = client.Teams.List(context.Background(), orgID, params)
+		var paginatedResp *atlasv2.PaginatedTeam
+		paginatedResp, resp, err = atlasV2.TeamsApi.ListOrganizationTeams(context.Background(), orgID).Execute()
 
 		if err != nil {
-			return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+			return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 		}
-
+		teams := paginatedResp.Results
 		for i := 0; i < len(teams); i++ {
-			models = append(models, convertTeamToModel(&teams[i], nil))
+			models = append(models, convertTeamResponseToModel(&teams[i], nil))
 		}
 	}
 
@@ -356,13 +358,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	if !isExist(client, currentModel) {
+	team, _, _ := getTeam(atlasV2, currentModel)
+	if team == nil {
 		_, _ = logger.Debugf("error getting Team information: %s", *currentModel.TeamId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -370,7 +374,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 	if currentModel.ProjectId != nil {
-		if err := removeFromProject(client, currentModel); err != nil {
+		if err := removeFromProject(atlasV2, currentModel); err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Unable to Delete",
@@ -379,12 +383,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	} else {
 		// remove from organization
-		err := removeFromOrganization(client, currentModel)
+		err := removeFromOrganization(atlasV2, currentModel)
 		if err != nil {
-			var target *mongodbatlas.ErrorResponse
 			// if team is assigned to project then first delete from project
-			if errors.As(err, &target) && target.ErrorCode == "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT" {
-				if err := removeFromProject(client, currentModel); err != nil {
+			if atlasv2.IsErrorCode(err, "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT") {
+				if err := removeFromProject(atlasV2, currentModel); err != nil {
 					return handler.ProgressEvent{
 						OperationStatus:  handler.Failed,
 						Message:          "Unable to Delete",
@@ -393,7 +396,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				}
 
 				// remove from organization if successfully deleted from project
-				if err := removeFromOrganization(client, currentModel); err != nil {
+				if err := removeFromOrganization(atlasV2, currentModel); err != nil {
 					return handler.ProgressEvent{
 						OperationStatus:  handler.Failed,
 						Message:          "Unable to Delete",
@@ -412,56 +415,48 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func setup() {
 	util.SetupLogger("mongodb-atlas-teams")
 }
-func removeFromProject(client *mongodbatlas.Client, currentModel *Model) error {
+func removeFromProject(atlasV2 *atlasv2.APIClient, currentModel *Model) error {
 	teamID := cast.ToString(currentModel.TeamId)
-	projectID, err := getProjectIDByTeamID(context.Background(), client, teamID)
+	projectID, err := getProjectIDByTeamID(context.Background(), atlasV2, teamID)
 	if err != nil {
 		_, _ = logger.Debugf("error to get assigned project details for Team: %s", teamID)
 		return err
 	}
-	_, err = client.Teams.RemoveTeamFromProject(context.Background(), projectID, teamID)
+	_, err = atlasV2.TeamsApi.RemoveProjectTeam(context.Background(), projectID, teamID).Execute()
 	if err != nil {
 		_, _ = logger.Debugf("error deleting Team from project: %s", teamID)
 		return err
 	}
 	return nil
 }
-func removeFromOrganization(client *mongodbatlas.Client, currentModel *Model) error {
+
+func removeFromOrganization(atlasV2 *atlasv2.APIClient, currentModel *Model) error {
 	teamID := cast.ToString(currentModel.TeamId)
 	orgID := cast.ToString(currentModel.OrgId)
 
-	_, err := client.Teams.RemoveTeamFromOrganization(context.Background(), orgID, teamID)
+	_, _, err := atlasV2.TeamsApi.DeleteTeam(context.Background(), orgID, teamID).Execute()
 	if err != nil {
 		_, _ = logger.Debugf("error deleting team from organization in retry : %s", teamID)
 		return err
 	}
 	return nil
 }
-func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
+
+func getTeam(atlasV2 *atlasv2.APIClient, currentModel *Model) (*atlasv2.TeamResponse, *http.Response, error) {
 	teamID := cast.ToString(currentModel.TeamId)
 	orgID := cast.ToString(currentModel.OrgId)
 	teamName := cast.ToString(currentModel.Name)
 	if *currentModel.TeamId != "" {
-		team, _, err := client.Teams.Get(context.Background(), orgID, teamID)
-		if err != nil {
-			return false
-		}
-		if team != nil {
-			return true
-		}
+		team, res, err := atlasV2.TeamsApi.GetTeamById(context.Background(), orgID, teamID).Execute()
+		return team, res, err
 	} else if *currentModel.Name != "" {
-		team, _, err := client.Teams.GetOneTeamByName(context.Background(), orgID, teamName)
-		if err != nil {
-			return false
-		}
-		if team != nil {
-			return true
-		}
+		team, res, err := atlasV2.TeamsApi.GetTeamByName(context.Background(), orgID, teamName).Execute()
+		return team, res, err
 	}
-
-	return false
+	return nil, nil, errors.New("could not fetch Team as neither TeamId or Name were defined in model")
 }
-func isUserExist(users []mongodbatlas.AtlasUser, username string) (mongodbatlas.AtlasUser, bool) {
+
+func isUserExist(users []atlasv2.CloudAppUser, username string) (atlasv2.CloudAppUser, bool) {
 	endLoop := len(users)
 	for ind := 0; ind < endLoop; ind++ {
 		_, _ = logger.Debugf("atlas user : %s,target User %s", users[ind].Username, username)
@@ -469,25 +464,24 @@ func isUserExist(users []mongodbatlas.AtlasUser, username string) (mongodbatlas.
 			return users[ind], true
 		}
 	}
-	return mongodbatlas.AtlasUser{}, false
+	return atlasv2.CloudAppUser{}, false
 }
 
-func getProjectIDByTeamID(ctx context.Context, conn *mongodbatlas.Client, teamID string) (string, error) {
-	options := &mongodbatlas.ListOptions{}
-	projects, _, err := conn.Projects.GetAllProjects(ctx, options)
+func getProjectIDByTeamID(ctx context.Context, atlasV2 *atlasv2.APIClient, teamID string) (string, error) {
+	paginatedResp, _, err := atlasV2.ProjectsApi.ListProjects(context.Background()).Execute()
 	if err != nil {
 		return "", fmt.Errorf("error getting projects information: %s", err)
 	}
 
-	for _, project := range projects.Results {
-		teams, _, err := conn.Projects.GetProjectTeamsAssigned(ctx, project.ID)
+	for _, project := range paginatedResp.Results {
+		teams, _, err := atlasV2.TeamsApi.ListProjectTeams(ctx, util.SafeString(project.Id)).Execute()
 		if err != nil {
 			return "", fmt.Errorf("error getting teams from project information: %s", err)
 		}
 
 		for _, team := range teams.Results {
-			if team.TeamID == teamID {
-				return project.ID, nil
+			if util.AreStringPtrEqual(team.TeamId, &teamID) {
+				return util.SafeString(project.Id), nil
 			}
 		}
 	}
@@ -499,28 +493,39 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-func convertProjectTeamToModel(team *mongodbatlas.Result) *Model {
-	if team == nil {
-		return nil
-	}
+func convertProjectTeamToModel(team atlasv2.TeamRole) *Model {
 	return &Model{
 		RoleNames: team.RoleNames,
-		TeamId:    &team.TeamID,
+		TeamId:    team.TeamId,
 	}
 }
-func convertTeamToModel(team *mongodbatlas.Team, result *Model) *Model {
+func convertTeamToModel(team *atlasv2.Team, result *Model) *Model {
 	if result == nil {
 		result = new(Model)
 	}
 
-	if team.ID != "" {
-		result.TeamId = &team.ID
+	if util.IsStringPresent(team.Id) {
+		result.TeamId = team.Id
 	}
 	if team.Name != "" {
 		result.Name = &team.Name
 	}
 	if team.Usernames != nil {
 		result.Usernames = team.Usernames
+	}
+	return result
+}
+
+func convertTeamResponseToModel(team *atlasv2.TeamResponse, result *Model) *Model {
+	if result == nil {
+		result = new(Model)
+	}
+
+	if util.IsStringPresent(team.Id) {
+		result.TeamId = team.Id
+	}
+	if util.IsStringPresent(team.Name) {
+		result.Name = team.Name
 	}
 	return result
 }

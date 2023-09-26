@@ -25,7 +25,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
@@ -66,10 +65,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(archiveID)
 		currentModel.ArchiveId = &id
-		return validateProgress2(ctx, client, currentModel, "PENDING")
+		return validateProgress(ctx, client, currentModel, "PENDING")
 	}
 
-	inputRequest, errHandler := mapToArchivePayload2(currentModel)
+	inputRequest, errHandler := prepareCreate(currentModel)
 	if errHandler != nil {
 		return *errHandler, nil
 	}
@@ -148,12 +147,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	inputRequest, errHandler := mapToArchivePayload3(currentModel)
+	inputRequest, errHandler := prepareUpdate(currentModel)
 	if errHandler != nil {
 		return *errHandler, nil
 	}
 	ctx := context.Background()
-	if a, _ := ArchiveExists2(ctx, client, currentModel); *a.State == "DELETED" {
+	if a, _ := ArchiveExists(ctx, client, currentModel); *a.State == "DELETED" {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &inputRequest).Execute()
@@ -189,10 +188,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(archiveID)
 		currentModel.ArchiveId = &id
-		return validateProgress2(ctx, client, currentModel, "PENDING")
+		return validateProgress(ctx, client, currentModel, "PENDING")
 	}
 
-	if a, _ := ArchiveExists2(ctx, client, currentModel); *a.State == "DELETED" {
+	if a, _ := ArchiveExists(ctx, client, currentModel); *a.State == "DELETED" {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 
@@ -255,35 +254,35 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func mapToArchivePayload2(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
+func prepareCreate(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
 	requestInput := admin.BackupOnlineArchiveCreate{
 		DbName:   *currentModel.DbName,
 		CollName: *currentModel.CollName,
 	}
-	criteria, errHandler := mapCriteria2(currentModel)
+	criteria, errHandler := mapCriteria(currentModel)
 	if errHandler != nil {
 		return requestInput, errHandler
 	}
 	requestInput.Criteria = *criteria
-	requestInput.PartitionFields = mapPartitionFields2(currentModel)
+	requestInput.PartitionFields = mapPartitionFields(currentModel)
 	return requestInput, nil
 }
 
-func mapToArchivePayload3(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
+func prepareUpdate(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
 	requestInput := admin.BackupOnlineArchive{
 		DbName:   currentModel.DbName,
 		CollName: currentModel.CollName,
 	}
-	criteria, errHandler := mapCriteria2(currentModel)
+	criteria, errHandler := mapCriteria(currentModel)
 	if errHandler != nil {
 		return requestInput, errHandler
 	}
 	requestInput.Criteria = criteria
-	requestInput.PartitionFields = mapPartitionFields2(currentModel)
+	requestInput.PartitionFields = mapPartitionFields(currentModel)
 	return requestInput, nil
 }
 
-func mapCriteria2(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) {
+func mapCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) {
 	criteriaModel := *currentModel.Criteria
 	criteriaInput := &admin.Criteria{
 		Type:            criteriaModel.Type,
@@ -304,7 +303,7 @@ func mapCriteria2(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent)
 	return criteriaInput, nil
 }
 
-func mapPartitionFields2(currentModel *Model) []admin.PartitionField {
+func mapPartitionFields(currentModel *Model) []admin.PartitionField {
 	partitionFields := make([]admin.PartitionField, len(currentModel.PartitionFields))
 
 	for i := range currentModel.PartitionFields {
@@ -324,11 +323,9 @@ func mapPartitionFields2(currentModel *Model) []admin.PartitionField {
 	return partitionFields
 }
 
-// Waits for the terminal stage from an intermediate stage
-func validateProgress2(ctx context.Context, client *util.MongoDBClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
-	archive, err := ArchiveExists2(ctx, client, currentModel)
+func validateProgress(ctx context.Context, client *util.MongoDBClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
+	archive, err := ArchiveExists(ctx, client, currentModel)
 	if err != nil {
-		_, _ = logger.Debugf("Error archive archive exists err: %+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
@@ -355,13 +352,14 @@ func validateProgress2(ctx context.Context, client *util.MongoDBClient, currentM
 	return p, nil
 }
 
-func ArchiveExists2(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin.BackupOnlineArchive, error) {
+func ArchiveExists(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin.BackupOnlineArchive, error) {
 	archive, resp, err := client.AtlasV2.OnlineArchiveApi.GetOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			state := "DELETED"
 			return &admin.BackupOnlineArchive{State: &state}, nil
 		}
+		return nil, err
 	}
 	return archive, nil
 }

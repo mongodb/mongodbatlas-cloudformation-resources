@@ -28,6 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -48,38 +49,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	if len(currentModel.AccessList) == 0 {
-		return progressevents.GetFailedEventByCode("AccessList must not be empty", cloudformation.HandlerErrorCodeInvalidRequest), nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	event, err := createEntries(currentModel, client)
-	if event.OperationStatus == handler.Failed || err != nil {
-		_, _ = logger.Warnf("Create err:%v", err)
-		return event, nil
-	}
-
-	_, _ = logger.Debugf("Create --- currentModel:%+v", currentModel)
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Create Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return CreateOp(req, prevModel, currentModel)
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -284,6 +254,44 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
+func newPaginatedNetworkAccess(model *Model) (*admin.PaginatedNetworkAccess, error) {
+	var accesslist []admin.NetworkPermissionEntry
+	for i := range model.AccessList {
+		modelAccessList := model.AccessList[i]
+		projectIPAccessList := admin.NetworkPermissionEntry{}
+
+		if modelAccessList.DeleteAfterDate != nil {
+			deleteAfterDate, err := util.StringToTime(*modelAccessList.DeleteAfterDate)
+			if err != nil {
+				return nil, err
+			}
+			projectIPAccessList.DeleteAfterDate = &deleteAfterDate
+		}
+
+		if modelAccessList.Comment != nil {
+			projectIPAccessList.Comment = modelAccessList.Comment
+		}
+
+		if modelAccessList.CIDRBlock != nil {
+			projectIPAccessList.CidrBlock = modelAccessList.CIDRBlock
+		}
+
+		if modelAccessList.IPAddress != nil {
+			projectIPAccessList.IpAddress = modelAccessList.IPAddress
+		}
+
+		if modelAccessList.AwsSecurityGroup != nil {
+			projectIPAccessList.AwsSecurityGroup = modelAccessList.AwsSecurityGroup
+		}
+
+		accesslist = append(accesslist, projectIPAccessList)
+	}
+
+	return &admin.PaginatedNetworkAccess{
+		Results: accesslist,
+	}, nil
+}
+
 func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
 	var accesslist []*mongodbatlas.ProjectIPAccessList
 	for i := range model.AccessList {
@@ -331,28 +339,6 @@ func getEntry(entry AccessListDefinition) (string, error) {
 	}
 
 	return "", fmt.Errorf("AccessList entry must have one of the following fields: cidrBlock, awsSecurityGroup, ipAddress")
-}
-
-func createEntries(model *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-	request := getProjectIPAccessListRequest(model)
-	projectID := *model.ProjectId
-
-	if isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, model); isEntryAlreadyInAccessList || err != nil {
-		return handler.ProgressEvent{
-			Message:          "Entry already exists in the access list",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
-	}
-
-	if _, _, err := client.ProjectIPAccessList.Create(context.Background(), projectID, request); err != nil {
-		_, _ = logger.Warnf("Error createEntries projectId:%s, err:%+v", projectID, err)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, err
-	}
-
-	return handler.ProgressEvent{}, nil
 }
 
 // deleteEntriesForUpdate deletes entries in the atlas access list without failing if the entry is NOT_FOUND.
@@ -411,7 +397,7 @@ func getAllEntries(client *mongodbatlas.Client, projectID string) (*mongodbatlas
 }
 
 // isEntryAlreadyInAccessList checks if the entry already exists in the atlas access list
-func isEntryAlreadyInAccessList(client *mongodbatlas.Client, model *Model) (bool, error) {
+func isEntryAlreadyInAccessList(client *util.MongoDBClient, model *Model) (bool, error) {
 	existingEntries, err := getAllEntries(client, *model.ProjectId)
 	if err != nil {
 		return false, err

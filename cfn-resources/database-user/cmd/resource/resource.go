@@ -373,7 +373,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		LdapAuthType:    currentModel.LdapAuthType,
 		AwsIAMType:      currentModel.AWSIAMType,
 		X509Type:        currentModel.X509Type,
-		DeleteAfterDate: util.StringToTime(currentModel.DeleteAfterDate),
+		DeleteAfterDate: util.StringPtrToTimePtr(currentModel.DeleteAfterDate),
 	}
 
 	if currentModel.Password != nil {

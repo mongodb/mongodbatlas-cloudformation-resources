@@ -390,10 +390,10 @@ func TimeToString(t time.Time) string {
 	return t.UTC().Format(time.RFC3339Nano)
 }
 
-// StringToTime parses a string with RFC3339 (nano) format and returns time.Time.
+// StringPtrToTimePtr parses a string with RFC3339 (nano) format and returns time.Time.
 // It's the opposite function to TimeToString.
 // Returns nil if date can't be parsed.
-func StringToTime(p *string) *time.Time {
+func StringPtrToTimePtr(p *string) *time.Time {
 	if !IsStringPresent(p) {
 		return nil
 	}

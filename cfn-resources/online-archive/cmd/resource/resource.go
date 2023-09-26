@@ -216,38 +216,39 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
-
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	archives, res, err := client.OnlineArchives.List(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
-		&mongodbatlas.ListOptions{
-			PageNum:      aws.IntValue(currentModel.PageNum),
-			ItemsPerPage: aws.IntValue(currentModel.ItemsPerPage),
-			IncludeCount: aws.BoolValue(currentModel.IncludeCount),
-		})
-	if err != nil {
-		_, _ = logger.Debugf("Error listing archive: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	params := admin.ListOnlineArchivesApiParams{
+		GroupId:      *currentModel.ProjectId,
+		ClusterName:  *currentModel.ClusterName,
+		IncludeCount: currentModel.IncludeCount,
+		ItemsPerPage: currentModel.ItemsPerPage,
+		PageNum:      currentModel.PageNum,
 	}
+	archives, resp, err := client.AtlasV2.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
 	resources := make([]any, 0, len(archives.Results))
 	for _, v := range archives.Results {
-		resources = append(resources, Model{
-			ArchiveId:  &v.ID,
-			ProjectId:  currentModel.ProjectId,
-			TotalCount: aws.Float64(float64(archives.TotalCount)),
-			State:      &v.State,
-		})
+		model := Model{
+			ArchiveId: v.Id,
+			ProjectId: currentModel.ProjectId,
+			State:     v.State,
+		}
+		if archives.TotalCount != nil {
+			model.TotalCount = aws.Float64(float64(*archives.TotalCount))
+		}
+		resources = append(resources, model)
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

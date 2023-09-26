@@ -167,39 +167,6 @@ func newPaginatedNetworkAccess(model *Model) (*admin.PaginatedNetworkAccess, err
 	}, nil
 }
 
-func getProjectIPAccessListRequest(model *Model) []*mongodbatlas.ProjectIPAccessList {
-	var accesslist []*mongodbatlas.ProjectIPAccessList
-	for i := range model.AccessList {
-		modelAccessList := model.AccessList[i]
-		projectIPAccessList := &mongodbatlas.ProjectIPAccessList{}
-
-		if modelAccessList.DeleteAfterDate != nil {
-			projectIPAccessList.DeleteAfterDate = *modelAccessList.DeleteAfterDate
-		}
-
-		if modelAccessList.Comment != nil {
-			projectIPAccessList.Comment = *modelAccessList.Comment
-		}
-
-		if modelAccessList.CIDRBlock != nil {
-			projectIPAccessList.CIDRBlock = *modelAccessList.CIDRBlock
-		}
-
-		if modelAccessList.IPAddress != nil {
-			projectIPAccessList.IPAddress = *modelAccessList.IPAddress
-		}
-
-		if modelAccessList.AwsSecurityGroup != nil {
-			projectIPAccessList.AwsSecurityGroup = *modelAccessList.AwsSecurityGroup
-		}
-
-		accesslist = append(accesslist, projectIPAccessList)
-	}
-
-	_, _ = logger.Debugf("getProjectIPAccessListRequest accesslist:%v", accesslist)
-	return accesslist
-}
-
 func getEntry(entry AccessListDefinition) (string, error) {
 	if entry.CIDRBlock != nil && *entry.CIDRBlock != "" {
 		return *entry.CIDRBlock, nil

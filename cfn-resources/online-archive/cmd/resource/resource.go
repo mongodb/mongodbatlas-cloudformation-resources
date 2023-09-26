@@ -137,7 +137,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          "no Id found in currentModel",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
 	if err := validator.ValidateModel(UpdateRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
@@ -145,30 +144,30 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	inputRequest, errHandler := mapToArchivePayload(currentModel)
+
+	inputRequest, errHandler := mapToArchivePayload3(currentModel)
 	if errHandler != nil {
 		return *errHandler, nil
 	}
-	a, _ := ArchiveExists(context.Background(), client, currentModel)
-	if a.State == "DELETED" {
+	a, _ := ArchiveExists2(context.Background(), client, currentModel)
+	if *a.State == "DELETED" {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
-	outputRequest, res, err := client.OnlineArchives.Update(context.Background(), *currentModel.ProjectId,
-		*currentModel.ClusterName, *currentModel.ArchiveId, &inputRequest)
+	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &inputRequest).Execute()
+
+	//	UpdateOnlineArchive(ctx context.Context, groupId string, archiveId string, clusterName string, backupOnlineArchive *BackupOnlineArchive) UpdateOnlineArchiveApiRequest
+
 	if err != nil {
-		_, _ = logger.Debugf("Error updating archive: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.ArchiveId = &outputRequest.ID
-	currentModel.Criteria.ExpireAfterDays = aws.Int(int(aws.Float64Value(outputRequest.Criteria.ExpireAfterDays)))
-	currentModel.State = &outputRequest.State
+	currentModel.ArchiveId = outputRequest.Id
+	currentModel.Criteria.ExpireAfterDays = outputRequest.Criteria.ExpireAfterDays
+	currentModel.State = outputRequest.State
 	currentModel.TotalCount = aws.Float64(1)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -291,6 +290,20 @@ func mapToArchivePayload2(currentModel *Model) (admin.BackupOnlineArchiveCreate,
 		return requestInput, errHandler
 	}
 	requestInput.Criteria = *criteria
+	requestInput.PartitionFields = mapPartitionFields2(currentModel)
+	return requestInput, nil
+}
+
+func mapToArchivePayload3(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
+	requestInput := admin.BackupOnlineArchive{
+		DbName:   currentModel.DbName,
+		CollName: currentModel.CollName,
+	}
+	criteria, errHandler := mapCriteria2(currentModel)
+	if errHandler != nil {
+		return requestInput, errHandler
+	}
+	requestInput.Criteria = criteria
 	requestInput.PartitionFields = mapPartitionFields2(currentModel)
 	return requestInput, nil
 }

@@ -28,7 +28,6 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -52,12 +51,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	maintenanceWindow, _ := get2(client, *currentModel)
+	maintenanceWindow, _ := get(client, *currentModel)
 	if maintenanceWindow != nil {
 		return progress_events.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
-	atlasModel := currentModel.toAtlasModel2()
+	atlasModel := currentModel.toAtlasModel()
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
@@ -86,7 +85,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	maintenanceWindow, errorProgressEvent := get2(client, *currentModel)
+	maintenanceWindow, errorProgressEvent := get(client, *currentModel)
 	if errorProgressEvent != nil {
 		return *errorProgressEvent, nil
 	}
@@ -116,12 +115,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, handlerError := get2(client, *currentModel)
+	_, handlerError := get(client, *currentModel)
 	if handlerError != nil {
 		return *handlerError, nil
 	}
 
-	atlasModel := currentModel.toAtlasModel2()
+	atlasModel := currentModel.toAtlasModel()
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
@@ -150,7 +149,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, handlerError := get2(client, *currentModel)
+	_, handlerError := get(client, *currentModel)
 	if handlerError != nil {
 		return *handlerError, nil
 	}
@@ -170,16 +169,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (m Model) toAtlasModel() mongodbatlas.MaintenanceWindow {
-	return mongodbatlas.MaintenanceWindow{
-		DayOfWeek:            *m.DayOfWeek,
-		HourOfDay:            m.HourOfDay,
-		StartASAP:            m.StartASAP,
-		AutoDeferOnceEnabled: m.AutoDeferOnceEnabled,
-	}
-}
-
-func (m Model) toAtlasModel2() admin.GroupMaintenanceWindow {
+func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
 	return admin.GroupMaintenanceWindow{
 		DayOfWeek:            *m.DayOfWeek,
 		HourOfDay:            *m.HourOfDay,
@@ -188,11 +178,11 @@ func (m Model) toAtlasModel2() admin.GroupMaintenanceWindow {
 	}
 }
 
-func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.MaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, res, err := client.MaintenanceWindows.Get(context.Background(), *currentModel.ProjectId)
+func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
+	maintenanceWindow, resp, err := client.AtlasV2.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
-		ev := progress_events.GetFailedEventByResponse(err.Error(), res.Response)
+		ev := progress_events.GetFailedEventByResponse(err.Error(), resp)
 		return nil, &ev
 	}
 
@@ -205,27 +195,6 @@ func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.Mainten
 	return maintenanceWindow, nil
 }
 
-func get2(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, resp, err := client.AtlasV2.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
-	if err != nil {
-		_, _ = logger.Warnf("Read - error: %+v", err)
-		ev := progress_events.GetFailedEventByResponse(err.Error(), resp)
-		return nil, &ev
-	}
-
-	if isResponseEmpty2(maintenanceWindow) {
-		_, _ = logger.Warnf("Read - resource is empty: %+v", err)
-		ev := progress_events.GetFailedEventByCode("resource not found", cloudformation.HandlerErrorCodeNotFound)
-		return nil, &ev
-	}
-
-	return maintenanceWindow, nil
-}
-
-func isResponseEmpty(maintenanceWindow *mongodbatlas.MaintenanceWindow) bool {
-	return maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0
-}
-
-func isResponseEmpty2(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
+func isResponseEmpty(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
 	return maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0
 }

@@ -73,37 +73,34 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Validation
-	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
 		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+		return *err, nil
 	}
 
 	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	// Create atlas client
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	maintenanceWindow, errorProgressEvent := get(client, *currentModel)
+	maintenanceWindow, errorProgressEvent := get2(client, *currentModel)
 	if errorProgressEvent != nil {
 		return *errorProgressEvent, nil
 	}
 
 	currentModel.AutoDeferOnceEnabled = maintenanceWindow.AutoDeferOnceEnabled
 	currentModel.DayOfWeek = &maintenanceWindow.DayOfWeek
-	currentModel.HourOfDay = maintenanceWindow.HourOfDay
-	// Response
-	event := handler.ProgressEvent{
+	currentModel.HourOfDay = &maintenanceWindow.HourOfDay
+
+	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
+		Message:         constants.ReadComplete,
 		ResourceModel:   currentModel,
-	}
-	return event, nil
+	}, nil
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

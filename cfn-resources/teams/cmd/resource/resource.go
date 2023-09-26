@@ -31,7 +31,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	atlasv2 "go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.OrgID}
@@ -386,9 +385,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		// remove from organization
 		err := removeFromOrganization(atlasV2, currentModel)
 		if err != nil {
-			var target *mongodbatlas.ErrorResponse
 			// if team is assigned to project then first delete from project
-			if errors.As(err, &target) && target.ErrorCode == "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT" {
+			if atlasv2.IsErrorCode(err, "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT") {
 				if err := removeFromProject(atlasV2, currentModel); err != nil {
 					return handler.ProgressEvent{
 						OperationStatus:  handler.Failed,

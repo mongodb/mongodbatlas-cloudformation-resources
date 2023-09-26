@@ -308,21 +308,21 @@ func isEntryInMap(entry AccessListDefinition, accessListMap map[string]bool) boo
 	return false
 }
 
-func newAccessListMap(accessList []mongodbatlas.ProjectIPAccessList) map[string]bool {
+func newAccessListMap(accessList []admin.NetworkPermissionEntry) map[string]bool {
 	m := make(map[string]bool)
 	for _, entry := range accessList {
-		if entry.CIDRBlock != "" {
-			m[entry.CIDRBlock] = true
+		if *entry.CidrBlock != "" {
+			m[*entry.CidrBlock] = true
 			continue
 		}
 
-		if entry.IPAddress != "" {
-			m[entry.IPAddress] = true
+		if *entry.IpAddress != "" {
+			m[*entry.IpAddress] = true
 			continue
 		}
 
-		if entry.AwsSecurityGroup != "" {
-			m[entry.AwsSecurityGroup] = true
+		if *entry.AwsSecurityGroup != "" {
+			m[*entry.AwsSecurityGroup] = true
 			continue
 		}
 	}

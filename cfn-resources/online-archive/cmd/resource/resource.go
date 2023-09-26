@@ -102,7 +102,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Message:          "no Id found in currentModel",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-
 	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
@@ -110,23 +109,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	var res *mongodbatlas.Response
-	olArchive, res, err := client.OnlineArchives.Get(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
-		*currentModel.ArchiveId)
+	olArchive, resp, err := client.AtlasV2.OnlineArchiveApi.GetOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
-		_, _ = logger.Debugf("Error fetching archive: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-	currentModel.ArchiveId = &olArchive.ID
-	currentModel.State = &olArchive.State
-	currentModel.ProjectId = &olArchive.GroupID
+	currentModel.ArchiveId = olArchive.Id
+	currentModel.State = olArchive.State
+	currentModel.ProjectId = olArchive.GroupId
 	currentModel.TotalCount = aws.Float64(1)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

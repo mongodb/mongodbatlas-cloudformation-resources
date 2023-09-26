@@ -21,7 +21,6 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -54,40 +53,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	result, resp, err := client.ProjectIPAccessList.List(context.Background(), *currentModel.ProjectId, nil)
-	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
-	}
-
-	if result.TotalCount == 0 {
-		return handler.ProgressEvent{
-			Message:          "The entry to read is not in the access list",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	currentModel.TotalCount = &result.TotalCount
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Read Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return ReadOp(req, prevModel, currentModel)
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -95,102 +61,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // As a result, we delete all the entries in the current model + previous model
 // and then create all the entries in the current model.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	// "cfn test" will fail without these validations
-	if len(prevModel.AccessList) == 0 {
-		return handler.ProgressEvent{
-			Message:          "The previous model does not have entry. You should use CREATE instead of UPDATE",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	existingEntries, err := getAllEntries(client, *currentModel.ProjectId)
-	if err != nil {
-		return handler.ProgressEvent{
-			Message:          "Error in retrieving the existing entries",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, err
-	}
-
-	if existingEntries.TotalCount == 0 {
-		return handler.ProgressEvent{
-			Message:          "You have no entry in the accesslist. You should use CREATE instead of UPDATE",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	if len(currentModel.AccessList) == 0 {
-		return handler.ProgressEvent{
-			Message:          "You cannot have an empty accesslist. You shoud use DELETE instead of UPDATE",
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	// We need to make sure that the entries in the previous and current model are not in the accesslist.
-	// Why do we need to do delete entries in the previous model?
-	// Scenario: If the user updates the current model by removing one of the entries in the accesslist,
-	// CFN will call the UPDATE operation which won't delete the removed entry bacause it is no longer in the current model.
-	entriesToDelete := currentModel.AccessList
-	entriesToDelete = append(entriesToDelete, prevModel.AccessList...)
-
-	progressEvent := deleteEntriesForUpdate(entriesToDelete, *currentModel.ProjectId, client)
-	if progressEvent.OperationStatus == handler.Failed {
-		_, _ = logger.Warnf("Update deleteEntries error:%+v", progressEvent.Message)
-		return progressEvent, nil
-	}
-
-	progressEvent, err = createEntries(currentModel, client)
-	if progressEvent.OperationStatus == handler.Failed || err != nil {
-		_, _ = logger.Warnf("Update createEntries error:%+v", err)
-		return progressEvent, nil
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Update Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return UpdateOp(req, prevModel, currentModel)
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	event := deleteEntries(currentModel, client)
-	if event.OperationStatus == handler.Failed {
-		_, _ = logger.Warnf("Delete error: %+v", event.Message)
-		return event, nil
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Delete Complete",
-	}, nil
+	return DeleteOp(req, prevModel, currentModel)
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -344,7 +219,7 @@ func getEntry(entry AccessListDefinition) (string, error) {
 // deleteEntriesForUpdate deletes entries in the atlas access list without failing if the entry is NOT_FOUND.
 // This function is used in the update handler where we don't want to fail if the entry is not found.
 // Note: The delete handler MUST fail if the entry is not found otherwise "cfn test" will fail.
-func deleteEntriesForUpdate(list []AccessListDefinition, projectID string, client *mongodbatlas.Client) handler.ProgressEvent {
+func deleteEntriesForUpdate(list []AccessListDefinition, projectID string, client *util.MongoDBClient) handler.ProgressEvent {
 	for _, accessListEntry := range list {
 		entry, err := getEntry(accessListEntry)
 		if err != nil {
@@ -352,21 +227,21 @@ func deleteEntriesForUpdate(list []AccessListDefinition, projectID string, clien
 				nil)
 		}
 
-		if resp, err := client.ProjectIPAccessList.Delete(context.Background(), projectID, entry); err != nil {
+		if _, resp, err := client.AtlasV2.ProjectIPAccessListApi.DeleteProjectIpAccessList(context.Background(), projectID, entry).Execute(); err != nil {
 			if resp.StatusCode == http.StatusNotFound {
 				_, _ = logger.Warnf("Accesslist entry Not Found: %s, err:%+v", entry, err)
 				continue
 			}
 
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting the resource: %s", err.Error()),
-				resp.Response)
+				resp)
 		}
 	}
 
 	return handler.ProgressEvent{}
 }
 
-func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEvent {
+func deleteEntries(model *Model, client *util.MongoDBClient) handler.ProgressEvent {
 	for _, accessListEntry := range model.AccessList {
 		entry, err := getEntry(accessListEntry)
 		if err != nil {
@@ -374,21 +249,25 @@ func deleteEntries(model *Model, client *mongodbatlas.Client) handler.ProgressEv
 				nil)
 		}
 
-		if resp, err := client.ProjectIPAccessList.Delete(context.Background(), *model.ProjectId, entry); err != nil {
+		if _, resp, err := client.AtlasV2.ProjectIPAccessListApi.DeleteProjectIpAccessList(context.Background(), *model.ProjectId, entry).Execute(); err != nil {
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting the resource: %s", err.Error()),
-				resp.Response)
+				resp)
 		}
 	}
 
 	return handler.ProgressEvent{}
 }
 
-func getAllEntries(client *mongodbatlas.Client, projectID string) (*mongodbatlas.ProjectIPAccessLists, error) {
-	listOptions := &mongodbatlas.ListOptions{
-		IncludeCount: true,
-		ItemsPerPage: 500,
+func getAllEntries(client *util.MongoDBClient, projectID string) (*admin.PaginatedNetworkAccess, error) {
+	includeCount := true
+	itemPerPage := 500
+
+	listOptions := &admin.ListProjectIpAccessListsApiParams{
+		GroupId:      projectID,
+		IncludeCount: &includeCount,
+		ItemsPerPage: &itemPerPage,
 	}
-	accessList, _, err := client.ProjectIPAccessList.List(context.Background(), projectID, listOptions)
+	accessList, _, err := client.AtlasV2.ProjectIPAccessListApi.ListProjectIpAccessListsWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
 		return nil, err
 	}

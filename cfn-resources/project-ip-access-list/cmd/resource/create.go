@@ -49,7 +49,6 @@ func CreateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 
 	event, err := createEntries(currentModel, client)
 	if event.OperationStatus == handler.Failed || err != nil {
-		_, _ = logger.Warnf("Create err:%v", err)
 		return event, nil
 	}
 

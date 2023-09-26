@@ -30,7 +30,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}
@@ -256,22 +255,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func mapToArchivePayload(currentModel *Model) (mongodbatlas.OnlineArchive, *handler.ProgressEvent) {
-	requestInput := mongodbatlas.OnlineArchive{
-		DBName:   *currentModel.DbName,
-		CollName: *currentModel.CollName,
-	}
-	criteria, errHandler := mapCriteria(currentModel)
-	if errHandler != nil {
-		return requestInput, errHandler
-	}
-
-	requestInput.PartitionFields = mapPartitionFields(currentModel)
-
-	requestInput.Criteria = criteria
-	return requestInput, nil
-}
-
 func mapToArchivePayload2(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
 	requestInput := admin.BackupOnlineArchiveCreate{
 		DbName:   *currentModel.DbName,
@@ -300,27 +283,6 @@ func mapToArchivePayload3(currentModel *Model) (admin.BackupOnlineArchive, *hand
 	return requestInput, nil
 }
 
-func mapCriteria(currentModel *Model) (*mongodbatlas.OnlineArchiveCriteria, *handler.ProgressEvent) {
-	criteriaModel := *currentModel.Criteria
-	criteriaInput := &mongodbatlas.OnlineArchiveCriteria{
-		Type:            aws.StringValue(criteriaModel.Type),
-		DateField:       aws.StringValue(criteriaModel.DateField),
-		ExpireAfterDays: aws.Float64(float64(aws.IntValue(criteriaModel.ExpireAfterDays))),
-		DateFormat:      aws.StringValue(criteriaModel.DateFormat),
-	}
-	if criteriaInput.Type == "DATE" {
-		requiredInputs := requiredCriteriaType[criteriaInput.Type]
-		criteriaInputDate := validator.ValidateModel(requiredInputs, criteriaModel)
-		if criteriaInputDate != nil {
-			return nil, criteriaInputDate
-		}
-	}
-	if criteriaInput.Type == "CUSTOM" {
-		criteriaInput.Query = aws.StringValue(criteriaModel.Query)
-	}
-	return criteriaInput, nil
-}
-
 func mapCriteria2(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) {
 	criteriaModel := *currentModel.Criteria
 	criteriaInput := &admin.Criteria{
@@ -342,26 +304,6 @@ func mapCriteria2(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent)
 	return criteriaInput, nil
 }
 
-func mapPartitionFields(currentModel *Model) []*mongodbatlas.PartitionFields {
-	partitionFields := make([]*mongodbatlas.PartitionFields, len(currentModel.PartitionFields))
-
-	for i := range currentModel.PartitionFields {
-		partitionField := mongodbatlas.PartitionFields{}
-
-		if currentModel.PartitionFields[i].FieldName != nil {
-			partitionField.FieldName = *currentModel.PartitionFields[i].FieldName
-		}
-
-		if currentModel.PartitionFields[i].Order != nil {
-			partitionField.Order = currentModel.PartitionFields[i].Order
-		}
-
-		partitionFields[i] = &partitionField
-	}
-
-	return partitionFields
-}
-
 func mapPartitionFields2(currentModel *Model) []admin.PartitionField {
 	partitionFields := make([]admin.PartitionField, len(currentModel.PartitionFields))
 
@@ -380,37 +322,6 @@ func mapPartitionFields2(currentModel *Model) []admin.PartitionField {
 	}
 
 	return partitionFields
-}
-
-// Waits for the terminal stage from an intermediate stage
-func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
-	archive, err := ArchiveExists(ctx, client, currentModel)
-	if err != nil {
-		_, _ = logger.Debugf("Error archive archive exists err: %+v", err)
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
-	}
-	if archive.State == targetState {
-		p := handler.NewProgressEvent()
-		p.ResourceModel = currentModel
-		p.OperationStatus = cloudformation.OperationStatusInProgress
-		p.CallbackDelaySeconds = 60
-		p.Message = "Pending"
-		p.CallbackContext = map[string]interface{}{
-			"stateName": archive.State,
-			"id":        currentModel.ArchiveId,
-		}
-		return p, nil
-	}
-	p := handler.NewProgressEvent()
-	p.OperationStatus = cloudformation.OperationStatusSuccess
-	p.Message = "Complete"
-	if archive.State != "DELETED" {
-		p.ResourceModel = currentModel
-	}
-	return p, nil
 }
 
 // Waits for the terminal stage from an intermediate stage
@@ -442,16 +353,6 @@ func validateProgress2(ctx context.Context, client *util.MongoDBClient, currentM
 		p.ResourceModel = currentModel
 	}
 	return p, nil
-}
-
-func ArchiveExists(ctx context.Context, client *mongodbatlas.Client, currentModel *Model) (*mongodbatlas.OnlineArchive, error) {
-	archive, resp, err := client.OnlineArchives.Get(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.ArchiveId)
-	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return &mongodbatlas.OnlineArchive{State: "DELETED"}, nil
-		}
-	}
-	return archive, nil
 }
 
 func ArchiveExists2(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin.BackupOnlineArchive, error) {

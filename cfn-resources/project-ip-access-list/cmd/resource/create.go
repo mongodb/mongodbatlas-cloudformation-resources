@@ -37,7 +37,7 @@ func CreateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 		return progressevents.GetFailedEventByCode("AccessList must not be empty", cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if !util.IsStringPresent(currentModel.Profile) {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 

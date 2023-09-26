@@ -28,7 +28,7 @@ func UpdateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
+	if !util.IsStringPresent(currentModel.Profile) {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 

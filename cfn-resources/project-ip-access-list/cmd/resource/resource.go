@@ -168,15 +168,15 @@ func newPaginatedNetworkAccess(model *Model) (*admin.PaginatedNetworkAccess, err
 }
 
 func getEntry(entry AccessListDefinition) (string, error) {
-	if entry.CIDRBlock != nil && *entry.CIDRBlock != "" {
+	if util.IsStringPresent(entry.CIDRBlock) {
 		return *entry.CIDRBlock, nil
 	}
 
-	if entry.AwsSecurityGroup != nil && *entry.AwsSecurityGroup != "" {
+	if util.IsStringPresent(entry.AwsSecurityGroup) {
 		return *entry.AwsSecurityGroup, nil
 	}
 
-	if entry.IPAddress != nil && *entry.IPAddress != "" {
+	if util.IsStringPresent(entry.IPAddress) {
 		return *entry.IPAddress, nil
 	}
 
@@ -283,12 +283,12 @@ func newAccessListMap(accessList []admin.NetworkPermissionEntry) map[string]bool
 			continue
 		}
 
-		if *entry.IpAddress != "" {
+		if util.IsStringPresent(entry.IpAddress) {
 			m[*entry.IpAddress] = true
 			continue
 		}
 
-		if *entry.AwsSecurityGroup != "" {
+		if util.IsStringPresent(entry.AwsSecurityGroup) {
 			m[*entry.AwsSecurityGroup] = true
 			continue
 		}

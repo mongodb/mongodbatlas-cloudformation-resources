@@ -423,10 +423,3 @@ func AreStringPtrEqual(p1, p2 *string) bool {
 	}
 	return *p1 == *p2
 }
-
-func StringPointerIfNotEmpty(input string) *string {
-	if input != "" {
-		return &input
-	}
-	return nil
-}

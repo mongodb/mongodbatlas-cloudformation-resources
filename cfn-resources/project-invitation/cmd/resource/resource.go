@@ -79,8 +79,8 @@ func invitationAPIRequestToModel(currentModel *Model, invitation *admin.GroupInv
 		Username:        invitation.Username,
 		Id:              invitation.Id,
 		Roles:           invitation.Roles,
-		ExpiresAt:       util.StringPointerIfNotEmpty(invitation.ExpiresAt.GoString()),
-		CreatedAt:       util.StringPointerIfNotEmpty(invitation.CreatedAt.GoString()),
+		ExpiresAt:       util.TimePtrToStringPtr(invitation.ExpiresAt),
+		CreatedAt:       util.TimePtrToStringPtr(invitation.CreatedAt),
 		InviterUsername: invitation.InviterUsername,
 	}
 

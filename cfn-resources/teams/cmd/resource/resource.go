@@ -30,7 +30,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20230201008/admin"
+	atlasv2 "go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := cast.ToString(currentModel.ProjectId)
 	if teamID == "" {
 		// create new team in organization
-		teamResponse, resp, err := atlasV2.TeamsApi.CreateTeam(context.Background(), orgID, &admin.Team{
+		teamResponse, resp, err := atlasV2.TeamsApi.CreateTeam(context.Background(), orgID, &atlasv2.Team{
 			Name:      cast.ToString(currentModel.Name),
 			Usernames: currentModel.Usernames,
 		}).Execute()
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// add existing team or newly created team to project if project id exist in the request
 	if projectID != "" && len(currentModel.RoleNames) > 0 {
-		createRequest := []admin.TeamRole{{
+		createRequest := []atlasv2.TeamRole{{
 			TeamId:    &teamID,
 			RoleNames: currentModel.RoleNames,
 		}}
@@ -114,7 +114,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	teamID := cast.ToString(currentModel.TeamId)
 	orgID := cast.ToString(currentModel.OrgId)
 	teamName := cast.ToString(currentModel.Name)
-	var team *admin.TeamResponse
+	var team *atlasv2.TeamResponse
 	var resp *http.Response
 	var err error
 	// get team by id or name
@@ -154,7 +154,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func newAtlasUser(user admin.CloudAppUser) AtlasUser {
+func newAtlasUser(user atlasv2.CloudAppUser) AtlasUser {
 	return AtlasUser{
 		Country:      &user.Country,
 		EmailAddress: &user.EmailAddress,
@@ -168,7 +168,7 @@ func newAtlasUser(user admin.CloudAppUser) AtlasUser {
 		Username:     &user.Username,
 	}
 }
-func newAtlasRoles(roles []admin.CloudAccessRoleAssignment) []AtlasRole {
+func newAtlasRoles(roles []atlasv2.CloudAccessRoleAssignment) []AtlasRole {
 	var modelRole []AtlasRole
 	if roles == nil {
 		return modelRole
@@ -221,7 +221,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// add existing team or newly created team to project if project id exist in the request
 	if projectID != "" && len(currentModel.RoleNames) > 0 {
-		createRequest := []admin.TeamRole{{
+		createRequest := []atlasv2.TeamRole{{
 			TeamId:    &teamID,
 			RoleNames: currentModel.RoleNames,
 		}}
@@ -233,7 +233,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// rename the team
 	if !util.AreStringPtrEqual(team.Name, &teamName) {
-		_, _, err := atlasV2.TeamsApi.RenameTeam(context.Background(), orgID, teamID, &admin.Team{
+		_, _, err := atlasV2.TeamsApi.RenameTeam(context.Background(), orgID, teamID, &atlasv2.Team{
 			Name: teamName,
 		}).Execute()
 		if err != nil {
@@ -249,7 +249,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
 		}
 		usernames := currentModel.Usernames
-		var newUsers []admin.AddUserToTeam
+		var newUsers []atlasv2.AddUserToTeam
 		for ind := range usernames {
 			currentUser, isExistingUser := isUserExist(paginatedResp.Results, usernames[ind])
 
@@ -267,7 +267,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				}
 				// if the user exists, we will store its ID so that we can save as user list later
 				if user != nil {
-					newUsers = append(newUsers, admin.AddUserToTeam{Id: util.SafeString(user.Id)})
+					newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(user.Id)})
 				}
 			}
 		}
@@ -283,7 +283,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// update roles to team
 	roleNames := currentModel.RoleNames
 	if len(roleNames) > 0 && currentModel.ProjectId != nil {
-		teamRequest := &admin.TeamRole{RoleNames: roleNames}
+		teamRequest := &atlasv2.TeamRole{RoleNames: roleNames}
 		_, _, err = atlasV2.TeamsApi.UpdateTeamRoles(context.Background(), projectID, teamID, teamRequest).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("update role to team  error (%+v) \n", err)
@@ -319,7 +319,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var err error
 	// API call to get teams for project id
 	if projectID != "" {
-		var teamsAssigned *admin.PaginatedTeamRole
+		var teamsAssigned *atlasv2.PaginatedTeamRole
 		teamsAssigned, resp, err = atlasV2.TeamsApi.ListProjectTeams(context.Background(), projectID).Execute()
 
 		if err != nil {
@@ -332,7 +332,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 	} else {
 		// API call to get teams from organization
-		var paginatedResp *admin.PaginatedTeam
+		var paginatedResp *atlasv2.PaginatedTeam
 		paginatedResp, resp, err = atlasV2.TeamsApi.ListOrganizationTeams(context.Background(), orgID).Execute()
 
 		if err != nil {
@@ -417,7 +417,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func setup() {
 	util.SetupLogger("mongodb-atlas-teams")
 }
-func removeFromProject(atlasV2 *admin.APIClient, currentModel *Model) error {
+func removeFromProject(atlasV2 *atlasv2.APIClient, currentModel *Model) error {
 	teamID := cast.ToString(currentModel.TeamId)
 	projectID, err := getProjectIDByTeamID(context.Background(), atlasV2, teamID)
 	if err != nil {
@@ -432,7 +432,7 @@ func removeFromProject(atlasV2 *admin.APIClient, currentModel *Model) error {
 	return nil
 }
 
-func removeFromOrganization(atlasV2 *admin.APIClient, currentModel *Model) error {
+func removeFromOrganization(atlasV2 *atlasv2.APIClient, currentModel *Model) error {
 	teamID := cast.ToString(currentModel.TeamId)
 	orgID := cast.ToString(currentModel.OrgId)
 
@@ -444,7 +444,7 @@ func removeFromOrganization(atlasV2 *admin.APIClient, currentModel *Model) error
 	return nil
 }
 
-func getTeam(atlasV2 *admin.APIClient, currentModel *Model) (*admin.TeamResponse, *http.Response, error) {
+func getTeam(atlasV2 *atlasv2.APIClient, currentModel *Model) (*atlasv2.TeamResponse, *http.Response, error) {
 	teamID := cast.ToString(currentModel.TeamId)
 	orgID := cast.ToString(currentModel.OrgId)
 	teamName := cast.ToString(currentModel.Name)
@@ -458,7 +458,7 @@ func getTeam(atlasV2 *admin.APIClient, currentModel *Model) (*admin.TeamResponse
 	return nil, nil, errors.New("could not fetch Team as neither TeamId or Name were defined in model")
 }
 
-func isUserExist(users []admin.CloudAppUser, username string) (admin.CloudAppUser, bool) {
+func isUserExist(users []atlasv2.CloudAppUser, username string) (atlasv2.CloudAppUser, bool) {
 	endLoop := len(users)
 	for ind := 0; ind < endLoop; ind++ {
 		_, _ = logger.Debugf("atlas user : %s,target User %s", users[ind].Username, username)
@@ -466,10 +466,10 @@ func isUserExist(users []admin.CloudAppUser, username string) (admin.CloudAppUse
 			return users[ind], true
 		}
 	}
-	return admin.CloudAppUser{}, false
+	return atlasv2.CloudAppUser{}, false
 }
 
-func getProjectIDByTeamID(ctx context.Context, atlasV2 *admin.APIClient, teamID string) (string, error) {
+func getProjectIDByTeamID(ctx context.Context, atlasV2 *atlasv2.APIClient, teamID string) (string, error) {
 	paginatedResp, _, err := atlasV2.ProjectsApi.ListProjects(context.Background()).Execute()
 	if err != nil {
 		return "", fmt.Errorf("error getting projects information: %s", err)
@@ -495,18 +495,18 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-func convertProjectTeamToModel(team admin.TeamRole) *Model {
+func convertProjectTeamToModel(team atlasv2.TeamRole) *Model {
 	return &Model{
 		RoleNames: team.RoleNames,
 		TeamId:    team.TeamId,
 	}
 }
-func convertTeamToModel(team *admin.Team, result *Model) *Model {
+func convertTeamToModel(team *atlasv2.Team, result *Model) *Model {
 	if result == nil {
 		result = new(Model)
 	}
 
-	if team.Id != nil && *team.Id != "" {
+	if util.IsStringPresent(team.Id) {
 		result.TeamId = team.Id
 	}
 	if team.Name != "" {
@@ -518,15 +518,15 @@ func convertTeamToModel(team *admin.Team, result *Model) *Model {
 	return result
 }
 
-func convertTeamResponseToModel(team *admin.TeamResponse, result *Model) *Model {
+func convertTeamResponseToModel(team *atlasv2.TeamResponse, result *Model) *Model {
 	if result == nil {
 		result = new(Model)
 	}
 
-	if team.Id != nil && *team.Id != "" {
+	if util.IsStringPresent(team.Id) {
 		result.TeamId = team.Id
 	}
-	if team.Id != nil && *team.Name != "" {
+	if util.IsStringPresent(team.Name) {
 		result.Name = team.Name
 	}
 	return result

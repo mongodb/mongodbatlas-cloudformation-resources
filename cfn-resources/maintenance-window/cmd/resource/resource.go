@@ -137,41 +137,33 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Validation
-	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
 		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+		return *err, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	// Create atlas client
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	_, handlerError := get(client, *currentModel)
+	_, handlerError := get2(client, *currentModel)
 	if handlerError != nil {
 		return *handlerError, nil
 	}
 
-	var res *mongodbatlas.Response
-	res, err := client.MaintenanceWindows.Reset(context.Background(), *currentModel.ProjectId)
-
+	resp, err := client.AtlasV2.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		_, _ = logger.Warnf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	// Response
-	event := handler.ProgressEvent{
+	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "delete successful",
-	}
-	return event, nil
+	}, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

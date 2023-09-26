@@ -31,9 +31,9 @@ func UpdateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 
 	_, _ = log.Warnf("Update() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	errValidation := validateModel(UpdateRequiredFields, currentModel)
+	if errValidation != nil {
+		return *errValidation, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -51,7 +51,6 @@ func UpdateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 
 	invitation, res, err := client.AtlasV2.ProjectsApi.UpdateProjectInvitationById(context.Background(), *currentModel.ProjectId, *currentModel.Id, invitationReq).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Update - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("%s invitation updated", *currentModel.Id)

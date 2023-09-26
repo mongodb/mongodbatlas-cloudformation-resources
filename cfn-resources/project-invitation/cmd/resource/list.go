@@ -31,9 +31,9 @@ func ListOp(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	errValidation := validateModel(ListRequiredFields, currentModel)
+	if errValidation != nil {
+		return *errValidation, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -52,7 +52,6 @@ func ListOp(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	invitations, res, err := client.AtlasV2.ProjectsApi.ListProjectInvitationsWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
-		_, _ = log.Warnf("List - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 

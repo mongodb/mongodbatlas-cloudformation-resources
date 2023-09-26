@@ -31,9 +31,9 @@ func CreateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 
 	_, _ = log.Debugf("Create() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	errValidation := validateModel(CreateRequiredFields, currentModel)
+	if errValidation != nil {
+		return *errValidation, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -52,7 +52,6 @@ func CreateOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 
 	invitation, res, err := client.AtlasV2.ProjectsApi.CreateProjectInvitation(context.Background(), *currentModel.ProjectId, invitationReq).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Create - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	currentModel.Id = invitation.Id

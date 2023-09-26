@@ -29,9 +29,9 @@ func ReadOp(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	errValidation := validateModel(ReadRequiredFields, currentModel)
+	if errValidation != nil {
+		return *errValidation, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {

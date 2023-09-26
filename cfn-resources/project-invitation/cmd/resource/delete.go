@@ -30,9 +30,9 @@ func DeleteOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 	setup()
 
 	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	errValidation := validateModel(DeleteRequiredFields, currentModel)
+	if errValidation != nil {
+		return *errValidation, nil
 	}
 
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
@@ -50,7 +50,6 @@ func DeleteOp(req handler.Request, prevModel *Model, currentModel *Model) (handl
 	}
 	_, resp, err := client.AtlasV2.ProjectsApi.DeleteProjectInvitationWithParams(context.Background(), params).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Delete - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	_, _ = log.Debugf("deleted invitation with Id :%s", *currentModel.Id)

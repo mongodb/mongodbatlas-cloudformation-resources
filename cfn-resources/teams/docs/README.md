@@ -64,7 +64,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### OrgId
 
-Unique 24-hexadecimal character string that identifies the team.
+Unique 24-hexadecimal character string that identifies the organization.
 
 _Required_: No
 
@@ -90,7 +90,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Name
 
-Unique 24-hexadecimal character string that identifies the team.
+Human-readable label that identifies the team.
 
 _Required_: No
 
@@ -100,7 +100,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Usernames
 
-One or more organization- or project-level roles to assign to the MongoDB Cloud user.
+List that contains the MongoDB Cloud users in this team.
 
 _Required_: No
 

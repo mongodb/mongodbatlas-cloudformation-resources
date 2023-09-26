@@ -1,0 +1,56 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template Returns, starts, or ends a cluster outage simulation.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project",
+      "Default": "64bad960538ae76ec5c70050"
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Name to use for your Atlas Cluster",
+      "Default": "ClusterOutageTest"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys",
+      "Default": "default"
+    }
+
+  },
+  "Resources": {
+    "CloudOutageSimulation": {
+      "Type": "MongoDB::Atlas::ClusterOutageSimulation",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "OutageFilters": [
+          {
+            "CloudProvider": "AWS",
+            "Region": "US_WEST_1",
+            "Type": "REGION"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "CloudOutageSimulationID": {
+      "Description": "Id of the CloudOutageSimulation and cluster name",
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudOutageSimulation",
+          "SimulationId"
+        ]
+      }
+    }
+    }
+  }

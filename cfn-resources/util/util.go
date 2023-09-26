@@ -366,6 +366,17 @@ func buildKey(keyID, storePrefix string) string {
 	return fmt.Sprintf("%s-%s", storePrefix, keyID)
 }
 
+// Contains checks if a string is present in a slice
+func Contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func SafeString(s *string) string {
 	if s != nil {
 		return *s

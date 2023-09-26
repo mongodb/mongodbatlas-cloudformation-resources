@@ -111,6 +111,9 @@ func mapToArchivePayload(currentModel *Model) (mongodbatlas.OnlineArchive, *hand
 	if errHandler != nil {
 		return requestInput, errHandler
 	}
+
+	requestInput.PartitionFields = mapPartitionFields(currentModel)
+
 	requestInput.Criteria = criteria
 	return requestInput, nil
 }
@@ -134,6 +137,26 @@ func mapCriteria(currentModel *Model) (*mongodbatlas.OnlineArchiveCriteria, *han
 		criteriaInput.Query = aws.StringValue(criteriaModel.Query)
 	}
 	return criteriaInput, nil
+}
+
+func mapPartitionFields(currentModel *Model) []*mongodbatlas.PartitionFields {
+	partitionFields := make([]*mongodbatlas.PartitionFields, len(currentModel.PartitionFields))
+
+	for i := range currentModel.PartitionFields {
+		partitionField := mongodbatlas.PartitionFields{}
+
+		if currentModel.PartitionFields[i].FieldName != nil {
+			partitionField.FieldName = *currentModel.PartitionFields[i].FieldName
+		}
+
+		if currentModel.PartitionFields[i].Order != nil {
+			partitionField.Order = currentModel.PartitionFields[i].Order
+		}
+
+		partitionFields[i] = &partitionField
+	}
+
+	return partitionFields
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

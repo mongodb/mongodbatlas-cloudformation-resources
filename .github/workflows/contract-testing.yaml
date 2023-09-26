@@ -20,9 +20,11 @@ jobs:
      access-list-api-key: ${{ steps.filter.outputs.access-list-api-key }}
      api-key: ${{ steps.filter.outputs.api-key }}
      privatelink-endpoint-service-data-federation-online-archive: ${{ steps.filter.outputs.privatelink-endpoint-service-data-federation-online-archive }}
+     cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
      serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      data-lake-pipeline: ${{ steps.filter.outputs.data-lake-pipeline }}
      cloud-backup-restore-jobs: ${{ steps.filter.outputs.cloud-backup-restore-jobs }}
+     online-archive: ${{ steps.filter.outputs.online-archive }}
    steps:
    - uses: actions/checkout@v4
      if: ${{ github.event_name == 'push' }}
@@ -46,8 +48,12 @@ jobs:
           - 'cfn-resources/api-key/**'
         privatelink-endpoint-service-data-federation-online-archive:
           - 'cfn-resources/privatelink-endpoint-service-data-federation-online-archive/**'
+        cluster-outage-simulation:
+          - 'cfn-resources/cluster-outage-simulation/**'
         data-lake-pipeline:
           - 'cfn-resources/data-lake-pipeline/**'
+        online-archive:
+          - 'cfn-resources/online-archive/**'
         serverless-private-endpoint:
           - 'cfn-resources/serverless-private-endpoint/**'
         cloud-backup-restore-jobs:
@@ -67,7 +73,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -106,11 +112,11 @@ jobs:
           public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -153,7 +159,7 @@ jobs:
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@v3
+    - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -181,6 +187,49 @@ jobs:
        
        make run-contract-testing
        make delete-test-resources
+  cluster-outage-simulation :
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Atlas CLI
+        uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+        with:
+          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          version: v1.10.0
+      - uses: actions/checkout@v4
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          pushd cfn-resources/cluster-outage-simulation
+          make create-test-resources
+          
+          cat inputs/inputs_1_create.json
+          
+          make run-contract-testing
+          make delete-test-resources
   federated-query-limit:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
@@ -197,7 +246,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -239,7 +288,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -278,7 +327,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -320,7 +369,7 @@ jobs:
     - uses: aws-actions/setup-sam@v2
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@v3
+    - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -364,7 +413,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -406,7 +455,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -449,7 +498,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -489,11 +538,11 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -518,6 +567,47 @@ jobs:
 
           cat inputs/inputs_1_create.json
 
+
+          make run-contract-testing
+          make delete-test-resources
+  online-archive:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Atlas CLI
+        uses: andreaangiolillo/atlas-cli-github-action@v1.1.1
+        with:
+          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+      - uses: actions/checkout@v4
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          pushd cfn-resources/online-archive
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
 
           make run-contract-testing
           make delete-test-resources

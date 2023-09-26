@@ -68,11 +68,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, client, currentModel, "PENDING")
 	}
 
-	inputRequest, errHandler := prepareCreate(currentModel)
+	params, errHandler := newCreateParams(currentModel)
 	if errHandler != nil {
 		return *errHandler, nil
 	}
-	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &inputRequest).Execute()
+	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -147,7 +147,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	inputRequest, errHandler := prepareUpdate(currentModel)
+	params, errHandler := newUpdateParams(currentModel)
 	if errHandler != nil {
 		return *errHandler, nil
 	}
@@ -155,7 +155,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if a, _ := ArchiveExists(ctx, client, currentModel); *a.State == "DELETED" {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
-	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &inputRequest).Execute()
+	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -254,7 +254,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func prepareCreate(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
+func newCreateParams(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
 	requestInput := admin.BackupOnlineArchiveCreate{
 		DbName:   *currentModel.DbName,
 		CollName: *currentModel.CollName,
@@ -268,7 +268,7 @@ func prepareCreate(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handl
 	return requestInput, nil
 }
 
-func prepareUpdate(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
+func newUpdateParams(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
 	requestInput := admin.BackupOnlineArchive{
 		DbName:   currentModel.DbName,
 		CollName: currentModel.CollName,

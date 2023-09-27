@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -36,29 +36,18 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-maintenance-window")
 }
 
-func (m Model) toAtlasModel() mongodbatlas.MaintenanceWindow {
-	return mongodbatlas.MaintenanceWindow{
-		DayOfWeek:            *m.DayOfWeek,
-		HourOfDay:            m.HourOfDay,
-		StartASAP:            m.StartASAP,
-		AutoDeferOnceEnabled: m.AutoDeferOnceEnabled,
-	}
-}
-
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	// Validation
-	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
+
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
 		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+		return *err, nil
 	}
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	// Create atlas client
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -67,16 +56,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progress_events.GetFailedEventByCode("resource already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
-	var res *mongodbatlas.Response
-
 	atlasModel := currentModel.toAtlasModel()
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.ProjectId, &atlasModel)
+	_, resp, err := client.AtlasV2.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
-		_, _ = logger.Warnf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{
@@ -86,20 +72,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Validation
-	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
 		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+		return *err, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	// Create atlas client
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -110,20 +92,97 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.AutoDeferOnceEnabled = maintenanceWindow.AutoDeferOnceEnabled
 	currentModel.DayOfWeek = &maintenanceWindow.DayOfWeek
-	currentModel.HourOfDay = maintenanceWindow.HourOfDay
-	// Response
-	event := handler.ProgressEvent{
+	currentModel.HourOfDay = &maintenanceWindow.HourOfDay
+
+	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
+		Message:         constants.ReadComplete,
 		ResourceModel:   currentModel,
-	}
-	return event, nil
+	}, nil
 }
 
-func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.MaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, res, err := client.MaintenanceWindows.Get(context.Background(), *currentModel.ProjectId)
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *err, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
+	}
+
+	_, handlerError := get(client, *currentModel)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
+	atlasModel := currentModel.toAtlasModel()
+	startASP := false
+	atlasModel.StartASAP = &startASP
+
+	_, resp, err := client.AtlasV2.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
+		_, _ = logger.Warnf("Validation Error")
+		return *err, nil
+	}
+
+	if currentModel.Profile == nil || *currentModel.Profile == "" {
+		currentModel.Profile = aws.String(profile.DefaultProfile)
+	}
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
+	}
+
+	_, handlerError := get(client, *currentModel)
+	if handlerError != nil {
+		return *handlerError, nil
+	}
+
+	resp, err := client.AtlasV2.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "delete successful",
+	}, nil
+}
+
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
+func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
+	return admin.GroupMaintenanceWindow{
+		DayOfWeek:            *m.DayOfWeek,
+		HourOfDay:            *m.HourOfDay,
+		StartASAP:            m.StartASAP,
+		AutoDeferOnceEnabled: m.AutoDeferOnceEnabled,
+	}
+}
+
+func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
+	maintenanceWindow, resp, err := client.AtlasV2.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
-		ev := progress_events.GetFailedEventByResponse(err.Error(), res.Response)
+		ev := progress_events.GetFailedEventByResponse(err.Error(), resp)
 		return nil, &ev
 	}
 
@@ -136,90 +195,6 @@ func get(client *mongodbatlas.Client, currentModel Model) (*mongodbatlas.Mainten
 	return maintenanceWindow, nil
 }
 
-func isResponseEmpty(maintenanceWindow *mongodbatlas.MaintenanceWindow) bool {
+func isResponseEmpty(maintenanceWindow *admin.GroupMaintenanceWindow) bool {
 	return maintenanceWindow != nil && maintenanceWindow.DayOfWeek == 0
-}
-
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Validation
-	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	// Create atlas client
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
-	}
-
-	_, handlerError := get(client, *currentModel)
-	if handlerError != nil {
-		return *handlerError, nil
-	}
-
-	var res *mongodbatlas.Response
-
-	atlasModel := currentModel.toAtlasModel()
-	startASP := false
-	atlasModel.StartASAP = &startASP
-
-	res, err := client.MaintenanceWindows.Update(context.Background(), *currentModel.ProjectId, &atlasModel)
-	if err != nil {
-		_, _ = logger.Warnf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	// Response
-	event := handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}
-	return event, nil
-}
-
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Validation
-	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	// Create atlas client
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
-	}
-
-	_, handlerError := get(client, *currentModel)
-	if handlerError != nil {
-		return *handlerError, nil
-	}
-
-	var res *mongodbatlas.Response
-	res, err := client.MaintenanceWindows.Reset(context.Background(), *currentModel.ProjectId)
-
-	if err != nil {
-		_, _ = logger.Warnf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	// Response
-	event := handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "delete successful",
-	}
-	return event, nil
-}
-
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }

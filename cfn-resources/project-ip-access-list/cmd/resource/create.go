@@ -77,7 +77,7 @@ func createEntries(model *Model, client *util.MongoDBClient) (handler.ProgressEv
 			return handler.ProgressEvent{
 				Message:          fmt.Sprintf("Error validating entries: %s", err.Error()),
 				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure}, err
 		}
 		return handler.ProgressEvent{
 			Message:          "Entry already exists in the access list",

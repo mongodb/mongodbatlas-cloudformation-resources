@@ -142,7 +142,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errHandler, nil
 	}
 	ctx := context.Background()
-	if a, _ := ArchiveExists(ctx, client, currentModel); *a.State == "DELETED" {
+	if ArchiveDeleted(ctx, client, currentModel) {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
@@ -178,7 +178,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(ctx, client, currentModel, "PENDING")
 	}
 
-	if a, _ := ArchiveExists(ctx, client, currentModel); *a.State == "DELETED" {
+	if ArchiveDeleted(ctx, client, currentModel) {
 		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 
@@ -346,4 +346,9 @@ func ArchiveExists(ctx context.Context, client *util.MongoDBClient, currentModel
 		return nil, err
 	}
 	return archive, nil
+}
+
+func ArchiveDeleted(ctx context.Context, client *util.MongoDBClient, currentModel *Model) bool {
+	a, _ := ArchiveExists(ctx, client, currentModel)
+	return a == nil || *a.State == "DELETED"
 }

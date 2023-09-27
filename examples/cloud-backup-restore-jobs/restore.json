@@ -55,8 +55,11 @@
         "ProjectId": {
           "Ref": "ProjectId"
         },
-        "ClusterName": {
-          "Ref": "ClusterName"
+        "InstanceName": {
+          "Ref": "InstanceName"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
         },
         "Profile": {
           "Ref": "Profile"

@@ -20,14 +20,12 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 func setup() {
@@ -49,27 +47,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	atlasCustomDBRole := currentModel.ToCustomDBRole()
 
-	customDBRole, response, err := client.CustomDBRoles.Create(context.Background(), *currentModel.ProjectId, &atlasCustomDBRole)
+	customDBRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.CreateCustomDatabaseRole(context.Background(), *currentModel.ProjectId, atlasCustomDBRole).Execute()
 	if err != nil {
-		if response.Response.StatusCode == http.StatusConflict {
+		if response.StatusCode == http.StatusConflict {
 			return progress_events.GetFailedEventByCode("Resource already exists",
 				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	currentModel.completeByAtlasRole(*customDBRole)
@@ -88,20 +82,16 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	atlasCustomDdRole, response, err := client.CustomDBRoles.Get(context.Background(), *currentModel.ProjectId, *currentModel.RoleName)
+	atlasCustomDdRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.GetCustomDatabaseRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleName).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	currentModel.completeByAtlasRole(*atlasCustomDdRole)
@@ -121,36 +111,32 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	var actions []mongodbatlas.Action
+	var actions []admin.DatabasePrivilegeAction
 	for _, a := range currentModel.Actions {
 		actions = append(actions, a.toAtlasAction())
 	}
 
-	var inheritedRoles []mongodbatlas.InheritedRole
+	var inheritedRoles []admin.DatabaseInheritedRole
 	for _, ir := range currentModel.InheritedRoles {
 		inheritedRoles = append(inheritedRoles, ir.toAtlasInheritedRole())
 	}
 
-	inputCustomDBRole := mongodbatlas.CustomDBRole{
+	inputCustomDBRole := admin.UpdateCustomDBRole{
 		Actions:        actions,
 		InheritedRoles: inheritedRoles,
 	}
 
-	atlasCustomDdRole, response, err := client.CustomDBRoles.Update(context.Background(), *currentModel.ProjectId,
-		*currentModel.RoleName, &inputCustomDBRole)
+	atlasCustomDdRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.UpdateCustomDatabaseRole(context.Background(), *currentModel.ProjectId,
+		*currentModel.RoleName, &inputCustomDBRole).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	currentModel.completeByAtlasRole(*atlasCustomDdRole)
@@ -170,20 +156,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	response, err := client.CustomDBRoles.Delete(context.Background(), *currentModel.ProjectId, *currentModel.RoleName)
+	response, err := client.AtlasV2.CustomDatabaseRolesApi.DeleteCustomDatabaseRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleName).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -200,26 +182,21 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	customDBRoleResponse, response, err := client.CustomDBRoles.List(context.Background(),
-		*currentModel.ProjectId,
-		nil)
+	customDBRoleResponse, response, err := client.AtlasV2.CustomDatabaseRolesApi.ListCustomDatabaseRoles(context.Background(),
+		*currentModel.ProjectId).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	mm := make([]interface{}, 0)
-	for _, customDBRole := range *customDBRoleResponse {
+	for _, customDBRole := range customDBRoleResponse {
 		var m Model
 		m.completeByAtlasRole(customDBRole)
 		m.ProjectId = currentModel.ProjectId
@@ -233,52 +210,52 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  mm}, nil
 }
 
-func (m *Model) ToCustomDBRole() mongodbatlas.CustomDBRole {
-	var actions []mongodbatlas.Action
+func (m *Model) ToCustomDBRole() *admin.UserCustomDBRole {
+	var actions []admin.DatabasePrivilegeAction
 	for _, a := range m.Actions {
 		actions = append(actions, a.toAtlasAction())
 	}
 
-	var inheritedRoles []mongodbatlas.InheritedRole
+	var inheritedRoles []admin.DatabaseInheritedRole
 	for _, ir := range m.InheritedRoles {
 		inheritedRoles = append(inheritedRoles, ir.toAtlasInheritedRole())
 	}
 
-	return mongodbatlas.CustomDBRole{
+	return &admin.UserCustomDBRole{
 		Actions:        actions,
 		InheritedRoles: inheritedRoles,
 		RoleName:       *m.RoleName,
 	}
 }
 
-func (a InheritedRole) toAtlasInheritedRole() mongodbatlas.InheritedRole {
-	return mongodbatlas.InheritedRole{
+func (a InheritedRole) toAtlasInheritedRole() admin.DatabaseInheritedRole {
+	return admin.DatabaseInheritedRole{
 		Db:   *a.Db,
 		Role: *a.Role,
 	}
 }
 
-func (a Action) toAtlasAction() mongodbatlas.Action {
-	var resources []mongodbatlas.Resource
+func (a Action) toAtlasAction() admin.DatabasePrivilegeAction {
+	var resources []admin.DatabasePermittedNamespaceResource
 	for _, r := range a.Resources {
 		resources = append(resources, r.toAtlasResource())
 	}
 
-	return mongodbatlas.Action{
+	return admin.DatabasePrivilegeAction{
 		Action:    *a.Action,
 		Resources: resources,
 	}
 }
 
-func (r Resource) toAtlasResource() mongodbatlas.Resource {
-	return mongodbatlas.Resource{
-		Collection: r.Collection,
-		DB:         r.DB,
-		Cluster:    r.Cluster,
+func (r Resource) toAtlasResource() admin.DatabasePermittedNamespaceResource {
+	return admin.DatabasePermittedNamespaceResource{
+		Collection: *r.Collection,
+		Db:         *r.DB,
+		Cluster:    *r.Cluster,
 	}
 }
 
-func (m *Model) completeByAtlasRole(role mongodbatlas.CustomDBRole) {
+func (m *Model) completeByAtlasRole(role admin.UserCustomDBRole) {
 	var actions []Action
 	for _, a := range role.Actions {
 		actions = append(actions, atlasActionToModel(a))
@@ -294,7 +271,7 @@ func (m *Model) completeByAtlasRole(role mongodbatlas.CustomDBRole) {
 	m.RoleName = &role.RoleName
 }
 
-func atlasActionToModel(action mongodbatlas.Action) Action {
+func atlasActionToModel(action admin.DatabasePrivilegeAction) Action {
 	var resources []Resource
 	for _, r := range action.Resources {
 		resources = append(resources, atlasResourceToModel(r))
@@ -306,15 +283,15 @@ func atlasActionToModel(action mongodbatlas.Action) Action {
 	}
 }
 
-func atlasResourceToModel(resource mongodbatlas.Resource) Resource {
+func atlasResourceToModel(resource admin.DatabasePermittedNamespaceResource) Resource {
 	return Resource{
-		Collection: resource.Collection,
-		DB:         resource.DB,
-		Cluster:    resource.Cluster,
+		Collection: &resource.Collection,
+		DB:         &resource.Db,
+		Cluster:    &resource.Cluster,
 	}
 }
 
-func atlasInheritedRoleToModel(inheritedRole mongodbatlas.InheritedRole) InheritedRole {
+func atlasInheritedRoleToModel(inheritedRole admin.DatabaseInheritedRole) InheritedRole {
 	return InheritedRole{
 		Db:   &inheritedRole.Db,
 		Role: &inheritedRole.Role,

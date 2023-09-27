@@ -48,7 +48,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ReturnSuccessIfTimeOut
 
-if set to true, the process will return success, in the event of a timeOut default false
+if set to true, the process will return success, in the event of a timeOut, default false
 
 _Required_: No
 

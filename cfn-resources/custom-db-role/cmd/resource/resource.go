@@ -54,7 +54,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	atlasCustomDBRole := currentModel.ToCustomDBRole()
-
 	customDBRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.CreateCustomDatabaseRole(context.Background(), *currentModel.ProjectId, atlasCustomDBRole).Execute()
 	if err != nil {
 		if response.StatusCode == http.StatusConflict {
@@ -67,7 +66,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.completeByAtlasRole(*customDBRole)
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -248,11 +246,22 @@ func (a Action) toAtlasAction() admin.DatabasePrivilegeAction {
 }
 
 func (r Resource) toAtlasResource() admin.DatabasePermittedNamespaceResource {
-	return admin.DatabasePermittedNamespaceResource{
-		Collection: *r.Collection,
-		Db:         *r.DB,
-		Cluster:    *r.Cluster,
+	out := admin.DatabasePermittedNamespaceResource{
+		Cluster: false,
 	}
+	if util.IsStringPresent(r.Collection) {
+		out.Collection = *r.Collection
+	}
+
+	if util.IsStringPresent(r.DB) {
+		out.Db = *r.DB
+	}
+
+	if r.Cluster != nil && *r.Cluster {
+		out.Cluster = *r.Cluster
+	}
+
+	return out
 }
 
 func (m *Model) completeByAtlasRole(role admin.UserCustomDBRole) {

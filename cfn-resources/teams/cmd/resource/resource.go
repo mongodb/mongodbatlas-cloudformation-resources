@@ -381,28 +381,28 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
 			}, nil
 		}
-	} else {
-		// remove from organization
-		err := removeFromOrganization(atlasV2, currentModel)
-		if err != nil {
-			// if team is assigned to project then first delete from project
-			if atlasv2.IsErrorCode(err, "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT") {
-				if err := removeFromProject(atlasV2, currentModel); err != nil {
-					return handler.ProgressEvent{
-						OperationStatus:  handler.Failed,
-						Message:          "Unable to Delete",
-						HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
-					}, nil
-				}
+	}
 
-				// remove from organization if successfully deleted from project
-				if err := removeFromOrganization(atlasV2, currentModel); err != nil {
-					return handler.ProgressEvent{
-						OperationStatus:  handler.Failed,
-						Message:          "Unable to Delete",
-						HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
-					}, nil
-				}
+	// remove from organization
+	err := removeFromOrganization(atlasV2, currentModel)
+	if err != nil {
+		// if team is assigned to project then first delete from project
+		if atlasv2.IsErrorCode(err, "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT") {
+			if err := removeFromProject(atlasV2, currentModel); err != nil {
+				return handler.ProgressEvent{
+					OperationStatus:  handler.Failed,
+					Message:          "Unable to Delete",
+					HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+				}, nil
+			}
+
+			// remove from organization if successfully deleted from project
+			if err := removeFromOrganization(atlasV2, currentModel); err != nil {
+				return handler.ProgressEvent{
+					OperationStatus:  handler.Failed,
+					Message:          "Unable to Delete",
+					HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+				}, nil
 			}
 		}
 	}

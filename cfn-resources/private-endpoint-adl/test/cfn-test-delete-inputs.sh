@@ -37,7 +37,6 @@ else
       echo "STEP 1.d deleting privateEndpoint Service "
       atlas privateEndpoints aws delete "$ATLAS_PRIVATE_ENDPOINT_SERVICE" --projectId "$projectId" --force
     else
-      interfaceEndpoints=$(echo "$ENDPOINT_OUTPUT" | jq -r '.interfaceEndpoints[]')
       for interfaceId in $(echo "$ENDPOINT_OUTPUT" | jq -r '.interfaceEndpoints[]'); do
         echo "STEP 1.b DELETING INTERFACE $interfaceId FOR SERVICE $ATLAS_PRIVATE_ENDPOINT_SERVICE"
         atlas privateEndpoints aws interface delete "$interfaceId" --endpointServiceId "$ATLAS_PRIVATE_ENDPOINT_SERVICE" --projectId "$projectId" --force

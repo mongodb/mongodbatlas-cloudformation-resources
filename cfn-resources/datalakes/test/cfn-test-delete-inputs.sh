@@ -21,7 +21,6 @@ clusters_response=$(atlas clusters list --projectId "$project_id" 2>&1)
 # Check if the response contains the "GROUP_NOT_FOUND" error message
 if [[ "$clusters_response" == *"GROUP_NOT_FOUND"* ]]; then
     echo "Project with ID $project_id not found. Continuing with the next project."
-    continue
 fi
 
 total_count=$(echo "$clusters_response" | jq -r '.totalCount')
@@ -31,7 +30,7 @@ if [ "$total_count" -eq 0 ]; then
     echo "No clusters found for project with ID: $project_id"
 else
     # Extract cluster names from the response
-    cluster_names=($(echo "$clusters_response" | jq -r '.results[].name'))
+    mapfile -t cluster_names < <(echo "$clusters_response" | jq -r '.results[].name')
 
     # Delete each cluster within the project
     for cluster_name in "${cluster_names[@]}"; do

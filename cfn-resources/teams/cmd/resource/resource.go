@@ -383,9 +383,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	// remove from organization
-	err := removeFromOrganization(atlasV2, currentModel)
-	if err != nil {
+	if err := removeFromOrganization(atlasV2, currentModel); err != nil {
 		// if team is assigned to project then first delete from project
 		if atlasv2.IsErrorCode(err, "CANNOT_DELETE_TEAM_ASSIGNED_TO_PROJECT") {
 			if err := removeFromProject(atlasV2, currentModel); err != nil {
@@ -400,7 +398,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			if err := removeFromOrganization(atlasV2, currentModel); err != nil {
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Unable to Delete",
+					Message:          "Unable to Delete from organization but successfully removed from project",
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
 				}, nil
 			}

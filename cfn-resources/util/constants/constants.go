@@ -77,6 +77,7 @@ const (
 	SnapshotID                       = "SnapshotId"
 	Automated                        = "automated"
 	Download                         = "download"
+	ClusterName                      = "ClusterName"
 	InstanceName                     = "InstanceName"
 	InstanceType                     = "InstanceType"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"

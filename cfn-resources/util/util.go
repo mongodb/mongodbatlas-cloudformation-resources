@@ -28,6 +28,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -422,4 +423,11 @@ func AreStringPtrEqual(p1, p2 *string) bool {
 		return false
 	}
 	return *p1 == *p2
+}
+
+// setDefaultProfileIfNotDefined can be called at the beginning of the CRUDL methods to set default profile if not defined
+func SetDefaultProfileIfNotDefined(p **string) {
+	if p != nil && !IsStringPresent(*p) {
+		*p = aws.String(profile.DefaultProfile)
+	}
 }

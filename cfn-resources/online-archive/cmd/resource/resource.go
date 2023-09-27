@@ -22,7 +22,6 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -42,15 +41,13 @@ var requiredCriteriaType = map[string][]string{
 	"CUSTOM": {"Query"},
 }
 
-func setupLogAndProfile(currentModel *Model) {
+func setup() {
 	util.SetupLogger("mongodb-atlas-online-archive")
-	if !util.IsStringPresent(currentModel.Profile) {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setupLogAndProfile(currentModel)
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
@@ -91,7 +88,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setupLogAndProfile(currentModel)
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if currentModel.ArchiveId == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -122,7 +120,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setupLogAndProfile(currentModel)
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if currentModel.ArchiveId == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -162,7 +161,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setupLogAndProfile(currentModel)
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
@@ -200,7 +200,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setupLogAndProfile(currentModel)
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}

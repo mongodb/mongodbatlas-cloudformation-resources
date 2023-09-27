@@ -21,7 +21,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
@@ -67,13 +67,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	invitation, res, err := atlasV2.OrganizationsApi.CreateOrganizationInvitation(context.Background(), *currentModel.OrgId, invitationReq).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Create - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	currentModel.Id = invitation.Id
 
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	// Response
@@ -108,11 +108,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		// if invitation already accepted
 		if res.StatusCode == 404 {
 			if alreadyAccepted, _ := validateOrgInvitationAlreadyAccepted(context.Background(), atlasV2, *currentModel.Username, *currentModel.OrgId); alreadyAccepted {
-				return progressevents.GetFailedEventByResponse("invitation has been already accepted", res), nil
+				return progressevent.GetFailedEventByResponse("invitation has been already accepted", res), nil
 			}
 		}
 
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	model := readAtlasOrgInvitation(invitation, currentModel)
@@ -150,7 +150,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("%s invitation updated", *currentModel.Id)
 
@@ -182,7 +182,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	res, err := client.Organizations.DeleteInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id)
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	_, _ = log.Debugf("deleted invitation with Id :%s", *currentModel.Id)
 
@@ -217,7 +217,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}).Execute()
 	if err != nil {
 		_, _ = log.Warnf("List - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	var invites []interface{}

@@ -25,7 +25,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Username}
@@ -57,26 +57,28 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
+
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	invitationReq := &mongodbatlas.Invitation{
-		TeamIDs:  currentModel.TeamIds,
+	invitationReq := &admin.OrganizationInvitationRequest{
+		TeamIds:  currentModel.TeamIds,
 		Roles:    currentModel.Roles,
-		Username: *currentModel.Username,
+		Username: currentModel.Username,
 	}
-	invitation, res, err := client.Organizations.InviteUser(context.Background(), *currentModel.OrgId, invitationReq)
+	invitation, res, err := atlasV2.OrganizationsApi.CreateOrganizationInvitation(context.Background(), *currentModel.OrgId, invitationReq).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Create - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
-	currentModel.Id = &invitation.ID
+	currentModel.Id = invitation.Id
 
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	// Response
@@ -101,23 +103,24 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	invitation, res, err := client.Organizations.Invitation(context.Background(), *currentModel.OrgId, *currentModel.Id)
+	invitation, res, err := atlasV2.OrganizationsApi.GetOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
 
 		// if invitation already accepted
 		if res.StatusCode == 404 {
-			if alreadyAccepted, _ := validateOrgInvitationAlreadyAccepted(context.Background(), client, *currentModel.Username, *currentModel.OrgId); alreadyAccepted {
-				return progressevents.GetFailedEventByResponse("invitation has been already accepted", res.Response), nil
+			if alreadyAccepted, _ := validateOrgInvitationAlreadyAccepted(context.Background(), atlasV2, *currentModel.Username, *currentModel.OrgId); alreadyAccepted {
+				return progressevents.GetFailedEventByResponse("invitation has been already accepted", res), nil
 			}
 		}
 
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	model := readAtlasOrgInvitation(invitation, currentModel)
@@ -143,20 +146,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	invitationReq := &mongodbatlas.Invitation{
-		TeamIDs: currentModel.TeamIds,
+	invitationReq := &admin.OrganizationInvitationUpdateRequest{
+		TeamIds: currentModel.TeamIds,
 		Roles:   currentModel.Roles,
 	}
 
-	invitation, res, err := client.Organizations.UpdateInvitationByID(context.Background(), *currentModel.OrgId, *currentModel.Id, invitationReq)
+	invitation, res, err := atlasV2.OrganizationsApi.UpdateOrganizationInvitationById(context.Background(), *currentModel.OrgId, *currentModel.Id, invitationReq).Execute()
+
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("%s invitation updated", *currentModel.Id)
 
@@ -217,25 +222,26 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	listOptions := &mongodbatlas.InvitationOptions{
-		Username: *currentModel.Username,
-	}
-	invitations, res, err := client.Organizations.Invitations(context.Background(), *currentModel.OrgId, listOptions)
+	invitations, res, err := atlasV2.OrganizationsApi.ListOrganizationInvitationsWithParams(context.Background(), &admin.ListOrganizationInvitationsApiParams{
+		OrgId:    *currentModel.OrgId,
+		Username: currentModel.Username,
+	}).Execute()
 	if err != nil {
 		_, _ = log.Warnf("List - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	var invites []interface{}
 	// iterate invites
 	for i := range invitations {
 		invite := &Model{}
-		model := readAtlasOrgInvitation(invitations[i], invite)
+		model := readAtlasOrgInvitation(&invitations[i], invite)
 		invites = append(invites, model)
 	}
 
@@ -246,26 +252,26 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func readAtlasOrgInvitation(invitation *mongodbatlas.Invitation, currentModel *Model) (model *Model) {
-	currentModel.Username = &invitation.Username
-	currentModel.OrgId = &invitation.OrgID
-	currentModel.Id = &invitation.ID
-	currentModel.TeamIds = invitation.TeamIDs
+func readAtlasOrgInvitation(invitation *admin.OrganizationInvitation, currentModel *Model) (model *Model) {
+	currentModel.Username = invitation.Username
+	currentModel.OrgId = invitation.OrgId
+	currentModel.Id = invitation.Id
+	currentModel.TeamIds = invitation.TeamIds
 	currentModel.Roles = invitation.Roles
-	currentModel.ExpiresAt = &invitation.ExpiresAt
-	currentModel.CreatedAt = &invitation.CreatedAt
-	currentModel.InviterUsername = &invitation.InviterUsername
+	currentModel.ExpiresAt = util.TimePtrToStringPtr(invitation.ExpiresAt)
+	currentModel.CreatedAt = util.TimePtrToStringPtr(invitation.CreatedAt)
+	currentModel.InviterUsername = invitation.InviterUsername
 	return currentModel
 }
 
-func validateOrgInvitationAlreadyAccepted(ctx context.Context, client *mongodbatlas.Client, username, orgID string) (bool, error) {
-	user, _, err := client.AtlasUsers.GetByName(ctx, username)
+func validateOrgInvitationAlreadyAccepted(ctx context.Context, atlasV2 *admin.APIClient, username, orgID string) (bool, error) {
+	user, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(ctx, username).Execute()
 	if err != nil {
 		return false, err
 	}
 
 	for _, role := range user.Roles {
-		if role.OrgID == orgID {
+		if util.AreStringPtrEqual(role.OrgId, &orgID) {
 			return true, nil
 		}
 	}

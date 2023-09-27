@@ -51,7 +51,7 @@ Properties:
 
 #### Profile
 
-The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
 
 _Required_: Yes
 
@@ -188,3 +188,4 @@ Date and time when MongoDB Cloud sent the invitation. MongoDB Cloud represents t
 #### InviterUsername
 
 Email address of the MongoDB Cloud user who sent the invitation to join the organization.
+

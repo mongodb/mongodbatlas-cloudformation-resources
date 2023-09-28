@@ -19,12 +19,10 @@ import (
 	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var listRequiredFields = []string{constants.ProjectID}
@@ -39,22 +37,19 @@ func listOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 		return *errEvent, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	projectID := *currentModel.ProjectId
-	containerRequest := &mongodbatlas.ContainersListOptions{
-		ProviderName: constants.AWS,
-		ListOptions:  mongodbatlas.ListOptions{},
+	aws := constants.AWS
+	containerRequest := &admin.ListPeeringContainerByCloudProviderApiParams{
+		ProviderName: &aws,
+		GroupId:      *currentModel.ProjectId,
 	}
-	_, _ = logger.Debugf("List projectId:%v, containerRequest:%v", projectID, containerRequest)
-	containerResponse, _, err := client.Containers.List(context.Background(), projectID, containerRequest)
+	_, _ = logger.Debugf("List - containerRequest:%v", containerRequest)
+	containerResponse, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), containerRequest).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Error %v", err)
 		return handler.ProgressEvent{}, err
@@ -62,9 +57,10 @@ func listOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 
 	_, _ = logger.Debugf("containerResponse:%v", containerResponse)
 
+	containers := containerResponse.Results
 	mm := make([]interface{}, 0)
-	for i := range containerResponse {
-		mm = append(mm, completeByConnection(containerResponse[i], projectID, *currentModel.Profile))
+	for i := range containers {
+		mm = append(mm, completeByConnection(&containers[i], *currentModel.ProjectId, *currentModel.Profile))
 	}
 
 	return handler.ProgressEvent{
@@ -74,13 +70,13 @@ func listOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 	}, nil
 }
 
-func completeByConnection(c mongodbatlas.Container, projectID, profileName string) Model {
+func completeByConnection(c *admin.CloudProviderContainer, projectID, profileName string) Model {
 	return Model{
-		RegionName:     &c.RegionName,
+		RegionName:     c.RegionName,
 		Provisioned:    c.Provisioned,
-		Id:             &c.ID,
-		VpcId:          &c.VPCID,
-		AtlasCidrBlock: &c.AtlasCIDRBlock,
+		Id:             c.Id,
+		VpcId:          c.VpcId,
+		AtlasCidrBlock: c.AtlasCidrBlock,
 		ProjectId:      &projectID,
 		Profile:        &profileName,
 	}

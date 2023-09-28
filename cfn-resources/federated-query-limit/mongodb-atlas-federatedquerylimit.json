@@ -1,112 +1,112 @@
 {
-    "typeName": "MongoDB::Atlas::FederatedQueryLimit",
-    "description": "Query limit for one federated database instance.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-    "definitions": {
+  "typeName": "MongoDB::Atlas::FederatedQueryLimit",
+  "description": "Query limit for one federated database instance.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "definitions": {},
+  "properties": {
+    "ProjectId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
     },
-    "properties": {
-        "ProjectId": {
-            "type": "string",
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "maxLength": 24,
-            "minLength": 24,
-            "pattern": "^([a-f0-9]{24})$"
-        },
-        "TenantName": {
-            "type": "string",
-            "description": "Human-readable label that identifies the data federated database instance to which the query limit applies."
-        },
-        "LimitName": {
-            "type": "string",
-            "description": "Human-readable label that identifies this data federation instance limit.",
-            "enum": [
-                "bytesProcessed.query",
-                "bytesProcessed.daily",
-                "bytesProcessed.weekly",
-                "bytesProcessed.monthly"
-            ]
-        },
-        "CurrentUsage" : {
-            "type" : "string",
-            "description" : "Amount that indicates the current usage of the limit."
-        },
-        "DefaultLimit" : {
-            "type" : "string",
-            "description" : "Default value of the limit."
-        },
-        "LastModifiedDate" : {
-            "type" : "string",
-            "description" : "Only used for Data Federation limits. Timestamp that indicates when this usage limit was last modified. This field uses the ISO 8601 timestamp format in UTC."
-        },
-        "MaximumLimit" : {
-            "type" : "string",
-            "description" : "Maximum value of the limit."
-        },
-        "OverrunPolicy" : {
-            "type" : "string",
-            "description" : "Only used for Data Federation limits. Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit. \"enum\" : [ \"BLOCK\", \"BLOCK_AND_KILL\" ]"
-        },
-        "Value" : {
-            "type" : "string",
-            "description" : "Amount to set the limit to."
-        },
-        "Profile": {
-            "type": "string",
-            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-            "default": "default"
-        }
+    "TenantName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the data federated database instance to which the query limit applies."
     },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId",
-        "TenantName",
-        "LimitName",
-        "Value"
-    ],
-    "readOnlyProperties": [
-        "/properties/CurrentUsage",
-        "/properties/DefaultLimit",
-        "/properties/LastModifiedDate",
-        "/properties/MaximumLimit",
-        "/properties/DefaultLimit"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/TenantName",
-        "/properties/LimitName",
-        "/properties/Profile"
-    ],
-    "primaryIdentifier": [
-        "/properties/ProjectId",
-        "/properties/TenantName",
-        "/properties/LimitName",
-        "/properties/Profile"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "update": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        }
+    "LimitName": {
+      "type": "string",
+      "description": "Human-readable label that identifies this data federation instance limit.",
+      "enum": [
+        "bytesProcessed.query",
+        "bytesProcessed.daily",
+        "bytesProcessed.weekly",
+        "bytesProcessed.monthly"
+      ]
+    },
+    "CurrentUsage": {
+      "type": "string",
+      "description": "Amount that indicates the current usage of the limit."
+    },
+    "DefaultLimit": {
+      "type": "string",
+      "description": "Default value of the limit."
+    },
+    "LastModifiedDate": {
+      "type": "string",
+      "description": "Only used for Data Federation limits. Timestamp that indicates when this usage limit was last modified. This field uses the ISO 8601 timestamp format in UTC."
+    },
+    "MaximumLimit": {
+      "type": "string",
+      "description": "Maximum value of the limit."
+    },
+    "OverrunPolicy": {
+      "type": "string",
+      "description": "Only used for Data Federation limits. Action to take when the usage limit is exceeded. If limit span is set to QUERY, this is ignored because MongoDB Cloud stops the query when it exceeds the usage limit. \"enum\" : [ \"BLOCK\", \"BLOCK_AND_KILL\" ]"
+    },
+    "Value": {
+      "type": "string",
+      "description": "Amount to set the limit to."
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "TenantName",
+    "LimitName",
+    "Value"
+  ],
+  "readOnlyProperties": [
+    "/properties/CurrentUsage",
+    "/properties/DefaultLimit",
+    "/properties/LastModifiedDate",
+    "/properties/MaximumLimit",
+    "/properties/DefaultLimit"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/TenantName",
+    "/properties/LimitName",
+    "/properties/Profile"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/TenantName",
+    "/properties/LimitName",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/federated-query-limit/README.md"
 }

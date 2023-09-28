@@ -1,81 +1,81 @@
 {
-    "typeName": "MongoDB::Atlas::NetworkContainer",
-    "description": "Returns, adds, edits, and removes network peering containers.",
-    "properties": {
-        "ProjectId": {
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "type": "string"
-        },
-        "RegionName": {
-            "description": "Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container.",
-            "type": "string"
-        },
-        "Provisioned": {
-            "description": "Boolean flag that indicates whether MongoDB Cloud clusters exist in the specified network peering container.",
-            "type": "boolean"
-        },
-        "VpcId": {
-            "description": "Unique string that identifies the MongoDB Cloud VPC on AWS.",
-            "type": "string"
-        },
-        "AtlasCidrBlock": {
-            "description": "IP addresses expressed in Classless Inter-Domain Routing (CIDR) notation that MongoDB Cloud uses for the network peering containers in your project. MongoDB Cloud assigns all of the project's clusters deployed to this cloud provider an IP address from this range. MongoDB Cloud locks this value if an M10 or greater cluster or a network peering connection exists in this project.\nThese CIDR blocks must fall within the ranges reserved per RFC 1918. AWS further limits the block to between the /24 and /21 ranges.\nTo modify the CIDR block, the target project cannot have:\n- Any M10 or greater clusters\n- Any other VPC peering connections\nYou can also create a new project and create a network peering connection to set the desired MongoDB Cloud network peering container CIDR block for that project. MongoDB Cloud limits the number of MongoDB nodes per network peering connection based on the CIDR block and the region selected for the project.\nExample: A project in an Amazon Web Services (AWS) region supporting three availability zones and an MongoDB CIDR network peering container block of limit of /24 equals 27 three-node replica sets.",
-            "type": "string"
-        },
-        "Id": {
-            "description": "Unique 24-hexadecimal digit string that identifies the network peering container.",
-            "type": "string"
-        },
-        "Profile": {
-            "type": "string",
-            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
-            "default": "default"
-        }
+  "typeName": "MongoDB::Atlas::NetworkContainer",
+  "description": "Returns, adds, edits, and removes network peering containers.",
+  "properties": {
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string"
     },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId",
-        "AtlasCidrBlock",
-        "RegionName"
-    ],
-    "readOnlyProperties": [
-        "/properties/Id"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/Profile"
-    ],
-    "primaryIdentifier": [
-        "/properties/ProjectId",
-        "/properties/Id",
-        "/properties/Profile"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "update": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        }
+    "RegionName": {
+      "description": "Geographic area that Amazon Web Services (AWS) defines to which MongoDB Cloud deployed this network peering container.",
+      "type": "string"
+    },
+    "Provisioned": {
+      "description": "Boolean flag that indicates whether MongoDB Cloud clusters exist in the specified network peering container.",
+      "type": "boolean"
+    },
+    "VpcId": {
+      "description": "Unique string that identifies the MongoDB Cloud VPC on AWS.",
+      "type": "string"
+    },
+    "AtlasCidrBlock": {
+      "description": "IP addresses expressed in Classless Inter-Domain Routing (CIDR) notation that MongoDB Cloud uses for the network peering containers in your project. MongoDB Cloud assigns all of the project's clusters deployed to this cloud provider an IP address from this range. MongoDB Cloud locks this value if an M10 or greater cluster or a network peering connection exists in this project.\nThese CIDR blocks must fall within the ranges reserved per RFC 1918. AWS further limits the block to between the /24 and /21 ranges.\nTo modify the CIDR block, the target project cannot have:\n- Any M10 or greater clusters\n- Any other VPC peering connections\nYou can also create a new project and create a network peering connection to set the desired MongoDB Cloud network peering container CIDR block for that project. MongoDB Cloud limits the number of MongoDB nodes per network peering connection based on the CIDR block and the region selected for the project.\nExample: A project in an Amazon Web Services (AWS) region supporting three availability zones and an MongoDB CIDR network peering container block of limit of /24 equals 27 three-node replica sets.",
+      "type": "string"
+    },
+    "Id": {
+      "description": "Unique 24-hexadecimal digit string that identifies the network peering container.",
+      "type": "string"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
     }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "AtlasCidrBlock",
+    "RegionName"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Id",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/network-container/README.md"
 }
-

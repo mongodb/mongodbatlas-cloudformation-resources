@@ -1,198 +1,189 @@
 {
-    "typeName": "MongoDB::Atlas::Project",
-    "description": "Retrieves or creates projects in any given Atlas organization.",
-    "definitions": {
-        "projectSettings": {
-            "type": "object",
-            "properties": {
-                "IsCollectDatabaseSpecificsStatisticsEnabled": {
-                    "type": "boolean",
-                    "description": "Flag that indicates whether to collect database-specific metrics for the specified project."
-                },
-                "IsDataExplorerEnabled": {
-                    "type": "boolean",
-                    "description": "Flag that indicates whether to enable the Data Explorer for the specified project."
-
-                },
-                "IsExtendedStorageSizesEnabled": {
-                    "type": "boolean",
-                    "description": "Flag that indicates whether to enable extended storage sizes for the specified project."
-
-                },
-                "IsPerformanceAdvisorEnabled": {
-                    "type": "boolean",
-                    "description": "Flag that indicates whether to enable the Performance Advisor and Profiler for the specified project."
-
-                },
-                "IsRealtimePerformancePanelEnabled": {
-                    "type": "boolean",
-                    "description": "Flag that indicates whether to enable the Real Time Performance Panel for the specified project."
-
-                },
-                "IsSchemaAdvisorEnabled": {
-                    "type": "boolean",
-                    "description": "Flag that indicates whether to enable the Schema Advisor for the specified project."
-
-                }
-            },
-            "additionalProperties": false
+  "typeName": "MongoDB::Atlas::Project",
+  "description": "Retrieves or creates projects in any given Atlas organization.",
+  "definitions": {
+    "projectSettings": {
+      "type": "object",
+      "properties": {
+        "IsCollectDatabaseSpecificsStatisticsEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether to collect database-specific metrics for the specified project."
         },
-        "projectTeam": {
-            "type": "object",
-            "properties": {
-                "TeamId": {
-                    "type": "string",
-                    "description": "Unique 24-hexadecimal character string that identifies the team. string = 24 characters ^([a-f0-9]{24})$"
-
-                },
-                "RoleNames": {
-                    "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user. tems Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\"",
-                    "items": {
-                        "$ref": "#/definitions/Roles"
-                    },
-                    "type": "array",
-                    "insertionOrder": false,
-                    "uniqueItems": true
-                }
-            },
-            "additionalProperties": false
+        "IsDataExplorerEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether to enable the Data Explorer for the specified project."
         },
-        "projectApiKey": {
-            "type": "object",
-            "properties": {
-                "Key": {
-                    "type": "string",
-                    "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project."
-
-                },
-                "RoleNames": {
-                    "items": {
-                        "$ref": "#/definitions/Roles"
-                    },
-                    "type": "array",
-                    "insertionOrder": false,
-                    "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this project.Items Enum: \"ORG_OWNER\" \"ORG_MEMBER\" \"ORG_GROUP_CREATOR\" \"ORG_BILLING_ADMIN\" \"ORG_READ_ONLY\" \"ORG_TEAM_MEMBERS_ADMIN\" \"GROUP_ATLAS_ADMIN\" \"GROUP_AUTOMATION_ADMIN\" \"GROUP_BACKUP_ADMIN\" \"GROUP_MONITORING_ADMIN\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\" \"GROUP_USER_ADMIN\" \"GROUP_BILLING_ADMIN\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_CHARTS_ADMIN\" \"GROUP_CLUSTER_MANAGER\" \"GROUP_SEARCH_INDEX_EDITOR\"",
-                    "uniqueItems": true
-                }
-            },
-            "additionalProperties": false
+        "IsExtendedStorageSizesEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether to enable extended storage sizes for the specified project."
         },
-        "Roles": {
-            "type": "string",
-            "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.Items Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\""
+        "IsPerformanceAdvisorEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether to enable the Performance Advisor and Profiler for the specified project."
+        },
+        "IsRealtimePerformancePanelEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether to enable the Real Time Performance Panel for the specified project."
+        },
+        "IsSchemaAdvisorEnabled": {
+          "type": "boolean",
+          "description": "Flag that indicates whether to enable the Schema Advisor for the specified project."
         }
+      },
+      "additionalProperties": false
     },
-    "properties": {
-        "Name": {
-            "description": "Name of the project to create.",
-            "type": "string",
-            "default": ""
+    "projectTeam": {
+      "type": "object",
+      "properties": {
+        "TeamId": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal character string that identifies the team. string = 24 characters ^([a-f0-9]{24})$"
         },
-        "OrgId": {
-            "description": "Unique identifier of the organization within which to create the project.",
-            "type": "string",
-            "default": ""
-
-        },
-        "ProjectOwnerId": {
-            "description": "Unique identifier of the organization within which to create the project.",
-            "type": "string",
-            "default": ""
-
-        },
-        "WithDefaultAlertsSettings": {
-            "description": "Flag that indicates whether to create the project with default alert settings.",
-            "type": "boolean",
-            "default": "false"
-        },
-        "Id": {
-            "description": "The unique identifier of the project.",
-            "type": "string",
-            "default": ""
-        },
-        "Created": {
-            "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
-            "type": "string"
-        },
-        "ClusterCount": {
-            "description": "The number of Atlas clusters deployed in the project.",
-            "type": "integer"
-        },
-        "ProjectSettings": {
-            "$ref": "#/definitions/projectSettings"
-        },
-        "Profile": {
-            "type": "string",
-            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-            "default": "default"
-        },
-        "ProjectTeams": {
-            "items": {
-                "$ref": "#/definitions/projectTeam"
-            },
-            "type": "array",
-            "insertionOrder": false,
-            "description": "Teams to which the authenticated user has access in the project specified using its unique 24-hexadecimal digit identifier.",
-            "uniqueItems": true
-        },
-        "ProjectApiKeys": {
-            "items": {
-                "$ref": "#/definitions/projectApiKey"
-            },
-            "type": "array",
-            "insertionOrder": false,
-            "description": "API keys that you assigned to the specified project.",
-            "uniqueItems": true
-        },
-        "RegionUsageRestrictions": {
-            "type": "string",
-            "description": "Region usage restrictions that designate the project's AWS region.Enum: \"GOV_REGIONS_ONLY\" \"COMMERCIAL_FEDRAMP_REGIONS_ONLY\" \"NONE\"",
-            "default": "NONE"
+        "RoleNames": {
+          "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user. tems Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\"",
+          "items": {
+            "$ref": "#/definitions/Roles"
+          },
+          "type": "array",
+          "insertionOrder": false,
+          "uniqueItems": true
         }
+      },
+      "additionalProperties": false
     },
-    "additionalProperties": false,
-    "required": [
-        "Name",
-        "OrgId"
-    ],
-    "createOnlyProperties": [
-        "/properties/Name",
-        "/properties/Profile"
-    ],
-    "writeOnlyProperties": [
-        "/properties/ProjectApiKeys"
-    ],
-    "readOnlyProperties": [
-        "/properties/Id",
-        "/properties/Created",
-        "/properties/ProjectOwnerId",
-        "/properties/ClusterCount"
-    ],
-    "primaryIdentifier": [
-        "/properties/Id",
-        "/properties/Profile"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
+    "projectApiKey": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string",
+          "description": "Unique 24-hexadecimal digit string that identifies this organization API key assigned to this project."
         },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "update": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
+        "RoleNames": {
+          "items": {
+            "$ref": "#/definitions/Roles"
+          },
+          "type": "array",
+          "insertionOrder": false,
+          "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this project.Items Enum: \"ORG_OWNER\" \"ORG_MEMBER\" \"ORG_GROUP_CREATOR\" \"ORG_BILLING_ADMIN\" \"ORG_READ_ONLY\" \"ORG_TEAM_MEMBERS_ADMIN\" \"GROUP_ATLAS_ADMIN\" \"GROUP_AUTOMATION_ADMIN\" \"GROUP_BACKUP_ADMIN\" \"GROUP_MONITORING_ADMIN\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\" \"GROUP_USER_ADMIN\" \"GROUP_BILLING_ADMIN\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_CHARTS_ADMIN\" \"GROUP_CLUSTER_MANAGER\" \"GROUP_SEARCH_INDEX_EDITOR\"",
+          "uniqueItems": true
         }
+      },
+      "additionalProperties": false
+    },
+    "Roles": {
+      "type": "string",
+      "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.Items Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\""
     }
+  },
+  "properties": {
+    "Name": {
+      "description": "Name of the project to create.",
+      "type": "string",
+      "default": ""
+    },
+    "OrgId": {
+      "description": "Unique identifier of the organization within which to create the project.",
+      "type": "string",
+      "default": ""
+    },
+    "ProjectOwnerId": {
+      "description": "Unique identifier of the organization within which to create the project.",
+      "type": "string",
+      "default": ""
+    },
+    "WithDefaultAlertsSettings": {
+      "description": "Flag that indicates whether to create the project with default alert settings.",
+      "type": "boolean",
+      "default": "false"
+    },
+    "Id": {
+      "description": "The unique identifier of the project.",
+      "type": "string",
+      "default": ""
+    },
+    "Created": {
+      "description": "The ISO-8601-formatted timestamp of when Atlas created the project.",
+      "type": "string"
+    },
+    "ClusterCount": {
+      "description": "The number of Atlas clusters deployed in the project.",
+      "type": "integer"
+    },
+    "ProjectSettings": {
+      "$ref": "#/definitions/projectSettings"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
+    "ProjectTeams": {
+      "items": {
+        "$ref": "#/definitions/projectTeam"
+      },
+      "type": "array",
+      "insertionOrder": false,
+      "description": "Teams to which the authenticated user has access in the project specified using its unique 24-hexadecimal digit identifier.",
+      "uniqueItems": true
+    },
+    "ProjectApiKeys": {
+      "items": {
+        "$ref": "#/definitions/projectApiKey"
+      },
+      "type": "array",
+      "insertionOrder": false,
+      "description": "API keys that you assigned to the specified project.",
+      "uniqueItems": true
+    },
+    "RegionUsageRestrictions": {
+      "type": "string",
+      "description": "Region usage restrictions that designate the project's AWS region.Enum: \"GOV_REGIONS_ONLY\" \"COMMERCIAL_FEDRAMP_REGIONS_ONLY\" \"NONE\"",
+      "default": "NONE"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "Name",
+    "OrgId"
+  ],
+  "createOnlyProperties": [
+    "/properties/Name",
+    "/properties/Profile"
+  ],
+  "writeOnlyProperties": [
+    "/properties/ProjectApiKeys"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/Created",
+    "/properties/ProjectOwnerId",
+    "/properties/ClusterCount"
+  ],
+  "primaryIdentifier": [
+    "/properties/Id",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/project/README.md"
 }
-

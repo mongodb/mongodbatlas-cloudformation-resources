@@ -7,7 +7,9 @@
       "ApiKeys",
       "GroupId"
     ],
-    "RequiredParams": ["RoleName"]
+    "RequiredParams": [
+      "RoleName"
+    ]
   },
   "ReadFields": {
     "InputParams": [
@@ -17,7 +19,10 @@
       "InheritedRoles",
       "RoleName"
     ],
-    "RequiredParams": ["GroupId", "RoleName"]
+    "RequiredParams": [
+      "GroupId",
+      "RoleName"
+    ]
   },
   "UpdateFields": {
     "InputParams": [
@@ -27,10 +32,16 @@
       "ApiKeys",
       "GroupId"
     ],
-    "RequiredParams": ["RoleName"]
+    "RequiredParams": [
+      "RoleName"
+    ]
   },
   "DeleteFields": {
-    "RequiredParams": ["GroupId", "RoleName"]
+    "RequiredParams": [
+      "GroupId",
+      "RoleName"
+    ]
   },
-  "ListFields": {}
+  "ListFields": {},
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/schemas/README.md"
 }

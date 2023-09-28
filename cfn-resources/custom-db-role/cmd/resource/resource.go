@@ -56,8 +56,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	atlasCustomDBRole := currentModel.ToCustomDBRole()
 	customDBRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.CreateCustomDatabaseRole(context.Background(), *currentModel.ProjectId, atlasCustomDBRole).Execute()
 	if err != nil {
-		apiError, ok := admin.AsError(err)
-		if ok && *apiError.Error == http.StatusConflict {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progress_events.GetFailedEventByCode("Resource already exists",
 				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}

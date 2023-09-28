@@ -73,9 +73,19 @@
       "description": "Port to which the Lightweight Directory Access Protocol (LDAP) host listens for client connections."
     }
   },
-  "primaryIdentifier": ["/properties/RequestId","/properties/ProjectId", "/properties/Profile"],
-  "readOnlyProperties": ["/properties/RequestId", "/properties/Status"],
-  "createOnlyProperties": ["/properties/ProjectId", "/properties/Profile"],
+  "primaryIdentifier": [
+    "/properties/RequestId",
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "readOnlyProperties": [
+    "/properties/RequestId",
+    "/properties/Status"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
   "required": [
     "ProjectId",
     "BindUsername",
@@ -99,5 +109,6 @@
         "secretsmanager:GetSecretValue"
       ]
     }
-  }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/ldap-verify/README.md"
 }

@@ -270,5 +270,6 @@
   "required": [
     "ProjectId",
     "AppId"
-  ]
+  ],
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/trigger/README.md"
 }

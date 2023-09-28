@@ -176,5 +176,6 @@
     "/properties/Profile"
   ],
   "description": "Returns, adds, edits, and removes database users.",
-  "typeName": "MongoDB::Atlas::DatabaseUser"
+  "typeName": "MongoDB::Atlas::DatabaseUser",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/database-user/README.md"
 }

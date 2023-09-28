@@ -113,5 +113,6 @@
   "required": [
     "ProjectId",
     "AccessList"
-  ]
+  ],
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/project-ip-access-list/README.md"
 }

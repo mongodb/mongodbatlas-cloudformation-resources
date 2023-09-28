@@ -219,5 +219,6 @@
     "/properties/Profile",
     "/properties/OrgId"
   ],
-  "typeName": "MongoDB::Atlas::Teams"
+  "typeName": "MongoDB::Atlas::Teams",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/teams/README.md"
 }

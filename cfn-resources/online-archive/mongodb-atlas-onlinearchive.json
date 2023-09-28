@@ -239,5 +239,6 @@
         "secretsmanager:GetSecretValue"
       ]
     }
-  }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/online-archive/README.md"
 }

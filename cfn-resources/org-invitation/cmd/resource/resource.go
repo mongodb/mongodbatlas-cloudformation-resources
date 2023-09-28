@@ -66,13 +66,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	invitation, res, err := atlasV2.OrganizationsApi.CreateOrganizationInvitation(context.Background(), *currentModel.OrgId, invitationReq).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Create - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	currentModel.Id = invitation.Id
 
 	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
@@ -103,7 +101,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	invitation, res, err := atlasV2.OrganizationsApi.GetOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
+		_, _ = log.Debugf("Read - error: %+v", err)
 
 		// if invitation already accepted
 		if res.StatusCode == 404 {
@@ -149,7 +147,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	invitation, res, err := atlasV2.OrganizationsApi.UpdateOrganizationInvitationById(context.Background(), *currentModel.OrgId, *currentModel.Id, invitationReq).Execute()
 
 	if err != nil {
-		_, _ = log.Warnf("Update - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("%s invitation updated", *currentModel.Id)
@@ -181,7 +178,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	res, err := client.Organizations.DeleteInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id)
 	if err != nil {
-		_, _ = log.Warnf("Delete - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	_, _ = log.Debugf("deleted invitation with Id :%s", *currentModel.Id)
@@ -216,7 +212,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Username: currentModel.Username,
 	}).Execute()
 	if err != nil {
-		_, _ = log.Warnf("List - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 

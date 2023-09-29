@@ -92,7 +92,10 @@
       }
     }
   },
-  "primaryIdentifier": ["/properties/ProjectId", "/properties/Profile"],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
   "required": [
     "ProjectId",
     "BindUsername",
@@ -125,5 +128,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/ldap-configuration/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

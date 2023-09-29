@@ -30,7 +30,6 @@
           "type": "string",
           "description": "Human-readable label of the database to manage for this Global Cluster."
         },
-
         "IsCustomShardKeyHashed": {
           "type": "boolean",
           "description": "Flag that indicates whether someone hashed the custom shard key for the specified collection. If you set this value to `false`, MongoDB Cloud uses ranged sharding."
@@ -106,5 +105,9 @@
     "/properties/RemoveAllZoneMapping"
   ],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/global-cluster-config/README.md",
+  "tagging": {
+    "taggable": false
+  }
 }

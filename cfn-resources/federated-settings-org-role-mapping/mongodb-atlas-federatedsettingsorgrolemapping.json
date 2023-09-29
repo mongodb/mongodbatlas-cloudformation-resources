@@ -110,5 +110,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/federated-settings-org-role-mapping/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

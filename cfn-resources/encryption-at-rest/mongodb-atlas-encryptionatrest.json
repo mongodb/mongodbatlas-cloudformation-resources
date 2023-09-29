@@ -82,5 +82,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/encryption-at-rest/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

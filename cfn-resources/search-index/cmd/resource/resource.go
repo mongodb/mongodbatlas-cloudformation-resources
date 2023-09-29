@@ -188,16 +188,12 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 		return nil, nil
 	}
 
-	if currentModel.Mappings.Fields != nil && currentModel.Mappings.Dynamic != nil && *currentModel.Mappings.Dynamic {
-		return nil, nil
-	}
-
 	sec, err := newMappingsFields(currentModel.Mappings.Fields)
 	if err != nil {
 		return nil, err
 	}
 	return &admin.ApiAtlasFTSMappings{
-		Dynamic: admin.PtrBool(false),
+		Dynamic: currentModel.Mappings.Dynamic,
 		Fields:  sec,
 	}, nil
 }

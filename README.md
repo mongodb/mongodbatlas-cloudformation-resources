@@ -14,7 +14,7 @@ See the [`cfn` examples](examples/README.md) to setup prerequisites and get star
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
 
 ## Limitations
-1. [Resource import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html) is not supported for third-party resources.
+1. [Resource import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html) is currently in Beta stage, review: [import examples](https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/examples/resource-import/resource-import.json).
 
 2. Any third-party resource must support all CRUD operations. MongoDB Atlas for CloudFormation does not support the following MongoDB Atlas resources because they do not support all CRUD operations: 
 

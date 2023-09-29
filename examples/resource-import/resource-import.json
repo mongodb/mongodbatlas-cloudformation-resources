@@ -1,0 +1,185 @@
+{
+    "Metadata": {
+      "AWS::CloudFormation::Interface": {
+        "ParameterGroups": [
+          {
+            "Label": {
+              "default": "Basic properties"
+            },
+            "Parameters": [
+              "OrgId",
+              "Profile",
+              "ProjectId"
+            ]
+          },
+          {
+            "Label": {
+              "default": "Project properties"
+            },
+            "Parameters": [
+              "ProjectName"
+            ]
+          },
+          {
+            "Label": {
+              "default": "Cluster properties"
+            },
+            "Parameters": [
+              "ClusterMongoDBMajorVersion",
+              "ClusterName"
+            ]
+          },
+          {
+            "Label": {
+              "default": "Database user properties"
+            },
+            "Parameters": [
+              "UserName",
+              "UserPassword"
+            ]
+          },
+          {
+            "Label": {
+              "default": "Project ip access list properties"
+            },
+            "Parameters": [
+              "IPAddress"
+            ]
+          }
+        ]
+      }
+    },
+    "Description": "Import example for Project ",
+    "Parameters": {
+      "OrgId": {
+        "Description": "MongoDB cloud organization ID.",
+        "Type": "String"
+      },
+      "Profile": {
+        "Description": "Atlas profile",
+        "Type": "String",
+        "Default": "default"
+      },
+      "ProjectName": {
+        "Description": "Name of the project.",
+        "Type": "String"
+      },
+      "ProjectId": {
+        "Description": "Id of the project.",
+        "Type": "String"
+      },
+      "IpAddress": {
+        "Description": "Ip address for Ip access list.",
+        "Type": "String"
+      },
+      "ClusterMongoDBMajorVersion": {
+        "Description": "MongoDB version.",
+        "Type": "String",
+        "Default": "4.4",
+        "AllowedValues": [
+          "3.6",
+          "4.0",
+          "4.2",
+          "4.4"
+        ]
+      },
+      "ClusterName": {
+        "Description": "Cluster Name",
+        "Type": "String"
+      },
+      "UserName": {
+        "Description": "Database user name",
+        "Type": "String"
+      },
+      "UserPassword": {
+        "Description": "Database user password",
+        "Type": "String"
+      }
+    },
+    "Resources": {
+      "AtlasProject": {
+        "Type": "MongoDB::Atlas::Project",
+        "DeletionPolicy": "Retain",
+        "Properties": {
+          "Name": {
+            "Ref": "ProjectName"
+          },
+          "OrgId": {
+            "Ref": "OrgId"
+          },
+          "Id": {
+            "Ref": "ProjectId"
+          },
+          "Profile": {
+            "Ref": "Profile"
+          }
+        }
+      },
+      "AtlasCluster": {
+        "Type": "MongoDB::Atlas::Cluster",
+        "DeletionPolicy": "Retain",
+        "Properties": {
+          "Profile": {
+            "Ref": "Profile"
+          },
+          "ProjectId": {
+            "Ref": "ProjectId"
+          },
+          "MongoDBVersion": "6.0.10",
+          "Name": {
+            "Ref": "ClusterName"
+          },
+          "TerminationProtectionEnabled": "false"
+        }
+      },
+      "DatabaseUser": {
+        "Type": "MongoDB::Atlas::DatabaseUser",
+        "DeletionPolicy": "Retain",
+        "Properties":  {
+          "DatabaseName": "admin",
+          "Password": {
+            "Ref": "UserPassword"
+          },
+          "Username": {
+            "Ref": "UserName"
+          },
+          "ProjectId": {
+            "Ref": "ProjectId"
+          },
+          "Roles": [
+            {
+              "DatabaseName": "admin",
+              "RoleName": "dbAdmin"
+            },
+            {
+              "DatabaseName": "admin",
+              "RoleName": "atlasAdmin"
+            }
+          ],
+          "Profile": {
+            "Ref": "Profile"
+          }
+        }
+      },
+      "IpAccessList": {
+        "Type": "MongoDB::Atlas::ProjectIpAccessList",
+        "DeletionPolicy": "Retain",
+        "Properties":  {
+          "ProjectId" : {
+            "Ref": "ProjectId"
+          },
+          "Profile" : {
+            "Ref": "Profile"
+          },
+          "AccessList" : [
+              {
+                "IPAddress": {
+                  "Ref": "IpAddress"
+                },
+                "Comment": "Testing open all ips"
+              }
+          ]
+        }
+      }
+    }
+  }

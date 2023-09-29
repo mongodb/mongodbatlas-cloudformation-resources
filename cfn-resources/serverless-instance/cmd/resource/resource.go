@@ -79,9 +79,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.CreateServerlessInstance(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Serverless - Create() - error: %+v", err)
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
-			_, _ = log.Warnf("Serverless - Create() - error 400: %+v", err)
+			_, _ = log.Debugf("Serverless - Create() - error 400: %+v", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -154,7 +153,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// CFN TEST : currently Update is throwing 500 Error instead of 404 if resource not exists
 	_, res, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Read in Update - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
@@ -171,7 +169,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.UpdateServerlessInstanceWithParams(context.Background(), serverlessInstanceRequest).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Update - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	// Response
@@ -208,7 +205,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, res, err := client.AtlasV2.ServerlessInstancesApi.DeleteServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Delete - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 

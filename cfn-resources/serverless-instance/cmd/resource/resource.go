@@ -28,7 +28,6 @@ import (
 	progressevent "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
@@ -73,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	serverlessInstanceRequest := &admin.ServerlessInstanceDescriptionCreate{
 		Name:                         *currentModel.Name,
-		ProviderSettings:             setProviderSettings(currentModel),
+		ProviderSettings:             *setProviderSettings(currentModel),
 		ServerlessBackupOptions:      setBackupOptions(currentModel),
 		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
 	}
@@ -119,7 +118,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	cluster, res, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Read - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	// Read Instance
@@ -167,9 +165,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
 			},
 		},
+		Name: *currentModel.Name,
 	}
 
-	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.UpdateServerlessInstanceWithParams(context.Background(), *currentModel.ProjectID, *currentModel.Name, serverlessInstanceRequest).Execute()
+	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.UpdateServerlessInstanceWithParams(context.Background(), serverlessInstanceRequest).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -182,7 +181,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.StateName: serverless.StateName,
-			constants.ID:        serverless.ID,
+			constants.ID:        serverless.Id,
 		},
 	}, nil
 }
@@ -197,20 +196,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	// Callback
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
 		return serverlessCallback(client, currentModel, constants.DeletedState)
 	}
 
-	res, err := client.ServerlessInstances.Delete(context.Background(), *currentModel.ProjectID, *currentModel.Name)
+	_, res, err := client.AtlasV2.ServerlessInstancesApi.DeleteServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Delete - error: %+v", err)
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	// Response
@@ -235,24 +233,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	listOptions := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 1000,
+	listOptions := &admin.ListServerlessInstancesApiParams{
+		GroupId:      *currentModel.ProjectID,
+		PageNum:      admin.PtrInt(0),
+		ItemsPerPage: admin.PtrInt(1000),
 	}
-	clustersResp, res, err := client.ServerlessInstances.List(context.Background(), *currentModel.ProjectID, listOptions)
+	clustersResp, res, err := client.AtlasV2.ServerlessInstancesApi.ListServerlessInstancesWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
-		_, _ = log.Warnf("List - error: %+v", err)
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	instances := []interface{}{} // cfn test needs empty array instead nil, when items entries found
 	for i := range clustersResp.Results {
-		cluster := readServerlessInstance(clustersResp.Results[i], currentModel.Profile)
+		cluster := readServerlessInstance(&clustersResp.Results[i], currentModel.Profile)
 		instances = append(instances, cluster)
 	}
 	// Response
@@ -262,28 +260,30 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func setBackupOptions(currentModel *Model) (serverlessBackupOptions *mongodbatlas.ServerlessBackupOptions) {
+func setBackupOptions(currentModel *Model) (serverlessBackupOptions *admin.ClusterServerlessBackupOptions) {
 	if currentModel.ContinuousBackupEnabled == nil {
 		return nil
 	}
-	serverlessBackupOptions = &mongodbatlas.ServerlessBackupOptions{
+	serverlessBackupOptions = &admin.ClusterServerlessBackupOptions{
 		ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
 	}
 	return serverlessBackupOptions
 }
 
-func setProviderSettings(currentModel *Model) (serverlessProviderSettings *mongodbatlas.ServerlessProviderSettings) {
+func setProviderSettings(currentModel *Model) (serverlessProviderSettings *admin.ServerlessProviderSettings) {
 	if currentModel.ProviderSettings == nil {
-		return &mongodbatlas.ServerlessProviderSettings{
-			ProviderName:        constants.Serverless,
+		return &admin.ServerlessProviderSettings{
+			ProviderName:        admin.PtrString(constants.Serverless),
 			BackingProviderName: constants.AWS,
 		}
 	}
-	serverlessProviderSettings = &mongodbatlas.ServerlessProviderSettings{
+
+	serverlessProviderSettings = &admin.ServerlessProviderSettings{
 		BackingProviderName: constants.AWS,
 	}
+
 	if currentModel.ProviderSettings.ProviderName != nil {
-		serverlessProviderSettings.ProviderName = *currentModel.ProviderSettings.ProviderName
+		serverlessProviderSettings.ProviderName = currentModel.ProviderSettings.ProviderName
 	}
 	if currentModel.ProviderSettings.RegionName != nil {
 		serverlessProviderSettings.RegionName = *currentModel.ProviderSettings.RegionName
@@ -291,17 +291,16 @@ func setProviderSettings(currentModel *Model) (serverlessProviderSettings *mongo
 	return serverlessProviderSettings
 }
 
-func readServerlessInstance(cluster *mongodbatlas.Cluster, profile *string) (serverless *Model) {
+func readServerlessInstance(cluster *admin.ServerlessInstanceDescription, profile *string) (serverless *Model) {
 	serverless = &Model{}
-	serverless.Name = &cluster.Name
-	serverless.Id = &cluster.ID
-	serverless.ProjectID = &cluster.GroupID
+	serverless.Name = cluster.Name
+	serverless.Id = cluster.Id
+	serverless.ProjectID = cluster.GroupId
 	serverless.Profile = profile
-	if cluster.ProviderSettings != nil {
-		serverless.ProviderSettings = &ServerlessInstanceProviderSettings{
-			ProviderName: &cluster.ProviderSettings.ProviderName,
-			RegionName:   &cluster.ProviderSettings.RegionName,
-		}
+
+	serverless.ProviderSettings = &ServerlessInstanceProviderSettings{
+		ProviderName: cluster.ProviderSettings.ProviderName,
+		RegionName:   &cluster.ProviderSettings.RegionName,
 	}
 
 	if cluster.ServerlessBackupOptions != nil {
@@ -310,34 +309,34 @@ func readServerlessInstance(cluster *mongodbatlas.Cluster, profile *string) (ser
 
 	if cluster.ConnectionStrings != nil {
 		serverless.ConnectionStrings = &ServerlessInstanceConnectionStrings{
-			StandardSrv:     &cluster.ConnectionStrings.StandardSrv,
+			StandardSrv:     cluster.ConnectionStrings.StandardSrv,
 			PrivateEndpoint: readPrivateEndpoint(cluster.ConnectionStrings.PrivateEndpoint),
 		}
 	}
-	serverless.CreateDate = &cluster.CreateDate
-	serverless.MongoDBVersion = &cluster.MongoDBVersion
+	serverless.CreateDate = admin.PtrString(cluster.CreateDate.String())
+	serverless.MongoDBVersion = cluster.MongoDBVersion
 	serverless.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
-	serverless.StateName = &cluster.StateName
+	serverless.StateName = cluster.StateName
 	return serverless
 }
 
-func readPrivateEndpoint(privateEPs []mongodbatlas.PrivateEndpoint) (endPoints []ServerlessInstancePrivateEndpoint) {
+func readPrivateEndpoint(privateEPs []admin.ServerlessConnectionStringsPrivateEndpointList) (endPoints []ServerlessInstancePrivateEndpoint) {
 	for i := range privateEPs {
 		var pep = ServerlessInstancePrivateEndpoint{}
 		pep.Endpoints = readPrivateEndpointEndpoints(privateEPs[i].Endpoints)
-		pep.Type = &privateEPs[i].Type
-		pep.SrvConnectionString = &privateEPs[i].SRVConnectionString
+		pep.Type = privateEPs[i].Type
+		pep.SrvConnectionString = privateEPs[i].SrvConnectionString
 		endPoints = append(endPoints, pep)
 	}
 	return
 }
 
-func readPrivateEndpointEndpoints(peEndpoints []mongodbatlas.Endpoint) (epEndpoints []ServerlessInstancePrivateEndpointEndpoint) {
+func readPrivateEndpointEndpoints(peEndpoints []admin.ServerlessConnectionStringsPrivateEndpointItem) (epEndpoints []ServerlessInstancePrivateEndpointEndpoint) {
 	for i := range peEndpoints {
 		epEndpoints = append(epEndpoints, ServerlessInstancePrivateEndpointEndpoint{
-			EndpointId:   &peEndpoints[i].EndpointID,
-			ProviderName: &peEndpoints[i].ProviderName,
-			Region:       &peEndpoints[i].Region,
+			EndpointId:   peEndpoints[i].EndpointId,
+			ProviderName: peEndpoints[i].ProviderName,
+			Region:       peEndpoints[i].Region,
 		})
 	}
 	return
@@ -347,14 +346,13 @@ func serverlessCallback(client *util.MongoDBClient, currentModel *Model, targtSt
 	serverless, resp, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
-			_, _ = log.Debugf("404:No instance found")
+			_, _ = log.Debugf("404: No instance found")
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				Message:         "Deleted ServerlessInstance",
 				ResourceModel:   nil,
 			}, nil
 		}
-		_, _ = log.Warnf("Read - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 

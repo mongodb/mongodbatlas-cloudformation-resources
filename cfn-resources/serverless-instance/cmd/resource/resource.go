@@ -310,7 +310,7 @@ func readServerlessInstance(cluster *admin.ServerlessInstanceDescription, profil
 			PrivateEndpoint: readPrivateEndpoint(cluster.ConnectionStrings.PrivateEndpoint),
 		}
 	}
-	serverless.CreateDate = admin.PtrString(cluster.CreateDate.String())
+	serverless.CreateDate = util.TimePtrToStringPtr(cluster.CreateDate)
 	serverless.MongoDBVersion = cluster.MongoDBVersion
 	serverless.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 	serverless.StateName = cluster.StateName

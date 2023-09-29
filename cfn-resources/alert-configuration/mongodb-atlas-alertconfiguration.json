@@ -594,5 +594,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/alert-configuration/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

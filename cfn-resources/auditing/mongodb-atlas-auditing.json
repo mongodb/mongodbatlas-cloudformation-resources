@@ -71,5 +71,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/auditing/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

@@ -213,5 +213,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/serverless-instance/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

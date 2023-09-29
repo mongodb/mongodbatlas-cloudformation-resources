@@ -30,10 +30,6 @@ import (
 
 var createRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
 
-func setup() {
-	util.SetupLogger("mongodb-atlas-maintenance-window")
-}
-
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if err := validateCreateModel(createRequiredFields, currentModel); err != nil {

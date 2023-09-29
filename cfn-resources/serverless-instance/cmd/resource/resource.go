@@ -80,7 +80,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.CreateServerlessInstance(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Serverless - Create() - error: %+v", err)
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.Reason, constants.Duplicate) {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
+			_, _ = log.Warnf("Serverless - Create() - error 400: %+v", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -92,7 +93,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+		Message:              fmt.Sprintf("Create ServerlessInstance `%s`", *serverless.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{

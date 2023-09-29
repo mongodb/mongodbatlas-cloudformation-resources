@@ -27,7 +27,7 @@ import (
 
 var listRequiredFields = []string{constants.ProjectID}
 
-func listOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	_, _ = logger.Debugf("List currentModel:%+v", currentModel)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 

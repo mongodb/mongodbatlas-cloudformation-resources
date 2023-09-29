@@ -26,7 +26,7 @@ import (
 
 var readRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func readOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if errEvent := validateModel(readRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}

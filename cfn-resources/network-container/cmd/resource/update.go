@@ -28,7 +28,7 @@ import (
 
 var updateRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func updateOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if errEvent := validateModel(updateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}

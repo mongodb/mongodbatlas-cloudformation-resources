@@ -30,7 +30,7 @@ import (
 
 var deleteRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
 
 	if errEvent := validateModel(deleteRequiredFields, currentModel); errEvent != nil {

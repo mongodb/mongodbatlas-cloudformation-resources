@@ -18,9 +18,7 @@ import (
 	"context"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
@@ -37,10 +35,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByCode("AccessList must not be empty", cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	if !util.IsStringPresent(currentModel.Profile) {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	// Create atlas client
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {

@@ -17,17 +17,17 @@ package resource
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevent "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -58,12 +58,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -74,23 +71,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return serverlessCallback(client, currentModel, constants.IdleState)
 	}
 
-	serverlessInstanceRequest := &mongodbatlas.ServerlessCreateRequestParams{
+	serverlessInstanceRequest := &admin.ServerlessInstanceDescriptionCreate{
 		Name:                         *currentModel.Name,
 		ProviderSettings:             setProviderSettings(currentModel),
 		ServerlessBackupOptions:      setBackupOptions(currentModel),
 		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
 	}
 
-	serverless, res, err := client.ServerlessInstances.Create(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest)
+	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.CreateServerlessInstance(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Serverless - Create() - error: %+v", err)
-		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.Duplicate) {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.Reason, constants.Duplicate) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
 				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 		}
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	return handler.ProgressEvent{
@@ -114,15 +112,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	cluster, res, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
+	cluster, res, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	// Read Instance
 	model := readServerlessInstance(cluster, currentModel.Profile)
@@ -143,8 +141,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -155,21 +153,26 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// CFN TEST : currently Update is throwing 500 Error instead of 404 if resource not exists
-	_, res, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
+	_, res, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Read in Update - error: %+v", err)
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	serverlessInstanceRequest := &mongodbatlas.ServerlessUpdateRequestParams{
-		ServerlessBackupOptions:      setBackupOptions(currentModel),
-		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
+	serverlessInstanceRequest := &admin.UpdateServerlessInstanceApiParams{
+		GroupId: *currentModel.ProjectID,
+		ServerlessInstanceDescriptionUpdate: &admin.ServerlessInstanceDescriptionUpdate{
+			TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
+			ServerlessBackupOptions: &admin.ClusterServerlessBackupOptions{
+				ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
+			},
+		},
 	}
 
-	serverless, res, err := client.ServerlessInstances.Update(context.Background(), *currentModel.ProjectID, *currentModel.Name, serverlessInstanceRequest)
+	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.UpdateServerlessInstanceWithParams(context.Background(), *currentModel.ProjectID, *currentModel.Name, serverlessInstanceRequest).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Update - error: %+v", err)
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	// Response
 	return handler.ProgressEvent{
@@ -193,7 +196,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -231,7 +234,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -340,10 +343,10 @@ func readPrivateEndpointEndpoints(peEndpoints []mongodbatlas.Endpoint) (epEndpoi
 	return
 }
 
-func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtStatus string) (progressEvent handler.ProgressEvent, err error) {
-	serverless, resp, err := client.ServerlessInstances.Get(context.Background(), *currentModel.ProjectID, *currentModel.Name)
+func serverlessCallback(client *util.MongoDBClient, currentModel *Model, targtStatus string) (progressEvent handler.ProgressEvent, err error) {
+	serverless, resp, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 && targtStatus == constants.DeletedState {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			_, _ = log.Debugf("404:No instance found")
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
@@ -352,11 +355,11 @@ func serverlessCallback(client *mongodbatlas.Client, currentModel *Model, targtS
 			}, nil
 		}
 		_, _ = log.Warnf("Read - error: %+v", err)
-		return progressevent.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.Id = &serverless.ID
-	if serverless.StateName != constants.IdleState {
+	currentModel.Id = serverless.Id
+	if *serverless.StateName != constants.IdleState {
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
 			Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),

@@ -21,12 +21,13 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 var readRequiredFields = []string{constants.ProjectID, constants.ID}
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if errEvent := validateModel(readRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -42,7 +43,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	containerResponse, response, err := client.AtlasV2.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response), nil
 	}
 

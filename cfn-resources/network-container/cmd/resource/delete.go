@@ -25,12 +25,13 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 var deleteRequiredFields = []string{constants.ProjectID, constants.ID}
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
 
 	if errEvent := validateModel(deleteRequiredFields, currentModel); errEvent != nil {
@@ -49,7 +50,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	containerResponse, response, err := client.AtlasV2.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
 			response), nil
 	}
 

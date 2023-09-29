@@ -75,7 +75,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func retryDeleteIfRequired(client *util.MongoDBClient, response *http.Response, err error, projectID, containerID string) (handler.ProgressEvent, error) {
 	if response.StatusCode != 409 {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
 			response), err
 	}
 
@@ -99,6 +99,6 @@ func retryDeleteIfRequired(client *util.MongoDBClient, response *http.Response, 
 		}, nil
 	}
 
-	return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", errSecondCall.Error()),
+	return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", errSecondCall.Error()),
 		response), errSecondCall
 }

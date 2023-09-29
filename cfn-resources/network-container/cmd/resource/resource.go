@@ -21,7 +21,7 @@ import (
 )
 
 func setup() {
-	util.SetupLogger("mongodb-atlas-maintenance-window")
+	util.SetupLogger("mongodb-atlas-network-container")
 }
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {

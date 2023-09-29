@@ -19,48 +19,44 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var updateRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func updateOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if errEvent := validateModel(updateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
-	containerRequest := &mongodbatlas.Container{}
+	containerRequest := &admin.CloudProviderContainer{}
 
 	CIDR := currentModel.AtlasCidrBlock
 	if CIDR != nil {
-		containerRequest.AtlasCIDRBlock = *CIDR
-	}
-	containerRequest.ProviderName = constants.AWS
-	containerRequest.RegionName = *currentModel.RegionName
-	containerResponse, resp, err := client.Containers.Update(context.Background(), projectID, containerID, containerRequest)
-	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		containerRequest.AtlasCidrBlock = CIDR
 	}
 
-	currentModel.Id = &containerResponse.ID
+	containerRequest.ProviderName = admin.PtrString(constants.AWS)
+	containerRequest.RegionName = currentModel.RegionName
+	containerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringContainer(context.Background(), projectID, containerID, containerRequest).Execute()
+	if err != nil {
+		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			resp), nil
+	}
+
+	currentModel.Id = containerResponse.Id
 	_, _ = logger.Debugf("Create network container - Id: %v", currentModel.Id)
 
 	return handler.ProgressEvent{

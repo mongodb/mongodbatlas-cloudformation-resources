@@ -58,9 +58,7 @@
     }
   },
   "createOnlyProperties": [
-    "/properties/ProjectId"
-  ],
-  "readOnlyProperties": [
+    "/properties/ProjectId",
     "/properties/Profile"
   ],
   "required": [

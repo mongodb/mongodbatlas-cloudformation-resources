@@ -21,18 +21,16 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var createRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
 
-func createOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	if err := validateCreateModel(createRequiredFields, currentModel); err != nil {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
@@ -41,19 +39,17 @@ func createOperation(req handler.Request, prevModel *Model, currentModel *Model)
 		}, err
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	containerRequest := &mongodbatlas.Container{}
-	containerRequest.RegionName = *currentModel.RegionName
-	containerRequest.ProviderName = constants.AWS
-	containerRequest.AtlasCIDRBlock = *currentModel.AtlasCidrBlock
+	containerRequest := &admin.CloudProviderContainer{
+		ProviderName:   admin.PtrString(constants.AWS),
+		RegionName:     currentModel.RegionName,
+		AtlasCidrBlock: currentModel.AtlasCidrBlock,
+	}
 
 	containerID, err := createContainer(client, *currentModel.ProjectId, containerRequest)
 	if err != nil {
@@ -72,10 +68,10 @@ func createOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	}, nil
 }
 
-func createContainer(client *mongodbatlas.Client, projectID string, request *mongodbatlas.Container) (string, error) {
-	container, httpResponse, err := client.Containers.Create(context.Background(), projectID, request)
+func createContainer(client *util.MongoDBClient, projectID string, request *admin.CloudProviderContainer) (string, error) {
+	container, httpResponse, err := client.AtlasV2.NetworkPeeringApi.CreatePeeringContainer(context.Background(), projectID, request).Execute()
 	if err == nil {
-		return container.ID, nil
+		return *container.Id, nil
 	}
 
 	if httpResponse.StatusCode != http.StatusConflict {
@@ -83,31 +79,30 @@ func createContainer(client *mongodbatlas.Client, projectID string, request *mon
 	}
 
 	_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
-	containers, _, err := client.Containers.ListAll(context.Background(), projectID, nil)
+	containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProvider(context.Background(), projectID).Execute()
 	if err != nil {
 		return "", fmt.Errorf("error Containers.ListAll err:%v", err)
 	}
 
-	for i := range containers {
-		if containers[i].RegionName == request.RegionName {
-			return containers[i].ID, nil
+	for i := range containers.Results {
+		if containers.Results[i].RegionName == request.RegionName {
+			return *containers.Results[i].Id, nil
 		}
 	}
 
 	return "", errors.New("error creating network container")
 }
 
-// function to validate inputs to all actions
 func validateCreateModel(fields []string, model *Model) error {
-	if model.ProjectId == nil || *model.ProjectId == "" {
+	if !util.IsStringPresent(model.ProjectId) {
 		return fmt.Errorf("error creating network container: `%s` must be set", constants.ProjectID)
 	}
 
-	if model.RegionName == nil || *model.RegionName == "" {
+	if !util.IsStringPresent(model.RegionName) {
 		return fmt.Errorf("`error creating network container: `%s` must be set", constants.RegionName)
 	}
 
-	if model.AtlasCidrBlock == nil || *model.AtlasCidrBlock == "" {
+	if !util.IsStringPresent(model.AtlasCidrBlock) {
 		return fmt.Errorf("error creating network container: `%s` must be set", constants.AtlasCIDRBlock)
 	}
 

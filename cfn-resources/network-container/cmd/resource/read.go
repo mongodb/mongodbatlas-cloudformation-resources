@@ -19,25 +19,21 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 var readRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func readOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if errEvent := validateModel(readRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -45,16 +41,16 @@ func readOperation(req handler.Request, prevModel *Model, currentModel *Model) (
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
-	containerResponse, response, err := client.Containers.Get(context.Background(), projectID, containerID)
+	containerResponse, response, err := client.AtlasV2.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response), nil
 	}
 
-	currentModel.RegionName = &containerResponse.RegionName
+	currentModel.RegionName = containerResponse.RegionName
 	currentModel.Provisioned = containerResponse.Provisioned
-	currentModel.VpcId = &containerResponse.VPCID
-	currentModel.AtlasCidrBlock = &containerResponse.AtlasCIDRBlock
+	currentModel.VpcId = containerResponse.VpcId
+	currentModel.AtlasCidrBlock = containerResponse.AtlasCidrBlock
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

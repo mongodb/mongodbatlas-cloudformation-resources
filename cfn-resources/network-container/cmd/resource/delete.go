@@ -17,33 +17,29 @@ package resource
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 var deleteRequiredFields = []string{constants.ProjectID, constants.ID}
 
-func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	_, _ = logger.Debugf("Delete currentModel:%+v", currentModel)
 
 	if errEvent := validateModel(deleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -52,11 +48,12 @@ func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
-	containerResponse, response, err := client.Containers.Get(context.Background(), projectID, containerID)
+	containerResponse, response, err := client.AtlasV2.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
-			response.Response), nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
+			response), nil
 	}
+
 	if containerResponse != nil && containerResponse.Provisioned != nil && *containerResponse.Provisioned {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
@@ -66,7 +63,7 @@ func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 		}, nil
 	}
 
-	if response, err := client.Containers.Delete(context.Background(), projectID, containerID); err != nil {
+	if _, response, err := client.AtlasV2.NetworkPeeringApi.DeletePeeringContainer(context.Background(), projectID, containerID).Execute(); err != nil {
 		return retryDeleteIfRequired(client, response, err, projectID, containerID)
 	}
 
@@ -76,17 +73,17 @@ func deleteOperation(req handler.Request, prevModel *Model, currentModel *Model)
 	}, nil
 }
 
-func retryDeleteIfRequired(client *mongodbatlas.Client, response *mongodbatlas.Response, err error, projectID, containerID string) (handler.ProgressEvent, error) {
+func retryDeleteIfRequired(client *util.MongoDBClient, response *http.Response, err error, projectID, containerID string) (handler.ProgressEvent, error) {
 	if response.StatusCode != 409 {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
-			response.Response), err
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
+			response), err
 	}
 
 	// handling "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER" error during release process:
 	// During the release process, the container is created and deleted in a short period of time which cause
 	// the deletion to fail with the error "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER".
 	time.Sleep(time.Second * 5)
-	responseSecondCall, errSecondCall := client.Containers.Delete(context.Background(), projectID, containerID)
+	_, responseSecondCall, errSecondCall := client.AtlasV2.NetworkPeeringApi.DeletePeeringContainer(context.Background(), projectID, containerID).Execute()
 	if errSecondCall == nil {
 		return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}, nil
 	}
@@ -102,6 +99,6 @@ func retryDeleteIfRequired(client *mongodbatlas.Client, response *mongodbatlas.R
 		}, nil
 	}
 
-	return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", errSecondCall.Error()),
-		response.Response), errSecondCall
+	return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", errSecondCall.Error()),
+		response), errSecondCall
 }

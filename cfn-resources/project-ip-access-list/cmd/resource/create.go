@@ -16,6 +16,7 @@ package resource
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -67,6 +68,12 @@ func createEntries(model *Model, client *util.MongoDBClient) (handler.ProgressEv
 	projectID := *model.ProjectId
 
 	if isEntryAlreadyInAccessList, err := isEntryAlreadyInAccessList(client, model); isEntryAlreadyInAccessList || err != nil {
+		if err != nil {
+			return handler.ProgressEvent{
+				Message:          fmt.Sprintf("Error validating entries: %s", err.Error()),
+				OperationStatus:  handler.Failed,
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure}, err
+		}
 		return handler.ProgressEvent{
 			Message:          "Entry already exists in the access list",
 			OperationStatus:  handler.Failed,

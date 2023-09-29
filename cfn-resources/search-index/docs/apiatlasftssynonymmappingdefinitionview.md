@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 Specific pre-defined method chosen to apply to the synonyms to be searched.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -38,7 +38,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Human-readable label that identifies the synonym definition. Each **synonym.name** must be unique within the same index definition.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -46,7 +46,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Source
 
-_Required_: No
+_Required_: Yes
 
 _Type_: <a href="synonymsource.md">SynonymSource</a>
 

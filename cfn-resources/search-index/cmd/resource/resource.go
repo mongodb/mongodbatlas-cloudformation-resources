@@ -24,13 +24,12 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 // indexFieldParts index field should be fieldName:fieldType.
@@ -52,26 +51,24 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
+		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
 
 	searchIndex, err := newSearchIndex(currentModel)
@@ -84,7 +81,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	newSearchIndex, _, err := client.Search.CreateIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndex)
+	newSearchIndex, _, err := atlasV2.AtlasSearchApi.CreateAtlasSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, searchIndex).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
@@ -92,8 +89,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	currentModel.Status = &newSearchIndex.Status
-	currentModel.IndexId = &newSearchIndex.IndexID
+	currentModel.Status = newSearchIndex.Status
+	currentModel.IndexId = newSearchIndex.IndexID
 	return handler.ProgressEvent{
 		OperationStatus: status(currentModel),
 		Message:         "Create Complete",
@@ -106,15 +103,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func newSearchIndex(currentModel *Model) (*mongodbatlas.SearchIndex, error) {
-	searchIndex := &mongodbatlas.SearchIndex{
-		Analyzer:       aws.StringValue(currentModel.Analyzer),
+func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
+	searchIndex := &admin.ClusterSearchIndex{
+		Analyzer:       currentModel.Analyzer,
 		CollectionName: aws.StringValue(currentModel.CollectionName),
 		Database:       aws.StringValue(currentModel.Database),
-		IndexID:        aws.StringValue(currentModel.IndexId),
+		IndexID:        currentModel.IndexId,
 		Name:           aws.StringValue(currentModel.Name),
-		SearchAnalyzer: aws.StringValue(currentModel.SearchAnalyzer),
-		Status:         aws.StringValue(currentModel.Status),
+		SearchAnalyzer: currentModel.SearchAnalyzer,
+		Status:         currentModel.Status,
 	}
 	if currentModel.Mappings != nil {
 		mapping, err := newMappings(currentModel)
@@ -123,11 +120,13 @@ func newSearchIndex(currentModel *Model) (*mongodbatlas.SearchIndex, error) {
 		}
 		searchIndex.Mappings = mapping
 	}
-	analyzers := make([]map[string]interface{}, 0, len(currentModel.Analyzers))
-	for _, v := range currentModel.Analyzers {
-		s, err := util.ToStringMapE(v)
-		if err != nil {
-			return nil, err
+	analyzers := make([]admin.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
+	for i := range currentModel.Analyzers {
+		s := admin.ApiAtlasFTSAnalyzers{
+			CharFilters:  convertToAnySlice(currentModel.Analyzers[i].CharFilters),
+			Name:         *currentModel.Analyzers[i].Name,
+			TokenFilters: convertToAnySlice(currentModel.Analyzers[i].TokenFilters),
+			Tokenizer:    newTokenizerModel(currentModel.Analyzers[i].Tokenizer),
 		}
 		analyzers = append(analyzers, s)
 	}
@@ -135,11 +134,14 @@ func newSearchIndex(currentModel *Model) (*mongodbatlas.SearchIndex, error) {
 		searchIndex.Analyzers = analyzers
 	}
 
-	synonyms := make([]map[string]interface{}, 0, len(currentModel.Synonyms))
-	for _, v := range currentModel.Synonyms {
-		s, err := util.ToStringMapE(v)
-		if err != nil {
-			return nil, err
+	synonyms := make([]admin.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
+	for i := range currentModel.Synonyms {
+		s := admin.SearchSynonymMappingDefinition{
+			Analyzer: *currentModel.Synonyms[i].Analyzer,
+			Name:     *currentModel.Synonyms[i].Name,
+			Source: admin.SynonymSource{
+				Collection: *currentModel.Synonyms[i].Source.Collection,
+			},
 		}
 		synonyms = append(synonyms, s)
 	}
@@ -149,7 +151,39 @@ func newSearchIndex(currentModel *Model) (*mongodbatlas.SearchIndex, error) {
 	return searchIndex, nil
 }
 
-func newMappings(currentModel *Model) (*mongodbatlas.IndexMapping, error) {
+// convertToAnySlice function converts a slice of map[string]interface{} to a slice of interface{}
+func convertToAnySlice(input []map[string]interface{}) []interface{} {
+	result := make([]interface{}, len(input))
+	for i, v := range input {
+		result[i] = v
+	}
+	return result
+}
+
+func newTokenizerModel(tokenizer map[string]interface{}) admin.ApiAtlasFTSAnalyzersTokenizer {
+	result := admin.ApiAtlasFTSAnalyzersTokenizer{}
+	if v, ok := tokenizer["maxGram"]; ok {
+		result.MaxGram = admin.PtrInt(cast.ToInt(v))
+	}
+	if v, ok := tokenizer["minGram"]; ok {
+		result.MinGram = admin.PtrInt(cast.ToInt(v))
+	}
+	if v, ok := tokenizer["type"]; ok {
+		result.Type = admin.PtrString(cast.ToString(v))
+	}
+	if v, ok := tokenizer["group"]; ok {
+		result.Group = admin.PtrInt(cast.ToInt(v))
+	}
+	if v, ok := tokenizer["pattern"]; ok {
+		result.Pattern = admin.PtrString(cast.ToString(v))
+	}
+	if v, ok := tokenizer["maxTokenLength"]; ok {
+		result.MaxTokenLength = admin.PtrInt(cast.ToInt(v))
+	}
+	return result
+}
+
+func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 	if currentModel.Mappings == nil {
 		return nil, nil
 	}
@@ -162,9 +196,9 @@ func newMappings(currentModel *Model) (*mongodbatlas.IndexMapping, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &mongodbatlas.IndexMapping{
-		Dynamic: false,
-		Fields:  &sec,
+	return &admin.ApiAtlasFTSMappings{
+		Dynamic: admin.PtrBool(false),
+		Fields:  sec,
 	}, nil
 }
 
@@ -202,6 +236,7 @@ func status(currentModel *Model) handler.Status {
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if currentModel.IndexId == nil {
 		err := errors.New("no Id found in currentModel")
 		return handler.ProgressEvent{
@@ -213,17 +248,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
-	searchIndex, resp, err := client.Search.GetIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId)
+	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -232,7 +264,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
 	}
-	currentModel.Status = &searchIndex.Status
+	currentModel.Status = searchIndex.Status
 	return handler.ProgressEvent{
 		OperationStatus: cloudformation.OperationStatusSuccess,
 		Message:         "Read Complete",
@@ -243,6 +275,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if currentModel.IndexId == nil {
 		err := errors.New("no Id found in currentModel")
 		return handler.ProgressEvent{
@@ -255,22 +288,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
+		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
 	searchIndex, err := newSearchIndex(currentModel)
 	if err != nil {
@@ -281,8 +311,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:    currentModel,
 		}, nil
 	}
-	updatedSearchIndex, res, err := client.Search.UpdateIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
-		*currentModel.IndexId, searchIndex)
+
+	updatedSearchIndex, res, err := atlasV2.AtlasSearchApi.UpdateAtlasSearchIndex(
+		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId, searchIndex).Execute()
 	if err != nil {
 		// Log and handle 404 ok
 		if res != nil && res.StatusCode == http.StatusNotFound {
@@ -296,7 +327,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-	currentModel.Status = &updatedSearchIndex.Status
+	currentModel.Status = updatedSearchIndex.Status
 	return handler.ProgressEvent{
 		OperationStatus: status(currentModel),
 		Message:         "Update Complete",
@@ -312,6 +343,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if currentModel.IndexId == nil {
 		err := errors.New("no Id found in currentModel")
 		return handler.ProgressEvent{
@@ -324,15 +356,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	ctx := context.Background()
 
@@ -340,10 +369,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext["stateName"]; ok && iOK {
 		id := cast.ToString(indexID)
 		currentModel.IndexId = &id
-		return validateProgress(ctx, client, currentModel, string(handler.InProgress))
+		return validateProgress(ctx, atlasV2, currentModel, string(handler.InProgress))
 	}
 
-	resp, err := client.Search.DeleteIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId)
+	_, resp, err := atlasV2.AtlasSearchApi.DeleteAtlasSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if resp != nil && (resp.StatusCode == http.StatusInternalServerError || resp.StatusCode == http.StatusNotFound) {
 			return handler.ProgressEvent{
@@ -370,28 +399,26 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	ctx := context.Background()
 
 	if _, ok := req.CallbackContext["stateName"]; ok {
-		return validateProgress(ctx, client, currentModel, "IDLE")
+		return validateProgress(ctx, atlasV2, currentModel, "IDLE")
 	}
 
-	indices, _, err := client.Search.ListIndexes(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName,
-		*currentModel.Database, *currentModel.CollectionName, nil)
+	indices, _, err := atlasV2.AtlasSearchApi.ListAtlasSearchIndexes(
+		context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.CollectionName, *currentModel.Database).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
@@ -399,8 +426,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 	response := make([]interface{}, 0, len(indices))
-	for _, v := range indices {
-		response = append(response, v)
+	for i := range indices {
+		response = append(response, indices[i])
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -410,7 +437,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // Waits for the terminal stage from an intermediate stage
-func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
+func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
 		_, _ = logger.Debugf("Error Cluster validate progress() err: %+v", err)
@@ -419,7 +446,7 @@ func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentM
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-	if index.Status == targetState {
+	if util.AreStringPtrEqual(index.Status, &targetState) {
 		p := handler.NewProgressEvent()
 		p.ResourceModel = currentModel
 		p.OperationStatus = cloudformation.OperationStatusInProgress
@@ -432,7 +459,7 @@ func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentM
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
-	if index.Status == cloudformation.OperationStatusFailed {
+	if util.AreStringPtrEqual(index.Status, admin.PtrString(cloudformation.OperationStatusFailed)) {
 		p.OperationStatus = cloudformation.OperationStatusFailed
 		p.Message = "Failed"
 		p.HandlerErrorCode = cloudformation.HandlerErrorCodeInvalidRequest
@@ -441,17 +468,17 @@ func validateProgress(ctx context.Context, client *mongodbatlas.Client, currentM
 	}
 	p.OperationStatus = cloudformation.OperationStatusSuccess
 	p.Message = "Complete"
-	if index.Status != "DELETED" {
+	if util.IsStringPresent(index.Status) && *index.Status != "DELETED" {
 		p.ResourceModel = currentModel
 	}
 	return p, nil
 }
 
-func SearchIndexExists(ctx context.Context, client *mongodbatlas.Client, currentModel *Model) (*mongodbatlas.SearchIndex, error) {
-	index, resp, err := client.Search.GetIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId)
+func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentModel *Model) (*admin.ClusterSearchIndex, error) {
+	index, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return &mongodbatlas.SearchIndex{Status: "DELETED"}, nil
+			return &admin.ClusterSearchIndex{Status: admin.PtrString("DELETED")}, nil
 		}
 	}
 	return index, err

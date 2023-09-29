@@ -177,7 +177,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+		Message:              fmt.Sprintf("Create ServerlessInstance `%s`", *serverless.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
@@ -361,7 +361,7 @@ func serverlessCallback(client *util.MongoDBClient, currentModel *Model, targtSt
 	if *serverless.StateName != constants.IdleState {
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+			Message:              fmt.Sprintf("Create ServerlessInstance `%s`", *serverless.StateName),
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: CallBackSeconds,
 			CallbackContext: map[string]interface{}{
@@ -375,7 +375,7 @@ func serverlessCallback(client *util.MongoDBClient, currentModel *Model, targtSt
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         fmt.Sprintf("Create ServerlessInstance `%s`", serverless.StateName),
+		Message:         fmt.Sprintf("Create ServerlessInstance `%s`", *serverless.StateName),
 		ResourceModel:   model,
 	}, nil
 }

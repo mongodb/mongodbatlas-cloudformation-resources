@@ -45,9 +45,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	aws := constants.AWS
 	containerRequest := &admin.CloudProviderContainer{
-		ProviderName:   &aws,
+		ProviderName:   admin.PtrString(constants.AWS),
 		RegionName:     currentModel.RegionName,
 		AtlasCidrBlock: currentModel.AtlasCidrBlock,
 	}

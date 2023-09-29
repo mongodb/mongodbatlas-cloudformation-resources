@@ -48,8 +48,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		containerRequest.AtlasCidrBlock = CIDR
 	}
 
-	aws := constants.AWS
-	containerRequest.ProviderName = &aws
+	containerRequest.ProviderName = admin.PtrString(constants.AWS)
 	containerRequest.RegionName = currentModel.RegionName
 	containerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringContainer(context.Background(), projectID, containerID, containerRequest).Execute()
 	if err != nil {

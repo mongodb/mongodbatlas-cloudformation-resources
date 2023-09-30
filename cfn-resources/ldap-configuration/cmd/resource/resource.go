@@ -157,24 +157,25 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
 	// Validate if resource exists
-	_, errPe := get(client, *currentModel.ProjectId)
+	_, errPe := get2(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
-	ldapReq := currentModel.GetAtlasModel()
-	ldapReq.LDAP.AuthorizationEnabled = aws.Bool(false)
-	ldapReq.LDAP.AuthenticationEnabled = aws.Bool(false)
+	ldapReq := currentModel.GetAtlasModel2()
+	ldapReq.Ldap.AuthorizationEnabled = aws.Bool(false)
+	ldapReq.Ldap.AuthenticationEnabled = aws.Bool(false)
 
-	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
+	ctx := context.Background()
+	_, resp, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{

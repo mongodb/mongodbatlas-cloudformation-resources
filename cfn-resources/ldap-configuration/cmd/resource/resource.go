@@ -96,17 +96,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
-	ldapConf, errPe := get(client, *currentModel.ProjectId)
+	ldapConf, errPe := get2(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
-	currentModel.CompleteByResponse(*ldapConf)
+	currentModel.CompleteByResponse2(*ldapConf)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -233,6 +233,22 @@ func get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfigu
 
 	if !isResourceEnabled(*ldapConf) {
 		errPe := progressevent.GetFailedEventByCode("Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
+		return nil, &errPe
+	}
+
+	return ldapConf, nil
+}
+
+func get2(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *handler.ProgressEvent) {
+	ctx := context.Background()
+	ldapConf, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(ctx, groupID).Execute()
+	if err != nil {
+		errPe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+		return nil, &errPe
+	}
+
+	if !isResourceEnabled2(*ldapConf) {
+		errPe := progressevent.GetFailedEventByCode("LDAP Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
 		return nil, &errPe
 	}
 

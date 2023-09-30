@@ -20,13 +20,11 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
-	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -39,32 +37,23 @@ const (
 
 var CreateRequiredFields = []string{constants.ProjectID, BindUsername, BindPassword, constants.HostName, constants.Port}
 var ReadRequiredFields = []string{constants.ProjectID, RequestID}
-var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.ProjectID, RequestID}
-var ListRequiredFields []string
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
 func setup() {
-	util.SetupLogger("mongodb-atlas-LDAPVerify")
+	util.SetupLogger("mongodb-atlas-ldap-verify")
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if err := validateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -77,14 +66,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
 	return handler.ProgressEvent{
-
 		OperationStatus:      handler.InProgress,
 		Message:              "Create in progress",
 		ResourceModel:        currentModel,
@@ -98,19 +85,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	// Validation
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if err := validateModel(ReadRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// Create atlas client
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -119,13 +99,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -138,18 +116,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	if err := validateModel(DeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -157,7 +129,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
 			res.Response), nil
 	}
 
@@ -170,11 +142,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
 	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete completed successfully",
@@ -226,8 +196,7 @@ func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Req
 
 	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *model.ProjectId, requestID)
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response)
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response)
 	}
 
 	switch LDAPConfigResponse.Status {
@@ -258,9 +227,8 @@ func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Req
 func getFailedMessage(configuration mongodbatlas.LDAPConfiguration) string {
 	for _, i := range configuration.Validations {
 		if i.Status == "FAIL" {
-			return fmt.Sprintf("Faild in validation %s", i.ValidationType)
+			return fmt.Sprintf("Validation fail: %s", i.ValidationType)
 		}
 	}
-
 	return ""
 }

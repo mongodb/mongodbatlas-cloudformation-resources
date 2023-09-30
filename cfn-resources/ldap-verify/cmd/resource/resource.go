@@ -19,8 +19,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -120,27 +118,24 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
-	_, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
+	_, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
-			res.Response), nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()), resp), nil
 	}
 
-	ldapReq := &mongodbatlas.LDAP{
-		Hostname:     aws.String("-"),
-		Port:         aws.Int(1111),
-		BindPassword: aws.String("-"),
-		BindUsername: aws.String("-"),
+	params := &admin.LDAPVerifyConnectivityJobRequestParams{
+		Hostname:     "-",
+		Port:         1111,
+		BindPassword: "-",
+		BindUsername: "-",
 	}
-
-	_, res, err = client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+	if _, resp, err := client.AtlasV2.LDAPConfigurationApi.VerifyLDAPConfiguration(context.Background(), *currentModel.ProjectId, params).Execute(); err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{
@@ -303,7 +298,7 @@ func getFailedMessage(configuration mongodbatlas.LDAPConfiguration) string {
 func getFailedMessage2(configuration admin.LDAPVerifyConnectivityJobRequest) string {
 	for _, i := range configuration.Validations {
 		if *i.Status == "FAIL" {
-			return fmt.Sprintf("Validation fail: %s", i.ValidationType)
+			return fmt.Sprintf("Validation fail: %s", *i.ValidationType)
 		}
 	}
 	return ""

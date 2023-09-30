@@ -27,7 +27,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
@@ -64,7 +63,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if isResourceEnabled2(*ldapConf) {
+	if isResourceEnabled(*ldapConf) {
 		return progressevent.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
@@ -72,14 +71,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.AuthenticationEnabled = &enabled
 
-	ldapReq := currentModel.GetAtlasModel2()
+	ldapReq := currentModel.GetAtlasModel()
 
 	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.CompleteByResponse2(*LDAPConfigResponse)
+	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -101,12 +100,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	ldapConf, errPe := get2(client, *currentModel.ProjectId)
+	ldapConf, errPe := get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
-	currentModel.CompleteByResponse2(*ldapConf)
+	currentModel.CompleteByResponse(*ldapConf)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -128,12 +127,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Validate if resource exists
-	_, errPe := get2(client, *currentModel.ProjectId)
+	_, errPe := get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
-	ldapReq := currentModel.GetAtlasModel2()
+	ldapReq := currentModel.GetAtlasModel()
 
 	ctx := context.Background()
 	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
@@ -141,7 +140,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.CompleteByResponse2(*LDAPConfigResponse)
+	currentModel.CompleteByResponse(*LDAPConfigResponse)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -163,12 +162,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Validate if resource exists
-	_, errPe := get2(client, *currentModel.ProjectId)
+	_, errPe := get(client, *currentModel.ProjectId)
 	if errPe != nil {
 		return *errPe, nil
 	}
 
-	ldapReq := currentModel.GetAtlasModel2()
+	ldapReq := currentModel.GetAtlasModel()
 	ldapReq.Ldap.AuthorizationEnabled = aws.Bool(false)
 	ldapReq.Ldap.AuthenticationEnabled = aws.Bool(false)
 
@@ -188,24 +187,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
-	m.AuthenticationEnabled = resp.LDAP.AuthenticationEnabled
-	m.AuthorizationEnabled = resp.LDAP.AuthorizationEnabled
-
-	mapping := make([]ApiAtlasNDSUserToDNMappingView, len(resp.LDAP.UserToDNMapping))
-
-	for i := range resp.LDAP.UserToDNMapping {
-		ndsMap := ApiAtlasNDSUserToDNMappingView{
-			Match:        &resp.LDAP.UserToDNMapping[i].Match,
-			Substitution: &resp.LDAP.UserToDNMapping[i].Substitution,
-			LdapQuery:    &resp.LDAP.UserToDNMapping[i].LDAPQuery,
-		}
-		mapping = append(mapping, ndsMap)
-	}
-	m.UserToDNMapping = mapping
-}
-
-func (m *Model) CompleteByResponse2(resp admin.UserSecurity) {
+func (m *Model) CompleteByResponse(resp admin.UserSecurity) {
 	m.AuthenticationEnabled = resp.Ldap.AuthenticationEnabled
 	m.AuthorizationEnabled = resp.Ldap.AuthorizationEnabled
 
@@ -222,22 +204,7 @@ func (m *Model) CompleteByResponse2(resp admin.UserSecurity) {
 	m.UserToDNMapping = mapping
 }
 
-func get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfiguration, *handler.ProgressEvent) {
-	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), groupID)
-	if err != nil {
-		errPe := progressevent.GetFailedEventByResponse(err.Error(), res.Response)
-		return nil, &errPe
-	}
-
-	if !isResourceEnabled(*ldapConf) {
-		errPe := progressevent.GetFailedEventByCode("Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
-		return nil, &errPe
-	}
-
-	return ldapConf, nil
-}
-
-func get2(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *handler.ProgressEvent) {
+func get(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *handler.ProgressEvent) {
 	ctx := context.Background()
 	ldapConf, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(ctx, groupID).Execute()
 	if err != nil {
@@ -245,7 +212,7 @@ func get2(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *han
 		return nil, &errPe
 	}
 
-	if !isResourceEnabled2(*ldapConf) {
+	if !isResourceEnabled(*ldapConf) {
 		errPe := progressevent.GetFailedEventByCode("LDAP Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
 		return nil, &errPe
 	}
@@ -253,39 +220,8 @@ func get2(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *han
 	return ldapConf, nil
 }
 
-func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
+func (m *Model) GetAtlasModel() *admin.UserSecurity {
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
-
-	ldap := &mongodbatlas.LDAP{
-		AuthenticationEnabled: aws.Bool(true),
-		Hostname:              m.Hostname,
-		Port:                  m.Port,
-		BindUsername:          m.BindUsername,
-		UserToDNMapping:       DNMapping,
-		BindPassword:          m.BindPassword,
-	}
-
-	ldapReq := &mongodbatlas.LDAPConfiguration{
-		LDAP: ldap,
-	}
-
-	if m.AuthzQueryTemplate != nil {
-		ldapReq.LDAP.AuthzQueryTemplate = m.AuthzQueryTemplate
-	}
-
-	if m.CaCertificate != nil {
-		ldapReq.LDAP.CaCertificate = m.CaCertificate
-	}
-
-	if m.AuthorizationEnabled != nil {
-		ldapReq.LDAP.AuthorizationEnabled = m.AuthorizationEnabled
-	}
-
-	return ldapReq
-}
-
-func (m *Model) GetAtlasModel2() *admin.UserSecurity {
-	DNMapping := getUserToDNMapping2(m.UserToDNMapping)
 
 	ldap := &admin.LDAPSecuritySettings{
 		AuthenticationEnabled: aws.Bool(true),
@@ -315,22 +251,7 @@ func (m *Model) GetAtlasModel2() *admin.UserSecurity {
 	return ldapReq
 }
 
-func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []*mongodbatlas.UserToDNMapping {
-	mapping := make([]*mongodbatlas.UserToDNMapping, len(ndsUserMapping))
-
-	for i := range ndsUserMapping {
-		ndsMap := mongodbatlas.UserToDNMapping{
-			Match:        *ndsUserMapping[i].Match,
-			Substitution: *ndsUserMapping[i].Substitution,
-			LDAPQuery:    *ndsUserMapping[i].LdapQuery,
-		}
-		mapping = append(mapping, &ndsMap)
-	}
-
-	return mapping
-}
-
-func getUserToDNMapping2(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin.UserToDNMapping {
+func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin.UserToDNMapping {
 	mapping := make([]admin.UserToDNMapping, len(ndsUserMapping))
 
 	for i := range ndsUserMapping {
@@ -344,13 +265,7 @@ func getUserToDNMapping2(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admi
 
 	return mapping
 }
-func isResourceEnabled(ldapConf mongodbatlas.LDAPConfiguration) bool {
-	if ldapConf.LDAP.AuthenticationEnabled != nil {
-		return *ldapConf.LDAP.AuthenticationEnabled
-	}
-	return false
-}
 
-func isResourceEnabled2(ldapConf admin.UserSecurity) bool {
+func isResourceEnabled(ldapConf admin.UserSecurity) bool {
 	return ldapConf.Ldap.AuthenticationEnabled != nil && *ldapConf.Ldap.AuthenticationEnabled
 }

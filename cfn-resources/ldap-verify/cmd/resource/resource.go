@@ -84,25 +84,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	if err := validateModel(ReadRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
-	var res *mongodbatlas.Response
 
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.GetStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId)
+	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.CompleteByResponse(*LDAPConfigResponse)
+	currentModel.CompleteByResponse2(*LDAPConfigResponse)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

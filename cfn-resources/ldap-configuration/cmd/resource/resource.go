@@ -63,13 +63,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if isResourceEnabled(*ldapConf) {
+	if isResourceEnabled(ldapConf) {
 		return progressevent.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
-	enabled := true
-
-	currentModel.AuthenticationEnabled = &enabled
+	currentModel.AuthenticationEnabled = aws.Bool(true)
 
 	ldapReq := currentModel.GetAtlasModel()
 
@@ -100,9 +98,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	ldapConf, errPe := get(client, *currentModel.ProjectId)
-	if errPe != nil {
-		return *errPe, nil
+	ldapConf, pe := get(client, *currentModel.ProjectId)
+	if pe != nil {
+		return *pe, nil
 	}
 
 	currentModel.CompleteByResponse(*ldapConf)
@@ -126,10 +124,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	// Validate if resource exists
-	_, errPe := get(client, *currentModel.ProjectId)
-	if errPe != nil {
-		return *errPe, nil
+	if _, pe := get(client, *currentModel.ProjectId); pe != nil {
+		return *pe, nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
@@ -161,10 +157,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	// Validate if resource exists
-	_, errPe := get(client, *currentModel.ProjectId)
-	if errPe != nil {
-		return *errPe, nil
+	if _, pe := get(client, *currentModel.ProjectId); pe != nil {
+		return *pe, nil
 	}
 
 	ldapReq := currentModel.GetAtlasModel()
@@ -212,7 +206,7 @@ func get(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *hand
 		return nil, &errPe
 	}
 
-	if !isResourceEnabled(*ldapConf) {
+	if !isResourceEnabled(ldapConf) {
 		errPe := progressevent.GetFailedEventByCode("LDAP Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
 		return nil, &errPe
 	}
@@ -266,6 +260,6 @@ func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin
 	return mapping
 }
 
-func isResourceEnabled(ldapConf admin.UserSecurity) bool {
+func isResourceEnabled(ldapConf *admin.UserSecurity) bool {
 	return ldapConf.Ldap.AuthenticationEnabled != nil && *ldapConf.Ldap.AuthenticationEnabled
 }

@@ -21,11 +21,9 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -49,6 +47,150 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-ldap-configuration")
 }
 
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), *currentModel.ProjectId)
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if isResourceEnabled(*ldapConf) {
+		return progressevent.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
+	}
+
+	enabled := true
+
+	currentModel.AuthenticationEnabled = &enabled
+
+	ldapReq := currentModel.GetAtlasModel()
+
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	currentModel.CompleteByResponse(*LDAPConfigResponse)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Create successfully",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
+		return *err, nil
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	ldapConf, errPe := get(client, *currentModel.ProjectId)
+	if errPe != nil {
+		return *errPe, nil
+	}
+
+	currentModel.CompleteByResponse(*ldapConf)
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if err := validator.ValidateModel(UpdateRequiredFields, currentModel); err != nil {
+		return *err, nil
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	// Validate if resource exists
+	_, errPe := get(client, *currentModel.ProjectId)
+	if errPe != nil {
+		return *errPe, nil
+	}
+
+	ldapReq := currentModel.GetAtlasModel()
+
+	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	currentModel.CompleteByResponse(*LDAPConfigResponse)
+
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
+	}
+
+	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+
+	// Validate if resource exists
+	_, errPe := get(client, *currentModel.ProjectId)
+	if errPe != nil {
+		return *errPe, nil
+	}
+
+	ldapReq := currentModel.GetAtlasModel()
+	ldapReq.LDAP.AuthorizationEnabled = aws.Bool(false)
+	ldapReq.LDAP.AuthenticationEnabled = aws.Bool(false)
+
+	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Delete success",
+	}, nil
+}
+
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
 func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 	m.AuthenticationEnabled = resp.LDAP.AuthenticationEnabled
 	m.AuthorizationEnabled = resp.LDAP.AuthorizationEnabled
@@ -64,6 +206,21 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 		mapping = append(mapping, ndsMap)
 	}
 	m.UserToDNMapping = mapping
+}
+
+func get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfiguration, *handler.ProgressEvent) {
+	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), groupID)
+	if err != nil {
+		errPe := progressevent.GetFailedEventByResponse(err.Error(), res.Response)
+		return nil, &errPe
+	}
+
+	if !isResourceEnabled(*ldapConf) {
+		errPe := progressevent.GetFailedEventByCode("Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
+		return nil, &errPe
+	}
+
+	return ldapConf, nil
 }
 
 func (m *Model) GetAtlasModel() *mongodbatlas.LDAPConfiguration {
@@ -112,199 +269,9 @@ func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []*mong
 	return mapping
 }
 
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	// Validation
-	if modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), *currentModel.ProjectId)
-	if err != nil {
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	if isResourceEnabled(*ldapConf) {
-		return progressEvents.GetFailedEventByCode("Authentication is already enabled for the selected project", cloudformation.HandlerErrorCodeAlreadyExists), nil
-	}
-
-	enabled := true
-
-	currentModel.AuthenticationEnabled = &enabled
-
-	ldapReq := currentModel.GetAtlasModel()
-
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
-	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	currentModel.CompleteByResponse(*LDAPConfigResponse)
-
-	// Response
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Create successfully",
-		ResourceModel:   currentModel,
-	}, nil
-}
-
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-
-	// Validation
-	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	ldapConf, errPe := Get(client, *currentModel.ProjectId)
-	if errPe != nil {
-		return *errPe, nil
-	}
-
-	currentModel.CompleteByResponse(*ldapConf)
-
-	// Response
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}, nil
-}
-
 func isResourceEnabled(ldapConf mongodbatlas.LDAPConfiguration) bool {
 	if ldapConf.LDAP.AuthenticationEnabled != nil {
 		return *ldapConf.LDAP.AuthenticationEnabled
 	}
 	return false
-}
-
-func Get(client *mongodbatlas.Client, groupID string) (*mongodbatlas.LDAPConfiguration, *handler.ProgressEvent) {
-	ldapConf, res, err := client.LDAPConfigurations.Get(context.Background(), groupID)
-	if err != nil {
-		errPe := progressEvents.GetFailedEventByResponse(err.Error(), res.Response)
-		return nil, &errPe
-	}
-
-	if !isResourceEnabled(*ldapConf) {
-		errPe := progressEvents.GetFailedEventByCode("Authentication is disabled for the selected project", cloudformation.HandlerErrorCodeNotFound)
-		return nil, &errPe
-	}
-
-	return ldapConf, nil
-}
-
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	// Validation
-	if modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	// Validate if resource exists
-	_, errPe := Get(client, *currentModel.ProjectId)
-	if errPe != nil {
-		return *errPe, nil
-	}
-
-	ldapReq := currentModel.GetAtlasModel()
-
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	currentModel.CompleteByResponse(*LDAPConfigResponse)
-
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	// Response
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}, nil
-}
-
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	// Validation
-	if modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	// Validate if resource exists
-	_, errPe := Get(client, *currentModel.ProjectId)
-	if errPe != nil {
-		return *errPe, nil
-	}
-
-	ldapReq := currentModel.GetAtlasModel()
-	ldapReq.LDAP.AuthorizationEnabled = aws.Bool(false)
-	ldapReq.LDAP.AuthenticationEnabled = aws.Bool(false)
-
-	_, res, err := client.LDAPConfigurations.Save(context.Background(), *currentModel.ProjectId, ldapReq)
-	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "Delete success",
-	}, nil
-}
-
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }

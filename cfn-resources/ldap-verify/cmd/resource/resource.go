@@ -26,6 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -54,22 +55,21 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err := validateModel(CreateRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 	if req.CallbackContext != nil {
-		return validateProgress(client, currentModel, req), nil
+		return validateProgress2(client, currentModel, req), nil
 	}
 
-	ldapReq := currentModel.GetAtlasModel()
-
-	LDAPConfigResponse, res, err := client.LDAPConfigurations.Verify(context.Background(), *currentModel.ProjectId, ldapReq)
+	params := currentModel.GetAtlasParams()
+	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.VerifyLDAPConfiguration(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.CompleteByResponse(*LDAPConfigResponse)
+	currentModel.CompleteByResponse2(*LDAPConfigResponse)
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -174,6 +174,25 @@ func (m *Model) GetAtlasModel() *mongodbatlas.LDAP {
 	return ldap
 }
 
+func (m *Model) GetAtlasParams() *admin.LDAPVerifyConnectivityJobRequestParams {
+	ldap := admin.LDAPVerifyConnectivityJobRequestParams{
+		Hostname:     *m.HostName,
+		Port:         *m.Port,
+		BindPassword: *m.BindPassword,
+		BindUsername: *m.BindUsername,
+	}
+
+	if m.AuthzQueryTemplate != nil {
+		ldap.AuthzQueryTemplate = m.AuthzQueryTemplate
+	}
+
+	if m.CaCertificate != nil {
+		ldap.CaCertificate = m.CaCertificate
+	}
+
+	return &ldap
+}
+
 func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 	m.RequestId = &resp.RequestID
 
@@ -189,6 +208,23 @@ func (m *Model) CompleteByResponse(resp mongodbatlas.LDAPConfiguration) {
 
 	m.Validations = mapping
 	m.Status = &resp.Status
+}
+
+func (m *Model) CompleteByResponse2(resp admin.LDAPVerifyConnectivityJobRequest) {
+	m.RequestId = resp.RequestId
+
+	mapping := make([]Validation, len(resp.Validations))
+
+	for i := range resp.Validations {
+		validation := Validation{
+			Status:         resp.Validations[i].Status,
+			ValidationType: resp.Validations[i].ValidationType,
+		}
+		mapping[i] = validation
+	}
+
+	m.Validations = mapping
+	m.Status = resp.Status
 }
 
 func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Request) handler.ProgressEvent {
@@ -224,9 +260,51 @@ func validateProgress(client *mongodbatlas.Client, model *Model, req handler.Req
 	}
 }
 
+func validateProgress2(client *util.MongoDBClient, model *Model, req handler.Request) handler.ProgressEvent {
+	requestID := req.CallbackContext["RequestId"].(string)
+
+	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *model.ProjectId, requestID).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp)
+	}
+
+	switch *LDAPConfigResponse.Status {
+	case "PENDING":
+		return handler.ProgressEvent{
+			OperationStatus: handler.InProgress,
+			Message:         "Create in progress",
+			ResourceModel:   model,
+			CallbackContext: map[string]interface{}{
+				"RequestId": requestID,
+			},
+		}
+	case "SUCCESS":
+		model.CompleteByResponse2(*LDAPConfigResponse)
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create successfully",
+			ResourceModel:   model,
+		}
+	default:
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         getFailedMessage2(*LDAPConfigResponse),
+		}
+	}
+}
+
 func getFailedMessage(configuration mongodbatlas.LDAPConfiguration) string {
 	for _, i := range configuration.Validations {
 		if i.Status == "FAIL" {
+			return fmt.Sprintf("Validation fail: %s", i.ValidationType)
+		}
+	}
+	return ""
+}
+
+func getFailedMessage2(configuration admin.LDAPVerifyConnectivityJobRequest) string {
+	for _, i := range configuration.Validations {
+		if *i.Status == "FAIL" {
 			return fmt.Sprintf("Validation fail: %s", i.ValidationType)
 		}
 	}

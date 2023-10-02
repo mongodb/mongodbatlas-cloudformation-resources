@@ -75,9 +75,12 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin.
 		var numShards int
 
 		rSpec := admin.ReplicationSpec{
-			Id:            admin.PtrString(cast.ToString(replicationSpecs[i].ID)),
 			NumShards:     &numShards,
 			RegionConfigs: expandRegionsConfig(replicationSpecs[i].AdvancedRegionConfigs),
+		}
+
+		if util.IsStringPresent(replicationSpecs[i].ID) {
+			rSpec.Id = admin.PtrString(cast.ToString(replicationSpecs[i].ID))
 		}
 
 		if replicationSpecs[i].NumShards != nil {

@@ -107,7 +107,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Create Cluster `%s`", cluster.StateName),
+		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
@@ -375,7 +375,7 @@ func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, 
 		}
 		return false, constants.Error, nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
-	_, _ = log.Debugf("Cluster state: %s, targetState : %s", cluster.StateName, targetState)
+	_, _ = log.Debugf("Cluster state: %s, targetState : %s", *cluster.StateName, targetState)
 	return *cluster.StateName == targetState, *cluster.StateName, cluster, nil
 }
 

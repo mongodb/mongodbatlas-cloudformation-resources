@@ -264,8 +264,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	for _, integration := range integrations.Results {
-		m := integrationToModel(*currentModel, &integration)
+	for i := range integrations.Results {
+		m := integrationToModel(*currentModel, &integrations.Results[i])
 		mm = append(mm, m)
 	}
 

@@ -136,7 +136,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
-		_, _ = log.Warnf("error cluster get- err:%+v resp:%+v", err, resp)
+
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,

@@ -102,7 +102,6 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	// Create Cluster
 	cluster, res, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
 	if err != nil {
-		_, _ = log.Warnf("Create - Cluster.Create() - error: %+v", err)
 		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.Duplicate) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -149,7 +148,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
-		_, _ = log.Warnf("error cluster get- err:%+v resp:%+v", err, resp)
+
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,
@@ -193,7 +192,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	model, resp, err := updateCluster(context.Background(), client, currentModel)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			_, _ = log.Warnf("update 404 err: %+v", err)
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
@@ -261,14 +259,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	resp, err := client.AdvancedClusters.Delete(ctx, *currentModel.ProjectId, *currentModel.Name, options)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			_, _ = log.Warnf("Delete 404 err: %+v", err)
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
 
-		_, _ = log.Warnf("Delete err: %+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,

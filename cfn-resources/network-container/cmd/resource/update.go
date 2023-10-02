@@ -22,13 +22,14 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var updateRequiredFields = []string{constants.ProjectID, constants.ID}
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if errEvent := validateModel(updateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
@@ -52,7 +53,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	containerRequest.RegionName = currentModel.RegionName
 	containerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringContainer(context.Background(), projectID, containerID, containerRequest).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp), nil
 	}
 

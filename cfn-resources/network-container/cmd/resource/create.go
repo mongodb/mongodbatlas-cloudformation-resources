@@ -31,6 +31,7 @@ import (
 var createRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
 	if err := validateCreateModel(createRequiredFields, currentModel); err != nil {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,

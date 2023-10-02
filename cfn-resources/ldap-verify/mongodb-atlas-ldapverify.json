@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::LDAPVerify",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/ldap-verify",
   "description": "Requests a verification of an LDAP configuration over TLS for an Atlas project. Pass the requestId in the response object to the Verify |ldap| Configuration endpoint to get the status of a verification request. Atlas retains only the most recent request for each project.",
   "additionalProperties": false,
   "definitions": {

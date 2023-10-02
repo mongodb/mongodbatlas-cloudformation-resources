@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::APIKey",
   "description": "Creates one API key for the specified organization. An organization API key grants programmatic access to an organization.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/api-key",
   "definitions": {
     "ListOptions": {
       "type": "object",

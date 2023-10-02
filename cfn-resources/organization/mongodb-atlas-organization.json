@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::Organization",
   "description": "Returns, adds, and edits organizational units in MongoDB Cloud.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/organization",
   "definitions": {
     "APIKey": {
       "type": "object",

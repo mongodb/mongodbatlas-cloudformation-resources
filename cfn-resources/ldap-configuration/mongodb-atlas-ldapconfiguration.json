@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::LDAPConfiguration",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/ldap-configuration",
   "description": "Returns, edits, verifies, and removes LDAP configurations.",
   "additionalProperties": false,
   "definitions": {

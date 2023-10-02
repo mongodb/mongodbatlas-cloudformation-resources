@@ -79,7 +79,7 @@
     "/properties/Results/Id"
   ],
   "typeName": "MongoDB::Atlas::X509AuthenticationDatabaseUser",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/x509-authentication-database-user",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/x509-authentication-database-user/README.md",
   "tagging": {
     "taggable": false

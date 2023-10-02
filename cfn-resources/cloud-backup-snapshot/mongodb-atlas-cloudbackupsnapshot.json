@@ -462,7 +462,7 @@
     "/properties/SnapshotId",
     "/properties/Profile"
   ],
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cloud-backup-snapshot",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-snapshot/README.md",
   "tagging": {
     "taggable": false

@@ -162,5 +162,6 @@
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/third-party-integration/README.md",
   "tagging": {
     "taggable": false
-  }
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/third-party-integration"
 }

@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::PrivatelinkEndpointServiceDataFederationOnlineArchive",
   "description": "Adds one private endpoint for Federated Database Instances and Online Archives to the specified projects.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/privatelink-endpoint-service-data-federation-online-archive",
   "definitions": {},
   "properties": {
     "ProjectId": {

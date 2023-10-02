@@ -258,7 +258,7 @@
     }
   },
   "typeName": "MongoDB::Atlas::Trigger",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/trigger",
   "readOnlyProperties": [
     "/properties/Id"
   ],

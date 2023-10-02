@@ -367,7 +367,7 @@
     "/properties/Profile"
   ],
   "typeName": "MongoDB::Atlas::FederatedDatabaseInstance",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/federated-database-instance",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/federated-database-instance/README.md",
   "tagging": {
     "taggable": false

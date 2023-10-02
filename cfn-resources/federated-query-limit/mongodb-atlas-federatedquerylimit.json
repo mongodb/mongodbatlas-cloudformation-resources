@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::FederatedQueryLimit",
   "description": "Query limit for one federated database instance.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/federated-query-limit",
   "definitions": {},
   "properties": {
     "ProjectId": {

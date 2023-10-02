@@ -574,7 +574,7 @@
     "/properties/CloudProviderConfig/Aws/TestS3Bucket"
   ],
   "typeName": "MongoDB::Atlas::DataLakes",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/datalakes",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/datalakes/README.md",
   "tagging": {
     "taggable": false

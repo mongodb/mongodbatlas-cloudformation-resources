@@ -105,7 +105,7 @@
     "/properties/RemoveAllZoneMapping"
   ],
   "typeName": "MongoDB::Atlas::GlobalClusterConfig",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/global-cluster-config",
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/global-cluster-config/README.md",
   "tagging": {
     "taggable": false

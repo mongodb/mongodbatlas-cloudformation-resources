@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::AccessListAPIKey",
   "description": "Creates the access list entries for the specified organization API key.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/access-list-api-key",
   "definitions": {},
   "properties": {
     "OrgId": {

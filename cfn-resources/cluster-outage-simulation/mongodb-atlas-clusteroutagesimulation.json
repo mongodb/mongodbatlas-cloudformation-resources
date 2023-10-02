@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::ClusterOutageSimulation",
   "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cluster-outage-simulation",
   "definitions": {
     "ProjectId": {
       "type": "string"

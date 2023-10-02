@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::SearchIndex",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/search-index",
   "additionalProperties": false,
   "definitions": {
     "ApiAtlasFTSAnalyzersViewManual": {

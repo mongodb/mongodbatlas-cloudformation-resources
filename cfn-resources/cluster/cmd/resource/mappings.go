@@ -102,25 +102,24 @@ func expandAutoScaling(scaling *AdvancedAutoScaling) *admin.AdvancedAutoScalingS
 		return nil
 	}
 	if scaling.Compute != nil {
-		var minInstanceSize string
-		if scaling.Compute.MinInstanceSize != nil {
-			minInstanceSize = *scaling.Compute.MinInstanceSize
-		}
-		var maxInstanceSize string
-		if scaling.Compute.MaxInstanceSize != nil {
-			maxInstanceSize = *scaling.Compute.MaxInstanceSize
-		}
-
 		advAutoScaling.Compute = &admin.AdvancedComputeAutoScaling{
 			Enabled:          scaling.Compute.Enabled,
 			ScaleDownEnabled: scaling.Compute.ScaleDownEnabled,
-			MinInstanceSize:  &minInstanceSize,
-			MaxInstanceSize:  &maxInstanceSize,
+		}
+
+		if util.IsStringPresent(scaling.Compute.MinInstanceSize) {
+			advAutoScaling.Compute.MinInstanceSize = scaling.Compute.MinInstanceSize
+		}
+
+		if util.IsStringPresent(scaling.Compute.MaxInstanceSize) {
+			advAutoScaling.Compute.MaxInstanceSize = scaling.Compute.MaxInstanceSize
 		}
 	}
+
 	if scaling.DiskGB != nil {
 		advAutoScaling.DiskGB = &admin.DiskGBAutoScaling{Enabled: scaling.DiskGB.Enabled}
 	}
+
 	return advAutoScaling
 }
 

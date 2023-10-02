@@ -73,14 +73,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// checking per type fields
 	requiredInputs := requiredPerType[*IntegrationType]
-	// Validation
-	IntegrationTypeValidation := validateModel(requiredInputs, currentModel)
-	if IntegrationTypeValidation != nil {
-		return *IntegrationTypeValidation, nil
+	validationErr := validateModel(requiredInputs, currentModel)
+	if validationErr != nil {
+		return *validationErr, nil
 	}
 
 	requestBody := modelToIntegration(currentModel)
-	integrations, resModel, err := client.AtlasV2.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType, requestBody).Execute()
+	integrations, resModel, err := client.AtlasV2.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
@@ -89,7 +88,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   integrationToModel(*currentModel, &integrations.Results[0]),
@@ -150,12 +148,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	updateIntegrationFromSchema(currentModel, integration)
-	integrations, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType, integration).Execute()
-
+	integrations, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
-	_, _ = log.Debugf("Atlas Client %v", client)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -230,7 +226,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	_, res, err = client.AtlasV2.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	_, res, err = client.AtlasV2.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -280,52 +276,52 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) {
 	out = &admin.ThridPartyIntegration{}
 
-	if currentModel.Type != nil {
+	if util.IsStringPresent(currentModel.Type) {
 		out.Type = currentModel.Type
 	}
 	if currentModel.Enabled != nil {
 		out.Enabled = currentModel.Enabled
 	}
-	if currentModel.Scheme != nil {
+	if util.IsStringPresent(currentModel.Scheme) {
 		out.Scheme = currentModel.Scheme
 	}
-	if currentModel.ServiceDiscovery != nil {
+	if util.IsStringPresent(currentModel.ServiceDiscovery) {
 		out.ServiceDiscovery = currentModel.ServiceDiscovery
 	}
-	if currentModel.Password != nil {
+	if util.IsStringPresent(currentModel.Password) {
 		out.Password = currentModel.Password
 	}
-	if currentModel.UserName != nil {
+	if util.IsStringPresent(currentModel.UserName) {
 		out.Username = currentModel.UserName
 	}
-	if currentModel.MicrosoftTeamsWebhookUrl != nil {
+	if util.IsStringPresent(currentModel.MicrosoftTeamsWebhookUrl) {
 		out.MicrosoftTeamsWebhookUrl = currentModel.MicrosoftTeamsWebhookUrl
 	}
-	if currentModel.Secret != nil {
+	if util.IsStringPresent(currentModel.Secret) {
 		out.Secret = currentModel.Secret
 	}
-	if currentModel.Url != nil {
+	if util.IsStringPresent(currentModel.Url) {
 		out.Url = currentModel.Url
 	}
-	if currentModel.RoutingKey != nil {
+	if util.IsStringPresent(currentModel.RoutingKey) {
 		out.RoutingKey = currentModel.RoutingKey
 	}
-	if currentModel.ChannelName != nil {
+	if util.IsStringPresent(currentModel.ChannelName) {
 		out.ChannelName = currentModel.ChannelName
 	}
-	if currentModel.TeamName != nil {
+	if util.IsStringPresent(currentModel.TeamName) {
 		out.TeamName = currentModel.TeamName
 	}
-	if currentModel.ApiToken != nil {
+	if util.IsStringPresent(currentModel.ApiToken) {
 		out.ApiToken = currentModel.ApiToken
 	}
-	if currentModel.ServiceKey != nil {
+	if util.IsStringPresent(currentModel.ServiceKey) {
 		out.ServiceKey = currentModel.ServiceKey
 	}
-	if currentModel.Region != nil {
+	if util.IsStringPresent(currentModel.Region) {
 		out.Region = currentModel.Region
 	}
-	if currentModel.ApiKey != nil {
+	if util.IsStringPresent(currentModel.ApiKey) {
 		out.ApiKey = currentModel.ApiKey
 	}
 

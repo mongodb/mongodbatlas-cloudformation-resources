@@ -92,7 +92,6 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	// Create Cluster
 	cluster, res, err := client.AtlasV2.ClustersApi.CreateCluster(context.Background(), *currentModel.ProjectId, clusterRequest).Execute()
 	if err != nil {
-		_, _ = log.Warnf("Create - Cluster.Create() - error: %+v", err)
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -176,7 +175,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	model, _, err := updateCluster(context.Background(), client, currentModel)
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
-			_, _ = log.Warnf("update 404 err: %+v", err)
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
@@ -245,7 +243,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, err := client.AtlasV2.ClustersApi.DeleteClusterWithParams(ctx, params).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
-			_, _ = log.Warnf("Delete 404 err: %+v", err)
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,

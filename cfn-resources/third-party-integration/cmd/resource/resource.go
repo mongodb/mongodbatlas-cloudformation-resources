@@ -16,19 +16,16 @@ package resource
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var RequiredFields = []string{constants.IntegrationType, constants.ProjectID}
@@ -65,12 +62,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -87,23 +80,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	requestBody := modelToIntegration(currentModel)
-
-	integrations, resModel, err := client.Integrations.Create(context.Background(), *ProjectID, *IntegrationType, requestBody)
-
+	integrations, resModel, err := client.AtlasV2.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType, requestBody).Execute()
 	if err != nil {
-		fmt.Printf("Create - error: %+v", err)
-		_, _ = log.Debugf("Create - error: %+v", err)
-		if resModel.Response.StatusCode == http.StatusConflict {
-			return progressevents.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
+			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
-		return progressevents.GetFailedEventByResponse(err.Error(), resModel.Response), nil
+
+		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil
 	}
-	_, _ = log.Debugf("Atlas Client %v", client)
 
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   integrationToModel(*currentModel, integrations.Results[0]),
+		ResourceModel:   integrationToModel(*currentModel, &integrations.Results[0]),
 	}, nil
 }
 
@@ -111,18 +100,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 
 	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-
-	// Validation
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -130,15 +113,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.Integrations.Get(context.Background(), *ProjectID, *IntegrationType)
+	integration, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("Atlas Client %v", client)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   integrationToModel(*currentModel, integration),
@@ -150,17 +131,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, _ = log.Debugf("Update() currentModel:%+v", currentModel)
 
-	// Validation
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -168,76 +144,70 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.Integrations.Get(context.Background(), *ProjectID, *IntegrationType)
+	integration, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	// check for changed attributes per type
-
 	updateIntegrationFromSchema(currentModel, integration)
-
-	integrations, res, err := client.Integrations.Replace(context.Background(), *ProjectID, *IntegrationType, integration)
+	integrations, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType, integration).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("Atlas Client %v", client)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   integrationToModel(*currentModel, integrations.Results[0]),
+		ResourceModel:   integrationToModel(*currentModel, &integrations.Results[0]),
 	}, nil
 }
 
-func updateIntegrationFromSchema(currentModel *Model, integration *mongodbatlas.ThirdPartyIntegration) {
-	if currentModel.Url != nil && *currentModel.Url != integration.URL {
-		integration.URL = *currentModel.Url
+func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThridPartyIntegration) {
+	if currentModel.Url != nil && *currentModel.Url != *integration.Url {
+		integration.Url = currentModel.Url
 	}
-	if currentModel.ApiKey != nil && *currentModel.ApiKey != integration.APIKey {
-		integration.APIKey = *currentModel.ApiKey
+	if currentModel.ApiKey != nil && *currentModel.ApiKey != *integration.ApiKey {
+		integration.ApiKey = currentModel.ApiKey
 	}
-	if currentModel.Region != nil && *currentModel.Region != integration.Region {
-		integration.Region = *currentModel.Region
+	if currentModel.Region != nil && currentModel.Region != integration.Region {
+		integration.Region = currentModel.Region
 	}
-	if currentModel.ServiceKey != nil && *currentModel.ServiceKey != integration.ServiceKey {
-		integration.ServiceKey = *currentModel.ServiceKey
+	if currentModel.ServiceKey != nil && currentModel.ServiceKey != integration.ServiceKey {
+		integration.ServiceKey = currentModel.ServiceKey
 	}
-	if currentModel.ApiToken != nil && *currentModel.ApiToken != integration.APIToken {
-		integration.APIToken = *currentModel.ApiToken
+	if currentModel.ApiToken != nil && *currentModel.ApiToken != *integration.ApiToken {
+		integration.ApiToken = currentModel.ApiToken
 	}
-	if currentModel.TeamName != nil && *currentModel.TeamName != integration.TeamName {
-		integration.TeamName = *currentModel.TeamName
+	if currentModel.TeamName != nil && currentModel.TeamName != integration.TeamName {
+		integration.TeamName = currentModel.TeamName
 	}
-	if currentModel.ChannelName != nil && *currentModel.ChannelName != integration.ChannelName {
-		integration.ChannelName = *currentModel.ChannelName
+	if currentModel.ChannelName != nil && currentModel.ChannelName != integration.ChannelName {
+		integration.ChannelName = currentModel.ChannelName
 	}
-	if currentModel.RoutingKey != nil && *currentModel.RoutingKey != integration.RoutingKey {
-		integration.RoutingKey = *currentModel.RoutingKey
+	if currentModel.RoutingKey != nil && currentModel.RoutingKey != integration.RoutingKey {
+		integration.RoutingKey = currentModel.RoutingKey
 	}
-	if currentModel.Secret != nil && *currentModel.Secret != integration.Secret {
-		integration.Secret = *currentModel.Secret
+	if currentModel.Secret != nil && currentModel.Secret != integration.Secret {
+		integration.Secret = currentModel.Secret
 	}
-	if currentModel.MicrosoftTeamsWebhookUrl != nil && *currentModel.MicrosoftTeamsWebhookUrl != integration.MicrosoftTeamsWebhookURL {
-		integration.MicrosoftTeamsWebhookURL = *currentModel.MicrosoftTeamsWebhookUrl
+	if currentModel.MicrosoftTeamsWebhookUrl != nil && currentModel.MicrosoftTeamsWebhookUrl != integration.MicrosoftTeamsWebhookUrl {
+		integration.MicrosoftTeamsWebhookUrl = currentModel.MicrosoftTeamsWebhookUrl
 	}
-	if currentModel.UserName != nil && *currentModel.UserName != integration.UserName {
-		integration.UserName = *currentModel.UserName
+	if currentModel.UserName != nil && currentModel.UserName != integration.Username {
+		integration.Username = currentModel.UserName
 	}
-	if currentModel.Password != nil && *currentModel.Password != integration.Password {
-		integration.Password = *currentModel.Password
+	if currentModel.Password != nil && currentModel.Password != integration.Password {
+		integration.Password = currentModel.Password
 	}
-	if currentModel.ServiceDiscovery != nil && *currentModel.ServiceDiscovery != integration.ServiceDiscovery {
-		integration.ServiceDiscovery = *currentModel.ServiceDiscovery
+	if currentModel.ServiceDiscovery != nil && currentModel.ServiceDiscovery != integration.ServiceDiscovery {
+		integration.ServiceDiscovery = currentModel.ServiceDiscovery
 	}
-	if currentModel.Scheme != nil && *currentModel.Scheme != integration.Scheme {
-		integration.Scheme = *currentModel.Scheme
+	if currentModel.Scheme != nil && currentModel.Scheme != integration.Scheme {
+		integration.Scheme = currentModel.Scheme
 	}
-	if currentModel.Enabled != nil && *currentModel.Enabled != integration.Enabled {
-		integration.Enabled = *currentModel.Enabled
+	if currentModel.Enabled != nil && currentModel.Enabled != integration.Enabled {
+		integration.Enabled = currentModel.Enabled
 	}
 }
 
@@ -245,37 +215,27 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
-
-	// Validation
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
-
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	var res *mongodbatlas.Response
+	var res *http.Response
 	var err error
 
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	res, err = client.Integrations.Delete(context.Background(), *ProjectID, *IntegrationType)
+	_, res, err = client.AtlasV2.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
-	_, _ = log.Debugf("Atlas Client %v", client)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
@@ -286,35 +246,26 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 
 	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
-
-	// Validation
 	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	var res *mongodbatlas.Response
+	var res *http.Response
 	ProjectID := currentModel.ProjectId
-	integrations, res, err := client.Integrations.List(context.Background(), *ProjectID)
+	integrations, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.ListThirdPartyIntegrations(context.Background(), *ProjectID).Execute()
 	if err != nil {
-		_, _ = log.Debugf("List - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
-	_, _ = log.Debugf("Atlas Client %v", client)
 
 	mm := make([]interface{}, 0)
-
 	for _, integration := range integrations.Results {
-		m := integrationToModel(*currentModel, integration)
+		m := integrationToModel(*currentModel, &integration)
 		mm = append(mm, m)
 	}
 
@@ -326,62 +277,62 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func modelToIntegration(currentModel *Model) (out *mongodbatlas.ThirdPartyIntegration) {
-	out = &mongodbatlas.ThirdPartyIntegration{}
+func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) {
+	out = &admin.ThridPartyIntegration{}
 
 	if currentModel.Type != nil {
-		out.Type = *currentModel.Type
+		out.Type = currentModel.Type
 	}
 	if currentModel.Enabled != nil {
-		out.Enabled = *currentModel.Enabled
+		out.Enabled = currentModel.Enabled
 	}
 	if currentModel.Scheme != nil {
-		out.Scheme = *currentModel.Scheme
+		out.Scheme = currentModel.Scheme
 	}
 	if currentModel.ServiceDiscovery != nil {
-		out.ServiceDiscovery = *currentModel.ServiceDiscovery
+		out.ServiceDiscovery = currentModel.ServiceDiscovery
 	}
 	if currentModel.Password != nil {
-		out.Password = *currentModel.Password
+		out.Password = currentModel.Password
 	}
 	if currentModel.UserName != nil {
-		out.UserName = *currentModel.UserName
+		out.Username = currentModel.UserName
 	}
 	if currentModel.MicrosoftTeamsWebhookUrl != nil {
-		out.MicrosoftTeamsWebhookURL = *currentModel.MicrosoftTeamsWebhookUrl
+		out.MicrosoftTeamsWebhookUrl = currentModel.MicrosoftTeamsWebhookUrl
 	}
 	if currentModel.Secret != nil {
-		out.Secret = *currentModel.Secret
+		out.Secret = currentModel.Secret
 	}
 	if currentModel.Url != nil {
-		out.URL = *currentModel.Url
+		out.Url = currentModel.Url
 	}
 	if currentModel.RoutingKey != nil {
-		out.RoutingKey = *currentModel.RoutingKey
+		out.RoutingKey = currentModel.RoutingKey
 	}
 	if currentModel.ChannelName != nil {
-		out.ChannelName = *currentModel.ChannelName
+		out.ChannelName = currentModel.ChannelName
 	}
 	if currentModel.TeamName != nil {
-		out.TeamName = *currentModel.TeamName
+		out.TeamName = currentModel.TeamName
 	}
 	if currentModel.ApiToken != nil {
-		out.APIToken = *currentModel.ApiToken
+		out.ApiToken = currentModel.ApiToken
 	}
 	if currentModel.ServiceKey != nil {
-		out.ServiceKey = *currentModel.ServiceKey
+		out.ServiceKey = currentModel.ServiceKey
 	}
 	if currentModel.Region != nil {
-		out.Region = *currentModel.Region
+		out.Region = currentModel.Region
 	}
 	if currentModel.ApiKey != nil {
-		out.APIKey = *currentModel.ApiKey
+		out.ApiKey = currentModel.ApiKey
 	}
 
 	return out
 }
 
-func integrationToModel(currentModel Model, integration *mongodbatlas.ThirdPartyIntegration) Model {
+func integrationToModel(currentModel Model, integration *admin.ThridPartyIntegration) Model {
 	enabled := false
 	// if "Enabled" is not set in the inputs we dont want to return "Enabled" in outputs
 	if currentModel.Enabled != nil {
@@ -392,7 +343,7 @@ func integrationToModel(currentModel Model, integration *mongodbatlas.ThirdParty
 	   The variables from the thirdparty integration are not returned back in reposnse because most of the variables are sensitive variables.
 	*/
 	out := Model{
-		Type:      &integration.Type,
+		Type:      integration.Type,
 		ProjectId: currentModel.ProjectId,
 		Profile:   currentModel.Profile,
 	}

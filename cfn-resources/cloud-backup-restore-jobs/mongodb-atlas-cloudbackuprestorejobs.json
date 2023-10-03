@@ -16,7 +16,7 @@
                 },
                 "ReturnSuccessIfTimeOut": {
                     "type": "boolean",
-                    "description": "if set to true, the process will return success, in the event of a timeOut default false"
+                    "description": "if set to true, the process will return success, in the event of a timeOut, default false"
                 }
             },
             "additionalProperties": false

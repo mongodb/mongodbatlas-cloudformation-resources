@@ -187,7 +187,7 @@ func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThridPa
 	if util.IsStringPresent(currentModel.MicrosoftTeamsWebhookUrl) && !util.AreStringPtrEqual(currentModel.MicrosoftTeamsWebhookUrl, integration.MicrosoftTeamsWebhookUrl) {
 		integration.MicrosoftTeamsWebhookUrl = currentModel.MicrosoftTeamsWebhookUrl
 	}
-	if util.IsStringPresent(currentModel.Username) && !util.AreStringPtrEqual(currentModel.Username, integration.Username) {
+	if util.IsStringPresent(currentModel.UserName) && !util.AreStringPtrEqual(currentModel.UserName, integration.Username) {
 		integration.Username = currentModel.UserName
 	}
 	if util.IsStringPresent(currentModel.Password) && !util.AreStringPtrEqual(currentModel.Password, integration.Password) {

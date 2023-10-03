@@ -396,10 +396,6 @@ func flattenCloudMembers(apiObjects []*mongodbatlas.Member) []ApiAtlasDiskBackup
 	return tfList
 }
 
-// function to validate inputs to all actions
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
 func convertToUIModel(snapShot *mongodbatlas.CloudProviderSnapshot, currentModel *Model) *Model {
 	currentModel.SnapshotId = &snapShot.ID
 	currentModel.Description = &snapShot.Description

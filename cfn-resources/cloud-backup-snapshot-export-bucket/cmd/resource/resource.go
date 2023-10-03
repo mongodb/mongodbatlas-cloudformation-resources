@@ -137,23 +137,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	output, res, err := client.CloudProviderSnapshotExportBuckets.List(context.Background(), *currentModel.ProjectId, nil)
+	output, resp, err := client.AtlasV2.CloudBackupsApi.ListExportBuckets(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	resultList := make([]interface{}, 0)
 
 	for i := range output.Results {
-		model := Model{}
-		model.completeByAtlasModel(output.Results[i])
-		model.ProjectId = currentModel.ProjectId
-		model.Profile = currentModel.Profile
+		model := Model{
+			ProjectId: currentModel.ProjectId,
+			Profile:   currentModel.Profile,
+		}
+		model.updateModel(&output.Results[i])
 		resultList = append(resultList, model)
 	}
 
@@ -162,12 +163,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List successful",
 		ResourceModels:  resultList,
 	}, nil
-}
-
-func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotExportBucket) {
-	m.BucketName = &bucket.BucketName
-	m.IamRoleID = &bucket.IAMRoleID
-	m.Id = &bucket.ID
 }
 
 func (m *Model) updateModel(bucket *admin.DiskBackupSnapshotAWSExportBucket) {

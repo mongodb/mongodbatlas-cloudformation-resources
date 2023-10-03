@@ -58,8 +58,8 @@
     }
   },
   "createOnlyProperties": [
-    "/properties/Profile",
-    "/properties/ProjectId"
+    "/properties/ProjectId",
+    "/properties/Profile"
   ],
   "required": [
     "HourOfDay"

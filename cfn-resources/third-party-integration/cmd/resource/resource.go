@@ -56,8 +56,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	_, _ = log.Warnf("Create() currentModel:%+v", currentModel)
-
-	// Validation
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -73,8 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// checking per type fields
 	requiredInputs := requiredPerType[*IntegrationType]
-	validationErr := validateModel(requiredInputs, currentModel)
-	if validationErr != nil {
+	if validationErr := validateModel(requiredInputs, currentModel); validationErr != nil {
 		return *validationErr, nil
 	}
 
@@ -160,46 +157,46 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThridPartyIntegration) {
-	if currentModel.Url != nil && *currentModel.Url != *integration.Url {
+	if util.IsStringPresent(currentModel.Url) && !util.AreStringPtrEqual(currentModel.Url, integration.Url) {
 		integration.Url = currentModel.Url
 	}
-	if currentModel.ApiKey != nil && *currentModel.ApiKey != *integration.ApiKey {
+	if util.IsStringPresent(currentModel.ApiKey) && !util.AreStringPtrEqual(currentModel.ApiKey, integration.ApiKey) {
 		integration.ApiKey = currentModel.ApiKey
 	}
-	if currentModel.Region != nil && currentModel.Region != integration.Region {
+	if util.IsStringPresent(currentModel.Region) && !util.AreStringPtrEqual(currentModel.Region, integration.Region) {
 		integration.Region = currentModel.Region
 	}
-	if currentModel.ServiceKey != nil && currentModel.ServiceKey != integration.ServiceKey {
+	if util.IsStringPresent(currentModel.ServiceKey) && !util.AreStringPtrEqual(currentModel.ServiceKey, integration.ServiceKey) {
 		integration.ServiceKey = currentModel.ServiceKey
 	}
-	if currentModel.ApiToken != nil && *currentModel.ApiToken != *integration.ApiToken {
+	if util.IsStringPresent(currentModel.ApiToken) && !util.AreStringPtrEqual(currentModel.ApiToken, integration.ApiToken) {
 		integration.ApiToken = currentModel.ApiToken
 	}
-	if currentModel.TeamName != nil && currentModel.TeamName != integration.TeamName {
+	if util.IsStringPresent(currentModel.TeamName) && !util.AreStringPtrEqual(currentModel.TeamName, integration.TeamName) {
 		integration.TeamName = currentModel.TeamName
 	}
-	if currentModel.ChannelName != nil && currentModel.ChannelName != integration.ChannelName {
+	if util.IsStringPresent(currentModel.ChannelName) && !util.AreStringPtrEqual(currentModel.ChannelName, integration.ChannelName) {
 		integration.ChannelName = currentModel.ChannelName
 	}
-	if currentModel.RoutingKey != nil && currentModel.RoutingKey != integration.RoutingKey {
+	if util.IsStringPresent(currentModel.RoutingKey) && !util.AreStringPtrEqual(currentModel.RoutingKey, integration.RoutingKey) {
 		integration.RoutingKey = currentModel.RoutingKey
 	}
-	if currentModel.Secret != nil && currentModel.Secret != integration.Secret {
+	if util.IsStringPresent(currentModel.Secret) && !util.AreStringPtrEqual(currentModel.Secret, integration.Secret) {
 		integration.Secret = currentModel.Secret
 	}
-	if currentModel.MicrosoftTeamsWebhookUrl != nil && currentModel.MicrosoftTeamsWebhookUrl != integration.MicrosoftTeamsWebhookUrl {
+	if util.IsStringPresent(currentModel.MicrosoftTeamsWebhookUrl) && !util.AreStringPtrEqual(currentModel.MicrosoftTeamsWebhookUrl, integration.MicrosoftTeamsWebhookUrl) {
 		integration.MicrosoftTeamsWebhookUrl = currentModel.MicrosoftTeamsWebhookUrl
 	}
-	if currentModel.UserName != nil && currentModel.UserName != integration.Username {
+	if util.IsStringPresent(currentModel.Username) && !util.AreStringPtrEqual(currentModel.Username, integration.Username) {
 		integration.Username = currentModel.UserName
 	}
-	if currentModel.Password != nil && currentModel.Password != integration.Password {
+	if util.IsStringPresent(currentModel.Password) && !util.AreStringPtrEqual(currentModel.Password, integration.Password) {
 		integration.Password = currentModel.Password
 	}
-	if currentModel.ServiceDiscovery != nil && currentModel.ServiceDiscovery != integration.ServiceDiscovery {
+	if util.IsStringPresent(currentModel.ServiceDiscovery) && !util.AreStringPtrEqual(currentModel.ServiceDiscovery, integration.ServiceDiscovery) {
 		integration.ServiceDiscovery = currentModel.ServiceDiscovery
 	}
-	if currentModel.Scheme != nil && currentModel.Scheme != integration.Scheme {
+	if util.IsStringPresent(currentModel.Scheme) && !util.AreStringPtrEqual(currentModel.Scheme, integration.Scheme) {
 		integration.Scheme = currentModel.Scheme
 	}
 	if currentModel.Enabled != nil && currentModel.Enabled != integration.Enabled {

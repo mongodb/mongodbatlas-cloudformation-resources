@@ -77,15 +77,15 @@ aws s3 mb "s3://${bucketName}" --output json
 echo -e "--------------------------------create aws bucket document  ends ----------------------------\n"
 
 
-roleID=$(atlas cloudProviders accessRoles aws create --output json | jq -r '.roleId')
+roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
 echo -e "--------------------------------Mongo CLI Role creation ends ----------------------------\n"
 
 echo -e "--------------------------------printing mongodb role details ----------------------------\n"
-atlas cloudProviders accessRoles  list --output json | jq --arg NAME "${projectName}" -r '.awsIamRoles[] |select(.iamAssumedRoleArn |test( "mongodb-test-export-role$")?)'
+atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg NAME "${projectName}" -r '.awsIamRoles[] |select(.iamAssumedRoleArn |test( "mongodb-test-export-role$")?)'
 echo -e "--------------------------------AWS Role policy creation starts ----------------------------\n"
 
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId |test( $roleID)) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
    --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
   '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
@@ -119,7 +119,7 @@ awsArne=$(echo "${awsArn}" | sed 's/"//g')
 # TODO Needs change to while loop using get operation
 sleep 65
 
-atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "${awsArne}"
+atlas cloudProviders accessRoles aws authorize "${roleID}" --projectId "${projectId}" --iamAssumedRoleArn "${awsArne}"
 echo -e "--------------------------------authorize mongodb  Role ends ----------------------------\n"
 
 jq --arg org "$ATLAS_ORG_ID" \

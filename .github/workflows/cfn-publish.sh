@@ -43,7 +43,7 @@ fi
 # declare OTHER_PARAMS will be used for CFN TEST input creation.
 # This script will update these params for  Few Resources.
 # Note: OtherParams is expected in the below format.
-OtherParams="'{\"param\":\"value\"}'"
+OtherParams_string="'{\"param\":\"value\"}'"
 
 echo "resources: ${RESOURCES}"
 echo "regions: ${REGIONS}"
@@ -56,7 +56,7 @@ read -ra ResourceNames <<< "$RESOURCES"
 for ResourceName in "${ResourceNames[@]}"; do
     echo "generating required aws ssm params for resource: $ResourceName"
      if [ -n "${OTHER_PARAMS}" ];then
-           OtherParams=${OTHER_PARAMS}
+           OtherParams_string=${OTHER_PARAMS}
      elif [ "$ResourceName" == "trigger" ] && [ -z "${OTHER_PARAMS}" ] ; then
           echo "OTHER_PARAMS required with PROJECT_ID,DB_NAME,COLLECTION_NAME, FUNC_NAME,FUNC_ID,SERVICE_ID and APP_ID"
           exit 1
@@ -90,6 +90,11 @@ for ResourceName in "${ResourceNames[@]}"; do
           ;;
 
           "organization")
+          # currently multi-org-payment-method is setup only in dev atlas account
+          ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_DEV}"
+          ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_DEV}"
+          ATLAS_ORG_ID="${ATLAS_ORG_ID_DEV}"
+
           jq --arg MONGODB_ATLAS_ORG_OWNER_ID "${ATLAS_ORG_OWNER_ID}" \
                '.MONGODB_ATLAS_ORG_OWNER_ID |= $MONGODB_ATLAS_ORG_OWNER_ID' \
                 "$(dirname "$0")/templates/organization.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/templates/organization-temp.json"

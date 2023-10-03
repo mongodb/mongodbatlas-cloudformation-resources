@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::OnlineArchive",
   "description": "Returns, adds, edits, or removes an online archive.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/online-archive",
   "additionalProperties": false,
   "definitions": {
     "ScheduleView": {
@@ -239,5 +239,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/online-archive/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

@@ -36,10 +36,6 @@ jq --arg project_id "$projectId" \
 
 jq --arg project_id "$projectId" \
 	'.ProjectId?|=$project_id' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg project_id "$projectId" \
-	'.ProjectId?|=$project_id' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

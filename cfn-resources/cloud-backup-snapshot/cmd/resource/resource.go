@@ -23,11 +23,9 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressEvents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -38,22 +36,19 @@ var DeleteRequiredFields = []string{constants.ClusterName, constants.ProjectID, 
 var ReadRequiredFields = []string{constants.ProjectID, constants.SnapshotID}
 var ListRequiredFields = []string{constants.ProjectID}
 
-// Create handles the Create event from the Cloudformation service.
+func setup() {
+	util.SetupLogger("mongodb-atlas-cloud-backup-snapshot")
+}
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-
-	// Validate required fields in the request
-	if modelValidation := validateModel(CreateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -80,18 +75,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// API call to create snapshot
 	snapshot, res, err := client.CloudProviderSnapshots.Create(context.Background(), requestParameters, snapshotRequest)
 	if err != nil {
-		_, _ = logger.Warnf("Create - CloudProviderSnapshots.Create() - error: %+v", err)
 		if res.Response.StatusCode == 400 && strings.Contains(err.Error(), constants.UnfinishedOnDemandSnapshot) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
 				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 		}
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel.SnapshotId = &snapshot.ID
-
-	_, _ = logger.Debugf("cloud backup created successfully %s", *currentModel.SnapshotId)
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -107,26 +99,20 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	_, _ = logger.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
-
-	// Validate required fields in the request
-	if modelValidation := validateModel(ReadRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
+
 	// cluster nae or instance name must present in the request
 	if currentModel.ClusterName == nil && currentModel.InstanceName == nil {
-		return progressEvents.GetFailedEventByCode("cluster Name or instance Name must present in the request",
+		return progressevent.GetFailedEventByCode("cluster Name or instance Name must present in the request",
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -143,7 +129,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	// Check if  exist
 	if !isSnapshotExist(client, currentModel) {
-		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -170,7 +155,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if err != nil {
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 	currentModel = convertToUIModel(snapshot, currentModel)
 
@@ -181,36 +166,27 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// NO OP
 	return handler.ProgressEvent{
 		OperationStatus: handler.Failed,
 		Message:         "Not Implemented",
 	}, nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
+	}
 
-	// Validate required fields in the request
-	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
-	}
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
 	// check if exist
 	if !isSnapshotExist(client, currentModel) {
-		_, _ = logger.Warnf("Error - Read snapshot with id(%s)", *currentModel.SnapshotId)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
@@ -231,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	resp, err := client.CloudProviderSnapshots.Delete(context.Background(), snapshotRequest)
 
 	if err != nil {
-		return progressEvents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp.Response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -278,24 +254,19 @@ func isSnapshotExist(client *mongodbatlas.Client, currentModel *Model) bool {
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-
-	// Validate required fields in the request
-	if modelValidation := validateModel(ListRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
+
 	if currentModel.ClusterName == nil && currentModel.InstanceName == nil {
-		return progressEvents.GetFailedEventByCode("cluster Name or instance Name must present in the request",
+		return progressevent.GetFailedEventByCode("cluster Name or instance Name must present in the request",
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -326,7 +297,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if err != nil {
-		return progressEvents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	// populate list
@@ -403,11 +374,6 @@ func snapshotIsReady(client *mongodbatlas.Client, projectID, snapshotID, cluster
 		return false, "", err
 	}
 	return snapshot.Status == targetState, snapshot.Status, nil
-}
-
-// logger setup function
-func setup() {
-	util.SetupLogger("mongodb-atlas-backup-snapshot")
 }
 
 func flattenCloudMember(apiObject *mongodbatlas.Member) ApiAtlasDiskBackupShardedClusterSnapshotMemberView {

@@ -20,51 +20,37 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
-	localconstants "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup-snapshot-export-bucket/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, localconstants.BucketName, localconstants.IamRoleID}
+const (
+	BucketName = "BucketName"
+	IamRoleID  = "IamRoleID"
+)
+
+var CreateRequiredFields = []string{constants.ProjectID, BucketName, IamRoleID}
 var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
 var ListRequiredFields = []string{constants.ProjectID}
 
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
-
 func setup() {
-	util.SetupLogger("mongodb-atlas-CloudBackupSnapshotExportBucket")
-}
-
-func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotExportBucket) {
-	m.BucketName = &bucket.BucketName
-	m.IamRoleID = &bucket.IAMRoleID
-	m.Id = &bucket.ID
+	util.SetupLogger("mongodb-atlas-cloud-backup-snapshot-export-bucket")
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	// Validation
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = log.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 	var res *mongodbatlas.Response
@@ -77,12 +63,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	output, res, err := client.CloudProviderSnapshotExportBuckets.Create(context.Background(), *currentModel.ProjectId, input)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.Id = &output.ID
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create successful",
@@ -92,32 +77,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	// Validation
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = log.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 	var res *mongodbatlas.Response
 
 	output, res, err := client.CloudProviderSnapshotExportBuckets.Get(context.Background(), *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	currentModel.completeByAtlasModel(output)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Get successful",
@@ -131,21 +108,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	_, _ = log.Warnf("Create cluster model : %+v", currentModel)
-
-	// Validation
-	if modelValidation := validateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(DeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = log.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 	var err error
@@ -153,7 +122,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	res, err = client.CloudProviderSnapshotExportBuckets.Delete(context.Background(), *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	// Response
@@ -165,11 +134,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	// Validation
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	// Create atlas client
@@ -178,13 +145,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = log.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
 	output, res, err := client.CloudProviderSnapshotExportBuckets.List(context.Background(), *currentModel.ProjectId, nil)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
 	resultList := make([]interface{}, 0)
@@ -197,10 +163,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		resultList = append(resultList, model)
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List successful",
 		ResourceModels:  resultList,
 	}, nil
+}
+
+func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotExportBucket) {
+	m.BucketName = &bucket.BucketName
+	m.IamRoleID = &bucket.IAMRoleID
+	m.Id = &bucket.ID
 }

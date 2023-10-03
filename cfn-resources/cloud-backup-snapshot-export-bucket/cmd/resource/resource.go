@@ -23,6 +23,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -80,18 +81,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
-	var res *mongodbatlas.Response
 
-	output, res, err := client.CloudProviderSnapshotExportBuckets.Get(context.Background(), *currentModel.ProjectId, *currentModel.Id)
+	output, resp, err := client.AtlasV2.CloudBackupsApi.GetExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.completeByAtlasModel(output)
+	currentModel.updateModel(output)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -168,4 +168,10 @@ func (m *Model) completeByAtlasModel(bucket *mongodbatlas.CloudProviderSnapshotE
 	m.BucketName = &bucket.BucketName
 	m.IamRoleID = &bucket.IAMRoleID
 	m.Id = &bucket.ID
+}
+
+func (m *Model) updateModel(bucket *admin.DiskBackupSnapshotAWSExportBucket) {
+	m.BucketName = bucket.BucketName
+	m.IamRoleID = bucket.IamRoleId
+	m.Id = bucket.Id
 }

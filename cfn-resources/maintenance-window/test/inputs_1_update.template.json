@@ -2,5 +2,5 @@
   "DayOfWeek": "1",
   "HourOfDay": "10",
   "ProjectId": "$ProjectId",
-  "Profile": ""
+  "Profile": "default"
 }

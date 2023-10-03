@@ -64,7 +64,7 @@
           "Ref": "ProjectId"
         },
         "Mappings": {
-          "Dynamic": "true"
+          "Dynamic": true
         }
       }
     }

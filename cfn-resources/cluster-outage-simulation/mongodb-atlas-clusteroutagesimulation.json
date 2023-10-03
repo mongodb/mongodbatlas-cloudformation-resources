@@ -1,0 +1,128 @@
+{
+  "typeName": "MongoDB::Atlas::ClusterOutageSimulation",
+  "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cluster-outage-simulation",
+  "definitions": {
+    "ProjectId": {
+      "type": "string"
+    },
+    "ClusterName": {
+      "type": "string"
+    },
+    "StartRequestState": {
+      "type": "string"
+    },
+    "State": {
+      "type": "string"
+    },
+    "SimulationId": {
+      "type": "string"
+    },
+    "OutageFilters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Filter"
+      }
+    },
+    "Filter": {
+      "type": "object",
+      "properties": {
+        "CloudProvider": {
+          "type": "string",
+          "enum": [
+            "AWS",
+            "AZURE",
+            "GCP"
+          ]
+        },
+        "Region": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
+    "OutageFilters": {
+      "description": "List of settings that configure your cluster regions. For Global Clusters, each object in the array represents a zone where your clusters nodes deploy. For non-Global replica sets and sharded clusters, this array has one object representing where your clusters nodes deploy.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Filter"
+      }
+    },
+    "ProjectId": {
+      "type": "string",
+      "description": "Human-readable label that identifies the project.",
+      "maxLength": 64,
+      "minLength": 1
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the cluster ."
+    },
+    "StartRequestDate": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1
+    },
+    "State": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1
+    },
+    "SimulationId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "ClusterName",
+    "ProjectId",
+    "Profile",
+    "OutageFilters"
+  ],
+  "readOnlyProperties": [
+    "/properties/SimulationId",
+    "/properties/StartRequestDate",
+    "/properties/State"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Profile",
+    "/properties/ClusterName"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cluster-outage-simulation/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

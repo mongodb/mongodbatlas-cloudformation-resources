@@ -30,7 +30,7 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201002/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgOwnerID, constants.Name, constants.AwsSecretName, constants.OrgKeyDescription, constants.OrgKeyRoles}
@@ -352,7 +352,7 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 
 func setAPIkeyInputs(currentModel *Model) (apiKeyInput *atlasSDK.CreateAtlasOrganizationApiKey) {
 	apiKeyInput = &atlasSDK.CreateAtlasOrganizationApiKey{
-		Desc:  currentModel.APIKey.Description,
+		Desc:  util.SafeString(currentModel.APIKey.Description),
 		Roles: currentModel.APIKey.Roles,
 	}
 	return apiKeyInput

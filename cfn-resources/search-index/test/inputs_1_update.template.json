@@ -8,5 +8,14 @@
   "ProjectId": "$PROJECT_ID",
   "Mappings": {
     "Dynamic": "true"
-  }
+  },
+  "Synonyms": [
+    {
+      "Analyzer": "lucene.simple",
+      "Name": "synonym_test",
+      "Source": {
+        "Collection": "someCollection"
+      }
+    }
+  ]
 }

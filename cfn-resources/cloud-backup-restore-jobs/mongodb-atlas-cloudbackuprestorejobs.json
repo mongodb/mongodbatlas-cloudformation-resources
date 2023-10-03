@@ -43,13 +43,17 @@
     "DeliveryType": {
       "description": "Type of restore job to create.The value can be any one of download,automated or point_in_time ",
       "type": "string",
-      "enum": ["download", "automated", "pointInTime"]
+      "enum": [
+        "download",
+        "automated",
+        "pointInTime"
+      ]
     },
     "DeliveryUrl": {
       "description": "One or more URLs for the compressed snapshot files for manual download. Only visible if deliveryType is download.",
       "insertionOrder": false,
       "items": {
-        "type" : "string"
+        "type": "string"
       },
       "type": "array"
     },
@@ -86,7 +90,7 @@
       "type": "array",
       "insertionOrder": false,
       "items": {
-        "type" : "object",
+        "type": "object",
         "properties": {
           "Rel": {
             "type": "string"
@@ -127,7 +131,7 @@
       "description": "If set to true, the CloudFormation resource will wait until the job is completed, WARNING: if the snapshot has a big load of data, the cloud formation resource might take a long time to finish leading to high costs",
       "type": "boolean"
     },
-    "SynchronousCreationOptions" : {
+    "SynchronousCreationOptions": {
       "description": "Options that needs to be set to control the synchronous creation flow, this options need to be set if EnableSynchronousCreation is se to TRUE",
       "$ref": "#/definitions/SynchronousCreationOptions"
     }
@@ -183,5 +187,10 @@
         "secretsmanager:GetSecretValue"
       ]
     }
-  }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-restore-jobs/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cloud-backup-restore-jobs"
 }

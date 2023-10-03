@@ -28,6 +28,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -350,9 +351,7 @@ func Get(keyID, prefix string, curSession *session.Session) string {
 	if err != nil {
 		return ""
 	}
-	print("ANDREA util.get\n")
-	print(*getParamOutput.Parameter.Value)
-	print("\n")
+
 	return *getParamOutput.Parameter.Value
 }
 
@@ -366,9 +365,86 @@ func buildKey(keyID, storePrefix string) string {
 	return fmt.Sprintf("%s-%s", storePrefix, keyID)
 }
 
+// Contains checks if a string is present in a slice
+func Contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func SafeString(s *string) string {
 	if s != nil {
 		return *s
 	}
 	return ""
+}
+
+// TimePtrToStringPtr utility conversions that can potentially be defined in sdk
+func TimePtrToStringPtr(t *time.Time) *string {
+	if t == nil {
+		return nil
+	}
+	res := TimeToString(*t)
+	return &res
+}
+
+// TimeToString returns a RFC3339 (nano) date time string format.
+// The resulting format is identical to the format returned by Atlas API, documented as ISO 8601 timestamp format in UTC.
+// It also returns decimals in seconds (up to nanoseconds) if available.
+// Example formats: "2023-07-18T16:12:23Z", "2023-07-18T16:12:23.456Z"
+func TimeToString(t time.Time) string {
+	return t.UTC().Format(time.RFC3339Nano)
+}
+
+// StringPtrToTimePtr parses a string with RFC3339 (nano) format and returns time.Time.
+// It's the opposite function to TimeToString.
+// Returns nil if date can't be parsed.
+func StringPtrToTimePtr(p *string) *time.Time {
+	if !IsStringPresent(p) {
+		return nil
+	}
+	t, err := time.Parse(time.RFC3339Nano, *p)
+	if err != nil {
+		return nil
+	}
+	t = t.UTC()
+	return &t
+}
+
+func StringToTime(t string) (time.Time, error) {
+	return time.Parse(time.RFC3339Nano, t)
+}
+
+func Int64PtrToIntPtr(i64 *int64) *int {
+	if i64 == nil {
+		return nil
+	}
+
+	i := int(*i64)
+	return &i
+}
+
+func IsStringPresent(strPtr *string) bool {
+	return strPtr != nil && len(*strPtr) > 0
+}
+
+func AreStringPtrEqual(p1, p2 *string) bool {
+	if p1 == nil {
+		return p2 == nil
+	}
+	if p2 == nil {
+		return false
+	}
+	return *p1 == *p2
+}
+
+// setDefaultProfileIfNotDefined can be called at the beginning of the CRUDL methods to set default profile if not defined
+func SetDefaultProfileIfNotDefined(p **string) {
+	if p != nil && !IsStringPresent(*p) {
+		*p = aws.String(profile.DefaultProfile)
+	}
 }

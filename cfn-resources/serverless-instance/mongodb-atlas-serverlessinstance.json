@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::ServerlessInstance",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/serverless-instance",
   "additionalProperties": false,
   "description": "Returns, adds, edits, and removes serverless instances.",
   "definitions": {
@@ -213,5 +213,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/serverless-instance/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

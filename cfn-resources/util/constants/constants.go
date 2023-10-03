@@ -46,6 +46,8 @@ const (
 	HostName            = "HostName"
 	Port                = "Port"
 	ContainerID         = "ContainerId"
+	Sink                = "Sink"
+	Transformations     = "transformations"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -146,7 +148,9 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
-	Sink                       = "Sink"
+
+	AlreadyExist = "Already Exist"
+	EmptyString  = ""
 
 	OrgOwnerID        = "OrgOwnerId"
 	OrgKeyRoles       = "APIKey.Roles"

@@ -20,13 +20,11 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas/mongodbatlas"
@@ -34,31 +32,15 @@ import (
 
 var RequiredFields = []string{constants.ProjectID, constants.ClusterName}
 
-// validateModel inputs based on the method
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
-
-// logger setup function
 func setup() {
 	util.SetupLogger("mongodb-atlas-cloud-backup-schedule")
 }
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// logger setup
 	setup()
-	_, _ = logger.Debugf("Create() currentModel:%+v", currentModel)
-
-	// Validate required fields in the request
-	if errEvent := validateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
-	}
-
-	// Validate the Profile
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
@@ -67,24 +49,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	// API call to Create cloud backup schedule
 	return cloudBackupScheduleCreateOrUpdate(req, prevModel, currentModel, client)
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// logger setup
 	setup()
-	_, _ = logger.Debugf("Get the current snapshot schedule and retention settings for the cluster:%+v", currentModel.ClusterName)
-	// Validate required fields in the request
-	if errEvent := validateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -97,7 +71,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// API call to Get the cloud backup schedule
 	backupPolicy, resp, err := client.CloudProviderSnapshotBackupPolicies.Get(context.Background(), projectID, clusterName)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
 			resp.Response), nil
 	}
 	_, _ = logger.Debugf("Read() end currentModel:%+v", currentModel)
@@ -109,7 +83,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Message:          "Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	// Response
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
@@ -117,21 +91,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// logger setup
 	setup()
-	// Validate required fields in the request
-	modelValidation := validateModel(RequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
-	_, _ = logger.Debugf("Update() currentModel:%+v", currentModel)
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -151,19 +117,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// logger setup
 	setup()
-	_, _ = logger.Debugf("Delete all the snapshot schedules for the cluster with currentModel:%+v", currentModel)
-	// Validate required fields in the request
-	modelValidation := validateModel(RequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(RequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -174,14 +133,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := currentModel.ClusterName
 	// Check if cloud backup policy already exist
 	if !isPolicyItemsExists(currentModel, client) {
-		return progressevents.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
 	_, _ = logger.Debugf("Deleting all snapshot backup schedules for cluster(%s) from project(%s)", *currentModel.ClusterName, *currentModel.ProjectId)
 
 	// API call to delete cloud backup schedule
 	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
 			resp.Response), nil
 	}
 	// Response
@@ -192,14 +151,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("not implemented")
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-// handles the Create/Update event from the Cloudformation service.
 func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
 	projectID := currentModel.ProjectId
 	clusterName := currentModel.ClusterName
@@ -214,7 +169,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 
 	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
 			resp.Response), nil
 	}
 
@@ -222,7 +177,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 	// API call to Create/Update cloud backup schedule
 	clusterBackupScheduled, resp, err := client.CloudProviderSnapshotBackupPolicies.Update(context.Background(), *projectID, *clusterName, cloudBackupScheduleRequest)
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error updating cloud backup schedule : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error updating cloud backup schedule : %s", err.Error()),
 			resp.Response), nil
 	}
 	// Response
@@ -236,12 +191,12 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
 	if currentModel.Policies == nil || len(currentModel.Policies) == 0 {
 		msg := "validation error: policies cannot be empty"
-		return progressevents.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
+		return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
 	}
 	for _, policy := range currentModel.Policies {
 		if policy.PolicyItems == nil || len(policy.PolicyItems) == 0 {
 			msg := "validation error: policy items cannot be empty"
-			return progressevents.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
+			return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
 		}
 		for _, policyItem := range policy.PolicyItems {
 			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||

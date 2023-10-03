@@ -19,12 +19,12 @@ import (
 	"errors"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
@@ -48,24 +48,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
-	var res *mongodbatlas.Response
 
-	input := &mongodbatlas.CloudProviderSnapshotExportBucket{
-		BucketName:    *currentModel.BucketName,
-		CloudProvider: constants.AWS,
-		IAMRoleID:     *currentModel.IamRoleID,
+	params := &admin.DiskBackupSnapshotAWSExportBucket{
+		BucketName:    currentModel.BucketName,
+		CloudProvider: aws.String(constants.AWS),
+		IamRoleId:     currentModel.IamRoleID,
 	}
-
-	output, res, err := client.CloudProviderSnapshotExportBuckets.Create(context.Background(), *currentModel.ProjectId, input)
+	output, resp, err := client.AtlasV2.CloudBackupsApi.CreateExportBucket(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.Id = &output.ID
+	currentModel.Id = output.Id
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

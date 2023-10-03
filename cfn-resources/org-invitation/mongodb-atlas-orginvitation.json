@@ -137,5 +137,9 @@
     "/properties/Profile"
   ],
   "typeName": "MongoDB::Atlas::OrgInvitation",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/org-invitation",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/org-invitation/README.md",
+  "tagging": {
+    "taggable": false
+  }
 }

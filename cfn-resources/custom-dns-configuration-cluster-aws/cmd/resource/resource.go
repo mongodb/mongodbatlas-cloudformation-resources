@@ -20,15 +20,13 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -45,17 +43,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	if isCustomAWSDNSSettingExists(currentModel, client) {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Custom AWS dns settings already enabled for : %s", *currentModel.ProjectId),
+		return progressevent.GetFailedEventByCode(fmt.Sprintf("Custom AWS dns settings already enabled for : %s", *currentModel.ProjectId),
 			cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 	// API call to
@@ -72,26 +68,23 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	customAWSDNSSetting, response, err := client.CustomAWSDNS.Get(context.Background(), *currentModel.ProjectId)
+	customAWSDNSSetting, response, err := client.AtlasV2.AWSClustersDNSApi.GetAWSCustomDNS(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error reading  : %s", err.Error()),
-			response.Response), nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error reading  : %s", err.Error()),
+			response), nil
 	}
 	enabled := customAWSDNSSetting.Enabled
 	if !enabled {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Custom AWS dns settings not found for Project : %s", *currentModel.ProjectId),
+		return progressevent.GetFailedEventByCode(fmt.Sprintf("Custom AWS dns settings not found for Project : %s", *currentModel.ProjectId),
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	// Response
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "READ Complete",
@@ -114,11 +107,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -128,16 +119,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Enabled = &enabled
 		events, err := resourceCustomAWSDNSUpdate(req, prevModel, currentModel, client)
 		if err != nil {
-			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
+			return progressevent.GetFailedEventByCode(fmt.Sprintf("Error in disabling regionalized mode for private endpoint for Project : %s", *currentModel.ProjectId),
 				events.HandlerErrorCode), nil
 		}
-		// Response
+
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         "Delete Complete",
 		}, nil
 	}
-	return progress_events.GetFailedEventByCode(fmt.Sprintf("Error in disabling Custom AWS DNS settings for Project : %s", *currentModel.ProjectId),
+	return progressevent.GetFailedEventByCode(fmt.Sprintf("Error in disabling Custom AWS DNS settings for Project : %s", *currentModel.ProjectId),
 		cloudformation.HandlerErrorCodeNotFound), nil
 }
 
@@ -148,18 +139,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func resourceCustomAWSDNSUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
-	customAWSDNSRequest := &mongodbatlas.AWSCustomDNSSetting{
+func resourceCustomAWSDNSUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *util.MongoDBClient) (handler.ProgressEvent, error) {
+	customAWSDNSRequest := &admin.AWSCustomDNSEnabled{
 		Enabled: *currentModel.Enabled,
 	}
-	customAWSDNSModel, response, err := client.CustomAWSDNS.Update(context.Background(), *currentModel.ProjectId, customAWSDNSRequest)
+	customAWSDNSModel, response, err := client.AtlasV2.AWSClustersDNSApi.ToggleAWSCustomDNS(context.Background(), *currentModel.ProjectId, customAWSDNSRequest).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(
+		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("Error in enabling Custom AWS DNS settings : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 	currentModel.Enabled = &customAWSDNSModel.Enabled
-	// Response
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -167,9 +158,9 @@ func resourceCustomAWSDNSUpdate(req handler.Request, prevModel *Model, currentMo
 	}, nil
 }
 
-func isCustomAWSDNSSettingExists(currentModel *Model, client *mongodbatlas.Client) bool {
+func isCustomAWSDNSSettingExists(currentModel *Model, client *util.MongoDBClient) bool {
 	var isExists bool
-	customAWSDNSSetting, _, err := client.CustomAWSDNS.Get(context.Background(), *currentModel.ProjectId)
+	customAWSDNSSetting, _, err := client.AtlasV2.AWSClustersDNSApi.GetAWSCustomDNS(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return isExists
 	}
@@ -179,7 +170,7 @@ func isCustomAWSDNSSettingExists(currentModel *Model, client *mongodbatlas.Clien
 	return isExists
 }
 
-func customAWSDNSToModel(currentModel Model, regPrivateMode *mongodbatlas.AWSCustomDNSSetting) *Model {
+func customAWSDNSToModel(currentModel Model, regPrivateMode *admin.AWSCustomDNSEnabled) *Model {
 	out := &Model{
 		Profile:   currentModel.Profile,
 		Enabled:   &regPrivateMode.Enabled,

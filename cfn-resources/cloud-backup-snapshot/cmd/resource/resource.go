@@ -150,32 +150,20 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	if !isSnapshotExist(client, currentModel) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	if pe := validateExist(client, currentModel); pe != nil {
+		return *pe, nil
 	}
 
-	clusterName := cast.ToString(currentModel.ClusterName)
-	projectID := cast.ToString(currentModel.ProjectId)
-	snapshotID := cast.ToString(currentModel.SnapshotId)
-
-	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID:     projectID,
-		SnapshotID:  snapshotID,
-		ClusterName: clusterName,
-	}
-
-	resp, err := client.CloudProviderSnapshots.Delete(context.Background(), snapshotRequest)
-
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp.Response), nil
+	if util.IsStringPresent(currentModel.ClusterName) {
+		_, resp, err := client.AtlasV2.CloudBackupsApi.DeleteReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.SnapshotId).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
 	}
 
 	return handler.ProgressEvent{

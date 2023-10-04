@@ -29,6 +29,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -108,48 +109,32 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.ProjectId)
-
-	if !isSnapshotExist(client, currentModel) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	if pe := validateExist(client, currentModel); pe != nil {
+		return *pe, nil
 	}
 
-	snapshotID := cast.ToString(currentModel.SnapshotId)
-	var snapshot *mongodbatlas.CloudProviderSnapshot
-	var res *mongodbatlas.Response
-	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID:    projectID,
-		SnapshotID: snapshotID,
-	}
-	var err error
-
-	if clusterName != "" {
-		snapshotRequest.ClusterName = clusterName
-		snapshot, res, err = client.CloudProviderSnapshots.GetOneCloudProviderSnapshot(context.Background(), snapshotRequest)
+	if util.IsStringPresent(currentModel.ClusterName) {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.GetReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.SnapshotId).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		currentModel.updateModelServer(server)
 	} else {
-		// read serverless instance snapshot
-		snapshotRequest.InstanceName = instanceName
-		snapshot, res, err = client.CloudProviderSnapshots.GetOneServerlessSnapshot(context.Background(), snapshotRequest)
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.GetServerlessBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		currentModel.updateModelServerless(serverless)
 	}
-
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	currentModel = convertToUIModel(snapshot, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
+		Message:         "Read Complete ",
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -261,7 +246,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// function to check if snapshot already available for the snapshot id
 func isSnapshotExist(client *mongodbatlas.Client, currentModel *Model) bool {
 	// Create Atlas API Request Object
 	clusterName := cast.ToString(currentModel.ClusterName)
@@ -295,6 +279,37 @@ func isSnapshotExist(client *mongodbatlas.Client, currentModel *Model) bool {
 		}
 	}
 	return false
+}
+
+func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEvent {
+	if util.IsStringPresent(model.ClusterName) {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *model.ProjectId, *model.ClusterName).Execute()
+		if err != nil {
+			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+			return &pe
+		}
+		for i := range server.Results {
+			if util.AreStringPtrEqual(model.SnapshotId, server.Results[i].Id) {
+				return nil
+			}
+		}
+	} else {
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *model.ProjectId, *model.ClusterName).Execute()
+		if err != nil {
+			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+			return &pe
+		}
+		for i := range serverless.Results {
+			if util.AreStringPtrEqual(model.SnapshotId, serverless.Results[i].Id) {
+				return nil
+			}
+		}
+	}
+
+	return &handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          "Resource Not Found",
+		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
 }
 
 // function to track snapshot creation status
@@ -392,6 +407,30 @@ func convertToUIModel(snapShot *mongodbatlas.CloudProviderSnapshot, currentModel
 	currentModel.SnapshotIds = snapShot.SnapshotsIds
 	currentModel.Members = flattenCloudMembers(snapShot.Members)
 	return currentModel
+}
+
+func (m *Model) updateModelServer(snapShot *admin.DiskBackupReplicaSet) {
+	m.SnapshotId = snapShot.Id
+	m.Description = snapShot.Description
+	m.Status = snapShot.Status
+	m.Type = snapShot.Type
+	m.CreatedAt = util.TimePtrToStringPtr(snapShot.CreatedAt)
+	m.ExpiresAt = util.TimePtrToStringPtr(snapShot.ExpiresAt)
+	m.ReplicaSetName = snapShot.ReplicaSetName
+	m.MasterKeyUUID = snapShot.MasterKeyUUID
+	m.MongodVersion = snapShot.MongodVersion
+	m.StorageSizeBytes = util.IntPtrToStrPtr(util.Int64PtrToIntPtr(snapShot.StorageSizeBytes))
+	m.CloudProvider = snapShot.CloudProvider
+}
+
+func (m *Model) updateModelServerless(snapShot *admin.ServerlessBackupSnapshot) {
+	m.SnapshotId = snapShot.Id
+	m.Status = snapShot.Status
+	m.CreatedAt = util.TimePtrToStringPtr(snapShot.CreatedAt)
+	m.ExpiresAt = util.TimePtrToStringPtr(snapShot.ExpiresAt)
+	m.MongodVersion = snapShot.MongodVersion
+	m.StorageSizeBytes = util.IntPtrToStrPtr(util.Int64PtrToIntPtr(snapShot.StorageSizeBytes))
+	m.CloudProvider = aws.String(constants.AWS)
 }
 
 func clusterOrInstance(model *Model) *handler.ProgressEvent {

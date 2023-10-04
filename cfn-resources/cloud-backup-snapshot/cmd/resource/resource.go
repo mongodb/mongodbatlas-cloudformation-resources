@@ -210,7 +210,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  models,
 	}, nil
-
 }
 
 func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEvent {
@@ -245,7 +244,6 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 }
 
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-
 	snapshotID := *currentModel.SnapshotId
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
@@ -274,7 +272,6 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		"snapshot_id": *currentModel.SnapshotId,
 	}
 	return p, nil
-
 }
 
 func (m *Model) updateModelServer(snapShot *admin.DiskBackupReplicaSet) {

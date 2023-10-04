@@ -16,6 +16,7 @@ package resource
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -97,18 +98,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
 		return *err, nil
-	}
-
-	// cluster nae or instance name must present in the request
-	if currentModel.ClusterName == nil && currentModel.InstanceName == nil {
-		return progressevent.GetFailedEventByCode("cluster Name or instance Name must present in the request",
-			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
@@ -119,21 +113,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	clusterName := cast.ToString(currentModel.ClusterName)
 	instanceName := cast.ToString(currentModel.InstanceName)
 	projectID := cast.ToString(currentModel.ProjectId)
-
-	if clusterName == "" && instanceName == "" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Error - reading cloud backup  snapshot restore job: cluster name or instance name must be set ",
-			ResourceModel:   currentModel,
-		}, nil
-	}
-	// Check if  exist
-	if !isSnapshotExist(client, currentModel) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
 
 	// Create Atlas API Request Object
 	snapshotID := cast.ToString(currentModel.SnapshotId)
@@ -167,10 +146,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{
-		OperationStatus: handler.Failed,
-		Message:         "Not Implemented",
-	}, nil
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -183,14 +159,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
-	}
-
-	// check if exist
-	if !isSnapshotExist(client, currentModel) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
 	// Create Atlas API Request Object
@@ -216,43 +184,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// function to check if snapshot already available for the snapshot id
-func isSnapshotExist(client *mongodbatlas.Client, currentModel *Model) bool {
-	// Create Atlas API Request Object
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.ProjectId)
-	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID: projectID,
-	}
-	var snapshots *mongodbatlas.CloudProviderSnapshots
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
-
-	var err error
-	// API call to list snapshot
-	if clusterName != "" {
-		snapshotRequest.ClusterName = clusterName
-		snapshots, _, err = client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
-	} else if instanceName != "" {
-		// read serverless instance snapshot
-		snapshotRequest.InstanceName = instanceName
-		snapshots, _, err = client.CloudProviderSnapshots.GetAllServerlessSnapshots(context.Background(), snapshotRequest, params)
-	}
-	if err != nil {
-		return false
-	}
-	for _, snapshot := range snapshots.Results {
-		if snapshot.ID == *currentModel.SnapshotId {
-			return true
-		}
-	}
-	return false
-}
-
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -300,7 +231,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	// populate list
 	snapshotsList := snapshots.Results
 	for ind := range snapshotsList {
 		var model Model
@@ -317,7 +247,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// function to track snapshot creation status
 func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	snapshotID := *currentModel.SnapshotId
 	projectID := *currentModel.ProjectId
@@ -339,7 +268,7 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 		}
 		return p, nil
 	}
-	// Create Atlas API Request Object
+
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID:     projectID,
 		SnapshotID:  snapshotID,
@@ -355,7 +284,6 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	return p, nil
 }
 
-// function to check if snapshot already exist in atlas
 func snapshotIsReady(client *mongodbatlas.Client, projectID, snapshotID, clusterName, targetState string) (isExist bool, status string, err error) {
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
 		GroupID:     projectID,

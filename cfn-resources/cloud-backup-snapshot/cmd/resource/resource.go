@@ -73,7 +73,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
-			Message:              fmt.Sprintf("Create cloud provider snapshots : %s", snapshot.Status),
+			Message:              fmt.Sprintf("Create cloud provider snapshots : %s", *snapshot.Status),
 			ResourceModel:        currentModel,
 			CallbackDelaySeconds: 65,
 			CallbackContext: map[string]interface{}{

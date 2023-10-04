@@ -182,49 +182,41 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	// Create Atlas API Request Object
-	projectID := *currentModel.ProjectId
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
-	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID: projectID,
-	}
 	models := make([]interface{}, 0)
-	var snapshots *mongodbatlas.CloudProviderSnapshots
-	var res *mongodbatlas.Response
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
 
-	var err error
-	// API call to list snapshot
-	if clusterName != "" {
-		snapshotRequest.ClusterName = clusterName
-		snapshots, res, err = client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
+	if util.IsStringPresent(currentModel.ClusterName) {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		for i := range server.Results {
+			model := Model{
+				ProjectId:   currentModel.ProjectId,
+				Profile:     currentModel.Profile,
+				ClusterName: currentModel.ClusterName,
+			}
+			model.updateModelServer(&server.Results[i])
+			models = append(models, &model)
+		}
 	} else {
-		// read serverless instance snapshot
-		snapshotRequest.InstanceName = instanceName
-		snapshots, res, err = client.CloudProviderSnapshots.GetAllServerlessSnapshots(context.Background(), snapshotRequest, params)
-	}
-
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-
-	// populate list
-	snapshotsList := snapshots.Results
-	for ind := range snapshotsList {
-		var model Model
-		model.ProjectId = currentModel.ProjectId
-		model.Profile = currentModel.Profile
-		model.ClusterName = currentModel.ClusterName
-		models = append(models, convertToUIModel(snapshotsList[ind], &model))
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		for i := range serverless.Results {
+			model := Model{
+				ProjectId:    currentModel.ProjectId,
+				Profile:      currentModel.Profile,
+				InstanceName: currentModel.InstanceName,
+			}
+			model.updateModelServerless(&serverless.Results[i])
+			models = append(models, &model)
+		}
 	}
 
 	return handler.ProgressEvent{
@@ -232,41 +224,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  models,
 	}, nil
-}
 
-func isSnapshotExist(client *mongodbatlas.Client, currentModel *Model) bool {
-	// Create Atlas API Request Object
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
-	projectID := cast.ToString(currentModel.ProjectId)
-	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID: projectID,
-	}
-	var snapshots *mongodbatlas.CloudProviderSnapshots
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
-
-	var err error
-	// API call to list snapshot
-	if clusterName != "" {
-		snapshotRequest.ClusterName = clusterName
-		snapshots, _, err = client.CloudProviderSnapshots.GetAllCloudProviderSnapshots(context.Background(), snapshotRequest, params)
-	} else if instanceName != "" {
-		// read serverless instance snapshot
-		snapshotRequest.InstanceName = instanceName
-		snapshots, _, err = client.CloudProviderSnapshots.GetAllServerlessSnapshots(context.Background(), snapshotRequest, params)
-	}
-	if err != nil {
-		return false
-	}
-	for _, snapshot := range snapshots.Results {
-		if snapshot.ID == *currentModel.SnapshotId {
-			return true
-		}
-	}
-	return false
 }
 
 func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEvent {
@@ -282,7 +240,7 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 			}
 		}
 	} else {
-		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *model.ProjectId, *model.ClusterName).Execute()
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe

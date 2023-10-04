@@ -23,7 +23,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
@@ -40,7 +39,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 
@@ -65,7 +63,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 
 	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -104,7 +101,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 
 	if errEvent := validator.ValidateModel(RequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 

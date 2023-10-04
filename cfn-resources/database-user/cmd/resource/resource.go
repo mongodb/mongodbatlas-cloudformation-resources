@@ -25,9 +25,9 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var CreateRequiredFields = []string{constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
@@ -53,11 +53,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -72,14 +71,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, res, err := client.DatabaseUsers.Create(context.Background(), groupID, dbUser)
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.CreateDatabaseUser(context.Background(), groupID, dbUser).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -96,11 +93,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -108,22 +104,21 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
-	databaseUser, resp, err := client.DatabaseUsers.Get(context.Background(), dbName, groupID, username)
+	databaseUser, resp, err := client.AtlasV2.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	currentModel.DatabaseName = &databaseUser.DatabaseName
 
 	if currentModel.LdapAuthType != nil {
-		currentModel.LdapAuthType = &databaseUser.LDAPAuthType
+		currentModel.LdapAuthType = databaseUser.LdapAuthType
 	}
 	if currentModel.AWSIAMType != nil {
-		currentModel.AWSIAMType = &databaseUser.AWSIAMType
+		currentModel.AWSIAMType = databaseUser.AwsIAMType
 	}
 	if currentModel.X509Type != nil {
-		currentModel.X509Type = &databaseUser.X509Type
+		currentModel.X509Type = databaseUser.X509Type
 	}
 	currentModel.Username = &databaseUser.Username
 	_, _ = logger.Debugf("databaseUser:%+v", databaseUser)
@@ -132,7 +127,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range databaseUser.Roles {
 		r := databaseUser.Roles[i]
 		role := RoleDefinition{
-			CollectionName: &r.CollectionName,
+			CollectionName: r.CollectionName,
 			DatabaseName:   &r.DatabaseName,
 			RoleName:       &r.RoleName,
 		}
@@ -146,19 +141,19 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range databaseUser.Labels {
 		l := databaseUser.Labels[i]
 		label := LabelDefinition{
-			Key:   &l.Key,
-			Value: &l.Value,
+			Key:   l.Key,
+			Value: l.Value,
 		}
 
 		labels = append(labels, label)
 	}
 	currentModel.Labels = labels
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
+		Message:         constants.ReadComplete,
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -170,11 +165,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -189,15 +183,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, resp, err := client.DatabaseUsers.Update(context.Background(), groupID, *currentModel.Username, dbUser)
-
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.UpdateDatabaseUser(context.Background(), groupID, *currentModel.DatabaseName, *currentModel.Username, dbUser).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -217,23 +208,21 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	groupID := *currentModel.ProjectId
+	databaseName := *currentModel.DatabaseName
 	username := *currentModel.Username
-	dbName := *currentModel.DatabaseName
-
-	resp, err := client.DatabaseUsers.Delete(context.Background(), dbName, groupID, username)
+	_, resp, err := client.AtlasV2.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupID, databaseName, username).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	cfnid := fmt.Sprintf("%s-%s", *currentModel.Username, groupID)
-	currentModel.UserCFNIdentifier = &cfnid
+	updateUserCFNIdentifier(currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
@@ -248,11 +237,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -261,52 +249,49 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	dbUserModels := make([]interface{}, 0)
 
-	databaseUsers, resp, err := client.DatabaseUsers.List(context.Background(), groupID, nil)
+	databaseUsers, resp, err := client.AtlasV2.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if len(databaseUsers) > 0 {
-		for i := range databaseUsers {
-			var model Model
-
-			databaseUser := databaseUsers[i]
-			model.DatabaseName = &databaseUser.DatabaseName
-			model.LdapAuthType = &databaseUser.LDAPAuthType
-			model.X509Type = &databaseUser.X509Type
-			model.Username = &databaseUser.Username
-			model.ProjectId = currentModel.ProjectId
-			var roles []RoleDefinition
-
-			for i := range databaseUser.Roles {
-				r := databaseUser.Roles[i]
-				role := RoleDefinition{
-					CollectionName: &r.CollectionName,
-					DatabaseName:   &r.DatabaseName,
-					RoleName:       &r.RoleName,
-				}
-
-				roles = append(roles, role)
-			}
-			model.Roles = roles
-
-			var labels []LabelDefinition
-
-			for i := range databaseUser.Labels {
-				l := databaseUser.Labels[i]
-				label := LabelDefinition{
-					Key:   &l.Key,
-					Value: &l.Value,
-				}
-				labels = append(labels, label)
-			}
-
-			model.Labels = labels
-
-			model.UserCFNIdentifier = aws.String(fmt.Sprintf("%s-%s", databaseUser.Username, databaseUser.GroupID))
-			dbUserModels = append(dbUserModels, model)
+	for i := range databaseUsers.Results {
+		databaseUser := &databaseUsers.Results[i]
+		var model = Model{
+			DatabaseName: &databaseUser.DatabaseName,
+			LdapAuthType: databaseUser.LdapAuthType,
+			X509Type:     databaseUser.X509Type,
+			Username:     &databaseUser.Username,
+			ProjectId:    currentModel.ProjectId,
 		}
+
+		var roles []RoleDefinition
+
+		for i := range databaseUser.Roles {
+			r := databaseUser.Roles[i]
+			role := RoleDefinition{
+				CollectionName: r.CollectionName,
+				DatabaseName:   &r.DatabaseName,
+				RoleName:       &r.RoleName,
+			}
+
+			roles = append(roles, role)
+		}
+		model.Roles = roles
+
+		var labels []LabelDefinition
+
+		for i := range databaseUser.Labels {
+			l := databaseUser.Labels[i]
+			label := LabelDefinition{
+				Key:   l.Key,
+				Value: l.Value,
+			}
+			labels = append(labels, label)
+		}
+
+		model.Labels = labels
+		updateUserCFNIdentifier(&model)
+		dbUserModels = append(dbUserModels, model)
 	}
 
 	return handler.ProgressEvent{
@@ -316,34 +301,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getDBUser(roles []mongodbatlas.Role, groupID string, currentModel *Model, labels []mongodbatlas.Label, scopes []mongodbatlas.Scope) *mongodbatlas.DatabaseUser {
-	user := &mongodbatlas.DatabaseUser{
-		Roles:           roles,
-		GroupID:         groupID,
-		Username:        *currentModel.Username,
-		DatabaseName:    *currentModel.DatabaseName,
-		Labels:          labels,
-		Scopes:          scopes,
-		LDAPAuthType:    *currentModel.LdapAuthType,
-		AWSIAMType:      *currentModel.AWSIAMType,
-		X509Type:        *currentModel.X509Type,
-		DeleteAfterDate: *currentModel.DeleteAfterDate,
-	}
-
-	if currentModel.Password != nil {
-		user.Password = *currentModel.Password
-	}
-
-	return user
-}
-
-func setModel(currentModel *Model) (*mongodbatlas.DatabaseUser, error) {
-	var roles []mongodbatlas.Role
+func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
+	var roles []admin.DatabaseUserRole
 	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
-		role := mongodbatlas.Role{}
+		role := admin.DatabaseUserRole{}
 		if r.CollectionName != nil {
-			role.CollectionName = *r.CollectionName
+			role.CollectionName = r.CollectionName
 		}
 		if r.DatabaseName != nil {
 			role.DatabaseName = *r.DatabaseName
@@ -354,20 +318,20 @@ func setModel(currentModel *Model) (*mongodbatlas.DatabaseUser, error) {
 		roles = append(roles, role)
 	}
 
-	var labels []mongodbatlas.Label
+	var labels []admin.ComponentLabel
 	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
-		label := mongodbatlas.Label{
-			Key:   *l.Key,
-			Value: *l.Value,
+		label := admin.ComponentLabel{
+			Key:   l.Key,
+			Value: l.Value,
 		}
 		labels = append(labels, label)
 	}
 
-	var scopes []mongodbatlas.Scope
+	var scopes []admin.UserScope
 	for i := range currentModel.Scopes {
 		s := currentModel.Scopes[i]
-		scope := mongodbatlas.Scope{
+		scope := admin.UserScope{
 			Name: *s.Name,
 			Type: *s.Type,
 		}
@@ -399,7 +363,27 @@ func setModel(currentModel *Model) (*mongodbatlas.DatabaseUser, error) {
 		currentModel.DeleteAfterDate = aws.String("")
 	}
 
-	user := getDBUser(roles, groupID, currentModel, labels, scopes)
+	user := &admin.CloudDatabaseUser{
+		Roles:           roles,
+		GroupId:         groupID,
+		Username:        *currentModel.Username,
+		DatabaseName:    *currentModel.DatabaseName,
+		Labels:          labels,
+		Scopes:          scopes,
+		LdapAuthType:    currentModel.LdapAuthType,
+		AwsIAMType:      currentModel.AWSIAMType,
+		X509Type:        currentModel.X509Type,
+		DeleteAfterDate: util.StringPtrToTimePtr(currentModel.DeleteAfterDate),
+	}
+
+	if currentModel.Password != nil {
+		user.Password = currentModel.Password
+	}
 
 	return user, nil
+}
+
+func updateUserCFNIdentifier(model *Model) {
+	cfnid := fmt.Sprintf("%s-%s", *model.Username, *model.ProjectId)
+	model.UserCFNIdentifier = &cfnid
 }

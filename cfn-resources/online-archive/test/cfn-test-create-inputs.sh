@@ -13,6 +13,13 @@ set -x
 rm -rf inputs
 mkdir inputs
 
+#set profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ];then
+    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+    profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 projectName="${1}"
 echo "$projectName"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
@@ -42,7 +49,8 @@ jq --arg cluster_name "$clusterName" \
 	--arg coll_name "$collName" \
 	--arg db_name "$dbName" \
 	--arg project_id "$projectId" \
-	'.ClusterName?|=$cluster_name
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .ClusterName?|=$cluster_name
    | .ProjectId?|=$project_id
    | .DbName?|=$db_name | .CollName?|=$coll_name' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
@@ -51,14 +59,8 @@ jq --arg cluster_name "$clusterName" \
 	--arg coll_name "$collName" \
 	--arg db_name "$dbName" \
 	--arg project_id "$projectId" \
-	'.ClusterName?|=$cluster_name
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .ClusterName?|=$cluster_name
     | .ProjectId?|=$project_id
     | .DbName?|=$db_name | .CollName?|=$coll_name' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
-
-#SET INVALID NAME
-clusterName="^%LKJ)(*J_ {+_+O_)"
-
-jq --arg clusterName "$clusterName" \
-	'.ClusterName?|=$clusterName ' \
-	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"

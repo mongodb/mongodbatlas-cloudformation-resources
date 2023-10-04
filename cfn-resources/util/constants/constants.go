@@ -46,6 +46,8 @@ const (
 	HostName            = "HostName"
 	Port                = "Port"
 	ContainerID         = "ContainerId"
+	Sink                = "Sink"
+	Transformations     = "transformations"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"
@@ -79,6 +81,7 @@ const (
 	Download                         = "download"
 	ClusterName                      = "ClusterName"
 	InstanceName                     = "InstanceName"
+	InstanceType                     = "InstanceType"
 	ErrorCreateCloudBackupRestoreJob = "Error - Create Cloud Backup Restore snapshot for Snapshot(%s)- Details: %+v"
 	ErrorReadCloudBackUpRestoreJob   = "Error - Read Restore Job with id(%s)"
 
@@ -145,7 +148,9 @@ const (
 	SkipRoleValidation         = "SkipRoleValidation"
 	LimitName                  = "LimitName"
 	Value                      = "Value"
-	Sink                       = "Sink"
+
+	AlreadyExist = "Already Exist"
+	EmptyString  = ""
 
 	OrgOwnerID        = "OrgOwnerId"
 	OrgKeyRoles       = "APIKey.Roles"

@@ -172,7 +172,7 @@
     },
     "OrgId": {
       "type": "string",
-      "description": "Unique 24-hexadecimal character string that identifies the team.",
+      "description": "Unique 24-hexadecimal character string that identifies the organization.",
       "maxLength": 24,
       "minLength": 24,
       "pattern": "^([a-f0-9]{24})$"
@@ -187,12 +187,12 @@
     },
     "Name": {
       "type": "string",
-      "description": "Unique 24-hexadecimal character string that identifies the team."
+      "description": "Human-readable label that identifies the team."
     },
     "Usernames": {
       "insertionOrder": false,
       "type": "array",
-      "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
+      "description": "List that contains the MongoDB Cloud users in this team.",
       "items": {
         "type": "string"
       }
@@ -219,5 +219,10 @@
     "/properties/Profile",
     "/properties/OrgId"
   ],
-  "typeName": "MongoDB::Atlas::Teams"
+  "typeName": "MongoDB::Atlas::Teams",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/teams/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/teams"
 }

@@ -26,17 +26,17 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
 var UpdateRequiredFields = []string{constants.ID}
 
 type UpdateAPIKey struct {
-	Key     string
-	APIKeys *mongodbatlas.AssignAPIKey
+	Key           string
+	UpdatePayload *admin.UpdateAtlasProjectApiKey
 }
 
 func setup() {
@@ -61,63 +61,72 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	var projectOwnerID string
-	if currentModel.ProjectOwnerId != nil {
-		projectOwnerID = *currentModel.ProjectOwnerId
-	}
-	projectInput := &mongodbatlas.Project{
+	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
-		OrgID:                     *currentModel.OrgId,
+		OrgId:                     *currentModel.OrgId,
 		WithDefaultAlertsSettings: currentModel.WithDefaultAlertsSettings,
 	}
 	if currentModel.RegionUsageRestrictions != nil {
-		projectInput.RegionUsageRestrictions = *currentModel.RegionUsageRestrictions
+		projectInput.RegionUsageRestrictions = currentModel.RegionUsageRestrictions
 	}
 
-	project, res, err := client.Projects.Create(context.Background(), projectInput, &mongodbatlas.CreateProjectOptions{ProjectOwnerID: projectOwnerID})
+	createProjectReq := admin.CreateProjectApiParams{
+		Group: projectInput,
+	}
+	if currentModel.ProjectOwnerId != nil {
+		createProjectReq.ProjectOwnerId = currentModel.ProjectOwnerId
+	}
+	project, res, err := atlasV2.ProjectsApi.CreateProjectWithParams(context.Background(), &createProjectReq).Execute()
+
 	if err != nil {
 		_, _ = logger.Debugf("Create - error: %+v", err)
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
-			res.Response), nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
+			res), nil
 	}
 
 	// Add ApiKeys
 	if len(currentModel.ProjectApiKeys) > 0 {
 		for _, key := range currentModel.ProjectApiKeys {
-			_, err = client.ProjectAPIKeys.Assign(context.Background(), project.ID, *key.Key, &mongodbatlas.AssignAPIKey{Roles: key.RoleNames})
+			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), *project.Id, *key.Key, &admin.UpdateAtlasProjectApiKey{
+				Roles: key.RoleNames,
+			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Assign Key Error: %s", err)
-				return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error while Assigning Key to project : %s", err.Error()),
-					res.Response), nil
+				return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error while Assigning Key to project : %s", err.Error()),
+					res), nil
 			}
 		}
 	}
 
 	// Add Teams
 	if len(currentModel.ProjectTeams) > 0 {
-		_, _, err = client.Projects.AddTeamsToProject(context.Background(), project.ID, readTeams(currentModel.ProjectTeams))
+		teams := readTeams(currentModel.ProjectTeams)
+		_, _, err := atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), *project.Id, &teams).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("AddTeamsToProject Error: %s", err)
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error while adding teams to project : %s", err.Error()),
-				res.Response), nil
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error while adding teams to project : %s", err.Error()),
+				res), nil
 		}
 	}
 
-	currentModel.Id = &project.ID
-	currentModel.Created = &project.Created
-	currentModel.ClusterCount = &project.ClusterCount
+	formattedCreated := util.TimeToString(project.Created)
 
-	progressEvent, err := updateProjectSettings(currentModel, client)
+	currentModel.Id = project.Id
+	currentModel.Created = &formattedCreated
+	currentModel.ClusterCount = util.Int64PtrToIntPtr(&project.ClusterCount)
+
+	progressEvent, err := updateProjectSettings(currentModel, atlasV2)
 	if err != nil {
 		return progressEvent, err
 	}
-	event, proj, err := getProjectWithSettings(client, currentModel)
+	event, proj, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
 		_, _ = logger.Warnf("getProject Error: %s", err)
 		return event, err
@@ -130,10 +139,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func updateProjectSettings(currentModel *Model, client *mongodbatlas.Client) (handler.ProgressEvent, error) {
+func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handler.ProgressEvent, error) {
 	if currentModel.ProjectSettings != nil {
 		// Update project settings
-		projectSettings := mongodbatlas.ProjectSettings{
+		projectSettings := admin.GroupSettings{
 			IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
 			IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
 			IsDataExplorerEnabled:                       currentModel.ProjectSettings.IsDataExplorerEnabled,
@@ -142,11 +151,11 @@ func updateProjectSettings(currentModel *Model, client *mongodbatlas.Client) (ha
 			IsExtendedStorageSizesEnabled:               currentModel.ProjectSettings.IsExtendedStorageSizesEnabled,
 		}
 
-		_, res, err := client.Projects.UpdateProjectSettings(context.Background(), *currentModel.Id, &projectSettings)
+		_, res, err := atlasV2.ProjectsApi.UpdateProjectSettings(context.Background(), *currentModel.Id, &projectSettings).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("UpdateProjectSettings Error: %s", err)
-			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
-				res.Response), err
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
+				res), err
 		}
 	}
 	return handler.ProgressEvent{}, nil
@@ -159,13 +168,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	event, model, err := getProjectWithSettings(client, currentModel)
+	event, model, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
 		return event, nil
 	}
@@ -189,7 +199,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
@@ -200,16 +211,16 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		projectID = *currentModel.Id
 	}
 
-	event, _, err = getProject(client, currentModel)
+	event, _, err = getProject(atlasV2, currentModel)
 	if err != nil {
 		return event, nil
 	}
 
 	if currentModel.ProjectTeams != nil {
 		// Get teams from project
-		teamsAssigned, _, errr := client.Projects.GetProjectTeamsAssigned(context.Background(), projectID)
-		if errr != nil {
-			_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, errr)
+		teamsAssigned, _, err := atlasV2.TeamsApi.ListProjectTeams(context.Background(), projectID).Execute()
+		if err != nil {
+			_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while finding teams in project",
@@ -219,7 +230,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 		// Remove Teams
 		for _, team := range removeTeams {
-			_, err = client.Teams.RemoveTeamFromProject(context.Background(), projectID, team.TeamID)
+			_, err = atlasV2.TeamsApi.RemoveProjectTeam(context.Background(), projectID, util.SafeString(team.TeamId)).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
 				return handler.ProgressEvent{
@@ -230,7 +241,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 		// Add Teams
 		if len(newTeams) > 0 {
-			_, _, err = client.Projects.AddTeamsToProject(context.Background(), projectID, newTeams)
+			_, _, err = atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), projectID, &newTeams).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
@@ -241,7 +252,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 		// Update Teams
 		for _, team := range changedTeams {
-			_, _, err = client.Teams.UpdateTeamRoles(context.Background(), projectID, team.TeamID, &mongodbatlas.TeamUpdateRoles{RoleNames: team.RoleNames})
+			_, _, err = atlasV2.TeamsApi.UpdateTeamRoles(context.Background(), projectID, util.SafeString(team.TeamId), &admin.TeamRole{RoleNames: team.RoleNames}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
@@ -254,9 +265,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 	if currentModel.ProjectApiKeys != nil {
 		// Get APIKeys from project
-		projectAPIKeys, _, errr := client.ProjectAPIKeys.List(context.Background(), projectID, &mongodbatlas.ListOptions{ItemsPerPage: 1000, IncludeCount: true})
+		itemsPerPage := 1000
+		projectAPIKeys, _, err := atlasV2.ProgrammaticAPIKeysApi.ListProjectApiKeysWithParams(context.Background(), &admin.ListProjectApiKeysApiParams{
+			GroupId:      projectID,
+			ItemsPerPage: &itemsPerPage,
+		}).Execute()
 		if err != nil {
-			_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, errr)
+			_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while finding api keys in project",
@@ -264,11 +279,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 
 		// Get Change in ApiKeys
-		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(*currentModel.Id, currentModel.ProjectApiKeys, projectAPIKeys)
+		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(*currentModel.Id, currentModel.ProjectApiKeys, projectAPIKeys.Results)
 
 		// Remove old keys
 		for _, key := range removeKeys {
-			_, err = client.ProjectAPIKeys.Unassign(context.Background(), projectID, key.Key)
+			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, key.Key).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
@@ -280,7 +295,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 		// Add Keys
 		for _, key := range newAPIKeys {
-			_, err = client.ProjectAPIKeys.Assign(context.Background(), projectID, key.Key, key.APIKeys)
+			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, key.Key, key.UpdatePayload).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
@@ -292,23 +307,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 		// Update Key Roles
 		for _, key := range changedKeys {
-			_, err = client.ProjectAPIKeys.Assign(context.Background(), projectID, key.Key, key.APIKeys)
+			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, key.Key, key.UpdatePayload).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Error while Un-assigning Key to project",
+					Message:          "Error while Assigning Key to project",
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
 		}
 	}
 
-	progressEvent, err := updateProjectSettings(currentModel, client)
+	progressEvent, err := updateProjectSettings(currentModel, atlasV2)
 	if err != nil {
 		return progressEvent, err
 	}
 
-	event, project, err := getProjectWithSettings(client, currentModel)
+	event, project, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
 		return event, err
 	}
@@ -327,7 +342,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
@@ -337,17 +353,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		id = *currentModel.Id
 	}
 
-	event, _, err = getProject(client, currentModel)
+	event, _, err = getProject(atlasV2, currentModel)
 	if err != nil {
 		return event, nil
 	}
 	_, _ = logger.Debugf("Deleting project with id(%s)", id)
 
-	res, err := client.Projects.Delete(context.Background(), id)
+	_, res, err := atlasV2.ProjectsApi.DeleteProject(context.Background(), id).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("####error deleting project with id(%s): %s", id, err)
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
-			res.Response), nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
+			res), nil
 	}
 
 	return handler.ProgressEvent{
@@ -363,9 +379,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // Read project
-func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
-	var project *mongodbatlas.Project
-	if currentModel.Name != nil && len(*currentModel.Name) > 0 {
+func getProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
+	var project *admin.Group
+	if util.IsStringPresent(currentModel.Name) {
 		event, project, err = getProjectByName(currentModel.Name, client)
 		if err != nil {
 			return event, nil, err
@@ -376,22 +392,24 @@ func getProject(client *mongodbatlas.Client, currentModel *Model) (event handler
 			return event, nil, err
 		}
 	}
+	formattedCreated := util.TimeToString(project.Created)
+
 	currentModel.Name = &project.Name
-	currentModel.OrgId = &project.OrgID
-	currentModel.Created = &project.Created
-	currentModel.ClusterCount = &project.ClusterCount
-	currentModel.Id = &project.ID
-	currentModel.RegionUsageRestrictions = &project.RegionUsageRestrictions
+	currentModel.OrgId = &project.OrgId
+	currentModel.Created = &formattedCreated
+	currentModel.ClusterCount = util.Int64PtrToIntPtr(&project.ClusterCount)
+	currentModel.Id = project.Id
+	currentModel.RegionUsageRestrictions = project.RegionUsageRestrictions
 	return handler.ProgressEvent{}, currentModel, nil
 }
 
 // Read project
-func getProjectWithSettings(client *mongodbatlas.Client, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
-	event, currentModel, err = getProject(client, currentModel)
+func getProjectWithSettings(atlasV2 *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
+	event, currentModel, err = getProject(atlasV2, currentModel)
 	if err != nil {
 		return event, currentModel, err
 	}
-	event, model, err = readProjectSettings(client, *currentModel.Id, currentModel)
+	event, model, err = readProjectSettings(atlasV2, *currentModel.Id, currentModel)
 
 	if err != nil {
 		return event, model, err
@@ -400,48 +418,48 @@ func getProjectWithSettings(client *mongodbatlas.Client, currentModel *Model) (e
 	return handler.ProgressEvent{}, model, nil
 }
 
-func getProjectByName(name *string, client *mongodbatlas.Client) (event handler.ProgressEvent, model *mongodbatlas.Project, err error) {
-	project, res, err := client.Projects.GetOneProjectByName(context.Background(), *name)
+func getProjectByName(name *string, client *admin.APIClient) (event handler.ProgressEvent, model *admin.Group, err error) {
+	project, res, err := client.ProjectsApi.GetProjectByName(context.Background(), *name).Execute()
 	if err != nil {
-		if res.Response.StatusCode == 401 { // cfn test
-			return progressevents.GetFailedEventByCode(
+		if res.StatusCode == 401 { // cfn test
+			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				cloudformation.HandlerErrorCodeNotFound), nil, err
 		}
-		return progressevents.GetFailedEventByResponse(err.Error(),
-			res.Response), project, err
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			res), project, err
 	}
 	return handler.ProgressEvent{}, project, err
 }
 
-func getProjectByID(id *string, client *mongodbatlas.Client) (event handler.ProgressEvent, model *mongodbatlas.Project, err error) {
-	project, res, err := client.Projects.GetOneProject(context.Background(), *id)
+func getProjectByID(id *string, atlasV2 *admin.APIClient) (event handler.ProgressEvent, model *admin.Group, err error) {
+	project, res, err := atlasV2.ProjectsApi.GetProject(context.Background(), *id).Execute()
 	if err != nil {
-		if res.Response.StatusCode == 401 { // cfn test
-			return progressevents.GetFailedEventByCode(
+		if res.StatusCode == 401 { // cfn test
+			return progressevent.GetFailedEventByCode(
 				"Unauthorized Error: Unable to retrieve Project by ID. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				cloudformation.HandlerErrorCodeNotFound), nil, err
 		}
-		return progressevents.GetFailedEventByResponse(err.Error(),
-			res.Response), project, err
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			res), project, err
 	}
 	return handler.ProgressEvent{}, project, err
 }
 
-func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
+func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	// Get teams from project
-	teamsAssigned, res, err := client.Projects.GetProjectTeamsAssigned(context.Background(), id)
+	teamsAssigned, res, err := atlasV2.TeamsApi.ListProjectTeams(context.Background(), id).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
-		return progressevents.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, err
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			res), nil, err
 	}
 
-	projectSettings, _, err := client.Projects.GetProjectSettings(context.Background(), id)
+	projectSettings, _, err := atlasV2.ProjectsApi.GetProjectSettings(context.Background(), id).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
-		return progressevents.GetFailedEventByResponse(err.Error(),
-			res.Response), nil, err
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			res), nil, err
 	}
 	// Set projectSettings
 	currentModel.ProjectSettings = &ProjectSettings{
@@ -456,8 +474,8 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 	// Set teams
 	var teams []ProjectTeam
 	for _, team := range teamsAssigned.Results {
-		if len(team.TeamID) > 0 {
-			teams = append(teams, ProjectTeam{TeamId: &team.TeamID, RoleNames: team.RoleNames})
+		if util.IsStringPresent(team.TeamId) {
+			teams = append(teams, ProjectTeam{TeamId: team.TeamId, RoleNames: team.RoleNames})
 		}
 	}
 
@@ -467,36 +485,36 @@ func readProjectSettings(client *mongodbatlas.Client, id string, currentModel *M
 }
 
 // Get difference in Teams
-func getChangeInTeams(currentTeams []ProjectTeam, oTeams []*mongodbatlas.Result) (newTeams []*mongodbatlas.ProjectTeam,
-	changedTeams []*mongodbatlas.ProjectTeam, removeTeams []*mongodbatlas.ProjectTeam) {
+func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newTeams []admin.TeamRole,
+	changedTeams []admin.TeamRole, removeTeams []admin.TeamRole) {
 	for _, nTeam := range currentTeams {
-		if nTeam.TeamId != nil && len(*nTeam.TeamId) > 0 {
+		if util.IsStringPresent(nTeam.TeamId) {
 			matched := false
 			for _, oTeam := range oTeams {
-				if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
-					changedTeams = append(changedTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+				if util.AreStringPtrEqual(nTeam.TeamId, oTeam.TeamId) {
+					changedTeams = append(changedTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
 					matched = true
 					break
 				}
 			}
 			// Add to newTeams
 			if !matched {
-				newTeams = append(newTeams, &mongodbatlas.ProjectTeam{TeamID: *nTeam.TeamId, RoleNames: nTeam.RoleNames})
+				newTeams = append(newTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
 			}
 		}
 	}
 
 	for _, oTeam := range oTeams {
-		if len(oTeam.TeamID) > 0 {
+		if util.IsStringPresent(oTeam.TeamId) {
 			matched := false
 			for _, nTeam := range currentTeams {
-				if nTeam.TeamId != nil && *nTeam.TeamId == oTeam.TeamID {
+				if util.AreStringPtrEqual(nTeam.TeamId, oTeam.TeamId) {
 					matched = true
 					break
 				}
 			}
 			if !matched {
-				removeTeams = append(removeTeams, &mongodbatlas.ProjectTeam{TeamID: oTeam.TeamID, RoleNames: oTeam.RoleNames})
+				removeTeams = append(removeTeams, admin.TeamRole{TeamId: oTeam.TeamId, RoleNames: oTeam.RoleNames})
 			}
 		}
 	}
@@ -504,29 +522,29 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []*mongodbatlas.Result)
 }
 
 // Get difference in ApiKeys
-func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []mongodbatlas.APIKey) (newKeys, changedKeys, removeKeys []UpdateAPIKey) {
+func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []admin.ApiKeyUserDetails) (newKeys, changedKeys, removeKeys []UpdateAPIKey) {
 	for _, nKey := range currentKeys {
-		if nKey.Key != nil && len(*nKey.Key) > 0 {
+		if util.IsStringPresent(nKey.Key) {
 			matched := false
 			for _, oKey := range oKeys {
-				if nKey.Key != nil && *nKey.Key == oKey.ID {
-					changedKeys = append(changedKeys, UpdateAPIKey{Key: *nKey.Key, APIKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+				if util.AreStringPtrEqual(nKey.Key, oKey.Id) {
+					changedKeys = append(changedKeys, UpdateAPIKey{Key: *nKey.Key, UpdatePayload: &admin.UpdateAtlasProjectApiKey{Roles: nKey.RoleNames}})
 					matched = true
 					break
 				}
 			}
 			// Add to newKeys
 			if !matched {
-				newKeys = append(newKeys, UpdateAPIKey{Key: *nKey.Key, APIKeys: &mongodbatlas.AssignAPIKey{Roles: nKey.RoleNames}})
+				newKeys = append(newKeys, UpdateAPIKey{Key: *nKey.Key, UpdatePayload: &admin.UpdateAtlasProjectApiKey{Roles: nKey.RoleNames}})
 			}
 		}
 	}
 
 	for _, oKey := range oKeys {
-		if len(oKey.ID) > 0 {
+		if util.IsStringPresent(oKey.Id) {
 			matched := false
 			for _, nKey := range currentKeys {
-				if nKey.Key != nil && *nKey.Key == oKey.ID {
+				if util.AreStringPtrEqual(nKey.Key, oKey.Id) {
 					matched = true
 					break
 				}
@@ -534,8 +552,8 @@ func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []mon
 			if !matched {
 				for _, role := range oKey.Roles {
 					// Consider only current ProjectRoles
-					if role.GroupID == groupID {
-						removeKeys = append(removeKeys, UpdateAPIKey{Key: oKey.ID})
+					if util.AreStringPtrEqual(role.GroupId, &groupID) {
+						removeKeys = append(removeKeys, UpdateAPIKey{Key: *oKey.Id})
 					}
 				}
 			}
@@ -544,11 +562,11 @@ func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []mon
 	return newKeys, changedKeys, removeKeys
 }
 
-func readTeams(teams []ProjectTeam) []*mongodbatlas.ProjectTeam {
-	var newTeams []*mongodbatlas.ProjectTeam
+func readTeams(teams []ProjectTeam) []admin.TeamRole {
+	var newTeams []admin.TeamRole
 	for _, t := range teams {
-		if t.TeamId != nil && len(*t.TeamId) > 0 {
-			newTeams = append(newTeams, &mongodbatlas.ProjectTeam{TeamID: *t.TeamId, RoleNames: t.RoleNames})
+		if util.IsStringPresent(t.TeamId) {
+			newTeams = append(newTeams, admin.TeamRole{TeamId: t.TeamId, RoleNames: t.RoleNames})
 		}
 	}
 	return newTeams

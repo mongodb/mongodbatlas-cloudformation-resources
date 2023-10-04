@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::ProjectIpAccessList",
   "description": "Returns, adds, edits, and removes network access limits to database deployments in Atlas.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/project-ip-access-list",
   "additionalProperties": false,
   "definitions": {
     "accessListDefinition": {
@@ -113,5 +113,9 @@
   "required": [
     "ProjectId",
     "AccessList"
-  ]
+  ],
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/project-ip-access-list/README.md",
+  "tagging": {
+    "taggable": false
+  }
 }

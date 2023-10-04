@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::CloudBackupSchedule",
   "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cloud-backup-schedule",
   "definitions": {
     "Export": {
       "type": "object",
@@ -96,7 +96,7 @@
       "properties": {
         "ID": {
           "type": "string",
-          "description" : "Unique 24-hexadecimal digit string that identifies this backup policy. The policy id can be retrieved by running: atlas backups schedule describe \"${clusterName}\" --projectId \"${projectId}\" | jq -r '.policies[0].id'"
+          "description": "Unique 24-hexadecimal digit string that identifies this backup policy. The policy id can be retrieved by running: atlas backups schedule describe \"${clusterName}\" --projectId \"${projectId}\" | jq -r '.policies[0].id'"
         },
         "PolicyItems": {
           "type": "array",
@@ -260,5 +260,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-schedule/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

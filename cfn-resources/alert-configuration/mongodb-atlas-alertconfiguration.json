@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::AlertConfiguration",
   "description": "Returns and edits the conditions that trigger alerts and how MongoDB Cloud notifies users. This collection remains under revision and may change. Refer to the legacy documentation for this collection in the following link.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/alert-configuration",
   "additionalProperties": false,
   "definitions": {
     "AlertConfigView": {
@@ -594,5 +594,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/alert-configuration/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

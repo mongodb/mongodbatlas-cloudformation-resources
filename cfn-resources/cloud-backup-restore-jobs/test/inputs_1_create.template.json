@@ -1,7 +1,7 @@
-
 {
     "ProjectId": "$GroupId",
-    "ClusterName": "$ClusterName",
+    "InstanceName": "$ClusterName",
+    "InstanceType" : "cluster",
     "DeliveryType": "download",
     "SnapshotId": "$SnapshotId",
     "Id": "",

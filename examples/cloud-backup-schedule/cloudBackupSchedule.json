@@ -15,29 +15,17 @@
       "Type": "String",
       "Default": ""
     },
-    "CloudProvider": {
-      "Type": "String",
-      "Default": "AWS"
-    },
-    "RegionName": {
-      "Type": "String",
-      "Default": "AP_NORTHEAST_2"
-    },
-    "ReplicationSpecId": {
-      "Type": "String",
-      "Default": ""
-    },
     "PolicyID": {
       "Type": "String",
       "Default": ""
     },
     "FrequencyInterval": {
       "Type": "String",
-      "Default": "1"
+      "Default": "6"
     },
     "FrequencyType": {
       "Type": "String",
-      "Default": "daily"
+      "Default": "hourly"
     },
     "RetentionUnit": {
       "Type": "String",
@@ -45,7 +33,7 @@
     },
     "RetentionValue": {
       "Type": "String",
-      "Default": "1"
+      "Default": "7"
     }
   },
   "Mappings": {},
@@ -60,23 +48,6 @@
           "Ref": "ClusterName"
         },
         "AutoExportEnabled": "false",
-        "CopySettings": [
-          {
-            "CloudProvider": {
-              "Ref": "CloudProvider"
-            },
-            "Frequencies": [
-              "HOURLY"
-            ],
-            "RegionName": {
-              "Ref": "RegionName"
-            },
-            "ReplicationSpecId": {
-              "Ref": "ReplicationSpecId"
-            },
-            "ShouldCopyOplogs": false
-          }
-        ],
         "Policies": [
           {
             "ID": {

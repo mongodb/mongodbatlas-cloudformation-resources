@@ -196,17 +196,16 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}, nil
 	}
 
-	// Check if job already exist
+	// Check if job exist
 	job, peError := getRestoreJob(client, currentModel)
 	if peError != nil {
 		return *peError, nil
 	}
 
-	if isJobFinished(*job) {
-		_, _ = logger.Warnf("restore job not fund for id :%s", *currentModel.Id)
+	if job.Cancelled {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Job is finished, cancelled, failed or expired",
+			Message:          "The job is in status cancelled, Cannot read a cancelled job",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
@@ -257,12 +256,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peError, nil
 	}
 
-	if isJobFinished(*job) {
-		_, _ = logger.Warnf("restore job not fund for id :%s", *currentModel.Id)
+	if job.Cancelled {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Job is finished, cancelled, failed or expired",
+			Message:          "Job is already cancelled and cannot be deleted",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+
+	if isJobFinished(*job) || isJobFailed(*job) || job.Expired {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "The resource is failed finished or expired",
+		}, nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -481,11 +486,19 @@ func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbat
 	return restoreJobs, nil
 }
 
-func isJobFinished(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
+func isJobFinished_old(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
 	failed := job.Failed != nil && *job.Failed
 	finished := job.FinishedAt != ""
 
 	return failed || job.Cancelled || job.Expired || finished
+}
+
+func isJobFinished(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
+	return job.FinishedAt != ""
+}
+
+func isJobFailed(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
+	return job.Failed != nil && *job.Failed
 }
 
 // convert mongodb links to model links

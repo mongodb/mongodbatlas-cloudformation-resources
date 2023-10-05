@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -113,7 +114,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.Id = peerResponse.Id
-
 	return progressevent.GetInProgressProgressEvent("Creating",
 		map[string]interface{}{
 			"stateName": StatusInitiating,
@@ -206,6 +206,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if vpcID != nil {
 		peerRequest.VpcId = vpcID
 	}
+
+	peerRequest.ContainerId = *currentModel.ContainerId
 	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringConnection(context.Background(), projectID, peerID, &peerRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error updating resource : %s", err.Error()),
@@ -348,14 +350,22 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 }
 
 func getStatus(client *util.MongoDBClient, projectID, peerID string) (statusName string, errorStatusName string, err error) {
-	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
+	peerResponse, _, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return StatusDeleted, "", nil
 		}
 
 		return "", "", err
 	}
 
-	return *peerResponse.StatusName, *peerResponse.ErrorStateName, nil
+	if util.IsStringPresent(peerResponse.ErrorStateName) {
+		errorStatusName = *peerResponse.ErrorStateName
+	}
+
+	if util.IsStringPresent(peerResponse.StatusName) {
+		statusName = *peerResponse.StatusName
+	}
+
+	return
 }

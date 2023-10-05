@@ -24,7 +24,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
@@ -95,7 +94,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	awsAccountID := currentModel.AwsAccountId
 	if awsAccountID == nil || *awsAccountID == "" {
 		awsAccountID = &req.RequestContext.AccountID
-		_, _ = logger.Debugf("AwsAccountIdwas not set, default to req.RequestContext.AccountID:%v", awsAccountID)
 	}
 
 	peerRequest := admin.BaseNetworkPeeringConnectionSettings{
@@ -169,8 +167,6 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
-
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {

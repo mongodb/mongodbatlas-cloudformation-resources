@@ -18,15 +18,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -34,27 +31,22 @@ import (
 var CreateRequiredFields = []string{constants.ProjectID, constants.UserID}
 var ReadRequiredFields = []string{constants.ProjectID}
 
-// Create handles the Create event from the Cloudformation service.
+func setup() {
+	util.SetupLogger("mongodb-atlas-x509-authentication-database-user")
+}
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	log.Print(currentModel.ProjectId)
-	log.Print(currentModel.UserName)
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	// progress callback setup
 	if _, ok := req.CallbackContext["status"]; ok {
 		sid := req.CallbackContext["ProjectId"].(string)
 		currentModel.ProjectId = &sid
@@ -68,16 +60,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
-	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
 	userName := *currentModel.UserName
 	expirationMonths := *currentModel.MonthsUntilExpiration
+
 	// create new user certificate
 	if expirationMonths > 0 {
-		_, _ = logger.Debug("Creating User Certificate")
 		res, _, err := client.X509AuthDBUsers.CreateUserCertificate(context.Background(), projectID, userName, expirationMonths)
 		if err != nil {
-			_, _ = logger.Warnf("error creating MongoDB X509 Authentication for DB User(%s) in the project(%s): %v", userName, projectID, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -89,11 +79,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 	} else { // save customer provided certificate
-		_, _ = logger.Debug("Save Custom Certificate DB User starts")
 		customerX509Cas := *currentModel.CustomerX509.Cas
 		_, _, err := client.X509AuthDBUsers.SaveConfiguration(context.Background(), projectID, &mongodbatlas.CustomerX509{Cas: customerX509Cas})
 		if err != nil {
-			_, _ = logger.Warnf("error creating Customer X509 Authentication in the project(%s): %s", projectID, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -109,27 +97,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return event, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	_, _ = logger.Debug("Read - X509 Certificates starts ")
-	// check if certificate is enabled
 	if !isEnabled(client, currentModel) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -138,7 +117,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	readModel, err := ReadUserX509Certificate(client, currentModel)
 	if err != nil {
-		_, _ = logger.Warnf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, *currentModel.ProjectId, err)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
@@ -151,20 +129,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// ReadUserX509Certificate Read handles the Read event from the Cloudformation service.
 func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (*Model, error) {
-	setup() // logger setup
 
-	_, _ = logger.Debugf("Read - X509 certificates  function starts %v", currentModel)
-
-	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
 
-	// API call to get currently configured certificate
 	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
-	_, _ = logger.Debugf("Read - X509 Certificates starts : %+v ", certificate)
 	if err != nil {
-		_, _ = logger.Warnf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
 		return nil, fmt.Errorf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
 	} else if certificate != nil {
 		currentModel.CustomerX509 = &CustomerX509{
@@ -174,45 +144,32 @@ func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (
 	return currentModel, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("not implemented")
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
 	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	// Create Atlas API Request Object
 	if !isEnabled(client, currentModel) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	_, _ = logger.Debug("Delete - X509 Certificates  starts ")
-	// API call
+
 	projectID := *currentModel.ProjectId
 	_, err := client.X509AuthDBUsers.DisableCustomerX509(context.Background(), projectID)
 	if err != nil {
-		_, _ = logger.Warnf("error deleting Customer X509 Authentication in the project(%s): %s", projectID, *currentModel.UserName)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Unable to Delete",
@@ -226,23 +183,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// Not implemented, return an empty handler.ProgressEvent
-	// and an error
-	return handler.ProgressEvent{}, errors.New("not implemented")
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-// function to validate inputs to all actions
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
-
-func setup() {
-	util.SetupLogger("mongodb-atlas-x509-authentication-db-user")
-}
-
-// function to track snapshot creation status
 func validateProgress(client *mongodbatlas.Client, currentModel *Model) (handler.ProgressEvent, error) {
 	projectID := *currentModel.ProjectId
 	isReady, state, err := certificateIsReady(client, projectID)
@@ -270,17 +214,12 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model) (handler
 	return p, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
 func isEnabled(client *mongodbatlas.Client, currentModel *Model) bool {
-	setup() // logger setup
 
-	_, _ = logger.Debugf("Read - X509 certificates for Request() :%+v", currentModel)
 	projectID := *currentModel.ProjectId
 
 	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
-	_, _ = logger.Debugf("Read - X509 Certificates starts : %+v ", certificate)
 	if err != nil {
-		_, _ = logger.Warnf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
 		return false
 	} else if certificate != nil && certificate.Cas != "" {
 		return true
@@ -289,7 +228,6 @@ func isEnabled(client *mongodbatlas.Client, currentModel *Model) bool {
 	return false
 }
 
-// function to check if snapshot already exist in atlas
 func certificateIsReady(client *mongodbatlas.Client, projectID string) (isExist bool, groupID string, errMsg error) {
 	certificate, resp, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
 	if err != nil {

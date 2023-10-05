@@ -23,10 +23,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -45,7 +45,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -59,35 +58,34 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	projectID := *currentModel.ProjectId
-	clusterName := *currentModel.ClusterName
-
-	// API call to Get the cloud backup schedule
-	backupPolicy, resp, err := client.CloudProviderSnapshotBackupPolicies.Get(context.Background(), projectID, clusterName)
+	backupPolicy, resp, err := client.AtlasV2.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-	_, _ = logger.Debugf("Read() end currentModel:%+v", currentModel)
-	// check the policy backup schedule is present for the cluster
+
 	if !isPolicySchedulePresent(backupPolicy) {
-		_, _ = logger.Warnf("Error - Read policy backup schedule for cluster(%s)", *currentModel.ClusterName)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
+	model := &Model{
+		Profile:     currentModel.Profile,
+		ProjectId:   currentModel.ProjectId,
+		ClusterName: currentModel.ClusterName,
+	}
+	model.updateModel(backupPolicy)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
-		ResourceModel:   backupPolicyToModel(*currentModel, backupPolicy),
+		ResourceModel:   model,
 	}, nil
 }
 
@@ -100,7 +98,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 	// API call to Get the cloud backup schedule
@@ -125,7 +122,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
@@ -135,9 +131,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if !isPolicyItemsExists(currentModel, client) {
 		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
-	_, _ = logger.Debugf("Deleting all snapshot backup schedules for cluster(%s) from project(%s)", *currentModel.ClusterName, *currentModel.ProjectId)
 
-	// API call to delete cloud backup schedule
 	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
@@ -202,7 +196,6 @@ func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error)
 			if policyItem.FrequencyInterval == nil || policyItem.FrequencyType == nil ||
 				policyItem.RetentionUnit == nil || policyItem.RetentionValue == nil {
 				err := errors.New("validation error: All values from PolicyItem should be set when `PolicyItems` is set")
-				_, _ = logger.Warnf("Update - error: %+v", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          err.Error(),
@@ -217,7 +210,6 @@ func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err e
 	if *currentModel.AutoExportEnabled && currentModel.Export != nil {
 		if (currentModel.Export.FrequencyType) == nil {
 			err := errors.New("error updating cloud backup schedule: FrequencyType should be set when `Export` is set")
-			_, _ = logger.Warnf("Update - error: %+v", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -236,8 +228,8 @@ func cast64(i *int) *int64 {
 	return &x
 }
 
-func isPolicySchedulePresent(backupPolicy *mongodbatlas.CloudProviderSnapshotBackupPolicy) bool {
-	return (backupPolicy.Policies != nil || len(backupPolicy.Policies) > 0) && len(backupPolicy.Policies[0].PolicyItems) > 0
+func isPolicySchedulePresent(policy *admin.DiskBackupSnapshotSchedule) bool {
+	return (policy.Policies != nil || len(policy.Policies) > 0) && len(policy.Policies[0].PolicyItems) > 0
 }
 
 // function to check if cloud backup policy already exist.
@@ -325,7 +317,6 @@ func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView)
 	return cloudDeleteCopiedBackups
 }
 
-// function to converts mongodb 'Policy' class to model 'ApiPolicyView' class.
 func flattenPolicies(policies []mongodbatlas.Policy) []ApiPolicyView {
 	snapPolicies := make([]ApiPolicyView, 0)
 	for _, policy := range policies {
@@ -338,7 +329,6 @@ func flattenPolicies(policies []mongodbatlas.Policy) []ApiPolicyView {
 	return snapPolicies
 }
 
-// function to converts mongodb 'PolicyItem' class to model 'ApiPolicyItemView' class.
 func flattenPolicyItems(policyItems []mongodbatlas.PolicyItem) []ApiPolicyItemView {
 	cloudPolicyItems := make([]ApiPolicyItemView, 0)
 	for _, policyItem := range policyItems {
@@ -354,7 +344,6 @@ func flattenPolicyItems(policyItems []mongodbatlas.PolicyItem) []ApiPolicyItemVi
 	return cloudPolicyItems
 }
 
-// function to converts mongodb 'Export' class to model 'Export' class.
 func flattenExport(export *mongodbatlas.Export) *Export {
 	if export == nil {
 		return nil
@@ -450,4 +439,83 @@ func backupPolicyToModel(currentModel Model, backupPolicy *mongodbatlas.CloudPro
 		out.Export = flattenExport(backupPolicy.Export)
 	}
 	return out
+}
+
+// function to converts  mongodb 'CloudProviderSnapshotBackupPolicy' class to 'currentModel' model class.
+func (m *Model) updateModel(policy *admin.DiskBackupSnapshotSchedule) {
+	m.ClusterId = policy.ClusterId
+	m.AutoExportEnabled = policy.AutoExportEnabled
+	m.ReferenceHourOfDay = policy.ReferenceHourOfDay
+	m.ReferenceMinuteOfHour = policy.ReferenceMinuteOfHour
+	m.RestoreWindowDays = policy.RestoreWindowDays
+	m.NextSnapshot = util.TimePtrToStringPtr(policy.NextSnapshot)
+	m.UseOrgAndGroupNamesInExportPrefix = policy.UseOrgAndGroupNamesInExportPrefix
+	m.Policies = flattenPolicies2(&policy.Policies)
+	m.Links = flattenLinks2(&policy.Links)
+	m.CopySettings = flattenCopySettings2(&policy.CopySettings)
+	if policy.Export != nil && *policy.AutoExportEnabled {
+		m.Export = flattenExport2(policy.Export)
+	}
+}
+
+func flattenExport2(export *admin.AutoExportPolicy) *Export {
+	if export == nil {
+		return nil
+	}
+	return &Export{
+		ExportBucketId: export.ExportBucketId,
+		FrequencyType:  export.FrequencyType,
+	}
+}
+
+func flattenPolicies2(policies *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy) []ApiPolicyView {
+	snapPolicies := make([]ApiPolicyView, 0)
+	for _, policy := range *policies {
+		snapPolicy := ApiPolicyView{
+			ID:          policy.Id,
+			PolicyItems: flattenPolicyItems2(policy.PolicyItems),
+		}
+		snapPolicies = append(snapPolicies, snapPolicy)
+	}
+	return snapPolicies
+}
+
+func flattenPolicyItems2(policyItems []admin.DiskBackupApiPolicyItem) []ApiPolicyItemView {
+	cloudPolicyItems := make([]ApiPolicyItemView, 0)
+	for _, policyItem := range policyItems {
+		snapPolicy := ApiPolicyItemView{
+			ID:                policyItem.Id,
+			FrequencyInterval: &policyItem.FrequencyInterval,
+			FrequencyType:     &policyItem.FrequencyType,
+			RetentionUnit:     &policyItem.RetentionUnit,
+			RetentionValue:    &policyItem.RetentionValue,
+		}
+		cloudPolicyItems = append(cloudPolicyItems, snapPolicy)
+	}
+	return cloudPolicyItems
+}
+
+func flattenLinks2(linksResult *[]admin.Link) []Link {
+	links := make([]Link, 0)
+	for _, link := range *linksResult {
+		var lin Link
+		lin.Href = link.Href
+		lin.Rel = link.Rel
+		links = append(links, lin)
+	}
+	return links
+}
+
+func flattenCopySettings2(copySettings *[]admin.DiskBackupCopySetting) []ApiAtlasDiskBackupCopySettingView {
+	cloudCopySettings := make([]ApiAtlasDiskBackupCopySettingView, 0)
+	for _, copySetting := range *copySettings {
+		cloudCopySettings = append(cloudCopySettings, ApiAtlasDiskBackupCopySettingView{
+			CloudProvider:     copySetting.CloudProvider,
+			RegionName:        copySetting.RegionName,
+			ReplicationSpecId: copySetting.ReplicationSpecId,
+			ShouldCopyOplogs:  copySetting.ShouldCopyOplogs,
+			Frequencies:       copySetting.Frequencies,
+		})
+	}
+	return cloudCopySettings
 }

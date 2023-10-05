@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -26,9 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.ClusterName}
@@ -64,11 +61,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if !isPolicySchedulePresent(backupPolicy) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	if pe := validateExist(backupPolicy); pe != nil {
+		return *pe, nil
 	}
 
 	return handler.ProgressEvent{
@@ -96,7 +90,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return cloudBackupScheduleCreateOrUpdate(req, prevModel, currentModel)
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -104,24 +97,25 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	projectID := currentModel.ProjectId
-	clusterName := currentModel.ClusterName
-	// Check if cloud backup policy already exist
-	if !isPolicyItemsExists(currentModel, client) {
-		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+	backupPolicy, resp, err := client.AtlasV2.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	_, resp, err := client.CloudProviderSnapshotBackupPolicies.Delete(context.Background(), *projectID, *clusterName)
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting cloud backup schedule : %s", err.Error()),
-			resp.Response), nil
+	if pe := validateExist(backupPolicy); pe != nil {
+		return *pe, nil
 	}
-	// Response
+
+	_, resp, err = client.AtlasV2.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
@@ -202,30 +196,14 @@ func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err e
 	return handler.ProgressEvent{}, nil
 }
 
-func castNO64(i *int64) *int {
-	x := cast.ToInt(&i)
-	return &x
-}
-func cast64(i *int) *int64 {
-	x := cast.ToInt64(&i)
-	return &x
-}
-
-func isPolicySchedulePresent(policy *admin.DiskBackupSnapshotSchedule) bool {
-	return (policy.Policies != nil || len(policy.Policies) > 0) && len(policy.Policies[0].PolicyItems) > 0
-}
-
-// function to check if cloud backup policy already exist.
-func isPolicyItemsExists(currentModel *Model, client *mongodbatlas.Client) bool {
-	var isExists bool
-	backupPolicy, _, err := client.CloudProviderSnapshotBackupPolicies.Get(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName)
-	if err != nil {
-		return isExists
+func validateExist(policy *admin.DiskBackupSnapshotSchedule) *handler.ProgressEvent {
+	if policy.Policies != nil && len(policy.Policies) > 0 && len(policy.Policies[0].PolicyItems) > 0 {
+		return nil
 	}
-	if (backupPolicy.Policies != nil || len(backupPolicy.Policies) > 0) && len(backupPolicy.Policies[0].PolicyItems) > 0 {
-		isExists = true
-	}
-	return isExists
+	return &handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          "Not Found",
+		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
 }
 
 func (m *Model) getParams() *admin.DiskBackupSnapshotSchedule {

@@ -184,22 +184,20 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerID := *currentModel.Id
 	peerRequest := admin.BaseNetworkPeeringConnectionSettings{}
 
-	region := currentModel.AccepterRegionName
-	if region != nil {
+	if region := currentModel.AccepterRegionName; region != nil {
 		peerRequest.AccepterRegionName = region
 	}
-	accountID := currentModel.AwsAccountId
-	if accountID != nil {
+
+	if accountID := currentModel.AwsAccountId; accountID != nil {
 		peerRequest.AwsAccountId = accountID
 	}
 
 	peerRequest.ProviderName = admin.PtrString(constants.AWS)
-	rtTableBlock := currentModel.RouteTableCIDRBlock
-	if rtTableBlock != nil {
+	if rtTableBlock := currentModel.RouteTableCIDRBlock; rtTableBlock != nil {
 		peerRequest.RouteTableCidrBlock = rtTableBlock
 	}
-	vpcID := currentModel.VpcId
-	if vpcID != nil {
+
+	if vpcID := currentModel.VpcId; vpcID != nil {
 		peerRequest.VpcId = vpcID
 	}
 
@@ -210,7 +208,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.Id = peerResponse.Id
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Complete",

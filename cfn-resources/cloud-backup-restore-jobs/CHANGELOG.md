@@ -4,8 +4,8 @@
 
 **(BREAKING CHANGE) ADDED SUPPORT TO SERVERLESS INSTANCE**
 
-originally the resource was partially supporting serverless instance, it required some changes on the schema to fully support the 
-creation of restore jobs for serverless instance:
+Originally, the resource partially supported serverless instances, but it required some schema changes to fully support
+the creation of restore jobs for serverless instances.
 
 - Deprecated fields:
     - ClusterName
@@ -47,7 +47,7 @@ Profile: !Ref 'Profile'
 
 We have introduced the capability to have a CloudFormation resource wait until the job is completed before returning a success status.
 
-he next options had been added to back up restore job:
+The following options have been added to the backup restore job:
 
 ``` json
 "EnableSynchronousCreation" : "true",
@@ -60,16 +60,16 @@ he next options had been added to back up restore job:
 
 - EnableSynchronousCreation: if set to TRUE, the resource will wait until the job is finished
 - SynchronousCreationOptions:
-  - TimeOutInSeconds: time in seconds until the resource stops witing and runturns success or fail depending on the ReturnSuccessIfTimeOut
-  - CallbackDelaySeconds: time to wait until the resource checks again if the job is finished
-  - ReturnSuccessIfTimeOut: if set to true, the process will return success, in the event of a timeOut
+  - TimeOutInSeconds: Time in seconds until the resource stops waiting and returns success or fails, depending on ReturnSuccessIfTimeOut.
+  - CallbackDelaySeconds: Time to wait until the resource checks again if the job is finished.
+  - ReturnSuccessIfTimeOut: If set to true, the resource will return success in the event of a timeOut.
 
 **FIXED READ AND DELETE VALIDATION FOR ALREADY EXISTS ERRORS**
 
-Cloud Formation requires any third party resource to fail with a "NotFound" error in case the user tries to read it after being deleted
+CloudFormation requires any third-party resource to fail with a "NotFound" error in case the user tries to read it after being deleted.
 
-in order to complay to this behaviour, we introduce the next behavriour on the resource:
+In order to comply with this behavior, we introduce the following behavior on the resource:
 
-- **If the job is marked as Cencelled:** it will faild with a Not Found error, both in the READ and DELETE flows
-- **if the Job is marked as Finished, Expired or Failed:** the READ will be excecuted (not returning error),
-and the DELETE flow will return success being this final states
+- **If the job is marked as Cancelled:** It will fail with a Not Found error, both in the READ and DELETE flows.
+- **if the Job is marked as Finished, Expired or Failed:** The READ will be executed (not returning an error), 
+and the DELETE flow will return success, being these final states.

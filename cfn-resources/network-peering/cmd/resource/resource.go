@@ -16,6 +16,7 @@ package resource
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -291,7 +292,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	state, _, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
+	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
 		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
 	}
@@ -313,7 +314,7 @@ func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) ha
 }
 
 func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-	state, errorMessage, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
+	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
 		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
 	}
@@ -327,7 +328,7 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 	}
 
 	if state == StatusFailed {
-		return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInternalFailure)
+		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInternalFailure)
 	}
 
 	return progressevent.GetInProgressProgressEvent("Creating",
@@ -340,18 +341,18 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 	)
 }
 
-func getStatus(client *util.MongoDBClient, projectID, peerID string) (statusName string, errorStatusName string, err error) {
+func getStatus(client *util.MongoDBClient, projectID, peerID string) (statusName string, err error) {
 	peerResponse, _, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
-			return StatusDeleted, "", nil
+			return StatusDeleted, nil
 		}
 
-		return "", "", err
+		return "", err
 	}
 
 	if util.IsStringPresent(peerResponse.ErrorStateName) {
-		errorStatusName = *peerResponse.ErrorStateName
+		err = errors.New(*peerResponse.ErrorStateName)
 	}
 
 	if util.IsStringPresent(peerResponse.StatusName) {

@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -447,4 +448,22 @@ func SetDefaultProfileIfNotDefined(p **string) {
 	if p != nil && !IsStringPresent(*p) {
 		*p = aws.String(profile.DefaultProfile)
 	}
+}
+
+func StrPtrToIntPtr(str *string) *int {
+	if !IsStringPresent(str) {
+		return nil
+	}
+	if val, err := strconv.Atoi(*str); err == nil {
+		return &val
+	}
+	return nil
+}
+
+func IntPtrToStrPtr(i *int) *string {
+	if i == nil {
+		return nil
+	}
+	str := strconv.Itoa(*i)
+	return &str
 }

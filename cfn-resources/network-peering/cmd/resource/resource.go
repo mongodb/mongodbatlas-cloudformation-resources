@@ -107,7 +107,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.CreatePeeringConnection(context.Background(), projectID, &peerRequest).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			resp), nil
 	}
 
@@ -140,7 +140,7 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 
 	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			resp), nil
 	}
 
@@ -206,8 +206,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerRequest.ContainerId = *currentModel.ContainerId
 	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringConnection(context.Background(), projectID, peerID, &peerRequest).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error updating resource : %s", err.Error()),
-			resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	currentModel.Id = peerResponse.Id
@@ -240,7 +239,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	peerID := *currentModel.Id
 	_, resp, err := client.AtlasV2.NetworkPeeringApi.DeletePeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(err.Error(),
 			resp), nil
 	}
 
@@ -269,8 +268,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	projectID := *currentModel.ProjectId
 	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.ListPeeringConnections(context.Background(), projectID).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	models := make([]interface{}, 0)

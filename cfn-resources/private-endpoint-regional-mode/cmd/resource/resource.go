@@ -23,7 +23,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20230201008/admin"
@@ -43,7 +42,6 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}
 
@@ -88,7 +86,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "READ Complete",
-		ResourceModel:   regionalPrivateEndpointToModel(*currentModel),
+		ResourceModel:   newResponseModel(*currentModel),
 	}, nil
 }
 
@@ -149,23 +147,20 @@ func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *util
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
-		ResourceModel:   regionalPrivateEndpointToModel(*currentModel),
+		ResourceModel:   newResponseModel(*currentModel),
 	}, nil
 }
 
 func isRegModeSettingExists(currentModel *Model, client *util.MongoDBClient) bool {
-	var isExists bool
 	regModeSetting, _, err := client.AtlasV2.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		return isExists
+		return false
 	}
-	if regModeSetting.Enabled {
-		isExists = true
-	}
-	return isExists
+
+	return regModeSetting.Enabled
 }
 
-func regionalPrivateEndpointToModel(currentModel Model) *Model {
+func newResponseModel(currentModel Model) *Model {
 	out := &Model{
 		ProjectId: currentModel.ProjectId,
 		Profile:   currentModel.Profile,

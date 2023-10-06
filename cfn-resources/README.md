@@ -63,7 +63,7 @@ Legend
 * python
 * go
 * bash
-* [mongocli](https://github.com/mongodb/mongocli) (you don't *need* this but you want it)
+* [atlascli](https://github.com/mongodb/mongodb-atlas-cli) (you don't *need* this but will make testing easier)
 
 ### How we handle ApiKeys
 

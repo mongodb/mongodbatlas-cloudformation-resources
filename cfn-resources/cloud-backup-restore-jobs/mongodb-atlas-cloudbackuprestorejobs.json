@@ -1,183 +1,196 @@
 {
-    "typeName": "MongoDB::Atlas::CloudBackUpRestoreJobs",
-    "description": "Returns, starts, and cancels Cloud Backup restore jobs.",
-    "definitions": {
-        "SynchronousCreationOptions": {
-            "type": "object",
-            "description": "Options that needs to be set to control the synchronous creation flow, this options need to be set if EnableSynchronousCreation is se to TRUE",
-            "properties": {
-                "TimeOutInSeconds": {
-                    "type": "integer",
-                    "description": "The amount of time the process will wait until exiting with a success, default (1200 seconds)"
-                },
-                "CallbackDelaySeconds": {
-                    "type": "integer",
-                    "description": "Represents the time interval, measured in seconds, for the synchronous process to wait before checking again to verify if the job has been completed. example: if set to 20, it will chek every 20 seconds if the resource is completed, default (30 seconds)"
-                },
-                "ReturnSuccessIfTimeOut": {
-                    "type": "boolean",
-                    "description": "if set to true, the process will return success, in the event of a timeOut default false"
-                }
-            },
-            "additionalProperties": false
+  "typeName": "MongoDB::Atlas::CloudBackUpRestoreJobs",
+  "description": "Returns, starts, and cancels Cloud Backup restore jobs.",
+  "definitions": {
+    "SynchronousCreationOptions": {
+      "type": "object",
+      "description": "Options that needs to be set to control the synchronous creation flow, this options need to be set if EnableSynchronousCreation is se to TRUE",
+      "properties": {
+        "TimeOutInSeconds": {
+          "type": "integer",
+          "description": "The amount of time the process will wait until exiting with a success, default (1200 seconds)"
+        },
+        "CallbackDelaySeconds": {
+          "type": "integer",
+          "description": "Represents the time interval, measured in seconds, for the synchronous process to wait before checking again to verify if the job has been completed. example: if set to 20, it will chek every 20 seconds if the resource is completed, default (30 seconds)"
+        },
+        "ReturnSuccessIfTimeOut": {
+          "type": "boolean",
+          "description": "if set to true, the process will return success, in the event of a timeOut, default false"
         }
-    },
-    "properties": {
-        "ProjectId": {
-            "description": "The unique identifier of the project for the Atlas cluster.",
-            "type": "string"
-        },
-        "ClusterName": {
-            "description": "The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
-            "type": "string"
-        },
-        "InstanceName": {
-            "description": "The instance name of the Serverless cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
-            "type": "string"
-        },
-        "Id": {
-            "description": " The unique identifier of the restore job.",
-            "type": "string"
-        },
-        "DeliveryType": {
-            "description": "Type of restore job to create.The value can be any one of download,automated or point_in_time ",
-            "type": "string",
-            "enum": ["download", "automated", "pointInTime"]
-        },
-        "DeliveryUrl": {
-            "description": "One or more URLs for the compressed snapshot files for manual download. Only visible if deliveryType is download.",
-            "insertionOrder": false,
-            "items": {
-                "type" : "string"
-            },
-            "type": "array"
-        },
-        "Cancelled": {
-            "description": "Indicates whether the restore job was canceled.",
-            "type": "boolean"
-        },
-        "CreatedAt": {
-            "description": "UTC ISO 8601 formatted point in time when Atlas created the restore job.",
-            "type": "string"
-        },
-        "Expired": {
-            "description": "Indicates whether the restore job expired.",
-            "type": "boolean"
-        },
-        "ExpiresAt": {
-            "description": "UTC ISO 8601 formatted point in time when the restore job expires.",
-            "type": "string"
-        },
-        "FinishedAt": {
-            "description": "UTC ISO 8601 formatted point in time when the restore job completed.",
-            "type": "string"
-        },
-        "Timestamp": {
-            "description": "Timestamp in ISO 8601 date and time format in UTC when the snapshot associated to snapshotId was taken.",
-            "type": "string"
-        },
-        "SnapshotId": {
-            "description": "Unique identifier of the source snapshot ID of the restore job.",
-            "type": "string"
-        },
-        "Links": {
-            "description": "One or more links to sub-resources and/or related resources.",
-            "type": "array",
-            "insertionOrder": false,
-            "items": {
-                "type" : "object",
-                "properties": {
-                    "Rel": {
-                        "type": "string"
-                    },
-                    "Href": {
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false
-            }
-        },
-        "OpLogTs": {
-            "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoch from which to you want to restore this snapshot. This is the first part of an Oplog timestamp.",
-            "type": "string"
-        },
-        "OpLogInc": {
-            "description": "Oplog operation number from which to you want to restore this snapshot. This is the second part of an Oplog timestamp.",
-            "type": "string"
-        },
-        "PointInTimeUtcSeconds": {
-            "description": "If you performed a Point-in-Time restores at a time specified by a Unix time in seconds since epoch, pointInTimeUTCSeconds indicates the Unix time used.",
-            "type": "integer"
-        },
-        "TargetProjectId": {
-            "description": "Name of the target Atlas project of the restore job. Only visible if deliveryType is automated.",
-            "type": "string"
-        },
-        "TargetClusterName": {
-            "description": "Name of the target Atlas cluster to which the restore job restores the snapshot. Only visible if deliveryType is automated.",
-            "type": "string"
-        },
-        "Profile": {
-            "type": "string",
-            "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
-            "default": "default"
-        },
-        "EnableSynchronousCreation": {
-            "description": "If set to true, the CloudFormation resource will wait until the job is completed, WARNING: if the snapshot has a big load of data, the cloud formation resource might take a long time to finish leading to high costs",
-            "type": "boolean"
-        },
-        "SynchronousCreationOptions" : {
-            "description": "Options that needs to be set to control the synchronous creation flow, this options need to be set if EnableSynchronousCreation is se to TRUE",
-            "$ref": "#/definitions/SynchronousCreationOptions"
-        }
-    },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId",
-        "ClusterName"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/ClusterName",
-        "/properties/Profile"
-    ],
-    "readOnlyProperties": [
-        "/properties/Id",
-        "/properties/DeliveryUrl",
-        "/properties/Cancelled",
-        "/properties/CreatedAt",
-        "/properties/Expired",
-        "/properties/ExpiresAt",
-        "/properties/FinishedAt",
-        "/properties/Timestamp",
-        "/properties/Links"
-    ],
-    "primaryIdentifier": [
-        "/properties/ProjectId",
-        "/properties/ClusterName",
-        "/properties/Id",
-        "/properties/Profile"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        }
+      },
+      "additionalProperties": false
     }
+  },
+  "properties": {
+    "ProjectId": {
+      "description": "The unique identifier of the project for the Atlas cluster.",
+      "type": "string"
+    },
+    "InstanceType": {
+      "description": "Type of instance specified on the Instance Name serverless or cluster",
+      "type": "string",
+      "enum": ["serverless", "cluster"]
+    },
+    "InstanceName": {
+      "description": "The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
+      "type": "string"
+    },
+    "Id": {
+      "description": " The unique identifier of the restore job.",
+      "type": "string"
+    },
+    "DeliveryType": {
+      "description": "Type of restore job to create.The value can be any one of download,automated or point_in_time ",
+      "type": "string",
+      "enum": [
+        "download",
+        "automated",
+        "pointInTime"
+      ]
+    },
+    "DeliveryUrl": {
+      "description": "One or more URLs for the compressed snapshot files for manual download. Only visible if deliveryType is download.",
+      "insertionOrder": false,
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "Cancelled": {
+      "description": "Indicates whether the restore job was canceled.",
+      "type": "boolean"
+    },
+    "CreatedAt": {
+      "description": "UTC ISO 8601 formatted point in time when Atlas created the restore job.",
+      "type": "string"
+    },
+    "Expired": {
+      "description": "Indicates whether the restore job expired.",
+      "type": "boolean"
+    },
+    "ExpiresAt": {
+      "description": "UTC ISO 8601 formatted point in time when the restore job expires.",
+      "type": "string"
+    },
+    "FinishedAt": {
+      "description": "UTC ISO 8601 formatted point in time when the restore job completed.",
+      "type": "string"
+    },
+    "Timestamp": {
+      "description": "Timestamp in ISO 8601 date and time format in UTC when the snapshot associated to snapshotId was taken.",
+      "type": "string"
+    },
+    "SnapshotId": {
+      "description": "Unique identifier of the source snapshot ID of the restore job.",
+      "type": "string"
+    },
+    "Links": {
+      "description": "One or more links to sub-resources and/or related resources.",
+      "type": "array",
+      "insertionOrder": false,
+      "items": {
+        "type": "object",
+        "properties": {
+          "Rel": {
+            "type": "string"
+          },
+          "Href": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "OpLogTs": {
+      "description": "Timestamp in the number of seconds that have elapsed since the UNIX epoch from which to you want to restore this snapshot. This is the first part of an Oplog timestamp.",
+      "type": "string"
+    },
+    "OpLogInc": {
+      "description": "Oplog operation number from which to you want to restore this snapshot. This is the second part of an Oplog timestamp.",
+      "type": "string"
+    },
+    "PointInTimeUtcSeconds": {
+      "description": "If you performed a Point-in-Time restores at a time specified by a Unix time in seconds since epoch, pointInTimeUTCSeconds indicates the Unix time used.",
+      "type": "integer"
+    },
+    "TargetProjectId": {
+      "description": "Name of the target Atlas project of the restore job. Only visible if deliveryType is automated.",
+      "type": "string"
+    },
+    "TargetClusterName": {
+      "description": "Name of the target Atlas cluster to which the restore job restores the snapshot. Only visible if deliveryType is automated.",
+      "type": "string"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
+    "EnableSynchronousCreation": {
+      "description": "If set to true, the CloudFormation resource will wait until the job is completed, WARNING: if the snapshot has a big load of data, the cloud formation resource might take a long time to finish leading to high costs",
+      "type": "boolean"
+    },
+    "SynchronousCreationOptions": {
+      "description": "Options that needs to be set to control the synchronous creation flow, this options need to be set if EnableSynchronousCreation is se to TRUE",
+      "$ref": "#/definitions/SynchronousCreationOptions"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "ClusterName"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Profile",
+    "/properties/InstanceType",
+    "/properties/InstanceName"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/DeliveryUrl",
+    "/properties/Cancelled",
+    "/properties/CreatedAt",
+    "/properties/Expired",
+    "/properties/ExpiresAt",
+    "/properties/FinishedAt",
+    "/properties/Timestamp",
+    "/properties/Links"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/InstanceType",
+    "/properties/InstanceName",
+    "/properties/Id",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cloud-backup-restore-jobs/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/cloud-backup-restore-jobs"
 }

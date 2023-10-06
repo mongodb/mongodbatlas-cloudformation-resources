@@ -31,7 +31,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Description, constants.AwsSecretName}

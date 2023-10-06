@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::CustomDnsConfigurationClusterAws",
   "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/custom-dns-configuration-cluster-aws",
   "properties": {
     "Enabled": {
       "description": "Flag that indicates whether the project's clusters deployed to Amazon Web Services (AWS) use a custom Domain Name System (DNS)",
@@ -47,5 +47,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/custom-dns-configuration-cluster-aws/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

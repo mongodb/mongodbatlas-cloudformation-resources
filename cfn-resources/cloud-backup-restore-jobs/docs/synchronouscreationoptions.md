@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### TimeOutInSeconds
 
-The amount of time the process will wait until exiting with a success, default ()
+The amount of time the process will wait until exiting with a success, default (1200 seconds)
 
 _Required_: No
 
@@ -38,7 +38,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### CallbackDelaySeconds
 
-Represents the time interval, measured in seconds, for the synchronous process to wait before checking again to verify if the job has been completed. example: if set to 20, it will chek every 20 seconds if the resource is completed
+Represents the time interval, measured in seconds, for the synchronous process to wait before checking again to verify if the job has been completed. example: if set to 20, it will chek every 20 seconds if the resource is completed, default (30 seconds)
 
 _Required_: No
 
@@ -48,7 +48,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### ReturnSuccessIfTimeOut
 
-if set to true, the process will return success, in the event of a timeOut
+if set to true, the process will return success, in the event of a timeOut, default false
 
 _Required_: No
 

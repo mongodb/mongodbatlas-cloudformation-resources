@@ -32,15 +32,17 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType}
-var ReadDeleteRequiredFields = []string{constants.ID}
-var ListRequiredFields = []string{constants.ProjectID}
+var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType, constants.InstanceType, constants.InstanceName}
+var ReadDeleteRequiredFields = []string{constants.ID, constants.InstanceType, constants.InstanceName}
+var ListRequiredFields = []string{constants.ProjectID, constants.InstanceType, constants.InstanceName}
 
 const (
 	defaultBackSeconds            = 30
 	defaultTimeOutInSeconds       = 1200
 	defaultReturnSuccessIfTimeOut = false
 	timeLayout                    = "2006-01-02 15:04:05"
+	clusterInstanceType           = "cluster"
+	serverlessInstanceType        = "serverless"
 )
 
 // Create handles the Create event from the Cloudformation service.
@@ -77,9 +79,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	targetClusterName := cast.ToString(currentModel.TargetClusterName)
 	targetProjectID := cast.ToString(currentModel.TargetProjectId)
 	deliveryType := cast.ToString(currentModel.DeliveryType)
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
 	snapshotID := cast.ToString(currentModel.SnapshotId)
+
+	clusterName := ""
+	instanceName := ""
+
+	if *currentModel.InstanceType == clusterInstanceType {
+		clusterName = cast.ToString(currentModel.InstanceName)
+	} else {
+		instanceName = cast.ToString(currentModel.InstanceName)
+	}
 
 	// check target cluster and project set for automated download
 	if deliveryType == constants.Automated {
@@ -99,13 +108,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	if clusterName == "" && instanceName == "" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Error - creating cloud backup  snapshot restore job: cluster name or instance name must be set ",
-			ResourceModel:   currentModel,
-		}, nil
-	}
 	// Create Atlas API Request Object
 	snapshotReq := &mongodbatlas.CloudProviderSnapshotRestoreJob{
 		SnapshotID:            snapshotID,
@@ -117,7 +119,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		PointInTimeUTCSeconds: cast.ToInt64(currentModel.PointInTimeUtcSeconds),
 	}
 
-	if clusterName != "" {
+	if *currentModel.InstanceType == clusterInstanceType {
 		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
 			GroupID:     cast.ToString(currentModel.ProjectId),
 			SnapshotID:  snapshotID,
@@ -177,8 +179,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
+	clusterName := ""
+	instanceName := ""
+
+	if *currentModel.InstanceType == clusterInstanceType {
+		clusterName = cast.ToString(currentModel.InstanceName)
+	} else {
+		instanceName = cast.ToString(currentModel.InstanceName)
+	}
 
 	if clusterName == "" && instanceName == "" {
 		return handler.ProgressEvent{
@@ -259,29 +267,27 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	jobID := *currentModel.Id
-	clusterName := cast.ToString(currentModel.ClusterName)
-	if clusterName != "" {
-		// Check if delivery type is automated
-		if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Failed,
-				Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
-				ResourceModel:   currentModel,
-			}, nil
-		}
 
-		// Create API Request Object
-		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
-			GroupID:     projectID,
-			ClusterName: cast.ToString(currentModel.ClusterName),
-			JobID:       jobID,
-		}
+	// Check if delivery type is automated
+	if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Failed,
+			Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
+			ResourceModel:   currentModel,
+		}, nil
+	}
 
-		// API call to delete
-		_, err := client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
-		if err != nil {
-			return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
-		}
+	// Create API Request Object
+	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
+		GroupID:     projectID,
+		ClusterName: cast.ToString(currentModel.InstanceName),
+		JobID:       jobID,
+	}
+
+	// API call to delete
+	_, err := client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
+	if err != nil {
+		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
 	}
 
 	return handler.ProgressEvent{
@@ -314,20 +320,19 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var restoreJobs *mongodbatlas.CloudProviderSnapshotRestoreJobs
 	var resp *mongodbatlas.Response
 
-	clusterName := cast.ToString(currentModel.ClusterName)
-	instanceName := cast.ToString(currentModel.InstanceName)
+	clusterName := ""
+	instanceName := ""
+
+	if *currentModel.InstanceType == clusterInstanceType {
+		clusterName = cast.ToString(currentModel.InstanceName)
+	} else {
+		instanceName = cast.ToString(currentModel.InstanceName)
+	}
+
 	projectID := cast.ToString(currentModel.ProjectId)
 	params := &mongodbatlas.ListOptions{
 		PageNum:      0,
 		ItemsPerPage: 100,
-	}
-
-	if clusterName == "" && instanceName == "" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Error - creating cloud backup  snapshot restore job: cluster name or instance name must be set ",
-			ResourceModel:   currentModel,
-		}, nil
 	}
 
 	if clusterName != "" {
@@ -351,7 +356,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for ind := range restoreJobsList {
 		var model Model
 		model.ProjectId = currentModel.ProjectId
-		model.ClusterName = currentModel.ClusterName
+		model.InstanceName = currentModel.InstanceName
+		model.InstanceType = currentModel.InstanceType
 		model.Profile = currentModel.Profile
 		if !restoreJobsList[ind].Cancelled && !restoreJobsList[ind].Expired {
 			models = append(models, *convertToUIModel(restoreJobsList[ind], &model))
@@ -446,7 +452,7 @@ func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
 }
 
 func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbatlas.CloudProviderSnapshotRestoreJob, *handler.ProgressEvent) {
-	if currentModel.isServerlessJob() {
+	if *currentModel.InstanceType == serverlessInstanceType {
 		/*projectID, instanceName, jobID*/
 		restoreJobs, resp, err := client.CloudProviderSnapshotRestoreJobs.GetForServerlessBackupRestore(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
 		if err != nil {
@@ -457,9 +463,14 @@ func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbat
 	}
 
 	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID:     *currentModel.ProjectId,
-		ClusterName: *currentModel.ClusterName,
-		JobID:       *currentModel.Id,
+		GroupID: *currentModel.ProjectId,
+		JobID:   *currentModel.Id,
+	}
+
+	if *currentModel.InstanceType == clusterInstanceType {
+		snapshotRequest.ClusterName = *currentModel.InstanceName
+	} else {
+		snapshotRequest.InstanceName = *currentModel.InstanceName
 	}
 
 	restoreJobs, resp, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), snapshotRequest)
@@ -468,10 +479,6 @@ func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbat
 		return nil, &pe
 	}
 	return restoreJobs, nil
-}
-
-func (model *Model) isServerlessJob() bool {
-	return model.ClusterName == nil || *model.ClusterName == ""
 }
 
 func isJobFinished(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {

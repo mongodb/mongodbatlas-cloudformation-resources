@@ -7,10 +7,15 @@
       "Description": "Atlas Project ID",
       "ConstraintDescription": ""
     },
-    "ClusterName": {
+    "InstanceName": {
       "Type": "String",
       "Description": "Atlas Cluster Name where to get the snapshot",
       "ConstraintDescription": ""
+    },
+    "InstanceType" : {
+      "Type" : "String",
+      "Default" : "cluster",
+      "AllowedValues" : ["cluster", "serverless"]
     },
     "Profile": {
       "Type": "String",
@@ -39,8 +44,8 @@
         "ProjectId": {
           "Ref": "ProjectId"
         },
-        "ClusterName": {
-          "Ref": "ClusterName"
+        "InstanceName": {
+          "Ref": "InstanceType"
         },
         "Profile": {
           "Ref": "Profile"
@@ -55,8 +60,11 @@
         "ProjectId": {
           "Ref": "ProjectId"
         },
-        "ClusterName": {
-          "Ref": "ClusterName"
+        "InstanceName": {
+          "Ref": "InstanceName"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
         },
         "Profile": {
           "Ref": "Profile"

@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -24,10 +23,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20230201008/admin"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}
@@ -69,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	currentModel.ArchiveId = outputRequest.Id
 	currentModel.Criteria.ExpireAfterDays = outputRequest.Criteria.ExpireAfterDays
@@ -106,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	olArchive, resp, err := client.AtlasV2.OnlineArchiveApi.GetOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	currentModel.ArchiveId = olArchive.Id
 	currentModel.State = olArchive.State
@@ -142,11 +141,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	ctx := context.Background()
 	if ArchiveDeleted(ctx, client, currentModel) {
-		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
+		return progressevent.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 	outputRequest, resp, err := client.AtlasV2.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	currentModel.ArchiveId = outputRequest.Id
@@ -179,12 +178,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if ArchiveDeleted(ctx, client, currentModel) {
-		return progress_events.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
+		return progressevent.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 
 	_, resp, err := client.AtlasV2.OnlineArchiveApi.DeleteOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{
@@ -216,20 +215,21 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ItemsPerPage: currentModel.ItemsPerPage,
 		PageNum:      currentModel.PageNum,
 	}
-	archives, resp, err := client.AtlasV2.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
+	archivesResponse, resp, err := client.AtlasV2.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	resources := make([]any, 0, len(archives.Results))
-	for _, v := range archives.Results {
+	resources := make([]any, 0, len(archivesResponse.Results))
+	archives := archivesResponse.Results
+	for i := range archives {
 		model := Model{
-			ArchiveId: v.Id,
+			ArchiveId: archives[i].Id,
 			ProjectId: currentModel.ProjectId,
-			State:     v.State,
+			State:     archives[i].State,
 		}
-		if archives.TotalCount != nil {
-			model.TotalCount = aws.Float64(float64(*archives.TotalCount))
+		if archivesResponse.TotalCount != nil {
+			model.TotalCount = aws.Float64(float64(*archivesResponse.TotalCount))
 		}
 		resources = append(resources, model)
 	}

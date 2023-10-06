@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20230201008/admin"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 func setup() {
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	_, _, err := client.AtlasV2.GlobalClustersApi.CreateCustomZoneMapping(context.Background(), projectID, clusterName, newGeoSharding(currentModel)).Execute()
+	_, _, err := client.AtlasV2.GlobalClustersApi.CreateCustomZoneMapping(context.Background(), projectID, clusterName, newCustomZoneMappings(currentModel)).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -243,9 +243,9 @@ func removeManagedNamespaces(ctx context.Context, conn *util.MongoDBClient, remo
 	}
 }
 
-func newGeoSharding(currentModel *Model) *admin.GeoSharding {
-	return &admin.GeoSharding{
-		CustomZoneMapping: modelToCustomZoneMappings(currentModel.CustomZoneMappings),
+func newCustomZoneMappings(currentModel *Model) *admin.CustomZoneMappings {
+	return &admin.CustomZoneMappings{
+		CustomZoneMappings: modelToCustomZoneMappings(currentModel.CustomZoneMappings),
 	}
 
 }
@@ -268,14 +268,18 @@ func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, na
 	return nil
 }
 
-func modelToCustomZoneMappings(tfList []ZoneMapping) *map[string]string {
-	apiObjects := make(map[string]string, len(tfList))
-	for _, tfMapRaw := range tfList {
+func modelToCustomZoneMappings(tfList []ZoneMapping) []admin.ZoneMapping {
+	apiObjects := make([]admin.ZoneMapping, len(tfList))
+	for i, tfMapRaw := range tfList {
 		if !util.IsStringPresent(tfMapRaw.Location) || !util.IsStringPresent(tfMapRaw.Zone) {
 			continue
 		}
 
-		apiObjects[*tfMapRaw.Location] = *tfMapRaw.Zone
+		apiObjects[i] = admin.ZoneMapping{
+			Location: *tfMapRaw.Location,
+			Zone:     *tfMapRaw.Zone,
+		}
 	}
-	return &apiObjects
+
+	return apiObjects
 }

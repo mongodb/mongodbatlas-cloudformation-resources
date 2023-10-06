@@ -486,13 +486,6 @@ func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbat
 	return restoreJobs, nil
 }
 
-func isJobFinished_old(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
-	failed := job.Failed != nil && *job.Failed
-	finished := job.FinishedAt != ""
-
-	return failed || job.Cancelled || job.Expired || finished
-}
-
 func isJobFinished(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
 	return job.FinishedAt != ""
 }

@@ -19,18 +19,14 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-
-	userprofile "github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.EndpointID}
@@ -59,12 +55,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -73,22 +65,22 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if pe != nil {
 		return *pe, nil
 	}
+
 	if alreadyExists {
-		return progressevents.GetFailedEventByCode("resource Already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
+		return progressevent.GetFailedEventByCode("resource Already exists", cloudformation.HandlerErrorCodeAlreadyExists), nil
 	}
 
 	ctx := context.Background()
 
-	cm := mongodbatlas.PrivateLinkEndpointDataLake{
-		Provider:   *currentModel.Provider,
-		Type:       *currentModel.Type,
-		EndpointID: *currentModel.EndpointId,
-		Comment:    aws.StringValue(currentModel.Comment),
+	requestBody := admin.PrivateNetworkEndpointIdEntry{
+		Provider:   currentModel.Provider,
+		Type:       currentModel.Type,
+		EndpointId: *currentModel.EndpointId,
+		Comment:    currentModel.Comment,
 	}
-	_, resp, err := client.DataLakes.CreatePrivateLinkEndpoint(ctx, *currentModel.ProjectId, &cm)
+	_, resp, err := client.AtlasV2.DataFederationApi.CreateDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, &requestBody).Execute()
 	if err != nil {
-		_, _ = log.Warnf("error in creating data-lake private link %v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -98,13 +90,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return event, nil
 }
 
-func resourceAlreadyExists(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent) {
-	_, resp, err := client.DataLakes.GetPrivateLinkEndpoint(context.Background(), *currentModel.ProjectId, *currentModel.EndpointId)
+func resourceAlreadyExists(client util.MongoDBClient, currentModel Model) (bool, *handler.ProgressEvent) {
+	_, resp, err := client.AtlasV2.DataFederationApi.GetDataFederationPrivateEndpoint(context.Background(), *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
-		if resp.Response.StatusCode == http.StatusNotFound {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return false, nil
 		}
-		pe := progressevents.GetFailedEventByResponse(err.Error(), resp.Response)
+
+		pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 		return false, &pe
 	}
 
@@ -115,7 +108,7 @@ func resourceAlreadyExists(client mongodbatlas.Client, currentModel Model) (bool
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	if currentModel.EndpointId == nil {
-		return progressevents.GetFailedEventByResponse("required field missing. Resource not found", &http.Response{
+		return progressevent.GetFailedEventByResponse("required field missing. Resource not found", &http.Response{
 			StatusCode: http.StatusNotFound,
 		}), nil
 	}
@@ -124,26 +117,21 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	ctx := context.Background()
-	dlEndpoint, resp, err := client.DataLakes.GetPrivateLinkEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId)
+	dlEndpoint, resp, err := client.AtlasV2.DataFederationApi.GetDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
-		_, _ = log.Warnf("error in getting data-lake private link details %v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.Comment = &dlEndpoint.Comment
-	currentModel.Type = &dlEndpoint.Type
-	currentModel.Provider = &dlEndpoint.Provider
+	currentModel.Comment = dlEndpoint.Comment
+	currentModel.Type = dlEndpoint.Type
+	currentModel.Provider = dlEndpoint.Provider
 	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Private Link ADL",
@@ -165,21 +153,16 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	ctx := context.Background()
-	resp, err := client.DataLakes.DeletePrivateLinkEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId)
+	_, resp, err := client.AtlasV2.DataFederationApi.DeleteDataFederationPrivateEndpoint(ctx, *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
-		_, _ = log.Warnf("error in deleting private endpoint adl %v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -196,31 +179,26 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(userprofile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	ctx := context.Background()
-	list, resp, err := client.DataLakes.ListPrivateLinkEndpoint(ctx, *currentModel.ProjectId)
+	list, resp, err := client.AtlasV2.DataFederationApi.ListDataFederationPrivateEndpoints(ctx, *currentModel.ProjectId).Execute()
 	if err != nil {
-		_, _ = log.Warnf("error in listing private endpoint adl %v", err)
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 	models := make([]any, 0, len(list.Results))
 	for _, v := range list.Results {
 		models = append(models, &Model{
 			ProjectId:  currentModel.ProjectId,
 			Profile:    currentModel.Profile,
-			Comment:    &v.Comment,
-			EndpointId: &v.EndpointID,
-			Provider:   &v.Provider,
-			Type:       &v.Type,
+			Comment:    v.Comment,
+			EndpointId: &v.EndpointId,
+			Provider:   v.Provider,
+			Type:       v.Type,
 		})
 	}
 	event := handler.ProgressEvent{

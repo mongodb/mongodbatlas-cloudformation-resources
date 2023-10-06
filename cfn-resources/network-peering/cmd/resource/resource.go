@@ -16,18 +16,18 @@ package resource
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 )
 
 func setup() {
@@ -80,12 +80,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -99,31 +95,28 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	awsAccountID := currentModel.AwsAccountId
 	if awsAccountID == nil || *awsAccountID == "" {
 		awsAccountID = &req.RequestContext.AccountID
-		_, _ = logger.Debugf("AwsAccountIdwas not set, default to req.RequestContext.AccountID:%v", awsAccountID)
 	}
 
-	peerRequest := mongodbatlas.Peer{
-		ContainerID:         *currentModel.ContainerId,
-		VpcID:               *currentModel.VpcId,
-		AccepterRegionName:  *currentModel.AccepterRegionName,
-		AWSAccountID:        *awsAccountID,
-		RouteTableCIDRBlock: *currentModel.RouteTableCIDRBlock,
-		ProviderName:        constants.AWS,
+	peerRequest := admin.BaseNetworkPeeringConnectionSettings{
+		ContainerId:         *currentModel.ContainerId,
+		VpcId:               currentModel.VpcId,
+		AccepterRegionName:  currentModel.AccepterRegionName,
+		AwsAccountId:        awsAccountID,
+		RouteTableCidrBlock: currentModel.RouteTableCIDRBlock,
+		ProviderName:        admin.PtrString(constants.AWS),
 	}
 
-	peerResponse, resp, err := client.Peers.Create(context.Background(), projectID, &peerRequest)
+	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.CreatePeeringConnection(context.Background(), projectID, &peerRequest).Execute()
 	if err != nil {
-		_, _ = logger.Warnf("error creating network peering: %s", err)
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			resp), nil
 	}
 
-	currentModel.Id = &peerResponse.ID
-
-	return progressevents.GetInProgressProgressEvent("Creating",
+	currentModel.Id = peerResponse.Id
+	return progressevent.GetInProgressProgressEvent("Creating",
 		map[string]interface{}{
 			"stateName": StatusInitiating,
-			"id":        &peerResponse.ID,
+			"id":        &peerResponse.Id,
 		},
 		currentModel,
 		5,
@@ -137,12 +130,8 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -150,23 +139,23 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 	projectID := *currentModel.ProjectId
 	peerID := *currentModel.Id
 
-	peerResponse, resp, err := client.Peers.Get(context.Background(), projectID, peerID)
+	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			resp), nil
 	}
 
-	currentModel.AwsAccountId = &peerResponse.AWSAccountID
-	currentModel.RouteTableCIDRBlock = &peerResponse.RouteTableCIDRBlock
-	currentModel.VpcId = &peerResponse.VpcID
-	currentModel.Id = &peerResponse.ID
-	currentModel.ConnectionId = &peerResponse.ConnectionID
-	currentModel.ErrorStateName = &peerResponse.ErrorStateName
+	currentModel.AwsAccountId = peerResponse.AwsAccountId
+	currentModel.RouteTableCIDRBlock = peerResponse.RouteTableCidrBlock
+	currentModel.VpcId = peerResponse.VpcId
+	currentModel.Id = peerResponse.Id
+	currentModel.ConnectionId = peerResponse.ConnectionId
+	currentModel.ErrorStateName = peerResponse.ErrorStateName
 	if currentModel.ErrorStateName != nil {
-		currentModel.ErrorStateName = &peerResponse.ErrorStateName
+		currentModel.ErrorStateName = peerResponse.ErrorStateName
 	}
 	if currentModel.StatusName != nil {
-		currentModel.StatusName = &peerResponse.StatusName
+		currentModel.StatusName = peerResponse.StatusName
 	}
 
 	return handler.ProgressEvent{
@@ -179,14 +168,8 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	_, _ = logger.Debugf("Update currentModel:%+v", currentModel)
-
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -200,34 +183,32 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	peerID := *currentModel.Id
-	peerRequest := mongodbatlas.Peer{}
+	peerRequest := admin.BaseNetworkPeeringConnectionSettings{}
 
-	region := currentModel.AccepterRegionName
-	if region != nil {
-		peerRequest.AccepterRegionName = *region
-	}
-	accountID := currentModel.AwsAccountId
-	if accountID != nil {
-		peerRequest.AWSAccountID = *accountID
+	if region := currentModel.AccepterRegionName; region != nil {
+		peerRequest.AccepterRegionName = region
 	}
 
-	peerRequest.ProviderName = constants.AWS
-	rtTableBlock := currentModel.RouteTableCIDRBlock
-	if rtTableBlock != nil {
-		peerRequest.RouteTableCIDRBlock = *rtTableBlock
+	if accountID := currentModel.AwsAccountId; accountID != nil {
+		peerRequest.AwsAccountId = accountID
 	}
-	vpcID := currentModel.VpcId
-	if vpcID != nil {
-		peerRequest.VpcID = *vpcID
+
+	peerRequest.ProviderName = admin.PtrString(constants.AWS)
+	if rtTableBlock := currentModel.RouteTableCIDRBlock; rtTableBlock != nil {
+		peerRequest.RouteTableCidrBlock = rtTableBlock
 	}
-	peerResponse, resp, err := client.Peers.Update(context.Background(), projectID, peerID, &peerRequest)
+
+	if vpcID := currentModel.VpcId; vpcID != nil {
+		peerRequest.VpcId = vpcID
+	}
+
+	peerRequest.ContainerId = *currentModel.ContainerId
+	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringConnection(context.Background(), projectID, peerID, &peerRequest).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error updating resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.Id = &peerResponse.ID
-
+	currentModel.Id = peerResponse.Id
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Complete",
@@ -242,12 +223,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -258,13 +235,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	peerID := *currentModel.Id
-	resp, err := client.Peers.Delete(context.Background(), projectID, peerID)
+	_, resp, err := client.AtlasV2.NetworkPeeringApi.DeletePeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(),
+			resp), nil
 	}
 
-	return progressevents.GetInProgressProgressEvent("Deleting",
+	return progressevent.GetInProgressProgressEvent("Deleting",
 		map[string]interface{}{
 			"stateName": StatusDeleted,
 		},
@@ -280,34 +257,30 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	// Create atlas client
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	projectID := *currentModel.ProjectId
-	peerResponse, resp, err := client.Peers.List(context.Background(), projectID, &mongodbatlas.ContainersListOptions{})
+	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.ListPeeringConnections(context.Background(), projectID).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	models := make([]interface{}, 0)
-	for i := range peerResponse {
+	networkPeeringConnections := peerResponse.Results
+	for i := range networkPeeringConnections {
 		var model Model
-		model.AccepterRegionName = &peerResponse[i].AccepterRegionName
-		model.AwsAccountId = &peerResponse[i].AWSAccountID
-		model.RouteTableCIDRBlock = &peerResponse[i].RouteTableCIDRBlock
-		model.VpcId = &peerResponse[i].VpcID
-		model.Id = &peerResponse[i].ID
-		model.ConnectionId = &peerResponse[i].ConnectionID
-		model.ErrorStateName = &peerResponse[i].ErrorStateName
-		model.StatusName = &peerResponse[i].StatusName
+		model.AccepterRegionName = networkPeeringConnections[i].AccepterRegionName
+		model.AwsAccountId = networkPeeringConnections[i].AwsAccountId
+		model.RouteTableCIDRBlock = networkPeeringConnections[i].RouteTableCidrBlock
+		model.VpcId = networkPeeringConnections[i].VpcId
+		model.Id = networkPeeringConnections[i].Id
+		model.ConnectionId = networkPeeringConnections[i].ConnectionId
+		model.ErrorStateName = networkPeeringConnections[i].ErrorStateName
+		model.StatusName = networkPeeringConnections[i].StatusName
 
 		models = append(models, model)
 	}
@@ -318,10 +291,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func validateDeletionProcess(client *mongodbatlas.Client, currentModel *Model) handler.ProgressEvent {
-	state, _, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
+func validateDeletionProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
+	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
 	}
 
 	if state == StatusDeleted {
@@ -331,7 +304,7 @@ func validateDeletionProcess(client *mongodbatlas.Client, currentModel *Model) h
 		}
 	}
 
-	return progressevents.GetInProgressProgressEvent("Deleting",
+	return progressevent.GetInProgressProgressEvent("Deleting",
 		map[string]interface{}{
 			"stateName": state,
 		},
@@ -340,10 +313,10 @@ func validateDeletionProcess(client *mongodbatlas.Client, currentModel *Model) h
 	)
 }
 
-func validateCreationProcess(client *mongodbatlas.Client, currentModel *Model) handler.ProgressEvent {
-	state, errorMessage, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
+func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
+	state, err := getStatus(client, *currentModel.ProjectId, *currentModel.Id)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
+		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
 	}
 
 	if state == StatusPendingAcceptance || state == StatusAvailable {
@@ -355,10 +328,10 @@ func validateCreationProcess(client *mongodbatlas.Client, currentModel *Model) h
 	}
 
 	if state == StatusFailed {
-		return progressevents.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInternalFailure)
+		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInternalFailure)
 	}
 
-	return progressevents.GetInProgressProgressEvent("Creating",
+	return progressevent.GetInProgressProgressEvent("Creating",
 		map[string]interface{}{
 			"stateName": state,
 			"id":        &currentModel.Id,
@@ -368,15 +341,23 @@ func validateCreationProcess(client *mongodbatlas.Client, currentModel *Model) h
 	)
 }
 
-func getStatus(client *mongodbatlas.Client, projectID, peerID string) (statusName string, errorStatusName string, err error) {
-	peerResponse, resp, err := client.Peers.Get(context.Background(), projectID, peerID)
+func getStatus(client *util.MongoDBClient, projectID, peerID string) (statusName string, err error) {
+	peerResponse, _, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			return StatusDeleted, "", nil
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+			return StatusDeleted, nil
 		}
 
-		return "", "", err
+		return "", err
 	}
 
-	return peerResponse.StatusName, peerResponse.ErrorStateName, nil
+	if util.IsStringPresent(peerResponse.ErrorStateName) {
+		err = errors.New(*peerResponse.ErrorStateName)
+	}
+
+	if util.IsStringPresent(peerResponse.StatusName) {
+		statusName = *peerResponse.StatusName
+	}
+
+	return
 }

@@ -49,12 +49,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	if _, ok := req.CallbackContext["status"]; ok {
-		sid := req.CallbackContext["ProjectId"].(string)
-		currentModel.ProjectId = &sid
-		return validateProgress(client, currentModel)
-	}
-
 	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
@@ -199,45 +193,4 @@ func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (
 		}
 	}
 	return currentModel, nil
-}
-
-func validateProgress(client *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
-	projectID := *currentModel.ProjectId
-	isReady, state, err := certificateIsReady(client, projectID)
-	if err != nil {
-		return handler.ProgressEvent{}, err
-	}
-
-	if !isReady {
-		p := handler.NewProgressEvent()
-		p.ResourceModel = currentModel
-		p.OperationStatus = handler.InProgress
-		p.CallbackDelaySeconds = 10
-		p.Message = "Pending"
-		p.CallbackContext = map[string]interface{}{
-			"status":    state,
-			"ProjectId": *currentModel.ProjectId,
-		}
-		return p, nil
-	}
-
-	p := handler.NewProgressEvent()
-	p.ResourceModel = currentModel
-	p.OperationStatus = handler.Success
-	p.Message = "Complete"
-	return p, nil
-}
-
-func certificateIsReady(client *util.MongoDBClient, projectID string) (isExist bool, groupID string, errMsg error) {
-	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), groupID).Execute()
-	if err != nil {
-		if certificate == nil && resp == nil {
-			return false, "", err
-		}
-		if resp != nil && resp.StatusCode == 404 {
-			return true, "deleted", nil
-		}
-		return false, "", err
-	}
-	return resp.StatusCode == constants.Success, "completed", nil
 }

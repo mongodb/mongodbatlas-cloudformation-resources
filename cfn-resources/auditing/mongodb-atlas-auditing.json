@@ -35,13 +35,10 @@
   },
   "additionalProperties": false,
   "readOnlyProperties": [
-    "/properties/AuditFilter",
-    "/properties/ConfigurationType",
-    "/properties/AuditAuthorizationSuccess"
+    "/properties/ConfigurationType"
   ],
   "required": [
-    "ProjectId",
-    "AuditFilter"
+    "ProjectId"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

@@ -46,3 +46,13 @@ jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"test/inputs_1_update.json" >"inputs/inputs_1_update.json"
+
+jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
+	"test/inputs_2_create.json" >"inputs/inputs_2_create.json"
+
+jq --arg projectId "$projectId" \
+	--arg profile "$profile" \
+	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
+	"test/inputs_2_update.json" >"inputs/inputs_2_update.json"

@@ -28,10 +28,10 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-var RequiredFields = []string{constants.ProjectID, constants.AuditFilter}
+var RequiredFields = []string{constants.ProjectID}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-auditing")
@@ -39,6 +39,7 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
@@ -65,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if atlasAuditing.Enabled {
+	if util.IsTrue(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
 			OperationStatus:  handler.Failed,
@@ -74,16 +75,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	enabled := true
 
-	auditingInput := atlasSDK.AuditLog{
-		Enabled: enabled,
+	auditingInput := admin.AuditLog{
+		Enabled: &enabled,
 	}
 
 	if currentModel.AuditAuthorizationSuccess != nil {
-		auditingInput.AuditAuthorizationSuccess = *currentModel.AuditAuthorizationSuccess
+		auditingInput.AuditAuthorizationSuccess = currentModel.AuditAuthorizationSuccess
 	}
 
 	if currentModel.AuditFilter != nil {
-		auditingInput.AuditFilter = *currentModel.AuditFilter
+		auditingInput.AuditFilter = currentModel.AuditFilter
 	}
 
 	atlasAuditing, res, err = atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
@@ -104,6 +105,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
@@ -131,7 +133,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if !atlasAuditing.Enabled {
+	if !util.IsTrue(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
 			OperationStatus:  handler.Failed,
@@ -139,8 +141,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
-	currentModel.AuditFilter = &atlasAuditing.AuditFilter
-	currentModel.AuditAuthorizationSuccess = &atlasAuditing.AuditAuthorizationSuccess
+	currentModel.AuditFilter = atlasAuditing.AuditFilter
+	currentModel.AuditAuthorizationSuccess = atlasAuditing.AuditAuthorizationSuccess
 
 	// Response
 	return handler.ProgressEvent{
@@ -152,6 +154,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
@@ -184,17 +187,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *http.Response
-	auditingInput := atlasSDK.AuditLog{Enabled: true}
+	enabled := true
+	auditingInput := admin.AuditLog{Enabled: &enabled}
 	modified := false
 
 	if currentModel.AuditAuthorizationSuccess != nil {
 		modified = true
-		auditingInput.AuditAuthorizationSuccess = *currentModel.AuditAuthorizationSuccess
+		auditingInput.AuditAuthorizationSuccess = currentModel.AuditAuthorizationSuccess
 	}
 
 	if currentModel.AuditFilter != nil {
 		modified = true
-		auditingInput.AuditFilter = *currentModel.AuditFilter
+		auditingInput.AuditFilter = currentModel.AuditFilter
 	}
 
 	if !modified {
@@ -224,6 +228,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
@@ -255,10 +260,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *http.Response
+	enabled := false
 
-	auditingInput := atlasSDK.AuditLog{
-		Enabled:     false,
-		AuditFilter: *currentModel.AuditFilter,
+	auditingInput := admin.AuditLog{
+		Enabled:     &enabled,
+		AuditFilter: currentModel.AuditFilter,
 	}
 
 	_, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
@@ -279,7 +285,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func isEnabled(client atlasSDK.APIClient, currentModel Model) (bool, *handler.ProgressEvent) {
+func isEnabled(client admin.APIClient, currentModel Model) (bool, *handler.ProgressEvent) {
 	atlasAuditing, res, err := client.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
@@ -288,7 +294,7 @@ func isEnabled(client atlasSDK.APIClient, currentModel Model) (bool, *handler.Pr
 		return false, &er
 	}
 
-	return atlasAuditing.Enabled, nil
+	return util.IsTrue(atlasAuditing.Enabled), nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

@@ -213,6 +213,7 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 	c := Config{BaseURL: prof.BaseURL}
 	// New SDK Client
 	sdkV2Client, err := c.newSDKV2Client(client)
+
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -275,7 +276,7 @@ func (c *Config) newSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error
 		atlasSDK.UseHTTPClient(client),
 		atlasSDK.UseUserAgent(userAgent),
 		atlasSDK.UseBaseURL(c.BaseURL),
-		atlasSDK.UseDebug(false)}
+		atlasSDK.UseDebug(true)}
 
 	// Initialize the MongoDB Versioned Atlas Client.
 	sdkV2, err := atlasSDK.NewClient(opts...)
@@ -466,4 +467,8 @@ func IntPtrToStrPtr(i *int) *string {
 	}
 	str := strconv.Itoa(*i)
 	return &str
+}
+
+func IsTrue(boolPtr *bool) bool {
+	return boolPtr != nil && *boolPtr
 }

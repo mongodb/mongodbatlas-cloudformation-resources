@@ -133,20 +133,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (*Model, error) {
-	projectID := *currentModel.ProjectId
-
-	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
-	if err != nil {
-		return nil, fmt.Errorf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
-	} else if certificate != nil {
-		currentModel.CustomerX509 = &CustomerX509{
-			Cas: &certificate.Cas,
-		}
-	}
-	return currentModel, nil
-}
-
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
@@ -158,20 +144,24 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
-	if !isEnabled(client, currentModel) {
+	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if certificate == nil || certificate.CustomerX509 == nil || !util.IsStringPresent(certificate.CustomerX509.Cas) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	projectID := *currentModel.ProjectId
-	_, err := client.X509AuthDBUsers.DisableCustomerX509(context.Background(), projectID)
+	_, _, err = client.AtlasV2.X509AuthenticationApi.DisableCustomerManagedX509(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -188,6 +178,20 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
+func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (*Model, error) {
+	projectID := *currentModel.ProjectId
+
+	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
+	if err != nil {
+		return nil, fmt.Errorf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
+	} else if certificate != nil {
+		currentModel.CustomerX509 = &CustomerX509{
+			Cas: &certificate.Cas,
+		}
+	}
+	return currentModel, nil
 }
 
 func validateProgress(client *mongodbatlas.Client, currentModel *Model) (handler.ProgressEvent, error) {

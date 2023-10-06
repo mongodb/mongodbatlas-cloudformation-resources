@@ -392,6 +392,8 @@ jobs:
        
        cat inputs/inputs_1_create.json
        cat inputs/inputs_1_update.json
+       cat inputs/inputs_2_create.json
+       cat inputs/inputs_2_update.json
        
        make run-contract-testing
        make delete-test-resources

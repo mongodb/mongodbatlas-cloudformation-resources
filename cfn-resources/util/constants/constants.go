@@ -155,6 +155,4 @@ const (
 	OrgOwnerID        = "OrgOwnerId"
 	OrgKeyRoles       = "APIKey.Roles"
 	OrgKeyDescription = "APIKey.Description"
-
-	AuditFilter = "AuditFilter"
 )

@@ -35,6 +35,9 @@
   },
   "additionalProperties": false,
   "readOnlyProperties": [
+    "/properties/AuditFilter",
+    "/properties/ConfigurationType",
+    "/properties/AuditAuthorizationSuccess",
     "/properties/ConfigurationType"
   ],
   "required": [

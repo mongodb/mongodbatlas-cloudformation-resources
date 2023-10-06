@@ -21,7 +21,7 @@ RestoreJob:
 Type: MongoDB::Atlas::CloudBackUpRestoreJobs
 Properties:
 ProjectId: !Ref 'ProjectSource'
-ClusterName: !Ref 'ClusterNameSource' <----- Old identifier (deprecated)
+ClusterName: !Ref 'ClusterNameSource' <----- Old identifier (removed)
 DeliveryType: 'automated'
 SnapshotId: !Ref 'Snapshot'
 TargetProjectId: !Ref 'ProjectDest'

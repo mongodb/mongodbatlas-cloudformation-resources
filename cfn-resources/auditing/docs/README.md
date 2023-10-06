@@ -75,7 +75,3 @@ Human-readable label that displays how to configure the audit filter.
 
 Flag that indicates whether someone set auditing to track successful authentications. This only applies to the `"atype" : "authCheck"` audit filter. Setting this parameter to `true` degrades cluster performance.
 
-#### ConfigurationType
-
-Human-readable label that displays how to configure the audit filter.
-

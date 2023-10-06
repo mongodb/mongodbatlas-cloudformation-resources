@@ -37,8 +37,7 @@
   "readOnlyProperties": [
     "/properties/AuditFilter",
     "/properties/ConfigurationType",
-    "/properties/AuditAuthorizationSuccess",
-    "/properties/ConfigurationType"
+    "/properties/AuditAuthorizationSuccess"
   ],
   "required": [
     "ProjectId"

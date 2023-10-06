@@ -196,7 +196,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			ProjectId:  currentModel.ProjectId,
 			Profile:    currentModel.Profile,
 			Comment:    v.Comment,
-			EndpointId: &v.EndpointId,
+			EndpointId: admin.PtrString(v.EndpointId),
 			Provider:   v.Provider,
 			Type:       v.Type,
 		})

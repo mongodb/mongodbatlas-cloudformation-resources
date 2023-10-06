@@ -26,6 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	"go.mongodb.org/atlas-sdk/v20230201008/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -43,9 +44,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
 	if _, ok := req.CallbackContext["status"]; ok {
@@ -54,34 +55,36 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel)
 	}
 
-	if isEnabled(client, currentModel) {
+	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if isEnabled(certificate) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "resource already exists",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
-	projectID := *currentModel.ProjectId
-	userName := *currentModel.UserName
-	expirationMonths := *currentModel.MonthsUntilExpiration
-
-	// create new user certificate
-	if expirationMonths > 0 {
-		res, _, err := client.X509AuthDBUsers.CreateUserCertificate(context.Background(), projectID, userName, expirationMonths)
+	if expirationMonths := aws.IntValue(currentModel.MonthsUntilExpiration); expirationMonths > 0 {
+		cert := admin.NewUserCert()
+		cert.MonthsUntilExpiration = &expirationMonths
+		res, _, err := client.AtlasV2.X509AuthenticationApi.CreateDatabaseUserCertificate(context.Background(), *currentModel.ProjectId, *currentModel.UserName, cert).Execute()
 		if err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		if res != nil {
+		if res != "" {
 			currentModel.CustomerX509 = &CustomerX509{
-				Cas: aws.String(res.Certificate),
+				Cas: &res,
 			}
 		}
-	} else { // save customer provided certificate
-		customerX509Cas := *currentModel.CustomerX509.Cas
-		_, _, err := client.X509AuthDBUsers.SaveConfiguration(context.Background(), projectID, &mongodbatlas.CustomerX509{Cas: customerX509Cas})
+	} else {
+		customerX509 := &admin.DBUserTLSX509Settings{Cas: currentModel.CustomerX509.Cas}
+		_, _, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(context.Background(), *currentModel.ProjectId, &admin.UserSecurity{CustomerX509: customerX509}).Execute()
 		if err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -89,7 +92,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 	}
-	// track progress
+
 	event := handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Created  Certificate  for DB User ",
@@ -115,7 +118,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if certificate == nil || certificate.CustomerX509 == nil || !util.IsStringPresent(certificate.CustomerX509.Cas) {
+	if !isEnabled(certificate) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
@@ -154,7 +157,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	if certificate == nil || certificate.CustomerX509 == nil || !util.IsStringPresent(certificate.CustomerX509.Cas) {
+	if !isEnabled(certificate) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
@@ -180,6 +183,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
+func isEnabled(certificate *admin.UserSecurity) bool {
+	return certificate != nil && certificate.CustomerX509 != nil && util.IsStringPresent(certificate.CustomerX509.Cas)
+}
+
 func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (*Model, error) {
 	projectID := *currentModel.ProjectId
 
@@ -194,7 +201,7 @@ func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (
 	return currentModel, nil
 }
 
-func validateProgress(client *mongodbatlas.Client, currentModel *Model) (handler.ProgressEvent, error) {
+func validateProgress(client *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
 	projectID := *currentModel.ProjectId
 	isReady, state, err := certificateIsReady(client, projectID)
 	if err != nil {
@@ -221,21 +228,8 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model) (handler
 	return p, nil
 }
 
-func isEnabled(client *mongodbatlas.Client, currentModel *Model) bool {
-	projectID := *currentModel.ProjectId
-
-	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
-	if err != nil {
-		return false
-	} else if certificate != nil && certificate.Cas != "" {
-		return true
-	}
-
-	return false
-}
-
-func certificateIsReady(client *mongodbatlas.Client, projectID string) (isExist bool, groupID string, errMsg error) {
-	certificate, resp, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
+func certificateIsReady(client *util.MongoDBClient, projectID string) (isExist bool, groupID string, errMsg error) {
+	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), groupID).Execute()
 	if err != nil {
 		if certificate == nil && resp == nil {
 			return false, "", err

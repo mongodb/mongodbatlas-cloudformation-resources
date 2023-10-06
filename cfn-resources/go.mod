@@ -17,7 +17,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas v0.33.0
-	go.mongodb.org/atlas-sdk/v20230201008 v20230201008.0.0
+	go.mongodb.org/atlas-sdk/v20231001001 v20231001001.0.0
 	go.mongodb.org/realm v0.1.0
 )
 

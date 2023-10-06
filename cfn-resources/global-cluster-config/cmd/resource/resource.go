@@ -46,7 +46,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 

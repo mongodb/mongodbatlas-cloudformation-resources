@@ -247,7 +247,6 @@ func newCustomZoneMappings(currentModel *Model) *admin.CustomZoneMappings {
 	return &admin.CustomZoneMappings{
 		CustomZoneMappings: modelToCustomZoneMappings(currentModel.CustomZoneMappings),
 	}
-
 }
 
 func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, nameSpaces []ManagedNamespace, projectID, clusterName string) error {

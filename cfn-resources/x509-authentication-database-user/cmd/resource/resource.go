@@ -24,6 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -104,33 +105,35 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
-	if !isEnabled(client, currentModel) {
+	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if certificate == nil || certificate.CustomerX509 == nil || !util.IsStringPresent(certificate.CustomerX509.Cas) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "config is not available",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	readModel, err := ReadUserX509Certificate(client, currentModel)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+
+	currentModel.CustomerX509 = &CustomerX509{
+		Cas: certificate.CustomerX509.Cas,
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
-		ResourceModel:   readModel,
+		Message:         "Read Complete: ",
+		ResourceModel:   currentModel,
 	}, nil
 }
 
 func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (*Model, error) {
-
 	projectID := *currentModel.ProjectId
 
 	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
@@ -215,7 +218,6 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model) (handler
 }
 
 func isEnabled(client *mongodbatlas.Client, currentModel *Model) bool {
-
 	projectID := *currentModel.ProjectId
 
 	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)

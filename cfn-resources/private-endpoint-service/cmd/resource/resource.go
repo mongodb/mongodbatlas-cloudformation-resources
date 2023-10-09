@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
@@ -106,7 +106,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.ProjectId, providerName, *currentModel.Id)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}
 
@@ -150,17 +150,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 
 		if privateEndpointResponse != nil {
-			return progress_events.GetInProgressProgressEvent("Delete in progress",
+			return progressevent.GetInProgressProgressEvent("Delete in progress",
 				map[string]interface{}{"stateName": "DELETING"}, currentModel, 20), nil
 		}
 	}
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}
 
 	if privateEndpointResponse == nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting resource, private Endpoint Response is null : %s", err.Error()),
+		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error deleting resource, private Endpoint Response is null : %s", err.Error()),
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
@@ -169,7 +169,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		*currentModel.Id)
 
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}
 
@@ -210,7 +210,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		providerName,
 		params)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
 			response.Response), nil
 	}
 
@@ -258,7 +258,7 @@ func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *hand
 	eventStatus, err := resource_constats.ParseEventStatus(fmt.Sprintf("%v", callback))
 
 	if err != nil {
-		pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error parsing callback status : %s", err.Error()),
+		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing callback status : %s", err.Error()),
 			cloudformation.HandlerErrorCodeServiceInternalError)
 		return "", &pe
 	}

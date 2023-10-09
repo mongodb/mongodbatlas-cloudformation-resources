@@ -9,7 +9,7 @@
     "required": [
         "ProjectId",
         "CloudProvider",
-        "EndpointServiceID"
+        "EndpointServiceId"
     ],
     "properties": {
         "Profile": {

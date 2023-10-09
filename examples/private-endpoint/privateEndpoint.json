@@ -39,8 +39,7 @@
         },
         "Profile": {
           "Ref": "Profile"
-        },
-        "CreateAndAssignAWSPrivateEndpoint": false
+        }
       }
     },
     "AWSPrivateEndpoint": {

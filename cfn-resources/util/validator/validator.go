@@ -21,28 +21,25 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
-func ValidateModel(fields []string, model interface{}) *handler.ProgressEvent {
-	requiredFields := ""
-
+func ValidateModel(fields []string, model any) *handler.ProgressEvent {
+	requiredFields := make([]string, 0)
 	for _, field := range fields {
-		if fieldIsEmpty(model, field) {
-			requiredFields = fmt.Sprintf("%s %s", requiredFields, field)
+		if isEmptyField(model, field) {
+			requiredFields = append(requiredFields, field)
 		}
 	}
-	if requiredFields == "" {
+	if len(requiredFields) == 0 {
 		return nil
 	}
-
-	progressEvent := progressevents.GetFailedEventByCode(fmt.Sprintf("The next fields are required%s", requiredFields),
-		cloudformation.HandlerErrorCodeInvalidRequest)
-
+	msg := fmt.Sprintf("These fields are required: %s", strings.Join(requiredFields, ", "))
+	progressEvent := progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest)
 	return &progressEvent
 }
 
-func fieldIsEmpty(model interface{}, field string) bool {
+func isEmptyField(model any, field string) bool {
 	var f reflect.Value
 	if strings.Contains(field, ".") {
 		fields := strings.Split(field, ".")

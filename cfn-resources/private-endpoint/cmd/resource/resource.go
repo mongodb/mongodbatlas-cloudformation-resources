@@ -133,7 +133,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 
-		privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id).Execute()
+		privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.
+			GetPrivateEndpointService(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id).
+			Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 				response), nil
@@ -161,7 +163,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id).Execute()
+	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.
+		GetPrivateEndpointService(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id).
+		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response), nil

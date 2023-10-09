@@ -133,7 +133,7 @@ func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID strin
 		return privateEndpointResponse, nil
 	default:
 		ev := progressevent.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s",
-			privateEndpointResponse.Status),
+			*privateEndpointResponse.Status),
 			cloudformation.HandlerErrorCodeInvalidRequest)
 		return nil, &ev
 	}

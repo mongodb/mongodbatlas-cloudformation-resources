@@ -57,9 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)

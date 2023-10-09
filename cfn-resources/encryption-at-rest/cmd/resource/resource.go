@@ -164,22 +164,33 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	// validate the request
-	event, client, err := validateRequest(&req, ReadAndDeleteRequiredFields, currentModel)
-	if err != nil {
-		if err.Error() == constants.ResourceNotFound {
-			return event, nil
-		}
-		return event, err
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ReadAndDeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// API call
-	projectID := *currentModel.ProjectId
-	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
-	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting encryption at rest configuration for project (%s): %s", projectID, err)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
+
+	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if pe := validateExist(info); pe != nil {
+		return *pe, nil
+	}
+
+	params := &admin.EncryptionAtRest{
+		AwsKms: &admin.AWSKMSConfiguration{Enabled: aws.Bool(false)},
+	}
+	_, resp, err = client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",

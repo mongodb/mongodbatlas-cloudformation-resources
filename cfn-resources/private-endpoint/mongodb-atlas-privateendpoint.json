@@ -1,6 +1,16 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpoint",
     "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint",
+    "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint/README.md",
+    "tagging": {
+        "taggable": false
+    },
+    "required": [
+        "ProjectId",
+        "CloudProvider",
+        "EndpointServiceID"
+    ],
     "properties": {
         "Profile": {
             "type": "string",

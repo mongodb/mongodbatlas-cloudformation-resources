@@ -398,11 +398,7 @@ func isExist(currentModel *Model, client *util.MongoDBClient) bool {
 	projectID := *currentModel.ProjectId
 	tenantName := *currentModel.TenantName
 	dataLake, _, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, tenantName).Execute()
-	if err != nil || dataLake == nil {
-		return false
-	}
-
-	return true
+	return err == nil && dataLake != nil
 }
 
 // function to check if snapshot already exist in atlas
@@ -420,7 +416,12 @@ func dataLakeIsReady(client *util.MongoDBClient, projectID, name, targetState st
 		}
 		return false, "", err
 	}
-	return *dataLake.State == targetState, *dataLake.State, nil
+
+	if dataLake != nil {
+		return *dataLake.State == targetState, *dataLake.State, nil
+	}
+
+	return false, "", nil
 }
 
 func convertToModel(dataLake *admin.DataLakeTenant, currentModel *Model) *Model {

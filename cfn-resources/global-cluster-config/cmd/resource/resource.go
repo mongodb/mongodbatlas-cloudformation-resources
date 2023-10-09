@@ -91,12 +91,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	if !isExist(client, currentModel) {
-		return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
-	}
-
 	config, event, err := ReadConfig(client, currentModel)
 	if err != nil {
+		if config == nil {
+			return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		}
+
 		return event, nil
 	}
 	return handler.ProgressEvent{
@@ -269,13 +269,11 @@ func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, na
 func modelToCustomZoneMappings(tfList []ZoneMapping) []admin.ZoneMapping {
 	apiObjects := make([]admin.ZoneMapping, len(tfList))
 	for i, tfMapRaw := range tfList {
-		if !util.IsStringPresent(tfMapRaw.Location) || !util.IsStringPresent(tfMapRaw.Zone) {
-			continue
-		}
-
-		apiObjects[i] = admin.ZoneMapping{
-			Location: *tfMapRaw.Location,
-			Zone:     *tfMapRaw.Zone,
+		if util.IsStringPresent(tfMapRaw.Location) || util.IsStringPresent(tfMapRaw.Zone) {
+			apiObjects[i] = admin.ZoneMapping{
+				Location: *tfMapRaw.Location,
+				Zone:     *tfMapRaw.Zone,
+			}
 		}
 	}
 

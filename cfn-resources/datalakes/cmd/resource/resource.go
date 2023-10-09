@@ -17,18 +17,17 @@ package resource
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.TenantName}
@@ -43,39 +42,29 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	// progress callback setup
 	if _, ok := req.CallbackContext["status"]; ok {
 		sid := req.CallbackContext["project_id"].(string)
 		currentModel.ProjectId = &sid
 		return validateProgress(client, currentModel, "ACTIVE")
 	}
 
-	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
-	dataLakeReq := &mongodbatlas.DataLakeCreateRequest{
+	dataLakeReq := &admin.DataLakeTenant{
 		CloudProviderConfig: expandCloudProviderConfig(currentModel),
-		Name:                *currentModel.TenantName,
+		Name:                currentModel.TenantName,
 	}
 
-	// API call to create data lake
-	dataLake, resp, err := client.DataLakes.Create(context.Background(), projectID, dataLakeReq)
+	dataLake, resp, err := client.AtlasV2.DataFederationApi.CreateFederatedDatabase(context.Background(), projectID, dataLakeReq).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-	currentModel.ProjectId = &dataLake.GroupID
-
-	_, _ = logger.Debugf("Created Successfully - (%s)", *currentModel.ProjectId)
-
-	// track progress
+	currentModel.ProjectId = dataLake.GroupId
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create cloud provider snapshots : %s", dataLake.State),
@@ -97,28 +86,23 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	if !isExist(currentModel, client) {
-		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.TenantName)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	// API call to get
 	projectID := *currentModel.ProjectId
-	dataLake, resp, err := client.DataLakes.Get(context.Background(), projectID, *currentModel.TenantName)
+	dataLake, resp, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, *currentModel.TenantName).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Resource Not Found",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		}
+
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	readModel := convertToModel(dataLake, currentModel)
@@ -138,11 +122,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -157,17 +138,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// create request object
 	projectID := *currentModel.ProjectId
-	dataLakeReq := &mongodbatlas.DataLakeUpdateRequest{
+	dataLakeReq := &admin.DataLakeTenant{
 		CloudProviderConfig: expandCloudProviderConfig(currentModel),
 		DataProcessRegion:   expandDataLakeDataProcessRegion(currentModel.DataProcessRegion),
 	}
 
 	// API call to update
-	dataLake, resp, err := client.DataLakes.Update(context.Background(), projectID, *currentModel.TenantName, dataLakeReq)
+	dataLake, resp, err := client.AtlasV2.DataFederationApi.UpdateFederatedDatabase(context.Background(), projectID, *currentModel.TenantName, dataLakeReq).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-	currentModel.ProjectId = &dataLake.GroupID
+	currentModel.ProjectId = dataLake.GroupId
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -185,27 +166,22 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *validationError, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	if !isExist(currentModel, client) {
-		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.TenantName)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// API call to delete
-	resp, err := client.DataLakes.Delete(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
+	_, resp, err := client.AtlasV2.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{
@@ -223,19 +199,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *validationError, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	// API call to list
-	result, resp, err := client.DataLakes.List(context.Background(), *currentModel.ProjectId)
+	result, resp, err := client.AtlasV2.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(err.Error(), resp.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	var models []interface{}
@@ -249,20 +221,20 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  models,
 	}, nil
 }
-func flattenAWSBlock(awsConfig *mongodbatlas.CloudProviderConfig) *DataLakeAWSCloudProviderConfigView {
+func flattenAWSBlock(awsConfig *admin.DataLakeCloudProviderConfig) *DataLakeAWSCloudProviderConfigView {
 	if awsConfig == nil {
 		return nil
 	}
 	return &DataLakeAWSCloudProviderConfigView{
-		RoleId:            &awsConfig.AWSConfig.RoleID,
-		IamAssumedRoleARN: &awsConfig.AWSConfig.IAMAssumedRoleARN,
-		IamUserARN:        &awsConfig.AWSConfig.IAMUserARN,
-		ExternalId:        &awsConfig.AWSConfig.ExternalID,
-		TestS3Bucket:      &awsConfig.AWSConfig.TestS3Bucket,
+		RoleId:            &awsConfig.Aws.RoleId,
+		IamAssumedRoleARN: awsConfig.Aws.IamAssumedRoleARN,
+		IamUserARN:        awsConfig.Aws.IamUserARN,
+		ExternalId:        awsConfig.Aws.ExternalId,
+		TestS3Bucket:      &awsConfig.Aws.TestS3Bucket,
 	}
 }
 
-func flattenDataLakeProcessRegion(processRegion *mongodbatlas.DataProcessRegion) *DataLakeDataProcessRegionView {
+func flattenDataLakeProcessRegion(processRegion *admin.DataLakeDataProcessRegion) *DataLakeDataProcessRegionView {
 	if processRegion != nil && (processRegion.Region != "" || processRegion.CloudProvider != "") {
 		return &DataLakeDataProcessRegionView{
 			CloudProvider: &processRegion.CloudProvider,
@@ -272,68 +244,64 @@ func flattenDataLakeProcessRegion(processRegion *mongodbatlas.DataProcessRegion)
 	return nil
 }
 
-func flattenDataLakeStorageDatabases(databases []mongodbatlas.DataLakeDatabase) []DataLakeDatabaseView {
+func flattenDataLakeStorageDatabases(databases []admin.DataLakeDatabaseInstance) []DataLakeDatabaseView {
 	database := make([]DataLakeDatabaseView, len(databases))
 	for ind := range databases {
 		database = append(database, DataLakeDatabaseView{
-			Name:                   &databases[ind].Name,
+			Name:                   databases[ind].Name,
 			Collections:            flattenDataLakeStorageDatabaseCollections(databases[ind].Collections),
 			Views:                  flattenDataLakeStorageDatabaseViews(databases[ind].Views),
-			MaxWildcardCollections: castNO64(databases[ind].MaxWildcardCollections),
+			MaxWildcardCollections: databases[ind].MaxWildcardCollections,
 		})
 	}
 	return database
 }
-func castNO64(i *int64) *int {
-	x := cast.ToInt(&i)
-	return &x
-}
 
-func flattenDataLakeStorageDatabaseCollections(collections []mongodbatlas.DataLakeCollection) []DataLakeDatabaseCollectionView {
+func flattenDataLakeStorageDatabaseCollections(collections []admin.DataLakeDatabaseCollection) []DataLakeDatabaseCollectionView {
 	database := make([]DataLakeDatabaseCollectionView, 0)
 	for ind := range collections {
 		database = append(database, DataLakeDatabaseCollectionView{
-			Name:        &collections[ind].Name,
+			Name:        collections[ind].Name,
 			DataSources: flattenDataLakeStorageDatabaseCollectionsDataSources(collections[ind].DataSources),
 		})
 	}
 	return database
 }
 
-func flattenDataLakeStorageDatabaseCollectionsDataSources(dataSources []mongodbatlas.DataLakeDataSource) []DataLakeDatabaseDataSourceView {
+func flattenDataLakeStorageDatabaseCollectionsDataSources(dataSources []admin.DataLakeDatabaseDataSourceSettings) []DataLakeDatabaseDataSourceView {
 	database := make([]DataLakeDatabaseDataSourceView, 0)
 	for ind := range dataSources {
 		database = append(database, DataLakeDatabaseDataSourceView{
-			StoreName:     &dataSources[ind].StoreName,
-			DefaultFormat: &dataSources[ind].DefaultFormat,
-			Path:          &dataSources[ind].Path,
+			StoreName:     dataSources[ind].StoreName,
+			DefaultFormat: dataSources[ind].DefaultFormat,
+			Path:          dataSources[ind].Path,
 		})
 	}
 	return database
 }
 
-func flattenDataLakeStorageDatabaseViews(views []mongodbatlas.DataLakeDatabaseView) []DataLakeViewView {
+func flattenDataLakeStorageDatabaseViews(views []admin.DataLakeApiBase) []DataLakeViewView {
 	view := make([]DataLakeViewView, 0)
 	for ind := range views {
 		view = append(view, DataLakeViewView{
-			Name:     &views[ind].Name,
-			Source:   &views[ind].Source,
-			Pipeline: &views[ind].Pipeline,
+			Name:     views[ind].Name,
+			Source:   views[ind].Source,
+			Pipeline: views[ind].Pipeline,
 		})
 	}
 	return view
 }
 
-func flattenDataLakeStorageStores(stores []mongodbatlas.DataLakeStore) []StoreDetail {
+func flattenDataLakeStorageStores(stores []admin.DataLakeStoreSettings) []StoreDetail {
 	store := make([]StoreDetail, 0)
 	for ind := range stores {
 		store = append(store, StoreDetail{
-			Name:                     &stores[ind].Name,
+			Name:                     stores[ind].Name,
 			Provider:                 &stores[ind].Provider,
-			Region:                   &stores[ind].Region,
-			Bucket:                   &stores[ind].Bucket,
-			Prefix:                   &stores[ind].Prefix,
-			Delimiter:                &stores[ind].Delimiter,
+			Region:                   stores[ind].Region,
+			Bucket:                   stores[ind].Bucket,
+			Prefix:                   stores[ind].Prefix,
+			Delimiter:                stores[ind].Delimiter,
 			IncludeTags:              stores[ind].IncludeTags,
 			AdditionalStorageClasses: stores[ind].AdditionalStorageClasses,
 		})
@@ -341,29 +309,29 @@ func flattenDataLakeStorageStores(stores []mongodbatlas.DataLakeStore) []StoreDe
 	return store
 }
 
-func expandDataLakeAwsBlock(cloudProviderConfig DataLakeCloudProviderConfigView) mongodbatlas.AwsCloudProviderConfig {
-	awsConfig := mongodbatlas.AwsCloudProviderConfig{}
+func expandDataLakeAwsBlock(cloudProviderConfig DataLakeCloudProviderConfigView) admin.DataLakeAWSCloudProviderConfig {
+	awsConfig := admin.DataLakeAWSCloudProviderConfig{}
 	if cloudProviderConfig.Aws != nil {
-		awsConfig.ExternalID = cast.ToString(cloudProviderConfig.Aws.ExternalId)
-		awsConfig.IAMAssumedRoleARN = cast.ToString(cloudProviderConfig.Aws.IamAssumedRoleARN)
-		awsConfig.IAMUserARN = cast.ToString(cloudProviderConfig.Aws.IamUserARN)
-		awsConfig.RoleID = cast.ToString(cloudProviderConfig.Aws.RoleId)
+		awsConfig.ExternalId = cloudProviderConfig.Aws.ExternalId
+		awsConfig.IamAssumedRoleARN = cloudProviderConfig.Aws.IamAssumedRoleARN
+		awsConfig.IamUserARN = cloudProviderConfig.Aws.IamUserARN
+		awsConfig.RoleId = cast.ToString(cloudProviderConfig.Aws.RoleId)
 		awsConfig.TestS3Bucket = cast.ToString(cloudProviderConfig.Aws.TestS3Bucket)
 	}
 	return awsConfig
 }
-func expandCloudProviderConfig(currentModel *Model) *mongodbatlas.CloudProviderConfig {
+func expandCloudProviderConfig(currentModel *Model) *admin.DataLakeCloudProviderConfig {
 	if currentModel.CloudProviderConfig != nil {
-		return &mongodbatlas.CloudProviderConfig{
-			AWSConfig: expandDataLakeAwsBlock(*currentModel.CloudProviderConfig),
+		return &admin.DataLakeCloudProviderConfig{
+			Aws: expandDataLakeAwsBlock(*currentModel.CloudProviderConfig),
 		}
 	}
 	return nil
 }
 
-func expandDataLakeDataProcessRegion(dataProcessRegion *DataLakeDataProcessRegionView) *mongodbatlas.DataProcessRegion {
+func expandDataLakeDataProcessRegion(dataProcessRegion *DataLakeDataProcessRegionView) *admin.DataLakeDataProcessRegion {
 	if dataProcessRegion != nil && dataProcessRegion.Region != nil {
-		return &mongodbatlas.DataProcessRegion{
+		return &admin.DataLakeDataProcessRegion{
 			CloudProvider: cast.ToString(dataProcessRegion.CloudProvider),
 			Region:        cast.ToString(dataProcessRegion.Region),
 		}
@@ -382,7 +350,7 @@ func validateRequest(fields []string, model *Model) *handler.ProgressEvent {
 }
 
 // function to track snapshot creation status
-func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
+func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	projectID := *currentModel.ProjectId
 	tenantName := *currentModel.TenantName
 	isReady, state, err := dataLakeIsReady(client, projectID, tenantName, targetState)
@@ -410,24 +378,20 @@ func validateProgress(client *mongodbatlas.Client, currentModel *Model, targetSt
 	return p, nil
 }
 
-// function to check if record already exist
-func isExist(currentModel *Model, client *mongodbatlas.Client) bool {
+func isExist(currentModel *Model, client *util.MongoDBClient) bool {
 	projectID := *currentModel.ProjectId
 	tenantName := *currentModel.TenantName
-	dataLake, _, err := client.DataLakes.Get(context.Background(), projectID, tenantName)
-	if err != nil {
+	dataLake, _, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, tenantName).Execute()
+	if err != nil || dataLake == nil {
 		return false
 	}
-	if dataLake != nil {
-		return true
-	}
 
-	return false
+	return true
 }
 
 // function to check if snapshot already exist in atlas
-func dataLakeIsReady(client *mongodbatlas.Client, projectID, name, targetState string) (isReady bool, status string, err error) {
-	dataLake, resp, err := client.DataLakes.Get(context.Background(), projectID, name)
+func dataLakeIsReady(client *util.MongoDBClient, projectID, name, targetState string) (isReady bool, status string, err error) {
+	dataLake, resp, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, name).Execute()
 	if err != nil {
 		return false, "", err
 	}
@@ -440,26 +404,26 @@ func dataLakeIsReady(client *mongodbatlas.Client, projectID, name, targetState s
 		}
 		return false, "", err
 	}
-	return dataLake.State == targetState, dataLake.State, nil
+	return *dataLake.State == targetState, *dataLake.State, nil
 }
 
-func convertToModel(dataLake *mongodbatlas.DataLake, currentModel *Model) *Model {
+func convertToModel(dataLake *admin.DataLakeTenant, currentModel *Model) *Model {
 	var result = new(Model)
 
 	result.Profile = currentModel.Profile // cfn test
-	result.TenantName = &dataLake.Name
-	result.State = &dataLake.State
-	result.ProjectId = &dataLake.GroupID
+	result.TenantName = dataLake.Name
+	result.State = dataLake.State
+	result.ProjectId = dataLake.GroupId
 	result.CloudProviderConfig = &DataLakeCloudProviderConfigView{
-		Aws: flattenAWSBlock(&dataLake.CloudProviderConfig),
+		Aws: flattenAWSBlock(dataLake.CloudProviderConfig),
 	}
-	result.DataProcessRegion = flattenDataLakeProcessRegion(&dataLake.DataProcessRegion)
+	result.DataProcessRegion = flattenDataLakeProcessRegion(dataLake.DataProcessRegion)
 	result.Storage = &DataLakeStorageView{
 		Databases: flattenDataLakeStorageDatabases(dataLake.Storage.Databases),
 		Stores:    flattenDataLakeStorageStores(dataLake.Storage.Stores),
 	}
 	result.Hostnames = dataLake.Hostnames
-	result.State = &dataLake.State
+	result.State = dataLake.State
 
 	return result
 }

@@ -138,12 +138,10 @@
   },
   "additionalProperties": false,
   "required": [
-    "ProjectId",
-    "ClusterName"
+    "ProjectId"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/ClusterName",
     "/properties/Profile",
     "/properties/InstanceType",
     "/properties/InstanceName"

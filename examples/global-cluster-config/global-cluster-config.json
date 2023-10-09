@@ -5,7 +5,6 @@
     "ProjectId": {
       "Type": "String",
       "Description": "",
-      "Default": "633bf97a5684466a4793c55c",
       "ConstraintDescription": ""
     },
     "ClusterName": {

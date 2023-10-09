@@ -33,25 +33,25 @@ if [ -z "$projectId" ]; then
 fi
 
 ClusterName=$projectName
-atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
-atlas clusters watch "${ClusterName}" --projectId "${projectId}"
+
+clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${ClusterName}" -r '.results[]? | select(.name==$NAME) | .id')
+if [ -z "$clusterId" ]; then
+	echo "creating cluster.."
+  atlas clusters create "${ClusterName}" --projectId "${projectId}" --backup --provider AWS --region US_EAST_1 --members 3 --tier M10 --mdbVersion 5.0 --diskSizeGB 10 --output=json
+  atlas clusters watch "${ClusterName}" --projectId "${projectId}"
+	echo -e "Created Cluster \"${ClusterName}\""
+fi
+
 echo -e "Created Cluster \"${ClusterName}\""
 
 SnapshotId=$(atlas backup snapshots create "${ClusterName}" --projectId "${projectId}" --desc "cfn unit test" --retention 3 --output=json | jq -r '.id')
 sleep 300
 
-jq --arg ClusterName "$ClusterName" \
+jq --arg cluster_name "$ClusterName" \
 	--arg group_id "$projectId" \
 	--arg SnapshotId "$SnapshotId" \
 	--arg profile "$profile" \
-	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
+	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId | .ProjectId?|=$group_id | .InstanceName?|=$cluster_name' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-jq --arg group_id "$projectId" \
-	--arg ClusterName "$ClusterName" \
-	--arg SnapshotId "$SnapshotId" \
-  --arg profile "$profile" \
-	'.Profile?|=$profile | .SnapshotId?|=$SnapshotId |.ProjectId?|=$group_id | .ClusterName?|=$ClusterName' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
 ls -l inputs

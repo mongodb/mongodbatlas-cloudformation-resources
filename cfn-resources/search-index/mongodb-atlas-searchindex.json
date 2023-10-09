@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::SearchIndex",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/search-index",
   "additionalProperties": false,
   "definitions": {
     "ApiAtlasFTSAnalyzersViewManual": {
@@ -65,6 +65,11 @@
           "$ref": "#/definitions/SynonymSource"
         }
       },
+      "required": [
+        "Analyzer",
+        "Name",
+        "Source"
+      ],
       "additionalProperties": false
     },
     "SynonymSource": {
@@ -75,6 +80,9 @@
           "description": "Human-readable label that identifies the MongoDB collection that stores words and their applicable synonyms."
         }
       },
+      "required": [
+        "Collection"
+      ],
       "additionalProperties": false
     }
   },
@@ -103,7 +111,7 @@
       "description": "Name of the cluster that contains the database and collection with one or more Application Search indexes.",
       "maxLength": 64,
       "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]*$"
     },
     "CollectionName": {
       "type": "string",
@@ -181,9 +189,7 @@
     "/properties/Profile",
     "/properties/ClusterName",
     "/properties/CollectionName",
-    "/properties/Database",
-    "/properties/Mappings",
-    "/properties/SearchAnalyzer"
+    "/properties/Database"
   ],
   "handlers": {
     "create": {
@@ -206,5 +212,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/search-index/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

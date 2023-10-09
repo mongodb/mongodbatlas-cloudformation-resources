@@ -23,29 +23,29 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-func mapClusterToModel(model *Model, cluster *mongodbatlas.AdvancedCluster) {
-	model.Id = &cluster.ID
-	model.ProjectId = &cluster.GroupID
-	model.Name = &cluster.Name
+func mapClusterToModel(model *Model, cluster *admin.AdvancedClusterDescription) {
+	model.Id = cluster.Id
+	model.ProjectId = cluster.GroupId
+	model.Name = cluster.Name
 	model.BackupEnabled = cluster.BackupEnabled
 	model.BiConnector = flattenBiConnectorConfig(cluster.BiConnector)
 	model.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
-	model.ClusterType = &cluster.ClusterType
-	model.CreatedDate = &cluster.CreateDate
+	model.ClusterType = cluster.ClusterType
+	model.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
 	model.DiskSizeGB = cluster.DiskSizeGB
-	model.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
+	model.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
 	model.Labels = flattenLabels(cluster.Labels)
-	model.MongoDBMajorVersion = &cluster.MongoDBMajorVersion
-	model.MongoDBVersion = &cluster.MongoDBVersion
+	model.MongoDBMajorVersion = cluster.MongoDBMajorVersion
+	model.MongoDBVersion = cluster.MongoDBVersion
 	model.Paused = cluster.Paused
 	model.PitEnabled = cluster.PitEnabled
-	model.RootCertType = &cluster.RootCertType
+	model.RootCertType = cluster.RootCertType
 	model.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
-	model.StateName = &cluster.StateName
-	model.VersionReleaseSystem = &cluster.VersionReleaseSystem
+	model.StateName = cluster.StateName
+	model.VersionReleaseSystem = cluster.VersionReleaseSystem
 }
 
 func containsLabelOrKey(list []Labels, item Labels) bool {
@@ -58,33 +58,36 @@ func containsLabelOrKey(list []Labels, item Labels) bool {
 	return false
 }
 
-func expandBiConnector(biConnector *BiConnector) *mongodbatlas.BiConnector {
+func expandBiConnector(biConnector *BiConnector) *admin.BiConnector {
 	if biConnector == nil {
 		return nil
 	}
-	return &mongodbatlas.BiConnector{
+	return &admin.BiConnector{
 		Enabled:        biConnector.Enabled,
-		ReadPreference: cast.ToString(biConnector.ReadPreference),
+		ReadPreference: biConnector.ReadPreference,
 	}
 }
 
-func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []*mongodbatlas.AdvancedReplicationSpec {
-	var rSpecs []*mongodbatlas.AdvancedReplicationSpec
+func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin.ReplicationSpec {
+	var rSpecs []admin.ReplicationSpec
 
 	for i := range replicationSpecs {
 		var numShards int
 
-		rSpec := &mongodbatlas.AdvancedReplicationSpec{
-			ID:            cast.ToString(replicationSpecs[i].ID),
-			NumShards:     numShards,
+		rSpec := admin.ReplicationSpec{
+			NumShards:     &numShards,
 			RegionConfigs: expandRegionsConfig(replicationSpecs[i].AdvancedRegionConfigs),
 		}
 
+		if util.IsStringPresent(replicationSpecs[i].ID) {
+			rSpec.Id = admin.PtrString(cast.ToString(replicationSpecs[i].ID))
+		}
+
 		if replicationSpecs[i].NumShards != nil {
-			rSpec.NumShards = *replicationSpecs[i].NumShards
+			rSpec.NumShards = replicationSpecs[i].NumShards
 		}
 		if replicationSpecs[i].ZoneName != nil {
-			rSpec.ZoneName = cast.ToString(replicationSpecs[i].ZoneName)
+			rSpec.ZoneName = admin.PtrString(cast.ToString(replicationSpecs[i].ZoneName))
 		}
 		rSpecs = append(rSpecs, rSpec)
 	}
@@ -93,43 +96,42 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []*mongo
 	return rSpecs
 }
 
-func expandAutoScaling(scaling *AdvancedAutoScaling) *mongodbatlas.AdvancedAutoScaling {
-	advAutoScaling := &mongodbatlas.AdvancedAutoScaling{}
+func expandAutoScaling(scaling *AdvancedAutoScaling) *admin.AdvancedAutoScalingSettings {
+	advAutoScaling := &admin.AdvancedAutoScalingSettings{}
 	if scaling == nil {
 		return nil
 	}
 	if scaling.Compute != nil {
-		var minInstanceSize string
-		if scaling.Compute.MinInstanceSize != nil {
-			minInstanceSize = *scaling.Compute.MinInstanceSize
-		}
-		var maxInstanceSize string
-		if scaling.Compute.MaxInstanceSize != nil {
-			maxInstanceSize = *scaling.Compute.MaxInstanceSize
-		}
-
-		advAutoScaling.Compute = &mongodbatlas.Compute{
+		advAutoScaling.Compute = &admin.AdvancedComputeAutoScaling{
 			Enabled:          scaling.Compute.Enabled,
 			ScaleDownEnabled: scaling.Compute.ScaleDownEnabled,
-			MinInstanceSize:  minInstanceSize,
-			MaxInstanceSize:  maxInstanceSize,
+		}
+
+		if util.IsStringPresent(scaling.Compute.MinInstanceSize) {
+			advAutoScaling.Compute.MinInstanceSize = scaling.Compute.MinInstanceSize
+		}
+
+		if util.IsStringPresent(scaling.Compute.MaxInstanceSize) {
+			advAutoScaling.Compute.MaxInstanceSize = scaling.Compute.MaxInstanceSize
 		}
 	}
+
 	if scaling.DiskGB != nil {
-		advAutoScaling.DiskGB = &mongodbatlas.DiskGB{Enabled: scaling.DiskGB.Enabled}
+		advAutoScaling.DiskGB = &admin.DiskGBAutoScaling{Enabled: scaling.DiskGB.Enabled}
 	}
+
 	return advAutoScaling
 }
 
-func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) []*mongodbatlas.AdvancedRegionConfig {
-	var regionsConfigs []*mongodbatlas.AdvancedRegionConfig
+func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) []admin.CloudRegionConfig {
+	var regionsConfigs []admin.CloudRegionConfig
 	for _, regionCfg := range regionConfigs {
 		regionsConfigs = append(regionsConfigs, expandRegionConfig(regionCfg))
 	}
 	return regionsConfigs
 }
 
-func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRegionConfig {
+func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig {
 	var region string
 	if regionCfg.RegionName != nil {
 		region = *regionCfg.RegionName
@@ -140,9 +142,9 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 		providerName = *regionCfg.ProviderName
 	}
 
-	advRegionConfig := &mongodbatlas.AdvancedRegionConfig{
-		ProviderName: providerName,
-		RegionName:   region,
+	advRegionConfig := admin.CloudRegionConfig{
+		ProviderName: &providerName,
+		RegionName:   &region,
 		Priority:     regionCfg.Priority,
 	}
 
@@ -156,21 +158,22 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 		advRegionConfig.AnalyticsSpecs = expandRegionConfigSpec(regionCfg.AnalyticsSpecs)
 	}
 	if regionCfg.ElectableSpecs != nil {
-		advRegionConfig.ElectableSpecs = expandRegionConfigSpec(regionCfg.ElectableSpecs)
+		advRegionConfig.ElectableSpecs = newHardwareSpec(regionCfg.ElectableSpecs)
 	}
 	if regionCfg.ReadOnlySpecs != nil {
 		advRegionConfig.ReadOnlySpecs = expandRegionConfigSpec(regionCfg.ReadOnlySpecs)
 	}
 	if regionCfg.BackingProviderName != nil {
-		advRegionConfig.BackingProviderName = *regionCfg.BackingProviderName
+		advRegionConfig.BackingProviderName = regionCfg.BackingProviderName
 	}
 	return advRegionConfig
 }
 
-func expandRegionConfigSpec(spec *Specs) *mongodbatlas.Specs {
+func newHardwareSpec(spec *Specs) *admin.HardwareSpec {
 	if spec == nil {
 		return nil
 	}
+
 	var ebsVolumeType string
 	var instanceSize string
 	if spec.EbsVolumeType != nil {
@@ -186,16 +189,46 @@ func expandRegionConfigSpec(spec *Specs) *mongodbatlas.Specs {
 			val = v
 		}
 	}
-	return &mongodbatlas.Specs{
-		DiskIOPS:      &val,
-		EbsVolumeType: ebsVolumeType,
-		InstanceSize:  instanceSize,
+
+	return &admin.HardwareSpec{
+		DiskIOPS:      util.Int64PtrToIntPtr(&val),
+		EbsVolumeType: &ebsVolumeType,
+		InstanceSize:  &instanceSize,
 		NodeCount:     spec.NodeCount,
 	}
 }
 
-func expandLabelSlice(labels []Labels) []mongodbatlas.Label {
-	res := make([]mongodbatlas.Label, len(labels))
+func expandRegionConfigSpec(spec *Specs) *admin.DedicatedHardwareSpec {
+	if spec == nil {
+		return nil
+	}
+
+	var ebsVolumeType string
+	var instanceSize string
+	if spec.EbsVolumeType != nil {
+		ebsVolumeType = *spec.EbsVolumeType
+	}
+	if spec.InstanceSize != nil {
+		instanceSize = *spec.InstanceSize
+	}
+	var val int64
+	if spec.DiskIOPS != nil {
+		v, err := strconv.ParseInt(*spec.DiskIOPS, 10, 64)
+		if err == nil {
+			val = v
+		}
+	}
+
+	return &admin.DedicatedHardwareSpec{
+		DiskIOPS:      util.Int64PtrToIntPtr(&val),
+		EbsVolumeType: &ebsVolumeType,
+		InstanceSize:  &instanceSize,
+		NodeCount:     spec.NodeCount,
+	}
+}
+
+func expandLabelSlice(labels []Labels) []admin.ComponentLabel {
+	res := make([]admin.ComponentLabel, len(labels))
 
 	for i := range labels {
 		var key string
@@ -206,15 +239,15 @@ func expandLabelSlice(labels []Labels) []mongodbatlas.Label {
 		if labels[i].Key != nil {
 			value = *labels[i].Value
 		}
-		res[i] = mongodbatlas.Label{
-			Key:   key,
-			Value: value,
+		res[i] = admin.ComponentLabel{
+			Key:   &key,
+			Value: &value,
 		}
 	}
 	return res
 }
 
-func flattenAutoScaling(scaling *mongodbatlas.AdvancedAutoScaling) *AdvancedAutoScaling {
+func flattenAutoScaling(scaling *admin.AdvancedAutoScalingSettings) *AdvancedAutoScaling {
 	if scaling == nil {
 		return nil
 	}
@@ -231,11 +264,11 @@ func flattenAutoScaling(scaling *mongodbatlas.AdvancedAutoScaling) *AdvancedAuto
 		if scaling.Compute.ScaleDownEnabled != nil {
 			compute.ScaleDownEnabled = scaling.Compute.ScaleDownEnabled
 		}
-		if scaling.Compute.MinInstanceSize != "" {
-			compute.MinInstanceSize = &scaling.Compute.MinInstanceSize
+		if util.IsStringPresent(scaling.Compute.MinInstanceSize) {
+			compute.MinInstanceSize = scaling.Compute.MinInstanceSize
 		}
-		if scaling.Compute.MaxInstanceSize != "" {
-			compute.MaxInstanceSize = &scaling.Compute.MaxInstanceSize
+		if util.IsStringPresent(scaling.Compute.MaxInstanceSize) {
+			compute.MaxInstanceSize = scaling.Compute.MaxInstanceSize
 		}
 
 		advAutoScaling.Compute = compute
@@ -243,14 +276,14 @@ func flattenAutoScaling(scaling *mongodbatlas.AdvancedAutoScaling) *AdvancedAuto
 	return advAutoScaling
 }
 
-func flattenReplicationSpecs(replicationSpecs []*mongodbatlas.AdvancedReplicationSpec) []AdvancedReplicationSpec {
+func flattenReplicationSpecs(replicationSpecs []admin.ReplicationSpec) []AdvancedReplicationSpec {
 	var rSpecs []AdvancedReplicationSpec
 
 	for ind := range replicationSpecs {
 		rSpec := AdvancedReplicationSpec{
-			ID:                    &replicationSpecs[ind].ID,
-			NumShards:             &replicationSpecs[ind].NumShards,
-			ZoneName:              &replicationSpecs[ind].ZoneName,
+			ID:                    replicationSpecs[ind].Id,
+			NumShards:             replicationSpecs[ind].NumShards,
+			ZoneName:              replicationSpecs[ind].ZoneName,
 			AdvancedRegionConfigs: flattenRegionsConfig(replicationSpecs[ind].RegionConfigs),
 		}
 		rSpecs = append(rSpecs, rSpec)
@@ -259,26 +292,26 @@ func flattenReplicationSpecs(replicationSpecs []*mongodbatlas.AdvancedReplicatio
 	return rSpecs
 }
 
-func flattenRegionsConfig(regionConfigs []*mongodbatlas.AdvancedRegionConfig) []AdvancedRegionConfig {
+func flattenRegionsConfig(regionConfigs []admin.CloudRegionConfig) []AdvancedRegionConfig {
 	var regionsConfigs []AdvancedRegionConfig
 	for i := range regionConfigs {
-		regionsConfigs = append(regionsConfigs, flattenRegionConfig(regionConfigs[i]))
+		regionsConfigs = append(regionsConfigs, flattenRegionConfig(&regionConfigs[i]))
 	}
 	return regionsConfigs
 }
 
-func flattenRegionConfig(regionCfg *mongodbatlas.AdvancedRegionConfig) AdvancedRegionConfig {
+func flattenRegionConfig(regionCfg *admin.CloudRegionConfig) AdvancedRegionConfig {
 	advRegConfig := AdvancedRegionConfig{
 		AutoScaling:          flattenAutoScaling(regionCfg.AutoScaling),
 		AnalyticsAutoScaling: flattenAutoScaling(regionCfg.AnalyticsAutoScaling),
-		RegionName:           &regionCfg.RegionName,
+		RegionName:           regionCfg.RegionName,
 		Priority:             regionCfg.Priority,
 	}
 	if regionCfg.AnalyticsSpecs != nil {
 		advRegConfig.AnalyticsSpecs = flattenRegionConfigSpec(regionCfg.AnalyticsSpecs)
 	}
 	if regionCfg.ElectableSpecs != nil {
-		advRegConfig.ElectableSpecs = flattenRegionConfigSpec(regionCfg.ElectableSpecs)
+		advRegConfig.ElectableSpecs = flattenElectableSpecs(regionCfg.ElectableSpecs)
 	}
 
 	if regionCfg.ReadOnlySpecs != nil {
@@ -288,30 +321,47 @@ func flattenRegionConfig(regionCfg *mongodbatlas.AdvancedRegionConfig) AdvancedR
 	return advRegConfig
 }
 
-func flattenRegionConfigSpec(spec *mongodbatlas.Specs) *Specs {
+func flattenElectableSpecs(spec *admin.HardwareSpec) *Specs {
 	if spec == nil {
 		return nil
 	}
 	var diskIops string
 	if spec.DiskIOPS != nil {
-		diskIops = strconv.FormatInt(*spec.DiskIOPS, 10)
+		diskIops = strconv.Itoa(*spec.DiskIOPS)
 	}
 
 	return &Specs{
 		DiskIOPS:      &diskIops,
-		EbsVolumeType: &spec.EbsVolumeType,
-		InstanceSize:  &spec.InstanceSize,
+		EbsVolumeType: spec.EbsVolumeType,
+		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
 	}
 }
 
-func flattenBiConnectorConfig(biConnector *mongodbatlas.BiConnector) *BiConnector {
+func flattenRegionConfigSpec(spec *admin.DedicatedHardwareSpec) *Specs {
+	if spec == nil {
+		return nil
+	}
+	var diskIops string
+	if spec.DiskIOPS != nil {
+		diskIops = strconv.Itoa(*spec.DiskIOPS)
+	}
+
+	return &Specs{
+		DiskIOPS:      &diskIops,
+		EbsVolumeType: spec.EbsVolumeType,
+		InstanceSize:  spec.InstanceSize,
+		NodeCount:     spec.NodeCount,
+	}
+}
+
+func flattenBiConnectorConfig(biConnector *admin.BiConnector) *BiConnector {
 	if biConnector == nil {
 		return nil
 	}
 
 	return &BiConnector{
-		ReadPreference: &biConnector.ReadPreference,
+		ReadPreference: biConnector.ReadPreference,
 		Enabled:        biConnector.Enabled,
 	}
 }
@@ -322,14 +372,14 @@ type privateEndpointConnectionStrings struct {
 	SRVShardOptimizedConnectionString []string
 }
 
-func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings) (connStrings *ConnectionStrings) {
+func flattenConnectionStrings(clusterConnStrings *admin.ClusterConnectionStrings) (connStrings *ConnectionStrings) {
 	if clusterConnStrings != nil {
 		privateEndpoints := flattenPrivateEndpoint(clusterConnStrings.PrivateEndpoint)
 		connStrings = &ConnectionStrings{
-			Standard:                          &clusterConnStrings.Standard,
-			StandardSrv:                       &clusterConnStrings.StandardSrv,
-			Private:                           &clusterConnStrings.Private,
-			PrivateSrv:                        &clusterConnStrings.PrivateSrv,
+			Standard:                          clusterConnStrings.Standard,
+			StandardSrv:                       clusterConnStrings.StandardSrv,
+			Private:                           clusterConnStrings.Private,
+			PrivateSrv:                        clusterConnStrings.PrivateSrv,
 			PrivateEndpoints:                  privateEndpoints.PrivateEndpoints,
 			PrivateEndpointsSrv:               privateEndpoints.PrivateEndpointsSrv,
 			SRVShardOptimizedConnectionString: privateEndpoints.SRVShardOptimizedConnectionString,
@@ -338,7 +388,7 @@ func flattenConnectionStrings(clusterConnStrings *mongodbatlas.ConnectionStrings
 	return
 }
 
-func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) privateEndpointConnectionStrings {
+func flattenPrivateEndpoint(pes []admin.ClusterDescriptionConnectionStringsPrivateEndpoint) privateEndpointConnectionStrings {
 	privateEndpoints := privateEndpointConnectionStrings{
 		PrivateEndpoints:                  make([]string, 0),
 		PrivateEndpointsSrv:               make([]string, 0),
@@ -346,72 +396,72 @@ func flattenPrivateEndpoint(pes []mongodbatlas.PrivateEndpoint) privateEndpointC
 	}
 
 	for _, pe := range pes {
-		if pe.ConnectionString != "" {
-			privateEndpoints.PrivateEndpoints = append(privateEndpoints.PrivateEndpoints, pe.ConnectionString)
+		if util.IsStringPresent(pe.ConnectionString) {
+			privateEndpoints.PrivateEndpoints = append(privateEndpoints.PrivateEndpoints, *pe.ConnectionString)
 		}
 
-		if pe.SRVConnectionString != "" {
-			privateEndpoints.PrivateEndpointsSrv = append(privateEndpoints.PrivateEndpointsSrv, pe.SRVConnectionString)
+		if util.IsStringPresent(pe.SrvConnectionString) {
+			privateEndpoints.PrivateEndpointsSrv = append(privateEndpoints.PrivateEndpointsSrv, *pe.SrvConnectionString)
 		}
 
-		if pe.SRVShardOptimizedConnectionString != "" {
-			privateEndpoints.SRVShardOptimizedConnectionString = append(privateEndpoints.SRVShardOptimizedConnectionString, pe.SRVShardOptimizedConnectionString)
+		if util.IsStringPresent(pe.SrvShardOptimizedConnectionString) {
+			privateEndpoints.SRVShardOptimizedConnectionString = append(privateEndpoints.SRVShardOptimizedConnectionString, *pe.SrvShardOptimizedConnectionString)
 		}
 	}
 	return privateEndpoints
 }
 
-func flattenProcessArgs(p *mongodbatlas.ProcessArgs) *ProcessArgs {
+func flattenProcessArgs(p *admin.ClusterDescriptionProcessArgs) *ProcessArgs {
 	return &ProcessArgs{
-		DefaultReadConcern:               &p.DefaultReadConcern,
-		DefaultWriteConcern:              &p.DefaultWriteConcern,
+		DefaultReadConcern:               p.DefaultReadConcern,
+		DefaultWriteConcern:              p.DefaultWriteConcern,
 		FailIndexKeyTooLong:              p.FailIndexKeyTooLong,
 		JavascriptEnabled:                p.JavascriptEnabled,
-		MinimumEnabledTLSProtocol:        &p.MinimumEnabledTLSProtocol,
+		MinimumEnabledTLSProtocol:        p.MinimumEnabledTlsProtocol,
 		NoTableScan:                      p.NoTableScan,
-		OplogSizeMB:                      castNO64(p.OplogSizeMB),
-		SampleSizeBIConnector:            castNO64(p.SampleSizeBIConnector),
-		SampleRefreshIntervalBIConnector: castNO64(p.SampleRefreshIntervalBIConnector),
+		OplogSizeMB:                      p.OplogSizeMB,
+		SampleSizeBIConnector:            p.SampleSizeBIConnector,
+		SampleRefreshIntervalBIConnector: p.SampleRefreshIntervalBIConnector,
 		OplogMinRetentionHours:           p.OplogMinRetentionHours,
-		TransactionLifetimeLimitSeconds:  castNO64(p.TransactionLifetimeLimitSeconds),
+		TransactionLifetimeLimitSeconds:  util.Int64PtrToIntPtr(p.TransactionLifetimeLimitSeconds),
 	}
 }
 
-func flattenLabels(clusterLabels []mongodbatlas.Label) []Labels {
+func flattenLabels(clusterLabels []admin.ComponentLabel) []Labels {
 	labels := make([]Labels, len(clusterLabels))
 	for i := range clusterLabels {
 		labels[i] = Labels{
-			Key:   &clusterLabels[i].Key,
-			Value: &clusterLabels[i].Value,
+			Key:   clusterLabels[i].Key,
+			Value: clusterLabels[i].Value,
 		}
 	}
 	return labels
 }
 
-func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
-	var args mongodbatlas.ProcessArgs
+func expandAdvancedSettings(processArgs ProcessArgs) *admin.ClusterDescriptionProcessArgs {
+	var args admin.ClusterDescriptionProcessArgs
 
 	if processArgs.DefaultReadConcern != nil {
-		args.DefaultReadConcern = *processArgs.DefaultReadConcern
+		args.DefaultReadConcern = processArgs.DefaultReadConcern
 	}
 	args.FailIndexKeyTooLong = processArgs.FailIndexKeyTooLong
 	if processArgs.DefaultWriteConcern != nil {
-		args.DefaultWriteConcern = *processArgs.DefaultWriteConcern
+		args.DefaultWriteConcern = processArgs.DefaultWriteConcern
 	}
 	args.JavascriptEnabled = processArgs.JavascriptEnabled
 	if processArgs.MinimumEnabledTLSProtocol != nil {
-		args.MinimumEnabledTLSProtocol = *processArgs.MinimumEnabledTLSProtocol
+		args.MinimumEnabledTlsProtocol = processArgs.MinimumEnabledTLSProtocol
 	}
 	args.NoTableScan = processArgs.NoTableScan
 
 	if processArgs.OplogSizeMB != nil {
-		args.OplogSizeMB = cast64(processArgs.OplogSizeMB)
+		args.OplogSizeMB = processArgs.OplogSizeMB
 	}
 	if processArgs.SampleSizeBIConnector != nil {
-		args.SampleSizeBIConnector = cast64(processArgs.SampleSizeBIConnector)
+		args.SampleSizeBIConnector = processArgs.SampleSizeBIConnector
 	}
 	if processArgs.SampleRefreshIntervalBIConnector != nil {
-		args.SampleRefreshIntervalBIConnector = cast64(processArgs.SampleRefreshIntervalBIConnector)
+		args.SampleRefreshIntervalBIConnector = processArgs.SampleRefreshIntervalBIConnector
 	}
 
 	if processArgs.OplogMinRetentionHours != nil {
@@ -425,34 +475,34 @@ func expandAdvancedSettings(processArgs ProcessArgs) *mongodbatlas.ProcessArgs {
 	return &args
 }
 
-func flattenTags(clusterTags []*mongodbatlas.Tag) (tags []Tag) {
+func flattenTags(clusterTags []admin.ResourceTag) (tags []Tag) {
 	for ind := range clusterTags {
 		tags = append(tags, Tag{
-			Key:   util.Pointer(clusterTags[ind].Key),
-			Value: util.Pointer(clusterTags[ind].Value),
+			Key:   clusterTags[ind].Key,
+			Value: clusterTags[ind].Value,
 		})
 	}
 	return
 }
 
-func expandTags(tags []Tag) (clusterTags []*mongodbatlas.Tag) {
+func expandTags(tags []Tag) (clusterTags []admin.ResourceTag) {
 	for ind := range tags {
-		clusterTags = append(clusterTags, &mongodbatlas.Tag{
-			Key:   *tags[ind].Key,
-			Value: *tags[ind].Value,
+		clusterTags = append(clusterTags, admin.ResourceTag{
+			Key:   tags[ind].Key,
+			Value: tags[ind].Value,
 		})
 	}
 	return
 }
 
-func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) {
+func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescription) {
 	if cluster == nil {
 		return
 	}
 
-	currentModel.ProjectId = &cluster.GroupID
-	currentModel.Name = &cluster.Name
-	currentModel.Id = &cluster.ID
+	currentModel.ProjectId = cluster.GroupId
+	currentModel.Name = cluster.Name
+	currentModel.Id = cluster.Id
 
 	if currentModel.BackupEnabled != nil {
 		currentModel.BackupEnabled = cluster.BackupEnabled
@@ -463,24 +513,24 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 	// Readonly
 	currentModel.ConnectionStrings = flattenConnectionStrings(cluster.ConnectionStrings)
 	if currentModel.ClusterType != nil {
-		currentModel.ClusterType = &cluster.ClusterType
+		currentModel.ClusterType = cluster.ClusterType
 	}
 	// Readonly
-	currentModel.CreatedDate = &cluster.CreateDate
+	currentModel.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
 	if currentModel.DiskSizeGB != nil {
 		currentModel.DiskSizeGB = cluster.DiskSizeGB
 	}
 	if currentModel.EncryptionAtRestProvider != nil {
-		currentModel.EncryptionAtRestProvider = &cluster.EncryptionAtRestProvider
+		currentModel.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
 	}
 	if currentModel.Labels != nil {
 		currentModel.Labels = flattenLabels(cluster.Labels)
 	}
 	if currentModel.MongoDBMajorVersion != nil {
-		currentModel.MongoDBMajorVersion = &cluster.MongoDBMajorVersion
+		currentModel.MongoDBMajorVersion = cluster.MongoDBMajorVersion
 	}
 	// Readonly
-	currentModel.MongoDBVersion = &cluster.MongoDBVersion
+	currentModel.MongoDBVersion = cluster.MongoDBVersion
 
 	if currentModel.Paused != nil {
 		currentModel.Paused = cluster.Paused
@@ -489,34 +539,34 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 		currentModel.PitEnabled = cluster.PitEnabled
 	}
 	if currentModel.RootCertType != nil {
-		currentModel.RootCertType = &cluster.RootCertType
+		currentModel.RootCertType = cluster.RootCertType
 	}
 	if currentModel.ReplicationSpecs != nil {
 		currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
 	}
 	// Readonly
-	currentModel.StateName = &cluster.StateName
+	currentModel.StateName = cluster.StateName
 	if currentModel.VersionReleaseSystem != nil {
-		currentModel.VersionReleaseSystem = &cluster.VersionReleaseSystem
+		currentModel.VersionReleaseSystem = cluster.VersionReleaseSystem
 	}
 
 	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 	currentModel.Tags = flattenTags(cluster.Tags)
 }
 
-func setClusterRequest(currentModel *Model) (*mongodbatlas.AdvancedCluster, handler.ProgressEvent, error) {
+func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, handler.ProgressEvent, error) {
 	// Atlas client
-	clusterRequest := &mongodbatlas.AdvancedCluster{
-		Name:             *currentModel.Name,
+	clusterRequest := &admin.AdvancedClusterDescription{
+		Name:             currentModel.Name,
 		ReplicationSpecs: expandReplicationSpecs(currentModel.ReplicationSpecs),
 	}
 
 	if currentModel.EncryptionAtRestProvider != nil {
-		clusterRequest.EncryptionAtRestProvider = *currentModel.EncryptionAtRestProvider
+		clusterRequest.EncryptionAtRestProvider = currentModel.EncryptionAtRestProvider
 	}
 
 	if currentModel.ClusterType != nil {
-		clusterRequest.ClusterType = *currentModel.ClusterType
+		clusterRequest.ClusterType = currentModel.ClusterType
 	}
 
 	if currentModel.BackupEnabled != nil {
@@ -536,7 +586,7 @@ func setClusterRequest(currentModel *Model) (*mongodbatlas.AdvancedCluster, hand
 	}
 
 	if currentModel.MongoDBMajorVersion != nil {
-		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
+		clusterRequest.MongoDBMajorVersion = admin.PtrString(formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion))
 	}
 
 	if currentModel.PitEnabled != nil {
@@ -544,11 +594,11 @@ func setClusterRequest(currentModel *Model) (*mongodbatlas.AdvancedCluster, hand
 	}
 
 	if currentModel.VersionReleaseSystem != nil {
-		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
+		clusterRequest.VersionReleaseSystem = currentModel.VersionReleaseSystem
 	}
 
 	if currentModel.RootCertType != nil {
-		clusterRequest.RootCertType = *currentModel.RootCertType
+		clusterRequest.RootCertType = currentModel.RootCertType
 	}
 	clusterRequest.Tags = expandTags(currentModel.Tags)
 

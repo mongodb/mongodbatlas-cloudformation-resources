@@ -13,7 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::CloudBackUpRestoreJobs",
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
-        "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+        "<a href="#instancetype" title="InstanceType">InstanceType</a>" : <i>String</i>,
         "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
         "<a href="#deliverytype" title="DeliveryType">DeliveryType</a>" : <i>String</i>,
         "<a href="#snapshotid" title="SnapshotId">SnapshotId</a>" : <i>String</i>,
@@ -35,7 +35,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::CloudBackUpRestoreJobs
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
-    <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+    <a href="#instancetype" title="InstanceType">InstanceType</a>: <i>String</i>
     <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
     <a href="#deliverytype" title="DeliveryType">DeliveryType</a>: <i>String</i>
     <a href="#snapshotid" title="SnapshotId">SnapshotId</a>: <i>String</i>
@@ -61,25 +61,27 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### ClusterName
+#### InstanceType
 
-The name of the Atlas cluster whose snapshot you want to restore or you want to retrieve restore jobs.
-
-_Required_: Yes
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### InstanceName
-
-The instance name of the Serverless cluster whose snapshot you want to restore or you want to retrieve restore jobs.
+Type of instance specified on the Instance Name serverless or cluster
 
 _Required_: No
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Allowed Values_: <code>serverless</code> | <code>cluster</code>
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### InstanceName
+
+The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore jobs.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### DeliveryType
 

@@ -1,7 +1,7 @@
 {
   "typeName": "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
   "description": "Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/federated-settings-org-role-mapping",
   "definitions": {
     "RoleAssignment": {
       "type": "object",
@@ -110,5 +110,9 @@
         "secretsmanager:GetSecretValue"
       ]
     }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/federated-settings-org-role-mapping/README.md",
+  "tagging": {
+    "taggable": false
   }
 }

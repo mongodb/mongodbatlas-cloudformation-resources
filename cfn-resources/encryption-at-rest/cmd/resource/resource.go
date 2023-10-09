@@ -17,10 +17,7 @@ package resource
 import (
 	"context"
 	"crypto/rand"
-	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
 	"math"
 	"math/big"
 	"strconv"
@@ -28,56 +25,36 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 var CreateAndUpdateRequiredFields = []string{constants.RoleID, constants.CustomMasterKey, constants.RoleID, constants.ProjectID}
 var ReadAndDeleteRequiredFields = []string{constants.ProjectID}
 
-// Create handles the Create event from the Cloudformation service.
+func setup() {
+	util.SetupLogger("mongodb-atlas-encryption-at-rest")
+}
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	_, _ = logger.Debugf("Create - Encryption for Request() currentModel:%+v", currentModel)
-
-	// Validate required fields in the request
-	if modelValidation := validateModel(CreateAndUpdateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateAndUpdateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
-	if handlerError != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
-		return *handlerError, errors.New(handlerError.Message)
+	_, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-
-	// Create Atlas API Request Object
-	_, _ = logger.Debug("Create - Encryption at rest starts ")
-	projectID := *currentModel.ProjectId
-	encryptionAtRest := &mongodbatlas.EncryptionAtRest{
-		AwsKms: mongodbatlas.AwsKms{
-			Enabled:             currentModel.AwsKms.Enabled,
-			CustomerMasterKeyID: *currentModel.AwsKms.CustomerMasterKeyID,
-			RoleID:              *currentModel.AwsKms.RoleID,
-			Region:              *currentModel.AwsKms.Region,
-		},
-		GroupID: projectID,
-	}
-	deploySecretString, _ := json.Marshal(encryptionAtRest)
-	log.Printf("Response Object: %s", deploySecretString)
-
-	if _, _, err := client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest); err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error - Create Encryption  for Project(%s)- Details: %+v", projectID, err)
-	}
-
 	currentModel.Id = aws.String(strconv.FormatInt(randInt64(), 10))
 
 	return handler.ProgressEvent{
@@ -87,61 +64,31 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// validateRequest function to validate the request
-func validateRequest(req *handler.Request, requiredFields []string, currentModel *Model) (handler.ProgressEvent, *mongodbatlas.Client, error) {
-	// Validate required fields in the request
-	if modelValidation := validateModel(requiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil, errors.New("required field not found")
-	}
-
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
-	client, handlerError := util.NewMongoDBClient(*req, currentModel.Profile)
-	if handlerError != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
-		return *handlerError, nil, errors.New(handlerError.Message)
-	}
-
-	// Check if  already exist
-	if !isExist(client, currentModel) {
-		_, _ = logger.Warnf("resource not found %s", *currentModel.Id)
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Resource Not Found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil, errors.New(constants.ResourceNotFound)
-	}
-	return handler.ProgressEvent{}, client, nil
-}
-
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	_, _ = logger.Debugf("Read snapshot for Request() currentModel:%+v", currentModel)
-
-	// validate the request
-	event, client, err := validateRequest(&req, ReadAndDeleteRequiredFields, currentModel)
-	if err != nil {
-		if err.Error() == constants.ResourceNotFound {
-			return event, nil
-		}
-		return event, err
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ReadAndDeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// API call
-	projectID := *currentModel.ProjectId
-	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
-	if err != nil {
-		return handler.NewProgressEvent(), fmt.Errorf("error fetching encryption at rest configuration for project (%s): %s", projectID, err)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
-	currentModel.AwsKms.CustomerMasterKeyID = &encryptionAtRest.AwsKms.CustomerMasterKeyID
-	currentModel.AwsKms.Enabled = encryptionAtRest.AwsKms.Enabled
-	currentModel.AwsKms.RoleID = &encryptionAtRest.AwsKms.RoleID
-	currentModel.AwsKms.Region = &encryptionAtRest.AwsKms.Region
 
-	currentModelString, _ := json.Marshal(currentModel)
-	log.Printf("Response Object: %s", currentModelString)
+	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if pe := validateExist(info); pe != nil {
+		return *pe, nil
+	}
+
+	currentModel.AwsKms.CustomerMasterKeyID = info.AwsKms.CustomerMasterKeyID
+	currentModel.AwsKms.Enabled = info.AwsKms.Enabled
+	currentModel.AwsKms.RoleID = info.AwsKms.RoleId
+	currentModel.AwsKms.Region = info.AwsKms.Region
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -150,44 +97,30 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	_, _ = logger.Debugf("Update - Encryption for Request() currentModel:%+v", currentModel)
-
-	// validate the request
-	event, client, err := validateRequest(&req, CreateAndUpdateRequiredFields, currentModel)
-	if err != nil {
-		if err.Error() == constants.ResourceNotFound {
-			return event, nil
-		}
-		return event, err
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateAndUpdateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
-	// API call
-	projectID := *currentModel.ProjectId
-	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
-	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting encryption at rest configuration for project (%s): %s", projectID, err)
-	}
-	// Create Atlas API Request Object
-	_, _ = logger.Debug("Create - Encryption at rest starts ")
 
-	encryptionAtRest := &mongodbatlas.EncryptionAtRest{
-		AwsKms: mongodbatlas.AwsKms{
-			Enabled:             currentModel.AwsKms.Enabled,
-			CustomerMasterKeyID: *currentModel.AwsKms.CustomerMasterKeyID,
-			RoleID:              *currentModel.AwsKms.RoleID,
-			Region:              *currentModel.AwsKms.Region,
-		},
-		GroupID: projectID,
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
-	deploySecretString, _ := json.Marshal(encryptionAtRest)
-	log.Printf("Response Object: %s", deploySecretString)
 
-	// API call to create
-	_, _, err = client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest)
+	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error - Create Encryption  for Project(%s)- Details: %+v", projectID, err)
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if pe := validateExist(info); pe != nil {
+		return *pe, nil
+	}
+
+	_, resp, err = client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{
@@ -197,57 +130,53 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	_, _ = logger.Debugf("Delete encryption for Request() currentModel:%+v", currentModel)
-
-	// validate the request
-	event, client, err := validateRequest(&req, ReadAndDeleteRequiredFields, currentModel)
-	if err != nil {
-		if err.Error() == constants.ResourceNotFound {
-			return event, nil
-		}
-		return event, err
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(ReadAndDeleteRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	// API call
-	projectID := *currentModel.ProjectId
-	_, err = client.EncryptionsAtRest.Delete(context.Background(), projectID)
-	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting encryption at rest configuration for project (%s): %s", projectID, err)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
+
+	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	if pe := validateExist(info); pe != nil {
+		return *pe, nil
+	}
+
+	params := &admin.EncryptionAtRest{
+		AwsKms: &admin.AWSKMSConfiguration{Enabled: aws.Bool(false)},
+	}
+	_, resp, err = client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
 	}, nil
 }
-func isExist(client *mongodbatlas.Client, currentModel *Model) bool {
-	projectID := *currentModel.ProjectId
-	encryptionAtRest, _, err := client.EncryptionsAtRest.Get(context.Background(), projectID)
-	if err != nil {
-		return false
-	}
-	if encryptionAtRest != nil && *encryptionAtRest.AwsKms.Enabled {
-		return true
-	}
 
-	return false
-}
-
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// no-op
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "List Complete",
-		ResourceModel:   currentModel,
-	}, nil
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-// function to set logger
-func setup() {
-	util.SetupLogger("mongodb-atlas-project")
+func validateExist(info *admin.EncryptionAtRest) *handler.ProgressEvent {
+	if info != nil && info.AwsKms != nil && aws.BoolValue(info.AwsKms.Enabled) {
+		return nil
+	}
+	return &handler.ProgressEvent{
+		OperationStatus:  handler.Failed,
+		Message:          "Resource Not Found",
+		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
 }
 
 func randInt64() int64 {
@@ -258,7 +187,13 @@ func randInt64() int64 {
 	return val.Int64()
 }
 
-// function to validate inputs to all actions
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
+func (m *Model) getParams() *admin.EncryptionAtRest {
+	return &admin.EncryptionAtRest{
+		AwsKms: &admin.AWSKMSConfiguration{
+			Enabled:             m.AwsKms.Enabled,
+			CustomerMasterKeyID: m.AwsKms.CustomerMasterKeyID,
+			RoleId:              m.AwsKms.RoleID,
+			Region:              m.AwsKms.Region,
+		},
+	}
 }

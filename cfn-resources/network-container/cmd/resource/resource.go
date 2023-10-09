@@ -16,32 +16,12 @@ package resource
 
 import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
-// Create handles the Create event from the Cloudformation service.
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return createOperation(req, prevModel, currentModel)
-}
-
-// Read handles the Read event from the Cloudformation service.
-func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return readOperation(req, prevModel, currentModel)
-}
-
-// Update handles the Update event from the Cloudformation service.
-func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return updateOperation(req, prevModel, currentModel)
-}
-
-// Delete handles the Delete event from the Cloudformation service.
-func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return deleteOperation(req, prevModel, currentModel)
-}
-
-// List handles the List event from the Cloudformation service.
-func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return listOperation(req, prevModel, currentModel)
+func setup() {
+	util.SetupLogger("mongodb-atlas-network-container")
 }
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {

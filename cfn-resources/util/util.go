@@ -23,11 +23,13 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -35,7 +37,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20230201008/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20231001001/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -439,4 +441,29 @@ func AreStringPtrEqual(p1, p2 *string) bool {
 		return false
 	}
 	return *p1 == *p2
+}
+
+// setDefaultProfileIfNotDefined can be called at the beginning of the CRUDL methods to set default profile if not defined
+func SetDefaultProfileIfNotDefined(p **string) {
+	if p != nil && !IsStringPresent(*p) {
+		*p = aws.String(profile.DefaultProfile)
+	}
+}
+
+func StrPtrToIntPtr(str *string) *int {
+	if !IsStringPresent(str) {
+		return nil
+	}
+	if val, err := strconv.Atoi(*str); err == nil {
+		return &val
+	}
+	return nil
+}
+
+func IntPtrToStrPtr(i *int) *string {
+	if i == nil {
+		return nil
+	}
+	str := strconv.Itoa(*i)
+	return &str
 }

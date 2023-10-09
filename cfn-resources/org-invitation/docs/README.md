@@ -188,3 +188,4 @@ Date and time when MongoDB Cloud sent the invitation. MongoDB Cloud represents t
 #### InviterUsername
 
 Email address of the MongoDB Cloud user who sent the invitation to join the organization.
+

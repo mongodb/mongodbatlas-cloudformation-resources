@@ -24,7 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 Human-readable label that identifies the MongoDB collection that stores words and their applicable synonyms.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

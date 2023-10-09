@@ -1,7 +1,8 @@
 {
     "desiredResourceState": {
         "ProjectId": "$GroupId",
-        "ClusterName": "$ClusterName",
+        "InstanceName": "$ClusterName",
+        "InstanceType" : "cluster",
         "DeliveryType": "download",
         "SnapshotId": "",
         "Id": "",

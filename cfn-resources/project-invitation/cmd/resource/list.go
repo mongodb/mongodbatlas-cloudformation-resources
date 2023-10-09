@@ -16,77 +16,53 @@ package resource
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
+
+	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
+
+	errValidation := validateModel(ListRequiredFields, currentModel)
+	if errValidation != nil {
+		return *errValidation, nil
 	}
 
 	if !util.IsStringPresent(currentModel.Profile) {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	// Create atlas client
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	pageNum := 0
-	itemsPerPage := 500
-	includeCount := true
-
-	if currentModel.ListOptions != nil {
-		if currentModel.ListOptions.PageNum != nil {
-			pageNum = *currentModel.ListOptions.PageNum
-		}
-
-		if currentModel.ListOptions.IncludeCount != nil {
-			includeCount = *currentModel.ListOptions.IncludeCount
-		}
-
-		if currentModel.ListOptions.ItemsPerPage != nil {
-			itemsPerPage = *currentModel.ListOptions.ItemsPerPage
-		}
+	listOptions := &admin.ListProjectInvitationsApiParams{
+		Username: currentModel.Username,
+		GroupId:  *currentModel.ProjectId,
 	}
 
-	listOptions := &admin.ListProjectIpAccessListsApiParams{
-		GroupId:      *currentModel.ProjectId,
-		IncludeCount: &includeCount,
-		ItemsPerPage: &itemsPerPage,
-		PageNum:      &pageNum,
-	}
-
-	result, resp, err := client.AtlasV2.ProjectIPAccessListApi.ListProjectIpAccessListsWithParams(context.Background(), listOptions).Execute()
+	invitations, res, err := client.AtlasV2.ProjectsApi.ListProjectInvitationsWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
-		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp), nil
+		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	mm := make([]AccessListDefinition, 0)
-	for i := range result.Results {
-		var m AccessListDefinition
-		m.completeByConnection(result.Results[i])
-		mm = append(mm, m)
+	var invites []interface{}
+	for i := range invitations {
+		invite := invitationAPIRequestToModel(currentModel, &invitations[i])
+		invites = append(invites, invite)
 	}
-	currentModel.AccessList = mm
-	// create list with 1
-	models := []interface{}{}
-	models = append(models, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "List Complete",
-		ResourceModels:  models,
+		ResourceModels:  invites,
 	}, nil
 }

@@ -75,3 +75,14 @@ jobs:
           shopt -s globstar # enable globbing
           cfn-lint
         shell: bash
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: run-unit-test
+        run: make unit-test
+        shell: bash
+        working-directory: cfn-resources

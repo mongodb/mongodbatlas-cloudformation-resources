@@ -21,52 +21,47 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
+
+func setup() {
+	util.SetupLogger("mongodb-atlas-global-cluster-config")
+}
 
 var RequiredFields = []string{constants.ClusterName, constants.ProjectID}
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
-	// Validate required fields in the request
-	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	if errValidation := validateModel(RequiredFields, currentModel); errValidation != nil {
+		return *errValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	// Create Atlas API Request Object
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
-
-	// create namespaces
 	nameSpaces := currentModel.ManagedNamespaces
-	addManagedNamespaces(context.Background(), client, nameSpaces, projectID, clusterName)
-	// add zone mappings
-	customZoneMappings := modelToCustomZoneMappings(currentModel.CustomZoneMappings)
 
-	// API call to create
-	_, _, err := client.GlobalClusters.AddCustomZoneMappings(context.Background(), projectID, clusterName, &mongodbatlas.CustomZoneMappingsRequest{
-		CustomZoneMappings: customZoneMappings,
-	})
+	if err := createManagedNamespaces(context.Background(), client, nameSpaces, projectID, clusterName); err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+		}, nil
+	}
+
+	_, _, err := client.AtlasV2.GlobalClustersApi.CreateCustomZoneMapping(context.Background(), projectID, clusterName, newCustomZoneMappings(currentModel)).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -84,31 +79,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
-	// Validate required fields in the request
-	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	if errValidation := validateModel(RequiredFields, currentModel); errValidation != nil {
+		return *errValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
-	// Check if  already exist
-	if !isExist(*client, currentModel) {
-		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
-	}
-	// method call to read configuration
-	config, event, err := ReadConfig(*client, currentModel)
+	config, event, err := ReadConfig(client, currentModel)
 	if err != nil {
-		_, _ = logger.Warnf("error reading MongoDB Global Cluster Configuration (%s): %v", *currentModel.ClusterName, err)
+		if config == nil {
+			return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+		}
+
 		return event, nil
 	}
 	return handler.ProgressEvent{
@@ -117,26 +105,27 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModel:   config,
 	}, nil
 }
-func ReadConfig(client mongodbatlas.Client, currentModel *Model) (*Model, handler.ProgressEvent, error) {
-	projectID := *currentModel.ProjectId
-	ClusterName := *currentModel.ClusterName
 
-	// API call to read configuration
-	globalCluster, resp, err := client.GlobalClusters.Get(context.Background(), projectID, ClusterName)
+func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handler.ProgressEvent, error) {
+	projectID := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName
+
+	globalCluster, resp, err := client.AtlasV2.GlobalClustersApi.GetManagedNamespace(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return nil, handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
-		return nil, progressevents.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
-			resp.Response), err
+
+		return nil, progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to fetch managed namespace : %s", err.Error()),
+			resp), err
 	}
+
 	nameSpaces := globalCluster.ManagedNamespaces
 	zoneMappings := globalCluster.CustomZoneMapping
-
-	if len(nameSpaces) == 0 && len(zoneMappings) == 0 {
+	if len(nameSpaces) == 0 && len(*zoneMappings) == 0 {
 		return nil, handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "resource Not Found",
@@ -146,7 +135,7 @@ func ReadConfig(client mongodbatlas.Client, currentModel *Model) (*Model, handle
 	return readModel, handler.ProgressEvent{}, nil
 }
 
-func newModel(globalCluster *mongodbatlas.GlobalCluster, currentModel *Model) *Model {
+func newModel(globalCluster *admin.GeoSharding, currentModel *Model) *Model {
 	readModel := new(Model)
 	readModel.ProjectId = currentModel.ProjectId
 	readModel.ClusterName = currentModel.ClusterName
@@ -158,7 +147,7 @@ func newModel(globalCluster *mongodbatlas.GlobalCluster, currentModel *Model) *M
 	return readModel
 }
 
-func flattenManagedNamespaces(managedNamespaces []mongodbatlas.ManagedNamespace) []ManagedNamespace {
+func flattenManagedNamespaces(managedNamespaces []admin.ManagedNamespaces) []ManagedNamespace {
 	var results []ManagedNamespace
 	for ind := range managedNamespaces {
 		namespace := ManagedNamespace{
@@ -182,25 +171,20 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
-	// Validate required fields in the request
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create MongoDb Atlas Client using keys
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	// Check if  already exist
-	if !isExist(*client, currentModel) {
-		return progressevents.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
+
+	if !isExist(client, currentModel) {
+		return progressevent.GetFailedEventByCode("Resource Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
 	projectID := *currentModel.ProjectId
@@ -220,9 +204,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		removeManagedNamespaces(context.Background(), client, remove, projectID, clusterName)
 	}
 	if currentModel.RemoveAllZoneMapping != nil && *currentModel.RemoveAllZoneMapping {
-		_, _, err := client.GlobalClusters.DeleteCustomZoneMappings(context.Background(), projectID, clusterName)
+		_, _, err := client.AtlasV2.GlobalClustersApi.DeleteAllCustomZoneMappings(context.Background(), projectID, clusterName).Execute()
 		if err != nil {
-			return progressevents.GetFailedEventByCode(fmt.Sprintf("Failed to remove custom zones : %s", err.Error()),
+			return progressevent.GetFailedEventByCode(fmt.Sprintf("Failed to remove custom zones : %s", err.Error()),
 				cloudformation.HandlerErrorCodeInvalidRequest), nil
 		}
 	}
@@ -232,11 +216,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func setup() {
-	util.SetupLogger("mongodb-atlas-global-cluster-config")
-}
-
-func isExist(client mongodbatlas.Client, currentModel *Model) bool {
+func isExist(client *util.MongoDBClient, currentModel *Model) bool {
 	config, _, err := ReadConfig(client, currentModel)
 	return err == nil && config != nil
 }
@@ -246,53 +226,56 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-func removeManagedNamespaces(ctx context.Context, conn *mongodbatlas.Client, remove []ManagedNamespace, projectID, clusterName string) {
+func removeManagedNamespaces(ctx context.Context, conn *util.MongoDBClient, remove []ManagedNamespace, projectID, clusterName string) {
 	for _, m := range remove {
-		addManagedNamespace := &mongodbatlas.ManagedNamespace{
-			Collection:     cast.ToString(m.Collection),
-			Db:             cast.ToString(m.Db),
-			CustomShardKey: cast.ToString(m.CustomShardKey),
+		addManagedNamespace := &admin.DeleteManagedNamespaceApiParams{
+			Collection:  m.Collection,
+			Db:          m.Db,
+			ClusterName: clusterName,
+			GroupId:     projectID,
 		}
-		addManagedNamespace.IsCustomShardKeyHashed = aws.Bool(*m.IsCustomShardKeyHashed)
-		addManagedNamespace.IsShardKeyUnique = aws.Bool(*m.IsShardKeyUnique)
-		_, _, err := conn.GlobalClusters.DeleteManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
+
+		_, _, err := conn.AtlasV2.GlobalClustersApi.DeleteManagedNamespaceWithParams(ctx, addManagedNamespace).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("error while removing namespace:%+v", err)
 		}
 	}
 }
 
-func addManagedNamespaces(ctx context.Context, client *mongodbatlas.Client, nameSpaces []ManagedNamespace, projectID, clusterName string) {
+func newCustomZoneMappings(currentModel *Model) *admin.CustomZoneMappings {
+	return &admin.CustomZoneMappings{
+		CustomZoneMappings: modelToCustomZoneMappings(currentModel.CustomZoneMappings),
+	}
+}
+
+func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, nameSpaces []ManagedNamespace, projectID, clusterName string) error {
 	for _, mn := range nameSpaces {
-		addManagedNamespace := &mongodbatlas.ManagedNamespace{
-			Collection:     cast.ToString(mn.Collection),
-			Db:             cast.ToString(mn.Db),
-			CustomShardKey: cast.ToString(mn.CustomShardKey),
+		addManagedNamespace := &admin.ManagedNamespace{
+			Collection:     mn.Collection,
+			Db:             mn.Db,
+			CustomShardKey: mn.CustomShardKey,
 		}
 		addManagedNamespace.IsCustomShardKeyHashed = mn.IsCustomShardKeyHashed
 		addManagedNamespace.IsShardKeyUnique = mn.IsShardKeyUnique
-		_, _, err := client.GlobalClusters.AddManagedNamespace(ctx, projectID, clusterName, addManagedNamespace)
+		_, _, err := client.AtlasV2.GlobalClustersApi.CreateManagedNamespace(ctx, projectID, clusterName, addManagedNamespace).Execute()
 		if err != nil {
-			_, _ = logger.Warnf("error while adding namespace:%+v", err)
+			return err
 		}
 	}
+
+	return nil
 }
 
-func modelToCustomZoneMapping(tfMap ZoneMapping) *mongodbatlas.CustomZoneMapping {
-	return &mongodbatlas.CustomZoneMapping{
-		Location: cast.ToString(tfMap.Location),
-		Zone:     cast.ToString(tfMap.Zone),
-	}
-}
-
-func modelToCustomZoneMappings(tfList []ZoneMapping) []mongodbatlas.CustomZoneMapping {
-	apiObjects := make([]mongodbatlas.CustomZoneMapping, len(tfList))
+func modelToCustomZoneMappings(tfList []ZoneMapping) []admin.ZoneMapping {
+	apiObjects := make([]admin.ZoneMapping, len(tfList))
 	for i, tfMapRaw := range tfList {
-		if tfMapRaw == (ZoneMapping{}) || tfMapRaw.Location == nil || tfMapRaw.Zone == nil {
-			continue
+		if util.IsStringPresent(tfMapRaw.Location) || util.IsStringPresent(tfMapRaw.Zone) {
+			apiObjects[i] = admin.ZoneMapping{
+				Location: *tfMapRaw.Location,
+				Zone:     *tfMapRaw.Zone,
+			}
 		}
-		apiObject := modelToCustomZoneMapping(tfMapRaw)
-		apiObjects[i] = *apiObject
 	}
+
 	return apiObjects
 }

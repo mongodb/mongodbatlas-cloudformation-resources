@@ -22,11 +22,10 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
@@ -48,11 +47,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -62,11 +56,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if util.IsTrue(atlasAuditing.Enabled) {
+	if aws.BoolValue(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
 			OperationStatus:  handler.Failed,
@@ -90,8 +83,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	atlasAuditing, res, err = atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
@@ -114,11 +106,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -129,11 +116,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Read - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if !util.IsTrue(atlasAuditing.Enabled) {
+	if !aws.BoolValue(atlasAuditing.Enabled) {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
 			OperationStatus:  handler.Failed,
@@ -163,11 +149,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -187,8 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *http.Response
-	enabled := true
-	auditingInput := admin.AuditLog{Enabled: &enabled}
+	auditingInput := admin.AuditLog{}
 	modified := false
 
 	if currentModel.AuditAuthorizationSuccess != nil {
@@ -212,8 +192,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	atlasAuditing, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
@@ -234,11 +213,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if modelValidation != nil {
 		_, _ = log.Debugf("DELETE Validation Error")
 		return *modelValidation, nil
-	}
-
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
@@ -270,13 +244,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, res, err := atlasV2.AuditingApi.UpdateAuditingConfiguration(context.Background(), *currentModel.ProjectId, &auditingInput).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	if err != nil {
-		_, _ = log.Debugf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	// Response
@@ -289,12 +261,11 @@ func isEnabled(client admin.APIClient, currentModel Model) (bool, *handler.Progr
 	atlasAuditing, res, err := client.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
-		_, _ = log.Debugf("Validating enabled - error: %+v", err)
-		er := progress_events.GetFailedEventByResponse(err.Error(), res)
+		er := progressevent.GetFailedEventByResponse(err.Error(), res)
 		return false, &er
 	}
 
-	return util.IsTrue(atlasAuditing.Enabled), nil
+	return aws.BoolValue(atlasAuditing.Enabled), nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

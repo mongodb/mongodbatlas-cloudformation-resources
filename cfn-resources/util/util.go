@@ -467,7 +467,3 @@ func IntPtrToStrPtr(i *int) *string {
 	str := strconv.Itoa(*i)
 	return &str
 }
-
-func IsTrue(boolPtr *bool) bool {
-	return boolPtr != nil && *boolPtr
-}

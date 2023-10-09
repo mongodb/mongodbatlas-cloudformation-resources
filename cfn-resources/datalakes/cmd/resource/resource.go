@@ -198,7 +198,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  handler.Failed,
 			Message:          "Error in deleting the resource",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
-
 	}
 
 	return handler.ProgressEvent{

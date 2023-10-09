@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	currentModel.ProjectId = dataLake.GroupId
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              fmt.Sprintf("Create cloud provider snapshots : %s", dataLake.State),
+		Message:              fmt.Sprintf("Create cloud provider snapshots : %s", *dataLake.State),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 65,
 		CallbackContext: map[string]interface{}{

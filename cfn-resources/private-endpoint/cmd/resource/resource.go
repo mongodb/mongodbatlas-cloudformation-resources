@@ -24,13 +24,12 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20230201008/admin"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 func setup() {
@@ -67,9 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	if currentModel.EnforceConnectionSuccess == nil {
 		currentModel.EnforceConnectionSuccess = aws.Bool(true)
@@ -172,9 +169,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
@@ -214,9 +209,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {

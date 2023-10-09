@@ -46,37 +46,28 @@ func setup() {
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-
-	if modelValidation := validator.ValidateModel(CreateAndUpdateRequiredFields, currentModel); modelValidation != nil {
-		return *modelValidation, nil
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if err := validator.ValidateModel(CreateAndUpdateRequiredFields, currentModel); err != nil {
+		return *err, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
 	}
 
-	client, handlerError := util.NewMongoDBClient(req, currentModel.Profile)
-	if handlerError != nil {
-		return *handlerError, errors.New(handlerError.Message)
-	}
-
-	projectID := *currentModel.ProjectId
-	encryptionAtRest := &mongodbatlas.EncryptionAtRest{
-		AwsKms: mongodbatlas.AwsKms{
+	params := &admin.EncryptionAtRest{
+		AwsKms: &admin.AWSKMSConfiguration{
 			Enabled:             currentModel.AwsKms.Enabled,
-			CustomerMasterKeyID: *currentModel.AwsKms.CustomerMasterKeyID,
-			RoleID:              *currentModel.AwsKms.RoleID,
-			Region:              *currentModel.AwsKms.Region,
+			CustomerMasterKeyID: currentModel.AwsKms.CustomerMasterKeyID,
+			RoleId:              currentModel.AwsKms.RoleID,
+			Region:              currentModel.AwsKms.Region,
 		},
-		GroupID: projectID,
 	}
-	deploySecretString, _ := json.Marshal(encryptionAtRest)
-	log.Printf("Response Object: %s", deploySecretString)
-
-	if _, _, err := client.EncryptionsAtRest.Create(context.Background(), encryptionAtRest); err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error - Create Encryption  for Project(%s)- Details: %+v", projectID, err)
+	_, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-
 	currentModel.Id = aws.String(strconv.FormatInt(randInt64(), 10))
 
 	return handler.ProgressEvent{

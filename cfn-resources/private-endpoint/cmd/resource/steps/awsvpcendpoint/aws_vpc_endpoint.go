@@ -22,7 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 )
 
 func newEc2Client(region string, req handler.Request) *ec2.EC2 {
@@ -68,7 +68,7 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
 		if err != nil {
-			fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
+			fpe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
 				cloudformation.HandlerErrorCodeGeneralServiceException)
 			return nil, &fpe
 		}
@@ -100,7 +100,7 @@ func Delete(req handler.Request, interfaceEndpoints []string, region string) *ha
 	_, err := svc.DeleteVpcEndpoints(&connection)
 
 	if err != nil {
-		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
+		fpe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
 			cloudformation.HandlerErrorCodeGeneralServiceException)
 		return &fpe
 	}

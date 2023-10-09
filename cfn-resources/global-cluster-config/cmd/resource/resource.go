@@ -119,7 +119,7 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
 
-		return nil, progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Client : %s", err.Error()),
+		return nil, progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to fetch managed namespace : %s", err.Error()),
 			resp), err
 	}
 

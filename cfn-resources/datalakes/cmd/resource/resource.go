@@ -23,7 +23,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
@@ -129,25 +128,35 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if !isExist(currentModel, client) {
-		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.TenantName)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource Not Found",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// create request object
 	projectID := *currentModel.ProjectId
-	dataLakeReq := &admin.DataLakeTenant{
-		CloudProviderConfig: expandCloudProviderConfig(currentModel),
-		DataProcessRegion:   expandDataLakeDataProcessRegion(currentModel.DataProcessRegion),
+	bodyRequest := &admin.UpdateFederatedDatabaseApiParams{
+		GroupId:            projectID,
+		TenantName:         *currentModel.TenantName,
+		SkipRoleValidation: admin.PtrBool(false),
+		DataLakeTenant: &admin.DataLakeTenant{
+			CloudProviderConfig: expandCloudProviderConfig(currentModel),
+			DataProcessRegion:   expandDataLakeDataProcessRegion(currentModel.DataProcessRegion),
+		},
 	}
 
-	// API call to update
-	dataLake, resp, err := client.AtlasV2.DataFederationApi.UpdateFederatedDatabase(context.Background(), projectID, *currentModel.TenantName, dataLakeReq).Execute()
+	dataLake, resp, err := client.AtlasV2.DataFederationApi.UpdateFederatedDatabaseWithParams(context.Background(), bodyRequest).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		if resp != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error in updating the resource",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
 	}
+
 	currentModel.ProjectId = dataLake.GroupId
 
 	return handler.ProgressEvent{
@@ -181,7 +190,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, resp, err := client.AtlasV2.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		if resp != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Error in deleting the resource",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
+
 	}
 
 	return handler.ProgressEvent{

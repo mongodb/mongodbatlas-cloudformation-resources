@@ -196,7 +196,6 @@ func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID strin
 					OperationStatus:  handler.Failed,
 					Message:          err.Error(),
 					HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
-
 			}
 			callBackContext.PrivateEndpoints[i].Status = *privateEndpointResponse.ConnectionStatus
 

@@ -59,10 +59,10 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING}}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
 
-      # ldap-configuration
-      LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD }}
-      LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME }}
-      LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME }}
+      # LDAP config
+      LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}
+      LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME_PUBLISHING }}
+      LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD_PUBLISHING }}
 
       # third party integration
       WEBHOOK_CREATE_URL: ${{ secrets.WEBHOOK_CREATE_URL }}

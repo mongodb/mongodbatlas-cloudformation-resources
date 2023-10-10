@@ -189,9 +189,7 @@
     "/properties/Profile",
     "/properties/ClusterName",
     "/properties/CollectionName",
-    "/properties/Database",
-    "/properties/Mappings",
-    "/properties/SearchAnalyzer"
+    "/properties/Database"
   ],
   "handlers": {
     "create": {

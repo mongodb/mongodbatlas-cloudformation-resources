@@ -245,8 +245,7 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.EndpointServiceName = &c.EndpointServiceName
 	m.ErrorMessage = &c.ErrorMessage
 	m.Status = &c.Status
-
-	copy(m.InterfaceEndpoints, c.InterfaceEndpoints)
+	m.InterfaceEndpoints = c.InterfaceEndpoints
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {

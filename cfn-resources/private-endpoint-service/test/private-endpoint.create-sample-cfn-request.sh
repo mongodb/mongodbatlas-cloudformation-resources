@@ -15,15 +15,7 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-region="${1}"
-vpcId="${2}"
-subnetId="${3}"
-
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_ORG_ID" \
+jq --arg projId "$PROJECT_ID" \
 	--arg region "$region" \
-	--arg vpcId "$vpcId" \
-	--arg subnetId "$subnetId" \
-	'.desiredResourceState.GroupId?|=$org | .desiredResourceState.PrivateEndpoints[0].VpcId?|=$vpcId | .desiredResourceState.PrivateEndpoints[0].SubnetIds[0]?|=$subnetId | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.Region?|=$region' \
+	'.desiredResourceState.ProjectId?|=$projId | .desiredResourceState.Region?|=$region' \
 	"$(dirname "$0")/private-endpoint.sample-cfn-request.json"

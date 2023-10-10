@@ -177,24 +177,30 @@ func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID strin
 
 	completed := true
 	ids := make([]string, len(callBackContext.PrivateEndpoints))
-
 	for i := range callBackContext.PrivateEndpoints {
 		ids[i] = callBackContext.PrivateEndpoints[i].InterfaceEndpointID
 		if callBackContext.PrivateEndpoints[i].Status != StatusAvailable {
 			privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(),
 				groupID,
 				ProviderName,
-				callBackContext.ID,
-				callBackContext.PrivateEndpoints[i].InterfaceEndpointID).Execute()
+				callBackContext.PrivateEndpoints[i].InterfaceEndpointID,
+				callBackContext.ID).Execute()
 			if err != nil {
-				pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
-					response)
-				return nil, &pe
+				if response != nil {
+					pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
+						response)
+					return nil, &pe
+				}
+
+				return nil, &handler.ProgressEvent{
+					OperationStatus:  handler.Failed,
+					Message:          err.Error(),
+					HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
+
 			}
+			callBackContext.PrivateEndpoints[i].Status = *privateEndpointResponse.ConnectionStatus
 
-			callBackContext.PrivateEndpoints[i].Status = *privateEndpointResponse.Status
-
-			switch *privateEndpointResponse.Status {
+			switch *privateEndpointResponse.ConnectionStatus {
 			case StatusPendingAcceptance, StatusPending:
 				completed = false
 			case StatusAvailable:
@@ -238,12 +244,20 @@ func Delete(mongodbClient *util.MongoDBClient, groupID string, endpointServiceID
 		_, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(),
 			groupID,
 			ProviderName,
-			endpointServiceID,
-			intEndpoints).Execute()
+			intEndpoints,
+			endpointServiceID).Execute()
 		if err != nil {
-			pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting private endpoint : %s",
-				err.Error()),
-				response)
+			if response != nil {
+				pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting private endpoint : %s",
+					err.Error()),
+					response)
+				return &pe
+			}
+
+			pe := handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
 			return &pe
 		}
 	}

@@ -212,9 +212,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				map[string]interface{}{"stateName": "DELETING"}, currentModel, 20), nil
 		}
 	}
+
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response), nil
+		if response != nil {
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+				response), nil
+		}
+
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
 	}
 
 	if privateEndpointResponse == nil {
@@ -231,7 +239,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if epr != nil {
 			return *epr, nil
 		}
-
 		epr = awsvpcendpoint.Delete(req, privateEndpoint.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
@@ -242,8 +249,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			*currentModel.Id).Execute()
 
 		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-				response), nil
+			if response != nil {
+				return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+					response), nil
+			}
+
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
 		}
 	}
 

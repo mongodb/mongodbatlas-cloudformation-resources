@@ -84,8 +84,10 @@
     ],
     "readOnlyProperties": [
         "/properties/Id",
-        "/properties/InterfaceEndpoints",
-        "/properties/EndpointServiceName"
+        "/properties/EndpointServiceName",
+        "/properties/ErrorMessage",
+        "/properties/Status",
+        "/properties/InterfaceEndpoints"
     ],
     "createOnlyProperties": [
         "/properties/ProjectId",

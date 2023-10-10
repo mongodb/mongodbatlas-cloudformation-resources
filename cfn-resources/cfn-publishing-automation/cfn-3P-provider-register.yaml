@@ -1,6 +1,5 @@
 description: |-
   *Replace this default text with instructions or other information about your document.*  
-
   ---
   # CFN-3P-Provider-Register
   This automation document builds and registers  3rd party resource providers. This automation document can register resources in a single AWS account or in multiple accounts and regions. However, multi-account and regions require a role. Please refer to  the [SSM multi-account ](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation-multiple-accounts-and-regions.html) documentation.
@@ -9,7 +8,6 @@ description: |-
   * JAVA [link to another webpage](https://aws.amazon.com/)
   * Go [link to another webpage](https://aws.amazon.com/)
   * Python (Coming soon) [link to another webpage](https://aws.amazon.com/)
-
   In order for CodeBuild to have the permission to build an submit the resource, a role must be created. 
   ##
 schemaVersion: '0.3'
@@ -67,7 +65,6 @@ parameters:
     type: String
     description: |-
       The S3 bucket to which CloudFormation delivers the contract test execution logs.
-
       CloudFormation delivers the logs by the time contract testing has completed and the extension has been assigned a test type status of PASSED or FAILED.
 mainSteps:
   - name: Get_Region
@@ -87,7 +84,6 @@ mainSteps:
       Script: |-
         import urllib
         import json
-
         def get_config(url,path,branchname):
             """
             Determines the runtime.
@@ -109,7 +105,6 @@ mainSteps:
             except: 
               print('Resource configuration not found')
               raise Exception('Resource configuration not found')
-
         def is_live(url):
             """
             Checks that a given URL is reachable.
@@ -117,15 +112,14 @@ mainSteps:
             """
             request = urllib.request.Request(url)
             request.get_method = lambda: 'HEAD'
-
             try:
                 urllib.request.urlopen(request)
             except urllib.request.HTTPError:
                 print('Repository not found')
                 raise Exception('Repository not found')
-        
-        
-        
+
+
+
         def script_handler(events, context):
           is_live(events['url'])
           print(events['branchname'])
@@ -137,7 +131,6 @@ mainSteps:
             return {'typename': typename, 'runtime': runtime, 'path': '.'}
           else:
             return {'typename': typename, 'runtime': runtime, 'path': events['path']}
-
       InputPayload:
         url: '{{ Repository }}'
         path: '{{ Path }}'
@@ -242,7 +235,7 @@ mainSteps:
         - FAULT
         - STOPPED
         - TIMED_OUT
-      timeoutSeconds: 7200
+    timeoutSeconds: 10800
   - name: Check_Build_Status
     action: 'aws:assertAwsResourceProperty'
     inputs:

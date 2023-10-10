@@ -11,6 +11,13 @@
       "Units": "RAW",
       "Mode": "AVERAGE"
     },
+    "Matchers": [
+      {
+        "FieldName": "TYPE_NAME",
+        "Operator": "EQUALS",
+        "Value": "STANDALONE"
+      }
+    ],
     "Notifications": [
       {
         "TypeName": "EMAIL",

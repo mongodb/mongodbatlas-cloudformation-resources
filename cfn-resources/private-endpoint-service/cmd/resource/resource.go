@@ -32,18 +32,14 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const (
-	providerName = "AWS"
-)
-
 func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint")
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.Region}
-var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.Region}
+var CreateRequiredFields = []string{constants.ProjectID, constants.Region, constants.CloudProvider}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.Region, constants.CloudProvider}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider}
 var ListRequiredFields = []string{constants.ProjectID}
 
 // Create handles the Create event from the Cloudformation service.
@@ -56,6 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
 	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
@@ -69,11 +66,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	switch status {
 	case resource_constats.Init:
-		pe := privateendpointservice.Create(*mongodbClient, *currentModel.Region, *currentModel.ProjectId)
+		pe := privateendpointservice.Create(*mongodbClient, *currentModel.Region, *currentModel.ProjectId, *currentModel.CloudProvider)
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
 		peConnection, completionValidation := privateendpointservice.ValidateCreationCompletion(mongodbClient,
-			*currentModel.ProjectId, req)
+			*currentModel.ProjectId, *currentModel.CloudProvider, req)
 		if completionValidation != nil {
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
@@ -104,7 +101,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.ProjectId, providerName, *currentModel.Id)
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.ProjectId, *currentModel.CloudProvider, *currentModel.Id)
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
@@ -140,7 +137,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(),
-		*currentModel.ProjectId, providerName, *currentModel.Id)
+		*currentModel.ProjectId, *currentModel.CloudProvider, *currentModel.Id)
 
 	if isDeleting(req) {
 		if response.StatusCode == http.StatusNotFound {
@@ -165,7 +162,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	response, err = mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.ProjectId,
-		providerName,
+		*currentModel.CloudProvider,
 		*currentModel.Id)
 
 	if err != nil {
@@ -207,7 +204,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.List(context.Background(),
 		*currentModel.ProjectId,
-		providerName,
+		*currentModel.CloudProvider,
 		params)
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
@@ -246,6 +243,7 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.ErrorMessage = &c.ErrorMessage
 	m.Status = &c.Status
 	m.InterfaceEndpoints = c.InterfaceEndpoints
+	m.CloudProvider = &c.ProviderName
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {

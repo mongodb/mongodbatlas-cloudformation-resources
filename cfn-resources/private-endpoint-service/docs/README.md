@@ -1,6 +1,6 @@
 # MongoDB::Atlas::PrivateEndpointService
 
-The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint
+Creates one private endpoint service for the specified cloud service provider. This cloud service provider manages the private endpoint service for the project. When you create a private endpoint service, MongoDB Cloud creates a network container in the project for the cloud provider for which you create the private endpoint service if one doesn't already exist.
 
 ## Syntax
 
@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>,
+        "<a href="#cloudprovider" title="CloudProvider">CloudProvider</a>" : <i>String</i>
     }
 }
 </pre>
@@ -27,6 +28,7 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
+    <a href="#cloudprovider" title="CloudProvider">CloudProvider</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -60,6 +62,18 @@ Aws Region
 _Required_: Yes
 
 _Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### CloudProvider
+
+Cloud service provider that manages this private endpoint, default : AWS
+
+_Required_: Yes
+
+_Type_: String
+
+_Allowed Values_: <code>AWS</code> | <code>AZURE</code> | <code>GCP</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 

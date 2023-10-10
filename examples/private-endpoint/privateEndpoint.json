@@ -39,7 +39,8 @@
         },
         "Profile": {
           "Ref": "Profile"
-        }
+        },
+        "CloudProvider": "AWS"
       }
     },
     "AWSPrivateEndpoint": {

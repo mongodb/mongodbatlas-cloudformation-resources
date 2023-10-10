@@ -1,5 +1,6 @@
 {
     "ProjectId" : "",
     "Region" : "",
-    "Profile": "default"
+    "Profile": "default",
+    "CloudProvider" : "AWS"
 }

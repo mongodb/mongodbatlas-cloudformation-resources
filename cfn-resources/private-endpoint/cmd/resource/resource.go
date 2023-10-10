@@ -39,7 +39,6 @@ func setup() {
 const (
 	Available         = "AVAILABLE"
 	Rejected          = "REJECTED"
-	CloudProvider     = "CloudProvider"
 	EndpointServiceID = "EndpointServiceId"
 )
 
@@ -51,10 +50,10 @@ func IsTerminalStatus(status string) bool {
 	return status == Available || status == Rejected
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, CloudProvider, EndpointServiceID}
-var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region}
+var CreateRequiredFields = []string{constants.ProjectID, constants.CloudProvider, EndpointServiceID}
+var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region, constants.CloudProvider}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, CloudProvider, EndpointServiceID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider, EndpointServiceID}
 var ListRequiredFields = []string{constants.GroupID}
 
 // Create handles the Create event from the Cloudformation service.
@@ -264,4 +263,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
+func (m *Model) validateCloudProvider() {
+	if m.CloudProvider == nil {
+		m.CloudProvider = aws.String(constants.AWS)
+	}
 }

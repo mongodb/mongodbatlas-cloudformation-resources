@@ -28,7 +28,6 @@ import (
 )
 
 const (
-	ProviderName     = "AWS"
 	AvailableStatus  = "AVAILABLE"
 	InitiatingStatus = "INITIATING"
 )
@@ -51,9 +50,9 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	return nil
 }
 
-func Create(mongodbClient mongodbatlas.Client, region string, groupID string) handler.ProgressEvent {
+func Create(mongodbClient mongodbatlas.Client, region string, groupID string, cloudProvider string) handler.ProgressEvent {
 	privateEndpointRequest := &mongodbatlas.PrivateEndpointConnection{
-		ProviderName: ProviderName,
+		ProviderName: cloudProvider,
 		Region:       region,
 	}
 
@@ -90,7 +89,7 @@ func Create(mongodbClient mongodbatlas.Client, region string, groupID string) ha
 		nil, 20)
 }
 
-func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID string, req handler.Request) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
+func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID, providerName string, req handler.Request) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 
 	err := PrivateEndpointCallBackContext.FillStruct(req.CallbackContext)
@@ -101,7 +100,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), groupID,
-		ProviderName, PrivateEndpointCallBackContext.ID)
+		providerName, PrivateEndpointCallBackContext.ID)
 	if err != nil {
 		ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response)

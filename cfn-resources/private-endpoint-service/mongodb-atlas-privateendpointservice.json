@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpointService",
-    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
+    "description": "Creates one private endpoint service for the specified cloud service provider. This cloud service provider manages the private endpoint service for the project. When you create a private endpoint service, MongoDB Cloud creates a network container in the project for the cloud provider for which you create the private endpoint service if one doesn't already exist.",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-service",
     "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-service/README.md",
     "tagging": {
@@ -71,16 +71,27 @@
         },
         "InterfaceEndpoints": {
             "type": "array",
+            "insertionOrder" : false,
             "description": "List of interface endpoint ids associated to the service",
             "items": {
                 "type": "string"
             }
+        },
+        "CloudProvider": {
+            "type": "string",
+            "description": "Cloud service provider that manages this private endpoint, default : AWS",
+            "enum": [
+                "AWS",
+                "AZURE",
+                "GCP"
+            ]
         }
     },
     "additionalProperties": false,
     "required": [
         "ProjectId",
-        "Region"
+        "Region",
+        "CloudProvider"
     ],
     "readOnlyProperties": [
         "/properties/Id",
@@ -92,13 +103,15 @@
     "createOnlyProperties": [
         "/properties/ProjectId",
         "/properties/Region",
-        "/properties/Profile"
+        "/properties/Profile",
+        "/properties/CloudProvider"
     ],
     "primaryIdentifier": [
         "/properties/Id",
         "/properties/ProjectId",
         "/properties/Region",
-        "/properties/Profile"
+        "/properties/Profile",
+        "/properties/CloudProvider"
     ],
     "handlers": {
         "create": {

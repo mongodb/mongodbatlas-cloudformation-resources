@@ -12,4 +12,5 @@ type Model struct {
 	ProjectId           *string  `json:",omitempty"`
 	Region              *string  `json:",omitempty"`
 	InterfaceEndpoints  []string `json:",omitempty"`
+	CloudProvider       *string  `json:",omitempty"`
 }

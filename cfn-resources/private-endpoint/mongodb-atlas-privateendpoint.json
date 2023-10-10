@@ -31,7 +31,12 @@
         },
         "CloudProvider": {
             "type": "string",
-            "description": "Cloud service provider that manages this private endpoint."
+            "description": "Cloud service provider that manages this private endpoint, default : AWS",
+            "enum": [
+                "AWS",
+                "AZURE",
+                "GCP"
+            ]
         },
         "Id": {
             "description": "Unique string that identifies the private endpoint. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.",

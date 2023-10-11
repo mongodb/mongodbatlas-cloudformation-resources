@@ -264,9 +264,3 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
-
-func (m *Model) validateCloudProvider() {
-	if m.CloudProvider == nil {
-		m.CloudProvider = aws.String(constants.AWS)
-	}
-}

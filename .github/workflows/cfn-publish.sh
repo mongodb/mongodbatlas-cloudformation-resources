@@ -20,7 +20,6 @@ set -Eeou pipefail
 AwsSsmDocumentName="leoantoli-CFN-MongoDB-Atlas-Resource-Register"
 AssumeRole="arn:aws:iam::${AWS_ACCOUNT_ID}:role/DevOpsIntegrationsContractorsSSM"
 AccountIds="${AWS_ACCOUNT_ID}"
-BuilderRole="DevOpsIntegrationsContractors-CodeBuild"
 DocumentVersion="\$DEFAULT"
 DocumentRegion="us-east-1"
 ExecutionRoleName="DevOpsIntegrationsContractorsSSM"
@@ -153,7 +152,6 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg BranchName "${BRANCH_NAME}" \
 		--arg ProjectName "${CodeBuild_Project_Name}" \
 		--arg OtherParams "${OtherParams_string}" \
-		--arg BuilderRole "${BuilderRole}" \
 		--arg AssumeRole "${AssumeRole}" \
 		'.ResourceName[0]?|=$ResourceName |
   .OrgID[0]?|=$OrgID |
@@ -162,7 +160,6 @@ for ResourceName in "${ResourceNames[@]}"; do
   .ProjectName[0]?|=$ProjectName |
   .OtherParams[0]?|=$OtherParams |
   .BranchName[0]?|=$BranchName |
-  .BuilderRole[0]?|=$BuilderRole |
   .AssumeRole[0]?|=$AssumeRole ' \
 		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/params-temp.json"
 

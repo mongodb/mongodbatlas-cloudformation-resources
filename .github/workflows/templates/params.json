@@ -20,9 +20,6 @@
   "OtherParams": [
     "'{\"test\":\"test\"}'"
   ],
-  "BuilderRole": [
-    ""
-  ],
   "AssumeRole": [
     "arn:aws:iam::accountid:role/name"
   ]

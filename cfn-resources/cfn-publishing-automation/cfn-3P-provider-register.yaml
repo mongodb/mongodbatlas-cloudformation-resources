@@ -41,6 +41,7 @@ parameters:
   BuilderRole:
     type: String
     description: The role that allows CodeBuild to build and submit the resource on your behalf
+    default: DevOpsIntegrationsContractors-CodeBuild
   AssumeRole:
     type: String
     description: A role this document can assume

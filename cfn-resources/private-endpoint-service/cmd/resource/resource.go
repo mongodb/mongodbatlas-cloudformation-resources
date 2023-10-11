@@ -40,7 +40,7 @@ var CreateRequiredFields = []string{constants.ProjectID, constants.Region, const
 var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.Region, constants.CloudProvider}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider}
-var ListRequiredFields = []string{constants.ProjectID}
+var ListRequiredFields = []string{constants.ProjectID, constants.CloudProvider}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -218,6 +218,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		m.Region = currentModel.Region
 		m.Profile = currentModel.Profile
 		m.ProjectId = currentModel.ProjectId
+		m.CloudProvider = currentModel.CloudProvider
 		mm = append(mm, m)
 	}
 
@@ -243,7 +244,6 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.ErrorMessage = &c.ErrorMessage
 	m.Status = &c.Status
 	m.InterfaceEndpoints = c.InterfaceEndpoints
-	m.CloudProvider = &c.ProviderName
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {

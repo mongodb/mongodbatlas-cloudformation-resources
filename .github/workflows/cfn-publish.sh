@@ -24,7 +24,6 @@ BuilderRole="DevOpsIntegrationsContractors-CodeBuild"
 DocumentVersion="\$DEFAULT"
 DocumentRegion="us-east-1"
 ExecutionRoleName="DevOpsIntegrationsContractorsSSM"
-Repository="https://github.com/mongodb/mongodbatlas-cloudformation-resources"
 
 # improve this code
 if [ -z "${REGIONS+x}" ]; then
@@ -147,8 +146,7 @@ for ResourceName in "${ResourceNames[@]}"; do
     .[0].Regions?|=($Regions | gsub(" "; "") | split(",")) ' \
 		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/locations-temp.json"
 
-	jq --arg Repository "${Repository}" \
-		--arg ResourceName "${ResourceName}" \
+	jq --arg ResourceName "${ResourceName}" \
 		--arg OrgID "${ATLAS_ORG_ID}" \
 		--arg PubKey "${ATLAS_PUBLIC_KEY}" \
 		--arg PvtKey "${ATLAS_PRIVATE_KEY}" \
@@ -157,8 +155,7 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg OtherParams "${OtherParams_string}" \
 		--arg BuilderRole "${BuilderRole}" \
 		--arg AssumeRole "${AssumeRole}" \
-		'.Repository[0]?|=$Repository |
-  .ResourceName[0]?|=$ResourceName |
+		'.ResourceName[0]?|=$ResourceName |
   .OrgID[0]?|=$OrgID |
   .PubKey[0]?|=$PubKey |
   .PvtKey[0]?|=$PvtKey |

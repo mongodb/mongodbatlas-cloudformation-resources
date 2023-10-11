@@ -9,6 +9,7 @@ parameters:
     description: |-
       https://github.com/resource
       The URL of the resource's repository
+    default: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources'
   ResourceName:
     type: String
     default: null

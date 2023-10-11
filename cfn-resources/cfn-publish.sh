@@ -8,14 +8,12 @@ otherParams="${2:-}"
 
 if [ -n "${otherParams}" ]; then
 	paramKeys=$(echo "$otherParams" | jq -c -r 'keys[]' | tr '\n' ' ')
-	echo "Exporting the following keys..."
-	echo "$paramKeys"
+	echo "Exporting the following keys: ${paramKeys}"
 	for param in ${paramKeys}; do
 		paramKey="${param}="
 		paramValue=$(echo "$otherParams" | jq -c -r --arg key "$param" '.[$key]')
 		exportString="$paramKey$paramValue"
 		export "${exportString?}"
-		echo
 	done
 fi
 

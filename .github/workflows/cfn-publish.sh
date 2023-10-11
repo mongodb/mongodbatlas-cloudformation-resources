@@ -136,7 +136,6 @@ for ResourceName in "${ResourceNames[@]}"; do
 		esac
 	fi
 
-	Path="cfn-resources/${ResourceName}/"
 	CodeBuild_Project_Name="${ResourceName}-proj-$((1 + RANDOM % 1000))"
 
 	jq --arg ExecutionRoleName "${ExecutionRoleName}" \
@@ -157,7 +156,6 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg BranchName "${BRANCH_NAME}" \
 		--arg ProjectName "${CodeBuild_Project_Name}" \
 		--arg OtherParams "${OtherParams_string}" \
-		--arg Path "${Path}" \
 		--arg BuilderRole "${BuilderRole}" \
 		--arg AssumeRole "${AssumeRole}" \
 		--arg LogDeliveryBucket "${LogDeliveryBucket}" \
@@ -169,7 +167,6 @@ for ResourceName in "${ResourceNames[@]}"; do
   .ProjectName[0]?|=$ProjectName |
   .OtherParams[0]?|=$OtherParams |
   .BranchName[0]?|=$BranchName |
-  .Path[0]?|=$Path |
   .BuilderRole[0]?|=$BuilderRole |
   .AssumeRole[0]?|=$AssumeRole |
   .LogDeliveryBucket[0]?|=$LogDeliveryBucket ' \

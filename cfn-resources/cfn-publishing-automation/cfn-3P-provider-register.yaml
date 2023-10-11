@@ -48,12 +48,6 @@ parameters:
     type: String
     default: null
     description: extra parameters that are specific to resource.
-  Path:
-    type: String
-    default: null
-    description: |-
-      provider/
-      The path of the resource in the repository. Example: https://github.com/resource/provider The path to the resource is provider/. If the repository only contains a single resource, the default value of root will look for the resource in the root of the repository.
   BuilderRole:
     type: String
     description: The role that allows CodeBuild to build and submit the resource on your behalf
@@ -76,88 +70,6 @@ mainSteps:
       - Name: RegionName
         Selector: '$.AvailabilityZones[0].RegionName'
         Type: String
-  - name: Select_Language
-    action: 'aws:executeScript'
-    inputs:
-      Runtime: python3.6
-      Handler: script_handler
-      Script: |-
-        import urllib
-        import json
-        def get_config(url,path,branchname):
-            """
-            Determines the runtime.
-            :param url: A URL
-            :param path: The path to the build directory
-            """
-            try:
-              if path == "root":
-                print('{url}/raw/{branchname}/.rpdk-config'.format(url=url,branchname=branchname))
-                location = '{url}/raw/{branchname}/.rpdk-config'.format(url=url,branchname=branchname)
-              else:
-                print('{url}/raw/{branchname}/{path}.rpdk-config'.format(url=url, path=path,branchname=branchname))
-                location = '{url}/raw/{branchname}/{path}.rpdk-config'.format(url=url, path=path,branchname=branchname)
-              req = urllib.request.Request(location)
-              ##parsing response
-              r = urllib.request.urlopen(req).read()
-              config = json.loads(r.decode('utf-8'))
-              return config
-            except: 
-              print('Resource configuration not found')
-              raise Exception('Resource configuration not found')
-        def is_live(url):
-            """
-            Checks that a given URL is reachable.
-            :param url: A URL
-            """
-            request = urllib.request.Request(url)
-            request.get_method = lambda: 'HEAD'
-            try:
-                urllib.request.urlopen(request)
-            except urllib.request.HTTPError:
-                print('Repository not found')
-                raise Exception('Repository not found')
-
-
-
-        def script_handler(events, context):
-          is_live(events['url'])
-          print(events['branchname'])
-          print('{url}/raw/{branchname}/{path}.rpdk-config'.format(url=events['url'], path=events['path'],branchname=events['branchname']))
-          config = get_config(url=events['url'], path=events['path'],branchname=events['branchname'])
-          runtime = config['language']
-          typename = config['typeName']
-          if events['path'] == "root":
-            return {'typename': typename, 'runtime': runtime, 'path': '.'}
-          else:
-            return {'typename': typename, 'runtime': runtime, 'path': events['path']}
-      InputPayload:
-        url: '{{ Repository }}'
-        path: '{{ Path }}'
-        branchname: '{{ BranchName }}'
-    outputs:
-      - Selector: $.Payload.runtime
-        Type: String
-        Name: runtime
-      - Name: path
-        Selector: $.Payload.path
-        Type: String
-      - Name: resourcename
-        Selector: $.Payload.resourcename
-        Type: String
-      - Name: typename
-        Selector: $.Payload.typename
-        Type: String
-    description: The step reads the .rpdk file and determines what build environment to use.
-  - name: Build_Branch
-    action: 'aws:branch'
-    inputs:
-      Choices:
-        - NextStep: Go_Build_Enviroment
-          Variable: '{{Select_Language.runtime}}'
-          StringEquals: go
-    description: Creates an environment that deploys a 3rd party resource
-    nextStep: Start_Build
   - name: Go_Build_Enviroment
     action: 'aws:executeAwsApi'
     inputs:

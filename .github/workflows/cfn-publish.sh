@@ -17,7 +17,7 @@
 set -Eeou pipefail
 
 # sort these by alphabetical order
-AwsSsmDocumentName="CFN-MongoDB-Atlas-Resource-Register"
+AwsSsmDocumentName="leoantoli-CFN-MongoDB-Atlas-Resource-Register"
 AssumeRole="arn:aws:iam::${AWS_ACCOUNT_ID}:role/DevOpsIntegrationsContractorsSSM"
 AccountIds="${AWS_ACCOUNT_ID}"
 BuilderRole="DevOpsIntegrationsContractors-CodeBuild"

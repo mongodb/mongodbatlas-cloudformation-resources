@@ -3,8 +3,6 @@ description: |
   This automation document builds and registers  3rd party resource providers. This automation document can register resources in a single AWS account or in multiple accounts and regions. However, multi-account and regions require a role. Please refer to  the [SSM multi-account ](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation-multiple-accounts-and-regions.html) documentation.
 schemaVersion: '0.3'
 assumeRole: '{{ AssumeRole }}'
-outputs:
-  - Default_Version.ARN
 parameters:
   Repository:
     type: String
@@ -156,14 +154,3 @@ mainSteps:
       Service: codebuild
       Api: delete-project
       name: '{{ProjectName}}'
-  - name: Default_Version
-    action: 'aws:executeAwsApi'
-    inputs:
-      Service: cloudformation
-      Api: DescribeType
-      Type: RESOURCE
-      TypeName: '{{ Select_Language.typename }}'
-    outputs:
-      - Name: ARN
-        Selector: $.Arn
-        Type: String

@@ -28,8 +28,5 @@
   ],
   "AssumeRole": [
     "arn:aws:iam::711489243244:role/DevOpsIntegrationsContractorsSSM"
-  ],
-  "LogDeliveryBucket": [
-    "atlascfnpublishing"
   ]
 }

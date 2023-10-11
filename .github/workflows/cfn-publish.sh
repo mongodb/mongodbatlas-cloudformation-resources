@@ -24,7 +24,6 @@ BuilderRole="DevOpsIntegrationsContractors-CodeBuild"
 DocumentVersion="\$DEFAULT"
 DocumentRegion="us-east-1"
 ExecutionRoleName="DevOpsIntegrationsContractorsSSM"
-LogDeliveryBucket="atlascfnpublishing"
 Repository="https://github.com/mongodb/mongodbatlas-cloudformation-resources"
 
 # improve this code
@@ -158,7 +157,6 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg OtherParams "${OtherParams_string}" \
 		--arg BuilderRole "${BuilderRole}" \
 		--arg AssumeRole "${AssumeRole}" \
-		--arg LogDeliveryBucket "${LogDeliveryBucket}" \
 		'.Repository[0]?|=$Repository |
   .ResourceName[0]?|=$ResourceName |
   .OrgID[0]?|=$OrgID |
@@ -168,8 +166,7 @@ for ResourceName in "${ResourceNames[@]}"; do
   .OtherParams[0]?|=$OtherParams |
   .BranchName[0]?|=$BranchName |
   .BuilderRole[0]?|=$BuilderRole |
-  .AssumeRole[0]?|=$AssumeRole |
-  .LogDeliveryBucket[0]?|=$LogDeliveryBucket ' \
+  .AssumeRole[0]?|=$AssumeRole ' \
 		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/params-temp.json"
 
 	ParamsJsonContent=$(cat "$(dirname "$0")"/params-temp.json)

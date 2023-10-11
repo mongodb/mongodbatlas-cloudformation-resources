@@ -44,11 +44,6 @@ parameters:
     type: String
     description: A role this document can assume
     default: ''
-  LogDeliveryBucket:
-    type: String
-    description: |-
-      The S3 bucket to which CloudFormation delivers the contract test execution logs.
-      CloudFormation delivers the logs by the time contract testing has completed and the extension has been assigned a test type status of PASSED or FAILED.
 mainSteps:
   - name: Get_Region
     action: 'aws:executeAwsApi'

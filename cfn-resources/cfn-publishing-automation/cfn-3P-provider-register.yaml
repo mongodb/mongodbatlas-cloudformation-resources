@@ -1,15 +1,6 @@
-description: |-
-  *Replace this default text with instructions or other information about your document.*  
-  ---
+description: |
   # CFN-3P-Provider-Register
   This automation document builds and registers  3rd party resource providers. This automation document can register resources in a single AWS account or in multiple accounts and regions. However, multi-account and regions require a role. Please refer to  the [SSM multi-account ](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation-multiple-accounts-and-regions.html) documentation.
-  ## 
-  This document builds and registers 3rd party resource providers build using the following plugins:   
-  * JAVA [link to another webpage](https://aws.amazon.com/)
-  * Go [link to another webpage](https://aws.amazon.com/)
-  * Python (Coming soon) [link to another webpage](https://aws.amazon.com/)
-  In order for CodeBuild to have the permission to build an submit the resource, a role must be created. 
-  ##
 schemaVersion: '0.3'
 assumeRole: '{{ AssumeRole }}'
 outputs:

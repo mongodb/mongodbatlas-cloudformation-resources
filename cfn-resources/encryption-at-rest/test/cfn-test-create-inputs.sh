@@ -4,7 +4,6 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-#set -x
 function usage {
 	echo "usage:$0 <project_name>"
 	echo "Creates a new encryption key for the the project "

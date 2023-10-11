@@ -8,8 +8,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
 	echo "usage:$0 "
 }
@@ -23,20 +21,20 @@ delete_output=$(atlas serverless delete "$instanceName" --projectId "$projectId"
 
 # Check if the instance deletion was initiated successfully
 if [[ $delete_output =~ Serverless\ instance\ \'$instanceName\'\ deleted ]]; then
-    echo "Deletion initiated for instance $instanceName."
+	echo "Deletion initiated for instance $instanceName."
 
-    # Loop until the instance is deleted
-    while true; do
-      if atlas serverless describe "${instanceName}" --projectId "${projectId}"; then
-        echo "Waiting for instance $instanceName to be deleted..."
-        sleep 10  # Adjust the sleep interval as needed
-      else
-        echo "Instance $instanceName has been deleted."
-        break
-      fi
-    done
+	# Loop until the instance is deleted
+	while true; do
+		if atlas serverless describe "${instanceName}" --projectId "${projectId}"; then
+			echo "Waiting for instance $instanceName to be deleted..."
+			sleep 10 # Adjust the sleep interval as needed
+		else
+			echo "Instance $instanceName has been deleted."
+			break
+		fi
+	done
 else
-    echo "Failed to initiate deletion for instance $instanceName. Error: $delete_output"
+	echo "Failed to initiate deletion for instance $instanceName. Error: $delete_output"
 fi
 
 #delete project

@@ -8,8 +8,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
 	echo "Creates a template for org apikey creation"
 }
@@ -21,40 +19,38 @@ mkdir inputs
 
 #set profile
 profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-    profile=${MONGODB_ATLAS_PROFILE}
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
 # Check if MONGODB_ATLAS_ORG_ID is set
 if [ -z "${MONGODB_ATLAS_ORG_ID+x}" ]; then
-  # Check if ATLAS_ORG_ID is set as a fallback
-  if [ -z "${ATLAS_ORG_ID+x}" ]; then
-    echo "MONGODB_ATLAS_ORG_ID or ATLAS_ORG_ID must be set"
-    exit 1
-  else
-    MONGODB_ATLAS_ORG_ID="$ATLAS_ORG_ID"
-  fi
+	# Check if ATLAS_ORG_ID is set as a fallback
+	if [ -z "${ATLAS_ORG_ID+x}" ]; then
+		echo "MONGODB_ATLAS_ORG_ID or ATLAS_ORG_ID must be set"
+		exit 1
+	else
+		MONGODB_ATLAS_ORG_ID="$ATLAS_ORG_ID"
+	fi
 fi
 
 orgId="${MONGODB_ATLAS_ORG_ID}"
 
 # create ProjectId
 projectName="${1}"
-if [ ${#projectName} -gt 22 ];then
-  projectName=${projectName:0:21}
+if [ ${#projectName} -gt 22 ]; then
+	projectName=${projectName:0:21}
 fi
 
 # create aws secret key
 awsSecretName="mongodb/atlas/apikey/${projectName}"
-if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here";then
-  echo "aws secret created with name : ${awsSecretName}"
+if aws secretsmanager create-secret --name "${awsSecretName}" --secret-string "atlas api-keys goes here"; then
+	echo "aws secret created with name : ${awsSecretName}"
 else
-  echo "aws secret create failed with name : ${awsSecretName}"
-  exit 1
+	echo "aws secret create failed with name : ${awsSecretName}"
+	exit 1
 fi
-
-
 
 project1="${projectName}-1"
 project2="${projectName}-2"
@@ -86,25 +82,23 @@ fi
 
 # Create assigns 2 projects
 jq --arg orgId "$orgId" \
-  --arg profile "$profile" \
-  --arg awsSecretName "$awsSecretName" \
-  --arg projectId1 "$projectId1" \
-  --arg projectId2 "$projectId2" \
+	--arg profile "$profile" \
+	--arg awsSecretName "$awsSecretName" \
+	--arg projectId1 "$projectId1" \
+	--arg projectId2 "$projectId2" \
 	'.OrgId?|=$orgId | .Profile?|=$profile | .AwsSecretName?|=$awsSecretName |
 	 .ProjectAssignments[0].ProjectId?|=$projectId1 |
 	 .ProjectAssignments[1].ProjectId?|=$projectId2' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
-
 
 # Update with un-assign 1, update 1 and assign 1 Project.
 jq --arg orgId "$orgId" \
 	--arg profile "$profile" \
 	--arg projectId2 "$projectId2" \
 	--arg projectId3 "$projectId3" \
-  	'.OrgId?|=$orgId | .Profile?|=$profile |
+	'.OrgId?|=$orgId | .Profile?|=$profile |
   	 .ProjectAssignments[0].ProjectId?|=$projectId2 |
   	 .ProjectAssignments[1].ProjectId?|=$projectId3' \
 	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
-
 
 ls -l inputs

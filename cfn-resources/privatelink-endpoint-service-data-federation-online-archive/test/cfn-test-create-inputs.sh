@@ -7,7 +7,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
 	echo "usage:$0 <project_name>"
@@ -16,21 +15,20 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
-
 rm -rf inputs
 mkdir inputs
 
 #set profile
 profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-    profile=${MONGODB_ATLAS_PROFILE}
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
 #project_id
 projectName="${1}"
-if [ ${#projectName} -gt 24 ];then
-  projectName=${projectName:0:23}
+if [ ${#projectName} -gt 24 ]; then
+	projectName=${projectName:0:23}
 fi
 
 region="${AWS_DEFAULT_REGION}"
@@ -42,8 +40,7 @@ else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
-
-id=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json | jq -r '.id' )
+id=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json | jq -r '.id')
 
 # WAIT UNTIL CREATES
 atlas privateEndpoints aws watch "${id}" --projectId "${projectId}"
@@ -53,7 +50,7 @@ endpointServiceName=$(atlas privateEndpoints aws describe "${id}" --projectId "$
 echo "endpointServiceName : ${endpointServiceName}"
 
 #Transforming endpointServiceName. eg: com.amazonaws.vpce.us-east-1.vpce-svc-00e311695874992b4 to vpce-00e311695874992b4
-endpointId="vpce-${endpointServiceName: (-17)}"
+endpointId="vpce-${endpointServiceName:(-17)}"
 echo "endpointID: ${endpointId}"
 
 jq --arg projectId "$projectId" \

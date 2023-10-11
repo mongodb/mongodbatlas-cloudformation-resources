@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -xe
+set -e
 set -o nounset
 
 resources="${1:-project}"
@@ -8,14 +8,12 @@ otherParams="${2:-}"
 
 if [ -n "${otherParams}" ]; then
 	paramKeys=$(echo "$otherParams" | jq -c -r 'keys[]' | tr '\n' ' ')
-	echo "Exporting the following keys..."
-	echo "$paramKeys"
+	echo "Exporting the following keys: ${paramKeys}"
 	for param in ${paramKeys}; do
 		paramKey="${param}="
 		paramValue=$(echo "$otherParams" | jq -c -r --arg key "$param" '.[$key]')
 		exportString="$paramKey$paramValue"
 		export "${exportString?}"
-		echo
 	done
 fi
 
@@ -33,7 +31,7 @@ for resource in ${resources}; do
 	PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
 	echo "PROJECT_NAME:${PROJECT_NAME}"
 
-	echo " Started Publishing ${resource} resource"
+	echo "Started Publishing ${resource} resource"
 	echo "Step 1: cfn test"
 
 	if ! ./cfn-testing-helper.sh "${resource}" "${PROJECT_NAME}"; then
@@ -41,14 +39,14 @@ for resource in ${resources}; do
 		exit 1
 	fi
 
-	echo "step 2: cfn submit for ${resource}"
+	echo "Step 2: cfn submit for ${resource}"
 
 	if ! ./cfn-submit-helper.sh "${resource}"; then
 		echo "Error in Submit phase"
 		exit 1
 	fi
 
-	echo " step 3: update default version for ${resource}"
+	echo "Step 3: update default version for ${resource}"
 
 	cd "${resource}"
 	pwd
@@ -67,7 +65,7 @@ for resource in ${resources}; do
 	echo "Setting default version to ${latestVersion} "
 	aws cloudformation set-type-default-version --type RESOURCE --type-name "${res_type}" --version-id "${latestVersion}"
 
-	echo " step 4:  Publishing  ${resource}"
+	echo "Step 4:  Publishing  ${resource}"
 
 	if ! ./cfn-publishing-helper.sh "${resource}" "${latestVersion}"; then
 		echo "Error in Publishing phase"

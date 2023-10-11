@@ -8,8 +8,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-#set -x
-
 function usage {
 	echo "usage:$0 <project_name>"
 	echo "Creates a new project and an AccessList for testing"
@@ -35,11 +33,9 @@ jq --arg projectId "$projectId" \
 	".ProjectId |= \"$projectId\"" \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
-
 jq --arg projectId "$projectId" \
 	".ProjectId |= \"$projectId\"" \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
 
 ls -l inputs
 #mongocli iam projects delete "${projectId}" --force

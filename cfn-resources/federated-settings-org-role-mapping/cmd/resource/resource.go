@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 var CreateRequiredFields = []string{constants.FederationSettingsID, constants.OrgID, constants.ExternalGroupName, constants.RoleAssignments}
@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -65,19 +65,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 
-	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody)
+	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
 			return progressevent.GetFailedEventByCode("Resource already exists",
 				cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+			resp), nil
 	}
-	currentModel.Id = &federatedSettingsOrganizationRoleMapping.ID
-	// Response
+	currentModel.Id = federatedSettingsOrganizationRoleMapping.Id
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   roleMappingToModel(*currentModel, federatedSettingsOrganizationRoleMapping),
@@ -92,7 +90,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -101,10 +99,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
 
-	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.GetRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID)
+	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.
+		GetRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID).
+		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			resp.Response), nil
+			resp), nil
 	}
 
 	return handler.ProgressEvent{
@@ -122,7 +122,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -131,10 +131,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
 
-	// Check if  already exist
 	if !isRoleMappingExists(currentModel, client) {
 		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
+
 	if (currentModel.RoleAssignments) == nil || len(currentModel.RoleAssignments) == 0 {
 		err := errors.New(RoleAssignementShouldBeSet)
 		return handler.ProgressEvent{
@@ -144,12 +144,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.FederatedSettings.UpdateRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID, requestBody)
+	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.
+		UpdateRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID, requestBody).
+		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error updating federated settings : %s", err.Error()),
-			resp.Response), nil
+			resp), nil
 	}
-	// Response
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Complete",
@@ -166,7 +168,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -175,15 +177,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if !isRoleMappingExists(currentModel, client) {
 		return progressevent.GetFailedEventByCode("Not Found", cloudformation.HandlerErrorCodeNotFound), nil
 	}
+
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
-	resp, err := client.FederatedSettings.DeleteRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID)
+	resp, err := client.AtlasV2.FederatedAuthenticationApi.
+		DeleteRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID).
+		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting federated settings : %s", err.Error()),
-			resp.Response), nil
+			resp), nil
 	}
-	// Response
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete Complete",
@@ -199,7 +204,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -207,22 +212,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 
-	listOptions := &mongodbatlas.ListOptions{ItemsPerPage: 100, PageNum: 1}
-	federatedSettingsOrganizationRoleMappings, resp, err := client.FederatedSettings.ListRoleMappings(context.Background(), *federationSettingsID, *orgID, listOptions)
+	federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasV2.
+		FederatedAuthenticationApi.
+		ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
+		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting federated settings : %s", err.Error()),
-			resp.Response), nil
+			resp), nil
 	}
 
 	models := make([]interface{}, 0) // cfn test
-	for i := range federatedSettingsOrganizationRoleMappings.Results {
+	for i := range federatedSettingsOrganizationRoleMappings {
 		model := Model{}
 		model.Profile = currentModel.Profile
 		model.OrgId = currentModel.OrgId
 		model.FederationSettingsId = currentModel.FederationSettingsId
-		model.Id = &federatedSettingsOrganizationRoleMappings.Results[i].ID
-		model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings.Results[i].ExternalGroupName
-		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings.Results[i].RoleAssignments)
+		model.Id = federatedSettingsOrganizationRoleMappings[i].Id
+		model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings[i].ExternalGroupName
+		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings[i].RoleAssignments)
 		models = append(models, model)
 	}
 	return handler.ProgressEvent{
@@ -232,11 +239,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func modelToRoleMappingRequest(currentModel *Model) (*mongodbatlas.FederatedSettingsOrganizationRoleMapping, handler.ProgressEvent, error) {
+func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMapping, handler.ProgressEvent, error) {
 	// Atlas client
-	roleMappingRequest := &mongodbatlas.FederatedSettingsOrganizationRoleMapping{}
+	roleMappingRequest := &admin.AuthFederationRoleMapping{}
 	if currentModel.Id != nil {
-		roleMappingRequest.ID = *currentModel.Id
+		roleMappingRequest.Id = currentModel.Id
 	}
 	if currentModel.ExternalGroupName != nil {
 		roleMappingRequest.ExternalGroupName = *currentModel.ExternalGroupName
@@ -247,8 +254,8 @@ func modelToRoleMappingRequest(currentModel *Model) (*mongodbatlas.FederatedSett
 	return roleMappingRequest, handler.ProgressEvent{}, nil
 }
 
-func expandRoleAssignments(assignments []RoleAssignment) []*mongodbatlas.RoleAssignments {
-	roles := make([]*mongodbatlas.RoleAssignments, len(assignments))
+func expandRoleAssignments(assignments []RoleAssignment) []admin.RoleAssignment {
+	roles := make([]admin.RoleAssignment, len(assignments))
 	for i := range assignments {
 		var role string
 		if assignments[i].Role != nil {
@@ -262,43 +269,45 @@ func expandRoleAssignments(assignments []RoleAssignment) []*mongodbatlas.RoleAss
 		if assignments[i].OrgId != nil {
 			orgID = *assignments[i].OrgId
 		}
-		roles[i] = &mongodbatlas.RoleAssignments{
-			Role:    role,
-			GroupID: groupID,
-			OrgID:   orgID,
+		roles[i] = admin.RoleAssignment{
+			Role:    &role,
+			GroupId: &groupID,
+			OrgId:   &orgID,
 		}
 	}
 	fmt.Printf("roles: len %d %+v", len(roles), roles)
 	return roles
 }
 
-func roleMappingToModel(currentModel Model, roleMapping *mongodbatlas.FederatedSettingsOrganizationRoleMapping) *Model {
+func roleMappingToModel(currentModel Model, roleMapping *admin.AuthFederationRoleMapping) *Model {
 	out := &Model{
 		Profile:              currentModel.Profile,
 		FederationSettingsId: currentModel.FederationSettingsId,
 		OrgId:                currentModel.OrgId,
-		Id:                   &roleMapping.ID,
+		Id:                   roleMapping.Id,
 		ExternalGroupName:    &roleMapping.ExternalGroupName,
 		RoleAssignments:      flattenRoleAssignments(roleMapping.RoleAssignments),
 	}
 	return out
 }
 
-func flattenRoleAssignments(assignments []*mongodbatlas.RoleAssignments) []RoleAssignment {
+func flattenRoleAssignments(assignments []admin.RoleAssignment) []RoleAssignment {
 	roleAssignments := make([]RoleAssignment, 0)
 	for _, role := range assignments {
 		roleAssignments = append(roleAssignments, RoleAssignment{
-			Role:      &role.Role,
-			OrgId:     &role.OrgID,
-			ProjectId: &role.GroupID,
+			Role:      role.Role,
+			OrgId:     role.OrgId,
+			ProjectId: role.GroupId,
 		})
 	}
 	return roleAssignments
 }
 
-func isRoleMappingExists(currentModel *Model, client *mongodbatlas.Client) bool {
+func isRoleMappingExists(currentModel *Model, client *util.MongoDBClient) bool {
 	var isExists bool
-	fedSettingsConnectedOrg, _, err := client.FederatedSettings.GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.OrgId, *currentModel.Id)
+	fedSettingsConnectedOrg, _, err := client.AtlasV2.FederatedAuthenticationApi.
+		GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.OrgId, *currentModel.Id).
+		Execute()
 	if err != nil {
 		return isExists
 	}

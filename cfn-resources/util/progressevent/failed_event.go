@@ -37,6 +37,13 @@ func getHandlerErrorCode(response *http.Response) string {
 }
 
 func GetFailedEventByResponse(message string, response *http.Response) handler.ProgressEvent {
+	if response == nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          message,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          message,

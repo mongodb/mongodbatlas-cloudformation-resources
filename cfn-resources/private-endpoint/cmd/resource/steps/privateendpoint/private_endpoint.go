@@ -186,16 +186,9 @@ func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID strin
 				callBackContext.PrivateEndpoints[i].InterfaceEndpointID,
 				callBackContext.ID).Execute()
 			if err != nil {
-				if response != nil {
-					pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
-						response)
-					return nil, &pe
-				}
-
-				return nil, &handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          err.Error(),
-					HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
+				pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
+					response)
+				return nil, &pe
 			}
 			callBackContext.PrivateEndpoints[i].Status = *privateEndpointResponse.ConnectionStatus
 
@@ -246,17 +239,9 @@ func Delete(mongodbClient *util.MongoDBClient, groupID string, endpointServiceID
 			intEndpoints,
 			endpointServiceID).Execute()
 		if err != nil {
-			if response != nil {
-				pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting private endpoint : %s",
-					err.Error()),
-					response)
-				return &pe
-			}
-
-			pe := handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
+			pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting private endpoint : %s",
+				err.Error()),
+				response)
 			return &pe
 		}
 	}

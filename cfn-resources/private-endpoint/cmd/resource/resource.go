@@ -214,15 +214,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if err != nil {
-		if response != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-				response), nil
-		}
-
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response), nil
 	}
 
 	if privateEndpointResponse == nil {
@@ -249,15 +242,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			*currentModel.Id).Execute()
 
 		if err != nil {
-			if response != nil {
-				return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-					response), nil
-			}
-
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}, nil
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+				response), nil
 		}
 	}
 

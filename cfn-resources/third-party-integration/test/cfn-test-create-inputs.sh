@@ -7,7 +7,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
 	echo "usage:$0 <project_name>"
@@ -42,10 +41,9 @@ jq --arg project_id "$projectId" \
 
 jq --arg project_id "$projectId" \
 	--arg web_hook_create_url "$webHookUpdateUrl" \
-		--arg web_hook_create_secret "$webHookUpdateSecret" \
-  '.ProjectId?|=$project_id | .Url?|=$web_hook_create_url | .Secret?|=$web_hook_create_secret' \
-  "$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
-
+	--arg web_hook_create_secret "$webHookUpdateSecret" \
+	'.ProjectId?|=$project_id | .Url?|=$web_hook_create_url | .Secret?|=$web_hook_create_secret' \
+	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 #PROMETHEUS
 prometheusUsrName="$PROMETHEUS_USER_NAME"
@@ -54,15 +52,14 @@ prometheusPassword="$PROMETHEUS_PASSWORD_NAME"
 jq --arg project_id "$projectId" \
 	--arg prometheus_usr_name "$prometheusUsrName" \
 	--arg prometheus_password "$prometheusPassword" \
-	'.ProjectId?|=$project_id | .UserName?|=$prometheus_usr_name | .Password?|=$prometheus_password'  \
+	'.ProjectId?|=$project_id | .UserName?|=$prometheus_usr_name | .Password?|=$prometheus_password' \
 	"$(dirname "$0")/inputs_2_create.template.json" >"inputs/inputs_2_create.json"
 
 jq --arg project_id "$projectId" \
 	--arg prometheus_usr_name "$prometheusUsrName" \
 	--arg prometheus_password "$prometheusPassword" \
-	'.ProjectId?|=$project_id | .UserName?|=$prometheus_usr_name | .Password?|=$prometheus_password'  \
-  "$(dirname "$0")/inputs_2_update.template.json" >"inputs/inputs_2_update.json"
-
+	'.ProjectId?|=$project_id | .UserName?|=$prometheus_usr_name | .Password?|=$prometheus_password' \
+	"$(dirname "$0")/inputs_2_update.template.json" >"inputs/inputs_2_update.json"
 
 #PAGER_DUTY
 
@@ -71,13 +68,13 @@ pagerDutyUpdateServiceKey="$PAGER_DUTY_UPDATE_SERVICE_KEY"
 
 jq --arg project_id "$projectId" \
 	--arg service_key "$pagerDutyCreateServiceKey" \
-	'.ProjectId?|=$project_id | .ServiceKey?|=$service_key'  \
+	'.ProjectId?|=$project_id | .ServiceKey?|=$service_key' \
 	"$(dirname "$0")/inputs_3_create.template.json" >"inputs/inputs_3_create.json"
 
 jq --arg project_id "$projectId" \
 	--arg service_key "$pagerDutyUpdateServiceKey" \
-	'.ProjectId?|=$project_id | .ServiceKey?|=$service_key'  \
-  "$(dirname "$0")/inputs_3_update.template.json" >"inputs/inputs_3_update.json"
+	'.ProjectId?|=$project_id | .ServiceKey?|=$service_key' \
+	"$(dirname "$0")/inputs_3_update.template.json" >"inputs/inputs_3_update.json"
 
 #DATA_DOG
 
@@ -86,13 +83,13 @@ dataDogUpdateApiKey="$DATA_DOG_UPDATE_API_KEY"
 
 jq --arg project_id "$projectId" \
 	--arg data_dog_create_api_key "$dataDogCreateApiKey" \
-	'.ProjectId?|=$project_id | .ApiKey?|=$data_dog_create_api_key'  \
+	'.ProjectId?|=$project_id | .ApiKey?|=$data_dog_create_api_key' \
 	"$(dirname "$0")/inputs_4_create.template.json" >"inputs/inputs_4_create.json"
 
 jq --arg project_id "$projectId" \
 	--arg data_dog_update_api_key "$dataDogUpdateApiKey" \
-	'.ProjectId?|=$project_id | .ApiKey?|=$data_dog_update_api_key'  \
-  "$(dirname "$0")/inputs_4_update.template.json" >"inputs/inputs_4_update.json"
+	'.ProjectId?|=$project_id | .ApiKey?|=$data_dog_update_api_key' \
+	"$(dirname "$0")/inputs_4_update.template.json" >"inputs/inputs_4_update.json"
 
 #OPS_GENIE
 
@@ -100,13 +97,13 @@ opsGenieApiKey="$OPS_GENIE_API_KEY"
 
 jq --arg project_id "$projectId" \
 	--arg ops_genie_api_key "$opsGenieApiKey" \
-	'.ProjectId?|=$project_id | .ApiKey?|=$ops_genie_api_key'  \
+	'.ProjectId?|=$project_id | .ApiKey?|=$ops_genie_api_key' \
 	"$(dirname "$0")/inputs_5_create.template.json" >"inputs/inputs_5_create.json"
 
 jq --arg project_id "$projectId" \
 	--arg ops_genie_api_key "$opsGenieApiKey" \
-	'.ProjectId?|=$project_id | .ApiKey?|=$ops_genie_api_key'  \
-  "$(dirname "$0")/inputs_5_update.template.json" >"inputs/inputs_5_update.json"
+	'.ProjectId?|=$project_id | .ApiKey?|=$ops_genie_api_key' \
+	"$(dirname "$0")/inputs_5_update.template.json" >"inputs/inputs_5_update.json"
 
 #MICROSOFT_TEAMS
 
@@ -115,14 +112,12 @@ microsoftTeamsUpdateWebHook="$MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL"
 
 jq --arg project_id "$projectId" \
 	--arg microsoft_teams_create_web_hook "$microsoftTeamsCreateWebHook" \
-	'.ProjectId?|=$project_id | .MicrosoftTeamsWebhookUrl?|=$microsoft_teams_create_web_hook'  \
+	'.ProjectId?|=$project_id | .MicrosoftTeamsWebhookUrl?|=$microsoft_teams_create_web_hook' \
 	"$(dirname "$0")/inputs_6_create.template.json" >"inputs/inputs_6_create.json"
 
 jq --arg project_id "$projectId" \
 	--arg microsoft_teams_update_web_hook "$microsoftTeamsUpdateWebHook" \
-	'.ProjectId?|=$project_id | .MicrosoftTeamsWebhookUrl?|=$microsoft_teams_update_web_hook'  \
-  "$(dirname "$0")/inputs_6_update.template.json" >"inputs/inputs_6_update.json"
-
+	'.ProjectId?|=$project_id | .MicrosoftTeamsWebhookUrl?|=$microsoft_teams_update_web_hook' \
+	"$(dirname "$0")/inputs_6_update.template.json" >"inputs/inputs_6_update.json"
 
 cd ..
-

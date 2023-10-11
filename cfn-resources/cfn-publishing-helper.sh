@@ -18,7 +18,7 @@
 # LOG_LEVEL=debug ./cfn-publishing-helper.sh project database-user project-ip-access-list cluster network-peering
 #
 #trap "exit" INT TERM ERR
-set -xe
+set -e
 #set -o errexit
 #set -o nounset
 #set -o pipefail

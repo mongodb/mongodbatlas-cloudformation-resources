@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -xe
+set -e
 set -o nounset
 
 resources="${1:-project}"

@@ -3,7 +3,6 @@
 #
 # This tool generates json files in the inputs/ for `cfn test`.
 #
-set -x
 echo "--------------------------------delete key and key policy document policy document starts ----------------------------"
 
 projectName="${1}"

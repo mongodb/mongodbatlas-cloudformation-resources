@@ -22,8 +22,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
 	echo "Creates a new private endpoint role for the test"
 }
@@ -39,11 +37,10 @@ vpcId="${2:-$AWS_VPC_ID}"
 subnetId="${3:-$AWS_SUBNET_ID}"
 
 if ! test -v AWS_DEFAULT_REGION; then
-    region=$(aws configure get region)
+	region=$(aws configure get region)
 else
-  region=$AWS_DEFAULT_REGION
+	region=$AWS_DEFAULT_REGION
 fi
-
 
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then

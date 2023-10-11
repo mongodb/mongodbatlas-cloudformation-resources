@@ -8,7 +8,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 # setting projectName
 projectName="ct-cloud-backup-restore-jobs-$((1 + RANDOM % 10000))"

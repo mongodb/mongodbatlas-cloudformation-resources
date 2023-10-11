@@ -7,7 +7,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 # setting projectName
 projectName="cfn-bot-datalake-pipeline-$((1 + RANDOM % 10000))"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -xeo
+set -eo
 
 export CLOUD_PUBLISH=true
 

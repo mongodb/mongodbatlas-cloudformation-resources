@@ -100,7 +100,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	roleMappingID := currentModel.Id
 
 	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.
-		GetRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID).
+		GetRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID).
 		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
@@ -145,7 +145,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
 	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.
-		UpdateRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID, requestBody).
+		UpdateRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID, requestBody).
 		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error updating federated settings : %s", err.Error()),
@@ -182,7 +182,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
 	resp, err := client.AtlasV2.FederatedAuthenticationApi.
-		DeleteRoleMapping(context.Background(), *federationSettingsID, *orgID, *roleMappingID).
+		DeleteRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID).
 		Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting federated settings : %s", err.Error()),
@@ -196,47 +196,43 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
+	// setup()
 
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
-	}
+	// modelValidation := validateModel(ListRequiredFields, currentModel)
+	// if modelValidation != nil {
+	// 	return *modelValidation, nil
+	// }
 
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		return *pe, nil
-	}
+	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	// client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	// if pe != nil {
+	// 	return *pe, nil
+	// }
 
-	federationSettingsID := currentModel.FederationSettingsId
-	orgID := currentModel.OrgId
+	// federationSettingsID := currentModel.FederationSettingsId
+	// orgID := currentModel.OrgId
 
-	federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasV2.
-		FederatedAuthenticationApi.
-		ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
-		Execute()
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting federated settings : %s", err.Error()),
-			resp), nil
-	}
+	// federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasV2.
+	// 	FederatedAuthenticationApi.
+	// 	ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
+	// 	Execute()
+	// if err != nil {
+	// 	return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting federated settings : %s", err.Error()),
+	// 		resp), nil
+	// }
 
-	models := make([]interface{}, 0) // cfn test
-	for i := range federatedSettingsOrganizationRoleMappings {
-		model := Model{}
-		model.Profile = currentModel.Profile
-		model.OrgId = currentModel.OrgId
-		model.FederationSettingsId = currentModel.FederationSettingsId
-		model.Id = federatedSettingsOrganizationRoleMappings[i].Id
-		model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings[i].ExternalGroupName
-		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings[i].RoleAssignments)
-		models = append(models, model)
-	}
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		Message:         "List",
-		ResourceModels:  models,
-	}, nil
+	// models := make([]interface{}, 0) // cfn test
+	// for i := range federatedSettingsOrganizationRoleMappings {
+	// 	model := Model{}
+	// 	model.Profile = currentModel.Profile
+	// 	model.OrgId = currentModel.OrgId
+	// 	model.FederationSettingsId = currentModel.FederationSettingsId
+	// 	model.Id = federatedSettingsOrganizationRoleMappings[i].Id
+	// 	model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings[i].ExternalGroupName
+	// 	model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings[i].RoleAssignments)
+	// 	models = append(models, model)
+	// }
+	return handler.ProgressEvent{}, errors.New("not implemented: LIST")
 }
 
 func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMapping, handler.ProgressEvent, error) {
@@ -257,25 +253,21 @@ func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMa
 func expandRoleAssignments(assignments []RoleAssignment) []admin.RoleAssignment {
 	roles := make([]admin.RoleAssignment, len(assignments))
 	for i := range assignments {
-		var role string
-		if assignments[i].Role != nil {
-			role = *assignments[i].Role
+		role := admin.RoleAssignment{}
+		if util.IsStringPresent(assignments[i].Role) {
+			role.Role = assignments[i].Role
 		}
-		var groupID string
-		if assignments[i].ProjectId != nil {
-			groupID = *assignments[i].ProjectId
+
+		if util.IsStringPresent(assignments[i].ProjectId) {
+			role.GroupId = assignments[i].ProjectId
 		}
-		var orgID string
-		if assignments[i].OrgId != nil {
-			orgID = *assignments[i].OrgId
+
+		if util.IsStringPresent(assignments[i].OrgId) {
+			role.OrgId = assignments[i].OrgId
 		}
-		roles[i] = admin.RoleAssignment{
-			Role:    &role,
-			GroupId: &groupID,
-			OrgId:   &orgID,
-		}
+		roles[i] = role
 	}
-	fmt.Printf("roles: len %d %+v", len(roles), roles)
+
 	return roles
 }
 
@@ -306,7 +298,7 @@ func flattenRoleAssignments(assignments []admin.RoleAssignment) []RoleAssignment
 func isRoleMappingExists(currentModel *Model, client *util.MongoDBClient) bool {
 	var isExists bool
 	fedSettingsConnectedOrg, _, err := client.AtlasV2.FederatedAuthenticationApi.
-		GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.OrgId, *currentModel.Id).
+		GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.Id, *currentModel.OrgId).
 		Execute()
 	if err != nil {
 		return isExists

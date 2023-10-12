@@ -54,7 +54,7 @@
         "Mappings":{
           "Dynamic":false,
           "Fields":[
-            "property_type:[{\"type\":\"autocomplete\"},{\"type\":\"stringFacet\"},{\"type\":\"string\"},{\"normalizer\":\"lowercase\",\"type\":\"token\"},{  \"indexShapes\": true,\"type\":\"geo\"}]"
+            "property_type:[{\"type\":\"autocomplete\"},{\"type\":\"string\"}]"
           ]
         },
         "SearchAnalyzer":"lucene.standard"

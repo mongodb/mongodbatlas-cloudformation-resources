@@ -16,6 +16,7 @@ package resource
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -205,16 +206,29 @@ func newMappingsFields(fields []string) (map[string]interface{}, error) {
 
 	fieldsMap := make(map[string]interface{})
 	for _, p := range fields {
-		f := strings.Split(p, ":")
+		f := strings.SplitN(p, ":", 2)
 		if len(f) != indexFieldParts {
 			return nil, fmt.Errorf("partition should be fieldName:fieldType, got: %s", p)
 		}
-		fieldsMap[f[0]] = map[string]interface{}{
-			"type": f[1],
+
+		fieldType, err := parseFieldType(f[1])
+		if err != nil {
+			return nil, err
 		}
+
+		fieldsMap[f[0]] = fieldType
 	}
 
 	return fieldsMap, nil
+}
+
+func parseFieldType(jsonStr string) (interface{}, error) {
+	var result interface{}
+	err := json.Unmarshal([]byte(jsonStr), &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func status(currentModel *Model) handler.Status {

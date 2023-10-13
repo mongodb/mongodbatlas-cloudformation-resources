@@ -13,15 +13,15 @@ parameters:
     description: the folder name of the resource as per the folder structure in your repo.
   ResourceVersionPublishing:
     type: String
-    description: the version used to publish the resource, empty will use the next minor version.
-    default: null
+    description: 'the version used to publish the resource, empty will use the next minor version.'
+    default: ''
   OtherParams:
     type: String
-    default: null
+    default: ''
     description: extra parameters that are specific to resource.
   BaseUrl:
     type: String
-    default: https://cloud.mongodb.com/
+    default: 'https://cloud.mongodb.com/'
     description: Atlas Base Url
   OrgID:
     type: String

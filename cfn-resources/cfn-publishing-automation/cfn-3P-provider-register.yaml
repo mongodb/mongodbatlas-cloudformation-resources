@@ -12,7 +12,6 @@ parameters:
     default: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources'
   ResourceName:
     type: String
-    default: null
     description: the folder name of the resource as per the folder structure in your repo.
   ProjectName:
     type: String
@@ -21,15 +20,15 @@ parameters:
   OrgID:
     type: String
     default: null
-    description: ATLAS OrgID.
+    description: Atlas OrgID
   PubKey:
     type: String
     default: null
-    description: ATLAS Public key.
+    description: Atlas Public key
   PvtKey:
     type: String
     default: null
-    description: ATLAS Private key.
+    description: Atlas Private key
   BranchName:
     type: String
     default: null
@@ -46,6 +45,10 @@ parameters:
     type: String
     description: A role this document can assume
     default: ''
+  BaseUrl:
+    type: String
+    default: 'https://cloud.mongodb.com/'
+    description: Atlas Base Url
 mainSteps:
   - name: Get_Region
     action: 'aws:executeAwsApi'
@@ -91,12 +94,13 @@ mainSteps:
                 - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
                 - ./sam-installation/install
                 - pip3 install cloudformation-cli cloudformation-cli-go-plugin
-                - export ATLAS_ORG_ID={{OrgID}}
-                - export ATLAS_PUBLIC_KEY={{PubKey}}
-                - export ATLAS_PRIVATE_KEY={{PvtKey}}
-                - export MCLI_PUBLIC_API_KEY=$ATLAS_PUBLIC_KEY
-                - export MCLI_PRIVATE_API_KEY=$ATLAS_PRIVATE_KEY
-                - export MCLI_ORG_ID=$ATLAS_ORG_ID
+                - export MONGODB_ATLAS_BASE_URL={{BaseUrl}}
+                - export MONGODB_ATLAS_ORG_ID={{OrgID}}
+                - export MONGODB_ATLAS_PUBLIC_KEY={{PubKey}}
+                - export MONGODB_ATLAS_PRIVATE_KEY={{PvtKey}}
+                - export MCLI_PUBLIC_API_KEY=$MONGODB_ATLAS_PUBLIC_KEY
+                - export MCLI_PRIVATE_API_KEY=$MONGODB_ATLAS_PRIVATE_KEY
+                - export MCLI_ORG_ID=$MONGODB_ATLAS_ORG_ID
                 - export MCLI_OUTPUT=json
                 - export AWS_DEFAULT_REGION={{Get_Region.RegionName}}
                 - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'

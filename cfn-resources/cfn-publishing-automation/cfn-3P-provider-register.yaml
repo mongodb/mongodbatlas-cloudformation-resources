@@ -13,30 +13,30 @@ parameters:
   ResourceName:
     type: String
     description: the folder name of the resource as per the folder structure in your repo.
-  ProjectName:
-    type: String
-    default: null
-    description: the name of the Build Project created in CodeBuild when automation is run.
-  OrgID:
-    type: String
-    default: null
-    description: Atlas OrgID
-  PubKey:
-    type: String
-    default: null
-    description: Atlas Public key
-  PvtKey:
-    type: String
-    default: null
-    description: Atlas Private key
-  BranchName:
-    type: String
-    default: null
-    description: git branch name.
   OtherParams:
     type: String
     default: null
     description: extra parameters that are specific to resource.
+  BaseUrl:
+    type: String
+    default: 'https://cloud.mongodb.com/'
+    description: Atlas Base Url
+  OrgID:
+    type: String
+    description: Atlas OrgID
+  PubKey:
+    type: String
+    description: Atlas Public key
+  PvtKey:
+    type: String
+    description: Atlas Private key
+  BranchName:
+    type: String
+    default: master
+    description: git branch name.
+  ProjectName:
+    type: String
+    description: the name of the Build Project created in CodeBuild when automation is run.
   BuilderRole:
     type: String
     description: The role that allows CodeBuild to build and submit the resource on your behalf
@@ -45,10 +45,6 @@ parameters:
     type: String
     description: A role this document can assume
     default: ''
-  BaseUrl:
-    type: String
-    default: 'https://cloud.mongodb.com/'
-    description: Atlas Base Url
 mainSteps:
   - name: Get_Region
     action: 'aws:executeAwsApi'
@@ -98,10 +94,7 @@ mainSteps:
                 - export MONGODB_ATLAS_ORG_ID={{OrgID}}
                 - export MONGODB_ATLAS_PUBLIC_KEY={{PubKey}}
                 - export MONGODB_ATLAS_PRIVATE_KEY={{PvtKey}}
-                - export MCLI_PUBLIC_API_KEY=$MONGODB_ATLAS_PUBLIC_KEY
-                - export MCLI_PRIVATE_API_KEY=$MONGODB_ATLAS_PRIVATE_KEY
-                - export MCLI_ORG_ID=$MONGODB_ATLAS_ORG_ID
-                - export MCLI_OUTPUT=json
+                - export MONGODB_ATLAS_OUTPUT=json
                 - export AWS_DEFAULT_REGION={{Get_Region.RegionName}}
                 - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'
                 - cd provider

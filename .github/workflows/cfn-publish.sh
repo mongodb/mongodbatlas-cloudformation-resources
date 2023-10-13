@@ -139,6 +139,8 @@ for ResourceName in "${ResourceNames[@]}"; do
 	ParamsJsonPath="$(dirname "$0")"/params-temp.json
 	LocationsJsonPath="$(dirname "$0")"/locations-temp.json
 
+	jq --version
+
 	jq --arg ExecutionRoleName "${ExecutionRoleName}" \
 		--arg TargetLocationsMaxConcurrency "${TARGET_LOCATIONS_MAX_CONCURRENCY}" \
 		--arg AccountIds "${AccountIds}" \
@@ -147,7 +149,7 @@ for ResourceName in "${ResourceNames[@]}"; do
     .[0].TargetLocationMaxConcurrency?|=$TargetLocationsMaxConcurrency |
     .[0].Accounts[0]?|=$AccountIds |
     .[0].Regions?|=($Regions | gsub(" "; "") | split(",")) ' \
-		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json ${LocationsJsonPath}
+		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json "${LocationsJsonPath}"
 
 	jq --arg ResourceName "${ResourceName}" \
 		--arg ResourceVersionPublishing "${RESOURCE_VERSION_PUBLISHING}" \
@@ -159,7 +161,7 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg OtherParams "${OtherParams_string}" \
 		--arg AssumeRole "${AssumeRole}" \
 		'.ResourceName[0]?|=$ResourceName |
-  .ResourceVersionPublishing[0]|=$ResourceVersionPublishing |
+  .ResourceVersionPublishing[0]?|=$ResourceVersionPublishing |
   .OrgID[0]?|=$OrgID |
   .PubKey[0]?|=$PubKey |
   .PvtKey[0]?|=$PvtKey |
@@ -167,12 +169,14 @@ for ResourceName in "${ResourceNames[@]}"; do
   .OtherParams[0]?|=$OtherParams |
   .BranchName[0]?|=$BranchName |
   .AssumeRole[0]?|=$AssumeRole ' \
-		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json ${ParamsJsonPath}
+		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "${ParamsJsonPath}"
 
-	[ -n "${RESOURCE_VERSION_PUBLISHING}" ] || jq 'del(.ResourceVersionPublishing)' ${ParamsJsonPath} >${ParamsJsonPath}
+	if [ -z "${RESOURCE_VERSION_PUBLISHING}" ]; then
+		jq 'del(.ResourceVersionPublishing)' "${ParamsJsonPath}" >tmp.$$.json && mv tmp.$$.json "${ParamsJsonPath}"
+	fi
 
-	ParamsJsonContent=$(cat ${ParamsJsonPath})
-	LocationsJsonContent=$(cat ${LocationsJsonPath})
+	ParamsJsonContent=$(cat "${ParamsJsonPath}")
+	LocationsJsonContent=$(cat "${LocationsJsonPath}")
 
 	# aws cli to start the automation execution
 	aws ssm start-automation-execution \

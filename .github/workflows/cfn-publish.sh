@@ -15,6 +15,7 @@
 # limitations under the License.
 
 set -Eeou pipefail
+set -x
 
 # sort these by alphabetical order
 AwsSsmDocumentName="leoantoli-CFN-MongoDB-Atlas-Resource-Register"
@@ -155,7 +156,7 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg OtherParams "${OtherParams_string}" \
 		--arg AssumeRole "${AssumeRole}" \
 		'.ResourceName[0]?|=$ResourceName |
-  .ResourceVersionPublishing[0]?|=$ResourceVersionPublishing |
+  .ResourceVersionPublishing[0]|=$ResourceVersionPublishing |
   .OrgID[0]?|=$OrgID |
   .PubKey[0]?|=$PubKey |
   .PvtKey[0]?|=$PvtKey |

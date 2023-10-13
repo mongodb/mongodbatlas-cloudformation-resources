@@ -15,10 +15,9 @@
 # limitations under the License.
 
 set -Eeou pipefail
-set -x
 
 # sort these by alphabetical order
-AwsSsmDocumentName="leoantoli-CFN-MongoDB-Atlas-Resource-Register"
+AwsSsmDocumentName="CFN-MongoDB-Atlas-Resource-Register"
 AssumeRole="arn:aws:iam::${AWS_ACCOUNT_ID}:role/DevOpsIntegrationsContractorsSSM"
 AccountIds="${AWS_ACCOUNT_ID}"
 DocumentVersion="\$DEFAULT"
@@ -138,8 +137,6 @@ for ResourceName in "${ResourceNames[@]}"; do
 
 	ParamsJsonPath="$(dirname "$0")"/params-temp.json
 	LocationsJsonPath="$(dirname "$0")"/locations-temp.json
-
-	jq --version
 
 	jq --arg ExecutionRoleName "${ExecutionRoleName}" \
 		--arg TargetLocationsMaxConcurrency "${TARGET_LOCATIONS_MAX_CONCURRENCY}" \

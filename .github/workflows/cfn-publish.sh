@@ -146,6 +146,7 @@ for ResourceName in "${ResourceNames[@]}"; do
 		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/locations-temp.json"
 
 	jq --arg ResourceName "${ResourceName}" \
+		--arg ResourceVersionPublishing "${RESOURCE_VERSION_PUBLISHING}" \
 		--arg OrgID "${ATLAS_ORG_ID}" \
 		--arg PubKey "${ATLAS_PUBLIC_KEY}" \
 		--arg PvtKey "${ATLAS_PRIVATE_KEY}" \
@@ -154,6 +155,7 @@ for ResourceName in "${ResourceNames[@]}"; do
 		--arg OtherParams "${OtherParams_string}" \
 		--arg AssumeRole "${AssumeRole}" \
 		'.ResourceName[0]?|=$ResourceName |
+  .ResourceVersionPublishing[0]?|=$ResourceVersionPublishing |
   .OrgID[0]?|=$OrgID |
   .PubKey[0]?|=$PubKey |
   .PvtKey[0]?|=$PvtKey |

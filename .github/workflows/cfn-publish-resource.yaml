@@ -10,6 +10,10 @@ on:
         description: "the folder name of the Resource in this Repo."
         default: ""
         required: true
+      resourceVersionPublishing:
+        description: "the version used to publish the resource, empty will use the next minor version."
+        default: ""
+        required: false
       otherParams:
         description: "Resource specific environment variables used for cfn test."
         default: ""
@@ -30,6 +34,7 @@ jobs:
     env:
 
       RESOURCES: ${{ github.event.inputs.resourceNames }}
+      RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
       REGIONS: ${{ github.event.inputs.regions }}
       OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
       TARGET_LOCATIONS_MAX_CONCURRENCY: ${{ github.event.inputs.targetLocationsMaxConcurrency }}

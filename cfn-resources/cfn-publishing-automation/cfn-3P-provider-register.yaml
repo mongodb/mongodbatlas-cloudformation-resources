@@ -6,20 +6,22 @@ assumeRole: '{{ AssumeRole }}'
 parameters:
   Repository:
     type: String
-    description: |-
-      https://github.com/resource
-      The URL of the resource's repository
+    description: URL of the resource repository
     default: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources'
   ResourceName:
     type: String
     description: the folder name of the resource as per the folder structure in your repo.
+  ResourceVersionPublishing:
+    type: String
+    description: the version used to publish the resource, empty will use the next minor version.
+    default: null
   OtherParams:
     type: String
     default: null
     description: extra parameters that are specific to resource.
   BaseUrl:
     type: String
-    default: 'https://cloud.mongodb.com/'
+    default: https://cloud.mongodb.com/
     description: Atlas Base Url
   OrgID:
     type: String
@@ -44,7 +46,7 @@ parameters:
   AssumeRole:
     type: String
     description: A role this document can assume
-    default: ''
+    default: null
 mainSteps:
   - name: Get_Region
     action: 'aws:executeAwsApi'
@@ -100,6 +102,7 @@ mainSteps:
                 - export MCLI_PUBLIC_API_KEY=$MONGODB_ATLAS_PUBLIC_KEY
                 - export MCLI_PRIVATE_API_KEY=$MONGODB_ATLAS_PRIVATE_KEY
                 - export MCLI_OUTPUT=$MONGODB_ATLAS_OUTPUT
+                - export RESOURCE_VERSION_PUBLISHING={{ResourceVersionPublishing}}
                 - export AWS_DEFAULT_REGION={{Get_Region.RegionName}}
                 - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'
                 - cd provider

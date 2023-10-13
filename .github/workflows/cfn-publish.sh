@@ -136,6 +136,9 @@ for ResourceName in "${ResourceNames[@]}"; do
 
 	CodeBuild_Project_Name="${ResourceName}-proj-$((1 + RANDOM % 1000))"
 
+	ParamsJsonPath="$(dirname "$0")"/params-temp.json
+	LocationsJsonPath="$(dirname "$0")"/locations-temp.json
+
 	jq --arg ExecutionRoleName "${ExecutionRoleName}" \
 		--arg TargetLocationsMaxConcurrency "${TARGET_LOCATIONS_MAX_CONCURRENCY}" \
 		--arg AccountIds "${AccountIds}" \
@@ -144,7 +147,7 @@ for ResourceName in "${ResourceNames[@]}"; do
     .[0].TargetLocationMaxConcurrency?|=$TargetLocationsMaxConcurrency |
     .[0].Accounts[0]?|=$AccountIds |
     .[0].Regions?|=($Regions | gsub(" "; "") | split(",")) ' \
-		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/locations-temp.json"
+		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json ${LocationsJsonPath}
 
 	jq --arg ResourceName "${ResourceName}" \
 		--arg ResourceVersionPublishing "${RESOURCE_VERSION_PUBLISHING}" \
@@ -164,10 +167,12 @@ for ResourceName in "${ResourceNames[@]}"; do
   .OtherParams[0]?|=$OtherParams |
   .BranchName[0]?|=$BranchName |
   .AssumeRole[0]?|=$AssumeRole ' \
-		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/params-temp.json"
+		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json ${ParamsJsonPath}
 
-	ParamsJsonContent=$(cat "$(dirname "$0")"/params-temp.json)
-	LocationsJsonContent=$(cat "$(dirname "$0")"/locations-temp.json)
+	[ -z "${RESOURCE_VERSION_PUBLISHING}" ] || jq 'del(.ResourceVersionPublishing)' ${ParamsJsonPath} >${ParamsJsonPath}
+
+	ParamsJsonContent=$(cat ${ParamsJsonPath})
+	LocationsJsonContent=$(cat ${LocationsJsonPath})
 
 	# aws cli to start the automation execution
 	aws ssm start-automation-execution \

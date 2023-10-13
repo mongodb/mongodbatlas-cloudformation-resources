@@ -95,6 +95,11 @@ mainSteps:
                 - export MONGODB_ATLAS_PUBLIC_KEY={{PubKey}}
                 - export MONGODB_ATLAS_PRIVATE_KEY={{PvtKey}}
                 - export MONGODB_ATLAS_OUTPUT=json
+                - export MCLI_OPS_MANAGER_URL=$MONGODB_ATLAS_BASE_URL
+                - export MCLI_ORG_ID=$MONGODB_ATLAS_ORG_ID
+                - export MCLI_PUBLIC_API_KEY=$MONGODB_ATLAS_PUBLIC_KEY
+                - export MCLI_PRIVATE_API_KEY=$MONGODB_ATLAS_PRIVATE_KEY
+                - export MCLI_OUTPUT=$MONGODB_ATLAS_OUTPUT
                 - export AWS_DEFAULT_REGION={{Get_Region.RegionName}}
                 - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'
                 - cd provider

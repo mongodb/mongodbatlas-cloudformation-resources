@@ -169,7 +169,7 @@ for ResourceName in "${ResourceNames[@]}"; do
   .AssumeRole[0]?|=$AssumeRole ' \
 		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json ${ParamsJsonPath}
 
-	[ -z "${RESOURCE_VERSION_PUBLISHING}" ] || jq 'del(.ResourceVersionPublishing)' ${ParamsJsonPath} >${ParamsJsonPath}
+	[ -n "${RESOURCE_VERSION_PUBLISHING}" ] || jq 'del(.ResourceVersionPublishing)' ${ParamsJsonPath} >${ParamsJsonPath}
 
 	ParamsJsonContent=$(cat ${ParamsJsonPath})
 	LocationsJsonContent=$(cat ${LocationsJsonPath})

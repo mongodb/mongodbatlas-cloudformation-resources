@@ -198,35 +198,31 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	job, peError := getRestoreJob(client, currentModel)
-	if peError != nil {
-		return *peError, nil
+	if err := updateModel(client, currentModel, true); err != nil {
+		return *err, nil
 	}
 
-	if job.Cancelled {
+	if aws.BoolValue(currentModel.Cancelled) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Job is already cancelled and cannot be deleted",
+			Message:          "The job is in status cancelled, Cannot delete a cancelled job",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	if isJobFinished(*job) || isJobFailed(*job) || job.Expired {
+	if util.IsStringPresent(currentModel.FinishedAt) || aws.BoolValue(currentModel.Failed) || aws.BoolValue(currentModel.Expired) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
-			Message:         "The resource is failed finished or expired",
+			Message:         "The resource is finished, failed, or expired",
 		}, nil
 	}
 
-	projectID := *currentModel.ProjectId
-	jobID := *currentModel.Id
-
-	// Check if delivery type is automated
-	if currentModel.DeliveryType != nil && *currentModel.DeliveryType == "automated" {
+	automated := "automated"
+	if util.AreStringPtrEqual(currentModel.DeliveryType, &automated) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Failed,
 			Message:         "Automated restore cannot be cancelled, wait until the process is finished and try again",
@@ -234,17 +230,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	// Create API Request Object
-	requestParameters := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID:     projectID,
-		ClusterName: cast.ToString(currentModel.InstanceName),
-		JobID:       jobID,
-	}
-
-	// API call to delete
-	_, err := client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), requestParameters)
+	_, resp, err := client.AtlasV2.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
 	if err != nil {
-		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectID, jobID, err)
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
 	return handler.ProgressEvent{

@@ -1,12 +1,1 @@
-{
-  "Profile": "default",
-  "RoleNames": [
-    "GROUP_CLUSTER_MANAGER"
-  ],
-  "OrgId": "",
-  "TeamId": "",
-  "Name": "testTeam",
-  "Usernames": [
-    "test@mongodb.com"
-  ]
-}
+

@@ -248,59 +248,48 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	// Create Atlas API Request Object
-	var restoreJobs *mongodbatlas.CloudProviderSnapshotRestoreJobs
-	var resp *mongodbatlas.Response
-
-	clusterName := ""
-	instanceName := ""
-
-	if *currentModel.InstanceType == clusterInstanceType {
-		clusterName = cast.ToString(currentModel.InstanceName)
-	} else {
-		instanceName = cast.ToString(currentModel.InstanceName)
-	}
-
-	projectID := cast.ToString(currentModel.ProjectId)
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
-
-	var err error
-	if clusterName != "" {
-		snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-			GroupID:     projectID,
-			ClusterName: clusterName,
-		}
-		// API call to list dedicated cluster restore jobs
-		restoreJobs, resp, err = client.CloudProviderSnapshotRestoreJobs.List(context.Background(), snapshotRequest, params)
-	} else {
-		// API call to list serverless instance jobs
-		restoreJobs, resp, err = client.CloudProviderSnapshotRestoreJobs.ListForServerlessBackupRestore(context.Background(), *currentModel.ProjectId, instanceName, params)
-	}
-
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp.Response), nil
-	}
-
 	models := make([]interface{}, 0)
-	restoreJobsList := restoreJobs.Results
-	for ind := range restoreJobsList {
-		var model Model
-		model.ProjectId = currentModel.ProjectId
-		model.InstanceName = currentModel.InstanceName
-		model.InstanceType = currentModel.InstanceType
-		model.Profile = currentModel.Profile
-		if !restoreJobsList[ind].Cancelled && !restoreJobsList[ind].Expired {
-			models = append(models, *convertToUIModel(restoreJobsList[ind], &model))
+	if *currentModel.InstanceType == serverlessInstanceType {
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		for i := range serverless.Results {
+			job := &serverless.Results[i]
+			model := &Model{
+				ProjectId:    currentModel.ProjectId,
+				InstanceName: currentModel.InstanceName,
+				Profile:      currentModel.Profile,
+			}
+			if !aws.BoolValue(job.Cancelled) && !aws.BoolValue(job.Expired) {
+				updateModelServerless(model, job)
+				models = append(models, model)
+			}
+		}
+	} else {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		for i := range server.Results {
+			job := &server.Results[i]
+			model := &Model{
+				ProjectId:    currentModel.ProjectId,
+				InstanceName: currentModel.InstanceName,
+				Profile:      currentModel.Profile,
+			}
+			if !aws.BoolValue(job.Cancelled) && !aws.BoolValue(job.Expired) {
+				updateModelServer(model, job)
+				models = append(models, model)
+			}
 		}
 	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "List complete",
@@ -419,14 +408,6 @@ func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbat
 	return restoreJobs, nil
 }
 
-func isJobFinished(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
-	return job.FinishedAt != ""
-}
-
-func isJobFailed(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
-	return job.Failed != nil && *job.Failed
-}
-
 func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *handler.ProgressEvent {
 	if *model.InstanceType == serverlessInstanceType {
 		serverless, resp, err := client.AtlasV2.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
@@ -459,7 +440,7 @@ func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) 
 	model.Cancelled = job.Cancelled
 	model.Expired = job.Expired
 	model.DeliveryUrl = job.DeliveryUrl
-	model.Links = flattenLinks2(job.Links)
+	model.Links = flattenLinks(job.Links)
 }
 
 func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
@@ -476,10 +457,10 @@ func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
 	model.Failed = job.Failed
 	model.Expired = job.Expired
 	model.DeliveryUrl = job.DeliveryUrl
-	model.Links = flattenLinks2(job.Links)
+	model.Links = flattenLinks(job.Links)
 }
 
-func flattenLinks2(linksResult []admin.Link) []Links {
+func flattenLinks(linksResult []admin.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {
 		var lin Links
@@ -488,33 +469,4 @@ func flattenLinks2(linksResult []admin.Link) []Links {
 		links = append(links, lin)
 	}
 	return links
-}
-
-// convert mongodb links to model links
-func flattenLinks(linksResult []*mongodbatlas.Link) []Links {
-	links := make([]Links, 0)
-	for _, link := range linksResult {
-		var lin Links
-		lin.Href = &link.Href
-		lin.Rel = &link.Rel
-		links = append(links, lin)
-	}
-	return links
-}
-
-func convertToUIModel(restoreJob *mongodbatlas.CloudProviderSnapshotRestoreJob, currentModel *Model) *Model {
-	currentModel.TargetClusterName = &restoreJob.TargetClusterName
-	currentModel.DeliveryType = &restoreJob.DeliveryType
-	currentModel.ExpiresAt = &restoreJob.ExpiresAt
-	currentModel.CreatedAt = &restoreJob.CreatedAt
-	currentModel.Id = &restoreJob.ID
-	currentModel.FinishedAt = &restoreJob.FinishedAt
-	currentModel.SnapshotId = &restoreJob.SnapshotID
-	currentModel.TargetProjectId = &restoreJob.TargetGroupID
-	currentModel.Timestamp = &restoreJob.Timestamp
-	currentModel.Cancelled = &restoreJob.Cancelled
-	currentModel.Expired = &restoreJob.Expired
-	currentModel.DeliveryUrl = restoreJob.DeliveryURL
-	currentModel.Links = flattenLinks(restoreJob.Links)
-	return currentModel
 }

@@ -232,10 +232,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
+		instanceType := serverlessInstanceType
 		for i := range serverless.Results {
 			job := &serverless.Results[i]
 			model := &Model{
 				ProjectId:    currentModel.ProjectId,
+				InstanceType: &instanceType,
 				InstanceName: currentModel.InstanceName,
 				Profile:      currentModel.Profile,
 			}
@@ -249,10 +251,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
+		instanceType := clusterInstanceType
 		for i := range server.Results {
 			job := &server.Results[i]
 			model := &Model{
 				ProjectId:    currentModel.ProjectId,
+				InstanceType: &instanceType,
 				InstanceName: currentModel.InstanceName,
 				Profile:      currentModel.Profile,
 			}

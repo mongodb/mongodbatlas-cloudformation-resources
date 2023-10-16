@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -27,9 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType, constants.InstanceType, constants.InstanceName}
@@ -40,7 +39,6 @@ const (
 	defaultBackSeconds            = 30
 	defaultTimeOutInSeconds       = 1200
 	defaultReturnSuccessIfTimeOut = false
-	timeLayout                    = "2006-01-02 15:04:05"
 	clusterInstanceType           = "cluster"
 	serverlessInstanceType        = "serverless"
 )
@@ -49,14 +47,28 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-backup-restore-job")
 }
 
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	if pe := validator.ValidateModel(fields, model); pe != nil {
+		return pe
+	}
+
+	if *model.InstanceType != clusterInstanceType && *model.InstanceType != serverlessInstanceType {
+		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("InstanceType must be %s or %s", clusterInstanceType, serverlessInstanceType),
+			cloudformation.HandlerErrorCodeInvalidRequest)
+		return &pe
+	}
+
+	return nil
+}
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
+	if err := validateModel(CreateRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -66,84 +78,46 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
 	}
 
-	// Callback
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
-		id := req.CallbackContext["id"]
-		startTime := req.CallbackContext["startTime"]
-		return createCallback(client, currentModel, cast.ToString(id), cast.ToString(startTime)), nil
+		id := req.CallbackContext["id"].(string)
+		startTime := req.CallbackContext["startTime"].(string)
+		return createCallback(client, currentModel, id, startTime), nil
 	}
 
-	targetClusterName := cast.ToString(currentModel.TargetClusterName)
-	targetProjectID := cast.ToString(currentModel.TargetProjectId)
-	deliveryType := cast.ToString(currentModel.DeliveryType)
-	snapshotID := cast.ToString(currentModel.SnapshotId)
-
-	clusterName := ""
-	instanceName := ""
-
-	if *currentModel.InstanceType == clusterInstanceType {
-		clusterName = cast.ToString(currentModel.InstanceName)
-	} else {
-		instanceName = cast.ToString(currentModel.InstanceName)
-	}
-
-	// check target cluster and project set for automated download
-	if deliveryType == constants.Automated {
-		if targetClusterName == "" {
+	automated := constants.Automated
+	if util.AreStringPtrEqual(currentModel.DeliveryType, &automated) {
+		if !util.IsStringPresent(currentModel.TargetProjectId) || !util.IsStringPresent(currentModel.TargetClusterName) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
-				Message:         "Error - creating cloud backup  snapshot restore job: `TargetClusterName` must be set if delivery type is `automated`",
-				ResourceModel:   currentModel,
-			}, nil
-		}
-		if targetProjectID == "" {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Failed,
-				Message:         "Error - creating cloud backup  snapshot restore job: `TargetProjectId` must be set if delivery type is `automated`",
+				Message:         "Error - creating cloud backup  snapshot restore job: `TargetProjectId` and `TargetClusterName` must be set if delivery type is `automated`",
 				ResourceModel:   currentModel,
 			}, nil
 		}
 	}
 
-	// Create Atlas API Request Object
-	snapshotReq := &mongodbatlas.CloudProviderSnapshotRestoreJob{
-		SnapshotID:            snapshotID,
-		DeliveryType:          deliveryType,
-		TargetClusterName:     targetClusterName,
-		TargetGroupID:         targetProjectID,
-		OplogTs:               cast.ToInt64(currentModel.OpLogTs),
-		OplogInc:              cast.ToInt64(currentModel.OpLogInc),
-		PointInTimeUTCSeconds: cast.ToInt64(currentModel.PointInTimeUtcSeconds),
-	}
-
-	if *currentModel.InstanceType == clusterInstanceType {
-		requestParameters := &mongodbatlas.SnapshotReqPathParameters{
-			GroupID:     cast.ToString(currentModel.ProjectId),
-			SnapshotID:  snapshotID,
-			ClusterName: clusterName,
-		}
-		// API call to create job
-		restoreJob, resp, err := client.CloudProviderSnapshotRestoreJobs.Create(context.Background(), requestParameters, snapshotReq)
+	if *currentModel.InstanceType == serverlessInstanceType {
+		params := paramsServerless(currentModel)
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.CreateServerlessBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error - creating  snapshot restore job for dedicated cluster: %+v", err), resp.Response), nil
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
-		currentModel.Id = &restoreJob.ID
+		currentModel.Id = serverless.Id
 	} else {
-		// API call to create job
-		restoreJob, resp, err := client.CloudProviderSnapshotRestoreJobs.CreateForServerlessBackupRestore(context.Background(), *currentModel.ProjectId, instanceName, snapshotReq)
+		params := paramsServer(currentModel)
+		server, resp, err := client.AtlasV2.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error - creating  snapshot restore job for serverless cluster: %+v", err), resp.Response), nil
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
-		currentModel.Id = &restoreJob.ID
+		currentModel.Id = server.Id
 	}
 
-	if flowIsSynchronous(currentModel) {
+	if aws.BoolValue(currentModel.EnableSynchronousCreation) {
 		return progressevent.GetInProgressProgressEvent(
 				"Create in progress",
 				map[string]interface{}{
 					constants.StateName: "in_progress",
 					"id":                currentModel.Id,
-					"startTime":         time.Now().Format(timeLayout),
+					"startTime":         util.TimeToString(time.Now()),
 				},
 				currentModel,
 				int64(*currentModel.SynchronousCreationOptions.CallbackDelaySeconds)),
@@ -160,7 +134,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if err := validator.ValidateModel(ReadDeleteRequiredFields, currentModel); err != nil {
+	if err := validateModel(ReadDeleteRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
 
@@ -194,7 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if err := validator.ValidateModel(ReadDeleteRequiredFields, currentModel); err != nil {
+	if err := validateModel(ReadDeleteRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
 
@@ -244,7 +218,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
+	if err := validateModel(ListRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
 
@@ -319,19 +293,13 @@ func (model *Model) validateAsynchronousProperties() error {
 	return nil
 }
 
-func flowIsSynchronous(model *Model) bool {
-	return model.EnableSynchronousCreation != nil && *model.EnableSynchronousCreation
-}
-
-func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID, startTime string) handler.ProgressEvent {
-	restoreJob, progressEvent := getRestoreJob(client, currentModel)
-	if progressEvent != nil {
-		return *progressEvent
+func createCallback(client *util.MongoDBClient, currentModel *Model, jobID, startTime string) handler.ProgressEvent {
+	currentModel.Id = &jobID
+	if err := updateModel(client, currentModel, false); err != nil {
+		return *err
 	}
 
-	currentModel.Id = &jobID
-
-	if restoreJob.FinishedAt != "" {
+	if util.IsStringPresent(currentModel.FinishedAt) {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         "Create Complete",
@@ -363,8 +331,8 @@ func createCallback(client *mongodbatlas.Client, currentModel *Model, jobID, sta
 }
 
 func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
-	startDateTime, err := time.Parse(timeLayout, startTime)
-	if err != nil {
+	startDateTime := util.StringPtrToTimePtr(&startTime)
+	if startDateTime == nil {
 		return false // If there's an error parsing the start time, assume timeout is not reached
 	}
 
@@ -376,36 +344,6 @@ func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
 
 	// Compare the current time with the timeout time
 	return currentTime.After(timeoutTime)
-}
-
-func getRestoreJob(client *mongodbatlas.Client, currentModel *Model) (*mongodbatlas.CloudProviderSnapshotRestoreJob, *handler.ProgressEvent) {
-	if *currentModel.InstanceType == serverlessInstanceType {
-		/*projectID, instanceName, jobID*/
-		restoreJobs, resp, err := client.CloudProviderSnapshotRestoreJobs.GetForServerlessBackupRestore(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
-		if err != nil {
-			pe := progressevent.GetFailedEventByResponse("Error getting response job", resp.Response)
-			return nil, &pe
-		}
-		return restoreJobs, nil
-	}
-
-	snapshotRequest := &mongodbatlas.SnapshotReqPathParameters{
-		GroupID: *currentModel.ProjectId,
-		JobID:   *currentModel.Id,
-	}
-
-	if *currentModel.InstanceType == clusterInstanceType {
-		snapshotRequest.ClusterName = *currentModel.InstanceName
-	} else {
-		snapshotRequest.InstanceName = *currentModel.InstanceName
-	}
-
-	restoreJobs, resp, err := client.CloudProviderSnapshotRestoreJobs.Get(context.Background(), snapshotRequest)
-	if err != nil {
-		pe := progressevent.GetFailedEventByResponse("Error getting response job", resp.Response)
-		return nil, &pe
-	}
-	return restoreJobs, nil
 }
 
 func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *handler.ProgressEvent {
@@ -469,4 +407,42 @@ func flattenLinks(linksResult []admin.Link) []Links {
 		links = append(links, lin)
 	}
 	return links
+}
+
+func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
+	var ts, inc *int
+	if val, err := strconv.Atoi(*model.OpLogTs); err == nil {
+		ts = &val
+	}
+	if val, err := strconv.Atoi(*model.OpLogInc); err == nil {
+		inc = &val
+	}
+	return &admin.DiskBackupSnapshotRestoreJob{
+		SnapshotId:            model.SnapshotId,
+		DeliveryType:          *model.DeliveryType,
+		TargetClusterName:     model.TargetClusterName,
+		TargetGroupId:         model.TargetProjectId,
+		OplogTs:               ts,
+		OplogInc:              inc,
+		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,
+	}
+}
+
+func paramsServerless(model *Model) *admin.ServerlessBackupRestoreJob {
+	var ts, inc *int
+	if val, err := strconv.Atoi(*model.OpLogTs); err == nil {
+		ts = &val
+	}
+	if val, err := strconv.Atoi(*model.OpLogInc); err == nil {
+		inc = &val
+	}
+	return &admin.ServerlessBackupRestoreJob{
+		SnapshotId:            model.SnapshotId,
+		DeliveryType:          *model.DeliveryType,
+		TargetClusterName:     *model.TargetClusterName,
+		TargetGroupId:         *model.TargetProjectId,
+		OplogTs:               ts,
+		OplogInc:              inc,
+		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,
+	}
 }

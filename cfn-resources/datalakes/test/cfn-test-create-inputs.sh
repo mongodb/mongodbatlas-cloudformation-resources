@@ -134,17 +134,7 @@ jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg role "$roleID" \
 	--arg bucketName "$bucketName" \
 	'.TenantName?|=$bucketName |.CloudProviderConfig.Aws.TestS3Bucket?|=$bucketName |.CloudProviderConfig.Aws.RoleId?|=$role |.CloudProviderConfig.Aws.IamUserARN?|=$atlasAWSAccountArn |.CloudProviderConfig.Aws.ExternalId?|=$atlasAssumedRoleExternalId | .CloudProviderConfig.Aws.IamAssumedRoleARN?|=$AWSAssumedArn  | .ProjectId?|=$projectId' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg org "$MONGODB_ATLAS_ORG_ID" \
-	--arg projectId "$projectId" \
-	--arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
-	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
-	--arg AWSAssumedArn "$awsArne" \
-	--arg role "$roleID" \
-	--arg bucketName "$bucketName" \
-	'.TenantName?|=$bucketName |.CloudProviderConfig.Aws.TestS3Bucket?|=$bucketName |.CloudProviderConfig.Aws.RoleId?|=$role |.CloudProviderConfig.Aws.IamUserARN?|=$atlasAWSAccountArn |.CloudProviderConfig.Aws.ExternalId?|=$atlasAssumedRoleExternalId | .CloudProviderConfig.Aws.IamAssumedRoleARN?|=$AWSAssumedArn  | .ProjectId?|=$projectId' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
-#echo "mongocli iam projects delete ${projectId} --force"
 
 ls -l inputs
+echo "mongocli iam projects delete ${projectId} --force"

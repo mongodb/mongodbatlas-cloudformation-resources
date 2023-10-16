@@ -120,13 +120,6 @@ jq --arg projectId "$projectId" \
 
 jq --arg projectId "$projectId" \
 	--arg role "$roleID" \
-	--arg name "((((( (*dsa^%$^%)" \
-	--arg bucketName "$bucketName" \
-	'.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg projectId "$projectId" \
-	--arg role "$roleID" \
 	--arg name "${projectName}" \
 	--arg bucketName "$bucketName" \
 	--arg profile "$profile" \

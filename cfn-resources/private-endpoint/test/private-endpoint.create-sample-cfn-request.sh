@@ -21,7 +21,7 @@ subnetId="${3}"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
 	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_ORG_ID" \
+	--arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg region "$region" \
 	--arg vpcId "$vpcId" \
 	--arg subnetId "$subnetId" \

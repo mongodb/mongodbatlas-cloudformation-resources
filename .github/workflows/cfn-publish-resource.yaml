@@ -43,7 +43,7 @@ jobs:
       # Atlas Profile
       ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
       ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
-      ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+      MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
 
       # Organization: atlas dev profile used for organization
       # currently multi-org-payment-method is set up only in dev atlas account

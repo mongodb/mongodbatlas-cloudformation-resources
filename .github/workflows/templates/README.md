@@ -35,7 +35,7 @@ act -W ./cfn-publish-resource.yaml -P ubuntu-latest=ubuntu:latest --secret-file 
 ```
         ATLAS_PUBLIC_KEY="xxxxxxxx"
         ATLAS_PRIVATE_KEY="xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
-        ATLAS_ORG_ID="xxxxxxxxxxxxxxxx"
+        MONGODB_ATLAS_ORG_ID="xxxxxxxxxxxxxxxx"
         ATLAS_FEDERATED_SETTINGS_ID=""
         
         AWS_ACCESS_KEY_ID=""

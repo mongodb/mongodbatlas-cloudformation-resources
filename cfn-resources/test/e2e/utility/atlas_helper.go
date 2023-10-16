@@ -76,14 +76,14 @@ func NewMongoDBClient() (atlasClient *atlas.Client, err error) {
 }
 
 func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {
-	orgID := os.Getenv("ATLAS_ORG_ID")
+	orgID := os.Getenv("MONGODB_ATLAS_ORG_ID")
 	publicKey := os.Getenv("ATLAS_PUBLIC_KEY")
 	privateKey := os.Getenv("ATLAS_PRIVATE_KEY")
 	baseURL := os.Getenv("ATLAS_BASE_URL")
 
 	if orgID == "" || publicKey == "" || privateKey == "" || baseURL == "" {
 		return nil, fmt.Errorf("please ensure following env variables are set: " +
-			"ATLAS_ORG_ID, ATLAS_PUBLIC_KEY, ATLAS_PRIVATE_KEY, ATLAS_BASE_URL, MONGODB_ATLAS_SECRET_PROFILE")
+			"MONGODB_ATLAS_ORG_ID, ATLAS_PUBLIC_KEY, ATLAS_PRIVATE_KEY, ATLAS_BASE_URL, MONGODB_ATLAS_SECRET_PROFILE")
 	}
 
 	return &AtlasEnvOptions{orgID, privateKey, publicKey, baseURL}, nil

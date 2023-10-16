@@ -33,8 +33,8 @@ act -W ./cfn-publish-resource.yaml -P ubuntu-latest=ubuntu:latest --secret-file 
 
 ## add .secret file in the templates directory and initialize all the required secrets for the workflow
 ```
-        ATLAS_PUBLIC_KEY="xxxxxxxx"
-        ATLAS_PRIVATE_KEY="xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
+        MONGODB_ATLAS_PUBLIC_KEY="xxxxxxxx"
+        MONGODB_ATLAS_PRIVATE_KEY="xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
         MONGODB_ATLAS_ORG_ID="xxxxxxxxxxxxxxxx"
         ATLAS_FEDERATED_SETTINGS_ID=""
         

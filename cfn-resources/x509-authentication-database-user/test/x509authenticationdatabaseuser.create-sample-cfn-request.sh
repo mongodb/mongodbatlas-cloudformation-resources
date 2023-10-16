@@ -16,8 +16,8 @@ if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 projectId="${1}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+jq --arg pubkey "$MONGODB_ATLAS_PUBLIC_KEY" \
+	--arg pvtkey "$MONGODB_ATLAS_PRIVATE_KEY" \
 	--arg projectId "$projectId" \
 	'.desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ProjectId?|=$projectId ' \
 	"$(dirname "$0")/x509authenticationdatabaseuser.sample-cfn-request.json"

@@ -31,8 +31,8 @@ jobs:
       INSTANCE_SIZE: ${{ github.event.inputs.instanceSize }}
       DATABASE_USERNAME: ${{ github.event.inputs.databaseUsername }}
       DATABASE_PASSWORD: ${{ github.event.inputs.databasePassword }}
-      ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
-      ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
       MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID }}
       TEMPLATE_FILE: quickstart-mongodbatlas/templates/mongodbatlas-cfn-quickstart.template.json 
       CAPABLITIES: CAPABILITY_IAM
@@ -58,9 +58,9 @@ jobs:
       run: |
         cat << EOF > ./secret.json
         {
-            "AtlasMongoDBPrivateKey": "${ATLAS_PRIVATE_KEY}",
+            "AtlasMongoDBPrivateKey": "${MONGODB_ATLAS_PRIVATE_KEY}",
             "AtlasMongoDBOrgID": "${MONGODB_ATLAS_ORG_ID}",
-            "AtlasMongoDBPublicKey" : "${ATLAS_PUBLIC_KEY}"
+            "AtlasMongoDBPublicKey" : "${MONGODB_ATLAS_PUBLIC_KEY}"
         }
         EOF
         cat ./secret.json

@@ -205,6 +205,10 @@ One or more URLs for the compressed snapshot files for manual download. Only vis
 
 Indicates whether the restore job was canceled.
 
+#### Failed
+
+Indicates whether the restore job failed.
+
 #### CreatedAt
 
 UTC ISO 8601 formatted point in time when Atlas created the restore job.

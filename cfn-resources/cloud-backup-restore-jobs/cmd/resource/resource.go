@@ -28,6 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -163,51 +164,26 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *err, nil
 	}
 
-	client, pe := util.NewMongoDBClient(req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	clusterName := ""
-	instanceName := ""
-
-	if *currentModel.InstanceType == clusterInstanceType {
-		clusterName = cast.ToString(currentModel.InstanceName)
-	} else {
-		instanceName = cast.ToString(currentModel.InstanceName)
+	if err := updateModel(client, currentModel, true); err != nil {
+		return *err, nil
 	}
 
-	if clusterName == "" && instanceName == "" {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Error - reading cloud backup  snapshot restore job: cluster name or instance name must be set ",
-			ResourceModel:   currentModel,
-		}, nil
-	}
-
-	// Check if job exist
-	job, peError := getRestoreJob(client, currentModel)
-	if peError != nil {
-		return *peError, nil
-	}
-
-	if job.Cancelled {
+	if aws.BoolValue(currentModel.Cancelled) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "The job is in status cancelled, Cannot read a cancelled job",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// Create Atlas API Request Object
-	restoreJob, progressEvent := getRestoreJob(client, currentModel)
-	if progressEvent != nil {
-		return *progressEvent, nil
-	}
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read complete",
-		ResourceModel:   convertToUIModel(restoreJob, currentModel),
+		ResourceModel:   currentModel,
 	}, nil
 }
 
@@ -463,6 +439,69 @@ func isJobFailed(job mongodbatlas.CloudProviderSnapshotRestoreJob) bool {
 	return job.Failed != nil && *job.Failed
 }
 
+func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *handler.ProgressEvent {
+	if *model.InstanceType == serverlessInstanceType {
+		serverless, resp, err := client.AtlasV2.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		if err != nil {
+			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+			return &pe
+		}
+		updateModelServerless(model, serverless)
+	} else {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		if err != nil {
+			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+			return &pe
+		}
+		updateModelServer(model, server)
+	}
+	return nil
+}
+
+func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) {
+	model.TargetClusterName = &job.TargetClusterName
+	model.DeliveryType = &job.DeliveryType
+	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
+	model.CreatedAt = nil // not available if new SDK
+	model.Id = job.Id
+	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
+	model.SnapshotId = job.SnapshotId
+	model.TargetProjectId = &job.TargetGroupId
+	model.Timestamp = util.TimePtrToStringPtr(job.Timestamp)
+	model.Cancelled = job.Cancelled
+	model.Expired = job.Expired
+	model.DeliveryUrl = job.DeliveryUrl
+	model.Links = flattenLinks2(job.Links)
+}
+
+func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
+	model.TargetClusterName = job.TargetClusterName
+	model.DeliveryType = &job.DeliveryType
+	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
+	model.CreatedAt = nil // not available in new SDK
+	model.Id = job.Id
+	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
+	model.SnapshotId = job.SnapshotId
+	model.TargetProjectId = job.TargetGroupId
+	model.Timestamp = util.TimePtrToStringPtr(job.Timestamp)
+	model.Cancelled = job.Cancelled
+	model.Failed = job.Failed
+	model.Expired = job.Expired
+	model.DeliveryUrl = job.DeliveryUrl
+	model.Links = flattenLinks2(job.Links)
+}
+
+func flattenLinks2(linksResult []admin.Link) []Links {
+	links := make([]Links, 0)
+	for _, link := range linksResult {
+		var lin Links
+		lin.Href = link.Href
+		lin.Rel = link.Rel
+		links = append(links, lin)
+	}
+	return links
+}
+
 // convert mongodb links to model links
 func flattenLinks(linksResult []*mongodbatlas.Link) []Links {
 	links := make([]Links, 0)
@@ -474,6 +513,7 @@ func flattenLinks(linksResult []*mongodbatlas.Link) []Links {
 	}
 	return links
 }
+
 func convertToUIModel(restoreJob *mongodbatlas.CloudProviderSnapshotRestoreJob, currentModel *Model) *Model {
 	currentModel.TargetClusterName = &restoreJob.TargetClusterName
 	currentModel.DeliveryType = &restoreJob.DeliveryType

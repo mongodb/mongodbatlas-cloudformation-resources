@@ -11,6 +11,7 @@ type Model struct {
 	DeliveryType               *string                     `json:",omitempty"`
 	DeliveryUrl                []string                    `json:",omitempty"`
 	Cancelled                  *bool                       `json:",omitempty"`
+	Failed                     *bool                       `json:",omitempty"`
 	CreatedAt                  *string                     `json:",omitempty"`
 	Expired                    *bool                       `json:",omitempty"`
 	ExpiresAt                  *string                     `json:",omitempty"`

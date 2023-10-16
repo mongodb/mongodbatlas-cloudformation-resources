@@ -30,7 +30,10 @@
     "InstanceType": {
       "description": "Type of instance specified on the Instance Name serverless or cluster",
       "type": "string",
-      "enum": ["serverless", "cluster"]
+      "enum": [
+        "serverless",
+        "cluster"
+      ]
     },
     "InstanceName": {
       "description": "The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
@@ -59,6 +62,10 @@
     },
     "Cancelled": {
       "description": "Indicates whether the restore job was canceled.",
+      "type": "boolean"
+    },
+    "Failed": {
+      "description": "Indicates whether the restore job failed.",
       "type": "boolean"
     },
     "CreatedAt": {
@@ -150,6 +157,7 @@
     "/properties/Id",
     "/properties/DeliveryUrl",
     "/properties/Cancelled",
+    "/properties/Failed",
     "/properties/CreatedAt",
     "/properties/Expired",
     "/properties/ExpiresAt",

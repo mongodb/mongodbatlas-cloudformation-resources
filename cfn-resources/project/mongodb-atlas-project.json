@@ -147,6 +147,7 @@
     "OrgId"
   ],
   "createOnlyProperties": [
+    "/properties/Name",
     "/properties/Profile"
   ],
   "writeOnlyProperties": [

@@ -54,11 +54,4 @@ jq --arg group_id "$projectId" \
 	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-clusterName="${clusterName}- more B@d chars !@(!(@====*** ;;::"
-jq --arg group_id "$projectId" \
-	--arg clusterName "$clusterName" \
-	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs

@@ -46,12 +46,3 @@ jq --arg region "$region" \
 	--arg projectId "$projectId" \
 	'.Name?|=$clusterName | .ProjectId?|=$projectId ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
-
-#SET INVALID NAME
-clusterName="^%LKJ)(*J_ {+_+O_)"
-
-jq --arg region "$region" \
-	--arg clusterName "$clusterName" \
-	--arg projectId "$projectId" \
-	'.Name?|=$clusterName | .ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"

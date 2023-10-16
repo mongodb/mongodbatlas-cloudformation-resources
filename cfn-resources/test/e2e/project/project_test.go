@@ -56,7 +56,7 @@ const (
 )
 
 var (
-	profile         = os.Getenv("ATLAS_SECRET_PROFILE")
+	profile         = os.Getenv("MONGODB_ATLAS_SECRET_PROFILE")
 	orgID           = os.Getenv("ATLAS_ORG_ID")
 	e2eRandSuffix   = utility.GetRandNum().String()
 	testProjectName = "cfn-e2e-project" + e2eRandSuffix

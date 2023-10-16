@@ -264,55 +264,45 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}
 
 	if currentModel.ProjectApiKeys != nil {
-		// Get APIKeys from project
-		itemsPerPage := 1000
-		projectAPIKeys, _, err := atlasV2.ProgrammaticAPIKeysApi.ListProjectApiKeysWithParams(context.Background(), &admin.ListProjectApiKeysApiParams{
-			GroupId:      projectID,
-			ItemsPerPage: &itemsPerPage,
-		}).Execute()
-		if err != nil {
-			_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Error while finding api keys in project",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-		}
-
 		// Get Change in ApiKeys
-		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(*currentModel.Id, currentModel.ProjectApiKeys, projectAPIKeys.Results)
+		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
 
 		// Remove old keys
 		for _, key := range removeKeys {
-			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, key.Key).Execute()
+			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, *key.Key).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Error while Un-assigning Key to project",
+					Message:          fmt.Sprintf("Error while Un-assigning Key to project %s", err.Error()),
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
 		}
 
 		// Add Keys
 		for _, key := range newAPIKeys {
-			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, key.Key, key.UpdatePayload).Execute()
+			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
+				Roles: key.RoleNames,
+			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Error while Assigning Key to project",
+					Message:          fmt.Sprintf("Error while Assigning Key to project %s", err.Error()),
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
 		}
 
 		// Update Key Roles
 		for _, key := range changedKeys {
-			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, key.Key, key.UpdatePayload).Execute()
+			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
+				Roles: key.RoleNames,
+			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Error while Assigning Key to project",
+					Message:          fmt.Sprintf("Error while Assigning Key to project %s", err.Error()),
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 			}
 		}
@@ -330,7 +320,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Read Complete",
+		Message:         "Update Complete",
 		ResourceModel:   project,
 	}, nil
 }
@@ -521,47 +511,6 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newT
 	return newTeams, changedTeams, removeTeams
 }
 
-// Get difference in ApiKeys
-func getChangeInAPIKeys(groupID string, currentKeys []ProjectApiKey, oKeys []admin.ApiKeyUserDetails) (newKeys, changedKeys, removeKeys []UpdateAPIKey) {
-	for _, nKey := range currentKeys {
-		if util.IsStringPresent(nKey.Key) {
-			matched := false
-			for _, oKey := range oKeys {
-				if util.AreStringPtrEqual(nKey.Key, oKey.Id) {
-					changedKeys = append(changedKeys, UpdateAPIKey{Key: *nKey.Key, UpdatePayload: &admin.UpdateAtlasProjectApiKey{Roles: nKey.RoleNames}})
-					matched = true
-					break
-				}
-			}
-			// Add to newKeys
-			if !matched {
-				newKeys = append(newKeys, UpdateAPIKey{Key: *nKey.Key, UpdatePayload: &admin.UpdateAtlasProjectApiKey{Roles: nKey.RoleNames}})
-			}
-		}
-	}
-
-	for _, oKey := range oKeys {
-		if util.IsStringPresent(oKey.Id) {
-			matched := false
-			for _, nKey := range currentKeys {
-				if util.AreStringPtrEqual(nKey.Key, oKey.Id) {
-					matched = true
-					break
-				}
-			}
-			if !matched {
-				for _, role := range oKey.Roles {
-					// Consider only current ProjectRoles
-					if util.AreStringPtrEqual(role.GroupId, &groupID) {
-						removeKeys = append(removeKeys, UpdateAPIKey{Key: *oKey.Id})
-					}
-				}
-			}
-		}
-	}
-	return newKeys, changedKeys, removeKeys
-}
-
 func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	var newTeams []admin.TeamRole
 	for _, t := range teams {
@@ -570,4 +519,65 @@ func readTeams(teams []ProjectTeam) []admin.TeamRole {
 		}
 	}
 	return newTeams
+}
+
+func getChangeInAPIKeys(currentKeys []ProjectApiKey, oKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
+	// Create maps to efficiently check for the existence of keys by ID
+	currentKeyMap := make(map[string]ProjectApiKey)
+	oKeyMap := make(map[string]ProjectApiKey)
+
+	// Populate the maps using the ID as the key
+	for _, key := range currentKeys {
+		if key.Key != nil {
+			currentKeyMap[*key.Key] = key
+		}
+	}
+
+	for _, key := range oKeys {
+		if key.Key != nil {
+			oKeyMap[*key.Key] = key
+		}
+	}
+
+	// Identify new keys, changed keys, and removed keys
+	for _, key := range currentKeys {
+		if key.Key == nil {
+			continue
+		}
+
+		if oKey, ok := oKeyMap[*key.Key]; ok {
+			// Key exists in both currentKeys and oKeys
+			if !stringSliceEqual(key.RoleNames, oKey.RoleNames) {
+				changedKeys = append(changedKeys, key)
+			}
+		} else {
+			// Key exists in currentKeys but not in oKeys
+			newKeys = append(newKeys, key)
+		}
+	}
+
+	for _, key := range oKeys {
+		if key.Key == nil {
+			continue
+		}
+
+		if _, ok := currentKeyMap[*key.Key]; !ok {
+			// Key exists in oKeys but not in currentKeys
+			removeKeys = append(removeKeys, key)
+		}
+	}
+
+	return newKeys, changedKeys, removeKeys
+}
+
+func stringSliceEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }

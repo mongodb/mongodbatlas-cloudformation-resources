@@ -47,7 +47,7 @@ jobs:
           ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
+          MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/test/e2e/project

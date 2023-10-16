@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -410,39 +409,25 @@ func flattenLinks(linksResult []admin.Link) []Links {
 }
 
 func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
-	var ts, inc *int
-	if val, err := strconv.Atoi(*model.OpLogTs); err == nil {
-		ts = &val
-	}
-	if val, err := strconv.Atoi(*model.OpLogInc); err == nil {
-		inc = &val
-	}
 	return &admin.DiskBackupSnapshotRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     model.TargetClusterName,
 		TargetGroupId:         model.TargetProjectId,
-		OplogTs:               ts,
-		OplogInc:              inc,
+		OplogTs:               util.StrPtrToIntPtr(model.OpLogTs),
+		OplogInc:              util.StrPtrToIntPtr(model.OpLogInc),
 		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,
 	}
 }
 
 func paramsServerless(model *Model) *admin.ServerlessBackupRestoreJob {
-	var ts, inc *int
-	if val, err := strconv.Atoi(*model.OpLogTs); err == nil {
-		ts = &val
-	}
-	if val, err := strconv.Atoi(*model.OpLogInc); err == nil {
-		inc = &val
-	}
 	return &admin.ServerlessBackupRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     *model.TargetClusterName,
 		TargetGroupId:         *model.TargetProjectId,
-		OplogTs:               ts,
-		OplogInc:              inc,
+		OplogTs:               util.StrPtrToIntPtr(model.OpLogTs),
+		OplogInc:              util.StrPtrToIntPtr(model.OpLogInc),
 		PointInTimeUTCSeconds: model.PointInTimeUtcSeconds,
 	}
 }

@@ -8,16 +8,16 @@ They should also be validated to ensure the changes do not cause a regression.
 
 ### Resources (and parameters for local tests) needed to manually QA:
 The Atlas organization must be manually provided.
-- Atlas Organization (`ATLAS_ORG_ID`)
+- Atlas Organization (`MONGODB_ATLAS_ORG_ID`)
 - Atlas Project (created as part of `cfn-testing-helper.sh`)
 
 ## Manual QA:
 
 ### Prerequisites
 1. Create an Atlas Organization if you don’t already have one.
-2. Export environment variable `ATLAS_ORG_ID` with the value as your Organization Id.
+2. Export environment variable `MONGODB_ATLAS_ORG_ID` with the value as your Organization Id.
    You can get this ID from your Atlas UI by clicking on your organization and note the Organization ID from the URL
-   which should look like this https://cloud.mongodb.com/v2#/org/<ATLAS_ORG_ID>/projects.
+   which should look like this https://cloud.mongodb.com/v2#/org/<MONGODB_ATLAS_ORG_ID>/projects.
 
 ### Steps to test:
 1. Ensure prerequisites above for this resource and general [prerequisites](/TESTING.md#prerequisites) are complete.

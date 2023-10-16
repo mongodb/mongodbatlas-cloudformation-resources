@@ -116,7 +116,7 @@ sleep 65
 atlas cloudProviders accessRoles aws authorize "${roleID}" --projectId "${projectId}" --iamAssumedRoleArn "${awsArne}"
 echo -e "--------------------------------authorize mongodb  Role ends ----------------------------\n"
 
-jq --arg org "$ATLAS_ORG_ID" \
+jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg projectId "$projectId" \
 	--arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
@@ -126,7 +126,7 @@ jq --arg org "$ATLAS_ORG_ID" \
 	'.TenantName?|=$bucketName |.CloudProviderConfig.Aws.TestS3Bucket?|=$bucketName |.CloudProviderConfig.Aws.RoleId?|=$role |.CloudProviderConfig.Aws.IamUserARN?|=$atlasAWSAccountArn |.CloudProviderConfig.Aws.ExternalId?|=$atlasAssumedRoleExternalId | .CloudProviderConfig.Aws.IamAssumedRoleARN?|=$AWSAssumedArn | .ProjectId?|=$projectId' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg org "$ATLAS_ORG_ID" \
+jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg projectId "$projectId" \
 	--arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
@@ -136,7 +136,7 @@ jq --arg org "$ATLAS_ORG_ID" \
 	'.TenantName?|=$bucketName |.CloudProviderConfig.Aws.TestS3Bucket?|=$bucketName |.CloudProviderConfig.Aws.RoleId?|=$role |.CloudProviderConfig.Aws.IamUserARN?|=$atlasAWSAccountArn |.CloudProviderConfig.Aws.ExternalId?|=$atlasAssumedRoleExternalId | .CloudProviderConfig.Aws.IamAssumedRoleARN?|=$AWSAssumedArn  | .ProjectId?|=$projectId' \
 	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
 
-jq --arg org "$ATLAS_ORG_ID" \
+jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg projectId "$projectId" \
 	--arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
 	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \

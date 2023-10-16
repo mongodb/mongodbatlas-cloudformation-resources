@@ -7,7 +7,7 @@ The following components use this resource and are potentially impacted by any c
 
 ### Resources (and parameters for local tests) needed to manually QA:
 The Atlas organization must be manually provided.
-- Atlas Organization (ATLAS_ORG_ID)
+- Atlas Organization (MONGODB_ATLAS_ORG_ID)
 - Team Id (created by cfn-test-create-inputs.sh)
 - username (created by cfn-test-create-inputs.sh)
 
@@ -17,8 +17,8 @@ The Atlas organization must be manually provided.
 
 ### Prerequisite steps:
 1. Create an Atlas Organization if you don’t already have one.
-2. Export environment variable ATLAS_ORG_ID with the value as your Organization Id. You can get this Id from your Atlas UI 
-by clicking on your organization and note the Organization Id from the URL (which should look like this https://cloud.mongodb.com/v2#/org/<ATLAS_ORG_ID>/projects)
+2. Export environment variable MONGODB_ATLAS_ORG_ID with the value as your Organization Id. You can get this Id from your Atlas UI 
+by clicking on your organization and note the Organization Id from the URL (which should look like this https://cloud.mongodb.com/v2#/org/<MONGODB_ATLAS_ORG_ID>/projects)
 
 
 ### Steps to test:

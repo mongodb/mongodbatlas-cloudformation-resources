@@ -1,17 +1,21 @@
 {
-    "desiredResourceState" : {
-            "ProjectId" : "ProjectId",
-            "ApiKeys" : {
-                "PublicKey" : "$ATLAS_PUBLIC_KEY",
-                "PrivateKey" : "$ATLAS_PRIVATE_KEY"
-            },
-            "AccessList" : [
-                { "IPAddress": "0.0.0.0/1",
-                  "Comment": "Testing open all ips" },
-                { "CIDRBlock": "203.0.113.0/24",
-                  "Comment": "CIDR block for Application Server B - D" }
-            ]
+  "desiredResourceState": {
+    "ProjectId": "ProjectId",
+    "ApiKeys": {
+      "PublicKey": "$MONGODB_ATLAS_PUBLIC_KEY",
+      "PrivateKey": "$MONGODB_ATLAS_PRIVATE_KEY"
     },
-    "providerLogGroupName" : "mongodb-atlas-projectipaccesslist-logs",
-    "previousResourceState": { }
+    "AccessList": [
+      {
+        "IPAddress": "0.0.0.0/1",
+        "Comment": "Testing open all ips"
+      },
+      {
+        "CIDRBlock": "203.0.113.0/24",
+        "Comment": "CIDR block for Application Server B - D"
+      }
+    ]
+  },
+  "providerLogGroupName": "mongodb-atlas-projectipaccesslist-logs",
+  "previousResourceState": {}
 }

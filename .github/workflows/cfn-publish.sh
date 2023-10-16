@@ -59,9 +59,9 @@ for ResourceName in "${ResourceNames[@]}"; do
 		case "$ResourceName" in
 		"federated-settings-org-role-mapping")
 			# atlas details will change for federated_settings-org-role-mapping
-			ATLAS_ORG_ID="${ATLAS_ORG_ID_FOR_FEDERATION}"
-			ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_FOR_FEDERATION}"
-			ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_FOR_FEDERATION}"
+			MONGODB_ATLAS_ORG_ID="${ATLAS_ORG_ID_FOR_FEDERATION}"
+			MONGODB_ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_FOR_FEDERATION}"
+			MONGODB_ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_FOR_FEDERATION}"
 
 			echo "setting up other params for federated-settings-org-role-mapping"
 			jq --arg ATLAS_FEDERATED_SETTINGS_ID "${ATLAS_FEDERATED_SETTINGS_ID}" \
@@ -86,9 +86,9 @@ for ResourceName in "${ResourceNames[@]}"; do
 
 		"organization")
 			# currently multi-org-payment-method is setup only in dev atlas account
-			ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_DEV}"
-			ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_DEV}"
-			ATLAS_ORG_ID="${ATLAS_ORG_ID_DEV}"
+			MONGODB_ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_DEV}"
+			MONGODB_ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_DEV}"
+			MONGODB_ATLAS_ORG_ID="${ATLAS_ORG_ID_DEV}"
 
 			jq --arg MONGODB_ATLAS_ORG_OWNER_ID "${ATLAS_ORG_OWNER_ID}" \
 				'.MONGODB_ATLAS_ORG_OWNER_ID |= $MONGODB_ATLAS_ORG_OWNER_ID' \
@@ -150,9 +150,9 @@ for ResourceName in "${ResourceNames[@]}"; do
 
 	jq --arg ResourceName "${ResourceName}" \
 		--arg ResourceVersionPublishing "${RESOURCE_VERSION_PUBLISHING}" \
-		--arg OrgID "${ATLAS_ORG_ID}" \
-		--arg PubKey "${ATLAS_PUBLIC_KEY}" \
-		--arg PvtKey "${ATLAS_PRIVATE_KEY}" \
+		--arg OrgID "${MONGODB_ATLAS_ORG_ID}" \
+		--arg PubKey "${MONGODB_ATLAS_PUBLIC_KEY}" \
+		--arg PvtKey "${MONGODB_ATLAS_PRIVATE_KEY}" \
 		--arg BranchName "${BRANCH_NAME}" \
 		--arg ProjectName "${CodeBuild_Project_Name}" \
 		--arg OtherParams "${OtherParams_string}" \

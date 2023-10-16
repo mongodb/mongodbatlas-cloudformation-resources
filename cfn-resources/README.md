@@ -85,9 +85,9 @@ Next, run `mongocli config` and then;
 ```bash
 $source <(./quickstart-mongodb-atlas/scripts/export-mongocli-config.py)
 $env | grep ATLAS
-ATLAS_PUBLIC_KEY=XXXXXX
-ATLAS_PRIVATE_KEY=XXXXXX
-ATLAS_ORG_ID=XXXXXX
+MONGODB_ATLAS_PUBLIC_KEY=XXXXXX
+MONGODB_ATLAS_PRIVATE_KEY=XXXXXX
+MONGODB_ATLAS_ORG_ID=XXXXXX
 ```
 
 ### Deployment.template.yaml

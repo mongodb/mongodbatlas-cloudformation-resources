@@ -1,5 +1,16 @@
 # Changelog
 
+## (2023-10-17)
+
+**(BREAKING CHANGE) FIELD CHANGES**
+
+Removed fields:
+- CreatedAt (string). This property was not being populated and therefore removed.
+
+Added fields:
+- Failed (bool). This property is being sent by the server so it is being made available.
+
+
 ## (2023-10-05)
 
 **(BREAKING CHANGE) ADDED SUPPORT TO SERVERLESS INSTANCE**

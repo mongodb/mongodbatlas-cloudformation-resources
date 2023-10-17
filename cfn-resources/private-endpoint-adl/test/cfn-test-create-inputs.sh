@@ -21,8 +21,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
 	echo "usage: cfn-test-create-inputs.sh <projectId> <endpoint>"
 	echo "Creates a new Search Index"
@@ -45,9 +43,9 @@ else
 fi
 
 if ! test -v AWS_DEFAULT_REGION; then
-    region=$(aws configure get region)
+	region=$(aws configure get region)
 else
-  region=$AWS_DEFAULT_REGION
+	region=$AWS_DEFAULT_REGION
 fi
 
 #Getting Aws vpc and subnet
@@ -60,38 +58,38 @@ output=$(atlas privateEndpoints aws list --projectId "${projectId}" --output jso
 private_endpoint_id=""
 # Check if the output is empty
 if [ "$(echo "$output" | jq -e '. | length == 0')" = true ]; then
-  echo "Empty"
-  # Execute the create command if the output is empty
-  create_output=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json)
-  private_endpoint_id=$(echo "$create_output" | jq -r '.id')
-  echo "Created endpoint with ID: $private_endpoint_id"
+	echo "Empty"
+	# Execute the create command if the output is empty
+	create_output=$(atlas privateEndpoints aws create --region "${region}" --projectId "${projectId}" --output json)
+	private_endpoint_id=$(echo "$create_output" | jq -r '.id')
+	echo "Created endpoint with ID: $private_endpoint_id"
 
-  # Poll and wait for the status to become "AVAILABLE"
-  while true; do
-    status=$(atlas privateEndpoints aws describe "$private_endpoint_id" --projectId "$projectId" --output json | jq -r '.status')
-    if [ "$status" = "AVAILABLE" ]; then
-      echo "Status: $status"
-      break
-    fi
-    echo "Status: $status (waiting for AVAILABLE)"
-    sleep 5
-  done
+	# Poll and wait for the status to become "AVAILABLE"
+	while true; do
+		status=$(atlas privateEndpoints aws describe "$private_endpoint_id" --projectId "$projectId" --output json | jq -r '.status')
+		if [ "$status" = "AVAILABLE" ]; then
+			echo "Status: $status"
+			break
+		fi
+		echo "Status: $status (waiting for AVAILABLE)"
+		sleep 5
+	done
 else
-  # Use jq to extract the ID of the first result
-    private_endpoint_id=$(echo "$output" | jq -r '.[0].id')
-    echo "ID: $private_endpoint_id"
+	# Use jq to extract the ID of the first result
+	private_endpoint_id=$(echo "$output" | jq -r '.[0].id')
+	echo "ID: $private_endpoint_id"
 fi
 
 endpoint_service_id=$(atlas privateEndpoints aws describe "$private_endpoint_id" --projectId "$projectId" --output json | jq -r '.endpointServiceName')
 
 #creating aws private endpoint
 aws_private_endpoint_id=$(aws ec2 create-vpc-endpoint \
-  --vpc-id "$vpc_id" \
-  --service-name "$endpoint_service_id" \
-  --region "$region" \
-  --subnet-ids "$subnet_id" \
-  --vpc-endpoint-type Interface \
-  --output json | jq -r '.VpcEndpoint.VpcEndpointId')
+	--vpc-id "$vpc_id" \
+	--service-name "$endpoint_service_id" \
+	--region "$region" \
+	--subnet-ids "$subnet_id" \
+	--vpc-endpoint-type Interface \
+	--output json | jq -r '.VpcEndpoint.VpcEndpointId')
 
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

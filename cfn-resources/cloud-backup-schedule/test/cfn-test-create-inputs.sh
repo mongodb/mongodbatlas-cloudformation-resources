@@ -7,7 +7,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
 	echo "usage:$0 <project_name>"
@@ -42,7 +41,6 @@ fi
 policyId=$(atlas backups schedule describe "${clusterName}" --projectId "${projectId}" | jq -r '.policies[0].id')
 echo "policyId: ${policyId}"
 
-name="${1}"
 jq --arg group_id "$projectId" \
 	--arg cluster_name "$clusterName" \
 	--arg policy_id "$policyId" \
@@ -55,11 +53,5 @@ jq --arg group_id "$projectId" \
 	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id| .Policies[0].ID?|=$policy_id' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
-name="${name}- more B@d chars !@(!(@====*** ;;::"
-jq --arg group_id "$projectId" \
-	--arg cluster_name "$clusterName" \
-	'.ClusterName?|=$cluster_name |.ProjectId?|=$group_id' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs
+echo "mongocli iam projects delete ${projectId} --force"

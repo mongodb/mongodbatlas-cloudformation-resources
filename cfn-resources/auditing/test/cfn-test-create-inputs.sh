@@ -8,8 +8,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
 	echo "Creates a new customdb role for the test"
 }
@@ -22,9 +20,9 @@ mkdir inputs
 
 #set profile
 profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-    profile=${MONGODB_ATLAS_PROFILE}
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
 projectName="${1}"
@@ -51,11 +49,6 @@ jq --arg projectId "$projectId" \
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg projectId "$projectId" \
-	--arg profile "$profile" \
-	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg projectId "$projectId" \
@@ -63,9 +56,5 @@ jq --arg projectId "$projectId" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
 
-jq --arg projectId "$projectId" \
-	--arg profile "$profile" \
-	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_2_invalid.json" >"inputs/inputs_2_invalid.json"
-
 ls -l inputs
+echo "mongocli iam projects delete ${projectId} --force"

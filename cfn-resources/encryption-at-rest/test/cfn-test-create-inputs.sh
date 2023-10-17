@@ -4,7 +4,6 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-#set -x
 function usage {
 	echo "usage:$0 <project_name>"
 	echo "Creates a new encryption key for the the project "
@@ -116,17 +115,11 @@ jq --arg projectId "$projectId" \
 	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-jq --arg KMS_KEY "$cleanedKeyID" \
-	--arg KMS_ROLE "${roleID}" \
-	--arg projectId "$projectId" \
-	--arg region "$keyRegion" \
-	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
 jq --arg projectId "$projectId" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
 	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
+
 ls -l inputs

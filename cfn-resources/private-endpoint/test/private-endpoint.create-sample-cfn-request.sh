@@ -19,9 +19,9 @@ region="${1}"
 vpcId="${2}"
 subnetId="${3}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
-	--arg org "$ATLAS_ORG_ID" \
+jq --arg pubkey "$MONGODB_ATLAS_PUBLIC_KEY" \
+	--arg pvtkey "$MONGODB_ATLAS_PRIVATE_KEY" \
+	--arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg region "$region" \
 	--arg vpcId "$vpcId" \
 	--arg subnetId "$subnetId" \

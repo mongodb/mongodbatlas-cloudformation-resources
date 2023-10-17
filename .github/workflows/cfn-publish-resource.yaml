@@ -10,6 +10,10 @@ on:
         description: "the folder name of the Resource in this Repo."
         default: ""
         required: true
+      resourceVersionPublishing:
+        description: "the version used to publish the resource, empty will use the next minor version."
+        default: ""
+        required: false
       otherParams:
         description: "Resource specific environment variables used for cfn test."
         default: ""
@@ -30,15 +34,16 @@ jobs:
     env:
 
       RESOURCES: ${{ github.event.inputs.resourceNames }}
+      RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
       REGIONS: ${{ github.event.inputs.regions }}
       OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
       TARGET_LOCATIONS_MAX_CONCURRENCY: ${{ github.event.inputs.targetLocationsMaxConcurrency }}
       BRANCH_NAME: ${{ github.event.inputs.branchName }}
 
       # Atlas Profile
-      ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
-      ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
-      ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
+      MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
 
       # Organization: atlas dev profile used for organization
       # currently multi-org-payment-method is set up only in dev atlas account
@@ -59,24 +64,24 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING}}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
 
-      # ldap-configuration
-      LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD }}
-      LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME }}
-      LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME }}
+      # LDAP config
+      LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}
+      LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME_PUBLISHING }}
+      LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD_PUBLISHING }}
 
       # third party integration
-      WEBHOOK_CREATE_URL: ${{ secrets.WEBHOOK_CREATE_URL }}
-      WEBHOOK_UPDATE_URL: ${{ secrets.WEBHOOK_UPDATE_URL }}
-      WEBHOOK_UPDATE_SECRET: ${{ secrets.WEBHOOK_UPDATE_SECRET }}
-      PROMETHEUS_USER_NAME: ${{ secrets.PROMETHEUS_USER_NAME }}
-      PROMETHEUS_PASSWORD_NAME: ${{ secrets.PROMETHEUS_PASSWORD_NAME }}
-      PAGER_DUTY_CREATE_SERVICE_KEY: ${{ secrets.PAGER_DUTY_CREATE_SERVICE_KEY }}
-      PAGER_DUTY_UPDATE_SERVICE_KEY: ${{ secrets.PAGER_DUTY_UPDATE_SERVICE_KEY }}
-      DATA_DOG_CREATE_API_KEY: ${{ secrets.DATA_DOG_CREATE_API_KEY }}
-      DATA_DOG_UPDATE_API_KEY: ${{ secrets.DATA_DOG_UPDATE_API_KEY }}
-      OPS_GENIE_API_KEY: ${{ secrets.OPS_GENIE_API_KEY }}
-      MICROSOFT_TEAMS_WEBHOOK_CREATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_CREATE_URL }}
-      MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL }}
+      WEBHOOK_CREATE_URL: ${{ secrets.WEBHOOK_CREATE_URL_PUBLISHING }}
+      WEBHOOK_UPDATE_URL: ${{ secrets.WEBHOOK_UPDATE_URL_PUBLISHING }}
+      WEBHOOK_UPDATE_SECRET: ${{ secrets.WEBHOOK_UPDATE_SECRET_PUBLISHING }}
+      PROMETHEUS_USER_NAME: ${{ secrets.PROMETHEUS_USER_NAME_PUBLISHING }}
+      PROMETHEUS_PASSWORD_NAME: ${{ secrets.PROMETHEUS_PASSWORD_NAME_PUBLISHING }}
+      PAGER_DUTY_CREATE_SERVICE_KEY: ${{ secrets.PAGER_DUTY_CREATE_SERVICE_KEY_PUBLISHING }}
+      PAGER_DUTY_UPDATE_SERVICE_KEY: ${{ secrets.PAGER_DUTY_UPDATE_SERVICE_KEY_PUBLISHING }}
+      DATA_DOG_CREATE_API_KEY: ${{ secrets.DATA_DOG_CREATE_API_KEY_PUBLISHING }}
+      DATA_DOG_UPDATE_API_KEY: ${{ secrets.DATA_DOG_UPDATE_API_KEY_PUBLISHING }}
+      OPS_GENIE_API_KEY: ${{ secrets.OPS_GENIE_API_KEY_PUBLISHING }}
+      MICROSOFT_TEAMS_WEBHOOK_CREATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_CREATE_URL_PUBLISHING }}
+      MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL_PUBLISHING }}
 
     steps:
       - name: Install AWS CLI

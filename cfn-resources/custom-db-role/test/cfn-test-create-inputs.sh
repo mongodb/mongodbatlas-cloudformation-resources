@@ -8,8 +8,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
 	echo "Creates a new customdb role for the test"
 }

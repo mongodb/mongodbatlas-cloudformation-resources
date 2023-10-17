@@ -16,9 +16,9 @@ function usage {
 
 #set profile
 profile="federation"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-    profile=${MONGODB_ATLAS_PROFILE}
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
 projectName="${1}"
@@ -40,7 +40,7 @@ mkdir inputs
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg org "$ATLAS_ORG_ID" \
+	jq --arg org "MONGODB_ATLAS_ORG_ID" \
 		--arg FederationSettingsId "$ATLAS_FEDERATED_SETTINGS_ID" \
 		--arg projectId "$projectId" \
 		--arg profile "$profile" \

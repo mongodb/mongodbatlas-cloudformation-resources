@@ -21,7 +21,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
 	echo "usage:$0 <project_name>"
@@ -51,15 +50,8 @@ echo -e "Created Cluster \"${clusterName}\""
 rm -rf inputs
 mkdir inputs
 jq --arg group_id "$projectId" \
-   --arg clusterName "$clusterName" \
-   '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+	--arg clusterName "$clusterName" \
+	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
-clusterName="${clusterName}- more B@d chars !@(!(@====*** ;;::"
-jq --arg group_id "$projectId" \
-   --arg clusterName "$clusterName" \
-   '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
-
-echo "mongocli iam projects delete ${projectId} --force"
 ls -l inputs

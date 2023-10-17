@@ -152,8 +152,13 @@ func (m *Model) setPrimaryIdentifier(privateEndpoint admin.PrivateLinkEndpoint) 
 }
 
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
+
+	if model.Id == nil {
+		model.Id = model.InterfaceEndpointId
+	}
+
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
-		*model.CloudProvider, *model.InterfaceEndpointId, *model.EndpointServiceId)
+		*model.CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
 
 	return privateEndpoint, response, err

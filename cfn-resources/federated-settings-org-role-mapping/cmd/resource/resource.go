@@ -221,7 +221,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			resp), nil
 	}
 
-	models := make([]interface{}, 0) // cfn test
+	models := make([]interface{}, 0)
 	for i := range federatedSettingsOrganizationRoleMappings.Results {
 		model := Model{}
 		model.Profile = currentModel.Profile

@@ -6,14 +6,14 @@ The following components use this resource and are potentially impacted by any c
 
 
 ### Resources (and parameters for local tests) needed to manually QA:
-- Atlas Organization (ATLAS_ORG_ID)
+- Atlas Organization (MONGODB_ATLAS_ORG_ID)
 - Atlas Project (created as part of `cfn-testing-helper.sh`)
 
 ## Manual QA:
 
 ### Prerequisite steps:
-1. Create an Atlas Organization if you don’t already have one and note the OrgId from URL (https://cloud.mongodb.com/v2#/org/<ATLAS_ORG_ID>/projects)
-2. Export ATLAS_ORG_ID environment variable with OrgId from #1.
+1. Create an Atlas Organization if you don’t already have one and note the OrgId from URL (https://cloud.mongodb.com/v2#/org/<MONGODB_ATLAS_ORG_ID>/projects)
+2. Export MONGODB_ATLAS_ORG_ID environment variable with OrgId from #1.
 
 ### Steps to test:
 1. Ensure prerequisites above for this resource and general [prerequisites](../../../TESTING.md#prerequisites) are complete.

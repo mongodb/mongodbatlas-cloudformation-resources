@@ -279,9 +279,9 @@ func expandAlertConfigurationMatchers(matchers []Matcher) []map[string]interface
 	mts := make([]map[string]interface{}, 0)
 	for ind := range matchers {
 		mMatcher := map[string]interface{}{
-			"FieldName": cast.ToString(matchers[ind].FieldName),
-			"Operator":  cast.ToString(matchers[ind].Operator),
-			"Value":     cast.ToString(matchers[ind].Value),
+			"fieldName": cast.ToString(matchers[ind].FieldName),
+			"operator":  cast.ToString(matchers[ind].Operator),
+			"value":     cast.ToString(matchers[ind].Value),
 		}
 		mts = append(mts, mMatcher)
 	}

@@ -7,7 +7,7 @@ The following components use this resource and are potentially impacted by any c
 
 ### Resources (and parameters for local tests) needed to manually QA:
 These Atlas federated setting ID must be manually created.
-- Atlas Organization (ATLAS_ORG_ID)
+- Atlas Organization (MONGODB_ATLAS_ORG_ID)
 - Atlas federated settings id (ATLAS_FEDERATED_SETTINGS_ID)
 - Atlas Project (created by cfn-test-create-inputs.sh)
 
@@ -15,16 +15,16 @@ These Atlas federated setting ID must be manually created.
 ## Manual QA:
 
 ### Prerequisite steps:
-1. Create an Atlas Organization if you don’t already have one and get the OrgId from URL (https://cloud.mongodb.com/v2#/org/<ATLAS_ORG_ID>/projects)
+1. Create an Atlas Organization if you don’t already have one and get the OrgId from URL (https://cloud.mongodb.com/v2#/org/<MONGODB_ATLAS_ORG_ID>/projects)
 2. Go to your organization settings and click on “Visit Federation Management App” under “Manage Federation Settings”
 3. Note the federationSettingsId from the URL (https://cloud.mongodb.com/v2#/federation/<ATLAS_FEDERATED_SETTINGS_ID>/overview).
 4. Configure your federation by configuring domains and Identity Providers.
-5. Export ATLAS_ORG_ID and ATLAS_FEDERATED_SETTINGS_ID environment variables.
+5. Export MONGODB_ATLAS_ORG_ID and ATLAS_FEDERATED_SETTINGS_ID environment variables.
 
 ### Steps to test:
 1. Ensure prerequisites above for this resource and general [prerequisites](../../../TESTING.md#prerequisites) are complete.
 2. Follow [general steps](../../../TESTING.md#steps) to test a CFN resource.
-3. Use this URL to view RoleMappings configured for your organization: https://cloud.mongodb.com/v2#/federation/<ATLAS_FEDERATED_SETTINGS_ID>/organizations/<ATLAS_ORG_ID>/roleMappings
+3. Use this URL to view RoleMappings configured for your organization: https://cloud.mongodb.com/v2#/federation/<ATLAS_FEDERATED_SETTINGS_ID>/organizations/<MONGODB_ATLAS_ORG_ID>/roleMappings
 
 ### Success criteria when testing the resource
 1. Role mappings should be correctly configured for the Organization under Federation settings:  

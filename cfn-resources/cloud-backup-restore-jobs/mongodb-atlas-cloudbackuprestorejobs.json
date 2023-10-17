@@ -30,7 +30,10 @@
     "InstanceType": {
       "description": "Type of instance specified on the Instance Name serverless or cluster",
       "type": "string",
-      "enum": ["serverless", "cluster"]
+      "enum": [
+        "serverless",
+        "cluster"
+      ]
     },
     "InstanceName": {
       "description": "The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore jobs.",
@@ -61,9 +64,9 @@
       "description": "Indicates whether the restore job was canceled.",
       "type": "boolean"
     },
-    "CreatedAt": {
-      "description": "UTC ISO 8601 formatted point in time when Atlas created the restore job.",
-      "type": "string"
+    "Failed": {
+      "description": "Indicates whether the restore job failed.",
+      "type": "boolean"
     },
     "Expired": {
       "description": "Indicates whether the restore job expired.",
@@ -138,12 +141,10 @@
   },
   "additionalProperties": false,
   "required": [
-    "ProjectId",
-    "ClusterName"
+    "ProjectId"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/ClusterName",
     "/properties/Profile",
     "/properties/InstanceType",
     "/properties/InstanceName"
@@ -152,7 +153,7 @@
     "/properties/Id",
     "/properties/DeliveryUrl",
     "/properties/Cancelled",
-    "/properties/CreatedAt",
+    "/properties/Failed",
     "/properties/Expired",
     "/properties/ExpiresAt",
     "/properties/FinishedAt",

@@ -1,74 +1,52 @@
-description: |-
-  *Replace this default text with instructions or other information about your document.*  
-
-  ---
+description: |
   # CFN-3P-Provider-Register
   This automation document builds and registers  3rd party resource providers. This automation document can register resources in a single AWS account or in multiple accounts and regions. However, multi-account and regions require a role. Please refer to  the [SSM multi-account ](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation-multiple-accounts-and-regions.html) documentation.
-  ## 
-  This document builds and registers 3rd party resource providers build using the following plugins:   
-  * JAVA [link to another webpage](https://aws.amazon.com/)
-  * Go [link to another webpage](https://aws.amazon.com/)
-  * Python (Coming soon) [link to another webpage](https://aws.amazon.com/)
-
-  In order for CodeBuild to have the permission to build an submit the resource, a role must be created. 
-  ##
 schemaVersion: '0.3'
 assumeRole: '{{ AssumeRole }}'
-outputs:
-  - Default_Version.ARN
 parameters:
   Repository:
     type: String
-    description: |-
-      https://github.com/resource
-      The URL of the resource's repository
+    description: URL of the resource repository
+    default: 'https://github.com/mongodb/mongodbatlas-cloudformation-resources'
   ResourceName:
     type: String
-    default: null
     description: the folder name of the resource as per the folder structure in your repo.
-  ProjectName:
+  ResourceVersionPublishing:
     type: String
-    default: null
-    description: the name of the Build Project created in CodeBuild when automation is run.
-  OrgID:
-    type: String
-    default: null
-    description: ATLAS OrgID.
-  PubKey:
-    type: String
-    default: null
-    description: ATLAS Public key.
-  PvtKey:
-    type: String
-    default: null
-    description: ATLAS Private key.
-  BranchName:
-    type: String
-    default: null
-    description: git branch name.
+    description: 'the version used to publish the resource, empty will use the next minor version.'
+    default: ''
   OtherParams:
     type: String
-    default: null
+    default: ''
     description: extra parameters that are specific to resource.
-  Path:
+  BaseUrl:
     type: String
-    default: null
-    description: |-
-      provider/
-      The path of the resource in the repository. Example: https://github.com/resource/provider The path to the resource is provider/. If the repository only contains a single resource, the default value of root will look for the resource in the root of the repository.
+    default: 'https://cloud.mongodb.com/'
+    description: Atlas Base Url
+  OrgID:
+    type: String
+    description: Atlas OrgID
+  PubKey:
+    type: String
+    description: Atlas Public key
+  PvtKey:
+    type: String
+    description: Atlas Private key
+  BranchName:
+    type: String
+    default: master
+    description: git branch name.
+  ProjectName:
+    type: String
+    description: the name of the Build Project created in CodeBuild when automation is run.
   BuilderRole:
     type: String
     description: The role that allows CodeBuild to build and submit the resource on your behalf
+    default: DevOpsIntegrationsContractors-CodeBuild
   AssumeRole:
     type: String
     description: A role this document can assume
-    default: ''
-  LogDeliveryBucket:
-    type: String
-    description: |-
-      The S3 bucket to which CloudFormation delivers the contract test execution logs.
-
-      CloudFormation delivers the logs by the time contract testing has completed and the extension has been assigned a test type status of PASSED or FAILED.
+    default: null
 mainSteps:
   - name: Get_Region
     action: 'aws:executeAwsApi'
@@ -79,92 +57,6 @@ mainSteps:
       - Name: RegionName
         Selector: '$.AvailabilityZones[0].RegionName'
         Type: String
-  - name: Select_Language
-    action: 'aws:executeScript'
-    inputs:
-      Runtime: python3.6
-      Handler: script_handler
-      Script: |-
-        import urllib
-        import json
-
-        def get_config(url,path,branchname):
-            """
-            Determines the runtime.
-            :param url: A URL
-            :param path: The path to the build directory
-            """
-            try:
-              if path == "root":
-                print('{url}/raw/{branchname}/.rpdk-config'.format(url=url,branchname=branchname))
-                location = '{url}/raw/{branchname}/.rpdk-config'.format(url=url,branchname=branchname)
-              else:
-                print('{url}/raw/{branchname}/{path}.rpdk-config'.format(url=url, path=path,branchname=branchname))
-                location = '{url}/raw/{branchname}/{path}.rpdk-config'.format(url=url, path=path,branchname=branchname)
-              req = urllib.request.Request(location)
-              ##parsing response
-              r = urllib.request.urlopen(req).read()
-              config = json.loads(r.decode('utf-8'))
-              return config
-            except: 
-              print('Resource configuration not found')
-              raise Exception('Resource configuration not found')
-
-        def is_live(url):
-            """
-            Checks that a given URL is reachable.
-            :param url: A URL
-            """
-            request = urllib.request.Request(url)
-            request.get_method = lambda: 'HEAD'
-
-            try:
-                urllib.request.urlopen(request)
-            except urllib.request.HTTPError:
-                print('Repository not found')
-                raise Exception('Repository not found')
-        
-        
-        
-        def script_handler(events, context):
-          is_live(events['url'])
-          print(events['branchname'])
-          print('{url}/raw/{branchname}/{path}.rpdk-config'.format(url=events['url'], path=events['path'],branchname=events['branchname']))
-          config = get_config(url=events['url'], path=events['path'],branchname=events['branchname'])
-          runtime = config['language']
-          typename = config['typeName']
-          if events['path'] == "root":
-            return {'typename': typename, 'runtime': runtime, 'path': '.'}
-          else:
-            return {'typename': typename, 'runtime': runtime, 'path': events['path']}
-
-      InputPayload:
-        url: '{{ Repository }}'
-        path: '{{ Path }}'
-        branchname: '{{ BranchName }}'
-    outputs:
-      - Selector: $.Payload.runtime
-        Type: String
-        Name: runtime
-      - Name: path
-        Selector: $.Payload.path
-        Type: String
-      - Name: resourcename
-        Selector: $.Payload.resourcename
-        Type: String
-      - Name: typename
-        Selector: $.Payload.typename
-        Type: String
-    description: The step reads the .rpdk file and determines what build environment to use.
-  - name: Build_Branch
-    action: 'aws:branch'
-    inputs:
-      Choices:
-        - NextStep: Go_Build_Enviroment
-          Variable: '{{Select_Language.runtime}}'
-          StringEquals: go
-    description: Creates an environment that deploys a 3rd party resource
-    nextStep: Start_Build
   - name: Go_Build_Enviroment
     action: 'aws:executeAwsApi'
     inputs:
@@ -175,7 +67,7 @@ mainSteps:
       description: This environment builds a 3P resource
       environment:
         computeType: BUILD_GENERAL1_SMALL
-        image: 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'
+        image: 'aws/codebuild/amazonlinux2-x86_64-standard:5.0'
         type: LINUX_CONTAINER
         privilegedMode: true
       name: '{{ProjectName}}'
@@ -187,8 +79,8 @@ mainSteps:
           phases:
             install:
               runtime-versions:
-                python: 3.9
-                golang: 1.18
+                python: 3.11
+                golang: 1.20
               commands:
                 - pip install pre-commit
                 - yum update -y
@@ -200,13 +92,17 @@ mainSteps:
                 - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
                 - ./sam-installation/install
                 - pip3 install cloudformation-cli cloudformation-cli-go-plugin
-                - export ATLAS_ORG_ID={{OrgID}}
-                - export ATLAS_PUBLIC_KEY={{PubKey}}
-                - export ATLAS_PRIVATE_KEY={{PvtKey}}
-                - export MCLI_PUBLIC_API_KEY=$ATLAS_PUBLIC_KEY
-                - export MCLI_PRIVATE_API_KEY=$ATLAS_PRIVATE_KEY
-                - export MCLI_ORG_ID=$ATLAS_ORG_ID
-                - export MCLI_OUTPUT=json
+                - export MONGODB_ATLAS_BASE_URL={{BaseUrl}}
+                - export MONGODB_ATLAS_ORG_ID={{OrgID}}
+                - export MONGODB_ATLAS_PUBLIC_KEY={{PubKey}}
+                - export MONGODB_ATLAS_PRIVATE_KEY={{PvtKey}}
+                - export MONGODB_ATLAS_OUTPUT=json
+                - export MCLI_OPS_MANAGER_URL=$MONGODB_ATLAS_BASE_URL
+                - export MCLI_ORG_ID=$MONGODB_ATLAS_ORG_ID
+                - export MCLI_PUBLIC_API_KEY=$MONGODB_ATLAS_PUBLIC_KEY
+                - export MCLI_PRIVATE_API_KEY=$MONGODB_ATLAS_PRIVATE_KEY
+                - export MCLI_OUTPUT=$MONGODB_ATLAS_OUTPUT
+                - export RESOURCE_VERSION_PUBLISHING={{ResourceVersionPublishing}}
                 - export AWS_DEFAULT_REGION={{Get_Region.RegionName}}
                 - 'git clone --branch {{ BranchName }}  {{ Repository }} provider'
                 - cd provider
@@ -242,7 +138,7 @@ mainSteps:
         - FAULT
         - STOPPED
         - TIMED_OUT
-      timeoutSeconds: 7200
+    timeoutSeconds: 10800
   - name: Check_Build_Status
     action: 'aws:assertAwsResourceProperty'
     inputs:
@@ -260,14 +156,3 @@ mainSteps:
       Service: codebuild
       Api: delete-project
       name: '{{ProjectName}}'
-  - name: Default_Version
-    action: 'aws:executeAwsApi'
-    inputs:
-      Service: cloudformation
-      Api: DescribeType
-      Type: RESOURCE
-      TypeName: '{{ Select_Language.typename }}'
-    outputs:
-      - Name: ARN
-        Selector: $.Arn
-        Type: String

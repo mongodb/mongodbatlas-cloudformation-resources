@@ -7,8 +7,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function usage {
     echo "usage:$0 <project/cluster_name>"
     echo "Creates a new project and cluster by that name for the test"
@@ -55,9 +53,9 @@ rm -rf inputs
 mkdir inputs
 
 if ! test -v AWS_DEFAULT_REGION; then
-    region=$(aws configure get region)
+	region=$(aws configure get region)
 else
-  region=$AWS_DEFAULT_REGION
+	region=$AWS_DEFAULT_REGION
 fi
 
 projectName="${1}"

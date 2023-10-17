@@ -83,12 +83,11 @@ if [ -z "${2}" ]; then
 	. ./cfn-testing-helper.config
 	env | grep CFN_TEST_
 	PROJECT_NAME="${CFN_TEST_NEW_PROJECT_NAME}"
-	echo "PROJECT_NAME:${PROJECT_NAME}"
 else
 	PROJECT_NAME="${2}"
 fi
 
-echo "${PROJECT_NAME}"
+echo "PROJECT_NAME: ${PROJECT_NAME}"
 
 for res in ${resources}; do
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run ./test/cfn-test-create-inputs.sh for:${resource}" && continue

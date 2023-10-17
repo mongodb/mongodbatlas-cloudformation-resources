@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	publicKeyEnv  = "ATLAS_PUBLIC_KEY"
-	privateKeyEnv = "ATLAS_PRIVATE_KEY"
+	publicKeyEnv  = "MONGODB_ATLAS_PUBLIC_KEY"
+	privateKeyEnv = "MONGODB_ATLAS_PRIVATE_KEY"
 )
 
 var (

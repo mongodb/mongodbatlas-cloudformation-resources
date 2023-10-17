@@ -60,4 +60,12 @@
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            Thanks for opening this issue. The ticket [${{ steps.create.outputs.jira-ticket-id }}](https://jira.mongodb.org/browse/${{ steps.create.outputs.jira-ticket-id }}) was created for internal tracking.
+            Thanks for opening this issue! Please make sure to provide the following information to help us reproduce the issue:
+              - Complete cloud formation template used by the customers
+              - List of Public CFN Resources that are activated in the AWS account with their release version
+              - AWS Region where the CFN stack is running
+              - The policies and service principals of the IAM role that is used to activate the CFN resource and run the CFN template (if any).
+                Note that passing an IAM role to CloudFormation when creating a stack is optional. If you don't supply one, the user permissions are assumed. See the IAM permissions section in the General information guide for more information.
+              
+            The ticket [${{ steps.create.outputs.jira-ticket-id }}](https://jira.mongodb.org/browse/${{ steps.create.outputs.jira-ticket-id }}) was created for internal tracking.
+

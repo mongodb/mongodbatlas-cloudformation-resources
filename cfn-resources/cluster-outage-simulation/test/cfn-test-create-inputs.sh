@@ -21,7 +21,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
 	echo "usage:$0 <project_name>"
@@ -35,9 +34,9 @@ rm -rf inputs
 mkdir inputs
 #set profile
 profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-    profile=${MONGODB_ATLAS_PROFILE}
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
 projectName="${1}"
@@ -51,22 +50,17 @@ if [ -z "$projectId" ]; then
 	echo -e "Cant find project \"${projectName}\"\n"
 fi
 
-atlas clusters create "${clusterName}" --projectId "${projectId}"  -f "$SCRIPTDIR"/cluster.json --output=json
+atlas clusters create "${clusterName}" --projectId "${projectId}" -f "$SCRIPTDIR"/cluster.json --output=json
 atlas clusters watch "${clusterName}" --projectId "${projectId}"
 echo -e "Created Cluster \"${clusterName}\""
 
 rm -rf inputs
 mkdir inputs
-jq --arg group_id "$projectId" \
-   --arg clusterName "$clusterName" \
-   --arg profile "$profile" \
-   '.Profile?|=$profile |.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
-clusterName="${clusterName}- more B@d chars !@(!(@====*** ;;::"
 jq --arg group_id "$projectId" \
-   --arg clusterName "$clusterName" \
-   '.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
+	--arg clusterName "$clusterName" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile |.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 ls -l inputs

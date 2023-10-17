@@ -21,7 +21,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 WORDTOREMOVE="template."
 function usage {
@@ -50,10 +49,6 @@ echo "Check if a project is created $projectId"
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	username="testing@mongodb.com"
-	if [[ $inputFile == *"_invalid.template"* ]]; then
-		echo "Changing username to be invalid"
-		username="(*&)(*&*&)(*&(*&"
-	fi
 	outputFile=${inputFile//$WORDTOREMOVE/}
 	jq --arg ProjectId "$projectId" \
 		--arg username "$username" \

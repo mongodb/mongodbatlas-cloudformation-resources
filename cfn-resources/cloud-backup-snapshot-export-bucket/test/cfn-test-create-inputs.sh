@@ -7,8 +7,6 @@
 #set -o nounset
 #set -o pipefail
 
-#set -x
-
 function usage {
 	echo "Creates a new cloud backup export bucket role for the test"
 }

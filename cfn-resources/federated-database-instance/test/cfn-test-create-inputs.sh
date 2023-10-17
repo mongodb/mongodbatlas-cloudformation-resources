@@ -20,10 +20,9 @@
 
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
-    echo "usage:$0 <project_name>"
+	echo "usage:$0 <project_name>"
 }
 
 if [ "$#" -ne 1 ]; then usage; fi
@@ -34,33 +33,31 @@ mkdir inputs
 
 #set profile
 profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ];then
-    echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-    profile=${MONGODB_ATLAS_PROFILE}
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
 #project_id
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-    projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 
-    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
-    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi
 
 keyRegion=$AWS_DEFAULT_REGION
 if [ -z "$keyRegion" ]; then
-keyRegion=$(aws configure get region)
+	keyRegion=$(aws configure get region)
 fi
 
 # shellcheck disable=SC2001
 keyRegionUnderScore=$(echo "$keyRegion" | sed -e "s/-/_/g")
 keyRegionUnderScore=$(echo "$keyRegionUnderScore" | tr '[:lower:]' '[:upper:]')
 echo "$keyRegion"
-
-
 
 echo -e "--------------------------------create aws bucket document starts ----------------------------\n"
 bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
@@ -71,37 +68,35 @@ echo -e "--------------------------------create aws bucket document  ends ------
 roleID=$(atlas cloudProviders accessRoles aws create --projectId "${projectId}" --output json | jq -r '.roleId')
 echo -e "--------------------------------Mongo CLI Role creation ends ----------------------------\n"
 
-
 echo -e "--------------------------------create key and key policy document starts ----------------------------\n"
 roleName="mongodb-atlas-df-role-${keyRegionUnderScore}"
 policyName="mongodb-atlas-df-bucket-role-policy-${keyRegionUnderScore}"
 echo "roleName: ${roleName} , policyName: ${policyName}"
 
-atlasAWSAccountArn=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAWSAccountArn')
-atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles  list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAssumedRoleExternalId')
+atlasAWSAccountArn=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAWSAccountArn')
+atlasAssumedRoleExternalId=$(atlas cloudProviders accessRoles list --projectId "${projectId}" --output json | jq --arg roleID "${roleID}" -r '.awsIamRoles[] |select(.roleId == $roleID) |.atlasAssumedRoleExternalId')
 jq --arg atlasAssumedRoleExternalId "$atlasAssumedRoleExternalId" \
-   --arg atlasAWSAccountArn "$atlasAWSAccountArn" \
-  '.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
+	--arg atlasAWSAccountArn "$atlasAWSAccountArn" \
+	'.Statement[0].Principal.AWS?|=$atlasAWSAccountArn | .Statement[0].Condition.StringEquals["sts:ExternalId"]?|=$atlasAssumedRoleExternalId' "$(dirname "$0")/role-policy-template.json" >"$(dirname "$0")/add-policy.json"
 echo cat add-policy.json
 
 echo -e "--------------------------------AWS Role creation starts ----------------------------\n"
 
 awsRoleID=$(aws iam get-role --role-name "${roleName}" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
 if [ -z "$awsRoleID" ]; then
-    awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
-    echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	echo -e "No role found, hence creating the role. Created id: ${awsRoleID}\n"
 else
-    aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
-    aws iam delete-role --role-name "${roleName}"
- awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
-    echo -e "FOUND id: ${awsRoleID}\n"
+	aws iam delete-role-policy --role-name "${roleName}" --policy-name "${policyName}"
+	aws iam delete-role --role-name "${roleName}"
+	awsRoleID=$(aws iam create-role --role-name "${roleName}" --assume-role-policy-document "file://$(dirname "$0")/add-policy.json" | jq --arg roleName "${roleName}" -r '.Role | select(.RoleName==$roleName) |.RoleId')
+	echo -e "FOUND id: ${awsRoleID}\n"
 fi
 echo -e "--------------------------------AWS Role creation ends ----------------------------\n"
 
-
 awsArn=$(aws iam get-role --role-name "${roleName}" | jq -r '.Role | .Arn')
 
-aws iam put-role-policy   --role-name "${roleName}"   --policy-name "${policyName}"   --policy-document "file://$(dirname "$0")/policy.json"
+aws iam put-role-policy --role-name "${roleName}" --policy-name "${policyName}" --policy-document "file://$(dirname "$0")/policy.json"
 echo -e "--------------------------------attach mongodb  Role to AWS Role ends ----------------------------\n"
 
 echo -e "--------------------------------Role Id : ${roleID} ----------------------------\n"
@@ -116,28 +111,19 @@ atlas cloudProviders accessRoles aws authorize "${roleID}" --iamAssumedRoleArn "
 echo -e "--------------------------------authorize mongodb  Role ends ----------------------------\n"
 
 jq --arg projectId "$projectId" \
-   --arg role "$roleID" \
-   --arg name "${projectName}" \
-   --arg bucketName "$bucketName" \
-   --arg profile "$profile" \
-   '.Profile?|=$profile | .TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
-   "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
+	--arg role "$roleID" \
+	--arg name "${projectName}" \
+	--arg bucketName "$bucketName" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
-   --arg role "$roleID" \
-   --arg name "((((( (*dsa^%$^%)" \
-   --arg bucketName "$bucketName" \
-   '.TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
-   "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
-
-jq --arg projectId "$projectId" \
-   --arg role "$roleID" \
-   --arg name "${projectName}" \
-   --arg bucketName "$bucketName" \
-   --arg profile "$profile" \
-   '.Profile?|=$profile | .TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
-   "$(dirname "$0")/inputs_1_update.template.json" > "inputs/inputs_1_update.json"
+	--arg role "$roleID" \
+	--arg name "${projectName}" \
+	--arg bucketName "$bucketName" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .TenantName?|=$name | .CloudProviderConfig.TestS3Bucket?|=$bucketName |.CloudProviderConfig.RoleId?|=$role | .ProjectId?|=$projectId' \
+	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs
-
-

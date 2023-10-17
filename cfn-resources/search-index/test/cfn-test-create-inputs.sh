@@ -7,7 +7,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 function usage {
 	echo "usage:$0 <project_name>"
@@ -49,9 +48,6 @@ cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
 	index_name="${u_index_name}"
-	if [[ ${inputFile} == *"invalid"* ]]; then
-		index_name="invalid_name"
-	fi
 	jq --arg org "$projectId" \
 		--arg cluster "$cluster_name" \
 		--arg name "$index_name" \

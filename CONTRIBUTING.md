@@ -101,9 +101,9 @@ The automated workflows require the following secrets to be placed into your Git
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
-ATLAS_PUBLIC_KEY
-ATLAS_PRIVATE_KEY
-ATLAS_ORG_ID
+MONGODB_ATLAS_PUBLIC_KEY
+MONGODB_ATLAS_PRIVATE_KEY
+MONGODB_ATLAS_ORG_ID
 ```
 
 ## Using the MongoDB Atlas CFN Resources

@@ -1,5 +1,12 @@
 # Changelog
 
+## (2023-10-17)
+
+**(BREAKING CHANGE) PROPERTY CHANGE**
+
+Removed field CreatedAt
+Added field Expired
+
 ## (2023-10-05)
 
 **(BREAKING CHANGE) ADDED SUPPORT TO SERVERLESS INSTANCE**

@@ -183,7 +183,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	privateEndpoint, response, err := getPrivateEndpoint(client, currentModel)
 	defer response.Body.Close()
 	if err != nil {
-		return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("READ: Error getting private endpoint: %s", err.Error()), response), nil
 	}
 
 	currentModel.completeByAtlasModel(*privateEndpoint)

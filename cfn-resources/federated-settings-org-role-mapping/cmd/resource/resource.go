@@ -232,7 +232,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings.Results[i].RoleAssignments)
 		models = append(models, model)
 	}
-	return handler.ProgressEvent{}, errors.New("not implemented: LIST")
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List Complete",
+		ResourceModels:  models,
+	}, nil
 }
 
 func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMapping, handler.ProgressEvent, error) {

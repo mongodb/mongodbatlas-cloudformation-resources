@@ -196,47 +196,46 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	// setup()
+	setup()
 
-	// modelValidation := validateModel(ListRequiredFields, currentModel)
-	// if modelValidation != nil {
-	// 	return *modelValidation, nil
-	// }
+	modelValidation := validateModel(ListRequiredFields, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 
-	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	// client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	// if pe != nil {
-	// 	return *pe, nil
-	// }
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	if pe != nil {
+		return *pe, nil
+	}
 
-	// federationSettingsID := currentModel.FederationSettingsId
-	// orgID := currentModel.OrgId
+	federationSettingsID := currentModel.FederationSettingsId
+	orgID := currentModel.OrgId
 
-	// federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasV2.
-	// 	FederatedAuthenticationApi.
-	// 	ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
-	// 	Execute()
-	// if err != nil {
-	// 	return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting federated settings : %s", err.Error()),
-	// 		resp), nil
-	// }
+	federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasV2.
+		FederatedAuthenticationApi.
+		ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
+		Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting federated settings : %s", err.Error()),
+			resp), nil
+	}
 
-	// models := make([]interface{}, 0) // cfn test
-	// for i := range federatedSettingsOrganizationRoleMappings {
-	// 	model := Model{}
-	// 	model.Profile = currentModel.Profile
-	// 	model.OrgId = currentModel.OrgId
-	// 	model.FederationSettingsId = currentModel.FederationSettingsId
-	// 	model.Id = federatedSettingsOrganizationRoleMappings[i].Id
-	// 	model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings[i].ExternalGroupName
-	// 	model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings[i].RoleAssignments)
-	// 	models = append(models, model)
-	// }
+	models := make([]interface{}, 0) // cfn test
+	for i := range federatedSettingsOrganizationRoleMappings.Results {
+		model := Model{}
+		model.Profile = currentModel.Profile
+		model.OrgId = currentModel.OrgId
+		model.FederationSettingsId = currentModel.FederationSettingsId
+		model.Id = federatedSettingsOrganizationRoleMappings.Results[i].Id
+		model.ExternalGroupName = &federatedSettingsOrganizationRoleMappings.Results[i].ExternalGroupName
+		model.RoleAssignments = flattenRoleAssignments(federatedSettingsOrganizationRoleMappings.Results[i].RoleAssignments)
+		models = append(models, model)
+	}
 	return handler.ProgressEvent{}, errors.New("not implemented: LIST")
 }
 
 func modelToRoleMappingRequest(currentModel *Model) (*admin.AuthFederationRoleMapping, handler.ProgressEvent, error) {
-	// Atlas client
 	roleMappingRequest := &admin.AuthFederationRoleMapping{}
 	if currentModel.Id != nil {
 		roleMappingRequest.Id = currentModel.Id

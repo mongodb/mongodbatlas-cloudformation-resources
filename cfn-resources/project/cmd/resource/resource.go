@@ -521,7 +521,7 @@ func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	return newTeams
 }
 
-func getChangeInAPIKeys(currentKeys []ProjectApiKey, oKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
+func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
 	// Create maps to efficiently check for the existence of keys by ID
 	currentKeyMap := make(map[string]ProjectApiKey)
 	oKeyMap := make(map[string]ProjectApiKey)

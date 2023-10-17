@@ -533,7 +533,7 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 		}
 	}
 
-	for _, key := range oKeys {
+	for _, key := range previousKeys {
 		if key.Key != nil {
 			oKeyMap[*key.Key] = key
 		}
@@ -556,7 +556,7 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 		}
 	}
 
-	for _, key := range oKeys {
+	for _, key := range previousKeys {
 		if key.Key == nil {
 			continue
 		}

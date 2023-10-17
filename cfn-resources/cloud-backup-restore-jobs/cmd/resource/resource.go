@@ -372,7 +372,6 @@ func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) 
 	model.TargetClusterName = &job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
-	model.CreatedAt = nil // not available if new SDK
 	model.Id = job.Id
 	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
 	model.SnapshotId = job.SnapshotId
@@ -388,7 +387,6 @@ func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
 	model.TargetClusterName = job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
-	model.CreatedAt = nil // not available in new SDK
 	model.Id = job.Id
 	model.FinishedAt = util.TimePtrToStringPtr(job.FinishedAt)
 	model.SnapshotId = job.SnapshotId

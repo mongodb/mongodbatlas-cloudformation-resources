@@ -209,10 +209,6 @@ Indicates whether the restore job was canceled.
 
 Indicates whether the restore job failed.
 
-#### CreatedAt
-
-UTC ISO 8601 formatted point in time when Atlas created the restore job.
-
 #### Expired
 
 Indicates whether the restore job expired.

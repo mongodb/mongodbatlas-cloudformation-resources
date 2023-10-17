@@ -68,10 +68,6 @@
       "description": "Indicates whether the restore job failed.",
       "type": "boolean"
     },
-    "CreatedAt": {
-      "description": "UTC ISO 8601 formatted point in time when Atlas created the restore job.",
-      "type": "string"
-    },
     "Expired": {
       "description": "Indicates whether the restore job expired.",
       "type": "boolean"
@@ -158,7 +154,6 @@
     "/properties/DeliveryUrl",
     "/properties/Cancelled",
     "/properties/Failed",
-    "/properties/CreatedAt",
     "/properties/Expired",
     "/properties/ExpiresAt",
     "/properties/FinishedAt",

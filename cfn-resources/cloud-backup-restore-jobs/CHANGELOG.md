@@ -2,10 +2,14 @@
 
 ## (2023-10-17)
 
-**(BREAKING CHANGE) PROPERTY CHANGE**
+**(BREAKING CHANGE) FIELD CHANGES**
 
-Removed field CreatedAt
-Added field Expired
+Removed fields:
+- CreatedAt (string). This property was not being populated and therefore removed.
+
+Added fields:
+- Failed (bool). This property is being sent by the server so it is being made available.
+
 
 ## (2023-10-05)
 

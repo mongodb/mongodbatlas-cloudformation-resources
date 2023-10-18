@@ -143,8 +143,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func (m *Model) setPrimaryIdentifier() {
-	id := *m.InterfaceEndpointId
-	m.Id = &id
+	if m.Id == nil {
+		m.Id = m.InterfaceEndpointId
+	}
 }
 
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
@@ -162,7 +163,7 @@ func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.Privat
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		_, _ = logger.Warnf("Validation Error")
 		return *errEvent, nil
 	}

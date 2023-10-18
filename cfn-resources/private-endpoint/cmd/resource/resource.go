@@ -37,10 +37,11 @@ func setup() {
 }
 
 const (
-	Available         = "AVAILABLE"
-	Rejected          = "REJECTED"
-	EndpointServiceID = "EndpointServiceId"
-	CloudProvider     = "AWS"
+	Available           = "AVAILABLE"
+	Rejected            = "REJECTED"
+	EndpointServiceID   = "EndpointServiceId"
+	CloudProvider       = "AWS"
+	InterfaceEndpointId = "InterfaceEndpointId"
 )
 
 func IsTerminalStatus(status string) bool {
@@ -51,10 +52,10 @@ func IsTerminalStatus(status string) bool {
 	return status == Available || status == Rejected
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.CloudProvider, EndpointServiceID}
-var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider}
+var CreateRequiredFields = []string{constants.ProjectID, EndpointServiceID, InterfaceEndpointId}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
 var UpdateRequiredFields []string
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider, EndpointServiceID}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, EndpointServiceID}
 var ListRequiredFields = []string{constants.GroupID}
 
 // Create handles the Create event from the Cloudformation service.
@@ -148,9 +149,7 @@ func (m *Model) setPrimaryIdentifier() {
 
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
 
-	if model.Id == nil {
-		model.Id = model.InterfaceEndpointId
-	}
+	model.setPrimaryIdentifier()
 
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		CloudProvider, *model.Id, *model.EndpointServiceId)

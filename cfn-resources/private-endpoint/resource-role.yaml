@@ -13,10 +13,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service:
-                - lambda.amazonaws.com
-                - resources.cloudformation.amazonaws.com
-                - cloudformation.amazonaws.com
+              Service: resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
             Condition:
               StringEquals:

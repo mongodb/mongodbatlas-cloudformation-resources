@@ -3,6 +3,5 @@
   "EndpointServiceId" : "",
   "Profile" : "default",
   "InterfaceEndpointId": "",
-  "CloudProvider" : "AWS",
   "EnforceConnectionSuccess" : "false"
 }

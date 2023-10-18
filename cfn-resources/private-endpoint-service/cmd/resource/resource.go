@@ -16,20 +16,26 @@ package resource
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	resource_constats "github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-service/cmd/resource/steps/privateendpointservice"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas/mongodbatlas"
+)
+
+const (
+	ProgressStatusCreating = "CREATING"
+	ProgressStatusDeleting = "DELETING"
+	AvailableStatus        = "AVAILABLE"
+	InitiatingStatus       = "INITIATING"
 )
 
 func setup() {
@@ -59,29 +65,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	status, pe := getProcessStatus(req)
-	if pe != nil {
-		return *pe, nil
+	if isCreating(req) {
+		print("In progress")
+		return validateCreationCompletion(mongodbClient,
+			currentModel, req), nil
 	}
 
-	switch status {
-	case resource_constats.Init:
-		pe := privateendpointservice.Create(*mongodbClient, *currentModel.Region, *currentModel.ProjectId, *currentModel.CloudProvider)
-		return addModelToProgressEvent(&pe, currentModel), nil
-	default:
-		peConnection, completionValidation := privateendpointservice.ValidateCreationCompletion(mongodbClient,
-			*currentModel.ProjectId, *currentModel.CloudProvider, req)
-		if completionValidation != nil {
-			return addModelToProgressEvent(completionValidation, currentModel), nil
-		}
-
-		currentModel.EndpointServiceName = &peConnection.EndpointServiceName
-		currentModel.Id = &peConnection.ID
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         "Create Completed",
-			ResourceModel:   currentModel}, nil
-	}
+	return create(*mongodbClient, currentModel), nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -235,7 +225,19 @@ func isDeleting(req handler.Request) bool {
 	}
 
 	callbackValue := fmt.Sprintf("%v", callback)
-	return callbackValue == "DELETING"
+	return callbackValue == ProgressStatusDeleting
+}
+
+func isCreating(req handler.Request) bool {
+	callback := req.CallbackContext["StateName"]
+	if callback == nil {
+		return false
+	}
+	println("got callback")
+
+	callbackValue := fmt.Sprintf("%v", callback)
+	println(callbackValue)
+	return callbackValue == ProgressStatusCreating
 }
 
 func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
@@ -246,34 +248,114 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.InterfaceEndpoints = c.InterfaceEndpoints
 }
 
-func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {
-	callback := req.CallbackContext["StateName"]
-	if callback == nil {
-		return resource_constats.Init, nil
-	}
-
-	eventStatus, err := resource_constats.ParseEventStatus(fmt.Sprintf("%v", callback))
-
-	if err != nil {
-		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing callback status : %s", err.Error()),
-			cloudformation.HandlerErrorCodeServiceInternalError)
-		return "", &pe
-	}
-
-	return eventStatus, nil
+type privateEndpointCreationCallBackContext struct {
+	StateName string
+	ID        string
 }
 
-func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model) handler.ProgressEvent {
-	if progressEvent.OperationStatus == handler.InProgress {
-		progressEvent.ResourceModel = model
+func create(mongodbClient mongodbatlas.Client, currentModel *Model) handler.ProgressEvent {
 
-		callbackID := progressEvent.CallbackContext["ID"]
+	region := *currentModel.Region
+	groupID := *currentModel.ProjectId
+	cloudProvider := *currentModel.CloudProvider
 
-		if callbackID != nil {
-			id := fmt.Sprint(callbackID)
-			model.Id = &id
-		}
+	privateEndpointRequest := &mongodbatlas.PrivateEndpointConnection{
+		ProviderName: cloudProvider,
+		Region:       region,
 	}
 
-	return *progressEvent
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Create(context.Background(),
+		groupID,
+		privateEndpointRequest)
+
+	if response.Response.StatusCode == http.StatusConflict {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Resource already exists",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}
+	}
+
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
+			response.Response)
+	}
+
+	callBackContext := privateEndpointCreationCallBackContext{
+		StateName: ProgressStatusCreating,
+		ID:        privateEndpointResponse.ID,
+	}
+
+	callBackMap, err := callBackContext.convertToInterface()
+	if err != nil {
+		progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+			cloudformation.HandlerErrorCodeServiceInternalError)
+	}
+
+	currentModel.completeByConnection(*privateEndpointResponse)
+	return progressevent.GetInProgressProgressEvent("Creating private endpoint service", callBackMap,
+		currentModel, 20)
+}
+
+func validateCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel *Model, req handler.Request) handler.ProgressEvent {
+	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
+	PrivateEndpointCallBackContext.fillStruct(req.CallbackContext)
+	print("getting private endpoint")
+	println(*currentModel.ProjectId)
+	println(*currentModel.CloudProvider)
+	println(PrivateEndpointCallBackContext.ID)
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider, PrivateEndpointCallBackContext.ID)
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response)
+	}
+
+	println("Completing connection")
+
+	currentModel.completeByConnection(*privateEndpointResponse)
+
+	switch privateEndpointResponse.Status {
+	case InitiatingStatus:
+		callBackContext := privateEndpointCreationCallBackContext{
+			StateName: ProgressStatusCreating,
+			ID:        privateEndpointResponse.ID,
+		}
+
+		callBackMap, err := callBackContext.convertToInterface()
+		if err != nil {
+			progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+				cloudformation.HandlerErrorCodeServiceInternalError)
+		}
+
+		return progressevent.GetInProgressProgressEvent("Private endpoint service initiating", callBackMap,
+			currentModel, 20)
+	case AvailableStatus:
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create Completed",
+			ResourceModel:   currentModel}
+	default:
+		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s",
+			privateEndpointResponse.Status),
+			cloudformation.HandlerErrorCodeInvalidRequest)
+	}
+}
+
+func (callBackContext *privateEndpointCreationCallBackContext) convertToInterface() (map[string]interface{}, error) {
+	var callBackMap map[string]interface{}
+	data, _ := json.Marshal(callBackContext)
+	err := json.Unmarshal(data, &callBackMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return callBackMap, nil
+}
+
+func (callBackContext *privateEndpointCreationCallBackContext) fillStruct(m map[string]interface{}) {
+	println("imprimiendo mierda")
+	println(fmt.Sprint(m["ID"]))
+	println(fmt.Sprint(m["StateName"]))
+	callBackContext.ID = fmt.Sprint(m["ID"])
+	callBackContext.StateName = fmt.Sprint(m["StateName"])
 }

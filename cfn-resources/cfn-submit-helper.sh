@@ -62,6 +62,7 @@ for resource in ${resources}; do
 	cd "${resource}"
 	echo "resource: ${resource}"
 	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
-	cfn submit "${CFN_SUBMIT_CFN_FLAGS}" || true
+	# ensure error is thrown if registration to private registry fails
+	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"
 	cd -
 done

@@ -8,7 +8,6 @@ type Model struct {
 	ProjectId                *string `json:",omitempty"`
 	EndpointServiceId        *string `json:",omitempty"`
 	InterfaceEndpointId      *string `json:",omitempty"`
-	CloudProvider            *string `json:",omitempty"`
 	Id                       *string `json:",omitempty"`
 	EnforceConnectionSuccess *bool   `json:",omitempty"`
 	ConnectionStatus         *string `json:",omitempty"`

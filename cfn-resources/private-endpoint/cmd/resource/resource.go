@@ -40,6 +40,7 @@ const (
 	Available         = "AVAILABLE"
 	Rejected          = "REJECTED"
 	EndpointServiceID = "EndpointServiceId"
+	CloudProvider     = "AWS"
 )
 
 func IsTerminalStatus(status string) bool {
@@ -51,7 +52,7 @@ func IsTerminalStatus(status string) bool {
 }
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.CloudProvider, EndpointServiceID}
-var ReadRequiredFields = []string{constants.GroupID, constants.ID, constants.Region, constants.CloudProvider}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, constants.CloudProvider, EndpointServiceID}
 var ListRequiredFields = []string{constants.GroupID}
@@ -83,8 +84,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		if peError != nil {
 			return progress_events.GetFailedEventByResponse("Error getting Private Endpoint", response), nil
 		}
-
-		currentModel.setPrimaryIdentifier(*privateEndpoint)
 
 		if IsTerminalStatus(*privateEndpoint.ConnectionStatus) {
 			if currentModel.EnforceConnectionSuccess != nil && *currentModel.EnforceConnectionSuccess &&
@@ -119,9 +118,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
-		*currentModel.CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
+		CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
 
-	privateEndpoint, response, err := privateEndpointRequest.Execute()
+	_, response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
@@ -129,7 +128,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			nil
 	}
 
-	currentModel.setPrimaryIdentifier(*privateEndpoint)
+	currentModel.setPrimaryIdentifier()
 
 	log.Print(*currentModel.Id)
 	return handler.ProgressEvent{
@@ -142,12 +141,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}}, nil
 }
 
-func getPrivateEndpointPrimaryIdentifier(privateEndpoint admin.PrivateLinkEndpoint) string {
-	return *privateEndpoint.InterfaceEndpointId
-}
-
-func (m *Model) setPrimaryIdentifier(privateEndpoint admin.PrivateLinkEndpoint) {
-	id := getPrivateEndpointPrimaryIdentifier(privateEndpoint)
+func (m *Model) setPrimaryIdentifier() {
+	id := *m.InterfaceEndpointId
 	m.Id = &id
 }
 
@@ -158,7 +153,7 @@ func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.Privat
 	}
 
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
-		*model.CloudProvider, *model.Id, *model.EndpointServiceId)
+		CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
 
 	return privateEndpoint, response, err
@@ -222,7 +217,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// progress callback setup
 	if _, ok := req.CallbackContext["state"]; ok {
-		privateEndpoint, response, peError := getPrivateEndpoint(client, currentModel)
+		_, response, peError := getPrivateEndpoint(client, currentModel)
 		defer response.Body.Close()
 		if peError != nil {
 			if response.StatusCode == http.StatusNotFound {
@@ -234,7 +229,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
 		}
 
-		currentModel.setPrimaryIdentifier(*privateEndpoint)
+		currentModel.setPrimaryIdentifier()
 
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,
@@ -246,7 +241,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
-		*currentModel.CloudProvider, *currentModel.Id, *currentModel.EndpointServiceId)
+		CloudProvider, *currentModel.Id, *currentModel.EndpointServiceId)
 	_, response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {

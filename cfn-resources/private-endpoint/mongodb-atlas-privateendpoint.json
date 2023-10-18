@@ -1,6 +1,6 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpoint",
-    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
+    "description": "Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint",
     "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint/README.md",
     "tagging": {
@@ -8,8 +8,8 @@
     },
     "required": [
         "ProjectId",
-        "CloudProvider",
-        "EndpointServiceId"
+        "EndpointServiceId",
+        "InterfaceEndpointId"
     ],
     "properties": {
         "Profile": {
@@ -28,15 +28,6 @@
         "InterfaceEndpointId" : {
             "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
             "type": "string"
-        },
-        "CloudProvider": {
-            "type": "string",
-            "description": "Cloud service provider that manages this private endpoint, default : AWS",
-            "enum": [
-                "AWS",
-                "AZURE",
-                "GCP"
-            ]
         },
         "Id": {
             "description": "Unique string that identifies the private endpoint. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.",
@@ -60,8 +51,7 @@
         "/properties/ProjectId",
         "/properties/Id",
         "/properties/Profile",
-        "/properties/EndpointServiceId",
-        "/properties/CloudProvider"
+        "/properties/EndpointServiceId"
     ],
     "readOnlyProperties": [
         "/properties/Id"
@@ -70,8 +60,7 @@
         "/properties/ProjectId",
         "/properties/EndpointServiceId",
         "/properties/Profile",
-        "/properties/InterfaceEndpointId",
-        "/properties/CloudProvider"
+        "/properties/InterfaceEndpointId"
     ],
     "handlers": {
         "create": {

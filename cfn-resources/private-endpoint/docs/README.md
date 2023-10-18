@@ -1,6 +1,6 @@
 # MongoDB::Atlas::PrivateEndpoint
 
-The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint
+Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported
 
 ## Syntax
 
@@ -16,7 +16,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#endpointserviceid" title="EndpointServiceId">EndpointServiceId</a>" : <i>String</i>,
         "<a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>" : <i>String</i>,
-        "<a href="#cloudprovider" title="CloudProvider">CloudProvider</a>" : <i>String</i>,
         "<a href="#enforceconnectionsuccess" title="EnforceConnectionSuccess">EnforceConnectionSuccess</a>" : <i>Boolean</i>,
         "<a href="#connectionstatus" title="ConnectionStatus">ConnectionStatus</a>" : <i>String</i>,
         "<a href="#errormessage" title="ErrorMessage">ErrorMessage</a>" : <i>String</i>
@@ -33,7 +32,6 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#endpointserviceid" title="EndpointServiceId">EndpointServiceId</a>: <i>String</i>
     <a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>: <i>String</i>
-    <a href="#cloudprovider" title="CloudProvider">CloudProvider</a>: <i>String</i>
     <a href="#enforceconnectionsuccess" title="EnforceConnectionSuccess">EnforceConnectionSuccess</a>: <i>Boolean</i>
     <a href="#connectionstatus" title="ConnectionStatus">ConnectionStatus</a>: <i>String</i>
     <a href="#errormessage" title="ErrorMessage">ErrorMessage</a>: <i>String</i>
@@ -75,21 +73,9 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.
 
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### CloudProvider
-
-Cloud service provider that manages this private endpoint, default : AWS
-
 _Required_: Yes
 
 _Type_: String
-
-_Allowed Values_: <code>AWS</code> | <code>AZURE</code> | <code>GCP</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 

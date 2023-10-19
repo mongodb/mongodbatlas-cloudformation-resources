@@ -19,8 +19,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 	"net/http"
+
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -249,7 +250,6 @@ type privateEndpointCreationCallBackContext struct {
 }
 
 func create(mongodbClient *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
-
 	region := *currentModel.Region
 	groupID := *currentModel.ProjectId
 	cloudProvider := *currentModel.CloudProvider
@@ -332,7 +332,7 @@ func validateCreationCompletion(mongodbClient *util.MongoDBClient, currentModel 
 			ResourceModel:   currentModel}
 	default:
 		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s",
-			privateEndpointResponse.Status),
+			*privateEndpointResponse.Status),
 			cloudformation.HandlerErrorCodeInvalidRequest)
 	}
 }

@@ -41,7 +41,7 @@ const (
 	Rejected            = "REJECTED"
 	EndpointServiceID   = "EndpointServiceId"
 	CloudProvider       = "AWS"
-	InterfaceEndpointId = "InterfaceEndpointId"
+	InterfaceEndpointID = "InterfaceEndpointId"
 )
 
 func IsTerminalStatus(status string) bool {
@@ -52,7 +52,7 @@ func IsTerminalStatus(status string) bool {
 	return status == Available || status == Rejected
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, EndpointServiceID, InterfaceEndpointId}
+var CreateRequiredFields = []string{constants.ProjectID, EndpointServiceID, InterfaceEndpointID}
 var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, EndpointServiceID}
@@ -149,7 +149,6 @@ func (m *Model) setPrimaryIdentifier() {
 }
 
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
-
 	model.setPrimaryIdentifier()
 
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,

@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -59,10 +60,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
 	if isCreating(req) {
@@ -233,18 +233,16 @@ func isCreating(req handler.Request) bool {
 	if callback == nil {
 		return false
 	}
-	println("got callback")
 
 	callbackValue := fmt.Sprintf("%v", callback)
-	println(callbackValue)
 	return callbackValue == ProgressStatusCreating
 }
 
-func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
-	m.Id = &c.ID
-	m.EndpointServiceName = &c.EndpointServiceName
-	m.ErrorMessage = &c.ErrorMessage
-	m.Status = &c.Status
+func (m *Model) completeByConnection(c admin.EndpointService) {
+	m.Id = c.Id
+	m.EndpointServiceName = c.EndpointServiceName
+	m.ErrorMessage = c.ErrorMessage
+	m.Status = c.Status
 	m.InterfaceEndpoints = c.InterfaceEndpoints
 }
 
@@ -296,29 +294,29 @@ func create(mongodbClient mongodbatlas.Client, currentModel *Model) handler.Prog
 		currentModel, 20)
 }
 
-func validateCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel *Model, req handler.Request) handler.ProgressEvent {
+func validateCreationCompletion(mongodbClient *util.MongoDBClient, currentModel *Model, req handler.Request) handler.ProgressEvent {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 	PrivateEndpointCallBackContext.fillStruct(req.CallbackContext)
-	print("getting private endpoint")
-	println(*currentModel.ProjectId)
-	println(*currentModel.CloudProvider)
-	println(PrivateEndpointCallBackContext.ID)
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, PrivateEndpointCallBackContext.ID)
+	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
+	defer response.Body.Close()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response)
+			response)
 	}
-
-	println("Completing connection")
 
 	currentModel.completeByConnection(*privateEndpointResponse)
 
-	switch privateEndpointResponse.Status {
+	if privateEndpointResponse.Status == nil {
+		return progressevent.GetFailedEventByCode("Error getting private endpoint status : status null", cloudformation.HandlerErrorCodeServiceInternalError)
+	}
+
+	switch *privateEndpointResponse.Status {
 	case InitiatingStatus:
 		callBackContext := privateEndpointCreationCallBackContext{
 			StateName: ProgressStatusCreating,
-			ID:        privateEndpointResponse.ID,
+			ID:        *privateEndpointResponse.Id,
 		}
 
 		callBackMap, err := callBackContext.convertToInterface()
@@ -353,9 +351,6 @@ func (callBackContext *privateEndpointCreationCallBackContext) convertToInterfac
 }
 
 func (callBackContext *privateEndpointCreationCallBackContext) fillStruct(m map[string]interface{}) {
-	println("imprimiendo mierda")
-	println(fmt.Sprint(m["ID"]))
-	println(fmt.Sprint(m["StateName"]))
 	callBackContext.ID = fmt.Sprint(m["ID"])
 	callBackContext.StateName = fmt.Sprint(m["StateName"])
 }

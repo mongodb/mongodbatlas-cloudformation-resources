@@ -29,7 +29,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 const (
@@ -71,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			currentModel, req), nil
 	}
 
-	return create(*mongodbClient, currentModel), nil
+	return create(mongodbClient, currentModel), nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -85,16 +84,18 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.ProjectId, *currentModel.CloudProvider, *currentModel.Id)
+	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider, *currentModel.Id)
+	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
+	defer response.Body.Close()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	currentModel.completeByConnection(*privateEndpointResponse)
@@ -121,13 +122,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(),
-		*currentModel.ProjectId, *currentModel.CloudProvider, *currentModel.Id)
+
+	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider, *currentModel.Id)
+	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
+	defer response.Body.Close()
 
 	if isDeleting(req) {
 		if response.StatusCode == http.StatusNotFound {
@@ -138,12 +141,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		if privateEndpointResponse != nil {
 			return progressevent.GetInProgressProgressEvent("Delete in progress",
-				map[string]interface{}{"stateName": "DELETING"}, currentModel, 20), nil
+				map[string]interface{}{"stateName": ProgressStatusDeleting}, currentModel, 20), nil
 		}
 	}
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	if privateEndpointResponse == nil {
@@ -151,13 +154,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
-	response, err = mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.ProjectId,
-		*currentModel.CloudProvider,
-		*currentModel.Id)
+	deletePrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider, *currentModel.Id)
+	_, response, err = deletePrivateEndpointRequest.Execute()
+	defer response.Body.Close()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	return handler.ProgressEvent{
@@ -166,7 +170,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 20,
 		CallbackContext: map[string]interface{}{
-			"stateName": "DELETING",
+			"stateName": ProgressStatusDeleting,
 		}}, nil
 }
 
@@ -181,24 +185,17 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, pe := util.NewMongoDBClient(req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	params := &mongodbatlas.ListOptions{
-		PageNum:      0,
-		ItemsPerPage: 100,
-	}
-
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.List(context.Background(),
-		*currentModel.ProjectId,
-		*currentModel.CloudProvider,
-		params)
+	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(), *currentModel.ProjectId,
+		*currentModel.CloudProvider)
+	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),
-			response.Response), nil
+			response), nil
 	}
 
 	mm := make([]interface{}, 0, len(privateEndpointResponse))
@@ -251,22 +248,23 @@ type privateEndpointCreationCallBackContext struct {
 	ID        string
 }
 
-func create(mongodbClient mongodbatlas.Client, currentModel *Model) handler.ProgressEvent {
+func create(mongodbClient *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 
 	region := *currentModel.Region
 	groupID := *currentModel.ProjectId
 	cloudProvider := *currentModel.CloudProvider
 
-	privateEndpointRequest := &mongodbatlas.PrivateEndpointConnection{
+	privateEndpointRequest := &admin.CloudProviderEndpointServiceRequest{
 		ProviderName: cloudProvider,
 		Region:       region,
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Create(context.Background(),
+	createPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpointService(context.Background(),
 		groupID,
 		privateEndpointRequest)
-
-	if response.Response.StatusCode == http.StatusConflict {
+	createPrivateEndpointResponse, response, err := createPrivateEndpointRequest.Execute()
+	defer response.Body.Close()
+	if response.StatusCode == http.StatusConflict {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          "Resource already exists",
@@ -275,12 +273,12 @@ func create(mongodbClient mongodbatlas.Client, currentModel *Model) handler.Prog
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-			response.Response)
+			response)
 	}
 
 	callBackContext := privateEndpointCreationCallBackContext{
 		StateName: ProgressStatusCreating,
-		ID:        privateEndpointResponse.ID,
+		ID:        *createPrivateEndpointResponse.Id,
 	}
 
 	callBackMap, err := callBackContext.convertToInterface()
@@ -289,7 +287,7 @@ func create(mongodbClient mongodbatlas.Client, currentModel *Model) handler.Prog
 			cloudformation.HandlerErrorCodeServiceInternalError)
 	}
 
-	currentModel.completeByConnection(*privateEndpointResponse)
+	currentModel.completeByConnection(*createPrivateEndpointResponse)
 	return progressevent.GetInProgressProgressEvent("Creating private endpoint service", callBackMap,
 		currentModel, 20)
 }

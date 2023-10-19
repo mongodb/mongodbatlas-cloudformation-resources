@@ -15,6 +15,12 @@ function usage {
 if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
+if ! test -v AWS_DEFAULT_REGION; then
+    region=$(aws configure get region)
+else
+  region=$AWS_DEFAULT_REGION
+fi
+
 jq --arg projId "$PROJECT_ID" \
 	--arg region "$region" \
 	'.desiredResourceState.ProjectId?|=$projId | .desiredResourceState.Region?|=$region' \

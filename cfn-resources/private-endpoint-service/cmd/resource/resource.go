@@ -283,7 +283,7 @@ func create(mongodbClient *util.MongoDBClient, currentModel *Model) handler.Prog
 
 	callBackMap, err := callBackContext.convertToInterface()
 	if err != nil {
-		progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
 			cloudformation.HandlerErrorCodeServiceInternalError)
 	}
 
@@ -319,7 +319,7 @@ func validateCreationCompletion(mongodbClient *util.MongoDBClient, currentModel 
 
 		callBackMap, err := callBackContext.convertToInterface()
 		if err != nil {
-			progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+			return progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
 				cloudformation.HandlerErrorCodeServiceInternalError)
 		}
 

@@ -38,3 +38,6 @@ pytestdebug.log
 *.idea
 *.iml
 *.secrets
+
+# generated markdown file with resource versions, will not be commited until we have mechanism to keep updated
+cfn-resources/resource-versions.md

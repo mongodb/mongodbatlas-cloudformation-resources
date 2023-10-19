@@ -2,6 +2,10 @@
 
 Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services).
 
+# V2 Migration Guideline
+
+For migrating from the unified Private endpoint (V1) to the divided (V2) follow the [V2 Upgrade Guide](docs/V2-UpgradeGuide.md)
+
 ## Requirements
 
 Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.

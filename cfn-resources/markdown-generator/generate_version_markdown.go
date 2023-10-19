@@ -40,7 +40,7 @@ func main() {
 
 	// map of resource type name to list of values where each index corresponds to a region
 	resourceVersions := obtainVersions(regions, resourceTypes)
-	generateMarkdown(ouputMarkdownFile, regions, resourceTypes, resourceVersions)
+	_ = generateMarkdown(ouputMarkdownFile, regions, resourceTypes, resourceVersions)
 }
 
 func obtainVersions(regions, resourceTypes []string) map[string][]string {
@@ -94,7 +94,6 @@ func generateMarkdown(filename string, regions, resourceTypes []string, resource
 			row = append(row, useNoBreakChar(value))
 		}
 		_, _ = fmt.Fprintf(file, "%s\n", strings.Join(row, "|"))
-
 	}
 	return nil
 }

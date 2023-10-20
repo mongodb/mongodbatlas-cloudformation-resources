@@ -121,6 +121,16 @@ for resource in ${resources}; do
 	command="aws cloudformation publish-type --type RESOURCE --arn ${type_arn} ${version_param}"
 	echo "${command}"
 	${command}
+
+	echo "Deleting role stack as it is not needeed anymore"
+	roleStack="mongodb-atlas-${resource//-/}-role-stack"
+	command="aws cloudformation update-termination-protection --no-enable-termination-protection --stack-name ${roleStack}"
+	echo "${command}"
+	${command}
+	command="aws cloudformation delete-stack --stack-name ${roleStack}"
+	echo "${command}"
+	${command}
+
 	cd -
 done
 

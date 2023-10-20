@@ -61,6 +61,19 @@ for resource in ${resources}; do
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'cfn submit' on:${resource}" && continue
 	cd "${resource}"
 	echo "resource: ${resource}"
+
+	echo "Deleting role stack if present"
+	roleStack="mongodb-atlas-${resource//-/}-role-stack"
+	command="aws cloudformation update-termination-protection --no-enable-termination-protection --stack-name ${roleStack}"
+	echo "${command}"
+	${command} || true
+	command="aws cloudformation delete-stack --stack-name ${roleStack}"
+	echo "${command}"
+	${command} || true
+	command=" aws cloudformation wait stack-delete-complete --stack-name ${roleStack}"
+	echo "${command}"
+	${command}
+
 	echo "Submitting to CloudFormation with flags: ${CFN_SUBMIT_CFN_FLAGS}"
 	# ensure error is thrown if registration to private registry fails
 	cfn submit "${CFN_SUBMIT_CFN_FLAGS}"

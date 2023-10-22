@@ -21,7 +21,7 @@ Resources:
                   Ref: AWS::AccountId
               StringLike:
                 aws:SourceArn:
-                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-AWSPrivateEndpoint/*
+                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-PrivateEndpointAWS/*
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy

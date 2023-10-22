@@ -8,7 +8,7 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/aws-private-endpoint/cmd/resource"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint-aws/cmd/resource"
 )
 
 // Handler is a container for the CRUDL actions exported by resources

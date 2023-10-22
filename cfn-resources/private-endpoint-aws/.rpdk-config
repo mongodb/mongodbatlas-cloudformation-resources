@@ -1,6 +1,6 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "MongoDB::Atlas::AWSPrivateEndpoint",
+    "typeName": "MongoDB::Atlas::PrivateEndpointAWS",
     "language": "go",
     "runtime": "go1.x",
     "entrypoint": "handler",

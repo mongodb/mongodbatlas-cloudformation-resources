@@ -1,4 +1,4 @@
-# MongoDB::Atlas::AWSPrivateEndpoint
+# MongoDB::Atlas::PrivateEndpointAWS
 
 Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::AWSPrivateEndpoint",
+    "Type" : "MongoDB::Atlas::PrivateEndpointAWS",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::AWSPrivateEndpoint
+Type: MongoDB::Atlas::PrivateEndpointAWS
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>

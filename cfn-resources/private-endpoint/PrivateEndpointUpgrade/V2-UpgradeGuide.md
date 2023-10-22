@@ -1,5 +1,7 @@
 # V2 Private Endpoint Upgrade Guide
 
+BEFORE UPDATING TO V2, in case the user has already updated to V2, contact AWS to downgrade to the previous version
+
 ## Document purpose
 With the Private Endpoint V2 we have introduced the next changes:
 
@@ -42,3 +44,390 @@ MongoDB::Atlas::PrivateEndpoint
 
 We are going to start with the next example:
 
+``` json
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Description":"This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
+   "Parameters":{
+      "Profile":{
+         "Type":"String",
+         "Description":"Atlas Profile name",
+         "Default":"default"
+      },
+      "MongoDBAtlasProjectName":{
+         "Type":"String",
+         "Description":"MongoDB project Key"
+      },
+      "MongoDBAtlasOrgId":{
+         "Type":"String",
+         "Description":"MongoDB project Key"
+      },
+      "AWSRegion":{
+         "Type":"String",
+         "Description":"Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
+         "Default":"us-east-1"
+      },
+      "AWSVpcId":{
+         "Type":"String",
+         "Description":"AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+      },
+      "AWSSubnetId":{
+         "Type":"String",
+         "Default":"subnet-",
+         "Description":"AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+      }
+   },
+   "Mappings":{
+      
+   },
+   "Resources":{
+      "Project":{
+         "Type":"MongoDB::Atlas::Project",
+         "Properties":{
+            "Name":{
+               "Ref":"MongoDBAtlasProjectName"
+            },
+            "OrgId":{
+               "Ref":"MongoDBAtlasOrgId"
+            },
+            "Profile":{
+               "Ref":"Profile"
+            }
+         }
+      },
+      "PrivateEndpoint":{
+         "Type":"MongoDB::Atlas::PrivateEndpoint",
+         "Properties":{
+            "GroupId":{
+               "Fn::GetAtt":[
+                  "Project",
+                  "Id"
+               ]
+            },
+            "Region":{
+               "Ref":"AWSRegion"
+            },
+            "PrivateEndpoints":[
+               {
+                  "VpcId":{
+                     "Ref":"AWSVpcId"
+                  },
+                  "SubnetIds":[
+                     {
+                        "Ref":"AWSSubnetId"
+                     }
+                  ]
+               }
+            ],
+            "Profile":{
+               "Ref":"Profile"
+            }
+         }
+      }
+   },
+   "Outputs":{
+      "PrivateEndpointId":{
+         "Value":{
+            "Fn::GetAtt":[
+               "PrivateEndpoint",
+               "Id"
+            ]
+         }
+      }
+   }
+}
+```
+
+In this example we have a stack with a Project and a PrivateEndpoint V1
+
+![img_1.png](Step0.png)
+
+## Step-1 : Adding DeletionPolicy
+
+In this step, we will incorporate the 'DeletionPolicy' : 'Retain' attribute into all references to private endpoints. 
+This step is crucial because we intend to remove the old PrivateEndpoint from the stack and introduce the new structure,
+ensuring that the actual ATLAS and AWS endpoint configurations remain intact when removing the reference from the stack.
+
+> WARNING: this has to be done before upgrading to the new version, otherwise the stack is going to fail in the update
+> in case of already having the V2 version, contact AWS to downgrade to the old V1 version
+
+the stack should look like this
+``` json
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Description":"This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
+   "Parameters":{
+      "Profile":{
+         "Type":"String",
+         "Description":"Atlas Profile name",
+         "Default":"default"
+      },
+      "MongoDBAtlasProjectName":{
+         "Type":"String",
+         "Description":"MongoDB project Key"
+      },
+      "MongoDBAtlasOrgId":{
+         "Type":"String",
+         "Description":"MongoDB project Key"
+      },
+      "AWSRegion":{
+         "Type":"String",
+         "Description":"Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
+         "Default":"us-east-1"
+      },
+      "AWSVpcId":{
+         "Type":"String",
+         "Description":"AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+      },
+      "AWSSubnetId":{
+         "Type":"String",
+         "Default":"subnet-",
+         "Description":"AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+      }
+   },
+   "Mappings":{
+      
+   },
+   "Resources":{
+      "Project":{
+         "Type":"MongoDB::Atlas::Project",
+         "Properties":{
+            "Name":{
+               "Ref":"MongoDBAtlasProjectName"
+            },
+            "OrgId":{
+               "Ref":"MongoDBAtlasOrgId"
+            },
+            "Profile":{
+               "Ref":"Profile"
+            }
+         }
+      },
+      "PrivateEndpoint":{
+         "Type":"MongoDB::Atlas::PrivateEndpoint",
+         "DeletionPolicy":"Retain",
+         "Properties":{
+            "GroupId":{
+               "Fn::GetAtt":[
+                  "Project",
+                  "Id"
+               ]
+            },
+            "Region":{
+               "Ref":"AWSRegion"
+            },
+            "PrivateEndpoints":[
+               {
+                  "VpcId":{
+                     "Ref":"AWSVpcId"
+                  },
+                  "SubnetIds":[
+                     {
+                        "Ref":"AWSSubnetId"
+                     }
+                  ]
+               }
+            ],
+            "Profile":{
+               "Ref":"Profile"
+            }
+         }
+      }
+   },
+   "Outputs":{
+      "PrivateEndpointId":{
+         "Value":{
+            "Fn::GetAtt":[
+               "PrivateEndpoint",
+               "Id"
+            ]
+         }
+      }
+   }
+}
+```
+
+We need to input this new stack, in the stack update:
+
+![](update.png)
+
+## Step-2 : Remove References to original private endpoint
+
+We need to remove all references to the old private endpoint
+
+``` json
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Atlas Profile name",
+      "Default": "default"
+    },
+    "MongoDBAtlasProjectName": {
+      "Type": "String",
+      "Description": "MongoDB project Key"
+    },
+    "MongoDBAtlasOrgId": {
+      "Type": "String",
+      "Description": "MongoDB project Key"
+    },
+    "AWSRegion": {
+      "Type": "String",
+      "Description": "Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
+      "Default": "us-east-1"
+    },
+    "AWSVpcId": {
+      "Type": "String",
+      "Description": "AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    },
+    "AWSSubnetId": {
+      "Type": "String",
+      "Default": "subnet-",
+      "Description": "AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "Project": {
+      "Type": "MongoDB::Atlas::Project",
+      "Properties": {
+        "Name": {
+          "Ref": "MongoDBAtlasProjectName"
+        },
+        "OrgId": {
+          "Ref": "MongoDBAtlasOrgId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "PrivateEndpointId": {
+      "Value": "6531fa9569795331fcc18778"
+    }
+  }
+}
+```
+
+the update process should show a deleted resource
+
+hardcoding any oputput or any reference to the old private endpoint
+
+## Step-3 : Import new resources
+
+the next step is to add the new structure to the stack
+
+``` json
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Description":"This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
+   "Parameters":{
+      "Profile":{
+         "Type":"String",
+         "Description":"Atlas Profile name",
+         "Default":"default"
+      },
+      "MongoDBAtlasProjectName":{
+         "Type":"String",
+         "Description":"MongoDB project Key"
+      },
+      "MongoDBAtlasOrgId":{
+         "Type":"String",
+         "Description":"MongoDB project Key"
+      },
+      "AWSRegion":{
+         "Type":"String",
+         "Description":"Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
+         "Default":"us-east-1"
+      },
+      "AWSVpcId":{
+         "Type":"String",
+         "Description":"AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+      },
+      "AWSSubnetId":{
+         "Type":"String",
+         "Default":"subnet-",
+         "Description":"AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+      }
+   },
+   "Mappings":{
+      
+   },
+   "Resources":{
+      "Project":{
+         "Type":"MongoDB::Atlas::Project",
+         "Properties":{
+            "Name":{
+               "Ref":"MongoDBAtlasProjectName"
+            },
+            "OrgId":{
+               "Ref":"MongoDBAtlasOrgId"
+            },
+            "Profile":{
+               "Ref":"Profile"
+            }
+         }
+      },
+      "PrivateEndpoint":{
+         "Type":"MongoDB::Atlas::PrivateEndpoint",
+         "DeletionPolicy":"Retain",
+         "Properties":{
+            "GroupId":{
+               "Fn::GetAtt":[
+                  "Project",
+                  "Id"
+               ]
+            },
+            "Region":{
+               "Ref":"AWSRegion"
+            },
+            "PrivateEndpoints":[
+               {
+                  "VpcId":{
+                     "Ref":"AWSVpcId"
+                  },
+                  "SubnetIds":[
+                     {
+                        "Ref":"AWSSubnetId"
+                     }
+                  ]
+               }
+            ],
+            "Profile":{
+               "Ref":"Profile"
+            }
+         }
+      }
+   },
+   "Outputs":{
+      "PrivateEndpointId":{
+         "Value":{
+            "Fn::GetAtt":[
+               "PrivateEndpoint",
+               "Id"
+            ]
+         }
+      }
+   }
+}
+```
+
+this should be done with the import option in the stack 
+
+![img.png](Import.png)
+
+the first step of the import is to identify the resources that we must import
+
+![](ImportProps.png)
+
+if the process is is finished successfully we should see something like this:
+![](Step3Validation2.png)
+
+## Step-4 : Update the Outputs
+
+since the import process does not allow modification in output values, we need to update the resource again 
+to modify the references to any output we hardcoded before

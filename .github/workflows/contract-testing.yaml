@@ -24,7 +24,7 @@ jobs:
      data-lake-pipeline: ${{ steps.filter.outputs.data-lake-pipeline }}
      cloud-backup-restore-jobs: ${{ steps.filter.outputs.cloud-backup-restore-jobs }}
      online-archive: ${{ steps.filter.outputs.online-archive }}
-     private-endpoint: ${{ steps.filter.outputs.private-endpoint }}
+     private-endpoint-aws: ${{ steps.filter.outputs.private-endpoint-aws }}
      private-endpoint-service: ${{ steps.filter.outputs.private-endpoint-service }}
    steps:
    - uses: actions/checkout@v4
@@ -59,8 +59,8 @@ jobs:
           - 'cfn-resources/serverless-private-endpoint/**'
         cloud-backup-restore-jobs:
           - 'cfn-resources/cloud-backup-restore-jobs/**'
-        private-endpoint:
-          - 'cfn-resources/private-endpoint/**'
+        private-endpoint-aws:
+          - 'cfn-resources/private-endpoint-aws/**'
         private-endpoint-service:
           - 'cfn-resources/private-endpoint-service/**'
   federated-database-instance:
@@ -574,9 +574,9 @@ jobs:
 
           make run-contract-testing
           make delete-test-resources
-  private-endpoint:
+  private-endpoint-aws:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.private-endpoint == 'true' }}
+    if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
@@ -610,7 +610,7 @@ jobs:
           MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
-          pushd cfn-resources/private-endpoint
+          pushd cfn-resources/private-endpoint-aws
           make create-test-resources
 
           cat inputs/inputs_1_create.json

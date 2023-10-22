@@ -1,4 +1,4 @@
-# MongoDB::Atlas::PrivateEndpoint
+# MongoDB::Atlas::AWSPrivateEndpoint
 
 Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported
 
@@ -10,12 +10,12 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "MongoDB::Atlas::PrivateEndpoint",
+    "Type" : "MongoDB::Atlas::AWSPrivateEndpoint",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#endpointserviceid" title="EndpointServiceId">EndpointServiceId</a>" : <i>String</i>,
-        "<a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>" : <i>String</i>,
+        "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#enforceconnectionsuccess" title="EnforceConnectionSuccess">EnforceConnectionSuccess</a>" : <i>Boolean</i>,
         "<a href="#connectionstatus" title="ConnectionStatus">ConnectionStatus</a>" : <i>String</i>,
         "<a href="#errormessage" title="ErrorMessage">ErrorMessage</a>" : <i>String</i>
@@ -26,12 +26,12 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: MongoDB::Atlas::PrivateEndpoint
+Type: MongoDB::Atlas::AWSPrivateEndpoint
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#endpointserviceid" title="EndpointServiceId">EndpointServiceId</a>: <i>String</i>
-    <a href="#interfaceendpointid" title="InterfaceEndpointId">InterfaceEndpointId</a>: <i>String</i>
+    <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#enforceconnectionsuccess" title="EnforceConnectionSuccess">EnforceConnectionSuccess</a>: <i>Boolean</i>
     <a href="#connectionstatus" title="ConnectionStatus">ConnectionStatus</a>: <i>String</i>
     <a href="#errormessage" title="ErrorMessage">ErrorMessage</a>: <i>String</i>
@@ -69,11 +69,11 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### InterfaceEndpointId
+#### Id
 
-Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.
+Unique string that identifies the private endpoint. for AWS is the VPC endpoint ID, example: vpce-xxxxxxxx
 
-_Required_: Yes
+_Required_: No
 
 _Type_: String
 
@@ -108,16 +108,4 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-## Return Values
-
-### Fn::GetAtt
-
-The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
-
-For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
-
-#### Id
-
-Unique string that identifies the private endpoint. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.
 

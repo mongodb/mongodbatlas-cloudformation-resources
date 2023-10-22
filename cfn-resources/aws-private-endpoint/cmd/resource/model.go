@@ -7,7 +7,6 @@ type Model struct {
 	Profile                  *string `json:",omitempty"`
 	ProjectId                *string `json:",omitempty"`
 	EndpointServiceId        *string `json:",omitempty"`
-	InterfaceEndpointId      *string `json:",omitempty"`
 	Id                       *string `json:",omitempty"`
 	EnforceConnectionSuccess *bool   `json:",omitempty"`
 	ConnectionStatus         *string `json:",omitempty"`

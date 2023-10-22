@@ -1,5 +1,5 @@
 {
-    "typeName": "MongoDB::Atlas::PrivateEndpoint",
+    "typeName": "MongoDB::Atlas::AWSPrivateEndpoint",
     "description": "Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported",
     "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint",
     "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint/README.md",
@@ -25,12 +25,8 @@
             "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
             "type": "string"
         },
-        "InterfaceEndpointId" : {
-            "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
-            "type": "string"
-        },
         "Id": {
-            "description": "Unique string that identifies the private endpoint. The format of the endpointId parameter differs for AWS and Azure. You must URL encode the endpointId for Azure private endpoints.",
+            "description": "Unique string that identifies the private endpoint. for AWS is the VPC endpoint ID, example: vpce-xxxxxxxx",
             "type": "string"
         },
         "EnforceConnectionSuccess": {
@@ -53,14 +49,11 @@
         "/properties/Profile",
         "/properties/EndpointServiceId"
     ],
-    "readOnlyProperties": [
-        "/properties/Id"
-    ],
     "createOnlyProperties": [
         "/properties/ProjectId",
         "/properties/EndpointServiceId",
         "/properties/Profile",
-        "/properties/InterfaceEndpointId"
+        "/properties/Id"
     ],
     "handlers": {
         "create": {

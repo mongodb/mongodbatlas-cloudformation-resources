@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -115,7 +114,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	endpointRequest := admin.CreateEndpointRequest{
-		Id: currentModel.InterfaceEndpointId,
+		Id: currentModel.Id,
 	}
 
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
@@ -129,9 +128,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			nil
 	}
 
-	currentModel.setPrimaryIdentifier()
-
-	log.Print(*currentModel.Id)
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              "Create in progress",
@@ -142,15 +138,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}}, nil
 }
 
-func (m *Model) setPrimaryIdentifier() {
-	if m.Id == nil {
-		m.Id = m.InterfaceEndpointId
-	}
-}
-
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
-	model.setPrimaryIdentifier()
-
 	privateEndpointRequest := client.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
@@ -227,8 +215,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 			return progress_events.GetFailedEventByResponse("Error validating Private Endpoint deletion progress", response), nil
 		}
-
-		currentModel.setPrimaryIdentifier()
 
 		return handler.ProgressEvent{
 			OperationStatus:      handler.InProgress,

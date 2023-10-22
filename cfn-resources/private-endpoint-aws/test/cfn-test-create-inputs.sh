@@ -125,7 +125,7 @@ aws_private_endpoint_id2=$(aws ec2 create-vpc-endpoint \
 
 jq --arg projectId "$projectId" \
   --arg endpointServiceId "$private_endpoint_id" \
-   --arg interfaceEndpointId "$aws_private_endpoint_id2" \
+   --arg Id "$aws_private_endpoint_id2" \
    --arg profile "$profile" \
-   '.Profile?|=$profile | .ProjectId?|=$projectId  | .EndpointServiceId?|=$endpointServiceId | .InterfaceEndpointId?|=$interfaceEndpointId ' \
+   '.Profile?|=$profile | .ProjectId?|=$projectId  | .EndpointServiceId?|=$endpointServiceId | .Id?|=$Id ' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"

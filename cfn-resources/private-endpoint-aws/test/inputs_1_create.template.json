@@ -2,6 +2,6 @@
   "ProjectId" : "",
   "EndpointServiceId" : "",
   "Profile" : "default",
-  "InterfaceEndpointId": "",
+  "Id": "",
   "EnforceConnectionSuccess" : "false"
 }

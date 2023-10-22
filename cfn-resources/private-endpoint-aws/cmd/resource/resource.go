@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"net/http"
 	"strings"
 
@@ -122,6 +123,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	_, response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {
+		if response.StatusCode == http.StatusConflict {
+			return progress_events.GetFailedEventByCode(fmt.Sprintf("error creating Serverless Private Endpoint %s",
+					err.Error()), cloudformation.HandlerErrorCodeAlreadyExists),
+				nil
+		}
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",
 				err.Error()), response),
 			nil

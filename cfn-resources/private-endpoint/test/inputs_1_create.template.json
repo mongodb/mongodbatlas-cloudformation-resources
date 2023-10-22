@@ -1,0 +1,11 @@
+{
+    "GroupId" : "",
+    "Region" : "",
+    "PrivateEndpoints": [
+        {
+            "VpcId": "",
+            "SubnetIds": [""]
+        }
+    ],
+    "Profile": "default"
+}

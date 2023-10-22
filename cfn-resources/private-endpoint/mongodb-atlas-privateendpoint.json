@@ -1,0 +1,126 @@
+{
+    "typeName": "MongoDB::Atlas::PrivateEndpoint",
+    "description": "The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint",
+    "definitions": {
+        "PrivateEndpoint": {
+            "type": "object",
+            "properties": {
+                "VpcId": {
+                    "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "type": "string"
+                },
+                "SubnetIds": {
+                    "type": "array",
+                    "description": "List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "InterfaceEndpointId": {
+                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+                    "type": "string"
+                },
+                "AWSPrivateEndpointStatus": {
+                    "description": "Status of the AWS PrivateEndpoint connection.",
+                    "type": "string"
+                },
+                "AtlasPrivateEndpointStatus": {
+                    "description": "Status of the Atlas PrivateEndpoint connection.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "Profile": {
+            "type": "string",
+            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)",
+            "default": "default"
+        },
+        "Id": {
+            "description": "The unique identifier of the private endpoint service.",
+            "type": "string"
+        },
+        "EndpointServiceName": {
+            "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
+            "type": "string"
+        },
+        "Status": {
+            "description": "Status of the Atlas PrivateEndpoint service connection",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "GroupId": {
+            "description": "Unique 24-hexadecimal digit string that identifies your project.",
+            "type": "string",
+            "pattern": "^([a-f0-9]{24})$"
+        },
+        "Region": {
+            "description": "Aws Region",
+            "type": "string"
+        },
+        "PrivateEndpoints": {
+            "type": "array",
+            "description": "List of private endpoint associated to the service",
+            "items": {
+                "$ref": "#/definitions/PrivateEndpoint"
+            }
+        },
+        "InterfaceEndpoints": {
+            "type": "array",
+            "description": "List of interface endpoint ids associated to the service",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "GroupId",
+        "Region"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/InterfaceEndpoints"
+    ],
+    "createOnlyProperties": [
+        "/properties/GroupId",
+        "/properties/Region",
+        "/properties/Profile"
+    ],
+    "primaryIdentifier": [
+        "/properties/Id",
+        "/properties/GroupId",
+        "/properties/Region",
+        "/properties/Profile"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "ec2:CreateVpcEndpoint",
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "ec2:DeleteVpcEndpoints",
+                "secretsmanager:GetSecretValue"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
+        }
+    }
+}

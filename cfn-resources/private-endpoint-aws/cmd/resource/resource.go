@@ -36,11 +36,10 @@ func setup() {
 }
 
 const (
-	Available           = "AVAILABLE"
-	Rejected            = "REJECTED"
-	EndpointServiceID   = "EndpointServiceId"
-	CloudProvider       = "AWS"
-	InterfaceEndpointID = "InterfaceEndpointId"
+	Available         = "AVAILABLE"
+	Rejected          = "REJECTED"
+	EndpointServiceID = "EndpointServiceId"
+	CloudProvider     = "AWS"
 )
 
 func IsTerminalStatus(status string) bool {
@@ -51,7 +50,7 @@ func IsTerminalStatus(status string) bool {
 	return status == Available || status == Rejected
 }
 
-var CreateRequiredFields = []string{constants.ProjectID, EndpointServiceID, InterfaceEndpointID}
+var CreateRequiredFields = []string{constants.ProjectID, EndpointServiceID, constants.ID}
 var ReadRequiredFields = []string{constants.ProjectID, constants.ID}
 var UpdateRequiredFields []string
 var DeleteRequiredFields = []string{constants.ProjectID, constants.ID, EndpointServiceID}

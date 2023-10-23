@@ -18,9 +18,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"net/http"
 	"strings"
+
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"

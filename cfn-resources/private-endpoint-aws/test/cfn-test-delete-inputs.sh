@@ -14,7 +14,7 @@ function usage {
 }
 
 projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
-interfaceEndpointId=$(jq -r '.InterfaceEndpointId' ./inputs/inputs_1_create.json)
+interfaceEndpointId=$(jq -r '.Id' ./inputs/inputs_1_create.json)
 
 echo "STEP 1 DELETING UNUSED AWS PRIVATE ENDPOINT"
 

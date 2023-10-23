@@ -14,7 +14,7 @@
     "AWSRegion": {
       "Type": "String",
       "Description": "Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
-      "Default": "US_EAST_1"
+      "Default": "us-east-1"
     },
     "AWSVpcId": {
       "Type": "String",
@@ -65,7 +65,7 @@
       }
     },
     "AtlasPrivateEndpoint": {
-      "Type": "MongoDB::Atlas::PrivateEndpoint",
+      "Type": "MongoDB::Atlas::PrivateEndpointAWS",
       "DependsOn": "AWSPrivateEndpoint",
       "Properties": {
         "ProjectId": {
@@ -80,13 +80,12 @@
         "Profile": {
           "Ref": "Profile"
         },
-        "InterfaceEndpointId": {
+        "Id": {
           "Fn::GetAtt": [
             "AWSPrivateEndpoint",
             "Id"
           ]
-        },
-        "CloudProvider": "AWS"
+        }
       }
     }
   },

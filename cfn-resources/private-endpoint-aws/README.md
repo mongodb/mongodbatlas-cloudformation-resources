@@ -1,4 +1,4 @@
-# MongoDB::Atlas::PrivateEndpoint
+# MongoDB::Atlas::PrivateEndpointAWS
 
 Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services).
 

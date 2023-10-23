@@ -1,4 +1,5 @@
 name: Atlas CFN Resource Publish
+run-name: Publish ${{ inputs.resourceNames }} ${{ inputs.resourceVersionPublishing }} 
 on:
   workflow_dispatch:
     inputs:

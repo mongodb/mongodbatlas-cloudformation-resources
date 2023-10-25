@@ -450,6 +450,16 @@ func SetDefaultProfileIfNotDefined(p **string) {
 	}
 }
 
+func StrPtrToIntPtr(str *string) *int {
+	if !IsStringPresent(str) {
+		return nil
+	}
+	if val, err := strconv.Atoi(*str); err == nil {
+		return &val
+	}
+	return nil
+}
+
 func IntPtrToStrPtr(i *int) *string {
 	if i == nil {
 		return nil

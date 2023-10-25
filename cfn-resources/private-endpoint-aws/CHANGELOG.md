@@ -29,4 +29,4 @@ Stack:
 
 Atlas Private Endpoint Service
 AWS Private Endpoint
-Atlas Private Endpoint
+Atlas Private Endpoint AWS

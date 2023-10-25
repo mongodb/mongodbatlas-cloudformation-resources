@@ -28,41 +28,67 @@
   },
   "Mappings": {},
   "Resources": {
-    "PrivateEndpoint": {
-      "Type": "MongoDB::Atlas::PrivateEndpoint",
+    "AtlasPrivateEndpointService": {
+      "Type": "MongoDB::Atlas::PrivateEndpointService",
       "Properties": {
-        "GroupId": {
+        "ProjectId": {
           "Ref": "MongoDBAtlasProjectId"
         },
         "Region": {
           "Ref": "AWSRegion"
         },
-        "PrivateEndpoints": [
-          {
-            "VpcId": {
-              "Ref": "AWSVpcId"
-            },
-            "SubnetIds": [
-              {
-                "Ref": "AWSSubnetId"
-              }
-            ]
-          }
-        ],
         "Profile": {
           "Ref": "Profile"
+        },
+        "CloudProvider": "AWS"
+      }
+    },
+    "AWSPrivateEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DependsOn": "AtlasPrivateEndpointService",
+      "Properties": {
+        "ServiceName": {
+          "Fn::GetAtt": [
+            "AtlasPrivateEndpointService",
+            "EndpointServiceName"
+          ]
+        },
+        "SubnetIds": [
+          {
+            "Ref": "AWSSubnetId"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "AWSVpcId"
+        }
+      }
+    },
+    "AtlasPrivateEndpoint": {
+      "Type": "MongoDB::Atlas::PrivateEndpointAWS",
+      "DependsOn": "AWSPrivateEndpoint",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "EndpointServiceId": {
+          "Fn::GetAtt": [
+            "AtlasPrivateEndpointService",
+            "Id"
+          ]
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Id": {
+          "Fn::GetAtt": [
+            "AWSPrivateEndpoint",
+            "Id"
+          ]
         }
       }
     }
   },
   "Outputs": {
-    "PrivateEndpointId": {
-      "Value": {
-        "Fn::GetAtt": [
-          "PrivateEndpoint",
-          "Id"
-        ]
-      }
-    }
   }
 }

@@ -13,4 +13,4 @@ See the [resource docs](docs/README.md).
 
 ## Cloudformation Examples
 
-See the examples [CFN Template](/examples/private-endpoint/privateEndpoint.json) for example resource.
+See the examples [CFN Template](/examples/private-endpoint/privateEndpointV2.json) for example resource.

@@ -15,9 +15,10 @@
 package resource
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
 	"reflect"
 	"testing"
+
+	"github.com/aws/aws-sdk-go/aws"
 )
 
 func TestGetChangeInAPIKeys_AddedButNotChangedOrRemoved(t *testing.T) {

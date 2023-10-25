@@ -4,7 +4,7 @@ Resource for creating and managing [Private Endpoint Services](https://www.mongo
 
 # V2 Migration Guideline
 
-For migrating from the unified Private endpoint (V1) to the divided (V2) follow the [V2 Upgrade Guide](upgradeguidev2/V2-UpgradeGuide.md)
+For migrating from the unified Private endpoint (V1) to the divided (V2) follow the [V2 Upgrade Guide](../private-endpoint/upgradeguidev2/V2-UpgradeGuide.md)
 
 ## Requirements
 

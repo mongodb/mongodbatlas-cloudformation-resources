@@ -30,3 +30,5 @@ Stack:
 - MongoDB::Atlas::PrivateEndpointService: new, resource responsible for creating a Private Endpoint Service, unconfigured, and then using it to configure a Private Endpoint with AWS or any other provider
 - AWS::EC2::VPCEndpoint: Existing aws resource
 - MongoDB::Atlas::PrivateEndpointAWS: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service
+
+check the [V2 Upgrade Guide](upgradeguidev2/V2-UpgradeGuide.md) to upgrade to the V2

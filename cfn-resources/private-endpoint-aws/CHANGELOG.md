@@ -21,7 +21,7 @@ To address these issues, we have introduced a new resource, MongoDB::Atlas::Priv
 Additionally, we have modified the existing MongoDB::Atlas::PrivateEndpoint resource to focus solely on adding a Private Endpoint to the Service.
 
 	- MongoDB::Atlas::PrivateEndpointService: new, resource responsible for creating a Private Endpoint Service, unconfigured, and then using it to configure a Private Endpoint with AWS or any other provider
-	- MongoDB::Atlas::PrivateEndpoint: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service
+	- MongoDB::Atlas::PrivateEndpointAWS: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service
 
 As a result, users will now configure a Private Endpoint by defining these resources separately:
 

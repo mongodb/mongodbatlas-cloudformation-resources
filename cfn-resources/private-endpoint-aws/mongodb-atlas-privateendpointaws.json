@@ -1,8 +1,8 @@
 {
     "typeName": "MongoDB::Atlas::PrivateEndpointAWS",
     "description": "Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint",
-    "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint/README.md",
+    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-aws",
+    "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-aws/README.md",
     "tagging": {
         "taggable": false
     },

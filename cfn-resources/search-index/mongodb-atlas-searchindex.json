@@ -43,7 +43,8 @@
           "items": {
             "type": "string"
           },
-          "description": "One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:fieldType. Required if **mappings.dynamic** is omitted or set to **false**."
+          "insertionOrder" : false,
+          "description": "One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:{Stringify json, containing a list of types with all its properties}. Required if **mappings.dynamic** is omitted or set to **false**."
         }
       },
       "additionalProperties": false

@@ -35,7 +35,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Fields
 
-One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:fieldType. Required if **mappings.dynamic** is omitted or set to **false**.
+One or more field specifications for the Atlas Search index. The element of the array must have the format fieldName:{Stringify json, containing a list of types with all its properties}. Required if **mappings.dynamic** is omitted or set to **false**.
 
 _Required_: No
 

@@ -27,6 +27,6 @@ As a result, users will now configure a Private Endpoint by defining these resou
 
 Stack:
 
-Atlas Private Endpoint Service
-AWS Private Endpoint
-Atlas Private Endpoint AWS
+- MongoDB::Atlas::PrivateEndpointService: new, resource responsible for creating a Private Endpoint Service, unconfigured, and then using it to configure a Private Endpoint with AWS or any other provider
+- AWS::EC2::VPCEndpoint: Existing aws resource
+- MongoDB::Atlas::PrivateEndpointAWS: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service

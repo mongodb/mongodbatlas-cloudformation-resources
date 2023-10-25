@@ -18,7 +18,7 @@ Users found it limiting to manage an AWS Private Endpoint within an Atlas resour
 When a resource was created, there was no visibility into the progress of each component.
 To address these issues, we have introduced a new resource, MongoDB::Atlas::PrivateEndpointService. This resource is specifically designed to create an Atlas Private Endpoint Service without any preconfiguration, allowing for subsequent Private Endpoint configuration with AWS or any other provider.
 
-Additionally, we have modified the existing MongoDB::Atlas::PrivateEndpoint resource to focus solely on adding a Private Endpoint to the Service.
+Additionally, we have defined a new MongoDB::Atlas::PrivateEndpointAWS resource to focus solely on adding a Private Endpoint to the Service.
 
 	- MongoDB::Atlas::PrivateEndpointService: new, resource responsible for creating a Private Endpoint Service, unconfigured, and then using it to configure a Private Endpoint with AWS or any other provider
 	- MongoDB::Atlas::PrivateEndpointAWS: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service

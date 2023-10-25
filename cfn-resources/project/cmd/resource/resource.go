@@ -524,7 +524,7 @@ func readTeams(teams []ProjectTeam) []admin.TeamRole {
 func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
 	// Create maps to efficiently check for the existence of keys by ID
 	currentKeyMap := make(map[string]ProjectApiKey)
-	oKeyMap := make(map[string]ProjectApiKey)
+	previousKeyMap := make(map[string]ProjectApiKey)
 
 	// Populate the maps using the ID as the key
 	for _, key := range currentKeys {
@@ -535,7 +535,7 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 
 	for _, key := range previousKeys {
 		if key.Key != nil {
-			oKeyMap[*key.Key] = key
+			previousKeyMap[*key.Key] = key
 		}
 	}
 
@@ -545,9 +545,8 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 			continue
 		}
 
-		if oKey, ok := oKeyMap[*key.Key]; ok {
-			// Key exists in both currentKeys and oKeys
-			if !stringSliceEqual(key.RoleNames, oKey.RoleNames) {
+		if oKey, ok := previousKeyMap[*key.Key]; ok {
+			if !util.SameStringSliceWithoutOrder(key.RoleNames, oKey.RoleNames) {
 				changedKeys = append(changedKeys, key)
 			}
 		} else {
@@ -568,16 +567,4 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 	}
 
 	return newKeys, changedKeys, removeKeys
-}
-
-func stringSliceEqual(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if v != b[i] {
-			return false
-		}
-	}
-	return true
 }

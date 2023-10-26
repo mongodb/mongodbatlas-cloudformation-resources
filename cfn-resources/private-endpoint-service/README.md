@@ -1,7 +1,5 @@
 # MongoDB::Atlas::PrivateEndpoint
 
-> WARNING: THIS RESOURCE IS CURRENTLY DEPRECATED, WE SUGGEST MIGRATING TO MongoDB::Atlas::PrivateEndpointAWS, please refere to [V2 Upgrade Guide](upgradeguidev2/V2-UpgradeGuide.md)
-
 Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services).
 
 ## Requirements
@@ -15,4 +13,4 @@ See the [resource docs](docs/README.md).
 
 ## Cloudformation Examples
 
-See the examples [CFN Template](/examples/private-endpoint/privateEndpoint.json) for example resource.
+See the examples [CFN Template](/examples/private-endpoint/privateEndpointV2.json) for example resource.

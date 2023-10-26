@@ -1,6 +1,6 @@
 # MongoDB::Atlas::PrivateEndpoint
 
-The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint
+DEPRECATED- USE MongoDB::Atlas::PrivateEndpointService and MongoDB::Atlas::PrivateEndpointAWS instead, The Private Endpoint creation flow consists of the creation of three related resources in the next order: 1. Atlas Private Endpoint Service 2. Aws VPC private Endpoint 3. Atlas Private Endpoint
 
 ## Syntax
 
@@ -42,7 +42,7 @@ Properties:
 
 #### Profile
 
-The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
 
 _Required_: No
 

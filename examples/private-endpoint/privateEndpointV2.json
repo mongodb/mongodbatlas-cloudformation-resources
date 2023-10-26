@@ -1,0 +1,94 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Private Endpoint / Private Endpoint Service resource with AWS PrivateLink for Dedicated Clusters on MongoDB Atlas. This will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Atlas Profile name",
+      "Default": "default"
+    },
+    "MongoDBAtlasProjectId": {
+      "Type": "String",
+      "Description": "MongoDB project Key"
+    },
+    "AWSRegion": {
+      "Type": "String",
+      "Description": "Cloud provider region for which you want to create the private endpoint service (example: us-east-1).",
+      "Default": "us-east-1"
+    },
+    "AWSVpcId": {
+      "Type": "String",
+      "Description": "AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    },
+    "AWSSubnetId": {
+      "Type": "String",
+      "Default": "subnet-",
+      "Description": "AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "AtlasPrivateEndpointService": {
+      "Type": "MongoDB::Atlas::PrivateEndpointService",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "Region": {
+          "Ref": "AWSRegion"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "CloudProvider": "AWS"
+      }
+    },
+    "AWSPrivateEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DependsOn": "AtlasPrivateEndpointService",
+      "Properties": {
+        "ServiceName": {
+          "Fn::GetAtt": [
+            "AtlasPrivateEndpointService",
+            "EndpointServiceName"
+          ]
+        },
+        "SubnetIds": [
+          {
+            "Ref": "AWSSubnetId"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "AWSVpcId"
+        }
+      }
+    },
+    "AtlasPrivateEndpoint": {
+      "Type": "MongoDB::Atlas::PrivateEndpointAWS",
+      "DependsOn": "AWSPrivateEndpoint",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "MongoDBAtlasProjectId"
+        },
+        "EndpointServiceId": {
+          "Fn::GetAtt": [
+            "AtlasPrivateEndpointService",
+            "Id"
+          ]
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "Id": {
+          "Fn::GetAtt": [
+            "AWSPrivateEndpoint",
+            "Id"
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+  }
+}

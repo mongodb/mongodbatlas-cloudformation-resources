@@ -11,7 +11,7 @@
 
    Private Endpoint Resource is ready to use.
 
-## Step 2: Create template using [privateEndpoint.json](privateEndpoint.json)
+## Step 2: Create template using [privateEndpoint.json](privateEndpointV2.json)
     Note: Make sure you are providing appropriate vales for 
     1. MongoDBAtlasProjectId
     4. AWSRegion

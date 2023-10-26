@@ -1,0 +1,9 @@
+{
+    "desiredResourceState" : {
+        "ProjectId" : "$ATLAS_ORG_ID",
+        "Region" : "",
+        "Profile" : "default"
+    },
+    "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
+    "previousResourceState": { }
+}

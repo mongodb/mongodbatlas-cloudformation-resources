@@ -49,11 +49,6 @@ jq --arg projectId "$projectId" \
 jq --arg projectId "$projectId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_1_invalid.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg projectId "$projectId" \
-	--arg profile "$profile" \
-	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg projectId "$projectId" \
@@ -61,9 +56,5 @@ jq --arg projectId "$projectId" \
 	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
 
-jq --arg projectId "$projectId" \
-	--arg profile "$profile" \
-	'.ProjectId?|=$projectId |.Profile?|=$profile ' \
-	"$(dirname "$0")/inputs_2_invalid.json" >"inputs/inputs_2_invalid.json"
-
 ls -l inputs
+echo "mongocli iam projects delete ${projectId} --force"

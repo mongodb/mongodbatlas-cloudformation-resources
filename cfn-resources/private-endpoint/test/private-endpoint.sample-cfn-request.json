@@ -1,15 +1,17 @@
 {
-    "desiredResourceState" : {
-        "GroupId" : "$ATLAS_ORG_ID",
-        "Region" : "",
-        "Profile" : "default",
-        "PrivateEndpoints": [
-            {
-                "VpcId": "",
-                "SubnetIds": [""]
-            }
+  "desiredResourceState": {
+    "GroupId": "$MONGODB_ATLAS_ORG_ID",
+    "Region": "",
+    "Profile": "default",
+    "PrivateEndpoints": [
+      {
+        "VpcId": "",
+        "SubnetIds": [
+          ""
         ]
-    },
-    "providerLogGroupName" : "mongodb-atlas-private-endpoint-logs",
-    "previousResourceState": { }
+      }
+    ]
+  },
+  "providerLogGroupName": "mongodb-atlas-private-endpoint-logs",
+  "previousResourceState": {}
 }

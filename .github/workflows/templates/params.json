@@ -1,7 +1,4 @@
 {
-  "Repository": [
-    "https://github.com/mongodb/mongodbatlas-cloudformation-resources"
-  ],
   "ResourceName": [
     ""
   ],
@@ -9,6 +6,9 @@
     ""
   ],
   "OrgID": [
+    ""
+  ],
+  "ResourceVersionPublishing": [
     ""
   ],
   "PubKey": [
@@ -23,16 +23,7 @@
   "OtherParams": [
     "'{\"test\":\"test\"}'"
   ],
-  "Path": [
-    ""
-  ],
-  "BuilderRole": [
-    ""
-  ],
   "AssumeRole": [
-    "arn:aws:iam::711489243244:role/DevOpsIntegrationsContractorsSSM"
-  ],
-  "LogDeliveryBucket": [
-    "atlascfnpublishing"
+    "arn:aws:iam::accountid:role/name"
   ]
 }

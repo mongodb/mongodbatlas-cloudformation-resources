@@ -17,7 +17,7 @@ if [[ "$*" == help ]]; then usage; fi
 
 name="${1}"
 userName="${2}"
-jq --arg org "$ATLAS_ORG_ID" \
+jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	--arg name "$name" \
 	--arg userName "$userName" \
 	'.desiredResourceState.Usernames?|=[$userName] |.desiredResourceState.OrgId?|=$org | .desiredResourceState.Name?|=$name' \

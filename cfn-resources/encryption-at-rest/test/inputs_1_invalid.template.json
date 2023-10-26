@@ -1,9 +1,0 @@
-{
-    "ProjectId": "",
-    "Profile" : "default",
-    "AwsKms": {
-        "Enabled": "true",
-        "Region": "$REGION",
-        "RoleID": "$KMS_ROLE"
-    }
-}

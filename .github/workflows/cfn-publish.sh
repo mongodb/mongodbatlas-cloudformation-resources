@@ -20,12 +20,9 @@ set -Eeou pipefail
 AwsSsmDocumentName="CFN-MongoDB-Atlas-Resource-Register"
 AssumeRole="arn:aws:iam::${AWS_ACCOUNT_ID}:role/DevOpsIntegrationsContractorsSSM"
 AccountIds="${AWS_ACCOUNT_ID}"
-BuilderRole="DevOpsIntegrationsContractors-CodeBuild"
 DocumentVersion="\$DEFAULT"
 DocumentRegion="us-east-1"
 ExecutionRoleName="DevOpsIntegrationsContractorsSSM"
-LogDeliveryBucket="atlascfnpublishing"
-Repository="https://github.com/mongodb/mongodbatlas-cloudformation-resources"
 
 # improve this code
 if [ -z "${REGIONS+x}" ]; then
@@ -62,9 +59,9 @@ for ResourceName in "${ResourceNames[@]}"; do
 		case "$ResourceName" in
 		"federated-settings-org-role-mapping")
 			# atlas details will change for federated_settings-org-role-mapping
-			ATLAS_ORG_ID="${ATLAS_ORG_ID_FOR_FEDERATION}"
-			ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_FOR_FEDERATION}"
-			ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_FOR_FEDERATION}"
+			MONGODB_ATLAS_ORG_ID="${ATLAS_ORG_ID_FOR_FEDERATION}"
+			MONGODB_ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_FOR_FEDERATION}"
+			MONGODB_ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_FOR_FEDERATION}"
 
 			echo "setting up other params for federated-settings-org-role-mapping"
 			jq --arg ATLAS_FEDERATED_SETTINGS_ID "${ATLAS_FEDERATED_SETTINGS_ID}" \
@@ -89,9 +86,9 @@ for ResourceName in "${ResourceNames[@]}"; do
 
 		"organization")
 			# currently multi-org-payment-method is setup only in dev atlas account
-			ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_DEV}"
-			ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_DEV}"
-			ATLAS_ORG_ID="${ATLAS_ORG_ID_DEV}"
+			MONGODB_ATLAS_PUBLIC_KEY="${ATLAS_PUBLIC_KEY_DEV}"
+			MONGODB_ATLAS_PRIVATE_KEY="${ATLAS_PRIVATE_KEY_DEV}"
+			MONGODB_ATLAS_ORG_ID="${ATLAS_ORG_ID_DEV}"
 
 			jq --arg MONGODB_ATLAS_ORG_OWNER_ID "${ATLAS_ORG_OWNER_ID}" \
 				'.MONGODB_ATLAS_ORG_OWNER_ID |= $MONGODB_ATLAS_ORG_OWNER_ID' \
@@ -136,8 +133,10 @@ for ResourceName in "${ResourceNames[@]}"; do
 		esac
 	fi
 
-	Path="cfn-resources/${ResourceName}/"
 	CodeBuild_Project_Name="${ResourceName}-proj-$((1 + RANDOM % 1000))"
+
+	ParamsJsonPath="$(dirname "$0")"/params-temp.json
+	LocationsJsonPath="$(dirname "$0")"/locations-temp.json
 
 	jq --arg ExecutionRoleName "${ExecutionRoleName}" \
 		--arg TargetLocationsMaxConcurrency "${TARGET_LOCATIONS_MAX_CONCURRENCY}" \
@@ -147,36 +146,34 @@ for ResourceName in "${ResourceNames[@]}"; do
     .[0].TargetLocationMaxConcurrency?|=$TargetLocationsMaxConcurrency |
     .[0].Accounts[0]?|=$AccountIds |
     .[0].Regions?|=($Regions | gsub(" "; "") | split(",")) ' \
-		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/locations-temp.json"
+		"$(dirname "$0")/templates/locations.json" >tmp.$$.json && mv tmp.$$.json "${LocationsJsonPath}"
 
-	jq --arg Repository "${Repository}" \
-		--arg ResourceName "${ResourceName}" \
-		--arg OrgID "${ATLAS_ORG_ID}" \
-		--arg PubKey "${ATLAS_PUBLIC_KEY}" \
-		--arg PvtKey "${ATLAS_PRIVATE_KEY}" \
+	jq --arg ResourceName "${ResourceName}" \
+		--arg ResourceVersionPublishing "${RESOURCE_VERSION_PUBLISHING}" \
+		--arg OrgID "${MONGODB_ATLAS_ORG_ID}" \
+		--arg PubKey "${MONGODB_ATLAS_PUBLIC_KEY}" \
+		--arg PvtKey "${MONGODB_ATLAS_PRIVATE_KEY}" \
 		--arg BranchName "${BRANCH_NAME}" \
 		--arg ProjectName "${CodeBuild_Project_Name}" \
 		--arg OtherParams "${OtherParams_string}" \
-		--arg Path "${Path}" \
-		--arg BuilderRole "${BuilderRole}" \
 		--arg AssumeRole "${AssumeRole}" \
-		--arg LogDeliveryBucket "${LogDeliveryBucket}" \
-		'.Repository[0]?|=$Repository |
-  .ResourceName[0]?|=$ResourceName |
+		'.ResourceName[0]?|=$ResourceName |
+  .ResourceVersionPublishing[0]?|=$ResourceVersionPublishing |
   .OrgID[0]?|=$OrgID |
   .PubKey[0]?|=$PubKey |
   .PvtKey[0]?|=$PvtKey |
   .ProjectName[0]?|=$ProjectName |
   .OtherParams[0]?|=$OtherParams |
   .BranchName[0]?|=$BranchName |
-  .Path[0]?|=$Path |
-  .BuilderRole[0]?|=$BuilderRole |
-  .AssumeRole[0]?|=$AssumeRole |
-  .LogDeliveryBucket[0]?|=$LogDeliveryBucket ' \
-		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "$(dirname "$0")/params-temp.json"
+  .AssumeRole[0]?|=$AssumeRole ' \
+		"$(dirname "$0")/templates/params.json" >tmp.$$.json && mv tmp.$$.json "${ParamsJsonPath}"
 
-	ParamsJsonContent=$(cat "$(dirname "$0")"/params-temp.json)
-	LocationsJsonContent=$(cat "$(dirname "$0")"/locations-temp.json)
+	if [ -z "${RESOURCE_VERSION_PUBLISHING}" ]; then
+		jq 'del(.ResourceVersionPublishing)' "${ParamsJsonPath}" >tmp.$$.json && mv tmp.$$.json "${ParamsJsonPath}"
+	fi
+
+	ParamsJsonContent=$(cat "${ParamsJsonPath}")
+	LocationsJsonContent=$(cat "${LocationsJsonPath}")
 
 	# aws cli to start the automation execution
 	aws ssm start-automation-execution \

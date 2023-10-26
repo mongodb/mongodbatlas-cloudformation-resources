@@ -23,8 +23,8 @@ region=$(aws configure get region)
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
 #echo "AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}"
 
-jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
-	--arg pvtkey "$ATLAS_PRIVATE_KEY" \
+jq --arg pubkey "$MONGODB_ATLAS_PUBLIC_KEY" \
+	--arg pvtkey "$MONGODB_ATLAS_PRIVATE_KEY" \
 	--arg projectId "$projectId" \
 	--arg region "$region" \
 	--arg awsacctid "$AWS_ACCOUNT_ID" \

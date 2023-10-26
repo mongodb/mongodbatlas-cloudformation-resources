@@ -60,14 +60,10 @@ jq --arg projectId "$projectId" \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
-	--arg endpointId "(*ksadfks)" \
-	'.ProjectId?|=$projectId | .EndpointId?|=$endpointId' \
-	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"
-
-jq --arg projectId "$projectId" \
 	--arg endpointId "$endpointId" \
 	--arg profile "$profile" \
 	'.ProjectId?|=$projectId | .EndpointId?|=$endpointId| .Profile?|=$profile ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs
+echo "mongocli iam projects delete ${projectId} --force"

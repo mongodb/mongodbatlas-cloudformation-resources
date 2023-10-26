@@ -1,4 +1,5 @@
 name: Atlas CFN Resource Publish
+run-name: Publish ${{ inputs.resourceNames }} ${{ inputs.resourceVersionPublishing }} 
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +11,10 @@ on:
         description: "the folder name of the Resource in this Repo."
         default: ""
         required: true
+      resourceVersionPublishing:
+        description: "the version used to publish the resource, empty will use the next minor version."
+        default: ""
+        required: false
       otherParams:
         description: "Resource specific environment variables used for cfn test."
         default: ""
@@ -30,15 +35,16 @@ jobs:
     env:
 
       RESOURCES: ${{ github.event.inputs.resourceNames }}
+      RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
       REGIONS: ${{ github.event.inputs.regions }}
       OTHER_PARAMS: ${{ github.event.inputs.otherParams }}
       TARGET_LOCATIONS_MAX_CONCURRENCY: ${{ github.event.inputs.targetLocationsMaxConcurrency }}
       BRANCH_NAME: ${{ github.event.inputs.branchName }}
 
       # Atlas Profile
-      ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
-      ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
-      ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
+      MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
 
       # Organization: atlas dev profile used for organization
       # currently multi-org-payment-method is set up only in dev atlas account

@@ -108,24 +108,29 @@ fi
 echo "Step: Running 'publish-type' on ${resources}"
 for resource in ${resources}; do
 	cd "${resource}"
-	echo "Working on resource:${resource}"
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run 'publish-type' for:${resource}" && continue
-	# shellcheck disable=SC2001
-	jsonschema="mongodb-atlas-$(echo "${resource}" | sed s/-//g).json"
-	echo "jsonschema=${jsonschema}"
-	# shellcheck disable=SC2002
-	type_name=$(cat "${jsonschema}" | jq -r '.typeName')
-	echo "type_name=${type_name}"
+	jsonschema="mongodb-atlas-${resource//-/}.json"
+	type_name=$(jq <"${jsonschema}" -r '.typeName')
 	type_info=$(aws cloudformation list-types --output=json | jq --arg typeName "${type_name}" '.TypeSummaries[] | select(.TypeName==$typeName)')
-	echo "type_info=${type_info}"
 	type_arn=$(echo "${type_info}" | jq -r '.TypeArn')
-	echo "type_arn=${type_arn}"
+	echo "resource:${resource}, jsonschema=${jsonschema}, type_name=${type_name}, version=${version}, type_arn=${type_arn}"
 
-	echo "version=${version}"
-	echo "publish-command"
-	echo "aws cloudformation publish-type --type RESOURCE --arn ${type_arn}"
-	echo "publish-command-exe"
-	aws cloudformation publish-type --type RESOURCE --arn "${type_arn}"
+	if [ -n "${RESOURCE_VERSION_PUBLISHING}" ]; then
+		version_param="--public-version-number ${RESOURCE_VERSION_PUBLISHING}"
+	fi
+	command="aws cloudformation publish-type --type RESOURCE --arn ${type_arn} ${version_param}"
+	echo "${command}"
+	${command}
+
+	echo "Deleting role stack as it is not needeed anymore"
+	roleStack="mongodb-atlas-${resource//-/}-role-stack"
+	command="aws cloudformation update-termination-protection --no-enable-termination-protection --stack-name ${roleStack}"
+	echo "${command}"
+	${command}
+	command="aws cloudformation delete-stack --stack-name ${roleStack}"
+	echo "${command}"
+	${command}
+
 	cd -
 done
 

@@ -1,34 +1,30 @@
 # Changelog
 
-## (2023-10-20)
+## (2023-10-20) **(BREAKING CHANGE) Deprecation of MongoDB::Atlas::PrivateEndpoint**
 
-**(BREAKING CHANGE) Resource Structure modification**
+### Why is this resource deprecated?
 
-We have made significant improvements to our Private Endpoint resource structure to enhance its usability and maintainability.
+The MongoDB::Atlas::PrivateEndpoint resource, which was responsible for several tasks, is now marked as DEPRECATED, and will no longer receive support after 1 January 2024.
+Users are encouraged to use the following new resources instead:
 
-Previously, the MongoDB::Atlas::PrivateEndpoint resource was responsible for handling three distinct tasks:
+1. **MongoDB::Atlas::PrivateEndpointService**: This resource is responsible for creating an unconfigured Atlas Private Endpoint Service. 
+Subsequent Private Endpoint configuration with AWS or any other provider can be done using this service.
+2. **MongoDB::Atlas::PrivateEndpointAWS**: The existing resource has been modified to focus solely on adding a Private Endpoint to the Service with an AWS provider.
 
-Creating and deleting an Atlas Private Endpoint service.
-Adding and removing an Atlas Private Endpoint to/from a Private Endpoint Service.
-Creating and deleting an AWS private endpoint.
-This approach had several drawbacks:
+### Drawbacks of the Previous Approach
+The deprecation of the MongoDB::Atlas::PrivateEndpoint resource is due to the following drawbacks in the previous approach:
 
-The complexity of having a single resource manage three different functions made it challenging to maintain.
-Users found it limiting to manage an AWS Private Endpoint within an Atlas resource, which restricted certain configurations.
-When a resource was created, there was no visibility into the progress of each component.
-To address these issues, we have introduced a new resource, MongoDB::Atlas::PrivateEndpointService. This resource is specifically designed to create an Atlas Private Endpoint Service without any preconfiguration, allowing for subsequent Private Endpoint configuration with AWS or any other provider.
+- Complexity: Managing three different functions within a single resource made it challenging to maintain.
+- Limitations: Users found it limiting to manage an AWS Private Endpoint within an Atlas resource, restricting certain configurations.
+- Progress Visibility: When a resource was created, there was no visibility into the progress of each component.
 
-Additionally, we have defined a new MongoDB::Atlas::PrivateEndpointAWS resource to focus solely on adding a Private Endpoint to the Service.
+### New Resource Structure
+With the introduction of the new resources, users can now configure a Private Endpoint by defining these resources separately:
 
-	- MongoDB::Atlas::PrivateEndpointService: new, resource responsible for creating a Private Endpoint Service, unconfigured, and then using it to configure a Private Endpoint with AWS or any other provider
-	- MongoDB::Atlas::PrivateEndpointAWS: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service
+**Stack:**
 
-As a result, users will now configure a Private Endpoint by defining these resources separately:
+- MongoDB::Atlas::PrivateEndpointService: A new resource responsible for creating an unconfigured Private Endpoint Service, which can be used to configure a Private Endpoint with AWS or any other provider.
+- AWS::EC2::VPCEndpoint: The existing AWS resource.
+- MongoDB::Atlas::PrivateEndpointAWS: The current resource, which has been modified to add a Private Endpoint to the Service.
 
-Stack:
-
-- MongoDB::Atlas::PrivateEndpointService: new, resource responsible for creating a Private Endpoint Service, unconfigured, and then using it to configure a Private Endpoint with AWS or any other provider
-- AWS::EC2::VPCEndpoint: Existing aws resource
-- MongoDB::Atlas::PrivateEndpointAWS: the current resource is modified, it is responsible for adding a privateEdnpoint to the Service
-
-check the [V2 Upgrade Guide](upgradeguidev2/V2-UpgradeGuide.md) to upgrade to the V2
+For detailed upgrade instructions, please refer to the [V2 Upgrade Guide](upgradeguidev2/V2-UpgradeGuide.md).

@@ -1,0 +1,15 @@
+{
+  "Profile": "default",
+  "ClusterName": "MongoDB12345",
+  "CollectionName": "testcoll",
+  "Database": "testdb",
+  "Name": "abc-123",
+  "ProjectId": "$PROJECT_ID",
+  "SearchAnalyzer": "lucene.standard",
+  "Mappings": {
+    "Dynamic": "false",
+    "Fields":[
+      "property_type:[{\"type\":\"autocomplete\"},{\"type\":\"string\"}]"
+    ]
+  }
+}

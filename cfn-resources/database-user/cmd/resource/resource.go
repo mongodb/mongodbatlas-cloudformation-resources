@@ -21,7 +21,6 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -48,14 +47,12 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -88,14 +85,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	if errEvent := validateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -161,13 +156,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
 	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -200,14 +194,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
 	if errEvent := validateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
 	// Create atlas client
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -232,14 +225,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // List handles listing database users
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	if errEvent := validateModel(ListRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
@@ -376,7 +367,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		DeleteAfterDate: util.StringPtrToTimePtr(currentModel.DeleteAfterDate),
 	}
 
-	if currentModel.Password != nil {
+	if util.IsStringPresent(currentModel.Password) {
 		user.Password = currentModel.Password
 	}
 

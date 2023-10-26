@@ -1,0 +1,20 @@
+{
+  "Username": "arn:aws:iam::111111967292:role/cfn-admin",
+  "AWSIAMType": "ROLE",
+  "ProjectId": "ProjectId",
+  "Profile": "default",
+  "DatabaseName": "$external",
+  "Roles": [
+    {
+      "RoleName": "readWrite",
+      "DatabaseName": "testdb",
+      "CollectionName": "col2"
+    }
+  ],
+  "Scopes": [
+    {
+      "Type": "CLUSTER",
+      "Name": "testdb"
+    }
+  ]
+}

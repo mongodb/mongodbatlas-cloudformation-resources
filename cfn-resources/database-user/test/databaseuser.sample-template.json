@@ -31,9 +31,9 @@
           }
         ],
         "Profile": {
-            "Ref": "Profile"
-          }
+          "Ref": "Profile"
         }
+      }
     },
     "x509User": {
       "Type": "MongoDB::Atlas::DatabaseUser",
@@ -102,5 +102,38 @@
       }
     }
   },
-  "Outputs": {}
+  "Outputs": {
+    "ScramUserCFNIdentifier": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ScramUser",
+          "UserCFNIdentifier"
+        ]
+      }
+    },
+    "x509UserCFNIdentifier": {
+      "Value": {
+        "Fn::GetAtt": [
+          "x509User",
+          "UserCFNIdentifier"
+        ]
+      }
+    },
+    "ldapUserCFNIdentifier": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ldapUser",
+          "UserCFNIdentifier"
+        ]
+      }
+    },
+    "awsIamCFNIdentifier": {
+      "Value": {
+        "Fn::GetAtt": [
+          "awsIamUser",
+          "UserCFNIdentifier"
+        ]
+      }
+    }
+  }
 }

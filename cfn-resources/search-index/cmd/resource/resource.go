@@ -18,10 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -31,6 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
+	"net/http"
 )
 
 // indexFieldParts index field should be fieldName:fieldType.
@@ -199,27 +196,16 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 	}, nil
 }
 
-func newMappingsFields(fields []string) (map[string]interface{}, error) {
-	if len(fields) == 0 {
+func newMappingsFields(fields *string) (map[string]interface{}, error) {
+	if fields == nil {
 		return nil, nil
 	}
 
-	fieldsMap := make(map[string]interface{})
-	for _, p := range fields {
-		f := strings.SplitN(p, ":", 2)
-		if len(f) != indexFieldParts {
-			return nil, fmt.Errorf("partition should be fieldName:fieldType, got: %s", p)
-		}
-
-		fieldType, err := parseFieldType(f[1])
-		if err != nil {
-			return nil, err
-		}
-
-		fieldsMap[f[0]] = fieldType
+	var data map[string]interface{}
+	if err := json.Unmarshal([]byte(*fields), &data); err != nil {
+		return nil, err
 	}
-
-	return fieldsMap, nil
+	return data, nil
 }
 
 func parseFieldType(jsonStr string) (interface{}, error) {

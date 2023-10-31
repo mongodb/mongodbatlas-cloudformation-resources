@@ -255,18 +255,17 @@
         "GCP"
       ]
     },
-    "ClusterName": {
+    "InstanceType": {
+      "description": "Type of instance specified on the Instance Name serverless or cluster",
       "type": "string",
-      "description": "Human-readable label that identifies the cluster.",
-      "maxLength": 64,
-      "minLength": 1
+      "enum": [
+        "serverless",
+        "cluster"
+      ]
     },
     "InstanceName": {
-      "type": "string",
-      "description": "Human-readable label that identifies the serverless instance.",
-      "maxLength": 64,
-      "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "description": "The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore snapshot.",
+      "type": "string"
     },
     "CreatedAt": {
       "type": "string",
@@ -449,16 +448,19 @@
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/ClusterName",
+    "/properties/InstanceName",
+    "/properties/InstanceType",
     "/properties/Profile"
   ],
   "required": [
     "ProjectId",
-    "ClusterName"
+    "InstanceName",
+    "InstanceType"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",
-    "/properties/ClusterName",
+    "/properties/InstanceName",
+    "/properties/InstanceType",
     "/properties/SnapshotId",
     "/properties/Profile"
   ],

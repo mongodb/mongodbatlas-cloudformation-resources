@@ -30,9 +30,6 @@ import (
 	"net/http"
 )
 
-// indexFieldParts index field should be fieldName:fieldType.
-const indexFieldParts = 2
-
 func setup() {
 	util.SetupLogger("search-index")
 }

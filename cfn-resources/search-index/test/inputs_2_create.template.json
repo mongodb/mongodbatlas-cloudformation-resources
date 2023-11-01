@@ -8,8 +8,6 @@
   "SearchAnalyzer": "lucene.standard",
   "Mappings": {
     "Dynamic": "false",
-    "Fields":[
-      "property_type:[{\"type\":\"autocomplete\"},{\"type\":\"string\"}]"
-    ]
+    "Fields": "\"{\"address\": {\"fields\": {\"street\": [{\"norms\": \"omit\",\"store\": false,\"type: \"string\"},{\"type\": \"autocomplete\"}]},\"type\": \"document\"},\"bedrooms\": {\"indexIntegers\": false,\"representation\": \"int64\",\"type\": \"number\"}}}\""
   }
 }

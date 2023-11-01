@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -27,7 +26,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.UserID}
@@ -179,18 +177,4 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func isEnabled(certificate *admin.UserSecurity) bool {
 	return certificate != nil && certificate.CustomerX509 != nil && util.IsStringPresent(certificate.CustomerX509.Cas)
-}
-
-func ReadUserX509Certificate(client *mongodbatlas.Client, currentModel *Model) (*Model, error) {
-	projectID := *currentModel.ProjectId
-
-	certificate, _, err := client.X509AuthDBUsers.GetCurrentX509Conf(context.Background(), projectID)
-	if err != nil {
-		return nil, fmt.Errorf("error reading MongoDB X509 Authentication for DB Users(%s) in the project(%s): %s", *currentModel.UserName, projectID, err)
-	} else if certificate != nil {
-		currentModel.CustomerX509 = &CustomerX509{
-			Cas: &certificate.Cas,
-		}
-	}
-	return currentModel, nil
 }

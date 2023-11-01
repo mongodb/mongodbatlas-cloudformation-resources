@@ -22,7 +22,7 @@ import (
 	"testing"
 
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 func GetRandNum() *big.Int {
@@ -79,7 +79,7 @@ func runShScript(t *testing.T, path string) ([]byte, error) {
 	return resp, err
 }
 
-func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *mongodbatlas.Client) {
+func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin.APIClient) {
 	t.Helper()
 
 	t.Log("Setting clients")

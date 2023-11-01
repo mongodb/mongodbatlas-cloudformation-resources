@@ -212,7 +212,7 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 
 	c := Config{BaseURL: prof.BaseURL}
 	// New SDK Client
-	sdkV2Client, err := c.newSDKV2Client(client)
+	sdkV2Client, err := c.NewSDKV2Client(client)
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -254,7 +254,7 @@ func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileName
 
 	c := Config{BaseURL: prof.BaseURL}
 	// New SDK Client
-	sdkV2Client, err := c.newSDKV2Client(client)
+	sdkV2Client, err := c.NewSDKV2Client(client)
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -270,7 +270,7 @@ func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileName
 	return clients, nil
 }
 
-func (c *Config) newSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
+func (c *Config) NewSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
 	opts := []atlasSDK.ClientModifier{
 		atlasSDK.UseHTTPClient(client),
 		atlasSDK.UseUserAgent(userAgent),

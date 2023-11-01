@@ -18,6 +18,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -27,7 +29,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
-	"net/http"
 )
 
 func setup() {
@@ -203,15 +204,6 @@ func newMappingsFields(fields *string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return data, nil
-}
-
-func parseFieldType(jsonStr string) (interface{}, error) {
-	var result interface{}
-	err := json.Unmarshal([]byte(jsonStr), &result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
 }
 
 func status(currentModel *Model) handler.Status {

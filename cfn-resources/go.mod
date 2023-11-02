@@ -2,6 +2,8 @@ module github.com/mongodb/mongodbatlas-cloudformation-resources
 
 go 1.21
 
+toolchain go1.21.3
+
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
 	github.com/aws/aws-sdk-go v1.45.24

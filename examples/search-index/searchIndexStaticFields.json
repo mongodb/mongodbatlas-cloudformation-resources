@@ -53,9 +53,7 @@
         },
         "Mappings":{
           "Dynamic":false,
-          "Fields":[
-            "property_type:[{\"type\":\"autocomplete\"},{\"type\":\"string\"}]"
-          ]
+          "Fields": "{\"property_type\": {\"type\": \"string\"}}"
         },
         "SearchAnalyzer":"lucene.standard"
       }

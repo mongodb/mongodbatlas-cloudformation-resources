@@ -64,8 +64,7 @@
           "Ref": "ProjectId"
         },
         "Mappings": {
-          "Dynamic": false,
-          "Fields": "{\"address\": {\"fields\": {\"street\": [{\"norms\": \"omit\",\"store\": false,\"type: \"string\"},{\"type\": \"autocomplete\"}]},\"type\": \"document\"},\"bedrooms\": {\"indexIntegers\": false,\"representation\": \"int64\",\"type\": \"number\"}}}"
+          "Dynamic": true
         }
       }
     }

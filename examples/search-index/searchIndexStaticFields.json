@@ -55,6 +55,20 @@
           "Dynamic":false,
           "Fields": "{\"property_type\": {\"type\": \"string\"}}"
         },
+        "Analyzers": [
+          {
+            "CharFilters": [
+              "{\"type\": \"icuNormalize\"}"
+            ],
+            "Name": "test",
+            "TokenFilters": [
+              "{\"type\": \"asciiFolding\"}"
+            ],
+            "Tokenizer": {
+              "Type": "standard"
+            }
+          }
+        ],
         "SearchAnalyzer":"lucene.standard"
       }
     }

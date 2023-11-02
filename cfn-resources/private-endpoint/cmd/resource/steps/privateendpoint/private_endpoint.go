@@ -24,8 +24,9 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 const (
@@ -134,20 +135,20 @@ func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackCo
 	return callBackMap, err
 }
 
-func Create(mongodbClient *mongodbatlas.Client, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
+func Create(mongodbClient *util.MongoDBClient, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
 	for _, endpoint := range privateEndpointInput {
-		interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
-			ID: endpoint.InterfaceEndpointID,
+		interfaceEndpointRequest := &admin.CreateEndpointRequest{
+			Id: &endpoint.InterfaceEndpointID,
 		}
 
-		_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
+		_, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(),
 			groupID,
 			ProviderName,
 			endpointServiceID,
-			interfaceEndpointRequest)
+			interfaceEndpointRequest).Execute()
 		if err != nil {
-			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-				response.Response)
+			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
+				response)
 		}
 	}
 
@@ -158,48 +159,46 @@ func Create(mongodbClient *mongodbatlas.Client, groupID string, privateEndpointI
 
 	callBackMap, err := GetCallback(privateEndpointInput, endpointServiceID, constants.CreatingPrivateEndpoint)
 	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
+		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error Unmarshalling callback map : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest)
 	}
 
-	return progress_events.GetInProgressProgressEvent("Adding private endpoint", callBackMap, nil, 20)
+	return progressevent.GetInProgressProgressEvent("Adding private endpoint", callBackMap, nil, 20)
 }
 
-func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID string, req handler.Request) (*ValidationResponse, *handler.ProgressEvent) {
+func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID string, req handler.Request) (*ValidationResponse, *handler.ProgressEvent) {
 	callBackContext := privateEndpointCreationCallBackContext{}
 
 	err := callBackContext.FillStruct(req.CallbackContext)
 	if err != nil {
-		pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
+		pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
 		return nil, &pe
 	}
 
 	completed := true
 	ids := make([]string, len(callBackContext.PrivateEndpoints))
-
 	for i := range callBackContext.PrivateEndpoints {
 		ids[i] = callBackContext.PrivateEndpoints[i].InterfaceEndpointID
 		if callBackContext.PrivateEndpoints[i].Status != StatusAvailable {
-			privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
+			privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(),
 				groupID,
 				ProviderName,
-				callBackContext.ID,
-				callBackContext.PrivateEndpoints[i].InterfaceEndpointID)
+				callBackContext.PrivateEndpoints[i].InterfaceEndpointID,
+				callBackContext.ID).Execute()
 			if err != nil {
-				pe := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
-					response.Response)
+				pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error validating private endpoint create : %s", err.Error()),
+					response)
 				return nil, &pe
 			}
+			callBackContext.PrivateEndpoints[i].Status = *privateEndpointResponse.ConnectionStatus
 
-			callBackContext.PrivateEndpoints[i].Status = privateEndpointResponse.AWSConnectionStatus
-
-			switch privateEndpointResponse.AWSConnectionStatus {
+			switch *privateEndpointResponse.ConnectionStatus {
 			case StatusPendingAcceptance, StatusPending:
 				completed = false
 			case StatusAvailable:
 				continue
 			default:
-				pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Resource is in status : %s", privateEndpointResponse.AWSConnectionStatus),
+				pe := progressevent.GetFailedEventByCode(fmt.Sprintf("Resource is in status : %s", *privateEndpointResponse.Status),
 					cloudformation.HandlerErrorCodeInternalFailure)
 				return nil, &pe
 			}
@@ -223,7 +222,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID stri
 		return &vr, nil
 	}
 
-	pe := progress_events.GetInProgressProgressEvent("Adding private endpoint in progress",
+	pe := progressevent.GetInProgressProgressEvent("Adding private endpoint in progress",
 		req.CallbackContext, nil, 20)
 	return nil, &pe
 }
@@ -232,17 +231,17 @@ func (i AtlasPrivateEndpointInput) ToString() string {
 	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetIDs)
 }
 
-func Delete(mongodbClient *mongodbatlas.Client, groupID string, endpointServiceID string, interfaceEndpoints []string) *handler.ProgressEvent {
+func Delete(mongodbClient *util.MongoDBClient, groupID string, endpointServiceID string, interfaceEndpoints []string) *handler.ProgressEvent {
 	for _, intEndpoints := range interfaceEndpoints {
-		response, err := mongodbClient.PrivateEndpoints.DeleteOnePrivateEndpoint(context.Background(),
+		_, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(),
 			groupID,
 			ProviderName,
-			endpointServiceID,
-			intEndpoints)
+			intEndpoints,
+			endpointServiceID).Execute()
 		if err != nil {
-			pe := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting private endpoint : %s",
+			pe := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting private endpoint : %s",
 				err.Error()),
-				response.Response)
+				response)
 			return &pe
 		}
 	}

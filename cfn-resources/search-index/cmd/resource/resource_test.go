@@ -15,6 +15,8 @@
 package resource
 
 import (
+	"github.com/aws/smithy-go/ptr"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 	"reflect"
 	"testing"
 )
@@ -67,5 +69,42 @@ func TestConvertToAnySliceInvalidJSON(t *testing.T) {
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Result does not match the expected value. Got: %v, Expected: %v", result, expected)
+	}
+}
+
+func TestNewTokenizerModelWithNilInput(t *testing.T) {
+	var tokenizer *ApiAtlasFTSAnalyzersTokenizer
+
+	result := newTokenizerModel(tokenizer)
+
+	expected := admin.ApiAtlasFTSAnalyzersTokenizer{}
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected: %v, but got: %v", expected, result)
+	}
+}
+
+func TestNewTokenizerModelWithPartialParameters(t *testing.T) {
+	tokenizer := &ApiAtlasFTSAnalyzersTokenizer{
+		MaxGram:        nil,
+		MinGram:        nil,
+		Type:           ptr.String("standard"),
+		Group:          ptr.Int(1),
+		Pattern:        nil,
+		MaxTokenLength: ptr.Int(10),
+	}
+
+	result := newTokenizerModel(tokenizer)
+
+	expected := admin.ApiAtlasFTSAnalyzersTokenizer{
+		MaxGram:        nil,
+		MinGram:        nil,
+		Type:           ptr.String("standard"),
+		Group:          ptr.Int(1),
+		Pattern:        nil,
+		MaxTokenLength: ptr.Int(10),
+	}
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected: %v, but got: %v", expected, result)
 	}
 }

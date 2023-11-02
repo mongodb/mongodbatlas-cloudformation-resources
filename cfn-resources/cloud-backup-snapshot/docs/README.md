@@ -13,7 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::CloudBackupSnapshot",
     "Properties" : {
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
-        "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
+        "<a href="#instancetype" title="InstanceType">InstanceType</a>" : <i>String</i>,
         "<a href="#instancename" title="InstanceName">InstanceName</a>" : <i>String</i>,
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#frequencytype" title="FrequencyType">FrequencyType</a>" : <i>String</i>,
@@ -37,7 +37,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::CloudBackupSnapshot
 Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
-    <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
+    <a href="#instancetype" title="InstanceType">InstanceType</a>: <i>String</i>
     <a href="#instancename" title="InstanceName">InstanceName</a>: <i>String</i>
     <a href="#description" title="Description">Description</a>: <i>String</i>
     <a href="#frequencytype" title="FrequencyType">FrequencyType</a>: <i>String</i>
@@ -68,35 +68,27 @@ _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
-#### ClusterName
+#### InstanceType
 
-Human-readable label that identifies the cluster.
+Type of instance specified on the Instance Name serverless or cluster
 
 _Required_: Yes
 
 _Type_: String
 
-_Minimum Length_: <code>1</code>
-
-_Maximum Length_: <code>64</code>
+_Allowed Values_: <code>serverless</code> | <code>cluster</code>
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### InstanceName
 
-Human-readable label that identifies the serverless instance.
+The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore snapshot.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
-_Minimum Length_: <code>1</code>
-
-_Maximum Length_: <code>64</code>
-
-_Pattern_: <code>^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\w]{0,42}))$</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Description
 

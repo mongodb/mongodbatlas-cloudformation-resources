@@ -1,6 +1,7 @@
 {
   "ProjectId": "",
-  "ClusterName": "",
+  "InstanceType": "cluster",
+  "InstanceName": "",
   "Description": "snapshotA through cloud formation template",
   "RetentionInDays": "5",
   "Profile": "default"

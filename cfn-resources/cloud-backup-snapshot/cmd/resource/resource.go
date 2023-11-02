@@ -29,9 +29,13 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-var CreateRequiredFields = []string{constants.ClusterName, constants.ProjectID}
-var DeleteRequiredFields = []string{constants.ClusterName, constants.ProjectID, constants.SnapshotID}
-var ReadRequiredFields = []string{constants.ProjectID, constants.SnapshotID}
+const (
+	clusterInstanceType = "cluster"
+)
+
+var CreateRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.InstanceType}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.SnapshotID, constants.InstanceName, constants.InstanceType}
+var ReadRequiredFields = []string{constants.ProjectID, constants.SnapshotID, constants.InstanceName, constants.InstanceType}
 var ListRequiredFields = []string{constants.ProjectID}
 
 func setup() {
@@ -42,9 +46,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(CreateRequiredFields, currentModel); err != nil {
-		return *err, nil
-	}
-	if err := clusterOrInstance(currentModel); err != nil {
 		return *err, nil
 	}
 
@@ -59,12 +60,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, "completed")
 	}
 
-	if util.IsStringPresent(currentModel.ClusterName) {
+	if *currentModel.InstanceType == clusterInstanceType {
 		params := admin.DiskBackupOnDemandSnapshotRequest{
 			Description:     currentModel.Description,
 			RetentionInDays: currentModel.RetentionInDays,
 		}
-		snapshot, resp, err := client.AtlasV2.CloudBackupsApi.TakeSnapshot(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
+		snapshot, resp, err := client.AtlasV2.CloudBackupsApi.TakeSnapshot(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, &params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -82,16 +83,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			},
 		}, nil
 	}
-	return handler.ProgressEvent{}, errors.New("not implemented: Create for serverless snapshots")
+	return handler.ProgressEvent{}, errors.New("not implemented: Create for serverless snapshots, import an existing serverless snapshot instead")
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if err := validator.ValidateModel(ReadRequiredFields, currentModel); err != nil {
-		return *err, nil
-	}
-	if err := clusterOrInstance(currentModel); err != nil {
 		return *err, nil
 	}
 
@@ -104,8 +102,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	if util.IsStringPresent(currentModel.ClusterName) {
-		server, resp, err := client.AtlasV2.CloudBackupsApi.GetReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.SnapshotId).Execute()
+	if *currentModel.InstanceType == clusterInstanceType {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.GetReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -145,8 +143,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	if util.IsStringPresent(currentModel.ClusterName) {
-		_, resp, err := client.AtlasV2.CloudBackupsApi.DeleteReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.SnapshotId).Execute()
+	if *currentModel.InstanceType == clusterInstanceType {
+		_, resp, err := client.AtlasV2.CloudBackupsApi.DeleteReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -164,9 +162,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err := validator.ValidateModel(ListRequiredFields, currentModel); err != nil {
 		return *err, nil
 	}
-	if err := clusterOrInstance(currentModel); err != nil {
-		return *err, nil
-	}
 
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
@@ -175,16 +170,17 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	models := make([]interface{}, 0)
 
-	if util.IsStringPresent(currentModel.ClusterName) {
-		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	if *currentModel.InstanceType == clusterInstanceType {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		for i := range server.Results {
 			model := Model{
-				ProjectId:   currentModel.ProjectId,
-				Profile:     currentModel.Profile,
-				ClusterName: currentModel.ClusterName,
+				ProjectId:    currentModel.ProjectId,
+				Profile:      currentModel.Profile,
+				InstanceName: currentModel.InstanceName,
+				InstanceType: currentModel.InstanceType,
 			}
 			model.updateModelServer(&server.Results[i])
 			models = append(models, &model)
@@ -199,6 +195,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				ProjectId:    currentModel.ProjectId,
 				Profile:      currentModel.Profile,
 				InstanceName: currentModel.InstanceName,
+				InstanceType: currentModel.InstanceType,
 			}
 			model.updateModelServerless(&serverless.Results[i])
 			models = append(models, &model)
@@ -213,8 +210,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEvent {
-	if util.IsStringPresent(model.ClusterName) {
-		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *model.ProjectId, *model.ClusterName).Execute()
+	if *model.InstanceType == clusterInstanceType {
+		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -246,7 +243,7 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	snapshotID := *currentModel.SnapshotId
 	projectID := *currentModel.ProjectId
-	clusterName := *currentModel.ClusterName
+	clusterName := *currentModel.InstanceName
 	snapshot, _, err := client.AtlasV2.CloudBackupsApi.GetReplicaSetBackup(context.Background(), projectID, clusterName, snapshotID).Execute()
 	if err != nil {
 		return handler.ProgressEvent{}, err
@@ -296,16 +293,4 @@ func (m *Model) updateModelServerless(snapShot *admin.ServerlessBackupSnapshot) 
 	m.MongodVersion = snapShot.MongodVersion
 	m.StorageSizeBytes = util.IntPtrToStrPtr(util.Int64PtrToIntPtr(snapShot.StorageSizeBytes))
 	m.CloudProvider = aws.String(constants.AWS)
-}
-
-func clusterOrInstance(model *Model) *handler.ProgressEvent {
-	is1, is2 := util.IsStringPresent(model.ClusterName), util.IsStringPresent(model.InstanceName)
-	if is1 && is2 || (!is1 && !is2) {
-		return &handler.ProgressEvent{
-			OperationStatus: handler.Failed,
-			Message:         "Cluster name or instance name must be set, and not both",
-			ResourceModel:   model,
-		}
-	}
-	return nil
 }

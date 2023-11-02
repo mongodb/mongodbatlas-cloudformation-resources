@@ -6,7 +6,7 @@ package resource
 type Model struct {
 	Profile          *string                                              `json:",omitempty"`
 	CloudProvider    *string                                              `json:",omitempty"`
-	ClusterName      *string                                              `json:",omitempty"`
+	InstanceType     *string                                              `json:",omitempty"`
 	InstanceName     *string                                              `json:",omitempty"`
 	CreatedAt        *string                                              `json:",omitempty"`
 	Description      *string                                              `json:",omitempty"`

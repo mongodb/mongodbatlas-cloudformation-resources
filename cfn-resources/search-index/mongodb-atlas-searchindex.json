@@ -3,6 +3,37 @@
   "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/search-index",
   "additionalProperties": false,
   "definitions": {
+    "ApiAtlasFTSAnalyzersTokenizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Tokenizer that you want to use to create tokens. Tokens determine how Atlas Search splits up text into discrete chunks for indexing.",
+      "properties": {
+        "MaxGram": {
+          "type": "integer",
+          "description": "Characters to include in the longest token that Atlas Search creates."
+        },
+        "MinGram": {
+          "type": "integer",
+          "description": "Characters to include in the shortest token that Atlas Search creates."
+        },
+        "Type": {
+          "type": "string",
+          "description": "Human-readable label that identifies this tokenizer type."
+        },
+        "Group": {
+          "type": "integer",
+          "description": "Index of the character group within the matching expression to extract into tokens. Use `0` to extract all character groups."
+        },
+        "Pattern": {
+          "type": "string",
+          "description": "Regular expression to match against."
+        },
+        "MaxTokenLength": {
+          "type": "integer",
+          "description": "Maximum number of characters in a single token. Tokens greater than this length are split at this length into multiple tokens."
+        }
+      }
+    },
     "ApiAtlasFTSAnalyzersViewManual": {
       "type": "object",
       "properties": {
@@ -11,7 +42,7 @@
           "insertionOrder": false,
           "description": "Filters that examine text one character at a time and perform filtering operations.",
           "items": {
-            "type": "object"
+            "type": "string"
           }
         },
         "Name": {
@@ -22,9 +53,10 @@
           "type": "array",
           "insertionOrder": false,
           "description": "Filter that performs operations such as:\n\n- Stemming, which reduces related words, such as \"talking\", \"talked\", and \"talks\" to their root word \"talk\".\n\n- Redaction, the removal of sensitive information from public documents.",
-          "items": {}
+          "items": {"type": "string"}
         },
         "Tokenizer": {
+          "$ref": "#/definitions/ApiAtlasFTSAnalyzersTokenizer",
           "type": "object",
           "description": "Tokenizer that you want to use to create tokens. Tokens determine how Atlas Search splits up text into discrete chunks for indexing."
         }

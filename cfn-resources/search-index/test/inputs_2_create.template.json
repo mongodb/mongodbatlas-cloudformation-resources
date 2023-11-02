@@ -6,6 +6,16 @@
   "Name": "abc-123",
   "ProjectId": "$PROJECT_ID",
   "SearchAnalyzer": "lucene.standard",
+  "Analyzers": [
+    {
+      "CharFilters": ["{\"type\": \"icuNormalize\"}"],
+      "Name": "test",
+      "TokenFilters": ["{\"type\": \"asciiFolding\"}"],
+      "Tokenizer": {
+        "Type": "standard"
+      }
+    }
+  ],
   "Mappings": {
     "Dynamic": "false",
     "Fields": "{\"address\":{\"fields\":{\"street\":[{\"norms\":\"omit\",\"store\":false,\"type\":\"string\"},{\"type\":\"autocomplete\"}]},\"type\":\"document\"},\"bedrooms\":{\"indexIntegers\":false,\"representation\":\"int64\",\"type\":\"number\"}}"

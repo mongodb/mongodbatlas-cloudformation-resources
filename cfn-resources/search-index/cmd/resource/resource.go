@@ -118,10 +118,20 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 	}
 	analyzers := make([]admin.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
 	for i := range currentModel.Analyzers {
+		charFilters, err := convertToAnySlice(currentModel.Analyzers[i].CharFilters)
+		if err != nil {
+			return nil, err
+		}
+
+		tokenFilters, err := convertToAnySlice(currentModel.Analyzers[i].TokenFilters)
+		if err != nil {
+			return nil, err
+		}
+
 		s := admin.ApiAtlasFTSAnalyzers{
-			CharFilters:  convertToAnySlice(currentModel.Analyzers[i].CharFilters),
+			CharFilters:  charFilters,
 			Name:         *currentModel.Analyzers[i].Name,
-			TokenFilters: convertToAnySlice(currentModel.Analyzers[i].TokenFilters),
+			TokenFilters: tokenFilters,
 			Tokenizer:    newTokenizerModel(currentModel.Analyzers[i].Tokenizer),
 		}
 		analyzers = append(analyzers, s)
@@ -148,35 +158,33 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 }
 
 // convertToAnySlice function converts a slice of map[string]interface{} to a slice of interface{}
-func convertToAnySlice(input []map[string]interface{}) []interface{} {
-	result := make([]interface{}, len(input))
-	for i, v := range input {
-		result[i] = v
+func convertToAnySlice(input []string) ([]interface{}, error) {
+	var result []interface{}
+
+	for _, jsonStr := range input {
+		var data interface{}
+		err := json.Unmarshal([]byte(jsonStr), &data)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, data)
 	}
-	return result
+
+	return result, nil
 }
 
-func newTokenizerModel(tokenizer map[string]interface{}) admin.ApiAtlasFTSAnalyzersTokenizer {
-	result := admin.ApiAtlasFTSAnalyzersTokenizer{}
-	if v, ok := tokenizer["maxGram"]; ok {
-		result.MaxGram = admin.PtrInt(cast.ToInt(v))
+func newTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasFTSAnalyzersTokenizer {
+	if tokenizer == nil {
+		return admin.ApiAtlasFTSAnalyzersTokenizer{}
 	}
-	if v, ok := tokenizer["minGram"]; ok {
-		result.MinGram = admin.PtrInt(cast.ToInt(v))
+	return admin.ApiAtlasFTSAnalyzersTokenizer{
+		MaxGram:        tokenizer.MaxGram,
+		MinGram:        tokenizer.MinGram,
+		Type:           tokenizer.Type,
+		Group:          tokenizer.Group,
+		Pattern:        tokenizer.Pattern,
+		MaxTokenLength: tokenizer.MaxTokenLength,
 	}
-	if v, ok := tokenizer["type"]; ok {
-		result.Type = admin.PtrString(cast.ToString(v))
-	}
-	if v, ok := tokenizer["group"]; ok {
-		result.Group = admin.PtrInt(cast.ToInt(v))
-	}
-	if v, ok := tokenizer["pattern"]; ok {
-		result.Pattern = admin.PtrString(cast.ToString(v))
-	}
-	if v, ok := tokenizer["maxTokenLength"]; ok {
-		result.MaxTokenLength = admin.PtrInt(cast.ToInt(v))
-	}
-	return result
 }
 
 func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
@@ -184,7 +192,7 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 		return nil, nil
 	}
 
-	sec, err := newMappingsFields(currentModel.Mappings.Fields)
+	sec, err := convertStringToInterface(currentModel.Mappings.Fields)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +202,7 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 	}, nil
 }
 
-func newMappingsFields(fields *string) (map[string]interface{}, error) {
+func convertStringToInterface(fields *string) (map[string]interface{}, error) {
 	if fields == nil {
 		return nil, nil
 	}

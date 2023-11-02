@@ -65,7 +65,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Type of instance specified on the Instance Name serverless or cluster
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -77,7 +77,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 The instance name of the Serverless/Cluster whose snapshot you want to restore or you want to retrieve restore jobs.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -87,7 +87,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Type of restore job to create.The value can be any one of download,automated or point_in_time 
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -99,7 +99,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique identifier of the source snapshot ID of the restore job.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

@@ -15,10 +15,11 @@
 package resource
 
 import (
-	"github.com/aws/smithy-go/ptr"
-	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 	"reflect"
 	"testing"
+
+	"github.com/aws/smithy-go/ptr"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 func TestConvertToAnySliceEmptyList(t *testing.T) {

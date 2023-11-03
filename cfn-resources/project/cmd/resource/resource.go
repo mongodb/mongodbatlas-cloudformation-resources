@@ -211,9 +211,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		projectID = *currentModel.Id
 	}
 
-	event, _, err = getProject(atlasV2, currentModel)
+	event, _, err = getProject(atlasV2, &Model{Id: currentModel.Id})
 	if err != nil {
 		return event, nil
+	}
+
+	// Update Project
+	if currentModel.Name != nil {
+		event, _, err = updateProject(atlasV2, currentModel)
+		if err != nil {
+			return event, err
+		}
 	}
 
 	if currentModel.ProjectTeams != nil {
@@ -371,16 +379,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Read project
 func getProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	var project *admin.Group
-	if util.IsStringPresent(currentModel.Name) {
-		event, project, err = getProjectByName(currentModel.Name, client)
-		if err != nil {
-			return event, nil, err
-		}
-	} else {
-		event, project, err = getProjectByID(currentModel.Id, client)
-		if err != nil {
-			return event, nil, err
-		}
+	event, project, err = getProjectByID(currentModel.Id, client)
+	if err != nil {
+		return event, nil, err
 	}
 	formattedCreated := util.TimeToString(project.Created)
 
@@ -408,12 +409,12 @@ func getProjectWithSettings(atlasV2 *admin.APIClient, currentModel *Model) (even
 	return handler.ProgressEvent{}, model, nil
 }
 
-func getProjectByName(name *string, client *admin.APIClient) (event handler.ProgressEvent, model *admin.Group, err error) {
-	project, res, err := client.ProjectsApi.GetProjectByName(context.Background(), *name).Execute()
+func updateProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *admin.Group, err error) {
+	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &admin.GroupName{Name: currentModel.Name}).Execute()
 	if err != nil {
 		if res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(
-				"Unauthorized Error: Unable to retrieve Project by name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
+				"Unauthorized Error: Unable to update project name. Please verify that the API keys provided in the profile have sufficient privileges to access the project.",
 				cloudformation.HandlerErrorCodeNotFound), nil, err
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(),

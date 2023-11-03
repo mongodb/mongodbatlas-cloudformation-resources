@@ -49,7 +49,7 @@ jq --arg org "${org_id}" \
 	"test/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg org "${org_id}" \
-	--arg name "${project_name}" \
+	--arg name "${project_name}-update" \
 	--arg profile "${profile}" \
 	--arg key_id "$api_key_id" \
 	--arg team_id "$team_id" \

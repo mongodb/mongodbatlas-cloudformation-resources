@@ -55,7 +55,7 @@ jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg org "$MONGODB_ATLAS_ORG_ID" \
-	--arg name "${name}" \
+	--arg name "${name}-update" \
 	--arg key_id "$api_key_id" \
 	--arg team_id "$team_id" \
 	'.OrgId?|=$org | .Name?|=$name | .ProjectApiKeys[0].Key?|=$key_id | .ProjectTeams[0].TeamId?|=$team_id' \

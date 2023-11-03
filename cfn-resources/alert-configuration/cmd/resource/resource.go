@@ -21,8 +21,6 @@ import (
 	"reflect"
 	"strings"
 
-	"go.mongodb.org/atlas/mongodbatlas"
-
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -200,8 +198,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
-	if reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.Bool(true)}) ||
-		reflect.DeepEqual(alertReq, &mongodbatlas.AlertConfiguration{Enabled: aws.Bool(false)}) {
+	if reflect.DeepEqual(alertReq, &atlasSDK.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
+		reflect.DeepEqual(alertReq, &atlasSDK.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
 		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfiguration(context.Background(), projectID, id, &atlasSDK.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
 	} else {
 		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfiguration(context.Background(), projectID, id, alertReq).Execute()

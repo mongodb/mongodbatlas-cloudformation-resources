@@ -51,7 +51,7 @@ rm -rf inputs
 mkdir inputs
 jq --arg group_id "$projectId" \
 	--arg clusterName "$clusterName" \
-	'.ClusterName?|=$clusterName |.ProjectId?|=$group_id' \
+	'.InstanceName?|=$clusterName |.ProjectId?|=$group_id' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 ls -l inputs

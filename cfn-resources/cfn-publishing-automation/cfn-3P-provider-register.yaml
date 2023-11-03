@@ -83,7 +83,6 @@ mainSteps:
                 golang: 1.20
               commands:
                 - pip install pre-commit
-                - yum update -y
                 - yum install docker -y
             build:
               commands:

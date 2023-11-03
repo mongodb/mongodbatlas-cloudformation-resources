@@ -27,12 +27,12 @@ import (
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 type LocalTestContext struct {
 	cfnClient      *cfn.Client
-	atlasClient    *mongodbatlas.Client
+	atlasClient    *admin.APIClient
 	projectTmplObj TestProject
 	resourceCtx    utility.ResourceContext
 
@@ -107,14 +107,14 @@ func testCreateStack(t *testing.T, c *LocalTestContext) {
 	output := utility.CreateStack(t, c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
-	project, getProjectResponse, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	project, getProjectResponse, err := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
 
-	teamsAssigned, _, _ := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
+	teamsAssigned, _, _ := c.atlasClient.TeamsApi.ListProjectTeams(ctx.Background(), *project.Id).Execute()
 	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
+	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.Results[0].TeamId)
 	a.Equal(200, getProjectResponse.StatusCode)
 }
 
@@ -128,14 +128,14 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	output := utility.UpdateStack(t, c.cfnClient, stackName, c.template)
 	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
 
-	project, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	project, _, err := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
 
-	teamsAssigned, _, err := c.atlasClient.Projects.GetProjectTeamsAssigned(ctx.Background(), project.ID)
+	teamsAssigned, _, err := c.atlasClient.TeamsApi.ListProjectTeams(ctx.Background(), *project.Id).Execute()
 	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamID, teamsAssigned.Results[0].TeamID)
+	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.Results[0].TeamId)
 	a.Equal(project.Name, c.projectTmplObj.Name)
 }
 
@@ -143,8 +143,7 @@ func testDeleteStack(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 
 	utility.DeleteStack(t, c.cfnClient, stackName)
-
-	_, resp, _ := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	_, resp, _ := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 
 	a := assert.New(t)
 	a.Equal(resp.StatusCode, 404)
@@ -164,9 +163,9 @@ func cleanupResources(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
 
-	_, _, err := c.atlasClient.Projects.GetOneProject(ctx.Background(), c.projectTmplObj.ProjectID)
+	_, _, err := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 	if err == nil {
-		_, err = c.atlasClient.Projects.Delete(ctx.Background(), c.projectTmplObj.ProjectID)
+		_, _, err = c.atlasClient.ProjectsApi.DeleteProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 		if err != nil {
 			t.Logf("Atlas Project could not be deleted during cleanup: %v", err)
 		} else {
@@ -178,7 +177,7 @@ func cleanupResources(t *testing.T, c *LocalTestContext) {
 func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
 	t.Helper()
 	t.Log("Cleaning up prerequisites")
-	_, err := c.atlasClient.Teams.RemoveTeamFromOrganization(ctx.Background(), orgID, c.projectTmplObj.TeamID)
+	_, _, err := c.atlasClient.TeamsApi.DeleteTeam(ctx.Background(), orgID, c.projectTmplObj.TeamID).Execute()
 	if err != nil {
 		t.Logf("Atlas Team could not be deleted during cleanup: %s\n", err.Error())
 	}
@@ -198,7 +197,7 @@ func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 		Name:             testProjectName,
 		OrgID:            orgID,
 		Profile:          profile,
-		TeamID:           team.ID,
+		TeamID:           *team.Id,
 		ResourceTypeName: os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
 	}
 

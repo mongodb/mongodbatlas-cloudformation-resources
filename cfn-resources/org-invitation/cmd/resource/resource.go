@@ -171,14 +171,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, peErr := util.NewMongoDBClient(req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	res, err := client.Organizations.DeleteInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id)
+	_, res, err := atlasV2.OrganizationsApi.DeleteOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res.Response), nil
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 	_, _ = log.Debugf("deleted invitation with Id :%s", *currentModel.Id)
 

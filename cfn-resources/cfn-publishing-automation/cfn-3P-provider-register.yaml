@@ -80,7 +80,7 @@ mainSteps:
             install:
               runtime-versions:
                 python: 3.11
-                golang: 1.20
+                golang: 1.21
               commands:
                 - pip install pre-commit
                 - yum install docker -y

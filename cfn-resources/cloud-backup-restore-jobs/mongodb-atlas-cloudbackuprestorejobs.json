@@ -141,7 +141,11 @@
   },
   "additionalProperties": false,
   "required": [
-    "ProjectId"
+    "ProjectId",
+    "InstanceName",
+    "InstanceType",
+    "SnapshotId",
+    "DeliveryType"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",

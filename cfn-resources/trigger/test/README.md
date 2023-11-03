@@ -20,38 +20,127 @@ All these resources need to be manually provided. Follow the steps below.
 ## Manual QA:
 
 ### Prerequisite steps:
-1. Go to your project/create a new project in Atlas. Note your PROJECT_ID from URL
-2. Create a Cluster.
-3. Create a database inside your cluster and a collection (you can load sample data for testing)
-4. Create an App in the project:
- - Click on ‘App Services’ tab -> click button ‘Create a new App’
- - Follow UI prompts to create app
- - Note your APP_ID from the URL (this is the identifier after ‘/apps/<id>’)
-5) If testing with ‘Database Trigger’ type, a serviceId is also required. This can be found in Atlas UI -> App Services -> click on ‘Linked Data Sources’ in the left menu under ‘Manage’. Note SERVICE_ID from URL
-6) After creating above resources you can also get above IDs from CLI by following:
-```
-Get an access token for your account (required by realm client):
+
+This guide will help you set up your MongoDB Realm configuration using cURL requests.
+You'll define properties and create essential components such as a project, application, service, and function.
+
+Required Properties:
+PROJECT_ID: Project Identifier.
+DB_NAME: Database Name.
+COLLECTION_NAME: Collection Name.
+APP_ID: Application Identifier.
+SERVICE_ID: Service Identifier.
+FUNC_NAME: Function Name.
+FUNC_ID: Function Identifier.
+
+
+### Step 1: Create a Project and Load Test Data
+Start by creating a project and setting up a cluster to host your test data (load sample data).
+Use the appropriate credentials to configure the necessary settings. this can be done with the Atlas UI
+once this step is completed we should have the:
+
+PROJECT_ID: We can get the project ID within the Atlas UI.
+DB_NAME: Database Name for this example we are using the sample data database "sample_analytics".
+COLLECTION_NAME: Collection Name, for this example we are using the sample collection "accounts".
+
+### Step 2: Login
+
+we are going to use the application service provided by atlas, in order to use this service we require a token we can get it
+with this CURL:
+``` bash
 curl --request POST \
+  --url https://realm.mongodb.com/api/admin/v3.0/auth/providers/mongodb-cloud/login \
+  --header 'Accept: application json' \
   --header 'Content-Type: application/json' \
-  --header 'Accept: application/json' \
-  --data '{"username": "<AtlasPublicKey>", "apiKey": "<AtlasPrivateKey>"}' \
-  https://realm.mongodb.com/api/admin/v3.0/auth/providers/mongodb-cloud/login
-
-Retrieve AppId in your project:
-curl \                                                                                                                 16.18.0 bazel 5.4.0
-  --header 'Content-Type: application/json' \
-  --header 'Accept: application/json' \
-  --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-  https://realm.mongodb.com/api/admin/v3.0/groups/<ProjectId>/apps
-
-Retrieve serviceId:
-  curl \
-  --header 'Content-Type: application/json' \
-  --header 'Accept: application/json' \
-  --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-https://realm.mongodb.com/api/admin/v3.0/groups/<ProjectId>/apps/<AppId>/services
-
+  --data '{"username": {your pub key}, "apiKey": {your pvt key}}'
 ```
+this will throw an "access_token" we need to save this access token because we will need to use them in the next steps
+
+### Step 3: Create an app
+Before creating a new app we should validate if our project already contains an app:
+``` bash
+curl --request GET \
+--url https://realm.mongodb.com/api/admin/v3.0/groups/64bad960538ae76ec5c70050/apps \
+--header 'Authorization: Bearer {Your Access Token}'
+```
+if not we can create a new one with this Curl:
+``` bash
+curl --request POST \
+--url https://realm.mongodb.com/api/admin/v3.0/groups/650e24611a33225d7e9b90d5/apps \
+--header 'Authorization: Bearer {Your access token}' \
+--header 'Content-Type: application/json' \
+--data '{
+"name": "MyApp",
+"provider_region": "aws-us-east-1",
+"location": "US-VA",
+"deployment_model": "GLOBAL",
+"environment": "production",
+"data_source": {
+"name": "mongodb-atlas",
+"type": "mongodb-atlas",
+"config": {
+"clusterName": "TriggerCluster",
+"readPreference": "primary",
+"wireProtocolEnabled": true
+}
+}
+}'
+```
+
+once this step is done we can extract the Id of the app:
+
+APP_ID: Application Identifier.
+
+### Step 4: Create a Service
+to create a service we need to use the next curl:
+```
+curl --request POST \
+--url https://realm.mongodb.com/api/admin/v3.0/groups/64bad960538ae76ec5c70050/apps/64c00d91250e0ebe36dc6bc6/services \
+--header 'Authorization: Bearer HERE_THE_access_token' \
+--header 'Content-Type: application/json' \
+--data '{
+"name": "mongodb-atlas-test",
+"type": "mongodb-atlas",
+"config": {
+"clusterName": {ClusterName},
+"readPreference": "primary",
+"wireProtocolEnabled": true
+}'
+```
+we can extract the SERVICE_ID from this result
+
+### Step 5: Create a function
+
+finally we require a Function we can use the next curl call:
+```
+curl --request POST \
+--url https://realm.mongodb.com/api/admin/v3.0/groups/{groupId}/apps/{appid}/functions \
+--header 'Authorization: Bearer HERE_THE_access_token' \
+--header 'Content-Type: application/json' \
+--data '{
+"can_evaluate": { },
+"name": "testfunc",
+"private": true,
+"source": "exports = function(changeEvent) {console.log(\"New Document Inserted\")};",
+"run_as_system": true
+}'
+```
+
+once this is done we can get the function id: FUNC_ID: Function Identifier.
+
+at this point we should have all the properties required:
+
+export PROJECT_ID=
+export APP_ID=
+export DB_NAME=
+export COLLECTION_NAME=
+export FUNC_NAME=
+export FUNC_ID=
+export SERVICE_ID=
+
+for the publishing flow we can use the next environment variables:
+`'{"PROJECT_ID":"","DB_NAME":"","COLLECTION_NAME":"","FUNC_NAME":"","FUNC_ID":"","SERVICE_ID":"","APP_ID":""}'`
+
 ### Steps to test:
 1. Follow general [prerequisites](../../../TESTING.md#prerequisites) for testing CFN resources.
 2. Update trigger.json under cfn-resources/examples/

@@ -18,11 +18,10 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"runtime"
 
 	"github.com/mongodb-forks/digest"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
-	atlas "go.mongodb.org/atlas/mongodbatlas"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
 type AtlasEnvOptions struct {
@@ -32,29 +31,20 @@ type AtlasEnvOptions struct {
 	BaseURL    string
 }
 
-const (
-	cfnTool = "mongodbatlas-cloudformation-resources"
-)
-
-var (
-	toolName  = cfnTool
-	userAgent = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
-)
-
-func NewAtlasTeam(ctx context.Context, client *atlas.Client, name string, orgID string) (*atlas.Team, error) {
+func NewAtlasTeam(ctx context.Context, client *admin.APIClient, name string, orgID string) (*admin.Team, error) {
 	orgUser, _ := getExistingOrgUser(ctx, client, orgID)
-	teamRequest := atlas.Team{
+	teamRequest := admin.Team{
 		Name:      name,
 		Usernames: []string{orgUser.Username},
 	}
-	team, _, err := client.Teams.Create(ctx, orgID, &teamRequest)
+	team, _, err := client.TeamsApi.CreateTeam(ctx, orgID, &teamRequest).Execute()
 	if err != nil {
 		return nil, err
 	}
 	return team, nil
 }
 
-func NewMongoDBClient() (atlasClient *atlas.Client, err error) {
+func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 	atlasEnv, err := getAtlasEnv()
 	if err != nil {
 		return nil, err
@@ -62,17 +52,17 @@ func NewMongoDBClient() (atlasClient *atlas.Client, err error) {
 	t := digest.NewTransport(atlasEnv.PublicKey, atlasEnv.PrivateKey)
 	client, _ := t.Client()
 
-	opts := []atlas.ClientOpt{atlas.SetUserAgent(userAgent)}
+	c := util.Config{}
 	if baseURL := atlasEnv.BaseURL; baseURL != "" {
-		opts = append(opts, atlas.SetBaseURL(baseURL))
+		c.BaseURL = baseURL
 	}
-
-	mongodbClient, err := atlas.New(client, opts...)
+	// New SDK Client
+	sdkV2Client, err := c.NewSDKV2Client(client)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create Atlas client")
 	}
 
-	return mongodbClient, nil
+	return sdkV2Client, nil
 }
 
 func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {
@@ -89,8 +79,8 @@ func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {
 	return &AtlasEnvOptions{orgID, privateKey, publicKey, baseURL}, nil
 }
 
-func getExistingOrgUser(ctx context.Context, client *atlas.Client, orgID string) (*atlas.AtlasUser, error) {
-	usersResponse, _, err := client.Organizations.Users(ctx, orgID, &atlas.ListOptions{})
+func getExistingOrgUser(ctx context.Context, client *admin.APIClient, orgID string) (*admin.CloudAppUser, error) {
+	usersResponse, _, err := client.OrganizationsApi.ListOrganizationUsers(ctx, orgID).Execute()
 	if err != nil {
 		return nil, err
 	}

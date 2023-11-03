@@ -39,12 +39,12 @@ func setup() {
 }
 
 func validateProjectInvitationAlreadyAccepted(ctx context.Context, client *util.MongoDBClient, username, projectID string) (bool, error) {
-	user, _, err := client.Atlas.AtlasUsers.GetByName(ctx, username)
+	user, _, err := client.AtlasV2.MongoDBCloudUsersApi.GetUserByUsername(ctx, username).Execute()
 	if err != nil {
 		return false, err
 	}
 	for _, role := range user.Roles {
-		if role.GroupID == projectID {
+		if util.AreStringPtrEqual(role.GroupId, &projectID) {
 			return true, nil
 		}
 	}

@@ -21,7 +21,7 @@ All these resources need to be manually provided. Follow the steps below.
 
 ### Prerequisite steps:
 
-This guide will help you set up your MongoDB Realm configuration using cURL requests.
+This guide will help you set up your MongoDB Realm configuration for testing a trigger resource.
 You'll define properties and create essential components such as a project, application, service, and function.
 
 Required Properties:

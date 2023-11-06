@@ -8,4 +8,4 @@ unit-test:
 	go test $$(go list ./... | grep -v /e2e)
 
 generate-resource-versions-markdown:
-	go run markdown-generator/*.go
+	go run tool/markdown-generator/*.go

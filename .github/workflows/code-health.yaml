@@ -84,5 +84,3 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: run-unit-test
         run: make unit-test
-        shell: bash
-        working-directory: cfn-resources

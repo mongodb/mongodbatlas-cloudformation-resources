@@ -47,7 +47,3 @@ unit-test:
 .PHONY: update-atlas-sdk
 update-atlas-sdk: ## Update the atlas-sdk dependency
 	(cd cfn-resources && ./scripts/update-sdk.sh)
-
-.PHONY: try-atlas-sdk-preview
-try-atlas-sdk-preview: ## Use SDK Preview, DONT MERGE
-	(cd cfn-resources && ./scripts/update-sdk-preview.sh)

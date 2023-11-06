@@ -9,11 +9,11 @@ ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultL
 
 .PHONY: submit
 submit:
-	cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS))
+	(cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
 .PHONY: test
 test:
-	cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS))
+	(cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
 .PHONY: fmt
 fmt: ## Format changed go and sh
@@ -39,3 +39,8 @@ link-git-hooks: ## Install git hooks
 .PHONY: lint
 lint: ## Run linter
 	@scripts/lint.sh
+
+.PHONY: unit-test
+unit-test:
+	(cd cfn-resources && go test $$(go list ./... | grep -v /e2e))
+

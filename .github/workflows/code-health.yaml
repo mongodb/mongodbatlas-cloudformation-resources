@@ -33,7 +33,7 @@ jobs:
           working-directory: cfn-resources
       - name: actionlint
         run: | 
-           make devtools 
+           make tools 
            actionlint -verbose -color
         shell: bash
   check-copyright:
@@ -43,9 +43,8 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: 'cfn-resources/go.mod'
-      - name: install devtools
-        run: | 
-           make devtools
+      - name: install tools
+        run: make tools
       - name: check copyright
         run: ./.github/scripts/check-licenses.sh
         shell: bash

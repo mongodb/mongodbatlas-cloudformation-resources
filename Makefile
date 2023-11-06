@@ -19,9 +19,10 @@ test:
 fmt: ## Format changed go and sh
 	@scripts/fmt.sh
 
-.PHONY: devtools
-devtools:  ## Install dev tools
+.PHONY: tools
+tools:  ## Install dev tools
 	@echo "==> Installing dev tools..."
+	go install github.com/icholy/gomajor@latest
 	go install github.com/google/addlicense@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/google/go-licenses@latest

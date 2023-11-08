@@ -7,10 +7,10 @@ import (
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-func FilterOnlyValidUsernames(atlasV2 *atlasv2.APIClient, usernames []string) []atlasv2.CloudAppUser {
+func FilterOnlyValidUsernames(mongoDBCloudUsersApiClient atlasv2.MongoDBCloudUsersApi, usernames []string) []atlasv2.CloudAppUser {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
-		userToAdd, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), elem).Execute()
+		userToAdd, _, err := mongoDBCloudUsersApiClient.GetUserByUsername(context.Background(), elem).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("Error while getting the user by username %s: (%+v) \n", elem, err)
 		} else {
@@ -28,7 +28,7 @@ func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {
 	return usersSet
 }
 
-func GetUserDeltas(atlasV2 *atlasv2.APIClient, currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) ([]string, []string, error) {
+func GetUserDeltas(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) ([]string, []string, error) {
 	// Create two sets to store the elements in A and B
 	currentUsersSet := initUserSet(currentUsers)
 	newUsersSet := initUserSet(newUsers)

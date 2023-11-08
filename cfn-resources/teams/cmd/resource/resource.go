@@ -250,8 +250,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	usernames := currentModel.Usernames
 	var newUsers []atlasv2.AddUserToTeam
 
-	validUsernames := userutils.FilterOnlyValidUsernames(atlasV2, usernames)
-	usersToAdd, usersToDelete, err := userutils.GetUserDeltas(atlasV2, paginatedResp.Results, validUsernames)
+	validUsernames := userutils.FilterOnlyValidUsernames(atlasV2.MongoDBCloudUsersApi, usernames)
+	usersToAdd, usersToDelete, err := userutils.GetUserDeltas(paginatedResp.Results, validUsernames)
 	if err != nil {
 		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)
 		return handler.ProgressEvent{

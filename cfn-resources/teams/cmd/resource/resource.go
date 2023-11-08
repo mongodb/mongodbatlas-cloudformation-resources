@@ -24,6 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+	userutils "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -249,8 +250,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	usernames := currentModel.Usernames
 	var newUsers []atlasv2.AddUserToTeam
 
-	validUsernames := filterOnlyValidUsernames(atlasV2, usernames)
-	usersToAdd, usersToDelete, err := getUserDeltas(atlasV2, paginatedResp.Results, validUsernames)
+	validUsernames := userutils.FilterOnlyValidUsernames(atlasV2, usernames)
+	usersToAdd, usersToDelete, err := userutils.GetUserDeltas(atlasV2, paginatedResp.Results, validUsernames)
 	if err != nil {
 		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)
 		return handler.ProgressEvent{
@@ -294,6 +295,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   currentModel,
 	}
 	return event, nil
+}
+
+func FilterOnlyValidUsernames(atlasV2 *atlasv2.APIClient, usernames []string) {
+	panic("unimplemented")
 }
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
@@ -453,54 +458,6 @@ func getTeam(atlasV2 *atlasv2.APIClient, currentModel *Model) (*atlasv2.TeamResp
 		return team, res, err
 	}
 	return nil, nil, errors.New("could not fetch Team as neither TeamId or Name were defined in model")
-}
-
-func filterOnlyValidUsernames(atlasV2 *atlasv2.APIClient, usernames []string) []atlasv2.CloudAppUser {
-	var validUsers []atlasv2.CloudAppUser
-	for _, elem := range usernames {
-		userToAdd, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), elem).Execute()
-		if err != nil {
-			_, _ = logger.Warnf("Error while getting the user by username %s: (%+v) \n", elem, err)
-		} else {
-			validUsers = append(validUsers, *userToAdd)
-		}
-	}
-	return validUsers
-}
-
-func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {
-	usersSet := make(map[string]bool)
-	for _, elem := range users {
-		usersSet[*elem.Id] = true
-	}
-	return usersSet
-}
-
-func getUserDeltas(atlasV2 *atlasv2.APIClient, currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) ([]string, []string, error) {
-	// Create two sets to store the elements in A and B
-	currentUsersSet := initUserSet(currentUsers)
-	newUsersSet := initUserSet(newUsers)
-
-	// Create two arrays to store the elements to be added and deleted
-	toAdd := []string{}
-	toDelete := []string{}
-
-	// Iterate over the elements in B and add them to the toAdd array if they are not in A
-	for elem := range newUsersSet {
-		if _, ok := currentUsersSet[elem]; !ok {
-			toAdd = append(toAdd, elem)
-		}
-	}
-
-	// Iterate over the elements in A and add them to the toDelete array if they are not in B
-	for elem := range currentUsersSet {
-		if _, ok := newUsersSet[elem]; !ok {
-			toDelete = append(toDelete, elem)
-		}
-	}
-
-	// Return the two arrays
-	return toAdd, toDelete, nil
 }
 
 func getProjectIDByTeamID(ctx context.Context, atlasV2 *atlasv2.APIClient, teamID string) (string, error) {

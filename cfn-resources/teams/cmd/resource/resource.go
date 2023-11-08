@@ -24,7 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
-	userutils "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/util"
+	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/team-user"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -250,8 +250,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	usernames := currentModel.Usernames
 	var newUsers []atlasv2.AddUserToTeam
 
-	validUsernames := userutils.FilterOnlyValidUsernames(atlasV2.MongoDBCloudUsersApi, usernames)
-	usersToAdd, usersToDelete, err := userutils.GetUserDeltas(paginatedResp.Results, validUsernames)
+	service := &teamuser.UserFetcherService{
+		MongoDBCloudUsersApi: atlasV2.MongoDBCloudUsersApi,
+	}
+
+	validUsernames := teamuser.FilterOnlyValidUsernames(service, usernames)
+	usersToAdd, usersToDelete, err := teamuser.GetUserDeltas(paginatedResp.Results, validUsernames)
 	if err != nil {
 		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)
 		return handler.ProgressEvent{

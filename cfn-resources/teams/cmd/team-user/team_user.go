@@ -1,16 +1,29 @@
-package util
+package teamuser
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-func FilterOnlyValidUsernames(mongoDBCloudUsersApiClient atlasv2.MongoDBCloudUsersApi, usernames []string) []atlasv2.CloudAppUser {
+type UserFetcher interface {
+	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
+}
+
+type UserFetcherService struct {
+	MongoDBCloudUsersApi atlasv2.MongoDBCloudUsersApi
+}
+
+func (ufm *UserFetcherService) GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error) {
+	return ufm.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), userName).Execute()
+}
+
+func FilterOnlyValidUsernames(mongoDBCloudUsersApiClient UserFetcher, usernames []string) []atlasv2.CloudAppUser {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
-		userToAdd, _, err := mongoDBCloudUsersApiClient.GetUserByUsername(context.Background(), elem).Execute()
+		userToAdd, _, err := mongoDBCloudUsersApiClient.GetUserByUsername(context.Background(), elem)
 		if err != nil {
 			_, _ = logger.Warnf("Error while getting the user by username %s: (%+v) \n", elem, err)
 		} else {

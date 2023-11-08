@@ -241,41 +241,42 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// add/remove user to/from teams
-	if currentModel.Usernames != nil {
-		// get the current users list for the team
-		paginatedResp, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
-		if err != nil {
-			_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
-		}
-		usernames := currentModel.Usernames
-		var newUsers []atlasv2.AddUserToTeam
-		for ind := range usernames {
-			currentUser, isExistingUser := isUserExist(paginatedResp.Results, usernames[ind])
+	// get the current users list for the team
+	paginatedResp, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
+	if err != nil {
+		_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
+	}
+	usernames := currentModel.Usernames
+	var newUsers []atlasv2.AddUserToTeam
 
-			if isExistingUser {
-				// remove user from team
-				_, err := atlasV2.TeamsApi.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(currentUser.Id)).Execute()
-				if err != nil {
-					_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", util.SafeString(currentUser.Id), teamID, err)
-				}
-			} else {
-				// add user to team
-				user, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), usernames[ind]).Execute()
-				if err != nil {
-					_, _ = logger.Warnf("Error reading user (%s)  with error (%v) \n", usernames[ind], err)
-				}
-				// if the user exists, we will store its ID so that we can save as user list later
-				if user != nil {
-					newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(user.Id)})
-				}
-			}
+	validUsernames := filterOnlyValidUsernames(atlasV2, usernames)
+	usersToAdd, usersToDelete, err := getUserDeltas(atlasV2, paginatedResp.Results, validUsernames)
+	if err != nil {
+		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Unable to determine users update",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+		}, nil
+	}
+
+	for ind := range usersToDelete {
+		// remove user from team
+		_, err := atlasV2.TeamsApi.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToDelete[ind])).Execute()
+		if err != nil {
+			_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", util.SafeString(&usersToDelete[ind]), teamID, err)
 		}
-		// save all new users
-		if len(newUsers) > 0 {
-			atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
-			if err != nil {
-				_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
-			}
+	}
+
+	for ind := range usersToAdd {
+		// add user to team
+		newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(&usersToAdd[ind])})
+	}
+	// save all new users
+	if len(newUsers) > 0 {
+		atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
+		if err != nil {
+			_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
 		}
 	}
 
@@ -463,6 +464,54 @@ func isUserExist(users []atlasv2.CloudAppUser, username string) (atlasv2.CloudAp
 		}
 	}
 	return atlasv2.CloudAppUser{}, false
+}
+
+func filterOnlyValidUsernames(atlasV2 *atlasv2.APIClient, usernames []string) []atlasv2.CloudAppUser {
+	var validUsers []atlasv2.CloudAppUser
+	for _, elem := range usernames {
+		userToAdd, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), elem).Execute()
+		if err != nil {
+			_, _ = logger.Warnf("Error while getting the user by username %s: (%+v) \n", elem, err)
+		} else {
+			validUsers = append(validUsers, *userToAdd)
+		}
+	}
+	return validUsers
+}
+
+func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {
+	usersSet := make(map[string]bool)
+	for _, elem := range users {
+		usersSet[*elem.Id] = true
+	}
+	return usersSet
+}
+
+func getUserDeltas(atlasV2 *atlasv2.APIClient, currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) ([]string, []string, error) {
+	// Create two sets to store the elements in A and B
+	currentUsersSet := initUserSet(currentUsers)
+	newUsersSet := initUserSet(newUsers)
+
+	// Create two arrays to store the elements to be added and deleted
+	toAdd := []string{}
+	toDelete := []string{}
+
+	// Iterate over the elements in B and add them to the toAdd array if they are not in A
+	for elem := range newUsersSet {
+		if _, ok := currentUsersSet[elem]; !ok {
+			toAdd = append(toAdd, elem)
+		}
+	}
+
+	// Iterate over the elements in A and add them to the toDelete array if they are not in B
+	for elem := range currentUsersSet {
+		if _, ok := newUsersSet[elem]; !ok {
+			toDelete = append(toDelete, elem)
+		}
+	}
+
+	// Return the two arrays
+	return toAdd, toDelete, nil
 }
 
 func getProjectIDByTeamID(ctx context.Context, atlasV2 *atlasv2.APIClient, teamID string) (string, error) {

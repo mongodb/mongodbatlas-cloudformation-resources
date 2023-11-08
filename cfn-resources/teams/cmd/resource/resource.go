@@ -455,17 +455,6 @@ func getTeam(atlasV2 *atlasv2.APIClient, currentModel *Model) (*atlasv2.TeamResp
 	return nil, nil, errors.New("could not fetch Team as neither TeamId or Name were defined in model")
 }
 
-func isUserExist(users []atlasv2.CloudAppUser, username string) (atlasv2.CloudAppUser, bool) {
-	endLoop := len(users)
-	for ind := 0; ind < endLoop; ind++ {
-		_, _ = logger.Debugf("atlas user : %s,target User %s", users[ind].Username, username)
-		if users[ind].Username == username {
-			return users[ind], true
-		}
-	}
-	return atlasv2.CloudAppUser{}, false
-}
-
 func filterOnlyValidUsernames(atlasV2 *atlasv2.APIClient, usernames []string) []atlasv2.CloudAppUser {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {

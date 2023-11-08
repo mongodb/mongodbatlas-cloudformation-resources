@@ -24,7 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
-	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/team-user"
+	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"

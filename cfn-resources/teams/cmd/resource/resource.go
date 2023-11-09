@@ -254,22 +254,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		MongoDBCloudUsersAPI: atlasV2.MongoDBCloudUsersApi,
 	}
 
-	validUsernames, httpResp, err := teamuser.FilterOnlyValidUsernames(service, usernames)
-	if err != nil {
-		_, _ = logger.Warnf("Unable to fetch users from given usernames (%v) (%v)", usernames, err)
-		var handlerErrorCode string
-		if httpResp.StatusCode < 500 {
-			handlerErrorCode = cloudformation.HandlerErrorCodeInvalidRequest
-		} else {
-			handlerErrorCode = cloudformation.HandlerErrorCodeInternalFailure
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Unable to fetch users from usernames",
-			HandlerErrorCode: handlerErrorCode,
-		}, nil
-	}
-
+	validUsernames, _, _ := teamuser.FilterOnlyValidUsernames(service, usernames)
 	usersToAdd, usersToDelete, err := teamuser.GetUserDeltas(paginatedResp.Results, validUsernames)
 	if err != nil {
 		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)

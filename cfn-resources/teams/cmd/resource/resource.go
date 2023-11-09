@@ -251,7 +251,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	var newUsers []atlasv2.AddUserToTeam
 
 	service := &teamuser.UserFetcherService{
-		MongoDBCloudUsersApi: atlasV2.MongoDBCloudUsersApi,
+		MongoDBCloudUsersAPI: atlasV2.MongoDBCloudUsersApi,
 	}
 
 	validUsernames := teamuser.FilterOnlyValidUsernames(service, usernames)

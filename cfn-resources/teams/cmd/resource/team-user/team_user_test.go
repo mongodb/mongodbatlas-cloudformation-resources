@@ -3,7 +3,6 @@ package teamuser
 import (
 	"context"
 	"errors"
-	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -42,7 +41,7 @@ func TestFilterOnlyValidUsernames(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockAtlasV2Client := mock_util.NewMockUserFetcher(mockCtrl)
+	mockAtlasV2Client := mock_util.NewMockTeamUsersAPI(mockCtrl)
 
 	// Create a slice of usernames, including some valid and some invalid usernames
 	validuser1 := "validuser1"
@@ -70,7 +69,7 @@ func TestFilterOnlyValidUsernamesWithInvalidInput(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	mockAtlasV2Client := mock_util.NewMockUserFetcher(mockCtrl)
+	mockAtlasV2Client := mock_util.NewMockTeamUsersAPI(mockCtrl)
 
 	// Create a slice of usernames, including some valid and some invalid usernames
 	validuser1 := "validuser1"
@@ -138,12 +137,53 @@ func TestGetUserDeltas1(t *testing.T) {
 			t.Errorf("Unexpected error: %v", err)
 		}
 
-		if !reflect.DeepEqual(toAdd, testCase.expectedToAdd) {
-			t.Errorf("Expected toAdd to be %v, but got %v", testCase.expectedToAdd, toAdd)
-		}
-
-		if !reflect.DeepEqual(toDelete, testCase.expectedToDelete) {
-			t.Errorf("Expected toDelete to be %v, but got %v", testCase.expectedToDelete, toDelete)
-		}
+		assert.Equal(t, toAdd, testCase.expectedToAdd)
+		assert.Equal(t, toDelete, testCase.expectedToDelete)
 	}
+}
+
+func TestUpdateTeamUsersSucceeds(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockAtlasV2Client := mock_util.NewMockTeamUsersAPI(mockCtrl)
+
+	// Create a slice of usernames, including some valid and some invalid usernames
+	validuser1 := "validuser1"
+	validuser2 := "validuser2"
+	usernames := []string{validuser1, validuser2}
+
+	// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
+
+	// Create a mock paginated list of existing team users
+	existingTeamUsers := &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}}
+
+	err := UpdateTeamUsers(mockAtlasV2Client, existingTeamUsers, usernames, "orgId", "teamId")
+
+	assert.Nil(t, err)
+}
+
+func TestUpdateTeamUsersFailsIfInvalidUsers(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockAtlasV2Client := mock_util.NewMockTeamUsersAPI(mockCtrl)
+
+	// Create a slice of usernames, including some valid and some invalid usernames
+	validuser1 := "validuser1"
+	invaliduser1 := "invaliduser1"
+	usernames := []string{validuser1, invaliduser1}
+
+	// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
+
+	// Create a mock paginated list of existing team users
+	existingTeamUsers := &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &invaliduser1}}}
+
+	err := UpdateTeamUsers(mockAtlasV2Client, existingTeamUsers, usernames, "orgId", "teamId")
+
+	assert.NotNil(t, err)
 }

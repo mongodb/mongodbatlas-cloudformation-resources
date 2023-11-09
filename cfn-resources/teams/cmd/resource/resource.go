@@ -183,6 +183,7 @@ func newAtlasRoles(roles []atlasv2.CloudAccessRoleAssignment) []AtlasRole {
 	}
 	return modelRole
 }
+
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
@@ -243,56 +244,23 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// add/remove user to/from teams
 	// get the current users list for the team
-	paginatedResp, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
+	existingTeamUsers, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
 	}
-	usernames := currentModel.Usernames
-	var newUsers []atlasv2.AddUserToTeam
-
-	service := &teamuser.UserFetcherService{
+	teamUsersAPIService := &teamuser.TeamUsersAPIService{
 		MongoDBCloudUsersAPI: atlasV2.MongoDBCloudUsersApi,
+		TeamsAPI:             atlasV2.TeamsApi,
 	}
 
-	validUsernames, _, _ := teamuser.FilterOnlyValidUsernames(service, usernames)
-	usersToAdd, usersToDelete, err := teamuser.GetUserDeltas(paginatedResp.Results, validUsernames)
+	err = teamuser.UpdateTeamUsers(teamUsersAPIService, existingTeamUsers, currentModel.Usernames, orgID, teamID)
 	if err != nil {
-		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)
+		_, _ = logger.Warnf("Unable to update users: %v \n", err)
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
-			Message:          "Unable to determine users update",
+			Message:          "Unable to update users",
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
 		}, nil
-	}
-
-	for ind := range usersToDelete {
-		// remove user from team
-		_, err := atlasV2.TeamsApi.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToDelete[ind])).Execute()
-		if err != nil {
-			_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", util.SafeString(&usersToDelete[ind]), teamID, err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Unable to delete user",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
-			}, nil
-		}
-	}
-
-	for ind := range usersToAdd {
-		// add user to team
-		newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(&usersToAdd[ind])})
-	}
-	// save all new users
-	if len(newUsers) > 0 {
-		_, _, err = atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers).Execute()
-		if err != nil {
-			_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          "Unable to add user",
-				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
-			}, nil
-		}
 	}
 
 	// update roles to team
@@ -311,9 +279,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return event, nil
 }
 
-func FilterOnlyValidUsernames(atlasV2 *atlasv2.APIClient, usernames []string) {
-	panic("unimplemented")
-}
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
@@ -369,6 +334,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  models,
 	}, nil
 }
+
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 

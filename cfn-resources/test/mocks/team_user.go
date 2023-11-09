@@ -13,31 +13,47 @@ import (
 	admin "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-// MockUserFetcher is a mock of UserFetcher interface.
-type MockUserFetcher struct {
+// MockTeamUsersAPI is a mock of TeamUsersAPI interface.
+type MockTeamUsersAPI struct {
 	ctrl     *gomock.Controller
-	recorder *MockUserFetcherMockRecorder
+	recorder *MockTeamUsersAPIMockRecorder
 }
 
-// MockUserFetcherMockRecorder is the mock recorder for MockUserFetcher.
-type MockUserFetcherMockRecorder struct {
-	mock *MockUserFetcher
+// MockTeamUsersAPIMockRecorder is the mock recorder for MockTeamUsersAPI.
+type MockTeamUsersAPIMockRecorder struct {
+	mock *MockTeamUsersAPI
 }
 
-// NewMockUserFetcher creates a new mock instance.
-func NewMockUserFetcher(ctrl *gomock.Controller) *MockUserFetcher {
-	mock := &MockUserFetcher{ctrl: ctrl}
-	mock.recorder = &MockUserFetcherMockRecorder{mock}
+// NewMockTeamUsersAPI creates a new mock instance.
+func NewMockTeamUsersAPI(ctrl *gomock.Controller) *MockTeamUsersAPI {
+	mock := &MockTeamUsersAPI{ctrl: ctrl}
+	mock.recorder = &MockTeamUsersAPIMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserFetcher) EXPECT() *MockUserFetcherMockRecorder {
+func (m *MockTeamUsersAPI) EXPECT() *MockTeamUsersAPIMockRecorder {
 	return m.recorder
 }
 
+// AddTeamUser mocks base method.
+func (m *MockTeamUsersAPI) AddTeamUser(ctx context.Context, orgId, teamId string, addUserToTeam *[]admin.AddUserToTeam) (*admin.PaginatedApiAppUser, *http.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddTeamUser", ctx, orgId, teamId, addUserToTeam)
+	ret0, _ := ret[0].(*admin.PaginatedApiAppUser)
+	ret1, _ := ret[1].(*http.Response)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// AddTeamUser indicates an expected call of AddTeamUser.
+func (mr *MockTeamUsersAPIMockRecorder) AddTeamUser(ctx, orgId, teamId, addUserToTeam interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTeamUser", reflect.TypeOf((*MockTeamUsersAPI)(nil).AddTeamUser), ctx, orgId, teamId, addUserToTeam)
+}
+
 // GetUserByUsername mocks base method.
-func (m *MockUserFetcher) GetUserByUsername(ctx context.Context, userName string) (*admin.CloudAppUser, *http.Response, error) {
+func (m *MockTeamUsersAPI) GetUserByUsername(ctx context.Context, userName string) (*admin.CloudAppUser, *http.Response, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByUsername", ctx, userName)
 	ret0, _ := ret[0].(*admin.CloudAppUser)
@@ -47,7 +63,22 @@ func (m *MockUserFetcher) GetUserByUsername(ctx context.Context, userName string
 }
 
 // GetUserByUsername indicates an expected call of GetUserByUsername.
-func (mr *MockUserFetcherMockRecorder) GetUserByUsername(ctx, userName interface{}) *gomock.Call {
+func (mr *MockTeamUsersAPIMockRecorder) GetUserByUsername(ctx, userName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockUserFetcher)(nil).GetUserByUsername), ctx, userName)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockTeamUsersAPI)(nil).GetUserByUsername), ctx, userName)
+}
+
+// RemoveTeamUser mocks base method.
+func (m *MockTeamUsersAPI) RemoveTeamUser(ctx context.Context, orgId, teamId, userId string) (*http.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveTeamUser", ctx, orgId, teamId, userId)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RemoveTeamUser indicates an expected call of RemoveTeamUser.
+func (mr *MockTeamUsersAPIMockRecorder) RemoveTeamUser(ctx, orgId, teamId, userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveTeamUser", reflect.TypeOf((*MockTeamUsersAPI)(nil).RemoveTeamUser), ctx, orgId, teamId, userId)
 }

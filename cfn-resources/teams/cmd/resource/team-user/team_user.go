@@ -4,23 +4,35 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-type UserFetcher interface {
+type TeamUsersAPI interface {
 	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
+	AddTeamUser(ctx context.Context, orgId string, teamId string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)
+	RemoveTeamUser(ctx context.Context, orgId string, teamId string, userId string) (*http.Response, error)
 }
 
-type UserFetcherService struct {
+type TeamUsersAPIService struct {
 	MongoDBCloudUsersAPI atlasv2.MongoDBCloudUsersApi
+	TeamsAPI             atlasv2.TeamsApi
 }
 
-func (ufm *UserFetcherService) GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error) {
-	return ufm.MongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
+func (s *TeamUsersAPIService) GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error) {
+	return s.MongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
 }
 
-func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient UserFetcher, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
+func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgId string, teamId string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error) {
+	return s.TeamsAPI.AddTeamUser(ctx, orgId, teamId, addUserToTeam).Execute()
+}
+
+func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgId string, teamId string, userId string) (*http.Response, error) {
+	return s.TeamsAPI.RemoveTeamUser(ctx, orgId, teamId, userId).Execute()
+}
+
+func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
 		userToAdd, httpResp, err := mongoDBCloudUsersAPIClient.GetUserByUsername(context.Background(), elem)
@@ -67,4 +79,38 @@ func GetUserDeltas(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.Cloud
 
 	// Return the two arrays
 	return toAdd, toDelete, nil
+}
+
+func UpdateTeamUsers(teamUsersAPIService TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
+	var newUsers []atlasv2.AddUserToTeam
+
+	validUsernames, _, err := FilterOnlyValidUsernames(teamUsersAPIService, usernames)
+	if err != nil {
+		return err
+	}
+	usersToAdd, usersToDelete, err := GetUserDeltas(existingTeamUsers.Results, validUsernames)
+	if err != nil {
+		return err
+	}
+
+	for ind := range usersToDelete {
+		// remove user from team
+		_, err := teamUsersAPIService.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToDelete[ind]))
+		if err != nil {
+			return err
+		}
+	}
+
+	for ind := range usersToAdd {
+		// add user to team
+		newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(&usersToAdd[ind])})
+	}
+	// save all new users
+	if len(newUsers) > 0 {
+		_, _, err = teamUsersAPIService.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

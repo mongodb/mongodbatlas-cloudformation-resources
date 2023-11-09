@@ -20,17 +20,18 @@ func (ufm *UserFetcherService) GetUserByUsername(ctx context.Context, userName s
 	return ufm.MongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
 }
 
-func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient UserFetcher, usernames []string) []atlasv2.CloudAppUser {
+func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient UserFetcher, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
-		userToAdd, _, err := mongoDBCloudUsersAPIClient.GetUserByUsername(context.Background(), elem)
+		userToAdd, httpResp, err := mongoDBCloudUsersAPIClient.GetUserByUsername(context.Background(), elem)
 		if err != nil {
-			_, _ = logger.Warnf("Error while getting the user by username %s: (%+v) \n", elem, err)
+			_, _ = logger.Warnf("Error while getting the user %s: (%+v) \n", elem, err)
+			return nil, httpResp, err
 		} else {
 			validUsers = append(validUsers, *userToAdd)
 		}
 	}
-	return validUsers
+	return validUsers, nil, nil
 }
 
 func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {

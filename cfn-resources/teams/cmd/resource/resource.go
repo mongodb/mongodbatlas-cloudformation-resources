@@ -254,7 +254,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		MongoDBCloudUsersAPI: atlasV2.MongoDBCloudUsersApi,
 	}
 
-	validUsernames := teamuser.FilterOnlyValidUsernames(service, usernames)
+	validUsernames, httpResp, err := teamuser.FilterOnlyValidUsernames(service, usernames)
+	if err != nil {
+		_, _ = logger.Warnf("Unable to fetch users from given usernames (%v) (%v)", usernames, err)
+		var handlerErrorCode string
+		if httpResp.StatusCode < 500 {
+			handlerErrorCode = cloudformation.HandlerErrorCodeInvalidRequest
+		} else {
+			handlerErrorCode = cloudformation.HandlerErrorCodeInternalFailure
+		}
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Unable to fetch users from usernames",
+			HandlerErrorCode: handlerErrorCode,
+		}, nil
+	}
+
 	usersToAdd, usersToDelete, err := teamuser.GetUserDeltas(paginatedResp.Results, validUsernames)
 	if err != nil {
 		_, _ = logger.Warnf("Unable to determine users update -error (%v)", err)
@@ -270,6 +285,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, err := atlasV2.TeamsApi.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToDelete[ind])).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", util.SafeString(&usersToDelete[ind]), teamID, err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Unable to delete user",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+			}, nil
 		}
 	}
 
@@ -279,9 +299,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// save all new users
 	if len(newUsers) > 0 {
-		atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
+		_, _, err = atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Unable to add user",
+				HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+			}, nil
 		}
 	}
 

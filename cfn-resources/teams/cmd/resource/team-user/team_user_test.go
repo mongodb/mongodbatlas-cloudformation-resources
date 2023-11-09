@@ -47,23 +47,44 @@ func TestFilterOnlyValidUsernames(t *testing.T) {
 	// Create a slice of usernames, including some valid and some invalid usernames
 	validuser1 := "validuser1"
 	validuser2 := "validuser2"
-	invaliduser1 := "invaliduser1"
-	invaliduser2 := "invaliduser2"
-	usernames := []string{validuser1, invaliduser1, validuser2, invaliduser2}
+	usernames := []string{validuser1, validuser2}
 
 	// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
 	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
-	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
 	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
-	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser2).Return(nil, nil, errors.New("invalid username"))
 
 	// Call the FilterOnlyValidUsernames function
-	validUsers := FilterOnlyValidUsernames(mockAtlasV2Client, usernames)
+	validUsers, _, err := FilterOnlyValidUsernames(mockAtlasV2Client, usernames)
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
 
 	// Check that the returned slice contains only the valid usernames
 	assert.Equal(t, len(validUsers), 2)
 	assert.Equal(t, "validuser1", *validUsers[0].Id)
 	assert.Equal(t, "validuser2", *validUsers[1].Id)
+}
+
+func TestFilterOnlyValidUsernamesWithInvalidInput(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockAtlasV2Client := mock_util.NewMockUserFetcher(mockCtrl)
+
+	// Create a slice of usernames, including some valid and some invalid usernames
+	validuser1 := "validuser1"
+	invaliduser1 := "invaliduser1"
+	usernames := []string{validuser1, invaliduser1}
+
+	// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
+
+	// Call the FilterOnlyValidUsernames function
+	_, _, err := FilterOnlyValidUsernames(mockAtlasV2Client, usernames)
+
+	assert.NotNil(t, err)
 }
 
 func TestGetUserDeltas1(t *testing.T) {

@@ -1,17 +1,18 @@
+//go:build unit
+
 // Copyright 2023 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//go:build unit
 package teamuser
 
 import (
@@ -100,7 +101,7 @@ func TestFilterOnlyValidUsernamesWithInvalidInput(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestGetUserDeltas(t *testing.T) {
+func TestGetUsersToAddAndRemove(t *testing.T) {
 	user1 := "user1"
 	user2 := "user2"
 	user3 := "user3"
@@ -146,7 +147,7 @@ func TestGetUserDeltas(t *testing.T) {
 
 	// Run test cases
 	for _, testCase := range testCases {
-		toAdd, toDelete, err := GetUserDeltas(testCase.currentUsers, testCase.newUsers)
+		toAdd, toDelete, err := GetUsersToAddAndRemove(testCase.currentUsers, testCase.newUsers)
 		if err != nil {
 			t.Errorf("Unexpected error: %v", err)
 		}

@@ -74,7 +74,7 @@ func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {
 	return usersSet
 }
 
-func GetUserDeltas(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
+func GetUsersToAddAndRemove(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
 	// Create two sets to store the elements in A and B
 	currentUsersSet := initUserSet(currentUsers)
 	newUsersSet := initUserSet(newUsers)
@@ -108,14 +108,14 @@ func UpdateTeamUsers(teamUsersAPIService TeamUsersAPI, existingTeamUsers *atlasv
 	if err != nil {
 		return err
 	}
-	usersToAdd, usersToDelete, err := GetUserDeltas(existingTeamUsers.Results, validUsernames)
+	usersToAdd, usersToRemove, err := GetUsersToAddAndRemove(existingTeamUsers.Results, validUsernames)
 	if err != nil {
 		return err
 	}
 
-	for ind := range usersToDelete {
+	for ind := range usersToRemove {
 		// remove user from team
-		_, err := teamUsersAPIService.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToDelete[ind]))
+		_, err := teamUsersAPIService.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToRemove[ind]))
 		if err != nil {
 			return err
 		}

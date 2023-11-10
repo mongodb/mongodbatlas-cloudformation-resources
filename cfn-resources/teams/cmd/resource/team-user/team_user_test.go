@@ -249,12 +249,12 @@ func TestUpdateTeamUsers(t *testing.T) {
 	// Run test cases
 	for _, testCase := range testCases {
 		mockCtrl := gomock.NewController(t)
-		defer mockCtrl.Finish()
-
 		client := testCase.mockFuncExpectations(mockCtrl)
 
 		err := UpdateTeamUsers(client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID")
 
 		assert.Equal(t, testCase.expectError, err != nil)
+
+		mockCtrl.Finish()
 	}
 }

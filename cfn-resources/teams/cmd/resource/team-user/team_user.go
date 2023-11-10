@@ -26,7 +26,7 @@ import (
 type TeamUsersAPI interface {
 	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
 	AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)
-	RemoveTeamUser(ctx context.Context, orgID string, teamID string, userId string) (*http.Response, error)
+	RemoveTeamUser(ctx context.Context, orgID string, teamID string, userID string) (*http.Response, error)
 }
 
 type TeamUsersAPIService struct {
@@ -49,8 +49,8 @@ func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgID string, tea
 	return s.teamsAPI.AddTeamUser(ctx, orgID, teamID, addUserToTeam).Execute()
 }
 
-func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgID string, teamId string, userId string) (*http.Response, error) {
-	return s.teamsAPI.RemoveTeamUser(ctx, orgID, teamId, userId).Execute()
+func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgID string, teamID string, userID string) (*http.Response, error) {
+	return s.teamsAPI.RemoveTeamUser(ctx, orgID, teamID, userID).Execute()
 }
 
 func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {

@@ -61,8 +61,8 @@ func TestFilterOnlyValidUsernames(t *testing.T) {
 
 	// Check that the returned slice contains only the valid usernames
 	assert.Equal(t, len(validUsers), 2)
-	assert.Equal(t, "validuser1", *validUsers[0].Id)
-	assert.Equal(t, "validuser2", *validUsers[1].Id)
+	assert.Equal(t, validuser1, *validUsers[0].Id)
+	assert.Equal(t, validuser2, *validUsers[1].Id)
 }
 
 func TestFilterOnlyValidUsernamesWithInvalidInput(t *testing.T) {
@@ -137,8 +137,8 @@ func TestGetUserDeltas1(t *testing.T) {
 			t.Errorf("Unexpected error: %v", err)
 		}
 
-		assert.Equal(t, toAdd, testCase.expectedToAdd)
-		assert.Equal(t, toDelete, testCase.expectedToDelete)
+		assert.Equal(t, testCase.expectedToAdd, toAdd)
+		assert.Equal(t, testCase.expectedToDelete, toDelete)
 	}
 }
 

@@ -11,8 +11,8 @@ import (
 
 type TeamUsersAPI interface {
 	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
-	AddTeamUser(ctx context.Context, orgId string, teamId string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)
-	RemoveTeamUser(ctx context.Context, orgId string, teamId string, userId string) (*http.Response, error)
+	AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)
+	RemoveTeamUser(ctx context.Context, orgID string, teamID string, userId string) (*http.Response, error)
 }
 
 type TeamUsersAPIService struct {
@@ -24,12 +24,12 @@ func (s *TeamUsersAPIService) GetUserByUsername(ctx context.Context, userName st
 	return s.MongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
 }
 
-func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgId string, teamId string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error) {
-	return s.TeamsAPI.AddTeamUser(ctx, orgId, teamId, addUserToTeam).Execute()
+func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error) {
+	return s.TeamsAPI.AddTeamUser(ctx, orgID, teamID, addUserToTeam).Execute()
 }
 
-func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgId string, teamId string, userId string) (*http.Response, error) {
-	return s.TeamsAPI.RemoveTeamUser(ctx, orgId, teamId, userId).Execute()
+func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgID string, teamId string, userId string) (*http.Response, error) {
+	return s.TeamsAPI.RemoveTeamUser(ctx, orgID, teamId, userId).Execute()
 }
 
 func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
@@ -39,29 +39,28 @@ func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames
 		if err != nil {
 			_, _ = logger.Warnf("Error while getting the user %s: (%+v) \n", elem, err)
 			return nil, httpResp, err
-		} else {
-			validUsers = append(validUsers, *userToAdd)
 		}
+		validUsers = append(validUsers, *userToAdd)
 	}
 	return validUsers, nil, nil
 }
 
 func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {
 	usersSet := make(map[string]bool)
-	for _, elem := range users {
-		usersSet[*elem.Id] = true
+	for i := 0; i < len(users); i++ {
+		usersSet[*(users[i]).Id] = true
 	}
 	return usersSet
 }
 
-func GetUserDeltas(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) ([]string, []string, error) {
+func GetUserDeltas(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
 	// Create two sets to store the elements in A and B
 	currentUsersSet := initUserSet(currentUsers)
 	newUsersSet := initUserSet(newUsers)
 
 	// Create two arrays to store the elements to be added and deleted
-	toAdd := []string{}
-	toDelete := []string{}
+	toAdd = []string{}
+	toDelete = []string{}
 
 	// Iterate over the elements in B and add them to the toAdd array if they are not in A
 	for elem := range newUsersSet {

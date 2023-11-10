@@ -248,10 +248,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if err != nil {
 		_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
 	}
-	teamUsersAPIService := &teamuser.TeamUsersAPIService{
-		MongoDBCloudUsersAPI: atlasV2.MongoDBCloudUsersApi,
-		TeamsAPI:             atlasV2.TeamsApi,
-	}
+	teamUsersAPIService := teamuser.NewTeamUsersAPIService(atlasV2)
 
 	err = teamuser.UpdateTeamUsers(teamUsersAPIService, existingTeamUsers, currentModel.Usernames, orgID, teamID)
 	if err != nil {

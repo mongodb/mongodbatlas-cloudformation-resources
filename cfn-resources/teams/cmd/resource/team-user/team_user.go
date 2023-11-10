@@ -16,20 +16,27 @@ type TeamUsersAPI interface {
 }
 
 type TeamUsersAPIService struct {
-	MongoDBCloudUsersAPI atlasv2.MongoDBCloudUsersApi
-	TeamsAPI             atlasv2.TeamsApi
+	mongoDBCloudUsersAPI atlasv2.MongoDBCloudUsersApi
+	teamsAPI             atlasv2.TeamsApi
+}
+
+func NewTeamUsersAPIService(client *atlasv2.APIClient) *TeamUsersAPIService {
+	return &TeamUsersAPIService{
+		mongoDBCloudUsersAPI: client.MongoDBCloudUsersApi,
+		teamsAPI:             client.TeamsApi,
+	}
 }
 
 func (s *TeamUsersAPIService) GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error) {
-	return s.MongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
+	return s.mongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
 }
 
 func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error) {
-	return s.TeamsAPI.AddTeamUser(ctx, orgID, teamID, addUserToTeam).Execute()
+	return s.teamsAPI.AddTeamUser(ctx, orgID, teamID, addUserToTeam).Execute()
 }
 
 func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgID string, teamId string, userId string) (*http.Response, error) {
-	return s.TeamsAPI.RemoveTeamUser(ctx, orgID, teamId, userId).Execute()
+	return s.teamsAPI.RemoveTeamUser(ctx, orgID, teamId, userId).Execute()
 }
 
 func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {

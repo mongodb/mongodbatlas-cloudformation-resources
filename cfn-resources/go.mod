@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.21.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.44
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.34.7
+	github.com/aws/smithy-go v1.15.0
 	github.com/dave/jennifer v1.7.0
 	github.com/getkin/kin-openapi v0.120.0
 	github.com/mongodb-forks/digest v1.0.5
@@ -17,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas v0.33.0
-	go.mongodb.org/atlas-sdk/v20231001001 v20231001001.1.0
+	go.mongodb.org/atlas-sdk/v20231001002 v20231001002.0.0
 	go.mongodb.org/realm v0.1.0
 )
 
@@ -32,7 +33,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.15.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.23.1 // indirect
-	github.com/aws/smithy-go v1.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect

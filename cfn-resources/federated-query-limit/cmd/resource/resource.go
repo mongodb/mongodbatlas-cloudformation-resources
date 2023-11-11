@@ -29,7 +29,7 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231001001/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20231001002/admin"
 )
 
 var CreateOrUpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName, constants.Value}

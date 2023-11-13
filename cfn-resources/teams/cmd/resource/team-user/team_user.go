@@ -70,10 +70,10 @@ func validateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUs
 	return validUsers, nil, nil
 }
 
-func initUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
-	usersSet := make(map[string]interface{}, len(users))
+func initUserSet(users []atlasv2.CloudAppUser) map[*string]interface{} {
+	usersSet := make(map[*string]interface{}, len(users))
 	for _, u := range users {
-		usersSet[u.GetId()] = true
+		usersSet[u.Id] = true
 	}
 	return usersSet
 }
@@ -90,14 +90,14 @@ func getChangesForTeamUsers(currentUsers []atlasv2.CloudAppUser, newUsers []atla
 	// Iterate over the elements in B and add them to the toAdd array if they are not in A
 	for elem := range newUsersSet {
 		if _, ok := currentUsersSet[elem]; !ok {
-			toAdd = append(toAdd, elem)
+			toAdd = append(toAdd, *elem)
 		}
 	}
 
 	// Iterate over the elements in A and add them to the toDelete array if they are not in B
 	for elem := range currentUsersSet {
 		if _, ok := newUsersSet[elem]; !ok {
-			toDelete = append(toDelete, elem)
+			toDelete = append(toDelete, *elem)
 		}
 	}
 

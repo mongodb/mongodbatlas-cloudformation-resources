@@ -20,6 +20,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 
 	mock "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user/mocks"
@@ -52,7 +53,6 @@ func TestInitUserSet(t *testing.T) {
 
 func TestValidateUsernames(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
 
 	mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -80,7 +80,6 @@ func TestValidateUsernames(t *testing.T) {
 
 func TestValidateUsernamesWithInvalidInput(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
 
 	mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -106,12 +105,14 @@ func TestGetUsersToAddAndRemove(t *testing.T) {
 
 	// Test cases
 	testCases := []struct {
+		testName         string
 		currentUsers     []atlasv2.CloudAppUser
 		newUsers         []atlasv2.CloudAppUser
 		expectedToAdd    []string
 		expectedToDelete []string
 	}{
 		{
+			testName: "succeeds adding a new user and removing an existing one",
 			currentUsers: []atlasv2.CloudAppUser{
 				{Id: &user1},
 				{Id: &user2},
@@ -124,6 +125,7 @@ func TestGetUsersToAddAndRemove(t *testing.T) {
 			expectedToDelete: []string{user2},
 		},
 		{
+			testName:     "succeeds adding all users",
 			currentUsers: []atlasv2.CloudAppUser{},
 			newUsers: []atlasv2.CloudAppUser{
 				{Id: &user1},
@@ -133,6 +135,7 @@ func TestGetUsersToAddAndRemove(t *testing.T) {
 			expectedToDelete: []string{},
 		},
 		{
+			testName: "succeeds removing both users",
 			currentUsers: []atlasv2.CloudAppUser{
 				{Id: &user1},
 				{Id: &user2},
@@ -145,13 +148,12 @@ func TestGetUsersToAddAndRemove(t *testing.T) {
 
 	// Run test cases
 	for _, testCase := range testCases {
-		toAdd, toDelete, err := GetTeamUserUpdates(testCase.currentUsers, testCase.newUsers)
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-
-		assert.Equal(t, testCase.expectedToAdd, toAdd)
-		assert.Equal(t, testCase.expectedToDelete, toDelete)
+		t.Run(testCase.testName, func(t *testing.T) {
+			toAdd, toDelete, err := GetTeamUserUpdates(testCase.currentUsers, testCase.newUsers)
+			require.NoError(t, err)
+			assert.Equal(t, testCase.expectedToAdd, toAdd)
+			assert.Equal(t, testCase.expectedToDelete, toDelete)
+		})
 	}
 }
 
@@ -161,12 +163,14 @@ func TestUpdateTeamUsers(t *testing.T) {
 	invaliduser1 := "invaliduser1"
 
 	testCases := []struct {
+		testName             string
 		mockFuncExpectations func(*gomock.Controller) *mock.MockTeamUsersAPI
 		existingTeamUsers    *atlasv2.PaginatedApiAppUser
 		usernames            []string
 		expectError          bool
 	}{
-		{ // Succeeds but no changes are required
+		{
+			testName: "succeeds but no changes are required",
 			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
 				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -180,7 +184,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 			usernames:         []string{validuser1, validuser2},
 			expectError:       false,
 		},
-		{ // Fails because one user is invalid
+		{
+			testName: "fails because one user is invalid",
 			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
 				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -194,7 +199,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 			usernames:         []string{validuser1, invaliduser1},
 			expectError:       true,
 		},
-		{ // Succeeds and one user has to be added
+		{
+			testName: "succeeds with one user to be added",
 			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
 				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -212,7 +218,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 			usernames:         []string{validuser1, validuser2},
 			expectError:       false,
 		},
-		{ // Succeeds and one user has to be removed
+		{
+			testName: "succeeds with one user to be removed",
 			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
 				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -226,7 +233,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 			usernames:         []string{validuser2},
 			expectError:       false,
 		},
-		{ // Succeeds and one user has to be added and the other removed
+		{
+			testName: "succeeds with one user to be added and the other removed",
 			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
 				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
 
@@ -247,13 +255,13 @@ func TestUpdateTeamUsers(t *testing.T) {
 
 	// Run test cases
 	for _, testCase := range testCases {
-		mockCtrl := gomock.NewController(t)
-		client := testCase.mockFuncExpectations(mockCtrl)
+		t.Run(testCase.testName, func(t *testing.T) {
+			mockCtrl := gomock.NewController(t)
+			client := testCase.mockFuncExpectations(mockCtrl)
 
-		err := UpdateTeamUsers(client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID")
+			err := UpdateTeamUsers(client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID")
 
-		assert.Equal(t, testCase.expectError, err != nil)
-
-		mockCtrl.Finish()
+			assert.Equal(t, testCase.expectError, err != nil)
+		})
 	}
 }

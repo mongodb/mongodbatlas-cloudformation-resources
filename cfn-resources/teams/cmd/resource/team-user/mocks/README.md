@@ -4,7 +4,7 @@ These mocks are generated through the `mockgen` command.
 
 ## HOW-TO: Update mocks
 
-1. In order to update these mocks, you need to have `mockgen` **installed** on your machine.
+1. In order to update these mocks, you need to have `mockgen` **installed** on your machine: `go install github.com/golang/mock/mockgen@latest`.
 1. `cd` in the root of the `mongodbatlas-clouformation-resources` repo
 1. After that, you can run the `mockgen` command as following:
 

@@ -26,7 +26,7 @@ import (
 func FilterOnlyValidUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
-		userToAdd, httpResp, err := mongoDBCloudUsersAPIClient.GetUserByUsername(context.Background(), elem)
+		userToAdd, httpResp, err := c.GetUserByUsername(context.Background(), elem)
 		if err != nil {
 			_, _ = logger.Warnf("Error while getting the user %s: (%+v) \n", elem, err)
 			return nil, httpResp, err
@@ -71,10 +71,10 @@ func GetUsersToAddAndRemove(currentUsers []atlasv2.CloudAppUser, newUsers []atla
 	return toAdd, toDelete, nil
 }
 
-func UpdateTeamUsers(teamUsersAPIService TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
+func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
 	var newUsers []atlasv2.AddUserToTeam
 
-	validUsernames, _, err := FilterOnlyValidUsernames(teamUsersAPIService, usernames)
+	validUsernames, _, err := FilterOnlyValidUsernames(c, usernames)
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func UpdateTeamUsers(teamUsersAPIService TeamUsersAPI, existingTeamUsers *atlasv
 
 	for ind := range usersToRemove {
 		// remove user from team
-		_, err := teamUsersAPIService.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToRemove[ind]))
+		_, err := c.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(&usersToRemove[ind]))
 		if err != nil {
 			return err
 		}
@@ -97,7 +97,7 @@ func UpdateTeamUsers(teamUsersAPIService TeamUsersAPI, existingTeamUsers *atlasv
 	}
 	// save all new users
 	if len(newUsers) > 0 {
-		_, _, err = teamUsersAPIService.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
+		_, _, err = c.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
 		if err != nil {
 			return err
 		}

@@ -23,7 +23,7 @@ import (
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-func FilterOnlyValidUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
+func ValidateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
 		userToAdd, httpResp, err := c.GetUserByUsername(context.Background(), elem)
@@ -44,7 +44,7 @@ func initUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
 	return usersSet
 }
 
-func GetUsersToAddAndRemove(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
+func GetTeamUserUpdates(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
 	// Create two sets to store the elements in A and B
 	currentUsersSet := initUserSet(currentUsers)
 	newUsersSet := initUserSet(newUsers)
@@ -74,11 +74,11 @@ func GetUsersToAddAndRemove(currentUsers []atlasv2.CloudAppUser, newUsers []atla
 func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
 	var newUsers []atlasv2.AddUserToTeam
 
-	validUsernames, _, err := FilterOnlyValidUsernames(c, usernames)
+	validUsernames, _, err := ValidateUsernames(c, usernames)
 	if err != nil {
 		return err
 	}
-	usersToAdd, usersToRemove, err := GetUsersToAddAndRemove(existingTeamUsers.Results, validUsernames)
+	usersToAdd, usersToRemove, err := GetTeamUserUpdates(existingTeamUsers.Results, validUsernames)
 	if err != nil {
 		return err
 	}

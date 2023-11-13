@@ -27,7 +27,6 @@ update.json
 **/taskcat_outputs/
 **/inputs/**
 pytestdebug.log
-!*.rpdk-config
 !/cdk/**/.*
 *.DS_Store
 

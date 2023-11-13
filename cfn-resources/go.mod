@@ -17,9 +17,10 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas v0.33.0
-	go.mongodb.org/atlas-sdk/v20231001001 v20231001001.1.0
 	go.mongodb.org/realm v0.1.0
 )
+
+require github.com/aws/smithy-go v1.15.0 // indirect
 
 require (
 	github.com/aws/aws-lambda-go v1.37.0 // indirect
@@ -32,7 +33,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.15.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.23.1 // indirect
-	github.com/aws/smithy-go v1.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect
@@ -47,6 +47,7 @@ require (
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
+	go.mongodb.org/atlas-sdk/v20231001001 v20231001001.1.0
 	gopkg.in/validator.v2 v2.0.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

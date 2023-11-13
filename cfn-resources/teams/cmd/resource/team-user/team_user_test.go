@@ -66,7 +66,7 @@ func TestValidateUsernames(t *testing.T) {
 	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
 
 	// Call the ValidateUsernames function
-	validUsers, _, err := ValidateUsernames(mockAtlasV2Client, usernames)
+	validUsers, _, err := validateUsernames(mockAtlasV2Client, usernames)
 
 	require.NoError(t, err)
 
@@ -91,12 +91,12 @@ func TestValidateUsernamesWithInvalidInput(t *testing.T) {
 	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
 
 	// Call the ValidateUsernames function
-	_, _, err := ValidateUsernames(mockAtlasV2Client, usernames)
+	_, _, err := validateUsernames(mockAtlasV2Client, usernames)
 
 	require.Error(t, err)
 }
 
-func TestGetUsersToAddAndRemove(t *testing.T) {
+func TestGetChangesForTeamUsers(t *testing.T) {
 	user1 := "user1"
 	user2 := "user2"
 	user3 := "user3"
@@ -147,7 +147,7 @@ func TestGetUsersToAddAndRemove(t *testing.T) {
 	// Run test cases
 	for _, testCase := range testCases {
 		t.Run(testCase.testName, func(t *testing.T) {
-			toAdd, toDelete, err := GetTeamUserUpdates(testCase.currentUsers, testCase.newUsers)
+			toAdd, toDelete, err := getChangesForTeamUsers(testCase.currentUsers, testCase.newUsers)
 			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedToAdd, toAdd)
 			assert.Equal(t, testCase.expectedToDelete, toDelete)

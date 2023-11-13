@@ -18,7 +18,7 @@ import (
 	"context"
 	"net/http"
 
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
+	atlasv2 "go.mongodb.org/atlas-sdk/v20231001002/admin"
 )
 
 type TeamUsersAPI interface {

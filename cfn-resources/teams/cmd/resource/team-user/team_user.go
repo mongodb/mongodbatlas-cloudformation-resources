@@ -23,7 +23,7 @@ import (
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
+func FilterOnlyValidUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
 		userToAdd, httpResp, err := mongoDBCloudUsersAPIClient.GetUserByUsername(context.Background(), elem)

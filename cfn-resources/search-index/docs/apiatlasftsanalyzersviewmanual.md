@@ -8,10 +8,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#charfilters" title="CharFilters">CharFilters</a>" : <i>[ Map, ... ]</i>,
+    "<a href="#charfilters" title="CharFilters">CharFilters</a>" : <i>[ String, ... ]</i>,
     "<a href="#name" title="Name">Name</a>" : <i>String</i>,
-    "<a href="#tokenfilters" title="TokenFilters">TokenFilters</a>" : <i>[ Map, ... ]</i>,
-    "<a href="#tokenizer" title="Tokenizer">Tokenizer</a>" : <i>Map</i>
+    "<a href="#tokenfilters" title="TokenFilters">TokenFilters</a>" : <i>[ String, ... ]</i>,
+    "<a href="#tokenizer" title="Tokenizer">Tokenizer</a>" : <i><a href="apiatlasftsanalyzerstokenizer.md">ApiAtlasFTSAnalyzersTokenizer</a></i>
 }
 </pre>
 
@@ -19,11 +19,11 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#charfilters" title="CharFilters">CharFilters</a>: <i>
-      - Map</i>
+      - String</i>
 <a href="#name" title="Name">Name</a>: <i>String</i>
 <a href="#tokenfilters" title="TokenFilters">TokenFilters</a>: <i>
-      - Map</i>
-<a href="#tokenizer" title="Tokenizer">Tokenizer</a>: <i>Map</i>
+      - String</i>
+<a href="#tokenizer" title="Tokenizer">Tokenizer</a>: <i><a href="apiatlasftsanalyzerstokenizer.md">ApiAtlasFTSAnalyzersTokenizer</a></i>
 </pre>
 
 ## Properties
@@ -34,7 +34,7 @@ Filters that examine text one character at a time and perform filtering operatio
 
 _Required_: No
 
-_Type_: List of Map
+_Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -61,7 +61,7 @@ Filter that performs operations such as:
 
 _Required_: No
 
-_Type_: List of Map
+_Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -71,7 +71,7 @@ Tokenizer that you want to use to create tokens. Tokens determine how Atlas Sear
 
 _Required_: No
 
-_Type_: Map
+_Type_: <a href="apiatlasftsanalyzerstokenizer.md">ApiAtlasFTSAnalyzersTokenizer</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

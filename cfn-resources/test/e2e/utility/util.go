@@ -22,7 +22,7 @@ import (
 	"testing"
 
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	"go.mongodb.org/atlas-sdk/v20231001001/admin"
+	"go.mongodb.org/atlas-sdk/v20231001002/admin"
 )
 
 func GetRandNum() *big.Int {

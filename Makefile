@@ -9,19 +9,20 @@ ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultL
 
 .PHONY: submit
 submit:
-	cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS))
+	(cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
 .PHONY: test
 test:
-	cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS))
+	(cd cfn-resources && ./cfn-testing-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
 
 .PHONY: fmt
 fmt: ## Format changed go and sh
 	@scripts/fmt.sh
 
-.PHONY: devtools
-devtools:  ## Install dev tools
+.PHONY: tools
+tools:  ## Install dev tools
 	@echo "==> Installing dev tools..."
+	go install github.com/icholy/gomajor@latest
 	go install github.com/google/addlicense@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/google/go-licenses@latest
@@ -38,3 +39,11 @@ link-git-hooks: ## Install git hooks
 .PHONY: lint
 lint: ## Run linter
 	@scripts/lint.sh
+
+.PHONY: unit-test
+unit-test:
+	(cd cfn-resources && go test $$(go list ./... | grep -v /e2e))
+
+.PHONY: update-atlas-sdk
+update-atlas-sdk: ## Update the atlas-sdk dependency
+	(cd cfn-resources && ./scripts/update-sdk.sh)

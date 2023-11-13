@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231001001/admin"
+	"go.mongodb.org/atlas-sdk/v20231001002/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.TenantName}

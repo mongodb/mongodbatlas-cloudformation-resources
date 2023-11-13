@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 
-	mock "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user/mocks"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user/mocks"
 )
 
 func TestInitUserSet(t *testing.T) {
@@ -54,7 +54,7 @@ func TestInitUserSet(t *testing.T) {
 func TestValidateUsernames(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 
-	mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+	mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 	// Create a slice of usernames, including some valid and some invalid usernames
 	validuser1 := "validuser1"
@@ -79,7 +79,7 @@ func TestValidateUsernames(t *testing.T) {
 func TestValidateUsernamesWithInvalidInput(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 
-	mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+	mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 	// Create a slice of usernames, including some valid and some invalid usernames
 	validuser1 := "validuser1"
@@ -162,15 +162,15 @@ func TestUpdateTeamUsers(t *testing.T) {
 
 	testCases := []struct {
 		testName             string
-		mockFuncExpectations func(*gomock.Controller) *mock.MockTeamUsersAPI
+		mockFuncExpectations func(*gomock.Controller) *mocks.MockTeamUsersAPI
 		existingTeamUsers    *atlasv2.PaginatedApiAppUser
 		usernames            []string
 		expectError          require.ErrorAssertionFunc
 	}{
 		{
 			testName: "succeeds but no changes are required",
-			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
-				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mocks.MockTeamUsersAPI {
+				mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
 				mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
@@ -184,8 +184,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 		},
 		{
 			testName: "fails because one user is invalid",
-			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
-				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mocks.MockTeamUsersAPI {
+				mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
 				mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
@@ -199,8 +199,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 		},
 		{
 			testName: "succeeds with one user to be added",
-			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
-				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mocks.MockTeamUsersAPI {
+				mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
 				mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
@@ -218,8 +218,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 		},
 		{
 			testName: "succeeds with one user to be removed",
-			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
-				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mocks.MockTeamUsersAPI {
+				mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
 				mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
@@ -233,8 +233,8 @@ func TestUpdateTeamUsers(t *testing.T) {
 		},
 		{
 			testName: "succeeds with one user to be added and the other removed",
-			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mock.MockTeamUsersAPI {
-				mockAtlasV2Client := mock.NewMockTeamUsersAPI(mockCtrl)
+			mockFuncExpectations: func(mockCtrl *gomock.Controller) *mocks.MockTeamUsersAPI {
+				mockAtlasV2Client := mocks.NewMockTeamUsersAPI(mockCtrl)
 
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
 				mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)

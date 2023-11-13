@@ -36,10 +36,10 @@ func FilterOnlyValidUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.Clo
 	return validUsers, nil, nil
 }
 
-func initUserSet(users []atlasv2.CloudAppUser) map[string]bool {
-	usersSet := make(map[string]bool)
-	for i := 0; i < len(users); i++ {
-		usersSet[*(users[i]).Id] = true
+func initUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
+	usersSet := make(map[string]interface{}, len(users))
+	for _, u := range users {
+		usersSet[u.GetId()] = true
 	}
 	return usersSet
 }

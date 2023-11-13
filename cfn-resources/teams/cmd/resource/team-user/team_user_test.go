@@ -41,14 +41,14 @@ func TestInitUserSet(t *testing.T) {
 	usersSet := initUserSet(users)
 
 	// Check that the map contains the expected user IDs
-	assert.True(t, usersSet[user1].(bool))
-	assert.True(t, usersSet[user2].(bool))
-	assert.True(t, usersSet[user3].(bool))
+	assert.Contains(t, usersSet, user1)
+	assert.Contains(t, usersSet, user2)
+	assert.Contains(t, usersSet, user3)
 
 	// Check that the map does not contain any unexpected user IDs
-	assert.Nil(t, usersSet["user4"])
-	assert.Nil(t, usersSet["user5"])
-	assert.Nil(t, usersSet["user6"])
+	assert.NotContains(t, usersSet, "user4")
+	assert.NotContains(t, usersSet, "user5")
+	assert.NotContains(t, usersSet, "user6")
 }
 
 func TestValidateUsernames(t *testing.T) {
@@ -68,14 +68,12 @@ func TestValidateUsernames(t *testing.T) {
 	// Call the ValidateUsernames function
 	validUsers, _, err := ValidateUsernames(mockAtlasV2Client, usernames)
 
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
+	require.NoError(t, err)
 
 	// Check that the returned slice contains only the valid usernames
-	assert.Equal(t, len(validUsers), 2)
-	assert.Equal(t, validuser1, *validUsers[0].Id)
-	assert.Equal(t, validuser2, *validUsers[1].Id)
+	assert.Len(t, validUsers, 2)
+	assert.Equal(t, validuser1, validUsers[0].GetId())
+	assert.Equal(t, validuser2, validUsers[1].GetId())
 }
 
 func TestValidateUsernamesWithInvalidInput(t *testing.T) {
@@ -95,7 +93,7 @@ func TestValidateUsernamesWithInvalidInput(t *testing.T) {
 	// Call the ValidateUsernames function
 	_, _, err := ValidateUsernames(mockAtlasV2Client, usernames)
 
-	assert.NotNil(t, err)
+	require.Error(t, err)
 }
 
 func TestGetUsersToAddAndRemove(t *testing.T) {
@@ -167,7 +165,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 		mockFuncExpectations func(*gomock.Controller) *mock.MockTeamUsersAPI
 		existingTeamUsers    *atlasv2.PaginatedApiAppUser
 		usernames            []string
-		expectError          bool
+		expectError          require.ErrorAssertionFunc
 	}{
 		{
 			testName: "succeeds but no changes are required",
@@ -182,7 +180,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 			},
 			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}},
 			usernames:         []string{validuser1, validuser2},
-			expectError:       false,
+			expectError:       require.NoError,
 		},
 		{
 			testName: "fails because one user is invalid",
@@ -197,7 +195,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 			},
 			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &invaliduser1}}},
 			usernames:         []string{validuser1, invaliduser1},
-			expectError:       true,
+			expectError:       require.Error,
 		},
 		{
 			testName: "succeeds with one user to be added",
@@ -216,7 +214,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 			},
 			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}}},
 			usernames:         []string{validuser1, validuser2},
-			expectError:       false,
+			expectError:       require.NoError,
 		},
 		{
 			testName: "succeeds with one user to be removed",
@@ -231,7 +229,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 			},
 			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}},
 			usernames:         []string{validuser2},
-			expectError:       false,
+			expectError:       require.NoError,
 		},
 		{
 			testName: "succeeds with one user to be added and the other removed",
@@ -249,7 +247,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 			},
 			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser2}}},
 			usernames:         []string{validuser1},
-			expectError:       false,
+			expectError:       require.NoError,
 		},
 	}
 
@@ -259,9 +257,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			client := testCase.mockFuncExpectations(mockCtrl)
 
-			err := UpdateTeamUsers(client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID")
-
-			assert.Equal(t, testCase.expectError, err != nil)
+			testCase.expectError(t, UpdateTeamUsers(client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID"))
 		})
 	}
 }

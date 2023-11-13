@@ -23,36 +23,6 @@ import (
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
 )
 
-type TeamUsersAPI interface {
-	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
-	AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)
-	RemoveTeamUser(ctx context.Context, orgID string, teamID string, userID string) (*http.Response, error)
-}
-
-type TeamUsersAPIService struct {
-	mongoDBCloudUsersAPI atlasv2.MongoDBCloudUsersApi
-	teamsAPI             atlasv2.TeamsApi
-}
-
-func NewTeamUsersAPIService(client *atlasv2.APIClient) *TeamUsersAPIService {
-	return &TeamUsersAPIService{
-		mongoDBCloudUsersAPI: client.MongoDBCloudUsersApi,
-		teamsAPI:             client.TeamsApi,
-	}
-}
-
-func (s *TeamUsersAPIService) GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error) {
-	return s.mongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
-}
-
-func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error) {
-	return s.teamsAPI.AddTeamUser(ctx, orgID, teamID, addUserToTeam).Execute()
-}
-
-func (s *TeamUsersAPIService) RemoveTeamUser(ctx context.Context, orgID string, teamID string, userID string) (*http.Response, error) {
-	return s.teamsAPI.RemoveTeamUser(ctx, orgID, teamID, userID).Execute()
-}
-
 func FilterOnlyValidUsernames(mongoDBCloudUsersAPIClient TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {

@@ -1,4 +1,4 @@
-.PHONY: build debug unit clean
+.PHONY: build debug clean
 tags=logging callback metrics scheduler
 cgo=0
 goos=linux
@@ -17,6 +17,3 @@ debug:
 
 clean:
 	rm -rf bin
-
-unit:
-	go test -tags=unit ./...

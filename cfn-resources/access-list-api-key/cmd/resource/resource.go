@@ -29,7 +29,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231001001/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20231001002/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.APIUserID}

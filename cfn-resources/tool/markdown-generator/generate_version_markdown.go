@@ -31,19 +31,24 @@ const mongoDBPublisherID = "bb989456c78c398a858fef18f2ca1bfc1fbba082"
 const ouputMarkdownFile = "resource-versions.md"
 
 func main() {
-	// can potentially get regions from github publish yaml file
-	var regions = []string{"af-south-1", "ap-east-1", "ap-northeast-1", "ap-northeast-2", "ap-northeast-3", "ap-south-1", "ap-southeast-1", "ap-southeast-2", "ap-southeast-3",
-		"ca-central-1", "eu-central-1", "eu-north-1", "eu-south-1", "eu-west-1", "eu-west-2", "eu-west-3", "me-south-1", "sa-east-1", "us-east-1", "us-east-2", "us-west-1", "us-west-2",
-		"ap-south-2", "ap-southeast-4", "eu-central-2", "eu-south-2", "me-central-1"}
-
+	var regions = getAWSRegionsFromEnvVar()
 	var resourceTypes = GetTypeNamesFromRpdkJSONFiles()
 
 	// map of resource type name to list of values where each index corresponds to a region
-	resourceVersions := obtainVersions(regions, resourceTypes)
+	resourceVersions := getVersions(regions, resourceTypes)
 	_ = generateMarkdown(ouputMarkdownFile, regions, resourceTypes, resourceVersions)
 }
 
-func obtainVersions(regions, resourceTypes []string) map[string][]string {
+func getAWSRegionsFromEnvVar() []string {
+	// Get the environment variable
+	envVar := os.Getenv("AWS_REGIONS")
+	if envVar == "" {
+		log.Fatal("missing env variable AWS_REGIONS")
+	}
+	return strings.Split(envVar, ",")
+}
+
+func getVersions(regions, resourceTypes []string) map[string][]string {
 	resourceValues := map[string][]string{}
 
 	for _, typeName := range resourceTypes {

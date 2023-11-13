@@ -48,6 +48,8 @@ unit-test:
 update-atlas-sdk: ## Update the atlas-sdk dependency
 	(cd cfn-resources && ./scripts/update-sdk.sh)
 
+# resulting file placed in cfn-resources/resource-versions.md
+# aws regions must defined by using AWS_REGIONS env variable, example: `export AWS_REGIONS=af-south-1,ap-east-1`
 .PHONY: generate-resource-versions-markdown
-generate-resource-versions-markdown: # resulting file placed in cfn-resources/resource-versions.md
+generate-resource-versions-markdown: 
 	(cd cfn-resources && go run tool/markdown-generator/*.go)

@@ -72,8 +72,8 @@ func validateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUs
 
 func initUserSet(users []atlasv2.CloudAppUser) map[*string]interface{} {
 	usersSet := make(map[*string]interface{}, len(users))
-	for _, u := range users {
-		usersSet[u.Id] = true
+	for i := 0; i < len(users); i++ {
+		usersSet[users[i].Id] = true
 	}
 	return usersSet
 }

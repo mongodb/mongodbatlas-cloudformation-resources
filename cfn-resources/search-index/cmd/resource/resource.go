@@ -91,7 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: status(currentModel),
 		Message:         "Create Complete",
 		ResourceModel:   currentModel,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": newSearchIndex.Status,
 			"id":        currentModel.IndexId,
 		},
@@ -157,12 +157,12 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 	return searchIndex, nil
 }
 
-// convertToAnySlice function converts a slice of map[string]interface{} to a slice of interface{}
-func convertToAnySlice(input []string) ([]interface{}, error) {
-	var result []interface{}
+// convertToAnySlice function converts a slice of map[string]any to a slice of any
+func convertToAnySlice(input []string) ([]any, error) {
+	var result []any
 
 	for _, jsonStr := range input {
-		var data interface{}
+		var data any
 		err := json.Unmarshal([]byte(jsonStr), &data)
 		if err != nil {
 			return nil, err
@@ -202,12 +202,12 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 	}, nil
 }
 
-func convertStringToInterface(fields *string) (map[string]interface{}, error) {
+func convertStringToInterface(fields *string) (map[string]any, error) {
 	if fields == nil {
 		return nil, nil
 	}
 
-	var data map[string]interface{}
+	var data map[string]any
 	if err := json.Unmarshal([]byte(*fields), &data); err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: status(currentModel),
 		Message:         "Update Complete",
 		ResourceModel:   currentModel,
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": updatedSearchIndex.Status,
 			"id":        currentModel.IndexId,
 		},
@@ -381,7 +381,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return handler.ProgressEvent{
 		OperationStatus: cloudformation.OperationStatusInProgress,
 		Message:         "Delete in progress",
-		CallbackContext: map[string]interface{}{
+		CallbackContext: map[string]any{
 			"stateName": handler.InProgress,
 			"id":        currentModel.IndexId,
 		},
@@ -418,7 +418,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-	response := make([]interface{}, 0, len(indices))
+	response := make([]any, 0, len(indices))
 	for i := range indices {
 		response = append(response, indices[i])
 	}
@@ -445,7 +445,7 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 		p.OperationStatus = cloudformation.OperationStatusInProgress
 		p.CallbackDelaySeconds = 120
 		p.Message = "Pending"
-		p.CallbackContext = map[string]interface{}{
+		p.CallbackContext = map[string]any{
 			"stateName": index.Status,
 			"id":        currentModel.IndexId,
 		}

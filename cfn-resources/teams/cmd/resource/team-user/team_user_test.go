@@ -149,8 +149,8 @@ func TestGetChangesForTeamUsers(t *testing.T) {
 		t.Run(testCase.testName, func(t *testing.T) {
 			toAdd, toDelete, err := getChangesForTeamUsers(testCase.currentUsers, testCase.newUsers)
 			require.NoError(t, err)
-			assert.Equal(t, testCase.expectedToAdd, toAdd)
-			assert.Equal(t, testCase.expectedToDelete, toDelete)
+			assert.ElementsMatch(t, testCase.expectedToAdd, toAdd)
+			assert.ElementsMatch(t, testCase.expectedToDelete, toDelete)
 		})
 	}
 }

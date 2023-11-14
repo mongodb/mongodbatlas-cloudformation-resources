@@ -28,6 +28,7 @@ tools:  ## Install dev tools
 	go install github.com/google/go-licenses@latest
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
+	go install go.uber.org/mock/mockgen@latest
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)
 
 .PHONY: link-git-hooks

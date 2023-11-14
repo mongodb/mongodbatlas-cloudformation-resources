@@ -303,7 +303,13 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 		Name:           aws.StringValue(currentModel.Name),
 		SearchAnalyzer: currentModel.SearchAnalyzer,
 		Status:         currentModel.Status,
+		Type:           currentModel.Type,
 	}
+
+	if fields, err := convertStringToInterfaceMap(currentModel.Fields); err == nil {
+		searchIndex.Fields = fields
+	}
+
 	if currentModel.Mappings != nil {
 		mapping, err := newMappings(currentModel)
 		if err != nil {
@@ -386,22 +392,32 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 		return nil, nil
 	}
 
-	sec, err := convertStringToInterface(currentModel.Mappings.Fields)
+	fields, err := convertStringToInterface(currentModel.Mappings.Fields)
 	if err != nil {
 		return nil, err
 	}
 	return &admin.ApiAtlasFTSMappings{
 		Dynamic: currentModel.Mappings.Dynamic,
-		Fields:  sec,
+		Fields:  fields,
 	}, nil
 }
 
 func convertStringToInterface(fields *string) (map[string]any, error) {
-	if fields == nil {
+	if !util.IsStringPresent(fields) {
 		return nil, nil
 	}
-
 	var data map[string]any
+	if err := json.Unmarshal([]byte(*fields), &data); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func convertStringToInterfaceMap(fields *string) ([]map[string]any, error) {
+	if !util.IsStringPresent(fields) {
+		return nil, nil
+	}
+	var data []map[string]any
 	if err := json.Unmarshal([]byte(*fields), &data); err != nil {
 		return nil, err
 	}

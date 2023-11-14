@@ -208,7 +208,6 @@
     }
   },
   "required": [
-    "Mappings",
     "ClusterName",
     "CollectionName",
     "Database"

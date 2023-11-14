@@ -146,7 +146,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### Mappings
 
-_Required_: Yes
+_Required_: No
 
 _Type_: <a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a>
 

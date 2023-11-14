@@ -125,6 +125,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 	}
 	currentModel.Status = searchIndex.Status
+	currentModel.Type = searchIndex.Type
 	return handler.ProgressEvent{
 		OperationStatus: cloudformation.OperationStatusSuccess,
 		Message:         "Read Complete",

@@ -47,3 +47,7 @@ unit-test:
 .PHONY: update-atlas-sdk
 update-atlas-sdk: ## Update the atlas-sdk dependency
 	(cd cfn-resources && ./scripts/update-sdk.sh)
+
+.PHONY: generate-mocks
+generate-mocks:
+	go generate ./...

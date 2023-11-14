@@ -18,10 +18,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231001002/admin"
+	"go.uber.org/mock/gomock"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user/mocks"
 )

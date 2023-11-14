@@ -24,7 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 #### Dynamic
 
-Flag that indicates whether the index uses dynamic or static mappings. Required if **mappings.fields** is omitted.
+Flag that indicates whether the index uses dynamic or static mappings. Required for search indexes if **mappings.fields** is omitted.
 
 _Required_: No
 
@@ -34,7 +34,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Fields
 
-One or more field specifications for the Atlas Search index. Stringify json representation of field with types and properties. Required if **mappings.dynamic** is omitted or set to **false**.
+One or more field specifications for the Atlas Search index. Stringify json representation of field with types and properties. Required for search indexes if **mappings.dynamic** is omitted or set to **false**.
 
 _Required_: No
 

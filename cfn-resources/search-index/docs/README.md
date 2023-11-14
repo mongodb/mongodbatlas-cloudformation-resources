@@ -21,8 +21,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#mappings" title="Mappings">Mappings</a>" : <i><a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a></i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
+        "<a href="#type" title="Type">Type</a>" : <i>String</i>,
         "<a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>" : <i>String</i>,
-        "<a href="#synonyms" title="Synonyms">Synonyms</a>" : <i>[ <a href="apiatlasftssynonymmappingdefinitionview.md">ApiAtlasFTSSynonymMappingDefinitionView</a>, ... ]</i>
+        "<a href="#synonyms" title="Synonyms">Synonyms</a>" : <i>[ <a href="apiatlasftssynonymmappingdefinitionview.md">ApiAtlasFTSSynonymMappingDefinitionView</a>, ... ]</i>,
+        "<a href="#fields" title="Fields">Fields</a>" : <i>String</i>
     }
 }
 </pre>
@@ -42,9 +44,11 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#mappings" title="Mappings">Mappings</a>: <i><a href="apiatlasftsmappingsviewmanual.md">ApiAtlasFTSMappingsViewManual</a></i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
+    <a href="#type" title="Type">Type</a>: <i>String</i>
     <a href="#searchanalyzer" title="SearchAnalyzer">SearchAnalyzer</a>: <i>String</i>
     <a href="#synonyms" title="Synonyms">Synonyms</a>: <i>
       - <a href="apiatlasftssynonymmappingdefinitionview.md">ApiAtlasFTSSynonymMappingDefinitionView</a></i>
+    <a href="#fields" title="Fields">Fields</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -158,6 +162,16 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Type
+
+Type of index: **search** or **vectorSearch**. Default type is **search**.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
 #### SearchAnalyzer
 
 Method applied to identify words when searching this index.
@@ -175,6 +189,16 @@ Rule sets that map words to their synonyms in this index.
 _Required_: No
 
 _Type_: List of <a href="apiatlasftssynonymmappingdefinitionview.md">ApiAtlasFTSSynonymMappingDefinitionView</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Fields
+
+Array of fields to configure this vectorSearch index. Stringify json representation of field with types and properties. Required for vector indexes. It must contain at least one **vector** type field.
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

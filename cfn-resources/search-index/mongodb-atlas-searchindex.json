@@ -53,7 +53,9 @@
           "type": "array",
           "insertionOrder": false,
           "description": "Filter that performs operations such as:\n\n- Stemming, which reduces related words, such as \"talking\", \"talked\", and \"talks\" to their root word \"talk\".\n\n- Redaction, the removal of sensitive information from public documents.",
-          "items": {"type": "string"}
+          "items": {
+            "type": "string"
+          }
         },
         "Tokenizer": {
           "$ref": "#/definitions/ApiAtlasFTSAnalyzersTokenizer",
@@ -68,11 +70,11 @@
       "properties": {
         "Dynamic": {
           "type": "boolean",
-          "description": "Flag that indicates whether the index uses dynamic or static mappings. Required if **mappings.fields** is omitted."
+          "description": "Flag that indicates whether the index uses dynamic or static mappings. Required for search indexes if **mappings.fields** is omitted."
         },
         "Fields": {
           "type": "string",
-          "description": "One or more field specifications for the Atlas Search index. Stringify json representation of field with types and properties. Required if **mappings.dynamic** is omitted or set to **false**."
+          "description": "One or more field specifications for the Atlas Search index. Stringify json representation of field with types and properties. Required for search indexes if **mappings.dynamic** is omitted or set to **false**."
         }
       },
       "additionalProperties": false
@@ -173,6 +175,10 @@
       "type": "string",
       "description": "Human-readable label that identifies this index. Within each namespace, names of all indexes in the namespace must be unique."
     },
+    "Type": {
+      "type": "string",
+      "description": "Type of index: **search** or **vectorSearch**. Default type is **search**."
+    },
     "SearchAnalyzer": {
       "type": "string",
       "description": "Method applied to identify words when searching this index."
@@ -195,6 +201,10 @@
         "$ref": "#/definitions/ApiAtlasFTSSynonymMappingDefinitionView",
         "type": "object"
       }
+    },
+    "Fields": {
+      "type": "string",
+      "description": "Array of fields to configure this vectorSearch index. Stringify json representation of field with types and properties. Required for vector indexes. It must contain at least one **vector** type field."
     }
   },
   "required": [
@@ -218,7 +228,8 @@
     "/properties/Profile",
     "/properties/ClusterName",
     "/properties/CollectionName",
-    "/properties/Database"
+    "/properties/Database",
+    "/properties/Type"
   ],
   "handlers": {
     "create": {

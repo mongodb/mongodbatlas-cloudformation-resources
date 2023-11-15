@@ -53,9 +53,7 @@
           "type": "array",
           "insertionOrder": false,
           "description": "Filter that performs operations such as:\n\n- Stemming, which reduces related words, such as \"talking\", \"talked\", and \"talks\" to their root word \"talk\".\n\n- Redaction, the removal of sensitive information from public documents.",
-          "items": {
-            "type": "string"
-          }
+          "items": {"type": "string"}
         },
         "Tokenizer": {
           "$ref": "#/definitions/ApiAtlasFTSAnalyzersTokenizer",

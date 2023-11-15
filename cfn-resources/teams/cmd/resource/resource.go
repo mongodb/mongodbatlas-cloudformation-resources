@@ -24,13 +24,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231001001/admin"
+	atlasv2 "go.mongodb.org/atlas-sdk/v20231001002/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID}
@@ -182,6 +183,7 @@ func newAtlasRoles(roles []atlasv2.CloudAccessRoleAssignment) []AtlasRole {
 	}
 	return modelRole
 }
+
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
@@ -241,42 +243,21 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// add/remove user to/from teams
-	if currentModel.Usernames != nil {
-		// get the current users list for the team
-		paginatedResp, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
-		if err != nil {
-			_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
-		}
-		usernames := currentModel.Usernames
-		var newUsers []atlasv2.AddUserToTeam
-		for ind := range usernames {
-			currentUser, isExistingUser := isUserExist(paginatedResp.Results, usernames[ind])
+	// get the current users list for the team
+	existingTeamUsers, _, err := atlasV2.TeamsApi.ListTeamUsers(context.Background(), orgID, teamID).Execute()
+	if err != nil {
+		_, _ = logger.Warnf("get assigned user to team -error (%v)", err)
+	}
+	teamUsersAPIService := teamuser.NewTeamUsersAPIService(atlasV2)
 
-			if isExistingUser {
-				// remove user from team
-				_, err := atlasV2.TeamsApi.RemoveTeamUser(context.Background(), orgID, teamID, util.SafeString(currentUser.Id)).Execute()
-				if err != nil {
-					_, _ = logger.Warnf("remove user(%s) from Team(%s) -error (%v) \n", util.SafeString(currentUser.Id), teamID, err)
-				}
-			} else {
-				// add user to team
-				user, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(context.Background(), usernames[ind]).Execute()
-				if err != nil {
-					_, _ = logger.Warnf("Error reading user (%s)  with error (%v) \n", usernames[ind], err)
-				}
-				// if the user exists, we will store its ID so that we can save as user list later
-				if user != nil {
-					newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(user.Id)})
-				}
-			}
-		}
-		// save all new users
-		if len(newUsers) > 0 {
-			atlasV2.TeamsApi.AddTeamUser(context.Background(), orgID, teamID, &newUsers)
-			if err != nil {
-				_, _ = logger.Warnf("team -Add users error (%+v) \n", err)
-			}
-		}
+	err = teamuser.UpdateTeamUsers(teamUsersAPIService, existingTeamUsers, currentModel.Usernames, orgID, teamID)
+	if err != nil {
+		_, _ = logger.Warnf("Unable to update users: %v \n", err)
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Unable to update users",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInternalFailure,
+		}, nil
 	}
 
 	// update roles to team
@@ -294,6 +275,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	return event, nil
 }
+
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
@@ -349,6 +331,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  models,
 	}, nil
 }
+
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup() // logger setup
 
@@ -452,17 +435,6 @@ func getTeam(atlasV2 *atlasv2.APIClient, currentModel *Model) (*atlasv2.TeamResp
 		return team, res, err
 	}
 	return nil, nil, errors.New("could not fetch Team as neither TeamId or Name were defined in model")
-}
-
-func isUserExist(users []atlasv2.CloudAppUser, username string) (atlasv2.CloudAppUser, bool) {
-	endLoop := len(users)
-	for ind := 0; ind < endLoop; ind++ {
-		_, _ = logger.Debugf("atlas user : %s,target User %s", users[ind].Username, username)
-		if users[ind].Username == username {
-			return users[ind], true
-		}
-	}
-	return atlasv2.CloudAppUser{}, false
 }
 
 func getProjectIDByTeamID(ctx context.Context, atlasV2 *atlasv2.APIClient, teamID string) (string, error) {

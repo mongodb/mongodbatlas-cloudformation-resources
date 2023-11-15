@@ -51,7 +51,7 @@ update-atlas-sdk: ## Update the atlas-sdk dependency
 
 .PHONY: generate-mocks
 generate-mocks:
-	go generate ./...
+	(cd cfn-resources && go generate ./...)
 
 # resulting file placed in cfn-resources/resource-versions.md
 # aws regions must defined by using AWS_REGIONS env variable, example: `export AWS_REGIONS=af-south-1,ap-east-1`

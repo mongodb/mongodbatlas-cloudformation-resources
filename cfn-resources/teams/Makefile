@@ -1,4 +1,4 @@
-.PHONY: build test clean
+.PHONY: build debug clean
 tags=logging callback metrics scheduler
 cgo=0
 goos=linux

@@ -51,4 +51,4 @@ update-atlas-sdk: ## Update the atlas-sdk dependency
 
 .PHONY: generate-mocks
 generate-mocks:
-	go generate ./...
+	(cd cfn-resources && go generate ./...)

@@ -13,7 +13,7 @@ import (
 	http "net/http"
 	reflect "reflect"
 
-	admin "go.mongodb.org/atlas-sdk/v20231001002/admin"
+	admin "go.mongodb.org/atlas-sdk/v20231115001/admin"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"github.com/aws/smithy-go/ptr"
-	"go.mongodb.org/atlas-sdk/v20231001002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115001/admin"
 )
 
 func TestConvertToAnySliceEmptyList(t *testing.T) {

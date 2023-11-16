@@ -24,7 +24,7 @@ import (
 
 func TestConvertToAnySliceEmptyList(t *testing.T) {
 	var input []string
-	var expected []interface{}
+	var expected []any
 
 	result, err := convertToAnySlice(input)
 
@@ -41,8 +41,8 @@ func TestConvertToAnySliceValidJSON(t *testing.T) {
 	input := []string{
 		`{"type": "icuNormalize"}`,
 	}
-	expected := []interface{}{
-		map[string]interface{}{"type": "icuNormalize"},
+	expected := []any{
+		map[string]any{"type": "icuNormalize"},
 	}
 
 	result, err := convertToAnySlice(input)
@@ -60,7 +60,7 @@ func TestConvertToAnySliceInvalidJSON(t *testing.T) {
 	input := []string{
 		`this is an invalid json`,
 	}
-	var expected []interface{}
+	var expected []any
 
 	result, err := convertToAnySlice(input)
 

@@ -31,7 +31,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231001002/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20231115001/admin"
 )
 
 var CreateRequiredFields = []string{constants.EventTypeName, constants.ProjectID}

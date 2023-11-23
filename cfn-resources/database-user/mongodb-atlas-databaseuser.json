@@ -96,7 +96,8 @@
       },
       "minItems": 1,
       "type": "array",
-      "uniqueItems": true
+      "uniqueItems": true,
+      "insertionOrder": false
     },
     "LdapAuthType": {
       "description": "Method by which the provided username is authenticated. Default value is `NONE`.",
@@ -117,7 +118,7 @@
       "type": "string"
     },
     "Password": {
-      "description": "The user’s password. This field is not included in the entity returned from the server.",
+      "description": "The user's password. This field is not included in the entity returned from the server.",
       "type": "string"
     },
     "ProjectId": {
@@ -131,7 +132,8 @@
       },
       "minItems": 1,
       "type": "array",
-      "uniqueItems": true
+      "uniqueItems": true,
+      "insertionOrder": false
     },
     "Scopes": {
       "description": "List that contains clusters and MongoDB Atlas Data Lakes that this database user can access. If omitted, MongoDB Cloud grants the database user access to all the clusters and MongoDB Atlas Data Lakes in the project.",
@@ -140,7 +142,8 @@
       },
       "minItems": 1,
       "type": "array",
-      "uniqueItems": true
+      "uniqueItems": true,
+      "insertionOrder": false
     },
     "UserCFNIdentifier": {
       "description": "A unique identifier comprised of the Atlas Project ID and Username.",

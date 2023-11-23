@@ -157,12 +157,10 @@
     }
   },
   "readOnlyProperties": [
-    "/properties/UserCFNIdentifier",
-    "/properties/Username"
+    "/properties/UserCFNIdentifier"
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/DatabaseName",
     "/properties/Profile"
   ],
   "required": [

@@ -57,5 +57,15 @@
         ]
       }
     }
+  },
+  "Outputs": {
+    "MongoDBIamUsername": {
+      "Value": {
+        "Fn::GetAtt": [
+          "x509User",
+          "Username"
+        ]
+      }
+    }
   }
 }

@@ -22,7 +22,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#roles" title="Roles">Roles</a>" : <i>[ <a href="roledefinition.md">roleDefinition</a>, ... ]</i>,
         "<a href="#scopes" title="Scopes">Scopes</a>" : <i>[ <a href="scopedefinition.md">scopeDefinition</a>, ... ]</i>,
-        "<a href="#username" title="Username">Username</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
@@ -46,7 +45,6 @@ Properties:
       - <a href="roledefinition.md">roleDefinition</a></i>
     <a href="#scopes" title="Scopes">Scopes</a>: <i>
       - <a href="scopedefinition.md">scopeDefinition</a></i>
-    <a href="#username" title="Username">Username</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
@@ -82,7 +80,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Labels
 
@@ -158,16 +156,6 @@ _Type_: List of <a href="scopedefinition.md">scopeDefinition</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Username
-
-Human-readable label that represents the user that authenticates to MongoDB. The format of this label depends on the method of authentication. This will be USER_ARN or ROLE_ARN if AWSIAMType is USER or ROLE. Refer https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users/operation/createDatabaseUser for details.
-
-_Required_: Yes
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 #### Profile
 
 Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided `default` is used
@@ -189,4 +177,8 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### UserCFNIdentifier
 
 A unique identifier comprised of the Atlas Project ID and Username.
+
+#### Username
+
+Human-readable label that represents the user that authenticates to MongoDB. The format of this label depends on the method of authentication. This will be USER_ARN or ROLE_ARN if AWSIAMType is USER or ROLE. Refer https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users/operation/createDatabaseUser for details.
 

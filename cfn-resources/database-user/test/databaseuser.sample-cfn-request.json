@@ -1,24 +1,24 @@
 {
-    "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::DatabaseUser",
-        "properties" : {
-            "Username" : "Name",
-            "Password" : "Name",
-            "ProjectId" : "ProjectId",
-            "Profile" : "",
-            "DatabaseName": "admin",
-            "Roles": [
-                { "RoleName": "readWrite",
-                  "DatabaseName": "testdb"
-                }
-            ],
-            "Scopes": [    
-                { "Type": "CLUSTER",
-                  "Name": "testdb"
-                }
-            ]
-        }
-    },
-    "providerLogGroupName" : "mongodb-atlas-databaseuser-logs",
-    "previousResourceState": { }
+  "desiredResourceState": {
+    "Username": "admin",
+    "Password": "admin%",
+    "ProjectId": "655dc50573473e18941e780d",
+    "Profile": "cfn-oriol-arbusi-cloud-dev",
+    "DatabaseName": "admin",
+    "Roles": [
+      {
+        "RoleName": "readWrite",
+        "DatabaseName": "testdb",
+        "CollectionName": "col1"
+      }
+    ],
+    "Scopes": [
+      {
+        "Type": "CLUSTER",
+        "Name": "testdb"
+      }
+    ]
+  },
+  "providerLogGroupName": "mongodb-atlas-databaseuser-logs",
+  "previousResourceState": {}
 }

@@ -83,15 +83,5 @@
         ]
       }
     }
-  },
-  "Outputs": {
-    "MongoDBIamUsername": {
-      "Value": {
-        "Fn::GetAtt": [
-          "ldapUser",
-          "Username"
-        ]
-      }
-    }
   }
 }

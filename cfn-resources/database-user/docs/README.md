@@ -120,7 +120,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Password
 
-The user's password. This field is not included in the entity returned from the server.
+The user’s password. This field is not included in the entity returned from the server.
 
 _Required_: No
 

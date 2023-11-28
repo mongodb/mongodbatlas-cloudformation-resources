@@ -17,7 +17,7 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/pretty v1.2.1
-	go.mongodb.org/atlas v0.35.0
+	go.mongodb.org/atlas v0.36.0
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.0.0
 	go.mongodb.org/realm v0.1.0
 	go.uber.org/mock v0.3.0

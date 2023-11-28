@@ -20,7 +20,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231115001/admin"
+	atlasv2 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 	"go.uber.org/mock/gomock"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user/mocks"

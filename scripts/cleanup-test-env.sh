@@ -19,7 +19,7 @@ set -Eeou pipefail
 projectToSkip="${PROJECT_TO_NOT_DELETE:-NONE}"
 
 # Get all project Ids inside the organization
-projects=$(atlas project ls --limit 500 -o json)
+projects=$(atlas project ls -o json)
 
 echo "${projects}" | jq -c '.results[].id' | while read -r id; do
 	# Trim the quotes from the id
@@ -37,8 +37,8 @@ echo "${projects}" | jq -c '.results[].id' | while read -r id; do
 
 	echo "Deleting projectId ${clean_project_id}"
 	# This command can fail if project has a cluster, a private endpoint, or general failure. The echo command always succeeds so the subshell will succeed and continue
-	(
-		atlas project delete "${clean_project_id}" --force ||
-			echo "Failed to delete project with ID ${clean_project_id}"
-	)
+    (
+        atlas project delete "${clean_project_id}" --force || \
+        echo "Failed to delete project with ID ${clean_project_id}"
+    )
 done

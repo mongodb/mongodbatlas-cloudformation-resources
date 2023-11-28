@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.40.1
 	github.com/aws/smithy-go v1.17.0
 	github.com/dave/jennifer v1.7.0
-	github.com/getkin/kin-openapi v0.120.0
+	github.com/getkin/kin-openapi v0.121.0
 	github.com/mongodb-forks/digest v1.0.5
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/rs/xid v1.5.0

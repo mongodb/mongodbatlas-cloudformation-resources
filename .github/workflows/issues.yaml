@@ -31,7 +31,7 @@
             --data '{
               "fields": {
                   "project": {
-                      "id": "19383"
+                      "id": "10984"
                   },
                   "summary": "HELP: GitHub Issue n. '"${ISSUE_NUMBER}"'",
                   "issuetype": {
@@ -40,7 +40,7 @@
                   "description": "This ticket tracks the following GitHub issue: '"${ISSUE_URL}"'.",
                   "components": [
                       {
-                          "id": "32225"
+                          "id": "34031"
                       }
                   ]
               }

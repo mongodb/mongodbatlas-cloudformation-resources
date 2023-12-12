@@ -33,7 +33,7 @@ jobs:
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@v4

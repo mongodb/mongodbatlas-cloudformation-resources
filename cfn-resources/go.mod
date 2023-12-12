@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.23.5
 	github.com/aws/aws-sdk-go-v2/config v1.25.6
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.42.0
-	github.com/aws/smithy-go v1.18.1
+	github.com/aws/smithy-go v1.19.0
 	github.com/dave/jennifer v1.7.0
 	github.com/getkin/kin-openapi v0.121.0
 	github.com/mongodb-forks/digest v1.0.5

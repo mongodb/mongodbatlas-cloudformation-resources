@@ -17,13 +17,6 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
-#set profile
-profile="default"
-if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
-	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
-	profile=${MONGODB_ATLAS_PROFILE}
-fi
-
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -39,9 +32,8 @@ echo "Check if a project is created $projectId"
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
-	jq --arg projectId "$projectId" \
-		--arg profile "$profile" \
-		'.ProjectId?|=$projectId |.Profile?|=$profile ' \
+	jq --arg ProjectId "$projectId" \
+		'.ProjectId?|=$ProjectId' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

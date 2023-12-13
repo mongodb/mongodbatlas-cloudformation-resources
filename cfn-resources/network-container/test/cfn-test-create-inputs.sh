@@ -48,4 +48,4 @@ cd ..
 
 ls -l inputs
 
-echo "mongocli iam projects delete ${projectId} --force"
+echo "TODO: Delete the team and api_key created above"

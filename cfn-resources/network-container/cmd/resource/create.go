@@ -83,15 +83,12 @@ func createContainer(client *util.MongoDBClient, projectID string, request *admi
 
 	_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
 
-	// args := admin.ListPeeringContainerByCloudProviderApiParams{
-	// 	GroupId:      projectID,
-	// 	ProviderName: request.ProviderName,
-	// }
+	args := admin.ListPeeringContainerByCloudProviderApiParams{
+		GroupId:      projectID,
+		ProviderName: request.ProviderName,
+	}
 
-	// containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), &args).Execute()
-
-	containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProvider(context.Background(), projectID).Execute()
-
+	containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), &args).Execute()
 	if err != nil {
 		return "", fmt.Errorf("error Containers.ListAll err:%v", err)
 	}

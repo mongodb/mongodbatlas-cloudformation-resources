@@ -20,12 +20,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var createRequiredFields = []string{constants.ProjectID, constants.RegionName, constants.AtlasCIDRBlock}
@@ -80,7 +82,13 @@ func createContainer(client *util.MongoDBClient, projectID string, request *admi
 	}
 
 	_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
-	containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProvider(context.Background(), projectID).Execute()
+
+	args := admin.ListPeeringContainerByCloudProviderApiParams{
+		GroupId:      projectID,
+		ProviderName: request.ProviderName,
+	}
+
+	containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), &args).Execute()
 	if err != nil {
 		return "", fmt.Errorf("error Containers.ListAll err:%v", err)
 	}

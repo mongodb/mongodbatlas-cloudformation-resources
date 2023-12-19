@@ -103,13 +103,13 @@ Our support will prioritise issues that contain all the required information tha
 
 * We should be able to make no changes to your provided script and **successfully run a local execution reproducing the issue**.
   * This means that you should kindly **provide all the required instructions**. This includes but not limited to:
-    * Terraform Atlas provider version used to reproduce the issue
-    * Terraform version used to reproduce the issue
-  * Configurations that **cannot be properly executed will be de-prioritised** in favour of the ones that succeed.
-* Before opening an issue, you have to try to specifically isolate it to **Terraform MongoDB Atlas** provider by **removing as many dependencies** as possible. If the issue only happens with other dependencies, then:
-  * If other terraform providers are required, please make sure you also include those. _Same "one-click reproducible issue" principle applies_.
+    * CFN resource template used to reproduce the issue
+    * CFN resource version and AWS region used to reproduce the issue
+  * Issues that **cannot be properly reproduced will be de-prioritised** in favour of the ones that succeed.
+* Before opening an issue, you have to try to specifically isolate it to the **CFN MongoDB Atlas resource** by **removing as many dependencies** as possible. If the issue only happens with other dependencies, then:
+  * If other CFN resources are required, please make sure you also include those. _Same "one-click reproducible issue" principle applies_.
   * If external components are required to replicate it, please make sure you also provides instructions on those parts.
-* Please confirm if the platform being used is Terraform OSS, Terraform Cloud, or Terraform Enterprise deployment
+
 
 ## Troubleshooting
 The following are common issues encountered when using AWS CloudFormation/CDK with MongoDB Atlas Resources: 

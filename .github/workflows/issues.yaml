@@ -68,8 +68,6 @@
                 Note that passing an IAM role to CloudFormation when creating a stack is optional. If you don't supply one, the user permissions are assumed. See the IAM permissions section in the General information guide for more information.
               
             The ticket [${{ steps.create.outputs.jira-ticket-id }}](https://jira.mongodb.org/browse/${{ steps.create.outputs.jira-ticket-id }}) was created for internal tracking.
-
-            Thanks for opening this issue. The ticket [${{ steps.create.outputs.jira-ticket-id }}](https://jira.mongodb.org/browse/${{ steps.create.outputs.jira-ticket-id }}) was created for internal tracking.
     reopen_jira_ticket:
       name: Reopen JIRA ticket
       if: github.event.action == 'reopened'

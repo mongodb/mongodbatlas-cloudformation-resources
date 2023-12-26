@@ -20,7 +20,7 @@ require (
 	go.mongodb.org/atlas v0.36.0
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
 	go.mongodb.org/realm v0.1.0
-	go.uber.org/mock v0.3.0
+	go.uber.org/mock v0.4.0
 )
 
 require (

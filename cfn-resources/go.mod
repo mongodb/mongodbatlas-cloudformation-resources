@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.49.9
 	github.com/aws/aws-sdk-go-v2 v1.24.0
 	github.com/aws/aws-sdk-go-v2/config v1.26.2
-	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.42.4
+	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.42.5
 	github.com/aws/smithy-go v1.19.0
 	github.com/dave/jennifer v1.7.0
 	github.com/getkin/kin-openapi v0.121.0

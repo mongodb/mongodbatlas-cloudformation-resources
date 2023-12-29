@@ -6,18 +6,8 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "version": false,
-        "subparser_name": null,
-        "verbose": 0,
-        "force": false,
-        "type_name": "MongoDB::Atlas::NetworkContainer",
-        "artifact_type": "r",
-        "endpoint_url": null,
-        "region": null,
-        "target_schemas": [],
-        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/network-container",
+        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/network-container",
         "protocolVersion": "2.0.0",
         "pluginVersion": "2.0.4"
     }
 }
-

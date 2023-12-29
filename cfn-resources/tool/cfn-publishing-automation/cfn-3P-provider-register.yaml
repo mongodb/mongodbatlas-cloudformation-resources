@@ -90,7 +90,8 @@ mainSteps:
                 - wget "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip"
                 - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
                 - ./sam-installation/install
-                - pip3 install cloudformation-cli cloudformation-cli-go-plugin
+                - pip3 install --force-reinstall -v "cloudformation-cli==0.2.33"
+                - pip3 install --force-reinstall -v "cloudformation-cli-go-plugin==2.0.4"
                 - export MONGODB_ATLAS_BASE_URL={{BaseUrl}}
                 - export MONGODB_ATLAS_ORG_ID={{OrgID}}
                 - export MONGODB_ATLAS_PUBLIC_KEY={{PubKey}}

@@ -17,7 +17,7 @@
 set -Eeou pipefail
 
 # sort these by alphabetical order
-AwsSsmDocumentName="CFN-MongoDB-Atlas-Resource-Register"
+AwsSsmDocumentName="TEST-CFN-Provider-Register"
 AssumeRole="arn:aws:iam::${AWS_ACCOUNT_ID}:role/DevOpsIntegrationsContractorsSSM"
 AccountIds="${AWS_ACCOUNT_ID}"
 DocumentVersion="\$DEFAULT"

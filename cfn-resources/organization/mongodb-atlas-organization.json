@@ -1,1 +1,126 @@
-
+{
+  "typeName": "MongoDB::Atlas::Organization",
+  "description": "Returns, adds, and edits organizational units in MongoDB Cloud.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/organization",
+  "definitions": {
+    "APIKey": {
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string",
+          "description": "Purpose or explanation provided when someone created this organization API key. 1 to 250 characters"
+        },
+        "Roles": {
+          "type": "array",
+          "description": "List of roles to grant this API key. If you provide this list, provide a minimum of one role and ensure each role applies to this organization.",
+          "items": {
+            "type": "string"
+          },
+          "insertionOrder": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Human-readable label that identifies the organization."
+    },
+    "APIKey": {
+      "$ref": "#/definitions/APIKey"
+    },
+    "FederatedSettingsId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the federation to link the newly created organization to. If specified, the proposed Organization Owner of the new organization must have the Organization Owner role in an organization associated with the federation."
+    },
+    "OrgOwnerId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the MongoDB Cloud user that you want to assign the Organization Owner role. This user must be a member of the same organization as the calling API key. If you provide federationSettingsId, this user must instead have the Organization Owner role on an organization in the specified federation. This parameter is required only when you authenticate with Programmatic API Keys.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
+    "AwsSecretName": {
+      "type": "string",
+      "description": "AwsSecretName used to set newly created Org credentials information.",
+      "default": "default"
+    },
+    "OrgId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects. Use the /orgs endpoint to retrieve all organizations to which the authenticated user has access.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IsDeleted": {
+      "type": "boolean",
+      "description": "Flag that indicates whether this organization has been deleted."
+    },
+    "ApiAccessListRequired": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to require API operations to originate from an IP Address added to the API access list for the specified organization."
+    },
+    "MultiFactorAuthRequired": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to require users to set up Multi-Factor Authentication (MFA) before accessing the specified organization. To learn more, see: https://www.mongodb.com/docs/atlas/security-multi-factor-authentication/."
+    },
+    "RestrictEmployeeAccess": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to block MongoDB Support from accessing Atlas infrastructure for any deployment in the specified organization without explicit permission. Once this setting is turned on, you can grant MongoDB Support a 24-hour bypass access to the Atlas deployment to resolve support issues. To learn more, see: https://www.mongodb.com/docs/atlas/security-restrict-support-access/."
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "OrgOwnerId",
+    "Name",
+    "AwsSecretName"
+  ],
+  "readOnlyProperties": [
+    "/properties/OrgId"
+  ],
+  "createOnlyProperties": [
+    "/properties/OrgOwnerId",
+    "/properties/Profile",
+    "/properties/AwsSecretName",
+    "/properties/APIKey/Roles",
+    "/properties/APIKey/Description"
+  ],
+  "primaryIdentifier": [
+    "/properties/OrgOwnerId",
+    "/properties/AwsSecretName",
+    "/properties/OrgId"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:PutSecretValue",
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/organization/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

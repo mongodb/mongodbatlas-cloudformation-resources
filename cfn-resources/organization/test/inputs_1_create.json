@@ -1,13 +1,1 @@
-{
-  "OrgOwnerId": "",
-  "Profile": "",
-  "Name": "",
-  "AwsSecretName": "",
-  "APIKey": {
-    "Description": "for cfn test api-key resource testing.",
-    "Roles": [
-      "ORG_OWNER",
-      "ORG_GROUP_CREATOR"
-    ]
-  }
-}
+

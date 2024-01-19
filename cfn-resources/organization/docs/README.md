@@ -18,7 +18,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#orgownerid" title="OrgOwnerId">OrgOwnerId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>" : <i>String</i>,
-        "<a href="#isdeleted" title="IsDeleted">IsDeleted</a>" : <i>Boolean</i>
+        "<a href="#isdeleted" title="IsDeleted">IsDeleted</a>" : <i>Boolean</i>,
+        "<a href="#apiaccesslistrequired" title="ApiAccessListRequired">ApiAccessListRequired</a>" : <i>Boolean</i>,
+        "<a href="#multifactorauthrequired" title="MultiFactorAuthRequired">MultiFactorAuthRequired</a>" : <i>Boolean</i>,
+        "<a href="#restrictemployeeaccess" title="RestrictEmployeeAccess">RestrictEmployeeAccess</a>" : <i>Boolean</i>
     }
 }
 </pre>
@@ -35,6 +38,9 @@ Properties:
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>: <i>String</i>
     <a href="#isdeleted" title="IsDeleted">IsDeleted</a>: <i>Boolean</i>
+    <a href="#apiaccesslistrequired" title="ApiAccessListRequired">ApiAccessListRequired</a>: <i>Boolean</i>
+    <a href="#multifactorauthrequired" title="MultiFactorAuthRequired">MultiFactorAuthRequired</a>: <i>Boolean</i>
+    <a href="#restrictemployeeaccess" title="RestrictEmployeeAccess">RestrictEmployeeAccess</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -106,6 +112,36 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 #### IsDeleted
 
 Flag that indicates whether this organization has been deleted.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ApiAccessListRequired
+
+Flag that indicates whether to require API operations to originate from an IP Address added to the API access list for the specified organization.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### MultiFactorAuthRequired
+
+Flag that indicates whether to require users to set up Multi-Factor Authentication (MFA) before accessing the specified organization. To learn more, see: https://www.mongodb.com/docs/atlas/security-multi-factor-authentication/.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### RestrictEmployeeAccess
+
+Flag that indicates whether to block MongoDB Support from accessing Atlas infrastructure for any deployment in the specified organization without explicit permission. Once this setting is turned on, you can grant MongoDB Support a 24-hour bypass access to the Atlas deployment to resolve support issues. To learn more, see: https://www.mongodb.com/docs/atlas/security-restrict-support-access/.
 
 _Required_: No
 

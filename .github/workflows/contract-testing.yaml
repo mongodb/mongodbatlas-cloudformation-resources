@@ -131,7 +131,8 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - run: pip install --force-reinstall -v "cloudformation-cli==0.2.33"
+      - run: pip install --force-reinstall -v "cloudformation-cli-go-plugin==2.0.4"
       - name: Run the Contract test
         shell: bash
         env:

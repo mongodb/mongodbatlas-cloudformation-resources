@@ -5,7 +5,7 @@
     "entrypoint": "handler",
     "testEntrypoint": "handler",
     "settings": {
-        "importpath": "github.com/mongodb/mongodbatlas-cloudformation-resources/project",
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/project",
         "protocolVersion": "2.0.0",
         "pluginVersion": "2.0.4"
     }

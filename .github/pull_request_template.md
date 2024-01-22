@@ -32,6 +32,7 @@ We're here to help! This is simply a reminder of what we are going to look for b
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as
   expected)
 - [ ] This change requires a documentation update
+- [ ] If changes include removal or addition of 3rd party GitHub actions, I updated our internal document. Reach out to the APIx Integration slack channel to get access to the internal document.
 
 ## Manual QA performed:
 

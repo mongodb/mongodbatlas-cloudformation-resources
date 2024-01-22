@@ -21,15 +21,17 @@ import (
 	"net/http"
 	"time"
 
+	"go.mongodb.org/atlas-sdk/v20231115003/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115003/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgOwnerID, constants.Name, constants.AwsSecretName, constants.OrgKeyDescription, constants.OrgKeyRoles}
@@ -309,16 +311,6 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 
 	return model, response, nil
 }
-
-//func closeResponse(response *http.Response) {
-//	if response != nil {
-//		err := response.Body.Close()
-//		if err != nil {
-//			_, _ = logger.Warnf("Error while closing response body: %s", err.Error())
-//			return
-//		}
-//	}
-//}
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())

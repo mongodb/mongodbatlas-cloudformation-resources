@@ -105,15 +105,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	orgID := org.Organization.GetId()
 
-	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
-	if peErr != nil {
-		return *peErr, nil
-	}
-	conn = newOrgClient.AtlasSDKLatest
-	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
-		return handleError(response, constants.CREATE, err)
-	}
-
 	// Read response
 	currentModel.OrgId = &orgID
 
@@ -125,6 +116,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return handleError(response, constants.CREATE, err)
 	}
+
+	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
+	if peErr != nil {
+		return *peErr, nil
+	}
+	conn = newOrgClient.AtlasSDKLatest
+	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
+		return handleError(response, constants.CREATE, err)
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",

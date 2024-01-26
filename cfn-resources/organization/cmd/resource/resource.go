@@ -21,16 +21,17 @@ import (
 	"net/http"
 	"time"
 
+	"go.mongodb.org/atlas-sdk/v20231115003/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgOwnerID, constants.Name, constants.AwsSecretName, constants.OrgKeyDescription, constants.OrgKeyRoles}
@@ -64,21 +65,19 @@ func setup() {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = util.Pointer(profile.DefaultProfile)
-	}
-
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if peErr != nil {
 		return *peErr, nil
 	}
+	conn := client.AtlasSDKLatest
+	ctx := context.Background()
 
 	_, _, err := secrets.Get(&req, *currentModel.AwsSecretName)
 	if err != nil {
@@ -91,7 +90,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apikeyInputs := setAPIkeyInputs(currentModel)
 
 	// Set the roles from model
-	orgInput := &atlasSDK.CreateOrganizationRequest{
+	orgInput := &admin.CreateOrganizationRequest{
 		ApiKey:     apikeyInputs,
 		OrgOwnerId: currentModel.OrgOwnerId,
 		Name:       *currentModel.Name,
@@ -99,28 +98,34 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.FederatedSettingsId != nil {
 		orgInput.FederationSettingsId = currentModel.FederatedSettingsId
 	}
-	orgCreateRequest := atlas.AtlasV2.OrganizationsApi.CreateOrganization(
-		context.Background(),
-		orgInput,
-	)
-	org, response, err := orgCreateRequest.Execute()
-
-	defer closeResponse(response)
+	org, response, err := conn.OrganizationsApi.CreateOrganization(ctx, orgInput).Execute()
 	if err != nil {
 		return handleError(response, constants.CREATE, err)
 	}
 
+	orgID := org.Organization.GetId()
+
 	// Read response
-	currentModel.OrgId = org.Organization.Id
+	currentModel.OrgId = &orgID
 
 	// Save PrivateKey in AWS SecretManager
-	secret := OrgProfile{OrgID: *currentModel.OrgId, PublicKey: *org.ApiKey.PublicKey, PrivateKey: *org.ApiKey.PrivateKey, BaseURL: atlas.Config.BaseURL}
+	secret := OrgProfile{OrgID: *currentModel.OrgId, PublicKey: *org.ApiKey.PublicKey, PrivateKey: *org.ApiKey.PrivateKey, BaseURL: client.Config.BaseURL}
 	_, _, err = secrets.PutSecret(&req, *currentModel.AwsSecretName, secret, currentModel.APIKey.Description)
 	if err != nil {
 		// Delete the APIKey from Atlas
 		response = &http.Response{StatusCode: http.StatusInternalServerError}
 		return handleError(response, constants.CREATE, err)
 	}
+
+	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
+	if peErr != nil {
+		return *peErr, nil
+	}
+	conn = newOrgClient.AtlasSDKLatest
+	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
+		return handleError(response, constants.CREATE, err)
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -131,19 +136,16 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	atlas, peErr := util.NewAtlasV2OnlyClient(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	apiKeyUserDetails, response, err := currentModel.getOrgDetails(atlas, currentModel)
-
-	defer closeResponse(response)
+	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.AtlasSDKLatest, currentModel)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
@@ -151,31 +153,30 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Completed",
-		ResourceModel:   apiKeyUserDetails}, nil
+		ResourceModel:   model}, nil
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	atlas, peErr := util.NewAtlasV2OnlyClient(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
 	if peErr != nil {
 		return *peErr, nil
 	}
+	conn := newOrgClient.AtlasSDKLatest
+	ctx := context.Background()
 
-	atlasOrg := atlasSDK.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name}
-	// Set the roles from model
-	renameOrganizationRequest := atlas.AtlasV2.OrganizationsApi.RenameOrganization(context.Background(), *currentModel.OrgId, &atlasOrg)
+	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name}
+	if _, response, err := conn.OrganizationsApi.RenameOrganization(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
+		return handleError(response, constants.UPDATE, err)
+	}
 
-	_, response, err := renameOrganizationRequest.Execute()
-
-	defer closeResponse(response)
-	if err != nil {
-		return handleError(response, constants.CREATE, err)
+	if _, response, err := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, *currentModel.OrgId, newOrganizationSettings(currentModel)).Execute(); err != nil {
+		return handleError(response, constants.UPDATE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -188,39 +189,35 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	atlas, peErr := util.NewAtlasV2OnlyClient(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
 	if peErr != nil {
 		return *peErr, nil
 	}
+	conn := newOrgClient.AtlasSDKLatest
+	ctx := context.Background()
 
 	// Callback
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
-		return deleteCallback(atlas, currentModel)
+		return deleteCallback(ctx, conn, currentModel)
 	}
 
 	// Read before delete
-	_, response, err := currentModel.getOrgDetails(atlas, currentModel)
-	defer closeResponse(response)
+	_, response, err := currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil {
 		return handleError(response, constants.DELETE, err)
 	}
 
 	// If exists
-	_, response, err = currentModel.getOrgDetails(atlas, currentModel)
-	defer closeResponse(response)
+	_, response, err = currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil && response.StatusCode == http.StatusUnauthorized {
 		return handleError(response, constants.DELETE, err)
 	}
 
-	deleteRequest := atlas.AtlasV2.OrganizationsApi.DeleteOrganization(
-		context.Background(),
-		*currentModel.OrgId,
-	)
+	deleteRequest := conn.OrganizationsApi.DeleteOrganization(ctx, *currentModel.OrgId)
 
 	// Since the Delete API is synchronous and takes more than 1 minute most of the time,
 	// we need to make the call in a goroutine and return a progress event
@@ -230,7 +227,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
 		_, response, err := deleteRequest.Execute()
-		defer closeResponse(response)
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 
@@ -261,10 +257,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   nil}, nil
 }
 
-func deleteCallback(atlas *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
+func deleteCallback(ctx context.Context, conn *admin.APIClient, currentModel *Model) (handler.ProgressEvent, error) {
 	// Read before delete
-	org, response, err := currentModel.getOrgDetails(atlas, currentModel)
-	defer closeResponse(response)
+	org, response, err := currentModel.getOrgDetails(ctx, conn, currentModel)
 	if err != nil {
 		if response.StatusCode == http.StatusUnauthorized {
 			return handler.ProgressEvent{
@@ -298,30 +293,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (model *Model) getOrgDetails(atlas *util.MongoDBClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
-	orgCreateRequest := atlas.AtlasV2.OrganizationsApi.GetOrganization(
-		context.Background(),
-		*currentModel.OrgId,
-	)
-	org, response, err := orgCreateRequest.Execute()
-	defer closeResponse(response)
+func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, currentModel *Model) (responseModel *Model, response *http.Response, err error) {
+	org, response, err := conn.OrganizationsApi.GetOrganization(ctx, *currentModel.OrgId).Execute()
 	if err != nil {
 		return nil, response, err
 	}
 	model.Name = util.Pointer(org.Name)
 	model.OrgId = org.Id
 	model.IsDeleted = org.IsDeleted
-	return model, response, nil
-}
 
-func closeResponse(response *http.Response) {
-	if response != nil {
-		err := response.Body.Close()
-		if err != nil {
-			_, _ = logger.Warnf("Error while closing response body: %s", err.Error())
-			return
-		}
+	settings, _, err := conn.OrganizationsApi.GetOrganizationSettings(ctx, org.GetId()).Execute()
+	if err != nil {
+		return nil, response, err
 	}
+	model.ApiAccessListRequired = settings.ApiAccessListRequired
+	model.MultiFactorAuthRequired = settings.MultiFactorAuthRequired
+	model.RestrictEmployeeAccess = settings.RestrictEmployeeAccess
+
+	return model, response, nil
 }
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
@@ -350,10 +339,18 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func setAPIkeyInputs(currentModel *Model) (apiKeyInput *atlasSDK.CreateAtlasOrganizationApiKey) {
-	apiKeyInput = &atlasSDK.CreateAtlasOrganizationApiKey{
+func setAPIkeyInputs(currentModel *Model) (apiKeyInput *admin.CreateAtlasOrganizationApiKey) {
+	apiKeyInput = &admin.CreateAtlasOrganizationApiKey{
 		Desc:  util.SafeString(currentModel.APIKey.Description),
 		Roles: currentModel.APIKey.Roles,
 	}
 	return apiKeyInput
+}
+
+func newOrganizationSettings(model *Model) *admin.OrganizationSettings {
+	return &admin.OrganizationSettings{
+		ApiAccessListRequired:   model.ApiAccessListRequired,
+		MultiFactorAuthRequired: model.MultiFactorAuthRequired,
+		RestrictEmployeeAccess:  model.RestrictEmployeeAccess,
+	}
 }

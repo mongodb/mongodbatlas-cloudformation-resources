@@ -11,8 +11,8 @@
       "Description": "MongoDB Atlas Organization Owner ID"
     },
     "FederatedSettingsId": {
-      "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies the federation to link the newly created organization to. If specified, the proposed Organization Owner of the new organization must have the Organization Owner role in an organization associated with the federation."
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies the federation to link the newly created organization to. If specified, the proposed Organization Owner of the new organization must have the Organization Owner role in an organization associated with the federation."
     },
     "Profile": {
       "Type": "String",
@@ -33,16 +33,34 @@
       "Description": "Purpose or explanation provided when someone created this organization API key."
     },
     "ApiAccessListRequired": {
-      "Type": "boolean",
-      "Description": "Flag that indicates whether to require API operations to originate from an IP Address added to the API access list for the specified organization."
+      "Type": "String",
+      "Description": "Flag that indicates whether to require API operations to originate from an IP Address added to the API access list for the specified organization.",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false"
     },
     "MultiFactorAuthRequired": {
-      "Type": "boolean",
-      "Description": "Flag that indicates whether to require users to set up Multi-Factor Authentication (MFA) before accessing the specified organization. To learn more, see: https://www.mongodb.com/docs/atlas/security-multi-factor-authentication/."
+      "Type": "String",
+      "Description": "Flag that indicates whether to require users to set up Multi-Factor Authentication (MFA) before accessing the specified organization. To learn more, see: https://www.mongodb.com/docs/atlas/security-multi-factor-authentication/.",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false"
     },
     "RestrictEmployeeAccess": {
-      "Type": "boolean",
-      "Description": "Flag that indicates whether to block MongoDB Support from accessing Atlas infrastructure for any deployment in the specified organization without explicit permission. Once this setting is turned on, you can grant MongoDB Support a 24-hour bypass access to the Atlas deployment to resolve support issues. To learn more, see: https://www.mongodb.com/docs/atlas/security-restrict-support-access/."
+      "Type": "String",
+      "Description": "Flag that indicates whether to block MongoDB Support from accessing Atlas infrastructure for any deployment in the specified organization without explicit permission. Once this setting is turned on, you can grant MongoDB Support a 24-hour bypass access to the Atlas deployment to resolve support issues. To learn more, see: https://www.mongodb.com/docs/atlas/security-restrict-support-access/.",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "false"
     }
   },
   "Mappings": {},
@@ -105,14 +123,6 @@
         "Fn::GetAtt": [
           "Organization",
           "OrgId"
-        ]
-      }
-    },
-    "MultiFactorAuthRequired": {
-      "Value": {
-        "Fn::GetAtt": [
-          "Organization",
-          "MultiFactorAuthRequired"
         ]
       }
     },

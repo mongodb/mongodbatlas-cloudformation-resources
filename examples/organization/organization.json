@@ -31,6 +31,18 @@
     "Description": {
       "Type": "String",
       "Description": "Purpose or explanation provided when someone created this organization API key."
+    },
+    "ApiAccessListRequired": {
+      "Type": "boolean",
+      "Description": "Flag that indicates whether to require API operations to originate from an IP Address added to the API access list for the specified organization."
+    },
+    "MultiFactorAuthRequired": {
+      "Type": "boolean",
+      "Description": "Flag that indicates whether to require users to set up Multi-Factor Authentication (MFA) before accessing the specified organization. To learn more, see: https://www.mongodb.com/docs/atlas/security-multi-factor-authentication/."
+    },
+    "RestrictEmployeeAccess": {
+      "Type": "boolean",
+      "Description": "Flag that indicates whether to block MongoDB Support from accessing Atlas infrastructure for any deployment in the specified organization without explicit permission. Once this setting is turned on, you can grant MongoDB Support a 24-hour bypass access to the Atlas deployment to resolve support issues. To learn more, see: https://www.mongodb.com/docs/atlas/security-restrict-support-access/."
     }
   },
   "Mappings": {},
@@ -58,16 +70,31 @@
         "OrgOwnerId": {
           "Ref": "OrgOwnerId"
         },
-        "Name": {"Ref":"OrgName"},
+        "Name": {
+          "Ref": "OrgName"
+        },
         "APIKey": {
-          "Roles": { "Ref": "OrgRoles" },
-          "Description": {"Ref": "Description"}
+          "Roles": {
+            "Ref": "OrgRoles"
+          },
+          "Description": {
+            "Ref": "Description"
+          }
         },
         "Profile": {
           "Ref": "Profile"
         },
         "AwsSecretName": {
           "Ref": "OrgSecret"
+        },
+        "ApiAccessListRequired": {
+          "Ref": "ApiAccessListRequired"
+        },
+        "MultiFactorAuthRequired": {
+          "Ref": "MultiFactorAuthRequired"
+        },
+        "RestrictEmployeeAccess": {
+          "Ref": "RestrictEmployeeAccess"
         }
       }
     }
@@ -78,6 +105,14 @@
         "Fn::GetAtt": [
           "Organization",
           "OrgId"
+        ]
+      }
+    },
+    "MultiFactorAuthRequired": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Organization",
+          "MultiFactorAuthRequired"
         ]
       }
     },
@@ -93,6 +128,5 @@
         ]
       }
     }
-
   }
 }

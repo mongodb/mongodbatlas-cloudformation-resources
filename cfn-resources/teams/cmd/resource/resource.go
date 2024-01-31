@@ -21,9 +21,7 @@ import (
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -45,16 +43,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, errors.New("required field not found")
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	// API call to create team
 	teamID := cast.ToString(currentModel.TeamId)
@@ -99,16 +94,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
-
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	// API call to read snapshot to read using ID field
 	teamID := cast.ToString(currentModel.TeamId)
@@ -192,16 +184,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, errors.New("required field not found")
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	team, res, err := getTeam(atlasV2, currentModel)
 	if err != nil && res != nil {
@@ -281,16 +271,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	_, _ = logger.Debugf("List Teams  Request :%+v", currentModel)
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	// Create Atlas API Request Object
 	orgID := cast.ToString(currentModel.OrgId)
@@ -337,16 +325,14 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, _ = logger.Debugf("Delete Team  Request() :%+v", currentModel)
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
 	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
+	atlasV2 := client.AtlasV2
 
 	team, _, _ := getTeam(atlasV2, currentModel)
 	if team == nil {

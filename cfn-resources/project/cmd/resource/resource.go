@@ -20,9 +20,7 @@ import (
 	"fmt"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -58,15 +56,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
@@ -164,16 +160,14 @@ func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handl
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	event, model, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
@@ -196,15 +190,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		return *errEvent, nil
 	}
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	var projectID string
 	if currentModel.Id != nil {
@@ -337,15 +329,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
 	setup()
 
-	if currentModel.Profile == nil || *currentModel.Profile == "" {
-		currentModel.Profile = aws.String(profile.DefaultProfile)
-	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
+	atlasV2 := client.AtlasV2
 	var id string
 	if currentModel.Id != nil {
 		id = *currentModel.Id

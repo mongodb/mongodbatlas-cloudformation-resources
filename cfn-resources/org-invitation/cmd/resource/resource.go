@@ -53,11 +53,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
-
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	invitationReq := &admin.OrganizationInvitationRequest{
 		TeamIds:  currentModel.TeamIds,
@@ -94,10 +93,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	invitation, res, err := atlasV2.OrganizationsApi.GetOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
@@ -134,10 +133,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	invitationReq := &admin.OrganizationInvitationUpdateRequest{
 		TeamIds: currentModel.TeamIds,
@@ -172,10 +171,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	_, res, err := atlasV2.OrganizationsApi.DeleteOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
@@ -203,10 +202,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	atlasV2 := client.AtlasV2
 	if peErr != nil {
 		return *peErr, nil
 	}
+	atlasV2 := client.AtlasV2
 
 	invitations, res, err := atlasV2.OrganizationsApi.ListOrganizationInvitationsWithParams(context.Background(), &admin.ListOrganizationInvitationsApiParams{
 		OrgId:    *currentModel.OrgId,

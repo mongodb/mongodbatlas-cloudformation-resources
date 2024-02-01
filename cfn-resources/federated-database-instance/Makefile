@@ -9,11 +9,11 @@ ldXflagsD=-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util
 
 build:
 	cfn generate
-	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflags)" -tags="$(tags)" -o bin/handler cmd/main.go
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflags)" -tags="$(tags)" -o bin/bootstrap cmd/main.go
 
 debug:
 	cfn generate
-	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflagsD)" -tags="$(tags)" -o bin/handler cmd/main.go
+	env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="$(ldXflagsD)" -tags="$(tags)" -o bin/bootstrap cmd/main.go
 
 clean:
 	rm -rf bin

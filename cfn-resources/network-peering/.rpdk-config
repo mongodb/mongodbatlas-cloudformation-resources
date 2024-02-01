@@ -2,8 +2,8 @@
     "typeName": "MongoDB::Atlas::NetworkPeering",
     "language": "go",
     "runtime": "go1.x",
-    "entrypoint": "handler",
-    "testEntrypoint": "handler",
+    "entrypoint": "bootstrap",
+    "testEntrypoint": "bootstrap",
     "settings": {
         "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/network-peering",
         "protocolVersion": "2.0.0",

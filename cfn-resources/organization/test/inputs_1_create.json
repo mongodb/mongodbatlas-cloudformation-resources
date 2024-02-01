@@ -9,5 +9,8 @@
       "ORG_OWNER",
       "ORG_GROUP_CREATOR"
     ]
-  }
+  },
+  "MultiFactorAuthRequired": "true",
+  "RestrictEmployeeAccess": "false",
+  "ApiAccessListRequired": "false"
 }

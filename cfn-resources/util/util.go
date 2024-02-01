@@ -38,6 +38,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	adminLatest "go.mongodb.org/atlas-sdk/v20231115003/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -50,9 +51,10 @@ const (
 )
 
 type MongoDBClient struct {
-	Atlas   *mongodbatlas.Client
-	AtlasV2 *atlasSDK.APIClient
-	Config  *Config
+	Atlas          *mongodbatlas.Client
+	AtlasV2        *atlasSDK.APIClient
+	AtlasSDKLatest *adminLatest.APIClient
+	Config         *Config
 }
 
 type Config struct {
@@ -279,6 +281,63 @@ func (c *Config) NewSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error
 
 	// Initialize the MongoDB Versioned Atlas Client.
 	sdkV2, err := atlasSDK.NewClient(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return sdkV2, nil
+}
+
+// NewAtlasV2OnlyClientLatest creates atlas-go-sdk client with the most recent version of Atlas SDK
+func NewAtlasV2OnlyClientLatest(req *handler.Request, profileName *string, profileNamePrefixRequired bool) (*MongoDBClient, *handler.ProgressEvent) {
+	prof, err := profile.NewProfile(req, profileName, profileNamePrefixRequired)
+
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+	}
+
+	// setup a transport to handle digest
+	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
+
+	// initialize the client
+	client, err := transport.Client()
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	c := Config{BaseURL: prof.BaseURL}
+	// New SDK Client
+	sdkV2Client, err := c.NewSDKV2LatestClient(client)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	clients := &MongoDBClient{
+		AtlasSDKLatest: sdkV2Client,
+		Config:         &c,
+	}
+
+	return clients, nil
+}
+
+func (c *Config) NewSDKV2LatestClient(client *http.Client) (*adminLatest.APIClient, error) {
+	opts := []adminLatest.ClientModifier{
+		adminLatest.UseHTTPClient(client),
+		adminLatest.UseUserAgent(userAgent),
+		adminLatest.UseBaseURL(c.BaseURL),
+		adminLatest.UseDebug(false)}
+
+	// Initialize the MongoDB Versioned Atlas Client.
+	sdkV2, err := adminLatest.NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}

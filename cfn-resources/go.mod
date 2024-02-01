@@ -4,9 +4,9 @@ go 1.20
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
-	github.com/aws/aws-sdk-go v1.49.21
+	github.com/aws/aws-sdk-go v1.50.6
 	github.com/aws/aws-sdk-go-v2 v1.24.1
-	github.com/aws/aws-sdk-go-v2/config v1.26.3
+	github.com/aws/aws-sdk-go-v2/config v1.26.6
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.42.6
 	github.com/aws/smithy-go v1.19.0
 	github.com/dave/jennifer v1.7.0
@@ -19,21 +19,22 @@ require (
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas v0.36.0
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
+	go.mongodb.org/atlas-sdk/v20231115003 v20231115003.1.0
 	go.mongodb.org/realm v0.1.0
 	go.uber.org/mock v0.4.0
 )
 
 require (
 	github.com/aws/aws-lambda-go v1.37.0 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.16.14 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.16.16 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.11 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.10 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.10 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.7.2 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.7.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.10.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.18.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.21.6 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.18.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.21.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.26.7 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect

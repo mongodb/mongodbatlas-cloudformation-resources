@@ -9,9 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
     - name: Set up Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: Build
@@ -21,13 +21,13 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
           go-version-file: 'cfn-resources/go.mod'
           cache: false # see https://github.com/golangci/golangci-lint-action/issues/807
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3.7.0
+        uses: golangci/golangci-lint-action@3a919529898de77ec3da873e3063ca4b10e7f5cc
         with:
           version: v1.52.2
           working-directory: cfn-resources
@@ -39,8 +39,8 @@ jobs:
   check-copyright:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: install tools
@@ -53,23 +53,23 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@4901385134134e04cec5fbe5ddfe3b2c5bd5d976
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Run ShellCheck
-        uses: bewuethr/shellcheck-action@v2
+        uses: bewuethr/shellcheck-action@a7092784dbc0f7b2139dd8396ab357fe4678e958
   cfn-lint:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: 'Setup cfn-lint'
-        uses: scottbrenner/cfn-lint-action@v2
+        uses: scottbrenner/cfn-lint-action@37aa911f6b6a9d8fe9fba4a96e069086a8dc95de
       - name: 'Run cfn-lint'
         run: |
           shopt -s globstar # enable globbing
@@ -78,8 +78,8 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: run-unit-test

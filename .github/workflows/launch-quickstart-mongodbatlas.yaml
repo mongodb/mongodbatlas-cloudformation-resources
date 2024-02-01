@@ -40,9 +40,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       AWS_REGION: ${{ github.event.inputs.region }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       name: Pull Code
-    - uses: FranzDiebold/github-env-vars-action@v2.7.0
+    - uses: FranzDiebold/github-env-vars-action@5be1a823971b42aea2115f6d742484ab9a314bb6
     - name: Configure Environment Outputs
       id: vars
       run: echo "sha_short=sha_short::$(git rev-parse --short=5 ${{ github.sha }})" >> "$GITHUB_OUTPUT"

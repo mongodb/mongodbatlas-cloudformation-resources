@@ -358,7 +358,7 @@ func newHTTPClient(p *profile.Profile) (*http.Client, error) {
 // more verbose logging.
 // For example,
 // env GOOS=$(goos) CGO_ENABLED=$(cgo) GOARCH=$(goarch) go build -ldflags="-s -w -X \
-// 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/handler cmd/main.go
+// 'github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug'" -tags="$(tags)" -o bin/bootstrap cmd/main.go
 func getLogLevel() logger.Level {
 	levelString, exists := os.LookupEnv(envLogLevel)
 	if !exists {

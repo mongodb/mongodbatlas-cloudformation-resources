@@ -12,6 +12,10 @@ After the above 2 steps are completed and we've agreed on a path forward:
 4. Commit and push your changes to your branch then submit a pull request against the current release branch, not master. The naming scheme of the branch is `release-staging-v#.#.#`. **Note**: There will only be one release branch at a time.  
 5. A repo maintainer will review the your pull request, and may either request additional changes or merge the pull request.
 
+## Requirements
+
+- Resources configurations, specifcally `.rpdk-config` and `Makefile` build commands, are compatible with cloudformation-cli (`cfn`) versions 0.2.34 and above.
+
 ## Testing
 We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources. Please follow below guidelines for testing to ensure quality:
 

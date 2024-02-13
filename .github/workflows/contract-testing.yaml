@@ -78,7 +78,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -121,7 +121,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -164,7 +164,7 @@ jobs:
     - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+    - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -208,7 +208,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -251,7 +251,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -293,7 +293,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -332,7 +332,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -374,7 +374,7 @@ jobs:
     - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
       with:
        use-installer: true
-    - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+    - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -418,7 +418,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -460,7 +460,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -503,7 +503,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -547,7 +547,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -590,7 +590,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -633,7 +633,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
@@ -675,7 +675,7 @@ jobs:
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@010d0da01d0b5a38af31e9c3470dbfdabdecca3a
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}

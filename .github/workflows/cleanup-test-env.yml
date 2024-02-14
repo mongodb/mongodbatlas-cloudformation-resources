@@ -15,7 +15,7 @@ jobs:
           sparse-checkout: |
             scripts
       - uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - name: Cleanup cloud-dev
+      - name: Cleanup cloud-dev CFN Test GitHub
         shell: bash
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
@@ -23,4 +23,12 @@ jobs:
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           PROJECT_TO_NOT_DELETE: ${{ vars.CLOUD_DEV_PROJECT_ID }}
+        run: ./scripts/cleanup-test-env.sh      
+      - name: Cleanup cloud-dev CFNTest
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_CFN_TEST_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
         run: ./scripts/cleanup-test-env.sh      

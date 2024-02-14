@@ -9,23 +9,26 @@ jobs:
   clenup-test-env-general:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           sparse-checkout: |
             scripts
-      - name: Cleanup cloud-dev
+      - uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
+      - name: Cleanup cloud-dev CFN Test GitHub
         shell: bash
         env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           PROJECT_TO_NOT_DELETE: ${{ vars.CLOUD_DEV_PROJECT_ID }}
+        run: ./scripts/cleanup-test-env.sh      
+      - name: Cleanup cloud-dev CFNTest
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_CFN_TEST_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
         run: ./scripts/cleanup-test-env.sh      

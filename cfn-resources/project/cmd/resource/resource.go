@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
@@ -167,7 +167,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	event, model, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
@@ -196,7 +196,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	var projectID string
 	if currentModel.Id != nil {
@@ -335,7 +335,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 	var id string
 	if currentModel.Id != nil {
 		id = *currentModel.Id

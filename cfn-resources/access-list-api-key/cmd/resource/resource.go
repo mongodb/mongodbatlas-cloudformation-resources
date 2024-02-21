@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -99,7 +99,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	entryList = append(entryList, access)
 
-	createAccessListAPIKey := atlas.AtlasV2.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
+	createAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
 	_, response, err := createAccessListAPIKey.Execute()
 
 	defer closeResponse(response)
@@ -127,7 +127,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -156,7 +156,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		access.IpAddress = currentModel.IpAddress
 	}
 
-	readAccessListAPIKey := atlas.AtlasV2.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, *access.IpAddress, apiKeyID)
+	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, *access.IpAddress, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
 	defer closeResponse(response)
 	if err != nil {
@@ -186,7 +186,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -215,7 +215,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		access.IpAddress = currentModel.IpAddress
 	}
 
-	deleteAccessListAPIKey := atlas.AtlasV2.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, *access.IpAddress)
+	deleteAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, *access.IpAddress)
 	_, response, err := deleteAccessListAPIKey.Execute()
 
 	defer closeResponse(response)
@@ -242,7 +242,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Profile == nil {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -250,7 +250,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := *currentModel.OrgId
 	apiKeyID := *currentModel.APIUserId
 
-	listAccessListAPIKey := atlas.AtlasV2.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID)
+	listAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID)
 
 	accessListResponse, response, err := listAccessListAPIKey.Execute()
 

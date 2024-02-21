@@ -43,7 +43,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	result, resp, err := client.AtlasV2.ProjectIPAccessListApi.ListProjectIpAccessLists(context.Background(), *currentModel.ProjectId).Execute()
+	result, resp, err := client.Atlas20231115002.ProjectIPAccessListApi.ListProjectIpAccessLists(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp), nil

@@ -108,7 +108,7 @@ func deleteEntriesForUpdate(list []AccessListDefinition, projectID string, clien
 				nil)
 		}
 
-		if _, resp, err := client.AtlasV2.ProjectIPAccessListApi.DeleteProjectIpAccessList(context.Background(), projectID, entry).Execute(); err != nil {
+		if _, resp, err := client.Atlas20231115002.ProjectIPAccessListApi.DeleteProjectIpAccessList(context.Background(), projectID, entry).Execute(); err != nil {
 			if resp.StatusCode == http.StatusNotFound {
 				_, _ = logger.Warnf("Accesslist entry Not Found: %s, err:%+v", entry, err)
 				continue
@@ -130,7 +130,7 @@ func deleteEntries(model *Model, client *util.MongoDBClient) handler.ProgressEve
 				nil)
 		}
 
-		if _, resp, err := client.AtlasV2.ProjectIPAccessListApi.DeleteProjectIpAccessList(context.Background(), *model.ProjectId, entry).Execute(); err != nil {
+		if _, resp, err := client.Atlas20231115002.ProjectIPAccessListApi.DeleteProjectIpAccessList(context.Background(), *model.ProjectId, entry).Execute(); err != nil {
 			return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error deleting the resource: %s", err.Error()),
 				resp)
 		}
@@ -148,7 +148,7 @@ func getAllEntries(client *util.MongoDBClient, projectID string) (*admin.Paginat
 		IncludeCount: &includeCount,
 		ItemsPerPage: &itemPerPage,
 	}
-	accessList, _, err := client.AtlasV2.ProjectIPAccessListApi.ListProjectIpAccessListsWithParams(context.Background(), listOptions).Execute()
+	accessList, _, err := client.Atlas20231115002.ProjectIPAccessListApi.ListProjectIpAccessListsWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
 		return nil, err
 	}

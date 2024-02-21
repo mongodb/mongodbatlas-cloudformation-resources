@@ -64,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -74,7 +74,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
-	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.CreateApiKey(
+	apiKeyRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		&apiKeyInput,
@@ -101,7 +101,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Assign Org APIKey to given projects i.e. projectAssignments
 	if len(currentModel.ProjectAssignments) > 0 {
 		for i := range currentModel.ProjectAssignments {
-			handlerEvent, err := assignProjects(atlas, currentModel.ProjectAssignments[i], currentModel.APIUserId)
+			handlerEvent, err := assignProjects(client, currentModel.ProjectAssignments[i], currentModel.APIUserId)
 			if err != nil {
 				return handlerEvent, nil
 			}
@@ -164,7 +164,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -173,7 +173,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Desc:  currentModel.Description,
 		Roles: currentModel.Roles,
 	}
-	updateRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.UpdateApiKey(
+	updateRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.UpdateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -194,7 +194,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	existingModel.readAPIKeyDetails(*apiKeyUserDetails)
 
 	// update the project assignments
-	_, response, err = updateProjectAssignments(atlas, currentModel, &existingModel)
+	_, response, err = updateProjectAssignments(client, currentModel, &existingModel)
 	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, constants.UPDATE, err)
@@ -220,11 +220,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.DeleteApiKey(
+	deleteRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -255,11 +255,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.ListApiKeys(
+	apiKeyRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.ListApiKeys(
 		context.Background(),
 		*currentModel.OrgId,
 	)
@@ -327,8 +327,8 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func assignProjects(atlasClient *util.MongoDBClient, project ProjectAssignment, apiUserID *string) (handler.ProgressEvent, error) {
-	_, updateResponse, err := updateOrgKeyProjectRoles(project, atlasClient, apiUserID)
+func assignProjects(client *util.MongoDBClient, project ProjectAssignment, apiUserID *string) (handler.ProgressEvent, error) {
+	_, updateResponse, err := updateOrgKeyProjectRoles(project, client, apiUserID)
 	defer closeResponse(updateResponse)
 	if err != nil {
 		return handleError(updateResponse, constants.CREATE, err)
@@ -336,8 +336,8 @@ func assignProjects(atlasClient *util.MongoDBClient, project ProjectAssignment, 
 	return handler.ProgressEvent{}, err
 }
 
-func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *string, *http.Response, error) {
-	apiKeyRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.GetApiKey(
+func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *string, *http.Response, error) {
+	apiKeyRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -351,12 +351,12 @@ func getAPIkeyDetails(req *handler.Request, atlas *util.MongoDBClient, currentMo
 	return apiKeyUserDetails, arn, response, err
 }
 
-func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, atlas *util.MongoDBClient, orgKeyID *string) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
+func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
 	// Set the roles from model
 	projectAPIKeyInput := atlasSDK.UpdateAtlasProjectApiKey{
 		Roles: projectAssignment.Roles,
 	}
-	assignAPIRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
+	assignAPIRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,
@@ -366,8 +366,8 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, atlas *util.M
 	return assignAPIRequest.Execute()
 }
 
-func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, atlas *util.MongoDBClient, orgKeyID *string) (map[string]interface{}, *http.Response, error) {
-	unAssignAPIRequest := atlas.AtlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
+func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (map[string]interface{}, *http.Response, error) {
+	unAssignAPIRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,

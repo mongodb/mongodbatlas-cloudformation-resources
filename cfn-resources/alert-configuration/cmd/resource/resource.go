@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// Check if  already exist
 	if currentModel.Id != nil && *currentModel.Id != "" {
@@ -123,7 +123,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
@@ -168,7 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
@@ -235,7 +235,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {

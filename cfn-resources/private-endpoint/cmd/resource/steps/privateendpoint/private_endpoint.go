@@ -135,13 +135,13 @@ func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackCo
 	return callBackMap, err
 }
 
-func Create(mongodbClient *util.MongoDBClient, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
+func Create(client *util.MongoDBClient, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
 	for _, endpoint := range privateEndpointInput {
 		interfaceEndpointRequest := &admin.CreateEndpointRequest{
 			Id: &endpoint.InterfaceEndpointID,
 		}
 
-		_, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(),
+		_, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(),
 			groupID,
 			ProviderName,
 			endpointServiceID,
@@ -166,7 +166,7 @@ func Create(mongodbClient *util.MongoDBClient, groupID string, privateEndpointIn
 	return progressevent.GetInProgressProgressEvent("Adding private endpoint", callBackMap, nil, 20)
 }
 
-func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID string, req handler.Request) (*ValidationResponse, *handler.ProgressEvent) {
+func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req handler.Request) (*ValidationResponse, *handler.ProgressEvent) {
 	callBackContext := privateEndpointCreationCallBackContext{}
 
 	err := callBackContext.FillStruct(req.CallbackContext)
@@ -180,7 +180,7 @@ func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID strin
 	for i := range callBackContext.PrivateEndpoints {
 		ids[i] = callBackContext.PrivateEndpoints[i].InterfaceEndpointID
 		if callBackContext.PrivateEndpoints[i].Status != StatusAvailable {
-			privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(),
+			privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(),
 				groupID,
 				ProviderName,
 				callBackContext.PrivateEndpoints[i].InterfaceEndpointID,
@@ -231,9 +231,9 @@ func (i AtlasPrivateEndpointInput) ToString() string {
 	return fmt.Sprintf("%s%s", i.VpcID, i.SubnetIDs)
 }
 
-func Delete(mongodbClient *util.MongoDBClient, groupID string, endpointServiceID string, interfaceEndpoints []string) *handler.ProgressEvent {
+func Delete(client *util.MongoDBClient, groupID string, endpointServiceID string, interfaceEndpoints []string) *handler.ProgressEvent {
 	for _, intEndpoints := range interfaceEndpoints {
-		_, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(),
+		_, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(),
 			groupID,
 			ProviderName,
 			intEndpoints,

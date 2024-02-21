@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 	ctx := context.Background()
-	ldapConf, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(ctx, *currentModel.ProjectId).Execute()
+	ldapConf, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfiguration(ctx, *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -71,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ldapReq := currentModel.GetAtlasModel()
 
-	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
+	LDAPConfigResponse, resp, err := client.Atlas20231115002.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -131,7 +131,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ldapReq := currentModel.GetAtlasModel()
 
 	ctx := context.Background()
-	LDAPConfigResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
+	LDAPConfigResponse, resp, err := client.Atlas20231115002.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -166,7 +166,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ldapReq.Ldap.AuthenticationEnabled = aws.Bool(false)
 
 	ctx := context.Background()
-	_, resp, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
+	_, resp, err := client.Atlas20231115002.LDAPConfigurationApi.SaveLDAPConfiguration(ctx, *currentModel.ProjectId, ldapReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -200,7 +200,7 @@ func (m *Model) CompleteByResponse(resp admin.UserSecurity) {
 
 func get(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *handler.ProgressEvent) {
 	ctx := context.Background()
-	ldapConf, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(ctx, groupID).Execute()
+	ldapConf, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfiguration(ctx, groupID).Execute()
 	if err != nil {
 		errPe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 		return nil, &errPe

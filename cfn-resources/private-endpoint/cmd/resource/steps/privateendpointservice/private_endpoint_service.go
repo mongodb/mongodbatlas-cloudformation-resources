@@ -52,13 +52,13 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 	return nil
 }
 
-func Create(mongodbClient util.MongoDBClient, region string, groupID string) handler.ProgressEvent {
+func Create(client util.MongoDBClient, region string, groupID string) handler.ProgressEvent {
 	privateEndpointRequest := &admin.CloudProviderEndpointServiceRequest{
 		ProviderName: ProviderName,
 		Region:       region,
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpointService(
+	privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.CreatePrivateEndpointService(
 		context.Background(),
 		groupID,
 		privateEndpointRequest).Execute()
@@ -92,7 +92,7 @@ func Create(mongodbClient util.MongoDBClient, region string, groupID string) han
 		nil, 20)
 }
 
-func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID string, req handler.Request) (*admin.EndpointService, *handler.ProgressEvent) {
+func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req handler.Request) (*admin.EndpointService, *handler.ProgressEvent) {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 
 	err := PrivateEndpointCallBackContext.FillStruct(req.CallbackContext)
@@ -102,7 +102,7 @@ func ValidateCreationCompletion(mongodbClient *util.MongoDBClient, groupID strin
 		return nil, &ev
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), groupID,
+	privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), groupID,
 		ProviderName, PrivateEndpointCallBackContext.ID).Execute()
 	if err != nil {
 		ev := progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),

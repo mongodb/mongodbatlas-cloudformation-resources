@@ -48,7 +48,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		GroupId:      *currentModel.ProjectId,
 		InvitationId: *currentModel.Id,
 	}
-	_, resp, err := client.AtlasV2.ProjectsApi.DeleteProjectInvitationWithParams(context.Background(), params).Execute()
+	_, resp, err := client.Atlas20231115002.ProjectsApi.DeleteProjectInvitationWithParams(context.Background(), params).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}

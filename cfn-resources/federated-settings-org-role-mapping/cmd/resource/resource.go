@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	orgID := currentModel.OrgId
 
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody).Execute()
+	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.CreateRoleMapping(context.Background(), *federationSettingsID, *orgID, requestBody).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), "DUPLICATE_ROLE_MAPPING") {
 			return progressevent.GetFailedEventByCode("Resource already exists",
@@ -99,7 +99,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
 
-	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.
+	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.
 		GetRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID).
 		Execute()
 	if err != nil {
@@ -144,7 +144,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// preparing model request
 	requestBody, _, _ := modelToRoleMappingRequest(currentModel)
-	federatedSettingsOrganizationRoleMapping, resp, err := client.AtlasV2.FederatedAuthenticationApi.
+	federatedSettingsOrganizationRoleMapping, resp, err := client.Atlas20231115002.FederatedAuthenticationApi.
 		UpdateRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID, requestBody).
 		Execute()
 	if err != nil {
@@ -181,7 +181,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 	roleMappingID := currentModel.Id
-	resp, err := client.AtlasV2.FederatedAuthenticationApi.
+	resp, err := client.Atlas20231115002.FederatedAuthenticationApi.
 		DeleteRoleMapping(context.Background(), *federationSettingsID, *roleMappingID, *orgID).
 		Execute()
 	if err != nil {
@@ -212,7 +212,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	federationSettingsID := currentModel.FederationSettingsId
 	orgID := currentModel.OrgId
 
-	federatedSettingsOrganizationRoleMappings, resp, err := client.AtlasV2.
+	federatedSettingsOrganizationRoleMappings, resp, err := client.Atlas20231115002.
 		FederatedAuthenticationApi.
 		ListRoleMappings(context.Background(), *federationSettingsID, *orgID).
 		Execute()
@@ -300,7 +300,7 @@ func flattenRoleAssignments(assignments []admin.RoleAssignment) []RoleAssignment
 
 func isRoleMappingExists(currentModel *Model, client *util.MongoDBClient) bool {
 	var isExists bool
-	fedSettingsConnectedOrg, _, err := client.AtlasV2.FederatedAuthenticationApi.
+	fedSettingsConnectedOrg, _, err := client.Atlas20231115002.FederatedAuthenticationApi.
 		GetRoleMapping(context.Background(), *currentModel.FederationSettingsId, *currentModel.Id, *currentModel.OrgId).
 		Execute()
 	if err != nil {

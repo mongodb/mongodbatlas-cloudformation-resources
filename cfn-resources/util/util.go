@@ -53,7 +53,7 @@ const (
 type MongoDBClient struct {
 	Atlas            *mongodbatlas.Client
 	Atlas20231115002 *admin20231115002.APIClient
-	AtlasSDKLatest   *adminLatest.APIClient
+	AtlasSDK         *adminLatest.APIClient
 	Config           *Config
 }
 
@@ -322,8 +322,8 @@ func NewAtlasV2OnlyClientLatest(req *handler.Request, profileName *string, profi
 	}
 
 	clients := &MongoDBClient{
-		AtlasSDKLatest: sdkV2Client,
-		Config:         &c,
+		AtlasSDK: sdkV2Client,
+		Config:   &c,
 	}
 
 	return clients, nil

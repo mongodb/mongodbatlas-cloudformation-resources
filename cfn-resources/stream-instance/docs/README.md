@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>" : <i><a href="streamsdataprocessregion.md">StreamsDataProcessRegion</a></i>,
         "<a href="#streamconfig" title="StreamConfig">StreamConfig</a>" : <i><a href="streamconfig.md">StreamConfig</a></i>,
+        "<a href="#connections" title="Connections">Connections</a>" : <i><a href="streamsconnection.md">StreamsConnection</a></i>,
         "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>
     }
 }
@@ -28,6 +29,7 @@ Properties:
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>: <i><a href="streamsdataprocessregion.md">StreamsDataProcessRegion</a></i>
     <a href="#streamconfig" title="StreamConfig">StreamConfig</a>: <i><a href="streamconfig.md">StreamConfig</a></i>
+    <a href="#connections" title="Connections">Connections</a>: <i><a href="streamsconnection.md">StreamsConnection</a></i>
     <a href="#links" title="Links">Links</a>: <i>
       - <a href="link.md">Link</a></i>
 </pre>
@@ -64,6 +66,16 @@ _Type_: <a href="streamconfig.md">StreamConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### Connections
+
+Settings that define a connection to an external data store.
+
+_Required_: No
+
+_Type_: <a href="streamsconnection.md">StreamsConnection</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### Links
 
 _Required_: No
@@ -90,7 +102,7 @@ Unique 24-hexadecimal character string that identifies the project.
 
 #### Connections
 
-Returns the <code>Connections</code> value.
+Settings that define a connection to an external data store.
 
 #### GroupId
 

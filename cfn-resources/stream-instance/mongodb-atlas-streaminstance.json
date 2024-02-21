@@ -17,43 +17,21 @@
       },
       "additionalProperties": false
     },
-    "ApiStreamsAWSRegionView": {
+    "BaseStreamsRegion": {
       "type": "string",
-      "description": "Atlas Streams AWS Regions.",
-      "enum": [
-        "SYDNEY_AUS",
-        "MUMBAI_IND",
-        "FRANKFURT_DEU",
-        "DUBLIN_IRL",
-        "LONDON_GBR",
-        "VIRGINIA_USA",
-        "OREGON_USA",
-        "SAOPAULO_BRA",
-        "SINGAPORE_SGP"
-      ]
-    },
-    "ApiStreamsAzureRegionView": {
-      "type": "string",
-      "description": "Atlas Streams Azure Regions.",
+      "description": "Name of the cloud provider region hosting Atlas Stream Processing.",
       "enum": [
         "VIRGINIA_USA",
         "CALIFORNIA_USA",
         "SINGAPORE_SGP",
         "DUBLIN_IRL",
         "AMSTERDAM_NLD",
-        "SYDNEY_AUS"
-      ]
-    },
-    "BaseStreamsRegion": {
-      "type": "object",
-      "description": "Name of the cloud provider region hosting Atlas Stream Processing.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/ApiStreamsAWSRegionView"
-        },
-        {
-          "$ref": "#/definitions/ApiStreamsAzureRegionView"
-        }
+        "SYDNEY_AUS",
+        "MUMBAI_IND",
+        "FRANKFURT_DEU",
+        "LONDON_GBR",
+        "OREGON_USA",
+        "SAOPAULO_BRA"
       ]
     },
     "StreamsDataProcessRegion": {
@@ -190,60 +168,9 @@
       },
       "additionalProperties": false
     },
-    "StreamsClusterConnection": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/definitions/StreamsConnection"
-        },
-        {
-          "properties": {
-            "ClusterName": {
-              "type": "string",
-              "description": "Name of the cluster configured for this connection."
-            },
-            "DbRoleToExecute": {
-              "$ref": "#/definitions/DBRoleToExecute"
-            }
-          },
-          "additionalProperties": false
-        }
-      ]
-    },
-    "StreamsKafkaConnection": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/definitions/StreamsConnection"
-        },
-        {
-          "properties": {
-            "Authentication": {
-              "$ref": "#/definitions/StreamsKafkaAuthentication"
-            },
-            "BootstrapServers": {
-              "type": "string",
-              "description": "Comma separated list of server addresses."
-            },
-            "Security": {
-              "$ref": "#/definitions/StreamsKafkaSecurity"
-            }
-          },
-          "additionalProperties": false
-        }
-      ]
-    },
     "StreamsConnection": {
       "type": "object",
       "description": "Settings that define a connection to an external data store.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/StreamsClusterConnection"
-        },
-        {
-          "$ref": "#/definitions/StreamsKafkaConnection"
-        }
-      ],
       "properties": {
         "Links": {
           "type": "array",
@@ -265,6 +192,23 @@
             "Cluster",
             "Sample"
           ]
+        },
+        "Authentication": {
+          "$ref": "#/definitions/StreamsKafkaAuthentication"
+        },
+        "BootstrapServers": {
+          "type": "string",
+          "description": "Comma separated list of server addresses."
+        },
+        "Security": {
+          "$ref": "#/definitions/StreamsKafkaSecurity"
+        },
+        "ClusterName": {
+          "type": "string",
+          "description": "Name of the cluster configured for this connection."
+        },
+        "DbRoleToExecute": {
+          "$ref": "#/definitions/DBRoleToExecute"
         }
       },
       "additionalProperties": false

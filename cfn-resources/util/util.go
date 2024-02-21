@@ -38,7 +38,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
 	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
-	adminLatest "go.mongodb.org/atlas-sdk/v20231115003/admin"
+	adminLatest "go.mongodb.org/atlas-sdk/v20231115007/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"

@@ -230,7 +230,11 @@
       "type": "string"
     },
     "Connections": {
-      "$ref": "#/definitions/StreamsConnection"
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/StreamsConnection"
+      },
+      "insertionOrder": false
     },
     "GroupId": {
       "description": "Unique 24-hexadecimal character string that identifies the project.",

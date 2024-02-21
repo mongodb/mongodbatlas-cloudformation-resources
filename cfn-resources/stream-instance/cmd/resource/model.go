@@ -8,7 +8,7 @@ type Model struct {
 	DataProcessRegion *StreamsDataProcessRegion `json:",omitempty"`
 	StreamConfig      *StreamConfig             `json:",omitempty"`
 	Id                *string                   `json:",omitempty"`
-	Connections       *StreamsConnection        `json:",omitempty"`
+	Connections       []StreamsConnection       `json:",omitempty"`
 	GroupId           *string                   `json:",omitempty"`
 	Hostnames         []string                  `json:",omitempty"`
 	Links             []Link                    `json:",omitempty"`

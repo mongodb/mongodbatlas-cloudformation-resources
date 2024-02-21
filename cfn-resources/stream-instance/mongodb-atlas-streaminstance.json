@@ -1,0 +1,362 @@
+{
+  "typeName": "MongoDB::Atlas::StreamInstance",
+  "description": "Returns, adds, edits, and removes stream instances.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+  "definitions": {
+    "Link": {
+      "type": "object",
+      "properties": {
+        "Href": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://cloud.mongodb.com/api/atlas`."
+        },
+        "Rel": {
+          "type": "string",
+          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://cloud.mongodb.com/api/atlas`."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiStreamsAWSRegionView": {
+      "type": "string",
+      "description": "Atlas Streams AWS Regions.",
+      "enum": [
+        "SYDNEY_AUS",
+        "MUMBAI_IND",
+        "FRANKFURT_DEU",
+        "DUBLIN_IRL",
+        "LONDON_GBR",
+        "VIRGINIA_USA",
+        "OREGON_USA",
+        "SAOPAULO_BRA",
+        "SINGAPORE_SGP"
+      ]
+    },
+    "ApiStreamsAzureRegionView": {
+      "type": "string",
+      "description": "Atlas Streams Azure Regions.",
+      "enum": [
+        "VIRGINIA_USA",
+        "CALIFORNIA_USA",
+        "SINGAPORE_SGP",
+        "DUBLIN_IRL",
+        "AMSTERDAM_NLD",
+        "SYDNEY_AUS"
+      ]
+    },
+    "BaseStreamsRegion": {
+      "type": "object",
+      "description": "Name of the cloud provider region hosting Atlas Stream Processing.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ApiStreamsAWSRegionView"
+        },
+        {
+          "$ref": "#/definitions/ApiStreamsAzureRegionView"
+        }
+      ]
+    },
+    "StreamsDataProcessRegion": {
+      "type": "object",
+      "description": "Information about the cloud provider region in which MongoDB Cloud processes the stream.",
+      "properties": {
+        "CloudProvider": {
+          "type": "string",
+          "description": "Label that identifies the cloud service provider where MongoDB Cloud performs stream processing. Currently, this parameter supports AWS only.",
+          "enum": [
+            "AWS",
+            "GCP",
+            "AZURE",
+            "TENANT",
+            "SERVERLESS"
+          ]
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "insertionOrder": false
+        },
+        "Region": {
+          "$ref": "#/definitions/BaseStreamsRegion"
+        }
+      },
+      "required": [
+        "cloudProvider",
+        "region"
+      ],
+      "additionalProperties": false
+    },
+    "StreamConfig": {
+      "type": "object",
+      "description": "Configuration options for an Atlas Stream Processing Instance.",
+      "properties": {
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "insertionOrder": false
+        },
+        "Tier": {
+          "type": "string",
+          "description": "Selected tier for the Stream Instance. Configures Memory / VCPU allowances.",
+          "enum": [
+            "SP30"
+          ],
+          "title": "Stream Instance Tier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsKafkaAuthentication": {
+      "type": "object",
+      "description": "User credentials required to connect to a Kafka Cluster. Includes the authentication type, as well as the parameters for that authentication mode.",
+      "properties": {
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "insertionOrder": false
+        },
+        "Mechanism": {
+          "type": "string",
+          "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512."
+        },
+        "Password": {
+          "type": "string",
+          "format": "password",
+          "description": "Password of the account to connect to the Kafka cluster."
+        },
+        "Username": {
+          "type": "string",
+          "description": "Username of the account to connect to the Kafka cluster."
+        }
+      },
+      "additionalProperties": false
+    },
+    "DBRoleToExecute": {
+      "type": "object",
+      "description": "The name of a Built in or Custom DB Role to connect to an Atlas Cluster.",
+      "properties": {
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "insertionOrder": false
+        },
+        "Role": {
+          "type": "string",
+          "description": "The name of the role to use. Can be a built in role or a custom role."
+        },
+        "Type": {
+          "type": "string",
+          "description": "Type of the DB role. Can be either BuiltIn or Custom.",
+          "enum": [
+            "BUILT_IN",
+            "CUSTOM"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsKafkaSecurity": {
+      "type": "object",
+      "description": "Properties for the secure transport connection to Kafka. For SSL, this can include the trusted certificate to use.",
+      "properties": {
+        "BrokerPublicCertificate": {
+          "type": "string",
+          "description": "A trusted, public x509 certificate for connecting to Kafka over SSL."
+        },
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "insertionOrder": false
+        },
+        "Protocol": {
+          "type": "string",
+          "description": "Describes the transport type. Can be either PLAINTEXT or SSL."
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsClusterConnection": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/StreamsConnection"
+        },
+        {
+          "properties": {
+            "ClusterName": {
+              "type": "string",
+              "description": "Name of the cluster configured for this connection."
+            },
+            "DbRoleToExecute": {
+              "$ref": "#/definitions/DBRoleToExecute"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "StreamsKafkaConnection": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/StreamsConnection"
+        },
+        {
+          "properties": {
+            "Authentication": {
+              "$ref": "#/definitions/StreamsKafkaAuthentication"
+            },
+            "BootstrapServers": {
+              "type": "string",
+              "description": "Comma separated list of server addresses."
+            },
+            "Security": {
+              "$ref": "#/definitions/StreamsKafkaSecurity"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "StreamsConnection": {
+      "type": "object",
+      "description": "Settings that define a connection to an external data store.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/StreamsClusterConnection"
+        },
+        {
+          "$ref": "#/definitions/StreamsKafkaConnection"
+        }
+      ],
+      "properties": {
+        "Links": {
+          "type": "array",
+          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+          "items": {
+            "$ref": "#/definitions/Link"
+          },
+          "insertionOrder": false
+        },
+        "Name": {
+          "type": "string",
+          "description": "Human-readable label that identifies the stream connection."
+        },
+        "Type": {
+          "type": "string",
+          "description": "Type of the connection. Can be either Cluster or Kafka.",
+          "enum": [
+            "Kafka",
+            "Cluster",
+            "Sample"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Name": {
+      "description": "Human-readable label that identifies the stream connection.",
+      "type": "string"
+    },
+    "DataProcessRegion": {
+      "$ref": "#/definitions/StreamsDataProcessRegion"
+    },
+    "StreamConfig": {
+      "$ref": "#/definitions/StreamConfig"
+    },
+    "Id": {
+      "description": "Unique 24-hexadecimal character string that identifies the project.",
+      "type": "string"
+    },
+    "Connections": {
+      "$ref": "#/definitions/StreamsConnection"
+    },
+    "GroupId": {
+      "description": "Unique 24-hexadecimal character string that identifies the project.",
+      "type": "string"
+    },
+    "Hostnames": {
+      "description": "List that contains the hostnames assigned to the stream instance.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "insertionOrder": false
+    },
+    "Links": {
+      "type": "array",
+      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
+      "items": {
+        "$ref": "#/definitions/Link"
+      },
+      "insertionOrder": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "Name",
+    "DataProcessRegion",
+    "StreamConfig"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/Connections",
+    "/properties/GroupId",
+    "/properties/Hostnames",
+    "/properties/Links"
+  ],
+  "primaryIdentifier": [
+    "/properties/Name"
+  ],
+  "createOnlyProperties": [
+    "/properties/Name"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/serverless-instance/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

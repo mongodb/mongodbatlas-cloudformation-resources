@@ -149,11 +149,13 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 	params := currentModel.getParams()
 	// From https://jira.mongodb.org/browse/HELP-55421
 	// Even after deleting and recreating the schedules, it is required to fetch the ID of the policy in order to be passed to the update request.
-	backupSchedule, resp, err := client.AtlasV2.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-	} else if len(backupSchedule.Policies) == 1 && len(params.Policies) == 1 {
-		params.Policies[0].Id = backupSchedule.Policies[0].Id
+	if len(params.Policies) == 1 && params.Policies[0].GetId() == "" {
+		backupSchedule, resp, err := client.AtlasV2.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		} else if len(backupSchedule.Policies) == 1 {
+			params.Policies[0].Id = backupSchedule.Policies[0].Id
+		}
 	}
 
 	backupPolicy, resp, err := client.AtlasV2.CloudBackupsApi.UpdateBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, params).Execute()

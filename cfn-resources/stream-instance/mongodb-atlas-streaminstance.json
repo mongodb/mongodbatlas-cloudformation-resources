@@ -215,6 +215,11 @@
     }
   },
   "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
     "Name": {
       "description": "Human-readable label that identifies the stream connection.",
       "type": "string"
@@ -259,6 +264,7 @@
   },
   "additionalProperties": false,
   "required": [
+    "GroupId",
     "Name",
     "DataProcessRegion",
     "StreamConfig"
@@ -266,7 +272,6 @@
   "readOnlyProperties": [
     "/properties/Id",
     "/properties/Connections",
-    "/properties/GroupId",
     "/properties/Hostnames",
     "/properties/Links"
   ],

@@ -20,6 +20,9 @@ func setup() {
 
 var CreateRequiredFields = []string{constants.Name, constants.StreamConfig, constants.StreamConfig}
 
+const Kafka = "Kafka"
+const Cluster = "Cluster"
+
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -33,19 +36,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	streamInstanceCreateReq := &admin.StreamsTenant{
-		Name:    currentModel.Name,
-		GroupId: currentModel.GroupId,
-		DataProcessRegion: &admin.StreamsDataProcessRegion{
-			CloudProvider: *currentModel.DataProcessRegion.CloudProvider,
-			Region:        *currentModel.DataProcessRegion.Region,
-		},
-		StreamConfig: &admin.StreamConfig{
-			Tier: currentModel.StreamConfig.Tier,
-		},
-	}
+	streamInstanceCreateReq := newStreamsTenant(currentModel)
 
-	atlasV2 := client.AtlasSDKLatest
+	atlasV2 := client.AtlasSDK
 
 	createdStreamInstance, resp, err := atlasV2.StreamsApi.CreateStreamInstance(context.Background(), *currentModel.GroupId, streamInstanceCreateReq).Execute()
 	if err != nil {
@@ -53,9 +46,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.Id = createdStreamInstance.Id
-	//TODO: do only if we need to include these attributes in the response
-	// currentModel.Hostnames = createdStreamInstance.GetHostnames()
-	// currentModel.Connections = createdStreamInstance.Connections
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -82,4 +72,18 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 
 	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+}
+
+func newStreamsTenant(model *Model) *admin.StreamsTenant {
+	return &admin.StreamsTenant{
+		Name:    model.Name,
+		GroupId: model.GroupId,
+		DataProcessRegion: &admin.StreamsDataProcessRegion{
+			CloudProvider: *model.DataProcessRegion.CloudProvider,
+			Region:        *model.DataProcessRegion.Region,
+		},
+		StreamConfig: &admin.StreamConfig{
+			Tier: model.StreamConfig.Tier,
+		},
+	}
 }

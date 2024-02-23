@@ -152,8 +152,40 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
+	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
+	atlasV2 := client.AtlasSDK
+
+	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
+	for ok := true; ok; {
+		streamInstances, resp, err := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId).Execute()
+		if err != nil {
+			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		}
+		accumulatedStreamInstances = append(accumulatedStreamInstances, streamInstances.GetResults()...)
+		ok = streamInstances.GetTotalCount() > len(accumulatedStreamInstances)
+	}
+
+	response := make([]any, 0, len(accumulatedStreamInstances))
+	for i := range accumulatedStreamInstances {
+		response = append(response, accumulatedStreamInstances[i])
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: cloudformation.OperationStatusSuccess,
+		Message:         "List Complete",
+		ResourceModel:   response,
+	}, nil
 }
 
 func newStreamsTenant(model *Model) *admin.StreamsTenant {

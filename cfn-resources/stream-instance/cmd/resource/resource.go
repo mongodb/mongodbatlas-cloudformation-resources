@@ -95,13 +95,60 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
+	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
+	updateRequest := &admin.StreamsDataProcessRegion{
+		CloudProvider: *currentModel.DataProcessRegion.CloudProvider,
+		Region:        *currentModel.DataProcessRegion.Region,
+	}
+
+	atlasV2 := client.AtlasSDK
+
+	_, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name, updateRequest).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Update success",
+	}, nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+		return *errEvent, nil
+	}
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Delete")
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	if handlerError != nil {
+		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
+		return *handlerError, errors.New(handlerError.Message)
+	}
+
+	atlasV2 := client.AtlasSDK
+
+	_, resp, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Delete success",
+	}, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

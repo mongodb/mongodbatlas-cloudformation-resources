@@ -37,8 +37,8 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
-	adminLatest "go.mongodb.org/atlas-sdk/v20231115007/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 	"go.mongodb.org/atlas/mongodbatlas"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
@@ -51,10 +51,10 @@ const (
 )
 
 type MongoDBClient struct {
-	Atlas          *mongodbatlas.Client
-	AtlasV2        *atlasSDK.APIClient
-	AtlasSDKLatest *adminLatest.APIClient
-	Config         *Config
+	Atlas            *mongodbatlas.Client
+	Atlas20231115002 *admin20231115002.APIClient
+	AtlasSDK         *admin.APIClient
+	Config           *Config
 }
 
 type Config struct {
@@ -223,9 +223,9 @@ func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, 
 	}
 
 	clients := &MongoDBClient{
-		Atlas:   atlasClient,
-		AtlasV2: sdkV2Client,
-		Config:  &c,
+		Atlas:            atlasClient,
+		Atlas20231115002: sdkV2Client,
+		Config:           &c,
 	}
 
 	return clients, nil
@@ -265,22 +265,22 @@ func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileName
 	}
 
 	clients := &MongoDBClient{
-		AtlasV2: sdkV2Client,
-		Config:  &c,
+		Atlas20231115002: sdkV2Client,
+		Config:           &c,
 	}
 
 	return clients, nil
 }
 
-func (c *Config) NewSDKV2Client(client *http.Client) (*atlasSDK.APIClient, error) {
-	opts := []atlasSDK.ClientModifier{
-		atlasSDK.UseHTTPClient(client),
-		atlasSDK.UseUserAgent(userAgent),
-		atlasSDK.UseBaseURL(c.BaseURL),
-		atlasSDK.UseDebug(false)}
+func (c *Config) NewSDKV2Client(client *http.Client) (*admin20231115002.APIClient, error) {
+	opts := []admin20231115002.ClientModifier{
+		admin20231115002.UseHTTPClient(client),
+		admin20231115002.UseUserAgent(userAgent),
+		admin20231115002.UseBaseURL(c.BaseURL),
+		admin20231115002.UseDebug(false)}
 
 	// Initialize the MongoDB Versioned Atlas Client.
-	sdkV2, err := atlasSDK.NewClient(opts...)
+	sdkV2, err := admin20231115002.NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -322,22 +322,22 @@ func NewAtlasV2OnlyClientLatest(req *handler.Request, profileName *string, profi
 	}
 
 	clients := &MongoDBClient{
-		AtlasSDKLatest: sdkV2Client,
-		Config:         &c,
+		AtlasSDK: sdkV2Client,
+		Config:   &c,
 	}
 
 	return clients, nil
 }
 
-func (c *Config) NewSDKV2LatestClient(client *http.Client) (*adminLatest.APIClient, error) {
-	opts := []adminLatest.ClientModifier{
-		adminLatest.UseHTTPClient(client),
-		adminLatest.UseUserAgent(userAgent),
-		adminLatest.UseBaseURL(c.BaseURL),
-		adminLatest.UseDebug(false)}
+func (c *Config) NewSDKV2LatestClient(client *http.Client) (*admin.APIClient, error) {
+	opts := []admin.ClientModifier{
+		admin.UseHTTPClient(client),
+		admin.UseUserAgent(userAgent),
+		admin.UseBaseURL(c.BaseURL),
+		admin.UseDebug(false)}
 
 	// Initialize the MongoDB Versioned Atlas Client.
-	sdkV2, err := adminLatest.NewClient(opts...)
+	sdkV2, err := admin.NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}

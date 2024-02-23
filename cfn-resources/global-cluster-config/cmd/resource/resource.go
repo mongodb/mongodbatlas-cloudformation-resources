@@ -61,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	_, _, err := client.AtlasV2.GlobalClustersApi.CreateCustomZoneMapping(context.Background(), projectID, clusterName, newCustomZoneMappings(currentModel)).Execute()
+	_, _, err := client.Atlas20231115002.GlobalClustersApi.CreateCustomZoneMapping(context.Background(), projectID, clusterName, newCustomZoneMappings(currentModel)).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -110,7 +110,7 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName
 
-	globalCluster, resp, err := client.AtlasV2.GlobalClustersApi.GetManagedNamespace(context.Background(), projectID, clusterName).Execute()
+	globalCluster, resp, err := client.Atlas20231115002.GlobalClustersApi.GetManagedNamespace(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return nil, handler.ProgressEvent{
@@ -204,7 +204,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		removeManagedNamespaces(context.Background(), client, remove, projectID, clusterName)
 	}
 	if currentModel.RemoveAllZoneMapping != nil && *currentModel.RemoveAllZoneMapping {
-		_, _, err := client.AtlasV2.GlobalClustersApi.DeleteAllCustomZoneMappings(context.Background(), projectID, clusterName).Execute()
+		_, _, err := client.Atlas20231115002.GlobalClustersApi.DeleteAllCustomZoneMappings(context.Background(), projectID, clusterName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByCode(fmt.Sprintf("Failed to remove custom zones : %s", err.Error()),
 				cloudformation.HandlerErrorCodeInvalidRequest), nil
@@ -226,7 +226,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-func removeManagedNamespaces(ctx context.Context, conn *util.MongoDBClient, remove []ManagedNamespace, projectID, clusterName string) {
+func removeManagedNamespaces(ctx context.Context, client *util.MongoDBClient, remove []ManagedNamespace, projectID, clusterName string) {
 	for _, m := range remove {
 		addManagedNamespace := &admin.DeleteManagedNamespaceApiParams{
 			Collection:  m.Collection,
@@ -235,7 +235,7 @@ func removeManagedNamespaces(ctx context.Context, conn *util.MongoDBClient, remo
 			GroupId:     projectID,
 		}
 
-		_, _, err := conn.AtlasV2.GlobalClustersApi.DeleteManagedNamespaceWithParams(ctx, addManagedNamespace).Execute()
+		_, _, err := client.Atlas20231115002.GlobalClustersApi.DeleteManagedNamespaceWithParams(ctx, addManagedNamespace).Execute()
 		if err != nil {
 			_, _ = logger.Warnf("error while removing namespace:%+v", err)
 		}
@@ -257,7 +257,7 @@ func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, na
 		}
 		addManagedNamespace.IsCustomShardKeyHashed = mn.IsCustomShardKeyHashed
 		addManagedNamespace.IsShardKeyUnique = mn.IsShardKeyUnique
-		_, _, err := client.AtlasV2.GlobalClustersApi.CreateManagedNamespace(ctx, projectID, clusterName, addManagedNamespace).Execute()
+		_, _, err := client.Atlas20231115002.GlobalClustersApi.CreateManagedNamespace(ctx, projectID, clusterName, addManagedNamespace).Execute()
 		if err != nil {
 			return err
 		}

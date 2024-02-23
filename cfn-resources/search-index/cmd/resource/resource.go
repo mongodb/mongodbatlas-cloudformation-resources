@@ -52,7 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
@@ -113,7 +113,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	searchIndex, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
@@ -153,7 +153,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	ctx := context.Background()
 	indexID, iOK := req.CallbackContext["id"]
@@ -220,7 +220,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	ctx := context.Background()
 
@@ -268,7 +268,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	ctx := context.Background()
 

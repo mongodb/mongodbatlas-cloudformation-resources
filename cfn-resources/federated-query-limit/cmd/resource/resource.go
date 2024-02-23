@@ -162,11 +162,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteQueryLimitAPIRequest := atlas.AtlasV2.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
+	deleteQueryLimitAPIRequest := client.Atlas20231115002.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -200,11 +200,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listQueryLimitsAPIRequest := atlas.AtlasV2.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
+	listQueryLimitsAPIRequest := client.Atlas20231115002.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -251,8 +251,8 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func getFederatedQueryLimit(atlas *util.MongoDBClient, currentModel *Model) (*atlasSDK.DataFederationTenantQueryLimit, *http.Response, error) {
-	getQueryLimitAPIRequest := atlas.AtlasV2.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
+func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*atlasSDK.DataFederationTenantQueryLimit, *http.Response, error) {
+	getQueryLimitAPIRequest := client.Atlas20231115002.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -262,9 +262,9 @@ func getFederatedQueryLimit(atlas *util.MongoDBClient, currentModel *Model) (*at
 	return queryLimit, response, err
 }
 
-func createOrUpdateQueryLimit(currentModel *Model, atlas *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
+func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
 	queryLimitInput := currentModel.setQueryLimit()
-	createQueryLimitRequest := atlas.AtlasV2.DataFederationApi.CreateOneDataFederationQueryLimit(
+	createQueryLimitRequest := client.Atlas20231115002.DataFederationApi.CreateOneDataFederationQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,

@@ -51,7 +51,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
+	_, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -76,7 +76,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	info, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -109,7 +109,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	info, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -118,7 +118,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err = client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
+	_, resp, err = client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, currentModel.getParams()).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -142,7 +142,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	info, resp, err := client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
+	info, resp, err := client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.GetEncryptionAtRest(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -154,7 +154,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	params := &admin.EncryptionAtRest{
 		AwsKms: &admin.AWSKMSConfiguration{Enabled: aws.Bool(false)},
 	}
-	_, resp, err = client.AtlasV2.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
+	_, resp, err = client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}

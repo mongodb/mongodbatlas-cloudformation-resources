@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	_, resp, err := client.AtlasV2.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	_, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -124,7 +124,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	startASP := false
 	atlasModel.StartASAP = &startASP
 
-	_, resp, err := client.AtlasV2.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
+	_, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.UpdateMaintenanceWindow(context.Background(), *currentModel.ProjectId, &atlasModel).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -154,7 +154,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, nil
 	}
 
-	resp, err := client.AtlasV2.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+	resp, err := client.Atlas20231115002.MaintenanceWindowsApi.ResetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -179,7 +179,7 @@ func (m Model) toAtlasModel() admin.GroupMaintenanceWindow {
 }
 
 func get(client *util.MongoDBClient, currentModel Model) (*admin.GroupMaintenanceWindow, *handler.ProgressEvent) {
-	maintenanceWindow, resp, err := client.AtlasV2.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
+	maintenanceWindow, resp, err := client.Atlas20231115002.MaintenanceWindowsApi.GetMaintenanceWindow(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Read - error: %+v", err)
 		ev := progress_events.GetFailedEventByResponse(err.Error(), resp)

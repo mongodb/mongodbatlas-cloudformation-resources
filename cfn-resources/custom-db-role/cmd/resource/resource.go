@@ -54,7 +54,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	atlasCustomDBRole := currentModel.ToCustomDBRole()
-	customDBRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.CreateCustomDatabaseRole(context.Background(), *currentModel.ProjectId, atlasCustomDBRole).Execute()
+	customDBRole, response, err := client.Atlas20231115002.CustomDatabaseRolesApi.CreateCustomDatabaseRole(context.Background(), *currentModel.ProjectId, atlasCustomDBRole).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progress_events.GetFailedEventByCode("Resource already exists",
@@ -86,7 +86,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	atlasCustomDdRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.GetCustomDatabaseRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleName).Execute()
+	atlasCustomDdRole, response, err := client.Atlas20231115002.CustomDatabaseRolesApi.GetCustomDatabaseRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleName).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response), nil
@@ -130,7 +130,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		InheritedRoles: inheritedRoles,
 	}
 
-	atlasCustomDdRole, response, err := client.AtlasV2.CustomDatabaseRolesApi.UpdateCustomDatabaseRole(context.Background(), *currentModel.ProjectId,
+	atlasCustomDdRole, response, err := client.Atlas20231115002.CustomDatabaseRolesApi.UpdateCustomDatabaseRole(context.Background(), *currentModel.ProjectId,
 		*currentModel.RoleName, &inputCustomDBRole).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
@@ -160,7 +160,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	response, err := client.AtlasV2.CustomDatabaseRolesApi.DeleteCustomDatabaseRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleName).Execute()
+	response, err := client.Atlas20231115002.CustomDatabaseRolesApi.DeleteCustomDatabaseRole(context.Background(), *currentModel.ProjectId, *currentModel.RoleName).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
 			response), nil
@@ -186,7 +186,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	customDBRoleResponse, response, err := client.AtlasV2.CustomDatabaseRolesApi.ListCustomDatabaseRoles(context.Background(),
+	customDBRoleResponse, response, err := client.Atlas20231115002.CustomDatabaseRolesApi.ListCustomDatabaseRoles(context.Background(),
 		*currentModel.ProjectId).Execute()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error listing resource : %s", err.Error()),

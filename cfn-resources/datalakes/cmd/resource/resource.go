@@ -59,7 +59,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Name:                currentModel.TenantName,
 	}
 
-	dataLake, resp, err := client.AtlasV2.DataFederationApi.CreateFederatedDatabase(context.Background(), projectID, dataLakeReq).Execute()
+	dataLake, resp, err := client.Atlas20231115002.DataFederationApi.CreateFederatedDatabase(context.Background(), projectID, dataLakeReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -92,7 +92,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	projectID := *currentModel.ProjectId
-	dataLake, resp, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, *currentModel.TenantName).Execute()
+	dataLake, resp, err := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, *currentModel.TenantName).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -145,7 +145,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		},
 	}
 
-	dataLake, resp, err := client.AtlasV2.DataFederationApi.UpdateFederatedDatabaseWithParams(context.Background(), bodyRequest).Execute()
+	dataLake, resp, err := client.Atlas20231115002.DataFederationApi.UpdateFederatedDatabaseWithParams(context.Background(), bodyRequest).Execute()
 	if err != nil {
 		if resp != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
@@ -188,7 +188,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	_, resp, err := client.AtlasV2.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	_, resp, err := client.Atlas20231115002.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 	if err != nil {
 		if resp != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
@@ -221,7 +221,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	result, resp, err := client.AtlasV2.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
+	result, resp, err := client.Atlas20231115002.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -397,13 +397,13 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 func isExist(currentModel *Model, client *util.MongoDBClient) bool {
 	projectID := *currentModel.ProjectId
 	tenantName := *currentModel.TenantName
-	dataLake, _, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, tenantName).Execute()
+	dataLake, _, err := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, tenantName).Execute()
 	return err == nil && dataLake != nil
 }
 
 // function to check if snapshot already exist in atlas
 func dataLakeIsReady(client *util.MongoDBClient, projectID, name, targetState string) (isReady bool, status string, err error) {
-	dataLake, resp, err := client.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, name).Execute()
+	dataLake, resp, err := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, name).Execute()
 	if err != nil {
 		return false, "", err
 	}

@@ -57,21 +57,21 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
 
 	if req.CallbackContext != nil {
-		return validateProgress(atlas, currentModel, Simulating)
+		return validateProgress(client, currentModel, Simulating)
 	}
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 
 	// check if already exist in active state
-	active, _, _ := isActive(atlas, projectID, clusterName, "nil")
+	active, _, _ := isActive(client, projectID, clusterName, "nil")
 	if active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -84,8 +84,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	_, _ = logger.Debugf("requestBody - : %+v", requestBody)
-	atlas.AtlasV2.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
-	simulationObject, res, err := atlas.AtlasV2.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
+	client.Atlas20231115002.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
+	simulationObject, res, err := client.Atlas20231115002.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("create Outage - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -123,7 +123,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -131,7 +131,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 	// API call to read resource
-	outageSimulation, resp, err := atlas.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.Atlas20231115002.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil || outageSimulation == nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -167,19 +167,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	if req.CallbackContext != nil {
-		return validateProgress(atlas, currentModel, Complete)
+		return validateProgress(client, currentModel, Complete)
 	}
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 
-	active, _, _ := isActive(atlas, projectID, clusterName, "nil")
+	active, _, _ := isActive(client, projectID, clusterName, "nil")
 	if !active {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -187,7 +187,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	simulationObject, res, err := atlas.AtlasV2.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	simulationObject, res, err := client.Atlas20231115002.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -276,7 +276,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 
 // function to check if resource action is completed
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-	outageSimulation, resp, err := client.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.Atlas20231115002.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusNotFound {
 			return true, Complete, nil
@@ -294,7 +294,7 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 
 // function to check if resource action is active
 func isActive(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-	outageSimulation, resp, err := client.AtlasV2.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.Atlas20231115002.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusNotFound {
 			return false, Complete, nil

@@ -49,7 +49,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// API call to create team
 	teamID := cast.ToString(currentModel.TeamId)
@@ -100,7 +100,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// API call to read snapshot to read using ID field
 	teamID := cast.ToString(currentModel.TeamId)
@@ -191,7 +191,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	team, res, err := getTeam(atlasV2, currentModel)
 	if err != nil && res != nil {
@@ -278,7 +278,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	// Create Atlas API Request Object
 	orgID := cast.ToString(currentModel.OrgId)
@@ -332,7 +332,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	team, _, _ := getTeam(atlasV2, currentModel)
 	if team == nil {

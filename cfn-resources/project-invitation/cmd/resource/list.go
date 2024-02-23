@@ -50,7 +50,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		GroupId:  *currentModel.ProjectId,
 	}
 
-	invitations, res, err := client.AtlasV2.ProjectsApi.ListProjectInvitationsWithParams(context.Background(), listOptions).Execute()
+	invitations, res, err := client.Atlas20231115002.ProjectsApi.ListProjectInvitationsWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}

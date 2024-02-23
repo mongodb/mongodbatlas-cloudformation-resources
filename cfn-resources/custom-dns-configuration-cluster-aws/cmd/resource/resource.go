@@ -71,7 +71,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	customAWSDNSSetting, response, err := client.AtlasV2.AWSClustersDNSApi.GetAWSCustomDNS(context.Background(), *currentModel.ProjectId).Execute()
+	customAWSDNSSetting, response, err := client.Atlas20231115002.AWSClustersDNSApi.GetAWSCustomDNS(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error reading  : %s", err.Error()),
 			response), nil
@@ -139,7 +139,7 @@ func resourceCustomAWSDNSUpdate(req handler.Request, prevModel *Model, currentMo
 	customAWSDNSRequest := &admin.AWSCustomDNSEnabled{
 		Enabled: *currentModel.Enabled,
 	}
-	customAWSDNSModel, response, err := client.AtlasV2.AWSClustersDNSApi.ToggleAWSCustomDNS(context.Background(), *currentModel.ProjectId, customAWSDNSRequest).Execute()
+	customAWSDNSModel, response, err := client.Atlas20231115002.AWSClustersDNSApi.ToggleAWSCustomDNS(context.Background(), *currentModel.ProjectId, customAWSDNSRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(
 			fmt.Sprintf("Error in enabling Custom AWS DNS settings : %s", err.Error()),
@@ -156,7 +156,7 @@ func resourceCustomAWSDNSUpdate(req handler.Request, prevModel *Model, currentMo
 
 func isCustomAWSDNSSettingExists(currentModel *Model, client *util.MongoDBClient) bool {
 	var isExists bool
-	customAWSDNSSetting, _, err := client.AtlasV2.AWSClustersDNSApi.GetAWSCustomDNS(context.Background(), *currentModel.ProjectId).Execute()
+	customAWSDNSSetting, _, err := client.Atlas20231115002.AWSClustersDNSApi.GetAWSCustomDNS(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return isExists
 	}

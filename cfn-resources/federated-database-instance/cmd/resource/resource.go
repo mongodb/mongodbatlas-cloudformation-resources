@@ -65,11 +65,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	dataLakeTenantInput := currentModel.setDataLakeTenant()
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	createFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.CreateFederatedDatabase(context.Background(), *currentModel.ProjectId, &dataLakeTenantInput)
+	createFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.CreateFederatedDatabase(context.Background(), *currentModel.ProjectId, &dataLakeTenantInput)
 	dataLakeTenant, response, err := createFederatedDatabaseAPIRequest.Execute()
 
 	defer closeResponse(response)
@@ -99,12 +99,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	getFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
+	getFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
 	dataLakeTenant, response, err := getFederatedDatabaseAPIRequest.Execute()
 
 	defer closeResponse(response)
@@ -134,12 +134,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	dataLakeTenantInput := currentModel.setDataLakeTenant()
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	updateFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
+	updateFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
 	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
@@ -170,11 +170,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
+	deleteFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
 	_, response, err := deleteFederatedDatabaseAPIRequest.Execute()
 
 	defer closeResponse(response)
@@ -202,11 +202,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listFederatedDatabaseAPIRequest := atlas.AtlasV2.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId)
+	listFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId)
 
 	dataLakeTenants, response, err := listFederatedDatabaseAPIRequest.Execute()
 

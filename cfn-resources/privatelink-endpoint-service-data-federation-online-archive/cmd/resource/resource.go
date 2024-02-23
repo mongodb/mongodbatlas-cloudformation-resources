@@ -91,7 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   currentModel}, nil
 }
 
-func createOrUpdate(currentModel *Model, atlas *util.MongoDBClient) (*http.Response, error) {
+func createOrUpdate(currentModel *Model, client *util.MongoDBClient) (*http.Response, error) {
 	provider := constants.AWS
 	privateNetworkEndpointIDEntry := atlasSDK.PrivateNetworkEndpointIdEntry{
 		EndpointId: *currentModel.EndpointId,
@@ -99,7 +99,7 @@ func createOrUpdate(currentModel *Model, atlas *util.MongoDBClient) (*http.Respo
 		Type:       currentModel.Type,
 		Provider:   &provider,
 	}
-	createRequest := atlas.AtlasV2.DataFederationApi.CreateDataFederationPrivateEndpoint(
+	createRequest := client.Atlas20231115002.DataFederationApi.CreateDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
 		&privateNetworkEndpointIDEntry,
@@ -197,12 +197,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	deleteRequest := atlas.AtlasV2.DataFederationApi.DeleteDataFederationPrivateEndpoint(
+	deleteRequest := client.Atlas20231115002.DataFederationApi.DeleteDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
 		*currentModel.EndpointId,
@@ -233,12 +233,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlas, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	listRequest := atlas.AtlasV2.DataFederationApi.ListDataFederationPrivateEndpoints(
+	listRequest := client.Atlas20231115002.DataFederationApi.ListDataFederationPrivateEndpoints(
 		ctx.Background(),
 		*currentModel.ProjectId,
 	)
@@ -265,8 +265,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  endpoints}, nil
 }
 
-func (model *Model) getPrivateEndpoint(atlas *util.MongoDBClient) (*http.Response, error) {
-	readRequest := atlas.AtlasV2.DataFederationApi.GetDataFederationPrivateEndpoint(
+func (model *Model) getPrivateEndpoint(client *util.MongoDBClient) (*http.Response, error) {
+	readRequest := client.Atlas20231115002.DataFederationApi.GetDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*model.ProjectId,
 		*model.EndpointId,

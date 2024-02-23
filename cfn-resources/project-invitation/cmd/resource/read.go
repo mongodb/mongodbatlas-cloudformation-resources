@@ -43,7 +43,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	invitation, res, err := client.AtlasV2.ProjectsApi.GetProjectInvitation(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	invitation, res, err := client.Atlas20231115002.ProjectsApi.GetProjectInvitation(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	if err != nil {
 		_, _ = log.Warnf("Read - error: %+v", err)
 		if res.StatusCode == 404 {

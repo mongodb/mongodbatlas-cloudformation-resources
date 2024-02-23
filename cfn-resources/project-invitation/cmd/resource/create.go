@@ -50,7 +50,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Username: currentModel.Username,
 	}
 
-	invitation, res, err := client.AtlasV2.ProjectsApi.CreateProjectInvitation(context.Background(), *currentModel.ProjectId, invitationReq).Execute()
+	invitation, res, err := client.Atlas20231115002.ProjectsApi.CreateProjectInvitation(context.Background(), *currentModel.ProjectId, invitationReq).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}

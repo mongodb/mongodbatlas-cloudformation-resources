@@ -48,7 +48,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
-	containerResponse, response, err := client.AtlasV2.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
+	containerResponse, response, err := client.Atlas20231115002.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource: %s", err.Error()),
 			response), nil
@@ -63,7 +63,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	if _, response, err := client.AtlasV2.NetworkPeeringApi.DeletePeeringContainer(context.Background(), projectID, containerID).Execute(); err != nil {
+	if _, response, err := client.Atlas20231115002.NetworkPeeringApi.DeletePeeringContainer(context.Background(), projectID, containerID).Execute(); err != nil {
 		return retryDeleteIfRequired(client, response, err, projectID, containerID)
 	}
 
@@ -83,7 +83,7 @@ func retryDeleteIfRequired(client *util.MongoDBClient, response *http.Response, 
 	// During the release process, the container is created and deleted in a short period of time which cause
 	// the deletion to fail with the error "CANNOT_DELETE_RECENTLY_CREATED_CONTAINER".
 	time.Sleep(time.Second * 5)
-	_, responseSecondCall, errSecondCall := client.AtlasV2.NetworkPeeringApi.DeletePeeringContainer(context.Background(), projectID, containerID).Execute()
+	_, responseSecondCall, errSecondCall := client.Atlas20231115002.NetworkPeeringApi.DeletePeeringContainer(context.Background(), projectID, containerID).Execute()
 	if errSecondCall == nil {
 		return handler.ProgressEvent{OperationStatus: handler.Success, Message: "Delete Complete"}, nil
 	}

@@ -69,11 +69,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	regPrivateEndpointSetting, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
+	regPrivateEndpointSetting, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), response), nil
 	}
@@ -136,7 +136,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *util.MongoDBClient, enabled bool) (handler.ProgressEvent, error) {
-	_, response, err := client.AtlasV2.PrivateEndpointServicesApi.ToggleRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId,
+	_, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.ToggleRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId,
 		&admin.ProjectSettingItem{
 			Enabled: enabled,
 		}).Execute()
@@ -152,7 +152,7 @@ func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *util
 }
 
 func isRegModeSettingExists(currentModel *Model, client *util.MongoDBClient) bool {
-	regModeSetting, _, err := client.AtlasV2.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
+	regModeSetting, _, err := client.Atlas20231115002.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return false
 	}

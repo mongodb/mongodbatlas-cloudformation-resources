@@ -61,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	params := currentModel.GetAtlasParams()
-	ldapResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.VerifyLDAPConfiguration(context.Background(), *currentModel.ProjectId, params).Execute()
+	ldapResponse, resp, err := client.Atlas20231115002.LDAPConfigurationApi.VerifyLDAPConfiguration(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -92,7 +92,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	ldapResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId).Execute()
+	ldapResponse, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -122,7 +122,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId).Execute()
+	_, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *currentModel.ProjectId, *currentModel.RequestId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()), resp), nil
 	}
@@ -133,7 +133,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		BindPassword: "-",
 		BindUsername: "-",
 	}
-	if _, resp, err := client.AtlasV2.LDAPConfigurationApi.VerifyLDAPConfiguration(context.Background(), *currentModel.ProjectId, params).Execute(); err != nil {
+	if _, resp, err := client.Atlas20231115002.LDAPConfigurationApi.VerifyLDAPConfiguration(context.Background(), *currentModel.ProjectId, params).Execute(); err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
@@ -186,7 +186,7 @@ func (m *Model) CompleteByResponse(resp *admin.LDAPVerifyConnectivityJobRequest)
 func validateProgress(client *util.MongoDBClient, model *Model, req handler.Request) handler.ProgressEvent {
 	requestID := req.CallbackContext["RequestId"].(string)
 
-	ldapResponse, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *model.ProjectId, requestID).Execute()
+	ldapResponse, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfigurationStatus(context.Background(), *model.ProjectId, requestID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
 	}

@@ -65,7 +65,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			Description:     currentModel.Description,
 			RetentionInDays: currentModel.RetentionInDays,
 		}
-		snapshot, resp, err := client.AtlasV2.CloudBackupsApi.TakeSnapshot(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, &params).Execute()
+		snapshot, resp, err := client.Atlas20231115002.CloudBackupsApi.TakeSnapshot(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, &params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -103,13 +103,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	if *currentModel.InstanceType == clusterInstanceType {
-		server, resp, err := client.AtlasV2.CloudBackupsApi.GetReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
+		server, resp, err := client.Atlas20231115002.CloudBackupsApi.GetReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		currentModel.updateModelServer(server)
 	} else {
-		serverless, resp, err := client.AtlasV2.CloudBackupsApi.GetServerlessBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
+		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.GetServerlessBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -144,7 +144,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if *currentModel.InstanceType == clusterInstanceType {
-		_, resp, err := client.AtlasV2.CloudBackupsApi.DeleteReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
+		_, resp, err := client.Atlas20231115002.CloudBackupsApi.DeleteReplicaSetBackup(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.SnapshotId).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -171,7 +171,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	models := make([]interface{}, 0)
 
 	if *currentModel.InstanceType == clusterInstanceType {
-		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -186,7 +186,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			models = append(models, &model)
 		}
 	} else {
-		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -211,7 +211,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEvent {
 	if *model.InstanceType == clusterInstanceType {
-		server, resp, err := client.AtlasV2.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
+		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListReplicaSetBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -222,7 +222,7 @@ func validateExist(client *util.MongoDBClient, model *Model) *handler.ProgressEv
 			}
 		}
 	} else {
-		serverless, resp, err := client.AtlasV2.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
+		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackups(aws.BackgroundContext(), *model.ProjectId, *model.InstanceName).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -244,7 +244,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	snapshotID := *currentModel.SnapshotId
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.InstanceName
-	snapshot, _, err := client.AtlasV2.CloudBackupsApi.GetReplicaSetBackup(context.Background(), projectID, clusterName, snapshotID).Execute()
+	snapshot, _, err := client.Atlas20231115002.CloudBackupsApi.GetReplicaSetBackup(context.Background(), projectID, clusterName, snapshotID).Execute()
 	if err != nil {
 		return handler.ProgressEvent{}, err
 	}

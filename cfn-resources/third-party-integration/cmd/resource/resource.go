@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	requestBody := modelToIntegration(currentModel)
-	integrations, resModel, err := client.AtlasV2.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
+	integrations, resModel, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
@@ -108,7 +108,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	integration, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -139,13 +139,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	integration, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	updateIntegrationFromSchema(currentModel, integration)
-	integrations, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
+	integrations, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -223,7 +223,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	_, res, err = client.AtlasV2.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
+	_, res, err = client.Atlas20231115002.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -251,7 +251,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	var res *http.Response
 	ProjectID := currentModel.ProjectId
-	integrations, res, err := client.AtlasV2.ThirdPartyIntegrationsApi.ListThirdPartyIntegrations(context.Background(), *ProjectID).Execute()
+	integrations, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.ListThirdPartyIntegrations(context.Background(), *ProjectID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}

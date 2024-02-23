@@ -41,7 +41,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
 
-	containerResponse, response, err := client.AtlasV2.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
+	containerResponse, response, err := client.Atlas20231115002.NetworkPeeringApi.GetPeeringContainer(context.Background(), projectID, containerID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response), nil

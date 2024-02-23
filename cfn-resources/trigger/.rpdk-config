@@ -1,7 +1,7 @@
 {
     "typeName": "MongoDB::Atlas::Trigger",
     "language": "go",
-    "runtime": "go1.x",
+    "runtime": "provided.al2",
     "entrypoint": "bootstrap",
     "testEntrypoint": "bootstrap",
     "settings": {

@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20231115003/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDKLatest
+	conn := client.AtlasSDK
 	ctx := context.Background()
 
 	_, _, err := secrets.Get(&req, *currentModel.AwsSecretName)
@@ -121,7 +121,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn = newOrgClient.AtlasSDKLatest
+	conn = newOrgClient.AtlasSDK
 	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
 		return handleError(response, constants.CREATE, err)
 	}
@@ -145,7 +145,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.AtlasSDKLatest, currentModel)
+	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.AtlasSDK, currentModel)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := newOrgClient.AtlasSDKLatest
+	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
 
 	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name}
@@ -197,7 +197,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := newOrgClient.AtlasSDKLatest
+	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
 
 	// Callback

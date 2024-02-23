@@ -39,7 +39,7 @@ func setup() {
 }
 
 func validateProjectInvitationAlreadyAccepted(ctx context.Context, client *util.MongoDBClient, username, projectID string) (bool, error) {
-	user, _, err := client.AtlasV2.MongoDBCloudUsersApi.GetUserByUsername(ctx, username).Execute()
+	user, _, err := client.Atlas20231115002.MongoDBCloudUsersApi.GetUserByUsername(ctx, username).Execute()
 	if err != nil {
 		return false, err
 	}

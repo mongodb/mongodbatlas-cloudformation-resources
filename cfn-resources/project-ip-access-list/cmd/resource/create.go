@@ -80,7 +80,7 @@ func createEntries(model *Model, client *util.MongoDBClient) (handler.ProgressEv
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, err
 	}
 
-	if _, _, err := client.AtlasV2.ProjectIPAccessListApi.CreateProjectIpAccessList(context.Background(), projectID, &request.Results).Execute(); err != nil {
+	if _, _, err := client.Atlas20231115002.ProjectIPAccessListApi.CreateProjectIpAccessList(context.Background(), projectID, &request.Results).Execute(); err != nil {
 		_, _ = logger.Warnf("Error createEntries projectId:%s, err:%+v", projectID, err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),

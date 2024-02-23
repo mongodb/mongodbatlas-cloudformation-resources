@@ -77,7 +77,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
 	}
 
-	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.CreateServerlessInstance(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest).Execute()
+	serverless, res, err := client.Atlas20231115002.ServerlessInstancesApi.CreateServerlessInstance(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
 			_, _ = log.Debugf("Serverless - Create() - error 400: %+v", err)
@@ -116,7 +116,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	cluster, res, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
+	cluster, res, err := client.Atlas20231115002.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -151,7 +151,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// CFN TEST : currently Update is throwing 500 Error instead of 404 if resource not exists
-	_, res, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
+	_, res, err := client.Atlas20231115002.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Name: *currentModel.Name,
 	}
 
-	serverless, res, err := client.AtlasV2.ServerlessInstancesApi.UpdateServerlessInstanceWithParams(context.Background(), serverlessInstanceRequest).Execute()
+	serverless, res, err := client.Atlas20231115002.ServerlessInstancesApi.UpdateServerlessInstanceWithParams(context.Background(), serverlessInstanceRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -203,7 +203,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return serverlessCallback(client, currentModel, constants.DeletedState)
 	}
 
-	_, res, err := client.AtlasV2.ServerlessInstancesApi.DeleteServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
+	_, res, err := client.Atlas20231115002.ServerlessInstancesApi.DeleteServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -240,7 +240,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		PageNum:      admin.PtrInt(0),
 		ItemsPerPage: admin.PtrInt(1000),
 	}
-	clustersResp, res, err := client.AtlasV2.ServerlessInstancesApi.ListServerlessInstancesWithParams(context.Background(), listOptions).Execute()
+	clustersResp, res, err := client.Atlas20231115002.ServerlessInstancesApi.ListServerlessInstancesWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -340,7 +340,7 @@ func readPrivateEndpointEndpoints(peEndpoints []admin.ServerlessConnectionString
 }
 
 func serverlessCallback(client *util.MongoDBClient, currentModel *Model, targtStatus string) (progressEvent handler.ProgressEvent, err error) {
-	serverless, resp, err := client.AtlasV2.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
+	serverless, resp, err := client.Atlas20231115002.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			_, _ = log.Debugf("404: No instance found")

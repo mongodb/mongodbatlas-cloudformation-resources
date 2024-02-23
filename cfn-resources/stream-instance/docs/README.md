@@ -17,7 +17,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>" : <i><a href="streamsdataprocessregion.md">StreamsDataProcessRegion</a></i>,
         "<a href="#streamconfig" title="StreamConfig">StreamConfig</a>" : <i><a href="streamconfig.md">StreamConfig</a></i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
-        "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>
     }
 }
 </pre>
@@ -32,8 +31,6 @@ Properties:
     <a href="#dataprocessregion" title="DataProcessRegion">DataProcessRegion</a>: <i><a href="streamsdataprocessregion.md">StreamsDataProcessRegion</a></i>
     <a href="#streamconfig" title="StreamConfig">StreamConfig</a>: <i><a href="streamconfig.md">StreamConfig</a></i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
-    <a href="#links" title="Links">Links</a>: <i>
-      - <a href="link.md">Link</a></i>
 </pre>
 
 ## Properties
@@ -88,14 +85,6 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Links
-
-_Required_: No
-
-_Type_: List of <a href="link.md">Link</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
 ## Return Values
 
 ### Ref
@@ -119,8 +108,4 @@ Returns the <code>Connections</code> value.
 #### Hostnames
 
 List that contains the hostnames assigned to the stream instance.
-
-#### Links
-
-Returns the <code>Links</code> value.
 

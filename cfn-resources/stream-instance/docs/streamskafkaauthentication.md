@@ -10,7 +10,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>,
     "<a href="#mechanism" title="Mechanism">Mechanism</a>" : <i>String</i>,
     "<a href="#password" title="Password">Password</a>" : <i>String</i>,
     "<a href="#username" title="Username">Username</a>" : <i>String</i>
@@ -20,22 +19,12 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#links" title="Links">Links</a>: <i>
-      - <a href="link.md">Link</a></i>
 <a href="#mechanism" title="Mechanism">Mechanism</a>: <i>String</i>
 <a href="#password" title="Password">Password</a>: <i>String</i>
 <a href="#username" title="Username">Username</a>: <i>String</i>
 </pre>
 
 ## Properties
-
-#### Links
-
-_Required_: No
-
-_Type_: List of <a href="link.md">Link</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Mechanism
 

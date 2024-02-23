@@ -3,20 +3,6 @@
   "description": "Returns, adds, edits, and removes stream instances.",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
   "definitions": {
-    "Link": {
-      "type": "object",
-      "properties": {
-        "Href": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that points another API resource to which this response has some relationship. This URL often begins with `https://cloud.mongodb.com/api/atlas`."
-        },
-        "Rel": {
-          "type": "string",
-          "description": "Uniform Resource Locator (URL) that defines the semantic relationship between this resource and another API resource. This URL often begins with `https://cloud.mongodb.com/api/atlas`."
-        }
-      },
-      "additionalProperties": false
-    },
     "BaseStreamsRegion": {
       "type": "string",
       "description": "Name of the cloud provider region hosting Atlas Stream Processing.",
@@ -49,14 +35,6 @@
             "SERVERLESS"
           ]
         },
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link"
-          },
-          "insertionOrder": false
-        },
         "Region": {
           "$ref": "#/definitions/BaseStreamsRegion"
         }
@@ -71,14 +49,6 @@
       "type": "object",
       "description": "Configuration options for an Atlas Stream Processing Instance.",
       "properties": {
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link"
-          },
-          "insertionOrder": false
-        },
         "Tier": {
           "type": "string",
           "description": "Selected tier for the Stream Instance. Configures Memory / VCPU allowances.",
@@ -94,14 +64,6 @@
       "type": "object",
       "description": "User credentials required to connect to a Kafka Cluster. Includes the authentication type, as well as the parameters for that authentication mode.",
       "properties": {
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link"
-          },
-          "insertionOrder": false
-        },
         "Mechanism": {
           "type": "string",
           "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512."
@@ -122,14 +84,6 @@
       "type": "object",
       "description": "The name of a Built in or Custom DB Role to connect to an Atlas Cluster.",
       "properties": {
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link"
-          },
-          "insertionOrder": false
-        },
         "Role": {
           "type": "string",
           "description": "The name of the role to use. Can be a built in role or a custom role."
@@ -153,14 +107,6 @@
           "type": "string",
           "description": "A trusted, public x509 certificate for connecting to Kafka over SSL."
         },
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link"
-          },
-          "insertionOrder": false
-        },
         "Protocol": {
           "type": "string",
           "description": "Describes the transport type. Can be either PLAINTEXT or SSL."
@@ -172,14 +118,6 @@
       "type": "object",
       "description": "Settings that define a connection to an external data store.",
       "properties": {
-        "Links": {
-          "type": "array",
-          "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-          "items": {
-            "$ref": "#/definitions/Link"
-          },
-          "insertionOrder": false
-        },
         "Name": {
           "type": "string",
           "description": "Human-readable label that identifies the stream connection."
@@ -252,14 +190,6 @@
         "type": "string"
       },
       "insertionOrder": false
-    },
-    "Links": {
-      "type": "array",
-      "description": "List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.",
-      "items": {
-        "$ref": "#/definitions/Link"
-      },
-      "insertionOrder": false
     }
   },
   "additionalProperties": false,
@@ -272,8 +202,7 @@
   "readOnlyProperties": [
     "/properties/Id",
     "/properties/Connections",
-    "/properties/Hostnames",
-    "/properties/Links"
+    "/properties/Hostnames"
   ],
   "primaryIdentifier": [
     "/properties/Name"

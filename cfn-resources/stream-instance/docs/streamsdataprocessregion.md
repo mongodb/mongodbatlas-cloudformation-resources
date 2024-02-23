@@ -11,7 +11,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 {
     "<a href="#cloudprovider" title="CloudProvider">CloudProvider</a>" : <i>String</i>,
-    "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>,
     "<a href="#region" title="Region">Region</a>" : <i>String</i>
 }
 </pre>
@@ -20,8 +19,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#cloudprovider" title="CloudProvider">CloudProvider</a>: <i>String</i>
-<a href="#links" title="Links">Links</a>: <i>
-      - <a href="link.md">Link</a></i>
 <a href="#region" title="Region">Region</a>: <i>String</i>
 </pre>
 
@@ -36,16 +33,6 @@ _Required_: No
 _Type_: String
 
 _Allowed Values_: <code>AWS</code> | <code>GCP</code> | <code>AZURE</code> | <code>TENANT</code> | <code>SERVERLESS</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Links
-
-List of one or more Uniform Resource Locators (URLs) that point to API sub-resources, related API resources, or both. RFC 5988 outlines these relationships.
-
-_Required_: No
-
-_Type_: List of <a href="link.md">Link</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

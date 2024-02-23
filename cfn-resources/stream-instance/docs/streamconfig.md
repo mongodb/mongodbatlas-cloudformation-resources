@@ -10,7 +10,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#links" title="Links">Links</a>" : <i>[ <a href="link.md">Link</a>, ... ]</i>,
     "<a href="#tier" title="Tier">Tier</a>" : <i>String</i>
 }
 </pre>
@@ -18,20 +17,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#links" title="Links">Links</a>: <i>
-      - <a href="link.md">Link</a></i>
 <a href="#tier" title="Tier">Tier</a>: <i>String</i>
 </pre>
 
 ## Properties
-
-#### Links
-
-_Required_: No
-
-_Type_: List of <a href="link.md">Link</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Tier
 

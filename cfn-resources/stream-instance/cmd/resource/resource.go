@@ -215,7 +215,7 @@ func newModelStreamConfig(streamConfig *admin.StreamConfig) *StreamConfig {
 	}
 }
 
-func newModelDbRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
+func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
 	return &DBRoleToExecute{
 		Role: dbRole.Role,
 		Type: dbRole.Type,
@@ -250,7 +250,7 @@ func newModelConnections(streamConfig []admin.StreamsConnection) []StreamsConnec
 		}
 		if connection.GetType() == Cluster {
 			modelConnection.ClusterName = connection.ClusterName
-			modelConnection.DbRoleToExecute = newModelDbRoleToExecute(connection.DbRoleToExecute)
+			modelConnection.DbRoleToExecute = newModelDBRoleToExecute(connection.DbRoleToExecute)
 		} else if connection.GetType() == Kafka {
 			modelConnection.BootstrapServers = connection.BootstrapServers
 			modelConnection.Authentication = newModelAuthentication(connection.Authentication)

@@ -10,11 +10,12 @@
         "subparser_name": null,
         "verbose": 0,
         "force": false,
-        "type_name": null,
+        "type_name": "MongoDB::Atlas::CloudBackupSchedule",
         "artifact_type": null,
         "endpoint_url": null,
         "region": null,
         "target_schemas": [],
+        "profile": null,
         "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/cloud-backup-schedule",
         "protocolVersion": "2.0.0",
         "pluginVersion": "2.0.4"

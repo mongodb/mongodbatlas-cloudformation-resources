@@ -43,8 +43,8 @@ cd ${repo_root}/cfn-resources/cloud-backup-schedule
 ./test/cloud-backup-schedule.create-sample-cfn-request.sh YourProjectID ClusterName > test.request.json 
 echo "Sample request:"
 cat test.request.json
-cfn invoke CREATE test.request.json 
-cfn invoke DELETE test.request.json 
+cfn invoke resource CREATE test.request.json 
+cfn invoke resource DELETE test.request.json 
 ```
 
 Both CREATE & DELETE tests must pass.

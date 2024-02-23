@@ -56,7 +56,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	invitationReq := &admin.OrganizationInvitationRequest{
 		TeamIds:  currentModel.TeamIds,
@@ -96,7 +96,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	invitation, res, err := atlasV2.OrganizationsApi.GetOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
@@ -136,7 +136,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	invitationReq := &admin.OrganizationInvitationUpdateRequest{
 		TeamIds: currentModel.TeamIds,
@@ -174,7 +174,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	_, res, err := atlasV2.OrganizationsApi.DeleteOrganizationInvitation(context.Background(), *currentModel.OrgId, *currentModel.Id).Execute()
 	if err != nil {
@@ -205,7 +205,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasV2
+	atlasV2 := client.Atlas20231115002
 
 	invitations, res, err := atlasV2.OrganizationsApi.ListOrganizationInvitationsWithParams(context.Background(), &admin.ListOrganizationInvitationsApiParams{
 		OrgId:    *currentModel.OrgId,

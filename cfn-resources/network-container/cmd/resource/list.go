@@ -50,7 +50,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		GroupId:      *currentModel.ProjectId,
 	}
 	_, _ = logger.Debugf("List - containerRequest:%v", containerRequest)
-	containerResponse, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), containerRequest).Execute()
+	containerResponse, _, err := client.Atlas20231115002.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), containerRequest).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Error %v", err)
 		return handler.ProgressEvent{}, err

@@ -85,12 +85,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.Id)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -123,12 +123,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.Id)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -155,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
-	deletePrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	deletePrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.Id)
 	_, response, err = deletePrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -186,12 +186,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	mongodbClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	if err != nil {
@@ -249,7 +249,7 @@ type privateEndpointCreationCallBackContext struct {
 	ID        string
 }
 
-func create(mongodbClient *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
+func create(client *util.MongoDBClient, currentModel *Model) handler.ProgressEvent {
 	region := *currentModel.Region
 	groupID := *currentModel.ProjectId
 	cloudProvider := *currentModel.CloudProvider
@@ -259,7 +259,7 @@ func create(mongodbClient *util.MongoDBClient, currentModel *Model) handler.Prog
 		Region:       region,
 	}
 
-	createPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.CreatePrivateEndpointService(context.Background(),
+	createPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.CreatePrivateEndpointService(context.Background(),
 		groupID,
 		privateEndpointRequest)
 	createPrivateEndpointResponse, response, err := createPrivateEndpointRequest.Execute()
@@ -292,10 +292,10 @@ func create(mongodbClient *util.MongoDBClient, currentModel *Model) handler.Prog
 		currentModel, 20)
 }
 
-func validateCreationCompletion(mongodbClient *util.MongoDBClient, currentModel *Model, req handler.Request) handler.ProgressEvent {
+func validateCreationCompletion(client *util.MongoDBClient, currentModel *Model, req handler.Request) handler.ProgressEvent {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 	PrivateEndpointCallBackContext.fillStruct(req.CallbackContext)
-	getPrivateEndpointRequest := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, PrivateEndpointCallBackContext.ID)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	defer response.Body.Close()

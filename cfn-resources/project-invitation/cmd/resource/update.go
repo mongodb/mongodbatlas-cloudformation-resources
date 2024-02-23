@@ -49,7 +49,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Roles: currentModel.Roles,
 	}
 
-	invitation, res, err := client.AtlasV2.ProjectsApi.UpdateProjectInvitationById(context.Background(), *currentModel.ProjectId, *currentModel.Id, invitationReq).Execute()
+	invitation, res, err := client.Atlas20231115002.ProjectsApi.UpdateProjectInvitationById(context.Background(), *currentModel.ProjectId, *currentModel.Id, invitationReq).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}

@@ -106,7 +106,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ProviderName:        admin.PtrString(constants.AWS),
 	}
 
-	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.CreatePeeringConnection(context.Background(), projectID, &peerRequest).Execute()
+	peerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.CreatePeeringConnection(context.Background(), projectID, &peerRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			resp), nil
@@ -139,7 +139,7 @@ func Read(req handler.Request, prevModel, currentModel *Model) (handler.Progress
 	projectID := *currentModel.ProjectId
 	peerID := *currentModel.Id
 
-	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
+	peerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			resp), nil
@@ -203,7 +203,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	peerRequest.ContainerId = *currentModel.ContainerId
-	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringConnection(context.Background(), projectID, peerID, &peerRequest).Execute()
+	peerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.UpdatePeeringConnection(context.Background(), projectID, peerID, &peerRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -235,7 +235,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	peerID := *currentModel.Id
-	_, resp, err := client.AtlasV2.NetworkPeeringApi.DeletePeeringConnection(context.Background(), projectID, peerID).Execute()
+	_, resp, err := client.Atlas20231115002.NetworkPeeringApi.DeletePeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			resp), nil
@@ -264,7 +264,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	projectID := *currentModel.ProjectId
-	peerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.ListPeeringConnections(context.Background(), projectID).Execute()
+	peerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.ListPeeringConnections(context.Background(), projectID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -342,7 +342,7 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 }
 
 func getStatus(client *util.MongoDBClient, projectID, peerID string) (statusName string, err error) {
-	peerResponse, _, err := client.AtlasV2.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
+	peerResponse, _, err := client.Atlas20231115002.NetworkPeeringApi.GetPeeringConnection(context.Background(), projectID, peerID).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return StatusDeleted, nil

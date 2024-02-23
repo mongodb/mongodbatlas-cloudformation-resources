@@ -67,7 +67,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		PageNum:      &pageNum,
 	}
 
-	result, resp, err := client.AtlasV2.ProjectIPAccessListApi.ListProjectIpAccessListsWithParams(context.Background(), listOptions).Execute()
+	result, resp, err := client.Atlas20231115002.ProjectIPAccessListApi.ListProjectIpAccessListsWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp), nil

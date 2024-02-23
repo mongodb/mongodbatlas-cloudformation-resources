@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		CloudProvider: aws.String(constants.AWS),
 		IamRoleId:     currentModel.IamRoleID,
 	}
-	output, resp, err := client.AtlasV2.CloudBackupsApi.CreateExportBucket(context.Background(), *currentModel.ProjectId, params).Execute()
+	output, resp, err := client.Atlas20231115002.CloudBackupsApi.CreateExportBucket(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -84,7 +84,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	output, resp, err := client.AtlasV2.CloudBackupsApi.GetExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	output, resp, err := client.Atlas20231115002.CloudBackupsApi.GetExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -114,7 +114,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err := client.AtlasV2.CloudBackupsApi.DeleteExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
+	_, resp, err := client.Atlas20231115002.CloudBackupsApi.DeleteExportBucket(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -137,7 +137,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	output, resp, err := client.AtlasV2.CloudBackupsApi.ListExportBuckets(context.Background(), *currentModel.ProjectId).Execute()
+	output, resp, err := client.Atlas20231115002.CloudBackupsApi.ListExportBuckets(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}

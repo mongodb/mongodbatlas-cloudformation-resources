@@ -72,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func createContainer(client *util.MongoDBClient, projectID string, request *admin.CloudProviderContainer) (string, error) {
-	container, httpResponse, err := client.AtlasV2.NetworkPeeringApi.CreatePeeringContainer(context.Background(), projectID, request).Execute()
+	container, httpResponse, err := client.Atlas20231115002.NetworkPeeringApi.CreatePeeringContainer(context.Background(), projectID, request).Execute()
 	if err == nil {
 		return *container.Id, nil
 	}
@@ -88,7 +88,7 @@ func createContainer(client *util.MongoDBClient, projectID string, request *admi
 		ProviderName: request.ProviderName,
 	}
 
-	containers, _, err := client.AtlasV2.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), &args).Execute()
+	containers, _, err := client.Atlas20231115002.NetworkPeeringApi.ListPeeringContainerByCloudProviderWithParams(context.Background(), &args).Execute()
 	if err != nil {
 		return "", fmt.Errorf("error Containers.ListAll err:%v", err)
 	}

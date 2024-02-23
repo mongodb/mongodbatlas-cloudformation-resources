@@ -47,7 +47,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+	certificate, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if expirationMonths := aws.IntValue(currentModel.MonthsUntilExpiration); expirationMonths > 0 {
 		cert := admin.NewUserCert()
 		cert.MonthsUntilExpiration = &expirationMonths
-		res, _, err := client.AtlasV2.X509AuthenticationApi.CreateDatabaseUserCertificate(context.Background(), *currentModel.ProjectId, *currentModel.UserName, cert).Execute()
+		res, _, err := client.Atlas20231115002.X509AuthenticationApi.CreateDatabaseUserCertificate(context.Background(), *currentModel.ProjectId, *currentModel.UserName, cert).Execute()
 		if err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	} else {
 		customerX509 := &admin.DBUserTLSX509Settings{Cas: currentModel.CustomerX509.Cas}
-		_, _, err := client.AtlasV2.LDAPConfigurationApi.SaveLDAPConfiguration(context.Background(), *currentModel.ProjectId, &admin.UserSecurity{CustomerX509: customerX509}).Execute()
+		_, _, err := client.Atlas20231115002.LDAPConfigurationApi.SaveLDAPConfiguration(context.Background(), *currentModel.ProjectId, &admin.UserSecurity{CustomerX509: customerX509}).Execute()
 		if err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -105,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+	certificate, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -144,7 +144,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	certificate, resp, err := client.AtlasV2.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
+	certificate, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -156,7 +156,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	_, _, err = client.AtlasV2.X509AuthenticationApi.DisableCustomerManagedX509(context.Background(), *currentModel.ProjectId).Execute()
+	_, _, err = client.Atlas20231115002.X509AuthenticationApi.DisableCustomerManagedX509(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,

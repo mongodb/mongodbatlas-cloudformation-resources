@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	mongodbClient, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
@@ -88,10 +88,10 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	switch status {
 	case resource_constats.Init:
-		pe := privateendpointservice.Create(*mongodbClient, *currentModel.Region, *currentModel.GroupId)
+		pe := privateendpointservice.Create(*client, *currentModel.Region, *currentModel.GroupId)
 		return addModelToProgressEvent(&pe, currentModel), nil
 	case resource_constats.CreatingPrivateEndpointService:
-		peConnection, completionValidation := privateendpointservice.ValidateCreationCompletion(mongodbClient,
+		peConnection, completionValidation := privateendpointservice.ValidateCreationCompletion(client,
 			*currentModel.GroupId, req)
 		if completionValidation != nil {
 			return addModelToProgressEvent(completionValidation, currentModel), nil
@@ -113,11 +113,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 
-		pe := privateendpoint.Create(mongodbClient, *currentModel.GroupId, privateEndpointInput, *peConnection.Id)
+		pe := privateendpoint.Create(client, *currentModel.GroupId, privateEndpointInput, *peConnection.Id)
 
 		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
-		ValidationOutput, progressEvent := privateendpoint.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
+		ValidationOutput, progressEvent := privateendpoint.ValidateCreationCompletion(client, *currentModel.GroupId, req)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
@@ -133,7 +133,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 
-		privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.
+		privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.
 			GetPrivateEndpointService(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id).
 			Execute()
 		if err != nil {
@@ -158,12 +158,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	mongodbClient, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.
+	privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.
 		GetPrivateEndpointService(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id).
 		Execute()
 	if err != nil {
@@ -193,11 +193,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	mongodbClient, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
-	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(),
+	privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(),
 		*currentModel.GroupId, providerName, *currentModel.Id).Execute()
 
 	if isDeleting(req) {
@@ -226,7 +226,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	privateEndpoint := *privateEndpointResponse
 
 	if hasInterfaceEndpoints(privateEndpoint) {
-		epr := privateendpoint.Delete(mongodbClient, *currentModel.GroupId, *currentModel.Id,
+		epr := privateendpoint.Delete(client, *currentModel.GroupId, *currentModel.Id,
 			privateEndpoint.InterfaceEndpoints)
 
 		if epr != nil {
@@ -237,7 +237,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return *epr, nil
 		}
 	} else {
-		_, response, err = mongodbClient.AtlasV2.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.GroupId,
+		_, response, err = client.Atlas20231115002.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.GroupId,
 			providerName,
 			*currentModel.Id).Execute()
 
@@ -266,12 +266,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	mongodbClient, pe := util.NewAtlasClient(&req, currentModel.Profile)
+	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
 	if pe != nil {
 		return *pe, nil
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.AtlasV2.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(),
+	privateEndpointResponse, response, err := client.Atlas20231115002.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(),
 		*currentModel.GroupId,
 		providerName).Execute()
 	if err != nil {

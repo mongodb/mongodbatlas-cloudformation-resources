@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlasClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	createRequest := atlasClient.AtlasV2.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline)
+	createRequest := client.Atlas20231115002.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline)
 
 	pe, response, err := createRequest.Execute()
 
@@ -143,7 +143,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlasClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -151,7 +151,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	readRequest := atlasClient.AtlasV2.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName)
+	readRequest := client.Atlas20231115002.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName)
 	pe, response, err := readRequest.Execute()
 
 	defer closeResponse(response)
@@ -241,7 +241,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlasClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -250,7 +250,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	pipelineName := *currentModel.Name
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	updateRequest := atlasClient.AtlasV2.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline)
+	updateRequest := client.Atlas20231115002.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline)
 	pe, response, err := updateRequest.Execute()
 
 	defer closeResponse(response)
@@ -288,7 +288,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlasClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -296,7 +296,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	deleteRequest := atlasClient.AtlasV2.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName)
+	deleteRequest := client.Atlas20231115002.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName)
 	_, response, err := deleteRequest.Execute()
 
 	defer closeResponse(response)
@@ -323,13 +323,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
 
-	atlasClient, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
 	groupID := *currentModel.ProjectId
-	readAllRequest := atlasClient.AtlasV2.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID)
+	readAllRequest := client.Atlas20231115002.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID)
 
 	pe, response, err := readAllRequest.Execute()
 	defer closeResponse(response)

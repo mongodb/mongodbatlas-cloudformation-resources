@@ -51,7 +51,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	containerRequest.ProviderName = admin.PtrString(constants.AWS)
 	containerRequest.RegionName = currentModel.RegionName
-	containerResponse, resp, err := client.AtlasV2.NetworkPeeringApi.UpdatePeeringContainer(context.Background(), projectID, containerID, containerRequest).Execute()
+	containerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.UpdatePeeringContainer(context.Background(), projectID, containerID, containerRequest).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			resp), nil

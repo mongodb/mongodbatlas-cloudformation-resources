@@ -130,7 +130,17 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name, updateRequest).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		// Log and handle 404 ok
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		}
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
 
 	return handler.ProgressEvent{
@@ -154,9 +164,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasV2 := client.AtlasSDK
 
-	_, resp, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
+	_, _, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
 	return handler.ProgressEvent{
@@ -182,7 +195,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
 	for ok := true; ok; {
-		streamInstances, resp, err := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId).Execute()//TODO: increase pagenum
+		streamInstances, resp, err := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId).Execute() //TODO: increase pagenum
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}

@@ -1,1 +1,11 @@
-
+{
+  "Name": "",
+  "GroupId": "",
+  "DataProcessRegion": {
+    "CloudProvider": "AWS",
+    "Region": "US_EAST_1"
+  },
+  "StreamConfig": {
+    "Tier": "SP30"
+  }
+}

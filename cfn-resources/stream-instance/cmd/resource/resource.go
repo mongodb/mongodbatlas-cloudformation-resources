@@ -182,7 +182,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
 	for ok := true; ok; {
-		streamInstances, resp, err := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId).Execute()
+		streamInstances, resp, err := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId).Execute()//TODO: increase pagenum
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}

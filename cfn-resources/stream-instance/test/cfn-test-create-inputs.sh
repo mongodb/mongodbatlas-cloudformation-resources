@@ -53,7 +53,7 @@ jq --arg cluster_name "$clusterName" \
 	--arg profile "$profile" \
 	--arg tier "$tier" \
 	'.Profile?|=$profile | .ClusterName?|=$cluster_name | .GroupId?|=$project_id | .Name?|=$stream_instance_name | .DataProcessRegion.CloudProvider?|=$cloud_provider | .DataProcessRegion.Region?|=$region | .StreamConfig.Tier?|=$tier' \
-	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
+	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg cluster_name "$clusterName" \
 	--arg project_id "$projectId" \
@@ -62,6 +62,6 @@ jq --arg cluster_name "$clusterName" \
 	--arg region "$region" \
 	--arg profile "$profile" \
 	--arg tier "$tier" \
-	'.Profile?|=$profile | .ClusterName?|=$cluster_name | .GroupId?|=$project_id | .Name?|=$stream_instance_name | .DataProcessRegion[0].CloudProvider?|=$cloud_provider | .DataProcessRegion[0].Region?|=$region | .StreamConfig[0].Tier?|=$tier' \
-	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
+	'.Profile?|=$profile | .ClusterName?|=$cluster_name | .GroupId?|=$project_id | .Name?|=$stream_instance_name | .DataProcessRegion.CloudProvider?|=$cloud_provider | .DataProcessRegion.Region?|=$region | .StreamConfig.Tier?|=$tier' \
+	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 

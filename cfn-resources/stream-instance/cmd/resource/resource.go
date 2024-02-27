@@ -51,7 +51,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -82,7 +82,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -115,7 +115,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -146,7 +146,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -172,7 +172,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
+	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -203,15 +203,17 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func newStreamsTenant(model *Model) *admin.StreamsTenant {
+	dataProcessRegion := *model.DataProcessRegion
+	streamConfig := *model.StreamConfig
 	return &admin.StreamsTenant{
 		Name:    model.Name,
 		GroupId: model.GroupId,
 		DataProcessRegion: &admin.StreamsDataProcessRegion{
-			CloudProvider: *model.DataProcessRegion.CloudProvider,
-			Region:        *model.DataProcessRegion.Region,
+			CloudProvider: *dataProcessRegion.CloudProvider,
+			Region:        *dataProcessRegion.Region,
 		},
 		StreamConfig: &admin.StreamConfig{
-			Tier: model.StreamConfig.Tier,
+			Tier: streamConfig.Tier,
 		},
 	}
 }

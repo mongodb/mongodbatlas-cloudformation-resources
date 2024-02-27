@@ -136,6 +136,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update success",
+		ResourceModel:   currentModel,
 	}, nil
 }
 
@@ -162,6 +163,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Delete success",
+		ResourceModel:   currentModel,
 	}, nil
 }
 
@@ -191,8 +193,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	response := make([]any, 0, len(accumulatedStreamInstances))
-	for i := range accumulatedStreamInstances {
-		response = append(response, accumulatedStreamInstances[i])
+	if len(accumulatedStreamInstances) > 0 {
+		for i := range accumulatedStreamInstances {
+			response = append(response, accumulatedStreamInstances[i])
+		}
 	}
 
 	return handler.ProgressEvent{

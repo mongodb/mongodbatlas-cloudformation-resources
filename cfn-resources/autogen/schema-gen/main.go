@@ -116,6 +116,7 @@ func main() {
 				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
 				// Read from query params
 				queryParams := readQueryParams(method)
+				fmt.Printf("%v", reqSchemaKeys)
 				for _, reqSchemaKey := range reqSchemaKeys {
 					bodySchema[key] = mergePropertyMaps(bodySchema[key], mergePropertyMaps(reqSchema[reqSchemaKey], resSchema[resSchemaKey]))
 				}
@@ -361,9 +362,9 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 
 func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []string, reqSchema map[string]map[string]Property, definitions map[string]Definitions, requiredParams []string) {
 	reqBody := method.RequestBody
-	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content["application/json"] != nil &&
-		reqBody.Value.Content["application/json"].Schema != nil {
-		reqSchemaKey := filepath.Base(reqBody.Value.Content["application/json"].Schema.Ref)
+	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content["application/vnd.atlas.2023-01-01+json"] != nil &&
+		reqBody.Value.Content["application/vnd.atlas.2023-01-01+json"].Schema != nil {
+		reqSchemaKey := filepath.Base(reqBody.Value.Content["application/vnd.atlas.2023-01-01+json"].Schema.Ref)
 		schemaKeys = append(schemaKeys, capitalize(reqSchemaKey))
 		// Read from Request body
 		if doc.Components.Schemas[filepath.Base(reqSchemaKey)] != nil {
@@ -394,6 +395,15 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 	return schemaKeys, reqSchema, definitions, requiredParams
 }
 
+func getMediaTypeFromContent(content openapi3.Content) *openapi3.MediaType {
+	if len(content) > 0 {
+		for _, v := range content {
+			return v
+		}
+	}
+	return nil
+}
+
 func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
 	if methodResponseHasSchema(method, "200") {
 		return readResponseBodyWithResponseCode(openAPIDoc, method, "200")
@@ -407,7 +417,7 @@ func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schem
 }
 
 func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
-	key = filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
+	key = filepath.Base(method.Responses[responseCode].Value.Content["application/vnd.atlas.2023-01-01+json"].Schema.Ref)
 	// Read from Request body
 	if openAPIDoc.Components.Schemas[filepath.Base(key)] != nil {
 		value := *openAPIDoc.Components.Schemas[filepath.Base(key)]
@@ -419,8 +429,8 @@ func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.O
 }
 
 func methodResponseHasSchema(method *openapi3.Operation, responseCode string) bool {
-	return method.Responses[responseCode] != nil && method.Responses[responseCode].Value != nil && method.Responses[responseCode].Value.Content["application/json"] != nil &&
-		method.Responses[responseCode].Value.Content["application/json"].Schema != nil
+	return method.Responses[responseCode] != nil && method.Responses[responseCode].Value != nil && method.Responses[responseCode].Value.Content["application/vnd.atlas.2023-01-01+json"] != nil &&
+		method.Responses[responseCode].Value.Content["application/vnd.atlas.2023-01-01+json"].Schema != nil
 }
 func readQueryParams(method *openapi3.Operation) map[string]Property {
 	queryParams := map[string]Property{}

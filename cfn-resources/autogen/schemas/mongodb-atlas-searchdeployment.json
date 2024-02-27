@@ -1,0 +1,80 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+    "ApiSearchDeploymentSpec": {
+      "type": "object",
+      "properties": {
+        "InstanceSize": {
+          "type": "string",
+          "description": "Hardware specification for the search node instance sizes."
+        },
+        "NodeCount": {
+          "type": "integer",
+          "description": "Number of search nodes in the cluster."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Returns, adds, edits, and removes Atlas Search indexes for the specified cluster. Also returns and updates user-defined analyzers for the specified cluster.",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/GroupId",
+    "/properties/Id"
+  ],
+  "properties": {
+    "ClusterName": {
+      "type": "string",
+      "description": "Label that identifies the cluster to delete.",
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]*$"
+    },
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project. Use the [/groups](#tag/Projects/operation/listProjects) endpoint to retrieve all projects to which the authenticated user has access.\n\n**NOTE**: Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Id": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the search deployment.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Specs": {
+      "type": "array",
+      "description": "List of settings that configure the search nodes for your cluster.",
+      "items": {
+        "$ref": "#/definitions/ApiSearchDeploymentSpec",
+        "type": "object"
+      }
+    },
+    "StateName": {
+      "type": "string",
+      "description": "Human-readable label that indicates the current operating condition of this search deployment."
+    }
+  },
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/Specs",
+    "/properties/StateName"
+  ],
+  "typeName": "MongoDB::Atlas::SearchDeployment",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+}

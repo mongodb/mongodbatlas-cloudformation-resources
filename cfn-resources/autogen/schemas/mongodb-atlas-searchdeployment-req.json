@@ -1,0 +1,40 @@
+{
+  "CreateFields": {
+    "InputParams": [
+      "Specs",
+      "StateName",
+      "GroupId",
+      "Id",
+      "ClusterName"
+    ]
+  },
+  "ReadFields": {
+    "InputParams": [
+      "Id",
+      "ClusterName",
+      "Specs",
+      "StateName",
+      "GroupId"
+    ],
+    "RequiredParams": [
+      "GroupId",
+      "ClusterName"
+    ]
+  },
+  "UpdateFields": {
+    "InputParams": [
+      "Specs",
+      "StateName",
+      "GroupId",
+      "Id",
+      "ClusterName"
+    ]
+  },
+  "DeleteFields": {
+    "RequiredParams": [
+      "GroupId",
+      "ClusterName"
+    ]
+  },
+  "ListFields": {}
+}

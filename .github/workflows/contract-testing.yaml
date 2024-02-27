@@ -75,7 +75,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -118,7 +118,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -161,7 +161,7 @@ jobs:
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-    - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+    - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
       with:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -205,7 +205,7 @@ jobs:
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -248,7 +248,7 @@ jobs:
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -290,7 +290,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -329,7 +329,7 @@ jobs:
          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
          use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -371,7 +371,7 @@ jobs:
        private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
        org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-    - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+    - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
       with:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -415,7 +415,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -457,7 +457,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -500,7 +500,7 @@ jobs:
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -544,7 +544,7 @@ jobs:
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -587,7 +587,7 @@ jobs:
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -630,7 +630,7 @@ jobs:
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
           version: v1.10.0
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -672,7 +672,7 @@ jobs:
           private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+      - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502

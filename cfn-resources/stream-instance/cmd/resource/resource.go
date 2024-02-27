@@ -192,7 +192,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ok = streamInstances.GetTotalCount() > len(accumulatedStreamInstances)
 	}
 
-	response := make([]any, 0, len(accumulatedStreamInstances))
+	response := make([]any, len(accumulatedStreamInstances))
 	if len(accumulatedStreamInstances) > 0 {
 		for i := range accumulatedStreamInstances {
 			response = append(response, accumulatedStreamInstances[i])

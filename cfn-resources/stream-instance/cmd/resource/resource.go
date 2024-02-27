@@ -190,27 +190,25 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ok = streamInstances.GetTotalCount() > len(accumulatedStreamInstances)
 	}
 
-	response := make([]interface{}, len(accumulatedStreamInstances))
-	if len(accumulatedStreamInstances) > 0 {
-		for _, stream := range accumulatedStreamInstances {
-			cloudProvider := stream.DataProcessRegion.CloudProvider
-			region := stream.DataProcessRegion.Region
-			model := Model{
-				Name: stream.Name,
-				DataProcessRegion: &StreamsDataProcessRegion{
-					CloudProvider: &cloudProvider,
-					Region:        &region,
-				},
-				StreamConfig: &StreamConfig{
-					Tier: stream.StreamConfig.Tier,
-				},
-				GroupId:     stream.GroupId,
-				Id:          stream.Id,
-				Hostnames:   *stream.Hostnames,
-				Connections: newModelConnections(*stream.Connections),
-			}
-			response = append(response, model)
+	response := make([]interface{}, 0)
+	for _, stream := range accumulatedStreamInstances {
+		cloudProvider := stream.DataProcessRegion.CloudProvider
+		region := stream.DataProcessRegion.Region
+		model := &Model{
+			Name: stream.Name,
+			DataProcessRegion: &StreamsDataProcessRegion{
+				CloudProvider: &cloudProvider,
+				Region:        &region,
+			},
+			StreamConfig: &StreamConfig{
+				Tier: stream.StreamConfig.Tier,
+			},
+			GroupId:     stream.GroupId,
+			Id:          stream.Id,
+			Hostnames:   *stream.Hostnames,
+			Connections: newModelConnections(*stream.Connections),
 		}
+		response = append(response, model)
 	}
 
 	return handler.ProgressEvent{

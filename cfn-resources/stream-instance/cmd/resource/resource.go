@@ -190,7 +190,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ok = streamInstances.GetTotalCount() > len(accumulatedStreamInstances)
 	}
 
-	response := make([]Model, len(accumulatedStreamInstances))
+	response := make([]interface{}, len(accumulatedStreamInstances))
 	if len(accumulatedStreamInstances) > 0 {
 		for _, stream := range accumulatedStreamInstances {
 			cloudProvider := stream.DataProcessRegion.CloudProvider

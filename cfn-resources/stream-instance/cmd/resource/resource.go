@@ -192,8 +192,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	response := make([]interface{}, len(accumulatedStreamInstances))
 	if len(accumulatedStreamInstances) > 0 {
-		for i := range accumulatedStreamInstances {
-			response = append(response, accumulatedStreamInstances[i])
+		for stream := range accumulatedStreamInstances {
+			response = append(response, stream)
 		}
 	}
 

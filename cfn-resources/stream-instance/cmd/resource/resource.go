@@ -162,9 +162,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Delete success",
-		ResourceModel:   currentModel,
-	}, nil
+		Message:         "Delete success"}, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

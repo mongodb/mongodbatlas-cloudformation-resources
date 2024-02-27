@@ -3,7 +3,7 @@
   "GroupId": "",
   "DataProcessRegion": {
     "CloudProvider": "AWS",
-    "Region": "US_EAST_1"
+    "Region": "DUBLIN_IRL"
   },
   "StreamConfig": {
     "Tier": "SP30"

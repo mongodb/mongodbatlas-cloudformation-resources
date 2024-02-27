@@ -27,7 +27,6 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
@@ -291,5 +290,5 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 			Message:          errMsg,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-	return progress_events.GetFailedEventByResponse(errMsg, response), nil
+	return progressevent.GetFailedEventByResponse(errMsg, response), nil
 }

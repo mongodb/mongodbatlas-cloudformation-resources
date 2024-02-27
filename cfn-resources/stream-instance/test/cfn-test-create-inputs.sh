@@ -31,7 +31,7 @@ fi
 
 streamInstanceName="stream-$RANDOM"
 cloudProvider="AWS"
-region="US_EAST_1"
+region="VIRGINIA_USA"
 tier="SP30"
 
 jq --arg project_id "$projectId" \

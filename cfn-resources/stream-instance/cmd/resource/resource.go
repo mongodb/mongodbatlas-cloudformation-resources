@@ -17,6 +17,7 @@ package resource
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -26,6 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
@@ -34,7 +36,11 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-stream-instance")
 }
 
-var CreateRequiredFields = []string{constants.Name, constants.StreamConfig, constants.StreamConfig}
+var CreateRequiredFields = []string{constants.Name, constants.GroupID, constants.StreamConfig, constants.DataProcessRegion}
+var ReadRequiredFields = []string{constants.Name, constants.GroupID}
+var UpdateRequiredFields = []string{constants.Name, constants.GroupID, constants.DataProcessRegion}
+var DeleteRequiredFields = []string{constants.Name, constants.GroupID}
+var ListRequiredFields = []string{constants.GroupID}
 
 const Kafka = "Kafka"
 const Cluster = "Cluster"
@@ -58,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	createdStreamInstance, resp, err := atlasV2.StreamsApi.CreateStreamInstance(context.Background(), *currentModel.GroupId, streamInstanceCreateReq).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		return handleError(resp, constants.CREATE, err)
 	}
 
 	currentModel.Id = createdStreamInstance.Id
@@ -73,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -87,12 +93,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	streamInstance, resp, err := atlasV2.StreamsApi.GetStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
+		return handleError(resp, constants.READ, err)
 	}
 
 	currentModel.Id = streamInstance.Id
@@ -111,7 +112,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -130,17 +131,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name, updateRequest).Execute()
 	if err != nil {
-		// Log and handle 404 ok
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+		return handleError(resp, constants.UPDATE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -152,7 +143,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -164,12 +155,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasV2 := client.AtlasSDK
 
-	_, _, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
+	_, resp, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
 	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		return handleError(resp, constants.DELETE, err)
 	}
 
 	return handler.ProgressEvent{
@@ -181,7 +169,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	if errEvent := validator.ValidateModel(ListRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
 
@@ -286,4 +274,22 @@ func newModelConnections(streamConfig []admin.StreamsConnection) []StreamsConnec
 		connections = append(connections, modelConnection)
 	}
 	return connections
+}
+
+func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
+	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
+	_, _ = logger.Warn(errMsg)
+	if response.StatusCode == http.StatusConflict {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errMsg,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+	}
+	if response.StatusCode == http.StatusBadRequest {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errMsg,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }

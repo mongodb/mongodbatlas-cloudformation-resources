@@ -144,6 +144,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	// populate response model
 	currentModel = convertToUIModel(alertConfig, currentModel)
 
+	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,

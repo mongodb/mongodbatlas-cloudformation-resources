@@ -87,21 +87,21 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 The trigger's name.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Type
 
 The trigger's type.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Disabled
 

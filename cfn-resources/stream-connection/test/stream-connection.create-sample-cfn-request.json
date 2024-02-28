@@ -1,1 +1,15 @@
-
+{
+  "desiredResourceState": {
+    "Profile": "",
+    "ProjectId": "65df4d741a7df1165f4ca4e2",
+    "InstanceName": "stream-instance-4655",
+    "ClusterName": "cluster-18730",
+    "ConnectionName": "ConnectionNameCluster2",
+    "Type": "Cluster",
+    "DbRoleToExecute": {
+      "Role": "atlasAdmin",
+      "Type": "BUILT_IN"
+    }
+  },
+  "previousResourceState": {}
+}

@@ -50,17 +50,26 @@ jq --arg cluster_name "$clusterName" \
    | .InstanceName?|=$instance_name' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
+jq --arg cluster_name "$clusterName" \
+	--arg instance_name "$instanceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .ClusterName?|=$cluster_name
+   | .ProjectId?|=$project_id
+   | .InstanceName?|=$instance_name' \
+	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
+
 jq --arg instance_name "$instanceName" \
-   	--arg project_id "$projectId" \
-   	--arg profile "$profile" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .InstanceName?|=$instance_name' \
 	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
 
 jq --arg instance_name "$instanceName" \
-   	--arg project_id "$projectId" \
-   	--arg profile "$profile" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
 	'.Profile?|=$profile
    | .ProjectId?|=$project_id
    | .InstanceName?|=$instance_name' \

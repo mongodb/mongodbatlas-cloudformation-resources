@@ -198,7 +198,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for _, stream := range accumulatedStreamInstances {
 		cloudProvider := stream.DataProcessRegion.CloudProvider
 		region := stream.DataProcessRegion.Region
-		model := &Model{
+		model := Model{
 			Name: stream.Name,
 			DataProcessRegion: &StreamsDataProcessRegion{
 				CloudProvider: &cloudProvider,

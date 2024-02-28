@@ -185,6 +185,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for ok := true; ok; {
 		listStreamInstancesRequest := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId)
 		listStreamInstancesRequest.PageNum(pageNum)
+		listStreamInstancesRequest.ItemsPerPage(100)
 		streamInstances, resp, err := listStreamInstancesRequest.Execute()
 		if err != nil {
 			return handleError(resp, constants.LIST, err)

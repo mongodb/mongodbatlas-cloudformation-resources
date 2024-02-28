@@ -99,10 +99,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Hostnames = streamInstance.GetHostnames()
 	currentModel.DataProcessRegion = newModelDataRegion(streamInstance.DataProcessRegion)
 	currentModel.StreamConfig = newModelStreamConfig(streamInstance.StreamConfig)
-	currentModel.Connections = newModelConnections(streamInstance.GetConnections())
+	currentModel.Connections = newModelConnections(streamInstance.Connections)
 
 	return handler.ProgressEvent{
-		OperationStatus: cloudformation.OperationStatusSuccess,
+		OperationStatus: handler.Success,
 		Message:         "Read Complete",
 		ResourceModel:   currentModel,
 	}, nil
@@ -211,13 +211,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			GroupId:     stream.GroupId,
 			Id:          stream.Id,
 			Hostnames:   *stream.Hostnames,
-			Connections: newModelConnections(*stream.Connections),
+			Connections: newModelConnections(stream.Connections),
 		}
 		response = append(response, model)
 	}
 
 	return handler.ProgressEvent{
-		OperationStatus: cloudformation.OperationStatusSuccess,
+		OperationStatus: handler.Success,
 		Message:         "List Complete",
 		ResourceModels:  response,
 	}, nil
@@ -274,13 +274,13 @@ func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurit
 	}
 }
 
-func newModelConnections(streamConfig []admin.StreamsConnection) []StreamsConnection {
-	if len(streamConfig) == 0 {
+func newModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
+	if streamConfig == nil || len(*streamConfig) == 0 {
 		return nil
 	}
 
 	connections := make([]StreamsConnection, 0)
-	for _, connection := range streamConfig {
+	for _, connection := range *streamConfig {
 		modelConnection := StreamsConnection{
 			Name: connection.Name,
 			Type: connection.Type,

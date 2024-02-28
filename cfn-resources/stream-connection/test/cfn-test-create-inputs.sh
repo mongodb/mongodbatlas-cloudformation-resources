@@ -30,7 +30,7 @@ else
 fi
 echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${projectId} --force\n====="
 
-instanceName="stream-$RANDOM"
+instanceName="stream-instance-$RANDOM"
 cloudProvider="AWS"
 clusterName="cluster-$RANDOM"
 
@@ -47,15 +47,21 @@ jq --arg cluster_name "$clusterName" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile | .ClusterName?|=$cluster_name
    | .ProjectId?|=$project_id
-   | .InstanceName?|=$instance_name' |
+   | .InstanceName?|=$instance_name' \
 	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
 
-jq --arg cluster_name "$clusterName" \
-	--arg coll_name "$collName" \
-	--arg db_name "$dbName" \
-	--arg project_id "$projectId" \
-	--arg profile "$profile" \
-	'.Profile?|=$profile | .ClusterName?|=$cluster_name
-    | .ProjectId?|=$project_id
-    | .DbName?|=$db_name | .CollName?|=$coll_name' \
-	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
+jq --arg instance_name "$instanceName" \
+   	--arg project_id "$projectId" \
+   	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .InstanceName?|=$instance_name' \
+	"$(dirname "$0")/inputs_2_create.json" >"inputs/inputs_2_create.json"
+
+jq --arg instance_name "$instanceName" \
+   	--arg project_id "$projectId" \
+   	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .InstanceName?|=$instance_name' \
+	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"

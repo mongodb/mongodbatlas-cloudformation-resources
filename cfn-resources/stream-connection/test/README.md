@@ -1,8 +1,8 @@
-# MongoDB::Atlas::OnlineArchive
+# MongoDB::Atlas::StreamConnection
 
 ## Impact 
 The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
- - Online archive L1 CDK constructor
+ - Stream Connection L1 CDK constructor
 
 
 ## Prerequisites 
@@ -10,15 +10,15 @@ The following components use this resource and are potentially impacted by any c
 All resources are created as part of `cfn-testing-helper.sh`:
 
 - Atlas Project
-- Cluster with sample data
-- Database name and collection name (using sample_airbnb)
+- Cluster
+- Atlas Stream Instance
 
 ## Manual QA
 Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource
-1. Online archive should be created in the specified test project:
+1. Online archive should be created in the specified test project for the specified Atlas Stream instance:
 
   ![image](https://user-images.githubusercontent.com/122359335/227655088-8c1d44d3-da02-4413-af2a-5d814ab113a8.png)
 

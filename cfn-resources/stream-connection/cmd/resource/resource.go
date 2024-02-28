@@ -21,7 +21,7 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.InstanceName,
 var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName}
 var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 
-// TODO - remove logs, extract chores, handle errors
+// TODO - remove logs, extract chores, handle errors, add dependency for cluster/kafka conn types
 func setup() {
 	util.SetupLogger("mongodb-atlas-stream-connection")
 }
@@ -60,62 +60,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:         "Create Completed",
 		ResourceModel:   readModel,
 	}, nil
-}
-
-func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
-	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
-	_, _ = log.Warn(errMsg)
-	if response.StatusCode == http.StatusConflict {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
-	}
-
-	if response.StatusCode == http.StatusUnauthorized {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Not found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	if response.StatusCode == http.StatusBadRequest {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-	return progress_events.GetFailedEventByResponse(errMsg, response), nil
-}
-
-func newStreamConnectionReq(ctx context.Context, model *Model) *admin.StreamsConnection {
-	streamConnection := admin.StreamsConnection{
-		Name:             model.ConnectionName,
-		Type:             model.Type,
-		ClusterName:      model.ClusterName,
-		BootstrapServers: model.BootstrapServers,
-	}
-	if model.Authentication != nil {
-		authenticationModel := model.Authentication
-		streamConnection.Authentication = &admin.StreamsKafkaAuthentication{
-			Mechanism: authenticationModel.Mechanism,
-			Password:  authenticationModel.Password,
-			Username:  authenticationModel.Username,
-		}
-	}
-	if model.Security != nil {
-		securityModel := model.Security
-		streamConnection.Security = &admin.StreamsKafkaSecurity{
-			BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
-			Protocol:                securityModel.Protocol,
-		}
-	}
-
-	if model.Config != nil {
-		streamConnection.Config = &model.Config
-	}
-
-	return &streamConnection
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -252,7 +196,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	response := make([]interface{}, 0)
 	for _, streamConn := range accumulatedStreamConns {
-		model := newStreamConnectionModel(&streamConn, projectID, instanceName, nil)
+		model := newStreamConnectionModel(&streamConn, projectID, instanceName, currentModel.Profile)
 		response = append(response, model)
 	}
 
@@ -303,4 +247,60 @@ func newStreamConnectionModel(streamsConn *admin.StreamsConnection, projectID, i
 		model.Config = *streamsConn.Config
 	}
 	return model
+}
+
+func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
+	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
+	_, _ = log.Warn(errMsg)
+	if response.StatusCode == http.StatusConflict {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errMsg,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
+	}
+
+	if response.StatusCode == http.StatusUnauthorized {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Not found",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+
+	if response.StatusCode == http.StatusBadRequest {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          errMsg,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
+	return progress_events.GetFailedEventByResponse(errMsg, response), nil
+}
+
+func newStreamConnectionReq(ctx context.Context, model *Model) *admin.StreamsConnection {
+	streamConnection := admin.StreamsConnection{
+		Name:             model.ConnectionName,
+		Type:             model.Type,
+		ClusterName:      model.ClusterName,
+		BootstrapServers: model.BootstrapServers,
+	}
+	if model.Authentication != nil {
+		authenticationModel := model.Authentication
+		streamConnection.Authentication = &admin.StreamsKafkaAuthentication{
+			Mechanism: authenticationModel.Mechanism,
+			Password:  authenticationModel.Password,
+			Username:  authenticationModel.Username,
+		}
+	}
+	if model.Security != nil {
+		securityModel := model.Security
+		streamConnection.Security = &admin.StreamsKafkaSecurity{
+			BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
+			Protocol:                securityModel.Protocol,
+		}
+	}
+
+	if model.Config != nil {
+		streamConnection.Config = &model.Config
+	}
+
+	return &streamConnection
 }

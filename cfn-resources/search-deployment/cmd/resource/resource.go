@@ -7,9 +7,15 @@ import (
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+)
+
+const (
+	CallBackSeconds = 10 // TODO temporary, must remove
+	// CallBackSeconds = 40
 )
 
 // TODO: complete required fields
@@ -32,31 +38,34 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, err := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
-	if err != nil {
-		return *err, nil
+	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	if progressErr != nil {
+		return *progressErr, nil
 	}
 	connV2 := client.AtlasSDK
 
+	if _, ok := req.CallbackContext[constants.StateName]; ok {
+		return validateProgress(*connV2, currentModel), nil
+	}
+
 	projectID := *currentModel.ProjectId
 	clusterName := *currentModel.ClusterName // TODO remove pointer access
-	// TODO: searchDeploymentReq := NewSearchDeploymentReq(ctx, &searchDeploymentPlan)
-	if _, res, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &admin.ApiSearchDeploymentRequest{
-		Specs: &[]admin.ApiSearchDeploymentSpec{
-			{
-				InstanceSize: *currentModel.Specs[0].InstanceSize,
-				NodeCount:    *currentModel.Specs[0].NodeCount,
-			},
-		},
-	}).Execute(); err != nil {
+	apiReq := newSearchDeploymentReq(*currentModel)
+	apiResp, res, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Search Deployment: %s", err.Error()),
 			res), nil
 	}
 
 	// Response
 	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		OperationStatus:      handler.InProgress,
+		ResourceModel:        newCFNSearchDeployment(currentModel, apiResp),
+		Message:              fmt.Sprintf("Create Search Deployment `%s`", *apiResp.StateName),
+		CallbackDelaySeconds: CallBackSeconds,
+		CallbackContext: map[string]interface{}{
+			constants.StateName: apiResp.StateName,
+		},
 	}, nil
 }
 
@@ -70,12 +79,23 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	fmt.Printf("running read: %v", *currentModel)
+	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	if progressErr != nil {
+		return *progressErr, nil
+	}
+	connV2 := client.AtlasSDK
+
+	projectID := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName // TODO remove pointer access
+	apiResp, res, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
+	}
 
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		ResourceModel:   newCFNSearchDeployment(currentModel, apiResp),
 	}, nil
 }
 
@@ -115,4 +135,61 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
+}
+
+func validateProgress(connV2 admin.APIClient, currentModel *Model) handler.ProgressEvent {
+	projectID := *currentModel.ProjectId
+	clusterName := *currentModel.ClusterName // TODO remove pointer access
+	apiResp, res, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(err.Error(), res)
+	}
+	newModel := newCFNSearchDeployment(currentModel, apiResp)
+
+	if *newModel.StateName == constants.IdleState {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			ResourceModel:   newModel,
+			Message:         constants.Complete,
+		}
+	}
+	return handler.ProgressEvent{
+		OperationStatus: handler.InProgress,
+		ResourceModel:   newModel,
+		Message:         constants.Pending,
+		CallbackContext: map[string]interface{}{
+			constants.StateName: apiResp.StateName,
+		},
+	}
+}
+
+func newCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
+	respSpecs := apiResp.GetSpecs()
+	resultSpecs := make([]ApiSearchDeploymentSpec, len(respSpecs))
+	for i, respSpec := range respSpecs {
+		resultSpecs[i] = ApiSearchDeploymentSpec{
+			InstanceSize: &respSpec.InstanceSize,
+			NodeCount:    &respSpec.NodeCount,
+		}
+	}
+	return Model{
+		Profile:     prevModel.Profile,
+		ClusterName: prevModel.ClusterName,
+		ProjectId:   prevModel.ProjectId,
+		Id:          apiResp.Id,
+		Specs:       resultSpecs,
+		StateName:   apiResp.StateName,
+	}
+}
+
+func newSearchDeploymentReq(model Model) admin.ApiSearchDeploymentRequest {
+	modelSpecs := model.Specs
+	requestSpecs := make([]admin.ApiSearchDeploymentSpec, len(modelSpecs))
+	for i, spec := range modelSpecs {
+		requestSpecs[i] = admin.ApiSearchDeploymentSpec{
+			InstanceSize: *spec.InstanceSize,
+			NodeCount:    *spec.NodeCount, // TODO remove pointer access
+		}
+	}
+	return admin.ApiSearchDeploymentRequest{Specs: &requestSpecs}
 }

@@ -265,11 +265,15 @@
   "createOnlyProperties": [
     "/properties/Profile",
     "/properties/ProjectId",
-    "/properties/AppId"
+    "/properties/AppId",
+    "/properties/Name",
+    "/properties/Type"
   ],
   "required": [
     "ProjectId",
-    "AppId"
+    "AppId",
+    "Name",
+    "Type"
   ],
   "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/trigger/README.md",
   "tagging": {

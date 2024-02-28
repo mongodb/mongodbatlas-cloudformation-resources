@@ -211,6 +211,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			GroupId:     stream.GroupId,
 			Id:          stream.Id,
 			Hostnames:   *stream.Hostnames,
+			Profile:     currentModel.Profile,
 			Connections: newModelConnections(stream.Connections),
 		}
 		response = append(response, model)

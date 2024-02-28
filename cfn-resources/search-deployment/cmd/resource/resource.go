@@ -59,7 +59,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
-	return inProgressEvent("Creating Search Deployment", &newModel)
+	return inProgressEvent("Creating Search Deployment", &newModel), nil
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -118,7 +118,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
-	return inProgressEvent("Updating Search Deployment", &newModel)
+	return inProgressEvent("Updating Search Deployment", &newModel), nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -146,7 +146,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	return inProgressEvent(constants.DeleteInProgress, currentModel)
+	return inProgressEvent(constants.DeleteInProgress, currentModel), nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -177,14 +177,8 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 			Message:         constants.Complete,
 		}
 	}
-	return handler.ProgressEvent{
-		OperationStatus: handler.InProgress,
-		ResourceModel:   newModel,
-		Message:         constants.Pending,
-		CallbackContext: map[string]interface{}{
-			constants.ID: currentModel.Id,
-		},
-	}
+
+	return inProgressEvent(constants.Pending, &newModel)
 }
 
 func newCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
@@ -218,7 +212,7 @@ func newSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
 	return admin.ApiSearchDeploymentRequest{Specs: &requestSpecs}
 }
 
-func inProgressEvent(message string, model *Model) (handler.ProgressEvent, error) {
+func inProgressEvent(message string, model *Model) handler.ProgressEvent {
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              message,
@@ -226,5 +220,5 @@ func inProgressEvent(message string, model *Model) (handler.ProgressEvent, error
 		CallbackDelaySeconds: CallBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.ID: model.Id,
-		}}, nil
+		}}
 }

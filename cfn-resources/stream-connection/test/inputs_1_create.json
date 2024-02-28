@@ -1,0 +1,12 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "InstanceName": "",
+  "ClusterName": "",
+  "ConnectionName": "ConnectionNameCluster",
+  "Type": "Cluster",
+  "DbRoleToExecute": {
+    "Role": "atlasAdmin",
+    "Type": "BUILT_IN"
+  }
+}

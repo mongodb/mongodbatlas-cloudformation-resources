@@ -156,4 +156,7 @@ const (
 	OrgOwnerID        = "OrgOwnerId"
 	OrgKeyRoles       = "APIKey.Roles"
 	OrgKeyDescription = "APIKey.Description"
+
+	ConnectionName = "ConnectionName"
+	Type           = "Type"
 )

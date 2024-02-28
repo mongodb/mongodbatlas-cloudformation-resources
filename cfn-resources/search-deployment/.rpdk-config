@@ -1,0 +1,22 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "MongoDB::Atlas::SearchDeployment",
+    "language": "go",
+    "runtime": "provided.al2",
+    "entrypoint": "bootstrap",
+    "testEntrypoint": "bootstrap",
+    "settings": {
+        "version": false,
+        "subparser_name": null,
+        "verbose": 0,
+        "force": false,
+        "type_name": "MongoDB::Atlas::SearchDeployment",
+        "artifact_type": "r",
+        "endpoint_url": null,
+        "region": null,
+        "target_schemas": [],
+        "profile": null,
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment",
+        "protocolVersion": "2.0.0"
+    }
+}

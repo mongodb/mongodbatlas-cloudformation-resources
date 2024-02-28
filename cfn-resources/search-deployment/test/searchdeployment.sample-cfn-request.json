@@ -1,0 +1,15 @@
+{
+  "desiredResourceState": {
+    "Profile": "agustin-profile",
+    "ProjectId": "65251446ae5f3f6ec7968b13",
+    "ClusterName": "Cluster1",
+    "Specs": [
+      {
+        "InstanceSize": "S30_HIGHCPU_NVME",
+        "NodeCount": 2
+      }
+    ]
+  },
+  "providerLogGroupName": "mongodb-atlas-search-deployment-logs",
+  "previousResourceState": {}
+}

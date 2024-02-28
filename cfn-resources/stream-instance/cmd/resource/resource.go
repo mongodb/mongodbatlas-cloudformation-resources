@@ -218,7 +218,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{
 		OperationStatus: cloudformation.OperationStatusSuccess,
 		Message:         "List Complete",
-		ResourceModel:   response,
+		ResourceModels:  response,
 	}, nil
 }
 

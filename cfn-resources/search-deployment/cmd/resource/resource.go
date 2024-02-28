@@ -34,8 +34,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -52,7 +51,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiReq := newSearchDeploymentReq(*currentModel)
+	apiReq := newSearchDeploymentReq(currentModel)
 	apiResp, res, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Search Deployment: %s", err.Error()),
@@ -60,24 +59,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
-	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		ResourceModel:        newModel,
-		Message:              fmt.Sprintf("Create Search Deployment `%s`", *apiResp.StateName),
-		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]interface{}{
-			constants.ID: newModel.Id,
-		},
-	}, nil
+	return inProgressEvent("Creating Search Deployment", &newModel)
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
-	modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -94,7 +83,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   newCFNSearchDeployment(currentModel, apiResp),
@@ -105,26 +93,39 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
-	modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Response
-	return handler.ProgressEvent{
-		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}, nil
+	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	if progressErr != nil {
+		return *progressErr, nil
+	}
+	connV2 := client.AtlasSDK
+
+	// handling of subsequent retry calls
+	if _, ok := req.CallbackContext[constants.ID]; ok {
+		return handleStateTransition(*connV2, currentModel, constants.IdleState), nil
+	}
+
+	projectID := util.SafeString(currentModel.ProjectId)
+	clusterName := util.SafeString(currentModel.ClusterName)
+	apiReq := newSearchDeploymentReq(currentModel)
+	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Update Search Deployment: %s", err.Error()),
+			res), nil
+	}
+
+	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	return inProgressEvent("Updating Search Deployment", &newModel)
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
-	modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
+	if modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -145,14 +146,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              constants.DeleteInProgress,
-		ResourceModel:        currentModel,
-		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]interface{}{
-			constants.ID: currentModel.Id,
-		}}, nil
+	return inProgressEvent(constants.DeleteInProgress, currentModel)
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -212,7 +206,7 @@ func newCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeployment
 	}
 }
 
-func newSearchDeploymentReq(model Model) admin.ApiSearchDeploymentRequest {
+func newSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
 	modelSpecs := model.Specs
 	requestSpecs := make([]admin.ApiSearchDeploymentSpec, len(modelSpecs))
 	for i, spec := range modelSpecs {
@@ -222,4 +216,15 @@ func newSearchDeploymentReq(model Model) admin.ApiSearchDeploymentRequest {
 		}
 	}
 	return admin.ApiSearchDeploymentRequest{Specs: &requestSpecs}
+}
+
+func inProgressEvent(message string, model *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              message,
+		ResourceModel:        model,
+		CallbackDelaySeconds: CallBackSeconds,
+		CallbackContext: map[string]interface{}{
+			constants.ID: model.Id,
+		}}, nil
 }

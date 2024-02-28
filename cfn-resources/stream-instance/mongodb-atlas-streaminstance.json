@@ -205,7 +205,8 @@
     "/properties/Hostnames"
   ],
   "primaryIdentifier": [
-    "/properties/Name"
+    "/properties/Name",
+    "/properties/Profile"
   ],
   "createOnlyProperties": [
     "/properties/Name"

@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -29,12 +30,13 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 
 	setup()
-	log.Debugf("Create() currentModel:%+v", currentModel)
+	log.Debugf("...............1. Create() currentModel:%+v", currentModel)
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
 	}
+	log.Debugf("\n.............2. Create() currentModel:%+v", currentModel)
 
 	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if peErr != nil {
@@ -43,15 +45,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	conn := client.AtlasSDK
 	ctx := context.Background()
 
+	log.Debugf("\n3. Create() currentModel:%+v", currentModel)
+
 	//handler logic main
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 	streamConnectionReq := newStreamConnectionReq(ctx, currentModel)
 
+	jsonBytes, err := json.MarshalIndent(streamConnectionReq, "", "\t")
+	log.Debugf("\n4. Create() streamConnectionReq: %s", string(jsonBytes))
+
 	streamConnResp, apiResp, err := conn.StreamsApi.CreateStreamConnection(ctx, *projectID, *instanceName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
+
+	jsonBytes, err = json.MarshalIndent(streamConnResp, "", "\t")
+	log.Debugf("\nstreamConnResp from API:  %s", string(jsonBytes))
+	log.Debugf("\nstreamConnResp from API:  %+v", streamConnResp)
 
 	readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
 
@@ -130,7 +141,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	log.Debugf("Delete() currentModel:%+v", currentModel)
+	log.Debugf("...................1. Delete() currentModel:%+v", currentModel)
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
 		return *errEvent, nil
@@ -221,7 +232,13 @@ func newStreamConnectionModel(streamsConn *admin.StreamsConnection, projectID, i
 		BootstrapServers: streamsConn.BootstrapServers,
 	}
 
+	jsonBytes, _ := json.MarshalIndent(streamsConn, "", "\t")
+	log.Debugf("\nin newStreamConnectionModel streamsConn input from API:  %s", string(jsonBytes))
+
 	if streamsConn.DbRoleToExecute != nil {
+		jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
+		log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
+
 		model.DbRoleToExecute = &DBRoleToExecute{
 			Role: streamsConn.DbRoleToExecute.Role,
 			Type: streamsConn.DbRoleToExecute.Type,
@@ -295,6 +312,14 @@ func newStreamConnectionReq(ctx context.Context, model *Model) *admin.StreamsCon
 		streamConnection.Security = &admin.StreamsKafkaSecurity{
 			BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
 			Protocol:                securityModel.Protocol,
+		}
+	}
+
+	if model.DbRoleToExecute != nil {
+		dbRoleToExecuteModel := model.DbRoleToExecute
+		streamConnection.DbRoleToExecute = &admin.DBRoleToExecute{
+			Role: dbRoleToExecuteModel.Role,
+			Type: dbRoleToExecuteModel.Type,
 		}
 	}
 

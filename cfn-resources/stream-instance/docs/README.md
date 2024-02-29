@@ -1,6 +1,6 @@
 # MongoDB::Atlas::StreamInstance
 
-Returns, adds, edits, and removes stream instances.
+Returns, adds, edits, and removes Atlas Stream Processing Instances.
 
 ## Syntax
 

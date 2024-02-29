@@ -35,11 +35,11 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-stream-instance")
 }
 
-var CreateRequiredFields = []string{constants.Name, constants.GroupID, constants.StreamConfig, constants.DataProcessRegion}
-var ReadRequiredFields = []string{constants.Name, constants.GroupID}
-var UpdateRequiredFields = []string{constants.Name, constants.GroupID, constants.DataProcessRegion}
-var DeleteRequiredFields = []string{constants.Name, constants.GroupID}
-var ListRequiredFields = []string{constants.GroupID}
+var CreateRequiredFields = []string{constants.InstanceName, constants.ProjectID, constants.DataProcessRegion}
+var ReadRequiredFields = []string{constants.InstanceName, constants.ProjectID}
+var UpdateRequiredFields = []string{constants.InstanceName, constants.ProjectID, constants.DataProcessRegion}
+var DeleteRequiredFields = []string{constants.InstanceName, constants.ProjectID}
+var ListRequiredFields = []string{constants.ProjectID}
 
 const Kafka = "Kafka"
 const Cluster = "Cluster"

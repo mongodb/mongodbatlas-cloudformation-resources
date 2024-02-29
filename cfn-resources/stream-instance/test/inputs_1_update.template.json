@@ -1,6 +1,6 @@
 {
-  "Name": "",
-  "GroupId": "",
+  "InstanceName": "",
+  "ProjectId": "",
   "DataProcessRegion": {
     "CloudProvider": "AWS",
     "Region": "VIRGINIA_USA"

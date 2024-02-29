@@ -1,19 +1,5 @@
 {
   "additionalProperties": false,
-  "definitions": {
-    "ApiSearchDeploymentSpec": {
-      "type": "object",
-      "properties": {
-        "InstanceSize": {
-          "type": "string"
-        },
-        "NodeCount": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
   "description": "Returns, adds, edits, and removes Atlas Search indexes for the specified cluster. Also returns and updates user-defined analyzers for the specified cluster.",
   "handlers": {
     "create": {
@@ -37,33 +23,37 @@
       ]
     }
   },
-  "primaryIdentifier": [
-    "/properties/ProjectId",
-    "/properties/ClusterName",
-    "/properties/Id"
-  ],
+  "definitions": {
+    "ApiSearchDeploymentSpec": {
+      "type": "object",
+      "properties": {
+        "InstanceSize": {
+          "type": "string"
+        },
+        "NodeCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "InstanceSize",
+        "NodeCount"
+      ],
+      "additionalProperties": false
+    }
+  },
   "properties": {
     "Profile": {
       "type": "string",
       "default": "default"
     },
     "ClusterName": {
-      "type": "string",
-      "maxLength": 64,
-      "minLength": 1,
-      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]*$"
+      "type": "string"
     },
     "ProjectId": {
-      "type": "string",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
+      "type": "string"
     },
     "Id": {
-      "type": "string",
-      "maxLength": 24,
-      "minLength": 24,
-      "pattern": "^([a-f0-9]{24})$"
+      "type": "string"
     },
     "Specs": {
       "insertionOrder": false,
@@ -77,6 +67,16 @@
       "type": "string"
     }
   },
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Id"
+  ],
+  "required": [
+    "ClusterName",
+    "ProjectId",
+    "Specs"
+  ],
   "createOnlyProperties": [
     "/properties/ProjectId",
     "/properties/ClusterName"

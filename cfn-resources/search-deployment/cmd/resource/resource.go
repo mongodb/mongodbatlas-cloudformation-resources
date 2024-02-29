@@ -1,3 +1,17 @@
+// Copyright 2023 MongoDB Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package resource
 
 import (
@@ -15,16 +29,14 @@ import (
 )
 
 const (
-	CallBackSeconds = 10 // TODO temporary, must remove
-	// CallBackSeconds = 40
+	CallBackSeconds                    = 40
 	SearchDeploymentDoesNotExistsError = "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST"
 )
 
-// TODO: complete required fields
-var CreateRequiredFields = []string{}
-var ReadRequiredFields = []string{}
-var UpdateRequiredFields = []string{}
-var DeleteRequiredFields = []string{}
+var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
+var ReadRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
+var DeleteRequiredFields = []string{constants.ProjectID, constants.ClusterName}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-searchdeployment")
@@ -184,10 +196,10 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 func newCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
 	respSpecs := apiResp.GetSpecs()
 	resultSpecs := make([]ApiSearchDeploymentSpec, len(respSpecs))
-	for i, respSpec := range respSpecs {
+	for i := range respSpecs {
 		resultSpecs[i] = ApiSearchDeploymentSpec{
-			InstanceSize: &respSpec.InstanceSize,
-			NodeCount:    &respSpec.NodeCount,
+			InstanceSize: &respSpecs[i].InstanceSize,
+			NodeCount:    &respSpecs[i].NodeCount,
 		}
 	}
 	return Model{

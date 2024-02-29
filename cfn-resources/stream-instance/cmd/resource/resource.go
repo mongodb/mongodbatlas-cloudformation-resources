@@ -61,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasV2 := client.AtlasSDK
 
-	createdStreamInstance, resp, err := atlasV2.StreamsApi.CreateStreamInstance(context.Background(), *currentModel.GroupId, streamInstanceCreateReq).Execute()
+	createdStreamInstance, resp, err := atlasV2.StreamsApi.CreateStreamInstance(context.Background(), *currentModel.ProjectId, streamInstanceCreateReq).Execute()
 	if err != nil {
 		return handleError(resp, constants.CREATE, err)
 	}
@@ -90,7 +90,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	atlasV2 := client.AtlasSDK
 
-	streamInstance, resp, err := atlasV2.StreamsApi.GetStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
+	streamInstance, resp, err := atlasV2.StreamsApi.GetStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 	if err != nil {
 		return handleError(resp, constants.READ, err)
 	}
@@ -128,7 +128,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasV2 := client.AtlasSDK
 
-	_, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name, updateRequest).Execute()
+	_, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, updateRequest).Execute()
 	if err != nil {
 		return handleError(resp, constants.UPDATE, err)
 	}
@@ -155,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasV2 := client.AtlasSDK
 
-	_, resp, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.GroupId, *currentModel.Name).Execute()
+	_, resp, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 	if err != nil {
 		return handleError(resp, constants.DELETE, err)
 	}
@@ -183,7 +183,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
 	pageNum := 1
 	for ok := true; ok; {
-		listStreamInstancesRequest := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.GroupId)
+		listStreamInstancesRequest := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.ProjectId)
 		listStreamInstancesRequest.PageNum(pageNum)
 		listStreamInstancesRequest.ItemsPerPage(100)
 		streamInstances, resp, err := listStreamInstancesRequest.Execute()
@@ -200,7 +200,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		cloudProvider := stream.DataProcessRegion.CloudProvider
 		region := stream.DataProcessRegion.Region
 		model := Model{
-			Name: stream.Name,
+			InstanceName: stream.Name,
 			DataProcessRegion: &StreamsDataProcessRegion{
 				CloudProvider: &cloudProvider,
 				Region:        &region,
@@ -208,7 +208,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			StreamConfig: &StreamConfig{
 				Tier: stream.StreamConfig.Tier,
 			},
-			GroupId:     stream.GroupId,
+			ProjectId:   stream.GroupId,
 			Id:          stream.Id,
 			Hostnames:   *stream.Hostnames,
 			Profile:     currentModel.Profile,
@@ -228,8 +228,8 @@ func newStreamsTenant(model *Model) *admin.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion
 	streamConfig := *model.StreamConfig
 	return &admin.StreamsTenant{
-		Name:    model.Name,
-		GroupId: model.GroupId,
+		Name:    model.InstanceName,
+		GroupId: model.ProjectId,
 		DataProcessRegion: &admin.StreamsDataProcessRegion{
 			CloudProvider: *dataProcessRegion.CloudProvider,
 			Region:        *dataProcessRegion.Region,

@@ -142,7 +142,7 @@
       "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
       "default": "default"
     },
-    "Name": {
+    "InstanceName": {
       "description": "Human-readable label that identifies the stream connection.",
       "type": "string"
     },
@@ -163,7 +163,7 @@
       },
       "insertionOrder": false
     },
-    "GroupId": {
+    "ProjectId": {
       "description": "Unique 24-hexadecimal character string that identifies the project.",
       "type": "string"
     },
@@ -178,8 +178,8 @@
   },
   "additionalProperties": false,
   "required": [
-    "GroupId",
-    "Name",
+    "ProjectId",
+    "InstanceName",
     "DataProcessRegion",
     "StreamConfig"
   ],
@@ -189,11 +189,14 @@
     "/properties/Hostnames"
   ],
   "primaryIdentifier": [
-    "/properties/Name",
+    "/properties/InstanceName",
+    "/properties/ProjectId",
     "/properties/Profile"
   ],
   "createOnlyProperties": [
-    "/properties/Name"
+    "/properties/InstanceName",
+    "/properties/ProjectId",
+    "/properties/Profile"
   ],
   "handlers": {
     "create": {

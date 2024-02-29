@@ -226,18 +226,21 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func newStreamsTenant(model *Model) *admin.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion
-	streamConfig := *model.StreamConfig
-	return &admin.StreamsTenant{
+	streamConfig := model.StreamConfig
+	streamTenant := &admin.StreamsTenant{
 		Name:    model.InstanceName,
 		GroupId: model.ProjectId,
 		DataProcessRegion: &admin.StreamsDataProcessRegion{
 			CloudProvider: *dataProcessRegion.CloudProvider,
 			Region:        *dataProcessRegion.Region,
 		},
-		StreamConfig: &admin.StreamConfig{
-			Tier: streamConfig.Tier,
-		},
 	}
+	if streamConfig != nil {
+		streamTenant.StreamConfig = &admin.StreamConfig{
+			Tier: streamConfig.Tier,
+		}
+	}
+	return streamTenant
 }
 
 func newModelDataRegion(dataProcessRegion *admin.StreamsDataProcessRegion) *StreamsDataProcessRegion {

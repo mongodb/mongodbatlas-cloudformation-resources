@@ -2,7 +2,6 @@ package resource
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -12,7 +11,6 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
@@ -28,7 +26,6 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.InstanceName,
 var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName}
 var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 
-// TODO - remove logs, extract chores, handle errors, add dependency for cluster/kafka conn types
 func setup(cfnFunc constants.CfnFunctions, req handler.Request, currentModel *Model) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-connection")
 
@@ -66,42 +63,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	// setup()
-	// log.Debugf("...............1. Create() currentModel:%+v", currentModel)
 
-	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	// if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
-	// 	return *errEvent, nil
-	// }
-	// log.Debugf("\n.............2. Create() currentModel:%+v", currentModel)
-
-	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
-	// if peErr != nil {
-	// 	return *peErr, nil
-	// }
-	// conn := client.AtlasSDK
 	ctx := context.Background()
 
-	log.Debugf("\n3. Create() currentModel:%+v", currentModel)
-
-	//handler logic main
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 	streamConnectionReq := NewStreamConnectionReq(ctx, currentModel)
-
-	jsonBytes, err := json.MarshalIndent(streamConnectionReq, "", "\t")
-	log.Debugf("\n4. Create() streamConnectionReq: %s", string(jsonBytes))
 
 	streamConnResp, apiResp, err := conn.StreamsApi.CreateStreamConnection(ctx, *projectID, *instanceName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
 
-	jsonBytes, err = json.MarshalIndent(streamConnResp, "", "\t")
-	log.Debugf("\nstreamConnResp from API:  %s", string(jsonBytes))
-	log.Debugf("\nstreamConnResp from API:  %+v", streamConnResp)
-
-	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
 	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
@@ -116,30 +89,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	// setup()
-	// log.Debugf("Read() currentModel:%+v", currentModel)
-	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	// if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
-	// 	return *errEvent, nil
-	// }
-
-	// // Create atlas client
-	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
-	// if peErr != nil {
-	// 	return *peErr, nil
-	// }
-	// conn := client.AtlasSDK
 
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
 	streamConnResp, apiResp, err := conn.StreamsApi.GetStreamConnection(context.Background(), *projectID, *instanceName, *connectionName).Execute()
 	if err != nil {
-		log.Debugf("Read - error: %+v", err)
 		return handleError(apiResp, constants.READ, err)
 	}
 
-	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
 	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
@@ -153,19 +111,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	// setup()
-	// log.Debugf("Update() currentModel:%+v", currentModel)
-	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	// if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
-	// 	return *errEvent, nil
-	// }
 
-	// // Create atlas client
-	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
-	// if peErr != nil {
-	// 	return *peErr, nil
-	// }
-	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
@@ -177,7 +123,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
-	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
 	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
@@ -192,18 +137,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	// setup()
-	// log.Debugf("...................1. Delete() currentModel:%+v", currentModel)
-	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	// if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
-	// 	return *errEvent, nil
-	// }
 
-	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
-	// if peErr != nil {
-	// 	return *peErr, nil
-	// }
-	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
@@ -224,42 +158,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	// setup()
-	// log.Debugf("List() currentModel:%+v", currentModel)
 
-	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	// if errEvent := validator.ValidateModel(ListRequiredFields, currentModel); errEvent != nil {
-	// 	return *errEvent, nil
-	// }
-
-	// // Create atlas client
-	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
-	// if peErr != nil {
-	// 	return *peErr, nil
-	// }
-	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 
-	// pageNum := 1
-	// accumulatedStreamConns := make([]admin.StreamsConnection, 0)
-	// for ok := true; ok; {
-	// 	streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
-	// 		GroupId:      *projectID,
-	// 		TenantName:   *instanceName,
-	// 		ItemsPerPage: util.Pointer(100),
-	// 		PageNum:      util.Pointer(pageNum),
-	// 	}).Execute()
-
-	// 	if err != nil {
-	// 		return handleError(apiResp, constants.LIST, err)
-	// 	}
-	// 	accumulatedStreamConns = append(accumulatedStreamConns, streamConns.GetResults()...)
-	// 	ok = streamConns.GetTotalCount() > len(accumulatedStreamConns)
-	// 	pageNum++
-	// }
 	accumulatedStreamConns, apiResp, err := getAllStreamConnections(ctx, conn, *projectID, *instanceName)
 	if err != nil {
 		return handleError(apiResp, constants.LIST, err)

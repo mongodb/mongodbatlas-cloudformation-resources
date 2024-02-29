@@ -156,5 +156,5 @@ const (
 	OrgOwnerID        = "OrgOwnerId"
 	OrgKeyRoles       = "APIKey.Roles"
 	OrgKeyDescription = "APIKey.Description"
-	StreamConfig = "StreamConfig"
+	StreamConfig      = "StreamConfig"
 )

@@ -33,12 +33,12 @@
         },
         "Username": {
           "type": "string",
-          "description": "Password of the account to connect to the Kafka cluster."
+          "description": "Username of the account to connect to the Kafka cluster."
         },
         "Password": {
           "type": "string",
           "format": "password",
-          "description": "Username of the account to connect to the Kafka cluster."
+          "description": "Password of the account to connect to the Kafka cluster."
         }
       },
       "additionalProperties": false
@@ -62,7 +62,7 @@
       "type": "object",
       "description": "A map of Kafka key-value pairs for optional configuration. This is a flat object, and keys can have '.' characters.",
       "patternProperties": {
-        "^[A-Za-z0-9.]$": {
+        "^[A-Za-z0-9.]+$": {
           "type": "string"
         }
       },

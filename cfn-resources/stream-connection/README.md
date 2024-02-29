@@ -13,4 +13,4 @@ See the [resource docs](docs/README.md).
 
 ## Cloudformation Examples
 
-See the example [CFN Template](/examples/stream-connection/connection-kafka.json) for example resource.
+See the example [CFN Template](/examples/stream-connection/kafka-stream-connection.json) for example resource.

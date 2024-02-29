@@ -44,6 +44,27 @@ func GetFailedEventByResponse(message string, response *http.Response) handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeHandlerInternalFailure}
 	}
 
+	if response.StatusCode == http.StatusConflict {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          message,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}
+	}
+
+	if response.StatusCode == http.StatusUnauthorized {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Not found",
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+	}
+
+	if response.StatusCode == http.StatusBadRequest {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          message,
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
+	}
+
 	return handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          message,

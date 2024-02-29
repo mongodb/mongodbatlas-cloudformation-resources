@@ -9,7 +9,6 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -30,26 +29,57 @@ var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName,
 var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 
 // TODO - remove logs, extract chores, handle errors, add dependency for cluster/kafka conn types
-func setup() {
+func setup(cfnFunc constants.CfnFunctions, req handler.Request, currentModel *Model) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-connection")
-}
-
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-
-	setup()
-	log.Debugf("...............1. Create() currentModel:%+v", currentModel)
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
+
+	var requiredFields []string
+
+	switch cfnFunc {
+	case constants.CREATE:
+		requiredFields = CreateRequiredFields
+	case constants.READ:
+		requiredFields = ReadRequiredFields
+	case constants.UPDATE:
+		requiredFields = UpdateRequiredFields
+	case constants.DELETE:
+		requiredFields = DeleteRequiredFields
+	case constants.LIST:
+		requiredFields = ListRequiredFields
 	}
-	log.Debugf("\n.............2. Create() currentModel:%+v", currentModel)
+
+	if errEvent := validator.ValidateModel(requiredFields, currentModel); errEvent != nil {
+		return nil, errEvent
+	}
 
 	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
 	if peErr != nil {
+		return nil, peErr
+	}
+	return client.AtlasSDK, nil
+
+}
+
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	conn, peErr := setup(constants.CREATE, req, currentModel)
+	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDK
+	// setup()
+	// log.Debugf("...............1. Create() currentModel:%+v", currentModel)
+
+	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	// if errEvent := validator.ValidateModel(CreateRequiredFields, currentModel); errEvent != nil {
+	// 	return *errEvent, nil
+	// }
+	// log.Debugf("\n.............2. Create() currentModel:%+v", currentModel)
+
+	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	// if peErr != nil {
+	// 	return *peErr, nil
+	// }
+	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	log.Debugf("\n3. Create() currentModel:%+v", currentModel)
@@ -57,7 +87,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	//handler logic main
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
-	streamConnectionReq := newStreamConnectionReq(ctx, currentModel)
+	streamConnectionReq := NewStreamConnectionReq(ctx, currentModel)
 
 	jsonBytes, err := json.MarshalIndent(streamConnectionReq, "", "\t")
 	log.Debugf("\n4. Create() streamConnectionReq: %s", string(jsonBytes))
@@ -72,7 +102,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Debugf("\nstreamConnResp from API:  %+v", streamConnResp)
 
 	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
-	resourceModel := toStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -82,19 +112,23 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	log.Debugf("Read() currentModel:%+v", currentModel)
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	// Create atlas client
-	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	conn, peErr := setup(constants.READ, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDK
+	// setup()
+	// log.Debugf("Read() currentModel:%+v", currentModel)
+	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	// if errEvent := validator.ValidateModel(ReadRequiredFields, currentModel); errEvent != nil {
+	// 	return *errEvent, nil
+	// }
+
+	// // Create atlas client
+	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	// if peErr != nil {
+	// 	return *peErr, nil
+	// }
+	// conn := client.AtlasSDK
 
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
@@ -106,7 +140,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
-	resourceModel := toStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -115,32 +149,36 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	log.Debugf("Update() currentModel:%+v", currentModel)
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	// Create atlas client
-	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	conn, peErr := setup(constants.UPDATE, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDK
+	// setup()
+	// log.Debugf("Update() currentModel:%+v", currentModel)
+	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	// if errEvent := validator.ValidateModel(UpdateRequiredFields, currentModel); errEvent != nil {
+	// 	return *errEvent, nil
+	// }
+
+	// // Create atlas client
+	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	// if peErr != nil {
+	// 	return *peErr, nil
+	// }
+	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
-	streamConnectionReq := newStreamConnectionReq(ctx, currentModel)
+	streamConnectionReq := NewStreamConnectionReq(ctx, currentModel)
 	streamConnResp, apiResp, err := conn.StreamsApi.UpdateStreamConnection(ctx, *projectID, *instanceName, *connectionName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
 	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
-	resourceModel := toStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -150,18 +188,22 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	log.Debugf("...................1. Delete() currentModel:%+v", currentModel)
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	conn, peErr := setup(constants.DELETE, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDK
+	// setup()
+	// log.Debugf("...................1. Delete() currentModel:%+v", currentModel)
+	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	// if errEvent := validator.ValidateModel(DeleteRequiredFields, currentModel); errEvent != nil {
+	// 	return *errEvent, nil
+	// }
+
+	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	// if peErr != nil {
+	// 	return *peErr, nil
+	// }
+	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
@@ -178,47 +220,54 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	log.Debugf("List() currentModel:%+v", currentModel)
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	if errEvent := validator.ValidateModel(ListRequiredFields, currentModel); errEvent != nil {
-		return *errEvent, nil
-	}
-
-	// Create atlas client
-	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	conn, peErr := setup(constants.LIST, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDK
+	// setup()
+	// log.Debugf("List() currentModel:%+v", currentModel)
+
+	// util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	// if errEvent := validator.ValidateModel(ListRequiredFields, currentModel); errEvent != nil {
+	// 	return *errEvent, nil
+	// }
+
+	// // Create atlas client
+	// client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	// if peErr != nil {
+	// 	return *peErr, nil
+	// }
+	// conn := client.AtlasSDK
 	ctx := context.Background()
 
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 
-	pageNum := 1
-	accumulatedStreamConns := make([]admin.StreamsConnection, 0)
-	for ok := true; ok; {
-		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
-			GroupId:      *projectID,
-			TenantName:   *instanceName,
-			ItemsPerPage: util.Pointer(100),
-			PageNum:      util.Pointer(pageNum),
-		}).Execute()
+	// pageNum := 1
+	// accumulatedStreamConns := make([]admin.StreamsConnection, 0)
+	// for ok := true; ok; {
+	// 	streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
+	// 		GroupId:      *projectID,
+	// 		TenantName:   *instanceName,
+	// 		ItemsPerPage: util.Pointer(100),
+	// 		PageNum:      util.Pointer(pageNum),
+	// 	}).Execute()
 
-		if err != nil {
-			return handleError(apiResp, constants.LIST, err)
-		}
-		accumulatedStreamConns = append(accumulatedStreamConns, streamConns.GetResults()...)
-		ok = streamConns.GetTotalCount() > len(accumulatedStreamConns)
-		pageNum++
+	// 	if err != nil {
+	// 		return handleError(apiResp, constants.LIST, err)
+	// 	}
+	// 	accumulatedStreamConns = append(accumulatedStreamConns, streamConns.GetResults()...)
+	// 	ok = streamConns.GetTotalCount() > len(accumulatedStreamConns)
+	// 	pageNum++
+	// }
+	accumulatedStreamConns, apiResp, err := getAllStreamConnections(ctx, conn, *projectID, *instanceName)
+	if err != nil {
+		return handleError(apiResp, constants.LIST, err)
 	}
 
 	response := make([]interface{}, 0)
 	for i := range accumulatedStreamConns {
-		// model := newStreamConnectionModel(&accumulatedStreamConns[i], projectID, instanceName, currentModel.Profile)
-		model := toStreamConnectionModel(&accumulatedStreamConns[i], nil)
+		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
 		model.InstanceName = currentModel.InstanceName
 		model.Profile = currentModel.Profile
@@ -232,203 +281,29 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// func updateModel(streamsConn *admin.StreamsConnection, currModel *Model) {
-// 	currModel.ConnectionName = streamsConn.Name
-// 	currModel.Type = streamsConn.Type
+func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, projectID, instanceName string) ([]admin.StreamsConnection, *http.Response, error) {
+	pageNum := 1
+	accumulatedStreamConns := make([]admin.StreamsConnection, 0)
+	for ok := true; ok; {
+		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
+			GroupId:      projectID,
+			TenantName:   instanceName,
+			ItemsPerPage: util.Pointer(100),
+			PageNum:      util.Pointer(pageNum),
+		}).Execute()
 
-// 	if *currModel.Type == ClusterConnectionType {
-// 		currModel.ClusterName = streamsConn.ClusterName
-
-// 		if streamsConn.DbRoleToExecute != nil {
-// 			jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
-// 			log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
-
-// 			currModel.DbRoleToExecute = &DBRoleToExecute{
-// 				Role: streamsConn.DbRoleToExecute.Role,
-// 				Type: streamsConn.DbRoleToExecute.Type,
-// 			}
-// 		}
-// 	}
-
-// 	if *currModel.Type == KafkaConnectionType {
-// 		currModel.BootstrapServers = streamsConn.BootstrapServers
-// 		currModel.Config = *streamsConn.Config
-
-// 		if streamsConn.Authentication != nil {
-// 			currModel.Authentication = &StreamsKafkaAuthentication{
-// 				Mechanism: streamsConn.Authentication.Mechanism,
-// 				Username:  streamsConn.Authentication.Username,
-// 			}
-// 		}
-
-// 		if streamsConn.Security != nil {
-// 			currModel.Security = &StreamsKafkaSecurity{
-// 				BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
-// 				Protocol:                streamsConn.Security.Protocol,
-// 			}
-// 		}
-// 	}
-// }
-
-// func newStreamConnectionModel(streamsConn *admin.StreamsConnection, projectID, instanceName, profile *string) *Model {
-// 	if streamsConn == nil {
-// 		return nil
-// 	}
-
-// 	model := &Model{
-// 		ProjectId:        projectID,
-// 		InstanceName:     instanceName,
-// 		Profile:          profile,
-// 		ConnectionName:   streamsConn.Name,
-// 		Type:             streamsConn.Type,
-// 		ClusterName:      streamsConn.ClusterName,
-// 		BootstrapServers: streamsConn.BootstrapServers,
-// 		Config:           *streamsConn.Config,
-// 	}
-
-// 	jsonBytes, _ := json.MarshalIndent(streamsConn, "", "\t")
-// 	log.Debugf("\nin newStreamConnectionModel streamsConn input from API:  %s", string(jsonBytes))
-
-// 	if streamsConn.Authentication != nil {
-// 		model.Authentication = &StreamsKafkaAuthentication{
-// 			Mechanism: streamsConn.Authentication.Mechanism,
-// 			Username:  streamsConn.Authentication.Username,
-// 		}
-// 	}
-
-// 	if streamsConn.Security != nil {
-// 		model.Security = &StreamsKafkaSecurity{
-// 			BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
-// 			Protocol:                streamsConn.Security.Protocol,
-// 		}
-// 	}
-
-// 	if streamsConn.DbRoleToExecute != nil {
-// 		jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
-// 		log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
-
-// 		model.DbRoleToExecute = &DBRoleToExecute{
-// 			Role: streamsConn.DbRoleToExecute.Role,
-// 			Type: streamsConn.DbRoleToExecute.Type,
-// 		}
-// 	}
-
-// 	return model
-// }
-
-func toStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
-	model := &Model{}
-
-	if currentModel != nil {
-		model = currentModel
-	}
-
-	model.ConnectionName = streamsConn.Name
-	model.Type = streamsConn.Type
-
-	if *streamsConn.Type == ClusterConnectionType {
-		model.ClusterName = streamsConn.ClusterName
-
-		if streamsConn.DbRoleToExecute != nil {
-			jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
-			log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
-
-			model.DbRoleToExecute = &DBRoleToExecute{
-				Role: streamsConn.DbRoleToExecute.Role,
-				Type: streamsConn.DbRoleToExecute.Type,
-			}
+		if err != nil {
+			return nil, apiResp, err
 		}
+		accumulatedStreamConns = append(accumulatedStreamConns, streamConns.GetResults()...)
+		ok = streamConns.GetTotalCount() > len(accumulatedStreamConns)
+		pageNum++
 	}
-
-	if *streamsConn.Type == KafkaConnectionType {
-		model.BootstrapServers = streamsConn.BootstrapServers
-		model.Config = *streamsConn.Config
-
-		if streamsConn.Authentication != nil {
-			model.Authentication = &StreamsKafkaAuthentication{
-				Mechanism: streamsConn.Authentication.Mechanism,
-				Username:  streamsConn.Authentication.Username,
-			}
-		}
-
-		if streamsConn.Security != nil {
-			model.Security = &StreamsKafkaSecurity{
-				BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
-				Protocol:                streamsConn.Security.Protocol,
-			}
-		}
-	}
-
-	return model
+	return accumulatedStreamConns, nil, nil
 }
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
-	_, _ = log.Warn(errMsg)
-	if response.StatusCode == http.StatusConflict {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
-	}
 
-	if response.StatusCode == http.StatusUnauthorized {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          "Not found",
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
-
-	if response.StatusCode == http.StatusBadRequest {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
-}
-
-func newStreamConnectionReq(ctx context.Context, model *Model) *admin.StreamsConnection {
-	streamConnReq := admin.StreamsConnection{
-		Name: model.ConnectionName,
-		Type: model.Type,
-	}
-
-	if *streamConnReq.Type == ClusterConnectionType {
-		if model.DbRoleToExecute != nil {
-			streamConnReq.ClusterName = model.ClusterName
-
-			dbRoleToExecuteModel := model.DbRoleToExecute
-			streamConnReq.DbRoleToExecute = &admin.DBRoleToExecute{
-				Role: dbRoleToExecuteModel.Role,
-				Type: dbRoleToExecuteModel.Type,
-			}
-		}
-	}
-
-	if *streamConnReq.Type == KafkaConnectionType {
-		streamConnReq.BootstrapServers = model.BootstrapServers
-
-		if model.Authentication != nil {
-			authenticationModel := model.Authentication
-			streamConnReq.Authentication = &admin.StreamsKafkaAuthentication{
-				Mechanism: authenticationModel.Mechanism,
-				Password:  authenticationModel.Password,
-				Username:  authenticationModel.Username,
-			}
-		}
-		if model.Security != nil {
-			securityModel := model.Security
-			streamConnReq.Security = &admin.StreamsKafkaSecurity{
-				BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
-				Protocol:                securityModel.Protocol,
-			}
-		}
-
-		if model.Config != nil {
-			streamConnReq.Config = &model.Config
-		}
-	}
-
-	return &streamConnReq
 }

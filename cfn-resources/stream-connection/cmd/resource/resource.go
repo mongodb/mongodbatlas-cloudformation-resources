@@ -6,14 +6,21 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+)
+
+const (
+	ClusterConnectionType = "Cluster"
+	KafkaConnectionType   = "Kafka"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName, constants.Type}
@@ -64,12 +71,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	log.Debugf("\nstreamConnResp from API:  %s", string(jsonBytes))
 	log.Debugf("\nstreamConnResp from API:  %+v", streamConnResp)
 
-	readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
+	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
+	resourceModel := toStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
-		ResourceModel:   readModel,
+		ResourceModel:   resourceModel,
 	}, nil
 }
 
@@ -97,11 +105,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(apiResp, constants.READ, err)
 	}
 
-	readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
+	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
+	resourceModel := toStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   readModel,
+		ResourceModel:   resourceModel,
 	}, nil
 }
 
@@ -130,12 +139,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
-	readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
+	// readModel := newStreamConnectionModel(streamConnResp, projectID, instanceName, currentModel.Profile)
+	resourceModel := toStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update Completed",
-		ResourceModel:   readModel,
+		ResourceModel:   resourceModel,
 	}, nil
 }
 
@@ -206,8 +216,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	response := make([]interface{}, 0)
-	for _, streamConn := range accumulatedStreamConns {
-		model := newStreamConnectionModel(&streamConn, projectID, instanceName, currentModel.Profile)
+	for i := range accumulatedStreamConns {
+		// model := newStreamConnectionModel(&accumulatedStreamConns[i], projectID, instanceName, currentModel.Profile)
+		model := toStreamConnectionModel(&accumulatedStreamConns[i], nil)
+		model.ProjectId = currentModel.ProjectId
+		model.InstanceName = currentModel.InstanceName
+		model.Profile = currentModel.Profile
+
 		response = append(response, model)
 	}
 
@@ -217,52 +232,133 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func newStreamConnectionModel(streamsConn *admin.StreamsConnection, projectID, instanceName, profile *string) *Model {
-	if streamsConn == nil {
-		return nil
+// func updateModel(streamsConn *admin.StreamsConnection, currModel *Model) {
+// 	currModel.ConnectionName = streamsConn.Name
+// 	currModel.Type = streamsConn.Type
+
+// 	if *currModel.Type == ClusterConnectionType {
+// 		currModel.ClusterName = streamsConn.ClusterName
+
+// 		if streamsConn.DbRoleToExecute != nil {
+// 			jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
+// 			log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
+
+// 			currModel.DbRoleToExecute = &DBRoleToExecute{
+// 				Role: streamsConn.DbRoleToExecute.Role,
+// 				Type: streamsConn.DbRoleToExecute.Type,
+// 			}
+// 		}
+// 	}
+
+// 	if *currModel.Type == KafkaConnectionType {
+// 		currModel.BootstrapServers = streamsConn.BootstrapServers
+// 		currModel.Config = *streamsConn.Config
+
+// 		if streamsConn.Authentication != nil {
+// 			currModel.Authentication = &StreamsKafkaAuthentication{
+// 				Mechanism: streamsConn.Authentication.Mechanism,
+// 				Username:  streamsConn.Authentication.Username,
+// 			}
+// 		}
+
+// 		if streamsConn.Security != nil {
+// 			currModel.Security = &StreamsKafkaSecurity{
+// 				BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
+// 				Protocol:                streamsConn.Security.Protocol,
+// 			}
+// 		}
+// 	}
+// }
+
+// func newStreamConnectionModel(streamsConn *admin.StreamsConnection, projectID, instanceName, profile *string) *Model {
+// 	if streamsConn == nil {
+// 		return nil
+// 	}
+
+// 	model := &Model{
+// 		ProjectId:        projectID,
+// 		InstanceName:     instanceName,
+// 		Profile:          profile,
+// 		ConnectionName:   streamsConn.Name,
+// 		Type:             streamsConn.Type,
+// 		ClusterName:      streamsConn.ClusterName,
+// 		BootstrapServers: streamsConn.BootstrapServers,
+// 		Config:           *streamsConn.Config,
+// 	}
+
+// 	jsonBytes, _ := json.MarshalIndent(streamsConn, "", "\t")
+// 	log.Debugf("\nin newStreamConnectionModel streamsConn input from API:  %s", string(jsonBytes))
+
+// 	if streamsConn.Authentication != nil {
+// 		model.Authentication = &StreamsKafkaAuthentication{
+// 			Mechanism: streamsConn.Authentication.Mechanism,
+// 			Username:  streamsConn.Authentication.Username,
+// 		}
+// 	}
+
+// 	if streamsConn.Security != nil {
+// 		model.Security = &StreamsKafkaSecurity{
+// 			BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
+// 			Protocol:                streamsConn.Security.Protocol,
+// 		}
+// 	}
+
+// 	if streamsConn.DbRoleToExecute != nil {
+// 		jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
+// 		log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
+
+// 		model.DbRoleToExecute = &DBRoleToExecute{
+// 			Role: streamsConn.DbRoleToExecute.Role,
+// 			Type: streamsConn.DbRoleToExecute.Type,
+// 		}
+// 	}
+
+// 	return model
+// }
+
+func toStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
+	model := &Model{}
+
+	if currentModel != nil {
+		model = currentModel
 	}
 
-	model := &Model{
-		ProjectId:        projectID,
-		InstanceName:     instanceName,
-		Profile:          profile,
-		ConnectionName:   streamsConn.Name,
-		Type:             streamsConn.Type,
-		ClusterName:      streamsConn.ClusterName,
-		BootstrapServers: streamsConn.BootstrapServers,
-	}
+	model.ConnectionName = streamsConn.Name
+	model.Type = streamsConn.Type
 
-	jsonBytes, _ := json.MarshalIndent(streamsConn, "", "\t")
-	log.Debugf("\nin newStreamConnectionModel streamsConn input from API:  %s", string(jsonBytes))
+	if *streamsConn.Type == ClusterConnectionType {
+		model.ClusterName = streamsConn.ClusterName
 
-	if streamsConn.DbRoleToExecute != nil {
-		jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
-		log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
+		if streamsConn.DbRoleToExecute != nil {
+			jsonBytes, _ := json.MarshalIndent(streamsConn.DbRoleToExecute, "", "\t")
+			log.Debugf("\nin newStreamConnectionModel DBRoleToExecute from API:  %s", string(jsonBytes))
 
-		model.DbRoleToExecute = &DBRoleToExecute{
-			Role: streamsConn.DbRoleToExecute.Role,
-			Type: streamsConn.DbRoleToExecute.Type,
+			model.DbRoleToExecute = &DBRoleToExecute{
+				Role: streamsConn.DbRoleToExecute.Role,
+				Type: streamsConn.DbRoleToExecute.Type,
+			}
 		}
 	}
 
-	if streamsConn.Authentication != nil {
-		model.Authentication = &StreamsKafkaAuthentication{
-			Mechanism: streamsConn.Authentication.Mechanism,
-			Username:  streamsConn.Authentication.Username,
-			Password:  streamsConn.Authentication.Password,
-		}
-	}
-
-	if streamsConn.Security != nil {
-		model.Security = &StreamsKafkaSecurity{
-			BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
-			Protocol:                streamsConn.Security.Protocol,
-		}
-	}
-
-	if streamsConn.Config != nil {
+	if *streamsConn.Type == KafkaConnectionType {
+		model.BootstrapServers = streamsConn.BootstrapServers
 		model.Config = *streamsConn.Config
+
+		if streamsConn.Authentication != nil {
+			model.Authentication = &StreamsKafkaAuthentication{
+				Mechanism: streamsConn.Authentication.Mechanism,
+				Username:  streamsConn.Authentication.Username,
+			}
+		}
+
+		if streamsConn.Security != nil {
+			model.Security = &StreamsKafkaSecurity{
+				BrokerPublicCertificate: streamsConn.Security.BrokerPublicCertificate,
+				Protocol:                streamsConn.Security.Protocol,
+			}
+		}
 	}
+
 	return model
 }
 
@@ -293,39 +389,46 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 }
 
 func newStreamConnectionReq(ctx context.Context, model *Model) *admin.StreamsConnection {
-	streamConnection := admin.StreamsConnection{
-		Name:             model.ConnectionName,
-		Type:             model.Type,
-		ClusterName:      model.ClusterName,
-		BootstrapServers: model.BootstrapServers,
+	streamConnReq := admin.StreamsConnection{
+		Name: model.ConnectionName,
+		Type: model.Type,
 	}
-	if model.Authentication != nil {
-		authenticationModel := model.Authentication
-		streamConnection.Authentication = &admin.StreamsKafkaAuthentication{
-			Mechanism: authenticationModel.Mechanism,
-			Password:  authenticationModel.Password,
-			Username:  authenticationModel.Username,
-		}
-	}
-	if model.Security != nil {
-		securityModel := model.Security
-		streamConnection.Security = &admin.StreamsKafkaSecurity{
-			BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
-			Protocol:                securityModel.Protocol,
+
+	if *streamConnReq.Type == ClusterConnectionType {
+		if model.DbRoleToExecute != nil {
+			streamConnReq.ClusterName = model.ClusterName
+
+			dbRoleToExecuteModel := model.DbRoleToExecute
+			streamConnReq.DbRoleToExecute = &admin.DBRoleToExecute{
+				Role: dbRoleToExecuteModel.Role,
+				Type: dbRoleToExecuteModel.Type,
+			}
 		}
 	}
 
-	if model.DbRoleToExecute != nil {
-		dbRoleToExecuteModel := model.DbRoleToExecute
-		streamConnection.DbRoleToExecute = &admin.DBRoleToExecute{
-			Role: dbRoleToExecuteModel.Role,
-			Type: dbRoleToExecuteModel.Type,
+	if *streamConnReq.Type == KafkaConnectionType {
+		streamConnReq.BootstrapServers = model.BootstrapServers
+
+		if model.Authentication != nil {
+			authenticationModel := model.Authentication
+			streamConnReq.Authentication = &admin.StreamsKafkaAuthentication{
+				Mechanism: authenticationModel.Mechanism,
+				Password:  authenticationModel.Password,
+				Username:  authenticationModel.Username,
+			}
+		}
+		if model.Security != nil {
+			securityModel := model.Security
+			streamConnReq.Security = &admin.StreamsKafkaSecurity{
+				BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
+				Protocol:                securityModel.Protocol,
+			}
+		}
+
+		if model.Config != nil {
+			streamConnReq.Config = &model.Config
 		}
 	}
 
-	if model.Config != nil {
-		streamConnection.Config = &model.Config
-	}
-
-	return &streamConnection
+	return &streamConnReq
 }

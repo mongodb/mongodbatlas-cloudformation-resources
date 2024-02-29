@@ -1,6 +1,6 @@
 {
   "desiredResourceState": {
-    "Profile": "",
+    "Profile": "maastha-cloud-dev",
     "ProjectId": "65df4d741a7df1165f4ca4e2",
     "InstanceName": "stream-instance-4655",
     "ClusterName": "cluster-18730",

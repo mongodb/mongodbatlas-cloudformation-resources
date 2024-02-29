@@ -37,6 +37,7 @@
         },
         "Password": {
           "type": "string",
+          "format": "password",
           "description": "Username of the account to connect to the Kafka cluster."
         }
       },

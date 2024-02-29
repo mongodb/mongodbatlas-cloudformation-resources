@@ -5,20 +5,7 @@
   "definitions": {
     "BaseStreamsRegion": {
       "type": "string",
-      "description": "Name of the cloud provider region hosting Atlas Stream Processing.",
-      "enum": [
-        "VIRGINIA_USA",
-        "CALIFORNIA_USA",
-        "SINGAPORE_SGP",
-        "DUBLIN_IRL",
-        "AMSTERDAM_NLD",
-        "SYDNEY_AUS",
-        "MUMBAI_IND",
-        "FRANKFURT_DEU",
-        "LONDON_GBR",
-        "OREGON_USA",
-        "SAOPAULO_BRA"
-      ]
+      "description": "Name of the cloud provider region hosting Atlas Stream Processing."
     },
     "StreamsDataProcessRegion": {
       "type": "object",
@@ -52,9 +39,6 @@
         "Tier": {
           "type": "string",
           "description": "Selected tier for the Stream Instance. Configures Memory / VCPU allowances.",
-          "enum": [
-            "SP30"
-          ],
           "title": "Stream Instance Tier"
         }
       },

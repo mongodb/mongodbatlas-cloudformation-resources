@@ -57,7 +57,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	streamInstanceCreateReq := newStreamsTenant(currentModel)
+	streamInstanceCreateReq := NewStreamsTenant(currentModel)
 
 	atlasV2 := client.AtlasSDK
 
@@ -97,9 +97,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	currentModel.Id = streamInstance.Id
 	currentModel.Hostnames = streamInstance.GetHostnames()
-	currentModel.DataProcessRegion = newModelDataRegion(streamInstance.DataProcessRegion)
-	currentModel.StreamConfig = newModelStreamConfig(streamInstance.StreamConfig)
-	currentModel.Connections = newModelConnections(streamInstance.Connections)
+	currentModel.DataProcessRegion = NewModelDataRegion(streamInstance.DataProcessRegion)
+	currentModel.StreamConfig = NewModelStreamConfig(streamInstance.StreamConfig)
+	currentModel.Connections = NewModelConnections(streamInstance.Connections)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -212,7 +212,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Id:          stream.Id,
 			Hostnames:   *stream.Hostnames,
 			Profile:     currentModel.Profile,
-			Connections: newModelConnections(stream.Connections),
+			Connections: NewModelConnections(stream.Connections),
 		}
 		response = append(response, model)
 	}
@@ -222,84 +222,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  response,
 	}, nil
-}
-
-func newStreamsTenant(model *Model) *admin.StreamsTenant {
-	dataProcessRegion := *model.DataProcessRegion
-	streamConfig := model.StreamConfig
-	streamTenant := &admin.StreamsTenant{
-		Name:    model.InstanceName,
-		GroupId: model.ProjectId,
-		DataProcessRegion: &admin.StreamsDataProcessRegion{
-			CloudProvider: *dataProcessRegion.CloudProvider,
-			Region:        *dataProcessRegion.Region,
-		},
-	}
-	if streamConfig != nil {
-		streamTenant.StreamConfig = &admin.StreamConfig{
-			Tier: streamConfig.Tier,
-		}
-	}
-	return streamTenant
-}
-
-func newModelDataRegion(dataProcessRegion *admin.StreamsDataProcessRegion) *StreamsDataProcessRegion {
-	return &StreamsDataProcessRegion{
-		CloudProvider: &dataProcessRegion.CloudProvider,
-		Region:        &dataProcessRegion.Region,
-	}
-}
-
-func newModelStreamConfig(streamConfig *admin.StreamConfig) *StreamConfig {
-	return &StreamConfig{
-		Tier: streamConfig.Tier,
-	}
-}
-
-func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
-	return &DBRoleToExecute{
-		Role: dbRole.Role,
-		Type: dbRole.Type,
-	}
-}
-
-func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
-	return &StreamsKafkaAuthentication{
-		Mechanism: authentication.Mechanism,
-		Password:  authentication.Password,
-		Username:  authentication.Username,
-	}
-}
-
-func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
-	return &StreamsKafkaSecurity{
-		BrokerPublicCertificate: security.BrokerPublicCertificate,
-		Protocol:                security.Protocol,
-	}
-}
-
-func newModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
-	if streamConfig == nil || len(*streamConfig) == 0 {
-		return nil
-	}
-
-	connections := make([]StreamsConnection, 0)
-	for _, connection := range *streamConfig {
-		modelConnection := StreamsConnection{
-			Name: connection.Name,
-			Type: connection.Type,
-		}
-		if connection.GetType() == Cluster {
-			modelConnection.ClusterName = connection.ClusterName
-			modelConnection.DbRoleToExecute = newModelDBRoleToExecute(connection.DbRoleToExecute)
-		} else if connection.GetType() == Kafka {
-			modelConnection.BootstrapServers = connection.BootstrapServers
-			modelConnection.Authentication = newModelAuthentication(connection.Authentication)
-			modelConnection.Security = newModelSecurity(connection.Security)
-		}
-		connections = append(connections, modelConnection)
-	}
-	return connections
 }
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {

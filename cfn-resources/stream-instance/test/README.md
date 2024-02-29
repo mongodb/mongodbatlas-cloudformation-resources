@@ -8,6 +8,7 @@ The following components use this resource and are potentially impacted by any c
 ## Prerequisites 
 ### Resources needed to run the manual QA
 - Atlas organization
+- Atlas project
 
 
 All resources are created as part of `cfn-testing-helper.sh`

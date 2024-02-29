@@ -233,11 +233,5 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 			Message:          errMsg,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-	if response.StatusCode == http.StatusBadRequest {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          errMsg,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-	}
 	return progressevent.GetFailedEventByResponse(errMsg, response), nil
 }

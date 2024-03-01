@@ -33,7 +33,7 @@
     },
     "AuthPassword": {
       "Type": "String",
-      "Description": "Password of the account to connect to the Kafka cluster",
+      "Description": "Password of the account to connect to the Kafka cluster. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials.",
       "NoEcho": true
     },
     "SecurityProtocol": {

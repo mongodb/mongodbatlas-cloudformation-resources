@@ -17,7 +17,6 @@ package resource
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -67,16 +66,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiReq := newSearchDeploymentReq(currentModel)
-	apiResp, res, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+	apiResp, resp, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
-		}
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Search Deployment: %s", err.Error()),
-			res), nil
+		return handleSearchDeploymentError(resp, err)
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
@@ -99,9 +91,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, res, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
+		return handleSearchDeploymentError(resp, err)
 	}
 
 	return handler.ProgressEvent{
@@ -134,15 +126,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apiReq := newSearchDeploymentReq(currentModel)
 	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
-		// specific handling is done here as NotFound error is returned with 400 status code
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Update Search Deployment: %s", err.Error()),
-			res), nil
+		return handleSearchDeploymentError(res, err)
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
@@ -171,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	if resp, err := connV2.AtlasSearchApi.DeleteAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+		return handleSearchDeploymentError(resp, err)
 	}
 
 	return inProgressEvent(constants.DeleteInProgress, currentModel), nil
@@ -186,14 +170,13 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == 400 && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
+		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				ResourceModel:   currentModel,
 				Message:         constants.Complete,
 			}
 		}
-
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
 	}
 
@@ -209,36 +192,21 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 	return inProgressEvent(constants.Pending, &newModel)
 }
 
-func newCFNSearchDeployment(prevModel *Model, apiResp *admin.ApiSearchDeploymentResponse) Model {
-	respSpecs := apiResp.GetSpecs()
-	resultSpecs := make([]ApiSearchDeploymentSpec, len(respSpecs))
-	for i := range respSpecs {
-		resultSpecs[i] = ApiSearchDeploymentSpec{
-			InstanceSize: &respSpecs[i].InstanceSize,
-			NodeCount:    &respSpecs[i].NodeCount,
-		}
+// specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
+func handleSearchDeploymentError(res *http.Response, err error) (handler.ProgressEvent, error) {
+	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-	return Model{
-		Profile:     prevModel.Profile,
-		ClusterName: prevModel.ClusterName,
-		ProjectId:   prevModel.ProjectId,
-		Id:          apiResp.Id,
-		Specs:       resultSpecs,
-		StateName:   apiResp.StateName,
+	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
-}
-
-func newSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
-	modelSpecs := model.Specs
-	requestSpecs := make([]admin.ApiSearchDeploymentSpec, len(modelSpecs))
-	for i, spec := range modelSpecs {
-		// Both spec fields are required in CFN model and will be defined
-		requestSpecs[i] = admin.ApiSearchDeploymentSpec{
-			InstanceSize: *spec.InstanceSize,
-			NodeCount:    *spec.NodeCount,
-		}
-	}
-	return admin.ApiSearchDeploymentRequest{Specs: &requestSpecs}
+	return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 }
 
 func inProgressEvent(message string, model *Model) handler.ProgressEvent {

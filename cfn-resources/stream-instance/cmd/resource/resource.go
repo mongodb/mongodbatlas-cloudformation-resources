@@ -129,10 +129,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	atlasV2 := client.AtlasSDK
 
-	_, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, updateRequest).Execute()
+	updatedStreamInstance, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, updateRequest).Execute()
 	if err != nil {
 		return handleError(resp, constants.UPDATE, err)
 	}
+
+	currentModel.Id = updatedStreamInstance.Id
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

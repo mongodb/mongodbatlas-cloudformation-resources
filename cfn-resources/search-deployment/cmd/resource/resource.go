@@ -134,6 +134,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apiReq := newSearchDeploymentReq(currentModel)
 	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
+		// specific handling is done here as NotFound error is returned with 400 status code
+		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          err.Error(),
+				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+		}
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Update Search Deployment: %s", err.Error()),
 			res), nil
 	}

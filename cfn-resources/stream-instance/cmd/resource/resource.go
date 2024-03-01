@@ -197,22 +197,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	response := make([]interface{}, 0)
 	for _, stream := range accumulatedStreamInstances {
-		cloudProvider := stream.DataProcessRegion.CloudProvider
-		region := stream.DataProcessRegion.Region
 		model := Model{
-			InstanceName: stream.Name,
-			DataProcessRegion: &StreamsDataProcessRegion{
-				CloudProvider: &cloudProvider,
-				Region:        &region,
-			},
-			StreamConfig: &StreamConfig{
-				Tier: stream.StreamConfig.Tier,
-			},
-			ProjectId:   stream.GroupId,
-			Id:          stream.Id,
-			Hostnames:   *stream.Hostnames,
-			Profile:     currentModel.Profile,
-			Connections: NewModelConnections(stream.Connections),
+			InstanceName:      stream.Name,
+			DataProcessRegion: NewModelDataRegion(stream.DataProcessRegion),
+			StreamConfig:      NewModelStreamConfig(stream.StreamConfig),
+			ProjectId:         stream.GroupId,
+			Id:                stream.Id,
+			Hostnames:         *stream.Hostnames,
+			Profile:           currentModel.Profile,
+			Connections:       NewModelConnections(stream.Connections),
 		}
 		response = append(response, model)
 	}

@@ -43,6 +43,7 @@ var ListRequiredFields = []string{constants.ProjectID}
 
 const Kafka = "Kafka"
 const Cluster = "Cluster"
+const defaultItemsPerPage = 100
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
@@ -180,21 +181,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	atlasV2 := client.AtlasSDK
 
-	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
-	pageNum := 1
-	for ok := true; ok; {
-		listStreamInstancesRequest := atlasV2.StreamsApi.ListStreamInstances(context.Background(), *currentModel.ProjectId)
-		listStreamInstancesRequest.PageNum(pageNum)
-		listStreamInstancesRequest.ItemsPerPage(100)
-		streamInstances, resp, err := listStreamInstancesRequest.Execute()
-		if err != nil {
-			return handleError(resp, constants.LIST, err)
-		}
-		accumulatedStreamInstances = append(accumulatedStreamInstances, streamInstances.GetResults()...)
-		ok = streamInstances.GetTotalCount() > len(accumulatedStreamInstances)
-		pageNum++
+	accumulatedStreamInstances, apiResp, err := getAllStreamInstances(context.Background(), atlasV2, *currentModel.ProjectId)
+	if err != nil {
+		return handleError(apiResp, constants.LIST, err)
 	}
-
 	response := make([]interface{}, 0)
 	for _, stream := range accumulatedStreamInstances {
 		model := Model{
@@ -215,6 +205,24 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  response,
 	}, nil
+}
+
+func getAllStreamInstances(ctx context.Context, conn *admin.APIClient, projectID string) ([]admin.StreamsTenant, *http.Response, error) {
+	pageNum := 1
+	accumulatedStreamInstances := make([]admin.StreamsTenant, 0)
+	for allStreamInstancesRetrieved := false; !allStreamInstancesRetrieved; {
+		listStreamInstancesRequest := conn.StreamsApi.ListStreamInstances(ctx, projectID)
+		listStreamInstancesRequest.PageNum(pageNum)
+		listStreamInstancesRequest.ItemsPerPage(defaultItemsPerPage)
+		streamInstances, resp, err := listStreamInstancesRequest.Execute()
+		if err != nil {
+			return nil, resp, err
+		}
+		accumulatedStreamInstances = append(accumulatedStreamInstances, streamInstances.GetResults()...)
+		allStreamInstancesRetrieved = streamInstances.GetTotalCount() <= len(accumulatedStreamInstances)
+		pageNum++
+	}
+	return accumulatedStreamInstances, nil, nil
 }
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {

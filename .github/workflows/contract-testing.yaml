@@ -69,11 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@main
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -112,11 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -155,11 +147,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: setup Atlas CLI
-      uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-      with:
-       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+      uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
     - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
       with:
@@ -198,12 +186,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: v1.10.0
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -241,12 +224,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: v1.10.0
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -284,11 +262,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -323,11 +297,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-         public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-         private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-         org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -365,11 +335,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: setup Atlas CLI
-      uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-      with:
-       public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-       private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-       org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+      uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
     - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
       with:
@@ -409,11 +375,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -451,11 +413,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -493,12 +451,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: v1.10.0
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -537,12 +490,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: v1.10.0
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -580,12 +528,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: v1.10.0
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -623,12 +566,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          version: v1.10.0
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
@@ -666,11 +604,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
-        uses: andreaangiolillo/atlas-cli-github-action@fdc1bca49f3f965831572078f1587090c818419a
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:

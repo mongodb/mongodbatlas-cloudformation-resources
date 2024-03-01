@@ -70,7 +70,8 @@
   "primaryIdentifier": [
     "/properties/ProjectId",
     "/properties/ClusterName",
-    "/properties/Id"
+    "/properties/Id",
+    "/properties/Profile"
   ],
   "required": [
     "ClusterName",
@@ -79,7 +80,8 @@
   ],
   "createOnlyProperties": [
     "/properties/ProjectId",
-    "/properties/ClusterName"
+    "/properties/ClusterName",
+    "/properties/Profile"
   ],
   "readOnlyProperties": [
     "/properties/Id",

@@ -1,10 +1,5 @@
 # Stream Instance
 
-## Impact 
-The following components use this resource and are potentially impacted by any changes. They should also be validated to ensure the changes do not cause a regression.
- - Stream Connection
-
-
 ## Prerequisites 
 ### Resources needed to run the manual QA
 - Atlas organization

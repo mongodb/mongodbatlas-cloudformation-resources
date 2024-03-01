@@ -1,4 +1,4 @@
-# Using Atlas Streams with Cloudformatiom
+# Using Atlas Streams with Cloudformation
 
 Atlas Stream Processing is composed of multiple components, and users can leverage AWS CloudFormation to define a subset of these. To obtain more details on each of the components please refer to the [Atlas Stream Processing Documentation](https://www.mongodb.com/docs/atlas/atlas-sp/overview/#atlas-stream-processing-overview).
 

@@ -232,9 +232,10 @@ func newSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
 	modelSpecs := model.Specs
 	requestSpecs := make([]admin.ApiSearchDeploymentSpec, len(modelSpecs))
 	for i, spec := range modelSpecs {
+		// Both spec fields are required in CFN model and will be defined
 		requestSpecs[i] = admin.ApiSearchDeploymentSpec{
 			InstanceSize: *spec.InstanceSize,
-			NodeCount:    *spec.NodeCount, // TODO verify what happens if one of the properties is not defined
+			NodeCount:    *spec.NodeCount,
 		}
 	}
 	return admin.ApiSearchDeploymentRequest{Specs: &requestSpecs}

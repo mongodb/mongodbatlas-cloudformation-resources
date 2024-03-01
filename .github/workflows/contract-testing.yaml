@@ -712,10 +712,6 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-        with:
-          public-key: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          private-key: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          org-id: ${{ secrets.CLOUD_DEV_ORG_ID }}
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:

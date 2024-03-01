@@ -173,7 +173,7 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
-				ResourceModel:   currentModel,
+				ResourceModel:   nil,
 				Message:         constants.Complete,
 			}
 		}

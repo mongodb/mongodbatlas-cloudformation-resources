@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 Label that identifies the cloud service provider where MongoDB Cloud performs stream processing. Currently, this parameter supports AWS only.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -40,7 +40,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Name of the cloud provider region hosting Atlas Stream Processing.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

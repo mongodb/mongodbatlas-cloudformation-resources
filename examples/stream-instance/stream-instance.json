@@ -7,10 +7,10 @@
       "Type": "String",
       "Description": "MongoDB Atlas Profile name"
     },
-    "GroupId": {
+    "ProjectId": {
       "Type": "String"
     },
-    "Name": {
+    "InstanceName": {
       "Type": "String"
     },
     "Tier": {
@@ -27,11 +27,11 @@
         "Profile": {
           "Ref": "Profile"
         },
-        "GroupId": {
-          "Ref": "GroupId"
+        "ProjectId": {
+          "Ref": "ProjectId"
         },
-        "Name": {
-          "Ref": "Name"
+        "InstanceName": {
+          "Ref": "InstanceName"
         },
         "DataProcessRegion": {
           "CloudProvider": "AWS",
@@ -52,6 +52,19 @@
     "Id": {
       "Value": {
         "Ref": "Id"
+      }
+    },
+    "Hostnames": {
+      "Value": {
+        "Fn::Join": [
+          ",",
+          {
+            "Fn::GetAtt": [
+              "StreamInstance",
+              "Hostnames"
+            ]
+          }
+        ]
       }
     }
   }

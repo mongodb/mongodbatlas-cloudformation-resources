@@ -27,8 +27,8 @@
         }
       },
       "required": [
-        "cloudProvider",
-        "region"
+        "CloudProvider",
+        "Region"
       ],
       "additionalProperties": false
     },

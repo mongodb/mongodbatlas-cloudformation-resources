@@ -19,6 +19,13 @@ if [[ "$*" == help ]]; then usage; fi
 rm -rf inputs
 mkdir inputs
 
+#set profile - relevant for contract tests which define a custom profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 projectName="${1}"
 clusterName="${projectName}"
 
@@ -44,7 +51,8 @@ for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
 	jq --arg projectId "$projectId" \
 		--arg clusterName "$clusterName" \
-		'.ProjectId?|=$projectId |.ClusterName?|=$clusterName' \
+		--arg profile "$profile" \
+		'.Profile?|=$profile | .ProjectId?|=$projectId |.ClusterName?|=$clusterName' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 cd ..

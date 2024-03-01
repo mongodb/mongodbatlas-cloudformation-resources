@@ -5,7 +5,7 @@
   "Specs": [
     {
       "InstanceSize": "S30_HIGHCPU_NVME",
-      "NodeCount": 3
+      "NodeCount": "3"
     }
   ]
 }

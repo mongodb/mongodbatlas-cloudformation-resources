@@ -1,13 +1,18 @@
 # MongoDB::Atlas::SearchDeployment
 
-Congratulations on starting development!
+## Description
 
-Next steps:
+Resource for managing [Search Nodes](https://www.mongodb.com/docs/atlas/cluster-config/multi-cloud-distribution/#search-nodes-for-workload-isolation).
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-searchdeployment.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
+## Requirements
 
-Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
+
+## Attributes and Parameters
+
+See the [resource docs](./docs/README.md).
+
+## CloudFormation Examples
+
+See the examples [CFN Template](/examples/search-deployment/search-deployment.json) for example resource.

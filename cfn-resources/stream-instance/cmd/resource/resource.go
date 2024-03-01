@@ -96,16 +96,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(resp, constants.READ, err)
 	}
 
-	currentModel.Id = streamInstance.Id
-	currentModel.Hostnames = streamInstance.GetHostnames()
-	currentModel.DataProcessRegion = NewModelDataRegion(streamInstance.DataProcessRegion)
-	currentModel.StreamConfig = NewModelStreamConfig(streamInstance.StreamConfig)
-	currentModel.Connections = NewModelConnections(streamInstance.Connections)
+	model := NewCFNModelFromStreamInstance(currentModel, *streamInstance)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Read Complete",
-		ResourceModel:   currentModel,
+		ResourceModel:   model,
 	}, nil
 }
 
@@ -189,17 +185,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	response := make([]interface{}, 0)
 	for _, stream := range accumulatedStreamInstances {
-		model := Model{
-			InstanceName:      stream.Name,
-			DataProcessRegion: NewModelDataRegion(stream.DataProcessRegion),
-			StreamConfig:      NewModelStreamConfig(stream.StreamConfig),
-			ProjectId:         stream.GroupId,
-			Id:                stream.Id,
-			Hostnames:         *stream.Hostnames,
-			Profile:           currentModel.Profile,
-			Connections:       NewModelConnections(stream.Connections),
-		}
-		response = append(response, model)
+		response = append(response, NewCFNModelFromStreamInstance(currentModel, stream))
 	}
 
 	return handler.ProgressEvent{

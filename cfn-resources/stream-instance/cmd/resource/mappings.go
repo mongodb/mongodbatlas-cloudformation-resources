@@ -93,3 +93,16 @@ func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConne
 	}
 	return connections
 }
+
+func NewCFNModelFromStreamInstance(prevModel *Model, streamTenant admin.StreamsTenant) *Model {
+	return &Model{
+		InstanceName:      streamTenant.Name,
+		DataProcessRegion: NewModelDataRegion(streamTenant.DataProcessRegion),
+		StreamConfig:      NewModelStreamConfig(streamTenant.StreamConfig),
+		ProjectId:         streamTenant.GroupId,
+		Id:                streamTenant.Id,
+		Hostnames:         streamTenant.GetHostnames(),
+		Profile:           prevModel.Profile,
+		Connections:       NewModelConnections(streamTenant.Connections),
+	}
+}

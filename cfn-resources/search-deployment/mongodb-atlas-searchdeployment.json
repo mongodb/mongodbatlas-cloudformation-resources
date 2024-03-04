@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Returns, adds, edits, and removes Atlas Search indexes for the specified cluster. Also returns and updates user-defined analyzers for the specified cluster.",
+  "description": "The resource lets you create, edit and delete dedicated search nodes in a cluster.\n-> **NOTE:** For details on supported cloud providers and existing limitations you can visit the [Search Node Documentation](https://www.mongodb.com/docs/atlas/cluster-config/multi-cloud-distribution/#search-nodes-for-workload-isolation).\n-> **NOTE:** Only a single search deployment resource can be defined for each cluster.",
   "handlers": {
     "create": {
       "permissions": [
@@ -28,10 +28,12 @@
       "type": "object",
       "properties": {
         "InstanceSize": {
-          "type": "string"
+          "type": "string",
+          "description": "Hardware specification for the search node instance sizes. The [MongoDB Atlas API](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Atlas-Search/operation/createAtlasSearchDeployment) describes the valid values. More details can also be found in the [Search Node Documentation](https://www.mongodb.com/docs/atlas/cluster-config/multi-cloud-distribution/#search-tier)."
         },
         "NodeCount": {
-          "type": "integer"
+          "type": "integer",
+          "description": "Number of search nodes in the cluster."
         }
       },
       "required": [
@@ -44,16 +46,23 @@
   "properties": {
     "Profile": {
       "type": "string",
-      "default": "default"
+      "default": "default",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used"
     },
     "ClusterName": {
-      "type": "string"
+      "type": "string",
+      "description": "Label that identifies the cluster to return the search nodes for."
     },
     "ProjectId": {
-      "type": "string"
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the project.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
     },
     "Id": {
-      "type": "string"
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies the search deployment."
     },
     "Specs": {
       "insertionOrder": false,
@@ -61,10 +70,12 @@
       "items": {
         "$ref": "#/definitions/ApiSearchDeploymentSpec",
         "type": "object"
-      }
+      },
+      "description": "List of settings that configure the search nodes for your cluster. This list is currently limited to defining a single element."
     },
     "StateName": {
-      "type": "string"
+      "type": "string",
+      "description": "Human-readable label that indicates the current operating condition of this search deployment."
     }
   },
   "primaryIdentifier": [

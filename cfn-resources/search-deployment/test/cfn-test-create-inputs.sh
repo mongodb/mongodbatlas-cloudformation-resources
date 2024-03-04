@@ -40,7 +40,7 @@ fi
 
 clusterId=$(atlas clusters list --projectId "${projectId}" --output json | jq --arg NAME "${clusterName}" -r '.results[]? | select(.name==$NAME) | .id')
 if [ -z "$clusterId" ]; then
-	atlas clusters create "${clusterName}" --projectId "${projectId}" --provider AWS --region US_EAST_1 --tier M10 --output=json
+	atlas clusters create "${clusterName}" --projectId "${projectId}" --provider AWS --region US_EAST_1 --tier M10 --mdbVersion 7.0 --output=json
 	atlas clusters watch "${clusterName}" --projectId "${projectId}"
 	echo -e "Created Cluster \"${clusterName}\""
 fi

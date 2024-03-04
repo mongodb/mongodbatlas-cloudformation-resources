@@ -17,7 +17,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource
-1. After successful creation of the stack using a template from examples section, by seeing the details of the Cluster configuration (https://cloud-dev.mongodb.com/v2/<project-id>#/clusters/detail/Cluster0) the isolated search nodes should appear together with the existing dedicated cluster nodes.
+1. After successful creation of the stack using a template from examples section, by seeing the details of the Cluster configuration in the Atlas UI (e.g. https://cloud.mongodb.com/v2/<project-id>#/clusters/detail/Cluster0) the isolated search nodes should appear together with the existing dedicated cluster nodes.
 
 2. Ensure general [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
 

@@ -732,6 +732,7 @@ jobs:
           MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MCLI_SERVICE: cloud
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
           pushd cfn-resources/search-deployment

@@ -26,5 +26,5 @@ Resources:
         Variables:
           MODE: Test
           LOG_LEVEL: debug
-          MONGODB_ATLAS_BASE_URL:
+          MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
 

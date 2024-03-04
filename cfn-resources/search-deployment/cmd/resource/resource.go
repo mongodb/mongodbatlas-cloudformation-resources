@@ -181,7 +181,7 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
-	if util.SafeString(currentModel.StateName) == targetState {
+	if util.SafeString(newModel.StateName) == targetState {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			ResourceModel:   newModel,

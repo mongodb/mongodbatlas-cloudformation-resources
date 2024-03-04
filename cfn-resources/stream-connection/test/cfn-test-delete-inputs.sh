@@ -14,13 +14,9 @@ projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 
 clusterName=$(jq -r '.ClusterName' ./inputs/inputs_1_create.json)
 
-if atlas cluster delete "${clusterName}" --projectId "${projectId}" --force; then
-	echo "deleted cluster with name ${clusterName}"
-else
-	echo "failed to delete the cluster with name ${clusterName}"
-fi
-
-atlas cluster watch "${clusterName}" --projectId "${projectId}"
+atlas cluster watch "${clusterName}" --projectId "${projectId}" && status=0 || status=$?
+if [ $status -eq 0 ]; then
+    echo "Cluster '${clusterName}' has been successfully watched until deletion."
 
 #delete project
 if atlas projects delete "$projectId" --force; then

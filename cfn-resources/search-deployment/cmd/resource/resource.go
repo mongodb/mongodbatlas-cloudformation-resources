@@ -65,13 +65,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiReq := newSearchDeploymentReq(currentModel)
+	apiReq := NewSearchDeploymentReq(currentModel)
 	apiResp, resp, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return handleError(resp, err)
 	}
 
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
 	return inProgressEvent("Creating Search Deployment", &newModel), nil
 }
 
@@ -98,7 +98,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   newCFNSearchDeployment(currentModel, apiResp),
+		ResourceModel:   NewCFNSearchDeployment(currentModel, apiResp),
 	}, nil
 }
 
@@ -123,13 +123,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiReq := newSearchDeploymentReq(currentModel)
+	apiReq := NewSearchDeploymentReq(currentModel)
 	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return handleError(res, err)
 	}
 
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
 	return inProgressEvent("Updating Search Deployment", &newModel), nil
 }
 
@@ -180,7 +180,7 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
 	}
 
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
 	if util.SafeString(newModel.StateName) == targetState {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,

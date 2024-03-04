@@ -27,8 +27,10 @@ func newStreamsTenant(model *Model) *admin.StreamsTenant {
 		},
 	}
 	if streamConfig := model.StreamConfig; streamConfig != nil {
-		streamTenant.StreamConfig = &admin.StreamConfig{
-			Tier: streamConfig.Tier,
+		if tier := streamConfig.Tier; tier != nil {
+			streamTenant.StreamConfig = &admin.StreamConfig{
+				Tier: streamConfig.Tier,
+			}
 		}
 	}
 	return streamTenant

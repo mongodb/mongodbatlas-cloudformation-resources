@@ -20,3 +20,7 @@ create:
 schema:
 	cd schema-gen && go build
 	./schema-gen/schema-gen
+
+get-latest-api-spec:
+	@echo "Downloading API spec"
+	@curl -L "https://raw.githubusercontent.com/mongodb/atlas-sdk-go/main/openapi/atlas-api-transformed.yaml" -o "schema-gen/latest-api-spec.yaml"

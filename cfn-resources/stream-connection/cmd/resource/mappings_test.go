@@ -24,77 +24,133 @@ import (
 )
 
 func TestNewModelDBRoleToExecute(t *testing.T) {
-	t.Run("Nil Input", func(t *testing.T) {
-		assert.Nil(t, newModelDBRoleToExecute(nil))
-	})
+	tests := []struct {
+		name     string
+		input    *admin.DBRoleToExecute
+		expected *DBRoleToExecute
+	}{
+		{
+			name:     "Nil Input",
+			input:    nil,
+			expected: nil,
+		},
+		{
+			name: "Valid Input",
+			input: &admin.DBRoleToExecute{
+				Role: ptr.String("readWrite"),
+				Type: ptr.String("BUILT_IN"),
+			},
+			expected: &DBRoleToExecute{
+				Role: ptr.String("readWrite"),
+				Type: ptr.String("BUILT_IN"),
+			},
+		},
+	}
 
-	t.Run("Valid Input", func(t *testing.T) {
-		dbRole := &admin.DBRoleToExecute{
-			Role: ptr.String("atlasAdmin"),
-			Type: ptr.String("BUILT_IN"),
-		}
-		expected := &DBRoleToExecute{
-			Role: ptr.String("atlasAdmin"),
-			Type: ptr.String("BUILT_IN"),
-		}
-		assert.Equal(t, expected, newModelDBRoleToExecute(dbRole))
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := newModelDBRoleToExecute(tt.input)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestNewModelAuthentication(t *testing.T) {
-	t.Run("Nil Input", func(t *testing.T) {
-		assert.Nil(t, newModelAuthentication(nil))
-	})
+	tests := []struct {
+		name     string
+		input    *admin.StreamsKafkaAuthentication
+		expected *StreamsKafkaAuthentication
+	}{
+		{
+			name:     "Nil Input",
+			input:    nil,
+			expected: nil,
+		},
+		{
+			name: "Valid Input",
+			input: &admin.StreamsKafkaAuthentication{
+				Mechanism: ptr.String("PLAIN"),
+				Username:  ptr.String("testuser111"),
+				Password:  ptr.String("testpassword"),
+			},
+			expected: &StreamsKafkaAuthentication{
+				Mechanism: ptr.String("PLAIN"),
+				Username:  ptr.String("testuser111"),
+				Password:  ptr.String("testpassword"),
+			},
+		},
+	}
 
-	t.Run("Valid Input", func(t *testing.T) {
-		auth := &admin.StreamsKafkaAuthentication{
-			Mechanism: ptr.String("PLAIN"),
-			Username:  ptr.String("user1"),
-			Password:  ptr.String("passwrd"),
-		}
-		expected := &StreamsKafkaAuthentication{
-			Mechanism: ptr.String("PLAIN"),
-			Username:  ptr.String("user1"),
-			Password:  ptr.String("passwrd"),
-		}
-		assert.Equal(t, expected, newModelAuthentication(auth))
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := newModelAuthentication(tt.input)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestNewModelSecurity(t *testing.T) {
-	t.Run("Nil Input", func(t *testing.T) {
-		assert.Nil(t, newModelSecurity(nil))
-	})
+	tests := []struct {
+		name     string
+		input    *admin.StreamsKafkaSecurity
+		expected *StreamsKafkaSecurity
+	}{
+		{
+			name:     "Nil Input",
+			input:    nil,
+			expected: nil,
+		},
+		{
+			name: "Valid Input",
+			input: &admin.StreamsKafkaSecurity{
+				BrokerPublicCertificate: ptr.String("testcert"),
+				Protocol:                ptr.String("SSL"),
+			},
+			expected: &StreamsKafkaSecurity{
+				BrokerPublicCertificate: ptr.String("testcert"),
+				Protocol:                ptr.String("SSL"),
+			},
+		},
+	}
 
-	t.Run("Valid Input", func(t *testing.T) {
-		sec := &admin.StreamsKafkaSecurity{
-			BrokerPublicCertificate: ptr.String("cert1"),
-			Protocol:                ptr.String("SSL"),
-		}
-		expected := &StreamsKafkaSecurity{
-			BrokerPublicCertificate: ptr.String("cert1"),
-			Protocol:                ptr.String("SSL"),
-		}
-		assert.Equal(t, expected, newModelSecurity(sec))
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := newModelSecurity(tt.input)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestNewDBRoleToExecute(t *testing.T) {
-	t.Run("Nil Input", func(t *testing.T) {
-		assert.Nil(t, newDBRoleToExecute(nil))
-	})
+	tests := []struct {
+		name     string
+		input    *DBRoleToExecute
+		expected *admin.DBRoleToExecute
+	}{
+		{
+			name:     "Nil Input",
+			input:    nil,
+			expected: nil,
+		},
+		{
+			name: "Valid Input",
+			input: &DBRoleToExecute{
+				Role: ptr.String("customroleadmin"),
+				Type: ptr.String("CUSTOM"),
+			},
+			expected: &admin.DBRoleToExecute{
+				Role: ptr.String("customroleadmin"),
+				Type: ptr.String("CUSTOM"),
+			},
+		},
+	}
 
-	t.Run("Valid Input", func(t *testing.T) {
-		dbRole := &DBRoleToExecute{
-			Role: ptr.String("admin"),
-			Type: ptr.String("CUSTOM"),
-		}
-		expected := &admin.DBRoleToExecute{
-			Role: ptr.String("admin"),
-			Type: ptr.String("CUSTOM"),
-		}
-		assert.Equal(t, expected, newDBRoleToExecute(dbRole))
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := newDBRoleToExecute(tt.input)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {

@@ -30,9 +30,9 @@ import (
 )
 
 const (
-	CallBackSeconds                    = 40
-	SearchDeploymentDoesNotExistsError = "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST"
-	SearchDeploymentAlreadyExistsError = "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS"
+	callBackSeconds                    = 40
+	searchDeploymentDoesNotExistsError = "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST"
+	searchDeploymentAlreadyExistsError = "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS"
 )
 
 var createRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
@@ -170,7 +170,7 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
+		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), searchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				ResourceModel:   nil,
@@ -194,13 +194,13 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 
 // specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
 func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
-	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
+	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, searchDeploymentAlreadyExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
+	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, searchDeploymentDoesNotExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
@@ -214,7 +214,7 @@ func inProgressEvent(message string, model *Model) handler.ProgressEvent {
 		OperationStatus:      handler.InProgress,
 		Message:              message,
 		ResourceModel:        model,
-		CallbackDelaySeconds: CallBackSeconds,
+		CallbackDelaySeconds: callBackSeconds,
 		CallbackContext: map[string]interface{}{
 			constants.ID: model.Id,
 		}}

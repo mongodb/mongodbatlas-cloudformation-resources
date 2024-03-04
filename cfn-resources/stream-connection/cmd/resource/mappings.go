@@ -1,4 +1,4 @@
-// Copyright 2024 MongoDB Inc
+// Copyright 2023 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 package resource
 
 import (
-	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+	"context"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
-func getStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
-	model := new(Model)
+func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
+	model := &Model{}
 
 	if currentModel != nil {
 		model = currentModel
@@ -32,11 +32,11 @@ func getStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 	model.ClusterName = streamsConn.ClusterName
 	model.BootstrapServers = streamsConn.BootstrapServers
 
-	model.DbRoleToExecute = newModelDBRoleToExecute(streamsConn.DbRoleToExecute)
+	model.DbRoleToExecute = NewModelDBRoleToExecute(streamsConn.DbRoleToExecute)
 
-	model.Authentication = newModelAuthentication(streamsConn.Authentication)
+	model.Authentication = NewModelAuthentication(streamsConn.Authentication)
 
-	model.Security = newModelSecurity(streamsConn.Security)
+	model.Security = NewModelSecurity(streamsConn.Security)
 
 	if streamsConn.Config != nil {
 		model.Config = *streamsConn.Config
@@ -45,55 +45,52 @@ func getStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 	return model
 }
 
-func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
-	if dbRole == nil {
-		return nil
+func NewModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
+	if dbRole != nil {
+		return &DBRoleToExecute{
+			Role: dbRole.Role,
+			Type: dbRole.Type,
+		}
 	}
-
-	return &DBRoleToExecute{
-		Role: dbRole.Role,
-		Type: dbRole.Type,
-	}
+	return nil
 }
 
-func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
-	if authentication == nil {
-		return nil
+func NewModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
+	if authentication != nil {
+		return &StreamsKafkaAuthentication{
+			Mechanism: authentication.Mechanism,
+			Password:  authentication.Password,
+			Username:  authentication.Username,
+		}
 	}
-
-	return &StreamsKafkaAuthentication{
-		Mechanism: authentication.Mechanism,
-		Password:  authentication.Password,
-		Username:  authentication.Username,
-	}
+	return nil
 }
 
-func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
-	if security == nil {
-		return nil
+func NewModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
+	if security != nil {
+		return &StreamsKafkaSecurity{
+			BrokerPublicCertificate: security.BrokerPublicCertificate,
+			Protocol:                security.Protocol,
+		}
 	}
-
-	return &StreamsKafkaSecurity{
-		BrokerPublicCertificate: security.BrokerPublicCertificate,
-		Protocol:                security.Protocol,
-	}
+	return nil
 }
 
-func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
+func NewStreamConnectionReq(ctx context.Context, model *Model) *admin.StreamsConnection {
 	streamConnReq := admin.StreamsConnection{
 		Name: model.ConnectionName,
 		Type: model.Type,
 	}
 
-	if util.SafeString(streamConnReq.Type) == ClusterConnectionType {
+	if *streamConnReq.Type == ClusterConnectionType {
 		streamConnReq.ClusterName = model.ClusterName
-		streamConnReq.DbRoleToExecute = newDBRoleToExecute(model.DbRoleToExecute)
+		streamConnReq.DbRoleToExecute = NewDBRoleToExecute(model.DbRoleToExecute)
 	}
 
-	if util.SafeString(streamConnReq.Type) == KafkaConnectionType {
+	if *streamConnReq.Type == KafkaConnectionType {
 		streamConnReq.BootstrapServers = model.BootstrapServers
-		streamConnReq.Security = newStreamsKafkaSecurity(model.Security)
-		streamConnReq.Authentication = newStreamsKafkaAuthentication(model.Authentication)
+		streamConnReq.Security = NewStreamsKafkaSecurity(model.Security)
+		streamConnReq.Authentication = NewStreamsKafkaAuthentication(model.Authentication)
 
 		if model.Config != nil {
 			streamConnReq.Config = &model.Config
@@ -103,36 +100,33 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 	return &streamConnReq
 }
 
-func newDBRoleToExecute(dbRoleToExecuteModel *DBRoleToExecute) *admin.DBRoleToExecute {
-	if dbRoleToExecuteModel == nil {
-		return nil
+func NewDBRoleToExecute(dbRoleToExecuteModel *DBRoleToExecute) *admin.DBRoleToExecute {
+	if dbRoleToExecuteModel != nil {
+		return &admin.DBRoleToExecute{
+			Role: dbRoleToExecuteModel.Role,
+			Type: dbRoleToExecuteModel.Type,
+		}
 	}
-
-	return &admin.DBRoleToExecute{
-		Role: dbRoleToExecuteModel.Role,
-		Type: dbRoleToExecuteModel.Type,
-	}
+	return nil
 }
 
-func newStreamsKafkaSecurity(securityModel *StreamsKafkaSecurity) *admin.StreamsKafkaSecurity {
-	if securityModel == nil {
-		return nil
+func NewStreamsKafkaSecurity(securityModel *StreamsKafkaSecurity) *admin.StreamsKafkaSecurity {
+	if securityModel != nil {
+		return &admin.StreamsKafkaSecurity{
+			BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
+			Protocol:                securityModel.Protocol,
+		}
 	}
-
-	return &admin.StreamsKafkaSecurity{
-		BrokerPublicCertificate: securityModel.BrokerPublicCertificate,
-		Protocol:                securityModel.Protocol,
-	}
+	return nil
 }
 
-func newStreamsKafkaAuthentication(authenticationModel *StreamsKafkaAuthentication) *admin.StreamsKafkaAuthentication {
-	if authenticationModel == nil {
-		return nil
+func NewStreamsKafkaAuthentication(authenticationModel *StreamsKafkaAuthentication) *admin.StreamsKafkaAuthentication {
+	if authenticationModel != nil {
+		return &admin.StreamsKafkaAuthentication{
+			Mechanism: authenticationModel.Mechanism,
+			Password:  authenticationModel.Password,
+			Username:  authenticationModel.Username,
+		}
 	}
-
-	return &admin.StreamsKafkaAuthentication{
-		Mechanism: authenticationModel.Mechanism,
-		Password:  authenticationModel.Password,
-		Username:  authenticationModel.Username,
-	}
+	return nil
 }

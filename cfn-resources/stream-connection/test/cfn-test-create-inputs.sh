@@ -4,7 +4,9 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
-set -euo pipefail
+set -o errexit
+set -o nounset
+set -o pipefail
 
 rm -rf inputs
 mkdir inputs

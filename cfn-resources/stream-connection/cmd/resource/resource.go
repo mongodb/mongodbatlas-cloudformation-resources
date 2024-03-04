@@ -1,4 +1,4 @@
-// Copyright 2024 MongoDB Inc
+// Copyright 2023 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,10 +40,25 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.InstanceName,
 var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName}
 var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 
-func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
+func setup(cfnFunc constants.CfnFunctions, req handler.Request, currentModel *Model) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-connection")
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	var requiredFields []string
+
+	switch cfnFunc {
+	case constants.CREATE:
+		requiredFields = CreateRequiredFields
+	case constants.READ:
+		requiredFields = ReadRequiredFields
+	case constants.UPDATE:
+		requiredFields = UpdateRequiredFields
+	case constants.DELETE:
+		requiredFields = DeleteRequiredFields
+	case constants.LIST:
+		requiredFields = ListRequiredFields
+	}
 
 	if errEvent := validator.ValidateModel(requiredFields, currentModel); errEvent != nil {
 		return nil, errEvent
@@ -57,7 +72,7 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	conn, peErr := setup(constants.CREATE, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -66,14 +81,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
-	streamConnectionReq := newStreamConnectionReq(currentModel)
+	streamConnectionReq := NewStreamConnectionReq(ctx, currentModel)
 
 	streamConnResp, apiResp, err := conn.StreamsApi.CreateStreamConnection(ctx, *projectID, *instanceName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
 
-	resourceModel := getStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -83,7 +98,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, ReadRequiredFields)
+	conn, peErr := setup(constants.READ, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -96,7 +111,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(apiResp, constants.READ, err)
 	}
 
-	resourceModel := getStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -105,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, UpdateRequiredFields)
+	conn, peErr := setup(constants.UPDATE, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -115,13 +130,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
-	streamConnectionReq := newStreamConnectionReq(currentModel)
+	streamConnectionReq := NewStreamConnectionReq(ctx, currentModel)
 	streamConnResp, apiResp, err := conn.StreamsApi.UpdateStreamConnection(ctx, *projectID, *instanceName, *connectionName, streamConnectionReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
-	resourceModel := getStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -131,7 +146,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+	conn, peErr := setup(constants.DELETE, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -152,7 +167,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, ListRequiredFields)
+	conn, peErr := setup(constants.LIST, req, currentModel)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -169,7 +184,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	response := make([]interface{}, 0)
 	for i := range accumulatedStreamConns {
-		model := getStreamConnectionModel(&accumulatedStreamConns[i], nil)
+		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
 		model.InstanceName = currentModel.InstanceName
 		model.Profile = currentModel.Profile
@@ -186,12 +201,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, projectID, instanceName string) ([]admin.StreamsConnection, *http.Response, error) {
 	pageNum := 1
 	accumulatedStreamConns := make([]admin.StreamsConnection, 0)
-
-	for allRecordsRetrieved := false; !allRecordsRetrieved; {
+	for ok := true; ok; {
 		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
 			GroupId:      projectID,
 			TenantName:   instanceName,
-			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),
+			ItemsPerPage: util.Pointer(100),
 			PageNum:      util.Pointer(pageNum),
 		}).Execute()
 
@@ -199,10 +213,9 @@ func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, project
 			return nil, apiResp, err
 		}
 		accumulatedStreamConns = append(accumulatedStreamConns, streamConns.GetResults()...)
-		allRecordsRetrieved = streamConns.GetTotalCount() <= len(accumulatedStreamConns)
+		ok = streamConns.GetTotalCount() > len(accumulatedStreamConns)
 		pageNum++
 	}
-
 	return accumulatedStreamConns, nil, nil
 }
 

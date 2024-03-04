@@ -15,6 +15,10 @@ Resources:
       Runtime: provided.al2
       CodeUri: bin/
       Environment:
+        Variables:
+          MODE: Test
+          LOG_LEVEL: debug
+          MONGODB_ATLAS_BASE_URL:
 
   TestEntrypoint:
     Type: AWS::Serverless::Function

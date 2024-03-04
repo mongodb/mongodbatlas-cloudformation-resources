@@ -4,7 +4,8 @@
 # This tool deletes the mongodb resources used for `cfn test` as inputs.
 #
 
-set -euo pipefail
+set -o nounset
+set -o pipefail
 
 function usage {
 	echo "usage:$0 "

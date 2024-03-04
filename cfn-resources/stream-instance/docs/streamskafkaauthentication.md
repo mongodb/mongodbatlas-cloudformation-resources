@@ -11,7 +11,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 {
     "<a href="#mechanism" title="Mechanism">Mechanism</a>" : <i>String</i>,
-    "<a href="#password" title="Password">Password</a>" : <i>String</i>,
     "<a href="#username" title="Username">Username</a>" : <i>String</i>
 }
 </pre>
@@ -20,7 +19,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 <a href="#mechanism" title="Mechanism">Mechanism</a>: <i>String</i>
-<a href="#password" title="Password">Password</a>: <i>String</i>
 <a href="#username" title="Username">Username</a>: <i>String</i>
 </pre>
 
@@ -29,16 +27,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 #### Mechanism
 
 Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Password
-
-Password of the account to connect to the Kafka cluster.
 
 _Required_: No
 

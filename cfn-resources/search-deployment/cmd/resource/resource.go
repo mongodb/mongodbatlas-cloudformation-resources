@@ -35,10 +35,10 @@ const (
 	SearchDeploymentAlreadyExistsError = "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
-var ReadRequiredFields = []string{constants.ProjectID, constants.ClusterName}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+var createRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
+var readRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+var updateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
+var deleteRequiredFields = []string{constants.ProjectID, constants.ClusterName}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-searchdeployment")
@@ -48,7 +48,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	if modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validator.ValidateModel(createRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -79,7 +79,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	if modelValidation := validator.ValidateModel(ReadRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validator.ValidateModel(readRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -106,7 +106,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	if modelValidation := validator.ValidateModel(UpdateRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validator.ValidateModel(updateRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
@@ -137,7 +137,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	if modelValidation := validator.ValidateModel(DeleteRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validator.ValidateModel(deleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 

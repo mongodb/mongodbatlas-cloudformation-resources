@@ -57,7 +57,6 @@ func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
 func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
 	return &StreamsKafkaAuthentication{
 		Mechanism: authentication.Mechanism,
-		Password:  authentication.Password,
 		Username:  authentication.Username,
 	}
 }

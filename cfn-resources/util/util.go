@@ -27,6 +27,12 @@ import (
 	"strings"
 	"time"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+	"go.mongodb.org/atlas/mongodbatlas"
+	realmAuth "go.mongodb.org/realm/auth"
+	"go.mongodb.org/realm/realm"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws"
@@ -34,14 +40,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb-forks/digest"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
-	"go.mongodb.org/atlas-sdk/v20231115007/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
-	realmAuth "go.mongodb.org/realm/auth"
-	"go.mongodb.org/realm/realm"
 )
 
 const (

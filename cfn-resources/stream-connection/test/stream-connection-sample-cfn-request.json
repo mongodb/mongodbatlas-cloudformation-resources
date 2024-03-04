@@ -1,10 +1,10 @@
 {
   "desiredResourceState": {
-    "Profile": "maastha-cloud-dev",
-    "ProjectId": "65df4d741a7df1165f4ca4e2",
-    "InstanceName": "stream-instance-4655",
-    "ClusterName": "cluster-18730",
-    "ConnectionName": "ConnectionNameCluster2",
+    "Profile": "default",
+    "ProjectId": "",
+    "InstanceName": "",
+    "ClusterName": "",
+    "ConnectionName": "",
     "Type": "Cluster",
     "DbRoleToExecute": {
       "Role": "atlasAdmin",

@@ -18,7 +18,6 @@ import "go.mongodb.org/atlas-sdk/v20231115007/admin"
 
 func NewStreamsTenant(model *Model) *admin.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion
-	streamConfig := model.StreamConfig
 	streamTenant := &admin.StreamsTenant{
 		Name:    model.InstanceName,
 		GroupId: model.ProjectId,
@@ -27,7 +26,7 @@ func NewStreamsTenant(model *Model) *admin.StreamsTenant {
 			Region:        *dataProcessRegion.Region,
 		},
 	}
-	if streamConfig != nil {
+	if streamConfig := model.StreamConfig; streamConfig != nil {
 		streamTenant.StreamConfig = &admin.StreamConfig{
 			Tier: streamConfig.Tier,
 		}

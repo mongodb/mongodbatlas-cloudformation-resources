@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apiReq := newSearchDeploymentReq(currentModel)
 	apiResp, resp, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
-		return handleSearchDeploymentError(resp, err)
+		return handleError(resp, err)
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
@@ -93,7 +93,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		return handleSearchDeploymentError(resp, err)
+		return handleError(resp, err)
 	}
 
 	return handler.ProgressEvent{
@@ -126,7 +126,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	apiReq := newSearchDeploymentReq(currentModel)
 	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
-		return handleSearchDeploymentError(res, err)
+		return handleError(res, err)
 	}
 
 	newModel := newCFNSearchDeployment(currentModel, apiResp)
@@ -155,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	if resp, err := connV2.AtlasSearchApi.DeleteAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
-		return handleSearchDeploymentError(resp, err)
+		return handleError(resp, err)
 	}
 
 	return inProgressEvent(constants.DeleteInProgress, currentModel), nil
@@ -193,7 +193,7 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 }
 
 // specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
-func handleSearchDeploymentError(res *http.Response, err error) (handler.ProgressEvent, error) {
+func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
 	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,

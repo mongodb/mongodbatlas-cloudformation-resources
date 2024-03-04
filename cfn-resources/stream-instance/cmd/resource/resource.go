@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	streamInstanceCreateReq := NewStreamsTenant(currentModel)
+	streamInstanceCreateReq := newStreamsTenant(currentModel)
 
 	atlasV2 := client.AtlasSDK
 
@@ -96,7 +96,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(resp, constants.READ, err)
 	}
 
-	model := NewCFNModelFromStreamInstance(currentModel, *streamInstance)
+	model := newCFNModelFromStreamInstance(currentModel, *streamInstance)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -185,7 +185,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	response := make([]interface{}, 0)
 	for _, stream := range accumulatedStreamInstances {
-		response = append(response, NewCFNModelFromStreamInstance(currentModel, stream))
+		response = append(response, newCFNModelFromStreamInstance(currentModel, stream))
 	}
 
 	return handler.ProgressEvent{

@@ -16,7 +16,7 @@ package resource
 
 import "go.mongodb.org/atlas-sdk/v20231115007/admin"
 
-func NewStreamsTenant(model *Model) *admin.StreamsTenant {
+func newStreamsTenant(model *Model) *admin.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion
 	streamTenant := &admin.StreamsTenant{
 		Name:    model.InstanceName,
@@ -34,14 +34,14 @@ func NewStreamsTenant(model *Model) *admin.StreamsTenant {
 	return streamTenant
 }
 
-func NewModelDataRegion(dataProcessRegion *admin.StreamsDataProcessRegion) *StreamsDataProcessRegion {
+func newModelDataRegion(dataProcessRegion *admin.StreamsDataProcessRegion) *StreamsDataProcessRegion {
 	return &StreamsDataProcessRegion{
 		CloudProvider: &dataProcessRegion.CloudProvider,
 		Region:        &dataProcessRegion.Region,
 	}
 }
 
-func NewModelStreamConfig(streamConfig *admin.StreamConfig) *StreamConfig {
+func newModelStreamConfig(streamConfig *admin.StreamConfig) *StreamConfig {
 	return &StreamConfig{
 		Tier: streamConfig.Tier,
 	}
@@ -69,7 +69,7 @@ func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurit
 	}
 }
 
-func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
+func newModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
 	if streamConfig == nil || len(*streamConfig) == 0 {
 		return nil
 	}
@@ -93,15 +93,15 @@ func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConne
 	return connections
 }
 
-func NewCFNModelFromStreamInstance(prevModel *Model, streamTenant admin.StreamsTenant) *Model {
+func newCFNModelFromStreamInstance(prevModel *Model, streamTenant admin.StreamsTenant) *Model {
 	return &Model{
 		InstanceName:      streamTenant.Name,
-		DataProcessRegion: NewModelDataRegion(streamTenant.DataProcessRegion),
-		StreamConfig:      NewModelStreamConfig(streamTenant.StreamConfig),
+		DataProcessRegion: newModelDataRegion(streamTenant.DataProcessRegion),
+		StreamConfig:      newModelStreamConfig(streamTenant.StreamConfig),
 		ProjectId:         streamTenant.GroupId,
 		Id:                streamTenant.Id,
 		Hostnames:         streamTenant.GetHostnames(),
 		Profile:           prevModel.Profile,
-		Connections:       NewModelConnections(streamTenant.Connections),
+		Connections:       newModelConnections(streamTenant.Connections),
 	}
 }

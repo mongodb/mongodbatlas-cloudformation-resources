@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource_test
+package resource
 
 import (
 	"testing"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-instance/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
@@ -38,19 +37,19 @@ var (
 func TestNewStreamsTenant(t *testing.T) {
 	testCases := []struct {
 		name     string
-		input    *resource.Model
+		input    *Model
 		expected *admin.StreamsTenant
 	}{
 		{
 			name: "Model with StreamConfig",
-			input: &resource.Model{
+			input: &Model{
 				InstanceName: &instanceName,
 				ProjectId:    &projectID,
-				DataProcessRegion: &resource.StreamsDataProcessRegion{
+				DataProcessRegion: &StreamsDataProcessRegion{
 					CloudProvider: &cloudProvider,
 					Region:        &region,
 				},
-				StreamConfig: &resource.StreamConfig{
+				StreamConfig: &StreamConfig{
 					Tier: &tier,
 				},
 			},
@@ -68,10 +67,10 @@ func TestNewStreamsTenant(t *testing.T) {
 		},
 		{
 			name: "Model without StreamConfig",
-			input: &resource.Model{
+			input: &Model{
 				InstanceName: &instanceName,
 				ProjectId:    &projectID,
-				DataProcessRegion: &resource.StreamsDataProcessRegion{
+				DataProcessRegion: &StreamsDataProcessRegion{
 					CloudProvider: &cloudProvider,
 					Region:        &region,
 				},
@@ -89,7 +88,7 @@ func TestNewStreamsTenant(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := resource.NewStreamsTenant(tc.input)
+			result := newStreamsTenant(tc.input)
 			assert.Equal(t, tc.expected, result, "created model did not match expected output")
 		})
 	}
@@ -99,7 +98,7 @@ func TestNewModelConnections(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    *[]admin.StreamsConnection
-		expected []resource.StreamsConnection
+		expected []StreamsConnection
 	}{
 		{
 			name:     "StreamConfig is nil",
@@ -122,13 +121,13 @@ func TestNewModelConnections(t *testing.T) {
 					Security:         &admin.StreamsKafkaSecurity{},
 				},
 			},
-			expected: []resource.StreamsConnection{
+			expected: []StreamsConnection{
 				{
 					Name:             &name,
 					Type:             &kafkaType,
 					BootstrapServers: &bootstrapServers,
-					Authentication:   &resource.StreamsKafkaAuthentication{},
-					Security:         &resource.StreamsKafkaSecurity{},
+					Authentication:   &StreamsKafkaAuthentication{},
+					Security:         &StreamsKafkaSecurity{},
 				},
 			},
 		},
@@ -142,12 +141,12 @@ func TestNewModelConnections(t *testing.T) {
 					DbRoleToExecute: &admin.DBRoleToExecute{},
 				},
 			},
-			expected: []resource.StreamsConnection{
+			expected: []StreamsConnection{
 				{
 					Name:            &name,
 					Type:            &clusterType,
 					ClusterName:     &clusterName,
-					DbRoleToExecute: &resource.DBRoleToExecute{},
+					DbRoleToExecute: &DBRoleToExecute{},
 				},
 			},
 		},
@@ -155,7 +154,7 @@ func TestNewModelConnections(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := resource.NewModelConnections(tc.input)
+			result := newModelConnections(tc.input)
 			assert.Equal(t, tc.expected, result, "created model did not match expected output")
 		})
 	}

@@ -735,7 +735,7 @@ jobs:
           MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
           MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
         run: |
-          pushd cfn-resources/stream-connection
+          cd cfn-resources/stream-connection
           make create-test-resources
 
           cat inputs/inputs_1_create.json

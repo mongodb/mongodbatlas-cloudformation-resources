@@ -26,6 +26,7 @@ jobs:
      online-archive: ${{ steps.filter.outputs.online-archive }}
      private-endpoint-aws: ${{ steps.filter.outputs.private-endpoint-aws }}
      private-endpoint-service: ${{ steps.filter.outputs.private-endpoint-service }}
+     stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
      search-deployment: ${{ steps.filter.outputs.search-deployment }}
    steps:
@@ -65,6 +66,8 @@ jobs:
           - 'cfn-resources/private-endpoint-aws/**'
         private-endpoint-service:
           - 'cfn-resources/private-endpoint-service/**'
+        stream-connection:
+          - 'cfn-resources/stream-connection/**'
         stream-instance:
           - 'cfn-resources/stream-instance/**'
         search-deployment:
@@ -713,4 +716,47 @@ jobs:
           cat inputs/inputs_1_create.json
           make run-contract-testing
           make delete-test-resources
+  stream-connection:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/stream-connection
+          make create-test-resources
 
+          cat inputs/inputs_1_create.json
+          cat inputs/inputs_1_update.json
+          cat inputs/inputs_2_create.json
+          cat inputs/inputs_2_update.json
+
+          make run-contract-testing
+          make delete-test-resources
+
+
+
+  

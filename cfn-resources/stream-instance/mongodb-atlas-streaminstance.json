@@ -1,0 +1,227 @@
+{
+  "typeName": "MongoDB::Atlas::StreamInstance",
+  "description": "Returns, adds, edits, and removes Atlas Stream Processing Instances. Note that Atlas Streams functionality is currently in [Public Preview](https://www.mongodb.com/blog/post/atlas-stream-processing-now-in-public-preview)",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git",
+  "definitions": {
+    "BaseStreamsRegion": {
+      "type": "string",
+      "description": "Name of the cloud provider region hosting Atlas Stream Processing."
+    },
+    "StreamsDataProcessRegion": {
+      "type": "object",
+      "description": "Information about the cloud provider region in which MongoDB Cloud processes the stream.",
+      "properties": {
+        "CloudProvider": {
+          "type": "string",
+          "description": "Label that identifies the cloud service provider where MongoDB Cloud performs stream processing. Currently, this parameter supports AWS only.",
+          "enum": [
+            "AWS",
+            "GCP",
+            "AZURE",
+            "TENANT",
+            "SERVERLESS"
+          ]
+        },
+        "Region": {
+          "$ref": "#/definitions/BaseStreamsRegion"
+        }
+      },
+      "required": [
+        "CloudProvider",
+        "Region"
+      ],
+      "additionalProperties": false
+    },
+    "StreamConfig": {
+      "type": "object",
+      "description": "Configuration options for an Atlas Stream Processing Instance.",
+      "properties": {
+        "Tier": {
+          "type": "string",
+          "description": "Selected tier for the Stream Instance. Configures Memory / VCPU allowances.",
+          "title": "Stream Instance Tier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsKafkaAuthentication": {
+      "type": "object",
+      "description": "User credentials required to connect to a Kafka Cluster. Includes the authentication type, as well as the parameters for that authentication mode.",
+      "properties": {
+        "Mechanism": {
+          "type": "string",
+          "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512."
+        },
+        "Username": {
+          "type": "string",
+          "description": "Username of the account to connect to the Kafka cluster."
+        }
+      },
+      "additionalProperties": false
+    },
+    "DBRoleToExecute": {
+      "type": "object",
+      "description": "The name of a Built in or Custom DB Role to connect to an Atlas Cluster.",
+      "properties": {
+        "Role": {
+          "type": "string",
+          "description": "The name of the role to use. Can be a built in role or a custom role."
+        },
+        "Type": {
+          "type": "string",
+          "description": "Type of the DB role. Can be either BuiltIn or Custom.",
+          "enum": [
+            "BUILT_IN",
+            "CUSTOM"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsKafkaSecurity": {
+      "type": "object",
+      "description": "Properties for the secure transport connection to Kafka. For SSL, this can include the trusted certificate to use.",
+      "properties": {
+        "BrokerPublicCertificate": {
+          "type": "string",
+          "description": "A trusted, public x509 certificate for connecting to Kafka over SSL."
+        },
+        "Protocol": {
+          "type": "string",
+          "description": "Describes the transport type. Can be either PLAINTEXT or SSL."
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsConnection": {
+      "type": "object",
+      "description": "Settings that define a connection to an external data store.",
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Human-readable label that identifies the stream connection."
+        },
+        "Type": {
+          "type": "string",
+          "description": "Type of the connection. Can be either Cluster or Kafka.",
+          "enum": [
+            "Kafka",
+            "Cluster",
+            "Sample"
+          ]
+        },
+        "Authentication": {
+          "$ref": "#/definitions/StreamsKafkaAuthentication"
+        },
+        "BootstrapServers": {
+          "type": "string",
+          "description": "Comma separated list of server addresses."
+        },
+        "Security": {
+          "$ref": "#/definitions/StreamsKafkaSecurity"
+        },
+        "ClusterName": {
+          "type": "string",
+          "description": "Name of the cluster configured for this connection."
+        },
+        "DbRoleToExecute": {
+          "$ref": "#/definitions/DBRoleToExecute"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml).",
+      "default": "default"
+    },
+    "InstanceName": {
+      "description": "Human-readable label that identifies the stream connection.",
+      "type": "string"
+    },
+    "DataProcessRegion": {
+      "$ref": "#/definitions/StreamsDataProcessRegion"
+    },
+    "StreamConfig": {
+      "$ref": "#/definitions/StreamConfig"
+    },
+    "Id": {
+      "description": "Unique 24-hexadecimal character string that identifies the project.",
+      "type": "string"
+    },
+    "Connections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/StreamsConnection"
+      },
+      "insertionOrder": false
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal character string that identifies the project.",
+      "type": "string"
+    },
+    "Hostnames": {
+      "description": "List that contains the hostnames assigned to the stream instance.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "insertionOrder": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "InstanceName",
+    "DataProcessRegion",
+    "StreamConfig"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/Connections",
+    "/properties/Hostnames"
+  ],
+  "primaryIdentifier": [
+    "/properties/InstanceName",
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "createOnlyProperties": [
+    "/properties/InstanceName",
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/stream-instance/README.md",
+  "tagging": {
+    "taggable": false
+  }
+}

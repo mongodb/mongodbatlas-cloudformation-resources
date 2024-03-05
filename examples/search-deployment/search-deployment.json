@@ -1,0 +1,76 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Search Index on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Project Id."
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Cluster name."
+    },
+    "InstanceSize": {
+      "Type": "String",
+      "Description": "Spec instance size.",
+      "Default": "S30_HIGHCPU_NVME"
+    },
+    "NodeCount": {
+      "Type": "Number",
+      "Description": "Spec node count.",
+      "Default": 2
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "SearchDeployment": {
+      "Type": "MongoDB::Atlas::SearchDeployment",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Specs": [
+          {
+            "InstanceSize": {
+              "Ref": "InstanceSize"
+            },
+            "NodeCount": {
+              "Ref": "NodeCount"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "SearchDeploymentId": {
+      "Description": "Search Deployment ID",
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchDeployment",
+          "Id"
+        ]
+      }
+    },
+    "SearchDeploymentStateName": {
+      "Description": "Search Deployment State",
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchDeployment",
+          "StateName"
+        ]
+      }
+    }
+  }
+}

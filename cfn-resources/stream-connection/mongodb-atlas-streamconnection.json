@@ -1,0 +1,173 @@
+{
+  "typeName": "MongoDB::Atlas::StreamConnection",
+  "additionalProperties": false,
+  "description": "Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
+  "definitions": {
+    "DBRoleToExecute": {
+      "type": "object",
+      "description": "The name of a Built in or Custom DB Role to connect to an Atlas Cluster.",
+      "properties": {
+        "Role": {
+          "type": "string",
+          "description": "The name of the role to use. Can be a built in role or a custom role."
+        },
+        "Type": {
+          "type": "string",
+          "description": "Type of the DB role. Can be either BuiltIn or Custom.",
+          "enum": [
+            "BUILT_IN",
+            "CUSTOM"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsKafkaAuthentication": {
+      "type": "object",
+      "description": "User credentials required to connect to a Kafka Cluster. Includes the authentication type, as well as the parameters for that authentication mode.",
+      "properties": {
+        "Mechanism": {
+          "type": "string",
+          "description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512."
+        },
+        "Username": {
+          "type": "string",
+          "description": "Username of the account to connect to the Kafka cluster."
+        },
+        "Password": {
+          "type": "string",
+          "format": "password",
+          "description": "Password of the account to connect to the Kafka cluster."
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamsKafkaSecurity": {
+      "type": "object",
+      "description": "Properties for the secure transport connection to Kafka. For SSL, this can include the trusted certificate to use.",
+      "properties": {
+        "BrokerPublicCertificate": {
+          "type": "string",
+          "description": "A trusted, public x509 certificate for connecting to Kafka over SSL."
+        },
+        "Protocol": {
+          "type": "string",
+          "description": "Describes the transport type. Can be either PLAINTEXT or SSL."
+        }
+      },
+      "additionalProperties": false
+    },
+    "Config": {
+      "type": "object",
+      "description": "A map of Kafka key-value pairs for optional configuration. This is a flat object, and keys can have '.' characters.",
+      "patternProperties": {
+        "^[A-Za-z0-9.]+$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "ProjectId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project. Use the [/groups](#tag/Projects/operation/listProjects) endpoint to retrieve all projects to which the authenticated user has access.\n\n**NOTE**: Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    },
+    "ConnectionName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the stream connection."
+    },
+    "InstanceName": {
+      "type": "string",
+      "description": "Human-readable label that identifies the stream instance."
+    },
+    "Type": {
+      "type": "string",
+      "description": "Type of the connection. Can be either Cluster or Kafka.",
+      "enum": [
+        "Kafka",
+        "Cluster"
+      ]
+    },
+    "ClusterName": {
+      "type": "string",
+      "description": "Name of the cluster configured for this connection."
+    },
+    "DbRoleToExecute": {
+      "$ref": "#/definitions/DBRoleToExecute"
+    },
+    "Authentication": {
+      "$ref": "#/definitions/StreamsKafkaAuthentication"
+    },
+    "BootstrapServers": {
+      "type": "string",
+      "description": "Comma separated list of server addresses."
+    },
+    "Security": {
+      "$ref": "#/definitions/StreamsKafkaSecurity"
+    },
+    "Config": {
+      "$ref": "#/definitions/Config"
+    }
+  },
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/ConnectionName",
+    "/properties/InstanceName",
+    "/properties/Profile"
+  ],
+  "required": [
+    "ProjectId",
+    "ConnectionName",
+    "InstanceName",
+    "Type"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/InstanceName",
+    "/properties/ConnectionName",
+    "/properties/Profile"
+  ],
+  "writeOnlyProperties": [
+    "/properties/Authentication/Password"
+  ],
+  "tagging": {
+    "taggable": false
+  }
+}

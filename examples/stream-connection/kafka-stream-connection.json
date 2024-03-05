@@ -1,0 +1,94 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates one connection of type 'Cluster' for a given stream instance in the specified project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id"
+    },
+    "InstanceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream instance"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream connection"
+    },
+    "BootstrapServers": {
+      "Type": "String",
+      "Description": "Comma separated list of server addresses"
+    },
+    "AuthMechanism": {
+      "Type": "String",
+      "Description": "Style of authentication. Can be one of PLAIN, SCRAM-256, or SCRAM-512"
+    },
+    "AuthUsername": {
+      "Type": "String",
+      "Description": "Username of the account to connect to the Kafka cluster"
+    },
+    "AuthPassword": {
+      "Type": "String",
+      "Description": "Password of the account to connect to the Kafka cluster",
+      "NoEcho": true
+    },
+    "SecurityProtocol": {
+      "Type": "String",
+      "Description": "Describes the transport type. Can be either PLAINTEXT or SSL"
+    },
+    "BrokerPublicCertificate": {
+      "Type": "String",
+      "Description": "A trusted, public x509 certificate for connecting to Kafka over SSL"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamConnection": {
+      "Type": "MongoDB::Atlas::StreamConnection",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        },
+        "InstanceName": {
+          "Ref": "InstanceName"
+        },
+        "Type": "Kafka",
+        "Authentication": {
+          "Mechanism": {
+            "Ref": "AuthMechanism"
+          },
+          "Username": {
+            "Ref": "AuthUsername"
+          },
+          "Password": {
+            "Ref": "AuthPassword"
+          }
+        },
+        "Security": {
+          "BrokerPublicCertificate": {
+            "Ref": "BrokerPublicCertificate"
+          },
+          "Protocol": {
+            "Ref": "SecurityProtocol"
+          }
+        },
+        "BootstrapServers": {
+          "Ref": "BootstrapServers"
+        },
+        "Config": {
+          "auto.offset.reset": "earliest"
+        }
+      }
+    }
+  }
+}

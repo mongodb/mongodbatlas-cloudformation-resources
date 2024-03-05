@@ -1,4 +1,4 @@
-# MongoDB::Atlas::StreamConnection StreamsKafkaAuthentication
+# MongoDB::Atlas::StreamInstance StreamsKafkaAuthentication
 
 User credentials required to connect to a Kafka Cluster. Includes the authentication type, as well as the parameters for that authentication mode.
 
@@ -11,8 +11,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 {
     "<a href="#mechanism" title="Mechanism">Mechanism</a>" : <i>String</i>,
-    "<a href="#username" title="Username">Username</a>" : <i>String</i>,
-    "<a href="#password" title="Password">Password</a>" : <i>String</i>
+    "<a href="#username" title="Username">Username</a>" : <i>String</i>
 }
 </pre>
 
@@ -21,7 +20,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 <a href="#mechanism" title="Mechanism">Mechanism</a>: <i>String</i>
 <a href="#username" title="Username">Username</a>: <i>String</i>
-<a href="#password" title="Password">Password</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -39,16 +37,6 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### Username
 
 Username of the account to connect to the Kafka cluster.
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Password
-
-Password of the account to connect to the Kafka cluster.
 
 _Required_: No
 

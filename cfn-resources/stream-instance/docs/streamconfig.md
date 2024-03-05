@@ -1,6 +1,6 @@
-# MongoDB::Atlas::StreamConnection Config
+# MongoDB::Atlas::StreamInstance StreamConfig
 
-A map of Kafka key-value pairs for optional configuration. This is a flat object, and keys can have '.' characters.
+Configuration options for an Atlas Stream Processing Instance.
 
 ## Syntax
 
@@ -10,19 +10,21 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#^[a-za-z0-9.]+$" title="^[A-Za-z0-9.]+$">^[A-Za-z0-9.]+$</a>" : <i>String</i>
+    "<a href="#tier" title="Tier">Tier</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#^[a-za-z0-9.]+$" title="^[A-Za-z0-9.]+$">^[A-Za-z0-9.]+$</a>: <i>String</i>
+<a href="#tier" title="Tier">Tier</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### \^[A-Za-z0-9.]+$
+#### Tier
+
+Selected tier for the Stream Instance. Configures Memory / VCPU allowances.
 
 _Required_: No
 

@@ -49,6 +49,7 @@ const (
 	Sink                    = "Sink"
 	Transformations         = "transformations"
 	CloudProvider           = "CloudProvider"
+	Specs                   = "Specs"
 	DefaultListItemsPerPage = 100
 
 	RegionName     = "RegionName"
@@ -160,4 +161,5 @@ const (
 
 	ConnectionName = "ConnectionName"
 	Type           = "Type"
+	StreamConfig   = "StreamConfig"
 )

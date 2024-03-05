@@ -1,0 +1,15 @@
+with-expecter: true
+disable-version-string: true
+dir: testutil/adminmock
+outpkg: adminmock
+filename: "{{ .InterfaceName | snakecase }}.go"
+mockname: "{{.InterfaceName}}"
+
+packages:
+  go.mongodb.org/atlas-sdk/v20231115007/admin:
+    interfaces:
+      AtlasSearchApi:
+  go.mongodb.org/atlas-sdk/v20231115002/admin:
+    interfaces:
+      TeamsApi:
+      MongoDBCloudUsersApi:

@@ -93,8 +93,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m := adminmock.NewAtlasSearchApi(t)
-			m.On("GetAtlasSearchDeployment", mock.Anything, mock.Anything, mock.Anything).Return(admin.GetAtlasSearchDeploymentApiRequest{ApiService: m}).Once()
-			m.On("GetAtlasSearchDeploymentExecute", mock.Anything).Return(tc.respModel, tc.respHttp, tc.respError).Once()
+			m.EXPECT().GetAtlasSearchDeployment(mock.Anything, mock.Anything, mock.Anything).Return(admin.GetAtlasSearchDeploymentApiRequest{ApiService: m}).Once()
+			m.EXPECT().GetAtlasSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHttp, tc.respError).Once()
 
 			client := admin.APIClient{AtlasSearchApi: m}
 			eventResult := handleStateTransition(client, &prevModel, tc.targetState)

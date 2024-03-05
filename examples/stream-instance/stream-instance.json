@@ -1,0 +1,71 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Returns, adds, edits, or removes a stream instance, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "MongoDB Atlas Profile name"
+    },
+    "ProjectId": {
+      "Type": "String"
+    },
+    "InstanceName": {
+      "Type": "String"
+    },
+    "Tier": {
+      "Type": "String"
+    },
+    "Id": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "StreamInstance": {
+      "Type": "MongoDB::Atlas::StreamInstance",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "InstanceName": {
+          "Ref": "InstanceName"
+        },
+        "DataProcessRegion": {
+          "CloudProvider": "AWS",
+          "Region": "VIRGINIA_USA"
+        },
+        "StreamConfig": {
+          "Tier": {
+            "Ref": "Tier"
+          }
+        },
+        "Id": {
+          "Ref": "Id"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "Id": {
+      "Value": {
+        "Ref": "Id"
+      }
+    },
+    "Hostnames": {
+      "Value": {
+        "Fn::Join": [
+          ",",
+          {
+            "Fn::GetAtt": [
+              "StreamInstance",
+              "Hostnames"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

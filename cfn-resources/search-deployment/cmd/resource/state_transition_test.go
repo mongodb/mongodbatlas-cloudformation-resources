@@ -16,7 +16,7 @@ import (
 type stateTransitionTestCase struct {
 	name                string
 	respModel           *admin.ApiSearchDeploymentResponse
-	respHttp            *http.Response
+	respHTTP            *http.Response
 	respError           error
 	targetState         string
 	expectedEventStatus handler.Status
@@ -35,7 +35,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			respModel: &admin.ApiSearchDeploymentResponse{
 				StateName: admin.PtrString("UPDATING"),
 			},
-			respHttp: &http.Response{
+			respHTTP: &http.Response{
 				StatusCode: 200,
 			},
 			respError:           nil,
@@ -47,7 +47,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			respModel: &admin.ApiSearchDeploymentResponse{
 				StateName: admin.PtrString("IDLE"),
 			},
-			respHttp: &http.Response{
+			respHTTP: &http.Response{
 				StatusCode: 200,
 			},
 			respError:           nil,
@@ -57,7 +57,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		{
 			name:      "400 response with target DELETED should return success event",
 			respModel: nil,
-			respHttp: &http.Response{
+			respHTTP: &http.Response{
 				StatusCode: 400,
 			},
 			respError:           errors.New(searchDeploymentDoesNotExistsError),
@@ -69,7 +69,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			respModel: &admin.ApiSearchDeploymentResponse{
 				StateName: admin.PtrString("UPDATING"),
 			},
-			respHttp: &http.Response{
+			respHTTP: &http.Response{
 				StatusCode: 200,
 			},
 			respError:           nil,
@@ -81,7 +81,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			respModel: &admin.ApiSearchDeploymentResponse{
 				StateName: admin.PtrString("IDLE"),
 			},
-			respHttp: &http.Response{
+			respHTTP: &http.Response{
 				StatusCode: 200,
 			},
 			respError:           nil,
@@ -94,7 +94,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			m := mocksvc.NewAtlasSearchApi(t)
 			m.EXPECT().GetAtlasSearchDeployment(mock.Anything, mock.Anything, mock.Anything).Return(admin.GetAtlasSearchDeploymentApiRequest{ApiService: m}).Once()
-			m.EXPECT().GetAtlasSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHttp, tc.respError).Once()
+			m.EXPECT().GetAtlasSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHTTP, tc.respError).Once()
 
 			client := admin.APIClient{AtlasSearchApi: m}
 			eventResult := handleStateTransition(client, &prevModel, tc.targetState)

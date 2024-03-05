@@ -720,6 +720,7 @@ jobs:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
      runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e

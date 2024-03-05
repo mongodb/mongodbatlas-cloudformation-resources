@@ -49,6 +49,7 @@ const (
 	Sink                = "Sink"
 	Transformations     = "transformations"
 	CloudProvider       = "CloudProvider"
+	Specs               = "Specs"
 
 	RegionName     = "RegionName"
 	AtlasCIDRBlock = "AtlasCidrBlock"

@@ -23,7 +23,6 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 
 	"github.com/stretchr/testify/assert"
@@ -42,26 +41,23 @@ type localTestContext struct {
 
 type testProject struct {
 	ResourceTypeName string
-	Name             string
-	OrgID            string
 	Profile          string
-	TeamID           string
-	ProjectName      string
 	ProjectID        string
+	ClusterName      string
 }
 
 const (
-	resourceTypeName  = "MongoDB::Atlas::Project"
-	resourceDirectory = "project"
+	resourceTypeName  = "MongoDB::Atlas::SearchDeployment"
+	resourceDirectory = "search-deployment"
 )
 
 var (
-	profile         = os.Getenv("MONGODB_ATLAS_SECRET_PROFILE")
-	orgID           = os.Getenv("MONGODB_ATLAS_ORG_ID")
-	e2eRandSuffix   = utility.GetRandNum().String()
-	testProjectName = "cfn-e2e-project" + e2eRandSuffix
-	testTeamName    = "cfn-e2e-team" + e2eRandSuffix
-	stackName       = "stack-project-e2e-" + e2eRandSuffix
+	profile       = os.Getenv("MONGODB_ATLAS_SECRET_PROFILE")
+	orgID         = os.Getenv("MONGODB_ATLAS_ORG_ID")
+	e2eRandSuffix = utility.GetRandNum().String()
+	stackName     = "stack-searchdeployment-e2e-" + e2eRandSuffix
+	clusterName   = "cfn-e2e-searchdeployment" + e2eRandSuffix
+	projectName   = "cfn-e2e-searchdeployment" + e2eRandSuffix
 )
 
 func TestSearchDeploymentCFN(t *testing.T) {
@@ -103,102 +99,55 @@ func (c *localTestContext) setUp(t *testing.T) {
 
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-
-	output := utility.CreateStack(t, c.cfnClient, stackName, c.template)
-	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
-
-	project, getProjectResponse, err := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
+	utility.CreateStack(t, c.cfnClient, stackName, c.template)
+	deployment, resp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
-
-	teamsAssigned, _, _ := c.atlasClient.TeamsApi.ListProjectTeams(ctx.Background(), *project.Id).Execute()
-	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
-
-	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.GetResults()[0].TeamId)
-	a.Equal(200, getProjectResponse.StatusCode)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, c.projectTmplObj.ProjectID, deployment.GetGroupId())
 }
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-
-	// create CFN template with updated project name
-	c.projectTmplObj.Name += "-updated"
-	c.template, c.err = newCFNTemplate(c.projectTmplObj)
-
-	output := utility.UpdateStack(t, c.cfnClient, stackName, c.template)
-	c.projectTmplObj.ProjectID = getProjectIDFromStack(output)
-
-	project, _, err := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
-	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
-
-	teamsAssigned, _, err := c.atlasClient.TeamsApi.ListProjectTeams(ctx.Background(), *project.Id).Execute()
-	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
-
-	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.GetResults()[0].TeamId)
-	a.Equal(project.Name, c.projectTmplObj.Name)
 }
 
 func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 
 	utility.DeleteStack(t, c.cfnClient, stackName)
-	_, resp, _ := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
-
-	a := assert.New(t)
-	a.Equal(resp.StatusCode, 404)
-}
-
-func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
-	stackOutputs := output.Stacks[0].Outputs
-	for i := 0; i < len(stackOutputs); i++ {
-		if *aws.String(*stackOutputs[i].OutputKey) == "ProjectId" {
-			return *aws.String(*stackOutputs[1].OutputValue)
-		}
-	}
-	return ""
+	_, resp, _ := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
+	assert.Equal(t, 404, resp.StatusCode)
 }
 
 func cleanupResources(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
 
-	_, _, err := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
-	if err == nil {
-		_, _, err = c.atlasClient.ProjectsApi.DeleteProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
-		if err != nil {
-			t.Logf("Atlas Project could not be deleted during cleanup: %v", err)
-		} else {
-			t.Logf("Atlas Project successfully deleted during cleanup: %v", err)
-		}
-	}
-}
-
-func cleanupPrerequisites(t *testing.T, c *localTestContext) {
-	t.Helper()
-	t.Log("Cleaning up prerequisites")
-	_, _, err := c.atlasClient.TeamsApi.DeleteTeam(ctx.Background(), orgID, c.projectTmplObj.TeamID).Execute()
+	t.Log("Cleaning up resources")
+	_, _, err := c.atlasClient.ProjectsApi.DeleteProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 	if err != nil {
-		t.Logf("Atlas Team could not be deleted during cleanup: %s\n", err.Error())
+		t.Logf("Atlas Project could not be deleted during cleanup: %s\n", err.Error())
 	}
 }
 
 func (c *localTestContext) setupPrerequisites(t *testing.T) {
 	t.Helper()
 	t.Cleanup(func() {
-		cleanupPrerequisites(t, c)
 		cleanupResources(t, c)
 	})
 
 	t.Log("Setting up prerequisites")
-	team, _ := utility.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
+	params := &admin.Group{
+		Name:  projectName,
+		OrgId: orgID,
+	}
+	resp, _, err := c.atlasClient.ProjectsApi.CreateProject(ctx.Background(), params).Execute()
+	utility.FailNowIfError(t, "Error creating Atlas Project: %v", err)
 
 	c.projectTmplObj = testProject{
-		Name:             testProjectName,
-		OrgID:            orgID,
-		Profile:          profile,
-		TeamID:           *team.Id,
 		ResourceTypeName: os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
+		Profile:          profile,
+		ProjectID:        resp.GetId(),
+		ClusterName:      clusterName,
 	}
 
 	// Read required data from resource CFN template

@@ -1,46 +1,39 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template creates a Search Index on the MongoDB Atlas API, this will be billed to your Atlas account.",
   "Mappings": {},
   "Resources": {
-    "Project": {
+    "SearchDeployment": {
       "Type": "{{ .ResourceTypeName }}",
       "Properties": {
-        "Name": "{{ .Name }}",
-        "OrgId": "{{ .OrgID }}",
         "Profile": "{{ .Profile }}",
-        "ProjectSettings": {
-          "IsCollectDatabaseSpecificsStatisticsEnabled": "false",
-          "IsDataExplorerEnabled": "false",
-          "IsPerformanceAdvisorEnabled": "false",
-          "IsRealtimePerformancePanelEnabled": "false",
-          "IsSchemaAdvisorEnabled": "false"
-        },
-        "ProjectTeams": [
+        "ProjectId": "{{ .ProjectID }}",
+        "ClusterName": "{{ .ClusterName }}",
+        "Specs": [
           {
-            "TeamId": "{{ .TeamID }}",
-            "RoleNames": [
-              "GROUP_OWNER"
-            ]
+            "InstanceSize": "S20_HIGHCPU_NVME",
+            "NodeCount": "2"
           }
         ]
       }
     }
   },
   "Outputs": {
-    "ProjectId": {
+    "SearchDeploymentId": {
+      "Description": "Search Deployment ID",
       "Value": {
         "Fn::GetAtt": [
-          "Project",
+          "SearchDeployment",
           "Id"
         ]
       }
     },
-    "ClusterCount": {
+    "SearchDeploymentStateName": {
+      "Description": "Search Deployment State",
       "Value": {
         "Fn::GetAtt": [
-          "Project",
-          "ClusterCount"
+          "SearchDeployment",
+          "StateName"
         ]
       }
     }

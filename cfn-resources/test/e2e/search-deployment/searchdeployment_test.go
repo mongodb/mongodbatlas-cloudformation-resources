@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package project
+package searchdeployment_test
 
 import (
 	"bytes"
@@ -30,17 +30,17 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
-type LocalTestContext struct {
+type localTestContext struct {
 	cfnClient      *cfn.Client
 	atlasClient    *admin.APIClient
-	projectTmplObj TestProject
+	projectTmplObj testProject
 	resourceCtx    utility.ResourceContext
 
 	template string
 	err      error
 }
 
-type TestProject struct {
+type testProject struct {
 	ResourceTypeName string
 	Name             string
 	OrgID            string
@@ -51,8 +51,8 @@ type TestProject struct {
 }
 
 const (
-	resourceTypeName  = "MongoDB::Atlas::Project"
-	resourceDirectory = "project"
+	resourceTypeName  = "MongoDB::Atlas::SearchDeployment"
+	resourceDirectory = "search-deployment"
 )
 
 var (
@@ -84,16 +84,16 @@ func TestSearchDeploymentCFN(t *testing.T) {
 	})
 }
 
-func setupSuite(t *testing.T) *LocalTestContext {
+func setupSuite(t *testing.T) *localTestContext {
 	t.Helper()
 	t.Log("Setting up suite")
-	testCtx := new(LocalTestContext)
+	testCtx := new(localTestContext)
 	testCtx.setUp(t)
 
 	return testCtx
 }
 
-func (c *LocalTestContext) setUp(t *testing.T) {
+func (c *localTestContext) setUp(t *testing.T) {
 	t.Helper()
 	c.resourceCtx = utility.InitResourceCtx(stackName, e2eRandSuffix, resourceTypeName, resourceDirectory)
 	c.cfnClient, c.atlasClient = utility.NewClients(t)
@@ -101,7 +101,7 @@ func (c *LocalTestContext) setUp(t *testing.T) {
 	c.setupPrerequisites(t)
 }
 
-func testCreateStack(t *testing.T, c *LocalTestContext) {
+func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 
 	output := utility.CreateStack(t, c.cfnClient, stackName, c.template)
@@ -118,7 +118,7 @@ func testCreateStack(t *testing.T, c *LocalTestContext) {
 	a.Equal(200, getProjectResponse.StatusCode)
 }
 
-func testUpdateStack(t *testing.T, c *LocalTestContext) {
+func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 
 	// create CFN template with updated project name
@@ -139,7 +139,7 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	a.Equal(project.Name, c.projectTmplObj.Name)
 }
 
-func testDeleteStack(t *testing.T, c *LocalTestContext) {
+func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 
 	utility.DeleteStack(t, c.cfnClient, stackName)
@@ -159,7 +159,7 @@ func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
 	return ""
 }
 
-func cleanupResources(t *testing.T, c *LocalTestContext) {
+func cleanupResources(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
 
@@ -174,7 +174,7 @@ func cleanupResources(t *testing.T, c *LocalTestContext) {
 	}
 }
 
-func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
+func cleanupPrerequisites(t *testing.T, c *localTestContext) {
 	t.Helper()
 	t.Log("Cleaning up prerequisites")
 	_, _, err := c.atlasClient.TeamsApi.DeleteTeam(ctx.Background(), orgID, c.projectTmplObj.TeamID).Execute()
@@ -183,7 +183,7 @@ func cleanupPrerequisites(t *testing.T, c *LocalTestContext) {
 	}
 }
 
-func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
+func (c *localTestContext) setupPrerequisites(t *testing.T) {
 	t.Helper()
 	t.Cleanup(func() {
 		cleanupPrerequisites(t, c)
@@ -193,7 +193,7 @@ func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 	t.Log("Setting up prerequisites")
 	team, _ := utility.NewAtlasTeam(ctx.Background(), c.atlasClient, testTeamName, orgID)
 
-	c.projectTmplObj = TestProject{
+	c.projectTmplObj = testProject{
 		Name:             testProjectName,
 		OrgID:            orgID,
 		Profile:          profile,
@@ -206,11 +206,11 @@ func (c *LocalTestContext) setupPrerequisites(t *testing.T) {
 	utility.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
 }
 
-func newCFNTemplate(tmpl TestProject) (string, error) {
+func newCFNTemplate(tmpl testProject) (string, error) {
 	return executeGoTemplate(tmpl)
 }
 
-func executeGoTemplate(projectTmpl TestProject) (string, error) {
+func executeGoTemplate(projectTmpl testProject) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
 	cfnTemplatePath := "templates/cfnTemplate.json"
 

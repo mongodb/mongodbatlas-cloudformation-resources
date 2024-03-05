@@ -1,8 +1,9 @@
 {
   "typeName": "MongoDB::Atlas::StreamConnection",
   "additionalProperties": false,
-  "description": "Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.",
+  "description": "Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles. Note that Atlas Streams functionality is currently in [Public Preview](https://www.mongodb.com/blog/post/atlas-stream-processing-now-in-public-preview)",
   "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/stream-connection/README.md",
   "definitions": {
     "DBRoleToExecute": {
       "type": "object",
@@ -38,7 +39,7 @@
         "Password": {
           "type": "string",
           "format": "password",
-          "description": "Password of the account to connect to the Kafka cluster."
+          "description": "Password of the account to connect to the Kafka cluster. Review [AWS security best practices for CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/security-best-practices.html#creds) to manage credentials."
         }
       },
       "additionalProperties": false

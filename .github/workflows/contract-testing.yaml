@@ -719,7 +719,6 @@ jobs:
   stream-connection:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
-     runs-on: ubuntu-latest
     runs-on: ubuntu-latest
     steps:
       - name: setup Atlas CLI

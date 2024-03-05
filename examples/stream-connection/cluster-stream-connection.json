@@ -1,0 +1,71 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates one connection of type 'Cluster' for a given stream instance in the specified project",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Atlas Project Id"
+    },
+    "InstanceName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream instance"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Description": "Human-readable label that identifies the stream connection"
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Name of the cluster configured for this connection"
+    },
+    "DbRole": {
+      "Type": "String",
+      "Description": "The name of the role to use. Can be a built in role or a custom role"
+    },
+    "DbRoleType": {
+      "Type": "String",
+      "Description": "Type of the DB role",
+      "AllowedValues": [
+        "BUILT_IN",
+        "CUSTOM"
+      ]
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "StreamConnection": {
+      "Type": "MongoDB::Atlas::StreamConnection",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        },
+        "InstanceName": {
+          "Ref": "InstanceName"
+        },
+        "ClusterName": {
+          "Ref": "ClusterName"
+        },
+        "Type": "Cluster",
+        "DbRoleToExecute": {
+          "Role": {
+            "Ref": "DbRole"
+          },
+          "Type": {
+            "Ref": "DbRoleType"
+          }
+        }
+      }
+    }
+  }
+}

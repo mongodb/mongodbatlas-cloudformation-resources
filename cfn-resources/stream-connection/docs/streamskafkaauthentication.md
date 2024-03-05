@@ -38,7 +38,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Username
 
-Password of the account to connect to the Kafka cluster.
+Username of the account to connect to the Kafka cluster.
 
 _Required_: No
 
@@ -48,7 +48,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Password
 
-Username of the account to connect to the Kafka cluster.
+Password of the account to connect to the Kafka cluster.
 
 _Required_: No
 

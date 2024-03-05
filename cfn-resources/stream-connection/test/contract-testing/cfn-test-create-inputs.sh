@@ -5,9 +5,7 @@
 #
 # This tool generates json files in the inputs/ for `cfn test`.
 #
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 set -x
 
 if [ -z "${AWS_DEFAULT_REGION+x}" ]; then

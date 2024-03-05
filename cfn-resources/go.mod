@@ -13,7 +13,6 @@ require (
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/mongodb-forks/digest v1.0.5
-	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/rs/xid v1.5.0
 	github.com/spf13/cast v1.6.0
 	github.com/stretchr/testify v1.9.0

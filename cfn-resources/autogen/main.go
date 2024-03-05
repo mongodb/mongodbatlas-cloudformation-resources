@@ -102,7 +102,7 @@ func addResource(path, schemaName string) {
 	// Add handlers
 	for _, fn := range funcNames {
 		inputParameters, modelObj := generateInputParams(fn, reqFields)
-		if len(inputParameters) > 0 {
+		if inputParameters != "" {
 			inputParameters = "Considerable params from currentModel: \n" + inputParameters
 		}
 

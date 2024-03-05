@@ -42,23 +42,12 @@ const (
 	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
 	CurrentDir         = "schema-gen"
-	LatestSwaggerFile  = "swagger.latest.json"
 )
 
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
-var diffFile = "diff"
-
 func main() {
-	/*Set the compare variable to TRUE to get the latest openAPI spec*/
-	compare := false
-
-	compare, err := readArgs()
-	if err != nil {
-		return
-	}
-
 	mappingFile, openAPIDoc, err := readConfig()
 	if err != nil {
 		fmt.Printf("read config err:%v", err)
@@ -84,8 +73,8 @@ func main() {
 
 	done := make(chan bool)
 	reqDone := make(chan bool)
-	go generateSchemas(cfnSchema, done, compare)
-	go generateReqFields(reqFieldsChan, reqDone, compare)
+	go generateSchemas(cfnSchema, done)
+	go generateReqFields(reqFieldsChan, reqDone)
 
 	fmt.Println("Generating schema")
 	for _, res := range data.Resources {
@@ -252,30 +241,30 @@ func main() {
 	<-reqDone
 }
 
-func readArgs() (compare bool, err error) {
-	if len(os.Args) > 1 {
-		arg := os.Args[1]
-		if arg == "compare" {
-			fmt.Println("comparing schemas..")
-			compare = true
-		}
-		if len(os.Args) > 2 {
-			diffFile = os.Args[2]
-		}
-		dir, _ := getCurrentDir()
-		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
-		if err != nil {
-			fmt.Println(err)
-			return compare, err
-		}
-		if diff == "" {
-			err = errors.New("no difference found in OpenAPI Spec")
-			return compare, err
-		}
-		return compare, err
-	}
-	return false, nil
-}
+// func readArgs() (compare bool, err error) {
+// 	if len(os.Args) > 1 {
+// 		arg := os.Args[1]
+// 		if arg == "compare" {
+// 			fmt.Println("comparing schemas..")
+// 			compare = true
+// 		}
+// 		if len(os.Args) > 2 {
+// 			diffFile = os.Args[2]
+// 		}
+// 		dir, _ := getCurrentDir()
+// 		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			return compare, err
+// 		}
+// 		if diff == "" {
+// 			err = errors.New("no difference found in OpenAPI Spec")
+// 			return compare, err
+// 		}
+// 		return compare, err
+// 	}
+// 	return false, nil
+// }
 
 func sortProperties[V any](properties map[string]V) (props map[string]interface{}) {
 	var propertyNames []string
@@ -501,7 +490,7 @@ func inputOnlyProperties(bodyParams map[string]Property) []string {
 	return inputParams
 }
 
-func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
+func generateSchemas(chn chan CfnSchema, done chan bool) {
 	for cfn := range chn {
 		rankingsJSON, err := json.Marshal(cfn)
 		if err != nil {
@@ -525,42 +514,7 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 		}
 
 		schemaFilePath := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, strings.ToLower(cfn.FileName))
-		latestSchemaFilePath := ""
 
-		// create required schema file
-		if compare {
-			latestSchemaDir := strings.Replace(dir, CurrentDir, SchemasDir, 1)
-			if _, err := os.Stat(latestSchemaDir); errors.Is(err, os.ErrNotExist) {
-				err := os.Mkdir(latestSchemaDir, os.ModePerm)
-				if err != nil {
-					print(err)
-					done <- true
-				}
-			}
-			latestSchemaFilePath = fmt.Sprintf("%s/mongodb-atlas-%s-latest.json", latestSchemaDir, strings.ToLower(cfn.FileName))
-
-			// Write schema into the latest file
-			err = os.WriteFile(latestSchemaFilePath, result, 0600)
-			if err != nil {
-				print(err)
-				done <- true
-				return
-			}
-		}
-
-		if compare && latestSchemaFilePath != "" {
-			_, err = CompareJSONFiles(cfn.FileName, schemaFilePath, latestSchemaFilePath)
-			if err != nil {
-				print(err)
-			}
-			// Delete the latest file created for comparison
-			err = os.RemoveAll(latestSchemaFilePath)
-			if err != nil {
-				print(err)
-			}
-		}
-
-		// Update with the schema file with the latest schema
 		err = os.WriteFile(schemaFilePath, result, 0600)
 		if err != nil {
 			print(err)
@@ -571,7 +525,7 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 	done <- true
 }
 
-func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare bool) {
+func generateReqFields(reqChan chan RequiredParams, reqDone chan bool) {
 	for reqFlds := range reqChan {
 		fieldsJSON, err := json.Marshal(reqFlds)
 		if err != nil {
@@ -588,9 +542,6 @@ func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare b
 		}
 
 		fileName := fmt.Sprintf("%s/mongodb-atlas-%s-req.json", SchemasDir, strings.ToLower(reqFlds.FileName))
-		if compare {
-			fileName = fmt.Sprintf("%s/mongodb-atlas-%s-req-latest.json", SchemasDir, strings.ToLower(reqFlds.FileName))
-		}
 		err = os.WriteFile(fileName, result, 0600)
 		if err != nil {
 			print(err)

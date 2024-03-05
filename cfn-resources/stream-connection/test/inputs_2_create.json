@@ -1,0 +1,19 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "InstanceName": "",
+  "ConnectionName": "ConnectionNameKafka",
+  "Type": "Kafka",
+  "BootstrapServers": "localhost:9092,localhost:9092",
+  "Authentication": {
+    "Mechanism": "PLAIN",
+    "Username": "user1",
+    "Password": "rawpassword"
+  },
+  "Security": {
+    "Protocol": "PLAINTEXT"
+  },
+  "Config": {
+    "auto.offset.reset": "earliest"
+  }
+}

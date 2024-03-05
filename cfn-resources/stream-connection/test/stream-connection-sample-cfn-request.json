@@ -1,0 +1,15 @@
+{
+  "desiredResourceState": {
+    "Profile": "default",
+    "ProjectId": "",
+    "InstanceName": "",
+    "ClusterName": "",
+    "ConnectionName": "",
+    "Type": "Cluster",
+    "DbRoleToExecute": {
+      "Role": "atlasAdmin",
+      "Type": "BUILT_IN"
+    }
+  },
+  "previousResourceState": {}
+}

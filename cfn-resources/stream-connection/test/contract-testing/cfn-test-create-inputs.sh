@@ -5,9 +5,7 @@
 #
 # This tool generates json files in the inputs/ for `cfn test`.
 #
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 set -x
 
 if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
@@ -16,6 +14,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-projectName="stream-instance-$((1 + RANDOM % 10000))"
+projectName="cfn-stream-conn-$((1 + RANDOM % 10000))"
 
 ./test/cfn-test-create-inputs.sh $projectName

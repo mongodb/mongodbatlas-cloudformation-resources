@@ -28,16 +28,17 @@ import (
 	"unicode"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/ghodss/yaml"
 	"github.com/tidwall/pretty"
 )
 
 // https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
 
 const (
-	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+	url                = "https://github.com/mongodb/mongodbatlas-cloudformation-resources"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
-	OpenAPISpecPath    = "https://cloud-dev.mongodb.com/openapi.json"
+	OpenAPISpecPath    = "https://raw.githubusercontent.com/mongodb/atlas-sdk-go/main/openapi/atlas-api-transformed.yaml"
 	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
 	CurrentDir         = "schema-gen"
@@ -92,8 +93,7 @@ func main() {
 		var ids, readOnly, idsDef, readOnlyDef []string
 		var cfn CfnSchema
 		key := "params"
-		var typeName string
-		var description string
+		var typeName, apiContentType, description string
 		requiredParams := RequiredParams{}
 		var createReqParams []string
 
@@ -101,6 +101,7 @@ func main() {
 		allMethodProps := make(map[string]map[string]Property, 0)
 		bodySchema := make(map[string]map[string]Property, 0)
 		typeName = capitalize(res.TypeName)
+		apiContentType = res.ContentType
 
 		for _, path := range res.OpenAPIPaths {
 			pathItem := openAPIDoc.Paths.Find(path)
@@ -110,10 +111,10 @@ func main() {
 
 			if method := pathItem.Post; method != nil {
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc, apiContentType)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc, apiContentType)
 				// Read from query params
 				queryParams := readQueryParams(method)
 				for _, reqSchemaKey := range reqSchemaKeys {
@@ -142,11 +143,11 @@ func main() {
 					continue
 				}
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc, apiContentType)
 				createReqParams = reqParams
 
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc, apiContentType)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -174,10 +175,10 @@ func main() {
 				}
 
 				// Read from Req params
-				_, _, _, reqParams := readRequestBody(method, openAPIDoc)
+				_, _, _, reqParams := readRequestBody(method, openAPIDoc, apiContentType)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc, apiContentType)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -338,7 +339,7 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 		return nil, nil, err
 	}
 
-	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
+	openAPISpecFile := fmt.Sprintf("%s/swagger.yaml", dir)
 	// For comparison download the latest openAPIspec file
 	if compare {
 		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
@@ -346,7 +347,19 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 			return []byte{}, nil, err
 		}
 	}
-	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
+
+	openAPISpecFileYaml, err := os.ReadFile(openAPISpecFile)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	specYaml, err := yaml.YAMLToJSON(openAPISpecFileYaml)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+
+		return nil, nil, err
+	}
+	doc, err := openapi3.NewLoader().LoadFromData(specYaml)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -359,11 +372,12 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	return file, doc, err
 }
 
-func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []string, reqSchema map[string]map[string]Property, definitions map[string]Definitions, requiredParams []string) {
+func readRequestBody(method *openapi3.Operation,
+	doc *openapi3.T, reqContentType string) (schemaKeys []string, reqSchema map[string]map[string]Property, definitions map[string]Definitions, requiredParams []string) {
 	reqBody := method.RequestBody
-	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content["application/json"] != nil &&
-		reqBody.Value.Content["application/json"].Schema != nil {
-		reqSchemaKey := filepath.Base(reqBody.Value.Content["application/json"].Schema.Ref)
+	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content[reqContentType] != nil &&
+		reqBody.Value.Content[reqContentType].Schema != nil {
+		reqSchemaKey := filepath.Base(reqBody.Value.Content[reqContentType].Schema.Ref)
 		schemaKeys = append(schemaKeys, capitalize(reqSchemaKey))
 		// Read from Request body
 		if doc.Components.Schemas[filepath.Base(reqSchemaKey)] != nil {
@@ -394,20 +408,22 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 	return schemaKeys, reqSchema, definitions, requiredParams
 }
 
-func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
-	if methodResponseHasSchema(method, "200") {
-		return readResponseBodyWithResponseCode(openAPIDoc, method, "200")
+func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T, respContentType string) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
+	if methodResponseHasSchema(method, "200", respContentType) {
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "200", respContentType)
 	}
 
-	if methodResponseHasSchema(method, "201") {
-		return readResponseBodyWithResponseCode(openAPIDoc, method, "201")
+	if methodResponseHasSchema(method, "201", respContentType) {
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "201", respContentType)
 	}
 
 	return "", nil, nil
 }
 
-func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
-	key = filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
+func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation,
+	responseCode, respContentType string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
+	tmp := method.Responses.Map()
+	key = filepath.Base(tmp[responseCode].Value.Content[respContentType].Schema.Ref)
 	// Read from Request body
 	if openAPIDoc.Components.Schemas[filepath.Base(key)] != nil {
 		value := *openAPIDoc.Components.Schemas[filepath.Base(key)]
@@ -418,9 +434,10 @@ func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.O
 	return capitalize(key), nil, nil
 }
 
-func methodResponseHasSchema(method *openapi3.Operation, responseCode string) bool {
-	return method.Responses[responseCode] != nil && method.Responses[responseCode].Value != nil && method.Responses[responseCode].Value.Content["application/json"] != nil &&
-		method.Responses[responseCode].Value.Content["application/json"].Schema != nil
+func methodResponseHasSchema(method *openapi3.Operation, responseCode, respContentType string) bool {
+	tmp := method.Responses.Map()
+	return tmp[responseCode] != nil && tmp[responseCode].Value != nil && tmp[responseCode].Value.Content[respContentType] != nil &&
+		tmp[responseCode].Value.Content[respContentType].Schema != nil
 }
 func readQueryParams(method *openapi3.Operation) map[string]Property {
 	queryParams := map[string]Property{}

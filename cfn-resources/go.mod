@@ -10,7 +10,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.46.1
 	github.com/aws/smithy-go v1.20.1
 	github.com/dave/jennifer v1.7.0
-	github.com/getkin/kin-openapi v0.121.0
+	github.com/getkin/kin-openapi v0.123.0
+	github.com/ghodss/yaml v1.0.0
 	github.com/mongodb-forks/digest v1.0.5
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/rs/xid v1.5.0
@@ -37,8 +38,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.23.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.28.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-openapi/jsonpointer v0.19.6 // indirect
-	github.com/go-openapi/swag v0.22.4 // indirect
+	github.com/go-openapi/jsonpointer v0.20.2 // indirect
+	github.com/go-openapi/swag v0.22.8 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect

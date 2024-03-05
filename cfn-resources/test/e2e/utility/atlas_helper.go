@@ -35,7 +35,7 @@ func NewAtlasTeam(ctx context.Context, client *admin.APIClient, name string, org
 	orgUser, _ := getExistingOrgUser(ctx, client, orgID)
 	teamRequest := admin.Team{
 		Name:      name,
-		Usernames: []string{orgUser.Username},
+		Usernames: &[]string{orgUser.Username},
 	}
 	team, _, err := client.TeamsApi.CreateTeam(ctx, orgID, &teamRequest).Execute()
 	if err != nil {
@@ -57,7 +57,7 @@ func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 		c.BaseURL = baseURL
 	}
 	// New SDK Client
-	sdkV2Client, err := c.NewSDKV2Client(client)
+	sdkV2Client, err := c.NewSDKV2LatestClient(client)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create Atlas client")
 	}
@@ -84,5 +84,5 @@ func getExistingOrgUser(ctx context.Context, client *admin.APIClient, orgID stri
 	if err != nil {
 		return nil, err
 	}
-	return &usersResponse.Results[0], nil
+	return &usersResponse.GetResults()[0], nil
 }

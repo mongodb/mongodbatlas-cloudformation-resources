@@ -22,8 +22,10 @@ jobs:
           filters: |
             project:
               - 'cfn-resources/project/**'
+              - 'cfn-resources/test/e2e/project/**'
             search-deployment:
               - 'cfn-resources/search-deployment/**'
+              - 'cfn-resources/test/e2e/search-deployment/**'
   project:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project == 'true' }}

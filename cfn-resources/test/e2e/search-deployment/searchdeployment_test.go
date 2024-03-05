@@ -53,7 +53,6 @@ type TestProject struct {
 const (
 	resourceTypeName  = "MongoDB::Atlas::Project"
 	resourceDirectory = "project"
-	var1              = "unused" // temporary check linter
 )
 
 var (

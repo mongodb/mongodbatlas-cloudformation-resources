@@ -59,7 +59,7 @@ func main() {
 		return
 	}
 
-	mappingFile, openAPIDoc, err := readConfig(compare)
+	mappingFile, openAPIDoc, err := readConfig()
 	if err != nil {
 		fmt.Printf("read config err:%v", err)
 		os.Exit(1)
@@ -328,7 +328,7 @@ func getCurrentDir() (path string, err error) {
 	return dir, err
 }
 
-func readConfig(compare bool) ([]byte, *openapi3.T, error) {
+func readConfig() ([]byte, *openapi3.T, error) {
 	dir, err := getCurrentDir()
 	if err != nil {
 		return nil, nil, err
@@ -340,12 +340,8 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	}
 
 	openAPISpecFile := fmt.Sprintf("%s/swagger.yaml", dir)
-	// For comparison download the latest openAPIspec file
-	if compare {
-		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
-		if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
-			return []byte{}, nil, err
-		}
+	if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
+		return []byte{}, nil, err
 	}
 
 	openAPISpecFileYaml, err := os.ReadFile(openAPISpecFile)

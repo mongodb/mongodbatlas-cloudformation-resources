@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil/adminmock"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil/mocksvc"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -92,7 +92,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			m := adminmock.NewAtlasSearchApi(t)
+			m := mocksvc.NewAtlasSearchApi(t)
 			m.EXPECT().GetAtlasSearchDeployment(mock.Anything, mock.Anything, mock.Anything).Return(admin.GetAtlasSearchDeploymentApiRequest{ApiService: m}).Once()
 			m.EXPECT().GetAtlasSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHttp, tc.respError).Once()
 

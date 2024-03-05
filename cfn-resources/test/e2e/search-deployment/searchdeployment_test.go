@@ -114,7 +114,7 @@ func testCreateStack(t *testing.T, c *LocalTestContext) {
 	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.Results[0].TeamId)
+	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.GetResults()[0].TeamId)
 	a.Equal(200, getProjectResponse.StatusCode)
 }
 
@@ -135,7 +135,7 @@ func testUpdateStack(t *testing.T, c *LocalTestContext) {
 	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
 	a := assert.New(t)
-	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.Results[0].TeamId)
+	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.GetResults()[0].TeamId)
 	a.Equal(project.Name, c.projectTmplObj.Name)
 }
 

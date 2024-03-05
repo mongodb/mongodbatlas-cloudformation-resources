@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -43,12 +44,49 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		},
 		{
 			name: "State in IDLE with target IDLE should return success event",
+			respModel: &admin.ApiSearchDeploymentResponse{
+				StateName: admin.PtrString("IDLE"),
+			},
+			respHttp: &http.Response{
+				StatusCode: 200,
+			},
+			respError:           nil,
+			targetState:         constants.IdleState,
+			expectedEventStatus: handler.Success,
 		},
 		{
-			name: "400 response with target DELETED should return success event",
+			name:      "400 response with target DELETED should return success event",
+			respModel: nil,
+			respHttp: &http.Response{
+				StatusCode: 400,
+			},
+			respError:           errors.New(searchDeploymentDoesNotExistsError),
+			targetState:         constants.DeletedState,
+			expectedEventStatus: handler.Success,
+		},
+		{
+			name: "State in WORKING with target DELETED should return in progress event",
+			respModel: &admin.ApiSearchDeploymentResponse{
+				StateName: admin.PtrString("UPDATING"),
+			},
+			respHttp: &http.Response{
+				StatusCode: 200,
+			},
+			respError:           nil,
+			targetState:         constants.DeletedState,
+			expectedEventStatus: handler.InProgress,
 		},
 		{
 			name: "State in IDLE with target DELETED should return in progress event",
+			respModel: &admin.ApiSearchDeploymentResponse{
+				StateName: admin.PtrString("IDLE"),
+			},
+			respHttp: &http.Response{
+				StatusCode: 200,
+			},
+			respError:           nil,
+			targetState:         constants.DeletedState,
+			expectedEventStatus: handler.InProgress,
 		},
 	}
 

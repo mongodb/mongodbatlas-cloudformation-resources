@@ -7,7 +7,7 @@ goarch=amd64
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
-MOCKERY_VERSION=v2.40.3
+MOCKERY_VERSION=v2.38.0
 
 .PHONY: submit
 submit:

@@ -24,6 +24,7 @@ jobs:
     steps:
     - name: Generate mocks
       run: |
+        ls
         make tools generate-mocks
     - name: Check for uncommited files
       run: |

@@ -1,0 +1,96 @@
+{
+  "additionalProperties": false,
+  "description": "Returns, adds, edits, and removes Atlas Search indexes for the specified cluster. Also returns and updates user-defined analyzers for the specified cluster.",
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  },
+  "definitions": {
+    "ApiSearchDeploymentSpec": {
+      "type": "object",
+      "properties": {
+        "InstanceSize": {
+          "type": "string"
+        },
+        "NodeCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "InstanceSize",
+        "NodeCount"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "default": "default"
+    },
+    "ClusterName": {
+      "type": "string"
+    },
+    "ProjectId": {
+      "type": "string"
+    },
+    "Id": {
+      "type": "string"
+    },
+    "Specs": {
+      "insertionOrder": false,
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ApiSearchDeploymentSpec",
+        "type": "object"
+      }
+    },
+    "StateName": {
+      "type": "string"
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Id",
+    "/properties/Profile"
+  ],
+  "required": [
+    "ClusterName",
+    "ProjectId",
+    "Specs"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/ClusterName",
+    "/properties/Profile"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/StateName"
+  ],
+  "typeName": "MongoDB::Atlas::SearchDeployment",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/search-deployment/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/search-deployment"
+}

@@ -165,33 +165,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
-	projectID := util.SafeString(currentModel.ProjectId)
-	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
-	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), searchDeploymentDoesNotExistsError) {
-			return handler.ProgressEvent{
-				OperationStatus: handler.Success,
-				ResourceModel:   nil,
-				Message:         constants.Complete,
-			}
-		}
-		return progressevent.GetFailedEventByResponse(err.Error(), resp)
-	}
-
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
-	if util.SafeString(newModel.StateName) == targetState {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			ResourceModel:   newModel,
-			Message:         constants.Complete,
-		}
-	}
-
-	return inProgressEvent(constants.Pending, &newModel)
-}
-
 // specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
 func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
 	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, searchDeploymentAlreadyExistsError) {

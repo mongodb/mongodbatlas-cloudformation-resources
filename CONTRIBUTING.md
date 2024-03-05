@@ -16,9 +16,14 @@ After the above 2 steps are completed and we've agreed on a path forward:
 
 - Resources configurations, specifcally `.rpdk-config` and `Makefile` build commands, are compatible with cloudformation-cli (`cfn`) versions 0.2.34 and above.
 
-## Testing
-We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources. Please follow below guidelines for testing to ensure quality:
 
+## Code and Test Best Practices
+
+- Each resource is implemented in a seperate directory within `./cfn-resources`. Under each resource directory operations will be implemented in `./cmd/resource/resource.go`, having a separate file `./cmd/resource/mappings.go` for defining conversion logic with respective SDK and CFN models. Associated unit testing files must defined for conversion logic, and can also exist for other business logic such as handling state transitions.
+- [Testify Mock](https://pkg.go.dev/github.com/stretchr/testify/mock) and [Mockery](https://github.com/vektra/mockery) are used for test doubles in unit tests. Mocked interfaces are generated in folder `cfn-resources/testutil/mocksvc`.
+- We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources.
+
+Please follow below guidelines for testing to ensure quality:
 **When adding a new feature:**
 - `/test/README.md` file must be created and must include detailed pre-requisites (if any) and steps to test a resource.
 - The file should include screenshots of how the resource is tested and how the changes reflect in Atlas UI.

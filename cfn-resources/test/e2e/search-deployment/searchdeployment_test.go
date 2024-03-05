@@ -27,7 +27,7 @@ import (
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
 type LocalTestContext struct {

@@ -21,7 +21,7 @@ import (
 
 	"github.com/mongodb-forks/digest"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
 type AtlasEnvOptions struct {

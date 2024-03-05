@@ -212,7 +212,7 @@ func newCFNTemplate(tmpl testProject) (string, error) {
 
 func executeGoTemplate(projectTmpl testProject) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
-	cfnTemplatePath := "templates/cfnTemplate.json"
+	cfnTemplatePath := "project_template.json"
 
 	name := path.Base(cfnTemplatePath)
 	cfnGoTemplate, err := template.New(name).ParseFiles(cfnTemplatePath)

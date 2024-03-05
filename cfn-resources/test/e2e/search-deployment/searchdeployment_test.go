@@ -51,8 +51,8 @@ type testProject struct {
 }
 
 const (
-	resourceTypeName  = "MongoDB::Atlas::SearchDeployment"
-	resourceDirectory = "search-deployment"
+	resourceTypeName  = "MongoDB::Atlas::Project"
+	resourceDirectory = "project"
 )
 
 var (
@@ -212,7 +212,7 @@ func newCFNTemplate(tmpl testProject) (string, error) {
 
 func executeGoTemplate(projectTmpl testProject) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
-	cfnTemplatePath := "templates/cfnTemplate.json"
+	cfnTemplatePath := "searchdeployment_template.json"
 
 	name := path.Base(cfnTemplatePath)
 	cfnGoTemplate, err := template.New(name).ParseFiles(cfnTemplatePath)

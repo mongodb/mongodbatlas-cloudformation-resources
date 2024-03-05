@@ -19,25 +19,28 @@ jobs:
         cd cfn-resources
         go build -v ./...
   mock-generation:
-    needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Generate mocks
-      run: |
-        ls
-        make tools generate-mocks
-    - name: Check for uncommited files
-      run: |
-        FILES=$(git ls-files -o -m --directory --exclude-standard --no-empty-directory)
-        LINES=$(echo "$FILES" | awk 'NF' | wc -l)
-        
-        if [ "$LINES" -ne 0 ]; then
-          echo "Detected files that need to be committed:"
-          echo "$FILES" | while IFS= read -r line; do echo "  $line"; done
-          echo ""
-          echo "Mock skeletons are not up-to-date, you may have forgotten to run mockery before committing your changes."
-          exit 1
-        fi
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Set up Go
+        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: Generate mocks
+        run: |
+          make tools generate-mocks
+      - name: Check for uncommited files
+        run: |
+          FILES=$(git ls-files -o -m --directory --exclude-standard --no-empty-directory)
+          LINES=$(echo "$FILES" | awk 'NF' | wc -l)
+          
+          if [ "$LINES" -ne 0 ]; then
+            echo "Detected files that need to be committed:"
+            echo "$FILES" | while IFS= read -r line; do echo "  $line"; done
+            echo ""
+            echo "Mock skeletons are not up-to-date, you may have forgotten to run mockery before committing your changes."
+            exit 1
+          fi
   lint:
     runs-on: ubuntu-latest
     steps:

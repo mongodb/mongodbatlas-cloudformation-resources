@@ -14,23 +14,18 @@
 package searchdeployment_test
 
 import (
-	"bytes"
 	ctx "context"
 	"os"
-	"path"
 	"testing"
-	"text/template"
 
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
-
-	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
 type localTestContext struct {
-	cfnClient      *cfn.Client
+	cfnClient      *cloudformation.Client
 	atlasClient    *admin.APIClient
 	projectTmplObj testProject
 	resourceCtx    utility.ResourceContext
@@ -47,6 +42,7 @@ type testProject struct {
 const (
 	resourceTypeName  = "MongoDB::Atlas::SearchDeployment"
 	resourceDirectory = "search-deployment"
+	cfnTemplatePath   = "searchdeployment_template.json"
 )
 
 var (
@@ -79,7 +75,6 @@ func setupSuite(t *testing.T) *localTestContext {
 	t.Log("Setting up suite")
 	testCtx := new(localTestContext)
 	testCtx.setUp(t)
-
 	return testCtx
 }
 
@@ -102,8 +97,8 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStack(t, c.cfnClient, stackName)
-	_, resp, _ := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
-	assert.Equal(t, 404, resp.StatusCode)
+	resp, _, _ := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
+	assert.Nil(t, resp)
 }
 
 func cleanupResources(t *testing.T, c *localTestContext) {
@@ -137,21 +132,5 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 }
 
 func newCFNTemplate(tmpl testProject) (string, error) {
-	return executeGoTemplate(tmpl)
-}
-
-func executeGoTemplate(projectTmpl testProject) (string, error) {
-	var cfnGoTemplateStr bytes.Buffer
-	cfnTemplatePath := "searchdeployment_template.json"
-
-	name := path.Base(cfnTemplatePath)
-	cfnGoTemplate, err := template.New(name).ParseFiles(cfnTemplatePath)
-	if err != nil {
-		return "", err
-	}
-	err = cfnGoTemplate.Execute(&cfnGoTemplateStr, projectTmpl)
-	if err != nil {
-		return "", err
-	}
-	return cfnGoTemplateStr.String(), nil
+	return utility.ExecuteGoTemplate(cfnTemplatePath, tmpl)
 }

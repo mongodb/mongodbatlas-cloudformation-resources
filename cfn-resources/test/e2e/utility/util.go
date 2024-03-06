@@ -15,10 +15,13 @@
 package utility
 
 import (
+	"bytes"
 	"crypto/rand"
 	"fmt"
+	"html/template"
 	"math/big"
 	"os/exec"
+	"path"
 	"testing"
 
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
@@ -90,4 +93,18 @@ func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin.APIClie
 	FailNowIfError(t, "Unable to create AWS client, please check AWS config is correctly setup: %v", err)
 
 	return cfnClient, atlasClient
+}
+
+func ExecuteGoTemplate(templatePath string, data any) (string, error) {
+	var cfnGoTemplateStr bytes.Buffer
+	name := path.Base(templatePath)
+	cfnGoTemplate, err := template.New(name).ParseFiles(templatePath)
+	if err != nil {
+		return "", err
+	}
+	err = cfnGoTemplate.Execute(&cfnGoTemplateStr, data)
+	if err != nil {
+		return "", err
+	}
+	return cfnGoTemplateStr.String(), nil
 }

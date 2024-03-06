@@ -14,24 +14,19 @@
 package project_test
 
 import (
-	"bytes"
 	ctx "context"
 	"os"
-	"path"
 	"testing"
-	"text/template"
-
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-
+	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
 type localTestContext struct {
-	cfnClient      *cfn.Client
+	cfnClient      *cloudformation.Client
 	atlasClient    *admin.APIClient
 	projectTmplObj testProject
 	resourceCtx    utility.ResourceContext
@@ -53,6 +48,7 @@ type testProject struct {
 const (
 	resourceTypeName  = "MongoDB::Atlas::Project"
 	resourceDirectory = "project"
+	cfnTemplatePath   = "project_template.json"
 )
 
 var (
@@ -207,21 +203,5 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 }
 
 func newCFNTemplate(tmpl testProject) (string, error) {
-	return executeGoTemplate(tmpl)
-}
-
-func executeGoTemplate(projectTmpl testProject) (string, error) {
-	var cfnGoTemplateStr bytes.Buffer
-	cfnTemplatePath := "project_template.json"
-
-	name := path.Base(cfnTemplatePath)
-	cfnGoTemplate, err := template.New(name).ParseFiles(cfnTemplatePath)
-	if err != nil {
-		return "", err
-	}
-	err = cfnGoTemplate.Execute(&cfnGoTemplateStr, projectTmpl)
-	if err != nil {
-		return "", err
-	}
-	return cfnGoTemplateStr.String(), nil
+	return utility.ExecuteGoTemplate(cfnTemplatePath, tmpl)
 }

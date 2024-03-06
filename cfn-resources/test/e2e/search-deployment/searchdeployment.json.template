@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Search Index on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template defines dedicated search nodes for a specific cluster, this will be billed to your Atlas account.",
   "Mappings": {},
   "Resources": {
     "SearchDeployment": {

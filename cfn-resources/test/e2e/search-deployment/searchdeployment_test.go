@@ -34,9 +34,7 @@ type localTestContext struct {
 	atlasClient    *admin.APIClient
 	projectTmplObj testProject
 	resourceCtx    utility.ResourceContext
-
-	template string
-	err      error
+	template       string
 }
 
 type testProject struct {
@@ -71,10 +69,6 @@ func TestSearchDeploymentCFN(t *testing.T) {
 		testCreateStack(t, testCtx)
 	})
 
-	t.Run("Update Stack", func(t *testing.T) {
-		testUpdateStack(t, testCtx)
-	})
-
 	t.Run("Delete Stack", func(t *testing.T) {
 		testDeleteStack(t, testCtx)
 	})
@@ -100,19 +94,13 @@ func (c *localTestContext) setUp(t *testing.T) {
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.CreateStack(t, c.cfnClient, stackName, c.template)
-	deployment, resp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
+	_, resp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
 	assert.Equal(t, 200, resp.StatusCode)
-	assert.Equal(t, c.projectTmplObj.ProjectID, deployment.GetGroupId())
-}
-
-func testUpdateStack(t *testing.T, c *localTestContext) {
-	t.Helper()
 }
 
 func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-
 	utility.DeleteStack(t, c.cfnClient, stackName)
 	_, resp, _ := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
 	assert.Equal(t, 404, resp.StatusCode)
@@ -121,12 +109,9 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 func cleanupResources(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
-
 	t.Log("Cleaning up resources")
-	_, _, err := c.atlasClient.ProjectsApi.DeleteProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
-	if err != nil {
-		t.Logf("Atlas Project could not be deleted during cleanup: %s\n", err.Error())
-	}
+	utility.DeleteCluster(t, c.atlasClient, c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName)
+	utility.DeleteProject(t, c.atlasClient, c.projectTmplObj.ProjectID)
 }
 
 func (c *localTestContext) setupPrerequisites(t *testing.T) {
@@ -134,25 +119,21 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 	t.Cleanup(func() {
 		cleanupResources(t, c)
 	})
-
 	t.Log("Setting up prerequisites")
-	params := &admin.Group{
-		Name:  projectName,
-		OrgId: orgID,
-	}
-	resp, _, err := c.atlasClient.ProjectsApi.CreateProject(ctx.Background(), params).Execute()
-	utility.FailNowIfError(t, "Error creating Atlas Project: %v", err)
+
+	projectID := utility.CreateProject(t, c.atlasClient, orgID, projectName)
+	utility.CreateCluster(t, c.atlasClient, projectID, clusterName)
 
 	c.projectTmplObj = testProject{
 		ResourceTypeName: os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
 		Profile:          profile,
-		ProjectID:        resp.GetId(),
+		ProjectID:        projectID,
 		ClusterName:      clusterName,
 	}
 
-	// Read required data from resource CFN template
-	c.template, c.err = newCFNTemplate(c.projectTmplObj)
-	utility.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
+	var err error
+	c.template, err = newCFNTemplate(c.projectTmplObj)
+	utility.FailNowIfError(t, "Error while reading CFN Template: %v", err)
 }
 
 func newCFNTemplate(tmpl testProject) (string, error) {

@@ -12,7 +12,7 @@
         "Specs": [
           {
             "InstanceSize": "S20_HIGHCPU_NVME",
-            "NodeCount": "2"
+            "NodeCount": 2
           }
         ]
       }

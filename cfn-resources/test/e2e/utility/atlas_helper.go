@@ -18,6 +18,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"testing"
+	"time"
 
 	"github.com/mongodb-forks/digest"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -63,6 +65,77 @@ func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 	}
 
 	return sdkV2Client, nil
+}
+
+func CreateProject(t *testing.T, atlasClient *admin.APIClient, orgID, projectName string) string {
+	t.Helper()
+	projectParams := &admin.Group{
+		Name:  projectName,
+		OrgId: orgID,
+	}
+	resp, _, err := atlasClient.ProjectsApi.CreateProject(context.Background(), projectParams).Execute()
+	FailNowIfError(t, "Error creating Atlas Project: %v", err)
+	return resp.GetId()
+}
+
+func DeleteProject(t *testing.T, atlasClient *admin.APIClient, projectID string) {
+	t.Helper()
+	_, _, err := atlasClient.ProjectsApi.DeleteProject(context.Background(), projectID).Execute()
+	if err != nil {
+		t.Logf("Atlas Project could not be deleted during cleanup: %s\n", err.Error())
+	}
+}
+
+func CreateCluster(t *testing.T, atlasClient *admin.APIClient, projectID, clusterName string) {
+	t.Helper()
+	clusterParams := &admin.AdvancedClusterDescription{
+		Name:        &clusterName,
+		ClusterType: admin.PtrString("REPLICASET"),
+		ReplicationSpecs: &[]admin.ReplicationSpec{
+			{
+				NumShards: admin.PtrInt(1),
+				RegionConfigs: &[]admin.CloudRegionConfig{
+					{
+						ProviderName: admin.PtrString("AWS"),
+						RegionName:   admin.PtrString("US_EAST_1"),
+						Priority:     admin.PtrInt(7),
+						ElectableSpecs: &admin.HardwareSpec{
+							InstanceSize: admin.PtrString("M10"),
+							NodeCount:    admin.PtrInt(3),
+						},
+					},
+				},
+			},
+		},
+	}
+	_, _, err := atlasClient.ClustersApi.CreateCluster(context.Background(), projectID, clusterParams).Execute()
+	FailNowIfError(t, "Error creating Atlas Cluster: %v", err)
+	waitCluster(t, atlasClient, projectID, clusterName)
+}
+
+func DeleteCluster(t *testing.T, atlasClient *admin.APIClient, projectID, clusterName string) {
+	t.Helper()
+	_, err := atlasClient.ClustersApi.DeleteCluster(context.Background(), projectID, clusterName).Execute()
+	if err != nil {
+		t.Logf("Atlas Cluster could not be deleted during cleanup: %s\n", err.Error())
+		return
+	}
+	waitCluster(t, atlasClient, projectID, clusterName)
+}
+
+func waitCluster(t *testing.T, atlasClient *admin.APIClient, projectID, clusterName string) {
+	t.Helper()
+	for {
+		time.Sleep(time.Second * 30)
+		read, httpResp, err := atlasClient.ClustersApi.GetCluster(context.Background(), projectID, clusterName).Execute()
+		if read.GetStateName() == "IDLE" || httpResp.StatusCode == 404 {
+			return
+		}
+		if err != nil {
+			FailNowIfError(t, "Error watching Atlas Cluster: %v", err)
+			return
+		}
+	}
 }
 
 func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {

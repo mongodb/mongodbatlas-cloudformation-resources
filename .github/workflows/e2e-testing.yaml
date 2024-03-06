@@ -55,7 +55,7 @@ jobs:
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/test/e2e/project
-          go test -v project_test.go
+          go test -timeout 60m -v project_test.go
   search-deployment:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
@@ -85,4 +85,4 @@ jobs:
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
         run: |
           cd cfn-resources/test/e2e/search-deployment
-          go test -v searchdeployment_test.go
+          go test -timeout 60m -v searchdeployment_test.go

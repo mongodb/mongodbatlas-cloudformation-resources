@@ -42,9 +42,13 @@ type testProject struct {
 }
 
 const (
-	resourceTypeName  = "MongoDB::Atlas::SearchDeployment"
-	resourceDirectory = "search-deployment"
-	cfnTemplatePath   = "searchdeployment.json.template"
+	resourceTypeName    = "MongoDB::Atlas::SearchDeployment"
+	resourceDirectory   = "search-deployment"
+	cfnTemplatePath     = "searchdeployment.json.template"
+	instanceSize        = "S20_HIGHCPU_NVME"
+	nodeCount           = 3
+	instanceSizeUpdated = "S30_HIGHCPU_NVME"
+	nodeCountUpdated    = 2
 )
 
 var (
@@ -94,20 +98,18 @@ func (c *localTestContext) setUp(t *testing.T) {
 
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-	c.projectTmplObj.InstanceSize = "S20_HIGHCPU_NVME"
-	c.projectTmplObj.NodeCount = 3
 	utility.CreateStack(t, c.cfnClient, stackName, c.template)
 	resp, httpResp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Search Deployment from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
-	assert.Equal(t, c.projectTmplObj.InstanceSize, resp.GetSpecs()[0].GetInstanceSize())
-	assert.Equal(t, c.projectTmplObj.NodeCount, resp.GetSpecs()[0].GetNodeCount())
+	assert.Equal(t, instanceSize, resp.GetSpecs()[0].GetInstanceSize())
+	assert.Equal(t, nodeCount, resp.GetSpecs()[0].GetNodeCount())
 }
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-	c.projectTmplObj.InstanceSize = "S30_HIGHCPU_NVME"
-	c.projectTmplObj.NodeCount = 2
+	c.projectTmplObj.InstanceSize = instanceSizeUpdated
+	c.projectTmplObj.NodeCount = nodeCountUpdated
 	var err error
 	c.template, err = newCFNTemplate(c.projectTmplObj)
 	utility.FailNowIfError(t, "Error while reading updated CFN Template: %v", err)
@@ -115,8 +117,8 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 	resp, httpResp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Search Deployment from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
-	assert.Equal(t, c.projectTmplObj.InstanceSize, resp.GetSpecs()[0].GetInstanceSize())
-	assert.Equal(t, c.projectTmplObj.NodeCount, resp.GetSpecs()[0].GetNodeCount())
+	assert.Equal(t, instanceSizeUpdated, resp.GetSpecs()[0].GetInstanceSize())
+	assert.Equal(t, nodeCountUpdated, resp.GetSpecs()[0].GetNodeCount())
 }
 
 func testDeleteStack(t *testing.T, c *localTestContext) {
@@ -149,6 +151,8 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 		Profile:          profile,
 		ProjectID:        projectID,
 		ClusterName:      clusterName,
+		InstanceSize:     instanceSize,
+		NodeCount:        nodeCount,
 	}
 
 	var err error

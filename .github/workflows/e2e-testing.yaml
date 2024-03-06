@@ -12,6 +12,7 @@ jobs:
       repository-projects: read
     outputs:
       project: ${{ steps.filter.outputs.project }}
+      search-deployment: ${{ steps.filter.outputs.search-deployment }}
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         if: ${{ github.event_name == 'push' }}
@@ -21,6 +22,10 @@ jobs:
           filters: |
             project:
               - 'cfn-resources/project/**'
+              - 'cfn-resources/test/e2e/project/**'
+            search-deployment:
+              - 'cfn-resources/search-deployment/**'
+              - 'cfn-resources/test/e2e/search-deployment/**'
   project:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project == 'true' }}
@@ -32,8 +37,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - name: Set up Go
-        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -50,5 +54,35 @@ jobs:
           MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
           MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
         run: |
-          pushd cfn-resources/test/e2e/project
-          go test -v project_test.go
+          cd cfn-resources/test/e2e/project
+          go test -timeout 60m -v project_test.go
+  search-deployment:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install cloudformation-cli-go-plugin
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - name: Run E2E test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
+          MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/test/e2e/search-deployment
+          go test -timeout 60m -v searchdeployment_test.go

@@ -15,14 +15,17 @@
 package utility
 
 import (
+	"bytes"
 	"crypto/rand"
 	"fmt"
+	"html/template"
 	"math/big"
 	"os/exec"
+	"path"
 	"testing"
 
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
 func GetRandNum() *big.Int {
@@ -70,9 +73,9 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 	t.Logf("New E2E test resource type %s successfully published to private registry!\n", rctx.ResourceTypeNameForE2e)
 }
 
-func runShScript(t *testing.T, path string) ([]byte, error) {
+func runShScript(t *testing.T, scriptPath string) ([]byte, error) {
 	t.Helper()
-	cmd := exec.Command(path)
+	cmd := exec.Command(scriptPath)
 	resp, err := cmd.CombinedOutput()
 
 	t.Logf("runShScript Output: %v", string(resp))
@@ -90,4 +93,18 @@ func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin.APIClie
 	FailNowIfError(t, "Unable to create AWS client, please check AWS config is correctly setup: %v", err)
 
 	return cfnClient, atlasClient
+}
+
+func ExecuteGoTemplate(templatePath string, data any) (string, error) {
+	var cfnGoTemplateStr bytes.Buffer
+	name := path.Base(templatePath)
+	cfnGoTemplate, err := template.New(name).ParseFiles(templatePath)
+	if err != nil {
+		return "", err
+	}
+	err = cfnGoTemplate.Execute(&cfnGoTemplateStr, data)
+	if err != nil {
+		return "", err
+	}
+	return cfnGoTemplateStr.String(), nil
 }

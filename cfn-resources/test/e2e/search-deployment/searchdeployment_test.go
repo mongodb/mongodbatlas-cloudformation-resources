@@ -25,14 +25,14 @@ import (
 )
 
 type localTestContext struct {
-	cfnClient      *cloudformation.Client
-	atlasClient    *admin.APIClient
-	projectTmplObj testProject
-	resourceCtx    utility.ResourceContext
-	template       string
+	cfnClient    *cloudformation.Client
+	atlasClient  *admin.APIClient
+	templateData testData
+	resourceCtx  utility.ResourceContext
+	template     string
 }
 
-type testProject struct {
+type testData struct {
 	ResourceTypeName string
 	Profile          string
 	ProjectID        string
@@ -99,7 +99,7 @@ func (c *localTestContext) setUp(t *testing.T) {
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.CreateStack(t, c.cfnClient, stackName, c.template)
-	resp, httpResp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
+	resp, httpResp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Search Deployment from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
 	assert.Equal(t, instanceSize, resp.GetSpecs()[0].GetInstanceSize())
@@ -108,13 +108,13 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-	c.projectTmplObj.InstanceSize = instanceSizeUpdated
-	c.projectTmplObj.NodeCount = nodeCountUpdated
+	c.templateData.InstanceSize = instanceSizeUpdated
+	c.templateData.NodeCount = nodeCountUpdated
 	var err error
-	c.template, err = newCFNTemplate(c.projectTmplObj)
+	c.template, err = newCFNTemplate(c.templateData)
 	utility.FailNowIfError(t, "Error while reading updated CFN Template: %v", err)
 	utility.UpdateStack(t, c.cfnClient, stackName, c.template)
-	resp, httpResp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
+	resp, httpResp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Search Deployment from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
 	assert.Equal(t, instanceSizeUpdated, resp.GetSpecs()[0].GetInstanceSize())
@@ -124,7 +124,7 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStack(t, c.cfnClient, stackName)
-	resp, _, _ := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
+	resp, _, _ := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
 	assert.Nil(t, resp)
 }
 
@@ -132,8 +132,8 @@ func cleanupResources(t *testing.T, c *localTestContext) {
 	t.Helper()
 	utility.DeleteStackForCleanup(t, c.cfnClient, stackName)
 	t.Log("Cleaning up resources")
-	utility.DeleteCluster(t, c.atlasClient, c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName)
-	utility.DeleteProject(t, c.atlasClient, c.projectTmplObj.ProjectID)
+	utility.DeleteCluster(t, c.atlasClient, c.templateData.ProjectID, c.templateData.ClusterName)
+	utility.DeleteProject(t, c.atlasClient, c.templateData.ProjectID)
 }
 
 func (c *localTestContext) setupPrerequisites(t *testing.T) {
@@ -146,7 +146,7 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 	projectID := utility.CreateProject(t, c.atlasClient, orgID, projectName)
 	utility.CreateCluster(t, c.atlasClient, projectID, clusterName)
 
-	c.projectTmplObj = testProject{
+	c.templateData = testData{
 		ResourceTypeName: os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
 		Profile:          profile,
 		ProjectID:        projectID,
@@ -156,10 +156,10 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 	}
 
 	var err error
-	c.template, err = newCFNTemplate(c.projectTmplObj)
+	c.template, err = newCFNTemplate(c.templateData)
 	utility.FailNowIfError(t, "Error while reading CFN Template: %v", err)
 }
 
-func newCFNTemplate(tmpl testProject) (string, error) {
-	return utility.ExecuteGoTemplate(cfnTemplatePath, tmpl)
+func newCFNTemplate(data testData) (string, error) {
+	return utility.ExecuteGoTemplate(cfnTemplatePath, data)
 }

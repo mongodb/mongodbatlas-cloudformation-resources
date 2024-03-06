@@ -1,6 +1,6 @@
 # Using autogen 
 
-## Autogenerating CFN resource schema and generic GO code for a new resource:
+## Autogenerating CFN resource schema and generic Go code for a new resource:
 
 ### Step 1:
 

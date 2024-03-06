@@ -24,7 +24,7 @@ done
 echo "==> Linting GitHub Actions..."
 STAGED_ACTION_FILES=$(git diff --name-only | grep -E "\.github/workflows/.*(\.yaml|\.yml)$")
 for FILE in ${STAGED_ACTION_FILES}; do
-	actionlint "${FILE}" -color -verbose
+	actionlint -color -verbose "${FILE}"
 done
 
 echo "==> Done..."

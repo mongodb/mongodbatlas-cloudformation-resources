@@ -11,8 +11,8 @@
         "ClusterName": "{{ .ClusterName }}",
         "Specs": [
           {
-            "InstanceSize": "S20_HIGHCPU_NVME",
-            "NodeCount": 2
+            "InstanceSize": "{{ .InstanceSize }}",
+            "NodeCount": {{ .NodeCount }}
           }
         ]
       }

@@ -48,7 +48,7 @@ type testProject struct {
 const (
 	resourceTypeName  = "MongoDB::Atlas::Project"
 	resourceDirectory = "project"
-	cfnTemplatePath   = "project_template.json"
+	cfnTemplatePath   = "project.json.template"
 )
 
 var (

@@ -37,12 +37,14 @@ type testProject struct {
 	Profile          string
 	ProjectID        string
 	ClusterName      string
+	InstanceSize     string
+	NodeCount        int
 }
 
 const (
 	resourceTypeName  = "MongoDB::Atlas::SearchDeployment"
 	resourceDirectory = "search-deployment"
-	cfnTemplatePath   = "searchdeployment_template.json"
+	cfnTemplatePath   = "searchdeployment.json.template"
 )
 
 var (
@@ -88,6 +90,7 @@ func (c *localTestContext) setUp(t *testing.T) {
 
 func testCreateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
+	c.projectTmplObj
 	utility.CreateStack(t, c.cfnClient, stackName, c.template)
 	_, resp, err := c.atlasClient.AtlasSearchApi.GetAtlasSearchDeployment(ctx.Background(), c.projectTmplObj.ProjectID, c.projectTmplObj.ClusterName).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)

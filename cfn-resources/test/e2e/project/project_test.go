@@ -1,4 +1,4 @@
-// Copyright 2023 MongoDB Inc
+// Copyright 2024 MongoDB Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -145,7 +145,7 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 	a.Equal(resp.StatusCode, 404)
 }
 
-func getProjectIDFromStack(output *cfn.DescribeStacksOutput) string {
+func getProjectIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
 	for i := 0; i < len(stackOutputs); i++ {
 		if *aws.String(*stackOutputs[i].OutputKey) == "ProjectId" {

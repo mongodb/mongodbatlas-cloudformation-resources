@@ -73,9 +73,9 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 	t.Logf("New E2E test resource type %s successfully published to private registry!\n", rctx.ResourceTypeNameForE2e)
 }
 
-func runShScript(t *testing.T, path string) ([]byte, error) {
+func runShScript(t *testing.T, scriptPath string) ([]byte, error) {
 	t.Helper()
-	cmd := exec.Command(path)
+	cmd := exec.Command(scriptPath)
 	resp, err := cmd.CombinedOutput()
 
 	t.Logf("runShScript Output: %v", string(resp))

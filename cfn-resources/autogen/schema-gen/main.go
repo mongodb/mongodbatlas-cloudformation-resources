@@ -241,31 +241,6 @@ func main() {
 	<-reqDone
 }
 
-// func readArgs() (compare bool, err error) {
-// 	if len(os.Args) > 1 {
-// 		arg := os.Args[1]
-// 		if arg == "compare" {
-// 			fmt.Println("comparing schemas..")
-// 			compare = true
-// 		}
-// 		if len(os.Args) > 2 {
-// 			diffFile = os.Args[2]
-// 		}
-// 		dir, _ := getCurrentDir()
-// 		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
-// 		if err != nil {
-// 			fmt.Println(err)
-// 			return compare, err
-// 		}
-// 		if diff == "" {
-// 			err = errors.New("no difference found in OpenAPI Spec")
-// 			return compare, err
-// 		}
-// 		return compare, err
-// 	}
-// 	return false, nil
-// }
-
 func sortProperties[V any](properties map[string]V) (props map[string]interface{}) {
 	var propertyNames []string
 	for name := range properties {

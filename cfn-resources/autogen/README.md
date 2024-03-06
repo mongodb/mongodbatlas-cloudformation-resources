@@ -66,7 +66,3 @@ One language plugin found, defaulting to go
 > Enter the GO Import path
 >> github.com/mongodb/mongodbatlas-cloudformation-resources/stream-connection
 ```
-
-
-## Getting the latest Atlas OpenAPI spec:
-- 

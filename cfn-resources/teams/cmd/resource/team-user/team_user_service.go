@@ -22,6 +22,7 @@ import (
 	atlasv2 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
+// Service interface was defined over mocking direct SDK as specific mapping of input parameters to responses is needed
 type TeamUsersAPI interface {
 	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
 	AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)

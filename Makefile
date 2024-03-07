@@ -7,6 +7,8 @@ goarch=amd64
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
+MOCKERY_VERSION=v2.38.0
+
 .PHONY: submit
 submit:
 	(cd cfn-resources && ./cfn-submit-helper.sh $(filter-out $@,$(MAKECMDGOALS)))
@@ -29,6 +31,7 @@ tools:  ## Install dev tools
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install go.uber.org/mock/mockgen@latest
+	go install github.com/vektra/mockery/v2@$(MOCKERY_VERSION)
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)
 
 .PHONY: link-git-hooks
@@ -50,8 +53,8 @@ update-atlas-sdk: ## Update the atlas-sdk dependency
 	(cd cfn-resources && ./scripts/update-sdk.sh)
 
 .PHONY: generate-mocks
-generate-mocks:
-	(cd cfn-resources && go generate ./...)
+generate-mocks: # uses mockery to generate mocks in folder `cfn-resources/testutil/mocksvc`
+	(cd cfn-resources && mockery)
 
 # resulting file placed in cfn-resources/resource-versions.md
 # aws regions must defined by using AWS_REGIONS env variable, example: `export AWS_REGIONS=af-south-1,ap-east-1`

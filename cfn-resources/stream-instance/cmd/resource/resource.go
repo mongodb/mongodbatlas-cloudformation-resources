@@ -52,7 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -83,7 +83,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -112,7 +112,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -146,7 +146,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)
@@ -171,7 +171,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *errEvent, nil
 	}
 
-	client, handlerError := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, handlerError := util.NewAtlasClient(&req, currentModel.Profile)
 	if handlerError != nil {
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", handlerError)
 		return *handlerError, errors.New(handlerError.Message)

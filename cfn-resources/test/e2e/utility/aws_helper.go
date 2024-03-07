@@ -23,6 +23,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
 const stackStatusWait = 2 * time.Second
@@ -79,7 +80,7 @@ func waitForStackCreateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		case "CREATE_COMPLETE":
 			return resp, nil
 		case "CREATE_FAILED", "ROLLBACK_COMPLETE":
-			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
+			return nil, fmt.Errorf("stack status: %s : %s", statusStr, util.SafeString(resp.Stacks[0].StackStatusReason))
 		}
 		time.Sleep(stackStatusWait)
 	}
@@ -125,7 +126,7 @@ func waitForStackDeleteComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		case "DELETE_COMPLETE":
 			return resp, nil
 		case "DELETE_FAILED", "ROLLBACK_COMPLETE":
-			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
+			return nil, fmt.Errorf("stack status: %s : %s", statusStr, util.SafeString(resp.Stacks[0].StackStatusReason))
 		}
 		time.Sleep(stackStatusWait)
 	}
@@ -170,7 +171,7 @@ func waitForStackUpdateComplete(svc *cfn.Client, stackID string) (*cfn.DescribeS
 		case "UPDATE_COMPLETE":
 			return resp, nil
 		case "UPDATE_FAILED", "UPDATE_ROLLBACK_COMPLETE", "UPDATE_ROLLBACK_FAILED", "ROLLBACK_COMPLETE":
-			return nil, fmt.Errorf("stack status: %s : %s", statusStr, *resp.Stacks[0].StackStatusReason)
+			return nil, fmt.Errorf("stack status: %s : %s", statusStr, util.SafeString(resp.Stacks[0].StackStatusReason))
 		}
 		time.Sleep(stackStatusWait)
 	}

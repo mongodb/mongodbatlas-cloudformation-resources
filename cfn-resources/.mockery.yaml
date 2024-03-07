@@ -1,0 +1,16 @@
+with-expecter: true
+disable-version-string: true
+dir: testutil/mocksvc
+outpkg: mocksvc
+filename: "{{ .InterfaceName | snakecase }}.go"
+mockname: "{{.InterfaceName}}"
+
+packages:
+  go.mongodb.org/atlas-sdk/v20231115007/admin:
+    interfaces:
+      AtlasSearchApi:
+  
+  github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user:
+    interfaces:
+      TeamUsersAPI:
+  

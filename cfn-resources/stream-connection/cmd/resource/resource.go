@@ -49,7 +49,7 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 		return nil, errEvent
 	}
 
-	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return nil, peErr
 	}

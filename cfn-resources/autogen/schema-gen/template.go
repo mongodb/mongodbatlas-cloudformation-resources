@@ -104,5 +104,6 @@ type OpenAPIMapping struct {
 	Resources []struct {
 		TypeName     string   `json:"typeName"`
 		OpenAPIPaths []string `json:"openApiPath"`
+		ContentType  string   `json:"contentType"`
 	} `json:"resources"`
 }

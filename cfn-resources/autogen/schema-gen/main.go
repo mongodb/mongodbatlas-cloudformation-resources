@@ -28,37 +28,27 @@ import (
 	"unicode"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/ghodss/yaml"
 	"github.com/tidwall/pretty"
 )
 
 // https://github.com/aws-cloudformation/cloudformation-cli/blob/master/src/rpdk/core/data/schema/provider.definition.schema.v1.json
 
 const (
-	url                = "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
+	url                = "https://github.com/mongodb/mongodbatlas-cloudformation-resources"
 	MongoDBAtlasPrefix = "MongoDB::Atlas::"
 	Unique             = "Unique"
-	OpenAPISpecPath    = "https://cloud-dev.mongodb.com/openapi.json"
+	OpenAPISpecPath    = "https://raw.githubusercontent.com/mongodb/atlas-sdk-go/main/openapi/atlas-api-transformed.yaml"
 	Dir                = "/schema-gen" // For debugging use 	"/autogen/schema-gen"
 	SchemasDir         = "schemas"
 	CurrentDir         = "schema-gen"
-	LatestSwaggerFile  = "swagger.latest.json"
 )
 
 var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
-var diffFile = "diff"
-
 func main() {
-	/*Set the compare variable to TRUE to get the latest openAPI spec*/
-	compare := false
-
-	compare, err := readArgs()
-	if err != nil {
-		return
-	}
-
-	mappingFile, openAPIDoc, err := readConfig(compare)
+	mappingFile, openAPIDoc, err := readConfig()
 	if err != nil {
 		fmt.Printf("read config err:%v", err)
 		os.Exit(1)
@@ -83,8 +73,8 @@ func main() {
 
 	done := make(chan bool)
 	reqDone := make(chan bool)
-	go generateSchemas(cfnSchema, done, compare)
-	go generateReqFields(reqFieldsChan, reqDone, compare)
+	go generateSchemas(cfnSchema, done)
+	go generateReqFields(reqFieldsChan, reqDone)
 
 	fmt.Println("Generating schema")
 	for _, res := range data.Resources {
@@ -92,8 +82,7 @@ func main() {
 		var ids, readOnly, idsDef, readOnlyDef []string
 		var cfn CfnSchema
 		key := "params"
-		var typeName string
-		var description string
+		var typeName, apiContentType, description string
 		requiredParams := RequiredParams{}
 		var createReqParams []string
 
@@ -101,6 +90,7 @@ func main() {
 		allMethodProps := make(map[string]map[string]Property, 0)
 		bodySchema := make(map[string]map[string]Property, 0)
 		typeName = capitalize(res.TypeName)
+		apiContentType = res.ContentType
 
 		for _, path := range res.OpenAPIPaths {
 			pathItem := openAPIDoc.Paths.Find(path)
@@ -110,10 +100,10 @@ func main() {
 
 			if method := pathItem.Post; method != nil {
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc, apiContentType)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc, apiContentType)
 				// Read from query params
 				queryParams := readQueryParams(method)
 				for _, reqSchemaKey := range reqSchemaKeys {
@@ -142,11 +132,11 @@ func main() {
 					continue
 				}
 				// Read from Req params
-				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc)
+				reqSchemaKeys, reqSchema, reqDefinitions, reqParams := readRequestBody(method, openAPIDoc, apiContentType)
 				createReqParams = reqParams
 
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc, apiContentType)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -174,10 +164,10 @@ func main() {
 				}
 
 				// Read from Req params
-				_, _, _, reqParams := readRequestBody(method, openAPIDoc)
+				_, _, _, reqParams := readRequestBody(method, openAPIDoc, apiContentType)
 				createReqParams = reqParams
 				// Read from Response params
-				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc)
+				resSchemaKey, resSchema, resDefinitions := readResponseBody(method, openAPIDoc, apiContentType)
 
 				// Read from query params
 				queryParams := readQueryParams(method)
@@ -251,31 +241,6 @@ func main() {
 	<-reqDone
 }
 
-func readArgs() (compare bool, err error) {
-	if len(os.Args) > 1 {
-		arg := os.Args[1]
-		if arg == "compare" {
-			fmt.Println("comparing schemas..")
-			compare = true
-		}
-		if len(os.Args) > 2 {
-			diffFile = os.Args[2]
-		}
-		dir, _ := getCurrentDir()
-		diff, err := CompareJSONFiles("openAPI", fmt.Sprintf("%s/%s", dir, "swagger.json"), fmt.Sprintf("%s/%s", dir, LatestSwaggerFile))
-		if err != nil {
-			fmt.Println(err)
-			return compare, err
-		}
-		if diff == "" {
-			err = errors.New("no difference found in OpenAPI Spec")
-			return compare, err
-		}
-		return compare, err
-	}
-	return false, nil
-}
-
 func sortProperties[V any](properties map[string]V) (props map[string]interface{}) {
 	var propertyNames []string
 	for name := range properties {
@@ -327,7 +292,7 @@ func getCurrentDir() (path string, err error) {
 	return dir, err
 }
 
-func readConfig(compare bool) ([]byte, *openapi3.T, error) {
+func readConfig() ([]byte, *openapi3.T, error) {
 	dir, err := getCurrentDir()
 	if err != nil {
 		return nil, nil, err
@@ -338,15 +303,23 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 		return nil, nil, err
 	}
 
-	openAPISpecFile := fmt.Sprintf("%s/swagger.json", dir)
-	// For comparison download the latest openAPIspec file
-	if compare {
-		openAPISpecFile = fmt.Sprintf("%s/%s", dir, LatestSwaggerFile)
-		if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
-			return []byte{}, nil, err
-		}
+	openAPISpecFile := fmt.Sprintf("%s/swagger.yaml", dir)
+	if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
+		return []byte{}, nil, err
 	}
-	doc, err := openapi3.NewLoader().LoadFromFile(openAPISpecFile)
+
+	openAPISpecFileYaml, err := os.ReadFile(openAPISpecFile)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	specYaml, err := yaml.YAMLToJSON(openAPISpecFileYaml)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+
+		return nil, nil, err
+	}
+	doc, err := openapi3.NewLoader().LoadFromData(specYaml)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -359,11 +332,12 @@ func readConfig(compare bool) ([]byte, *openapi3.T, error) {
 	return file, doc, err
 }
 
-func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []string, reqSchema map[string]map[string]Property, definitions map[string]Definitions, requiredParams []string) {
+func readRequestBody(method *openapi3.Operation,
+	doc *openapi3.T, reqContentType string) (schemaKeys []string, reqSchema map[string]map[string]Property, definitions map[string]Definitions, requiredParams []string) {
 	reqBody := method.RequestBody
-	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content["application/json"] != nil &&
-		reqBody.Value.Content["application/json"].Schema != nil {
-		reqSchemaKey := filepath.Base(reqBody.Value.Content["application/json"].Schema.Ref)
+	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content[reqContentType] != nil &&
+		reqBody.Value.Content[reqContentType].Schema != nil {
+		reqSchemaKey := filepath.Base(reqBody.Value.Content[reqContentType].Schema.Ref)
 		schemaKeys = append(schemaKeys, capitalize(reqSchemaKey))
 		// Read from Request body
 		if doc.Components.Schemas[filepath.Base(reqSchemaKey)] != nil {
@@ -394,20 +368,22 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 	return schemaKeys, reqSchema, definitions, requiredParams
 }
 
-func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
-	if methodResponseHasSchema(method, "200") {
-		return readResponseBodyWithResponseCode(openAPIDoc, method, "200")
+func readResponseBody(method *openapi3.Operation, openAPIDoc *openapi3.T, respContentType string) (schemaKey string, resSchema map[string]map[string]Property, definitions map[string]Definitions) {
+	if methodResponseHasSchema(method, "200", respContentType) {
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "200", respContentType)
 	}
 
-	if methodResponseHasSchema(method, "201") {
-		return readResponseBodyWithResponseCode(openAPIDoc, method, "201")
+	if methodResponseHasSchema(method, "201", respContentType) {
+		return readResponseBodyWithResponseCode(openAPIDoc, method, "201", respContentType)
 	}
 
 	return "", nil, nil
 }
 
-func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation, responseCode string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
-	key = filepath.Base(method.Responses[responseCode].Value.Content["application/json"].Schema.Ref)
+func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.Operation,
+	responseCode, respContentType string) (key string, schema map[string]map[string]Property, def map[string]Definitions) {
+	tmp := method.Responses.Map()
+	key = filepath.Base(tmp[responseCode].Value.Content[respContentType].Schema.Ref)
 	// Read from Request body
 	if openAPIDoc.Components.Schemas[filepath.Base(key)] != nil {
 		value := *openAPIDoc.Components.Schemas[filepath.Base(key)]
@@ -418,9 +394,10 @@ func readResponseBodyWithResponseCode(openAPIDoc *openapi3.T, method *openapi3.O
 	return capitalize(key), nil, nil
 }
 
-func methodResponseHasSchema(method *openapi3.Operation, responseCode string) bool {
-	return method.Responses[responseCode] != nil && method.Responses[responseCode].Value != nil && method.Responses[responseCode].Value.Content["application/json"] != nil &&
-		method.Responses[responseCode].Value.Content["application/json"].Schema != nil
+func methodResponseHasSchema(method *openapi3.Operation, responseCode, respContentType string) bool {
+	tmp := method.Responses.Map()
+	return tmp[responseCode] != nil && tmp[responseCode].Value != nil && tmp[responseCode].Value.Content[respContentType] != nil &&
+		tmp[responseCode].Value.Content[respContentType].Schema != nil
 }
 func readQueryParams(method *openapi3.Operation) map[string]Property {
 	queryParams := map[string]Property{}
@@ -488,7 +465,7 @@ func inputOnlyProperties(bodyParams map[string]Property) []string {
 	return inputParams
 }
 
-func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
+func generateSchemas(chn chan CfnSchema, done chan bool) {
 	for cfn := range chn {
 		rankingsJSON, err := json.Marshal(cfn)
 		if err != nil {
@@ -512,42 +489,7 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 		}
 
 		schemaFilePath := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, strings.ToLower(cfn.FileName))
-		latestSchemaFilePath := ""
 
-		// create required schema file
-		if compare {
-			latestSchemaDir := strings.Replace(dir, CurrentDir, SchemasDir, 1)
-			if _, err := os.Stat(latestSchemaDir); errors.Is(err, os.ErrNotExist) {
-				err := os.Mkdir(latestSchemaDir, os.ModePerm)
-				if err != nil {
-					print(err)
-					done <- true
-				}
-			}
-			latestSchemaFilePath = fmt.Sprintf("%s/mongodb-atlas-%s-latest.json", latestSchemaDir, strings.ToLower(cfn.FileName))
-
-			// Write schema into the latest file
-			err = os.WriteFile(latestSchemaFilePath, result, 0600)
-			if err != nil {
-				print(err)
-				done <- true
-				return
-			}
-		}
-
-		if compare && latestSchemaFilePath != "" {
-			_, err = CompareJSONFiles(cfn.FileName, schemaFilePath, latestSchemaFilePath)
-			if err != nil {
-				print(err)
-			}
-			// Delete the latest file created for comparison
-			err = os.RemoveAll(latestSchemaFilePath)
-			if err != nil {
-				print(err)
-			}
-		}
-
-		// Update with the schema file with the latest schema
 		err = os.WriteFile(schemaFilePath, result, 0600)
 		if err != nil {
 			print(err)
@@ -558,7 +500,7 @@ func generateSchemas(chn chan CfnSchema, done chan bool, compare bool) {
 	done <- true
 }
 
-func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare bool) {
+func generateReqFields(reqChan chan RequiredParams, reqDone chan bool) {
 	for reqFlds := range reqChan {
 		fieldsJSON, err := json.Marshal(reqFlds)
 		if err != nil {
@@ -575,9 +517,6 @@ func generateReqFields(reqChan chan RequiredParams, reqDone chan bool, compare b
 		}
 
 		fileName := fmt.Sprintf("%s/mongodb-atlas-%s-req.json", SchemasDir, strings.ToLower(reqFlds.FileName))
-		if compare {
-			fileName = fmt.Sprintf("%s/mongodb-atlas-%s-req-latest.json", SchemasDir, strings.ToLower(reqFlds.FileName))
-		}
 		err = os.WriteFile(fileName, result, 0600)
 		if err != nil {
 			print(err)

@@ -17,7 +17,6 @@ package util
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -27,6 +26,11 @@ import (
 	"strings"
 	"time"
 
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+	realmAuth "go.mongodb.org/realm/auth"
+	"go.mongodb.org/realm/realm"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
 	"github.com/aws/aws-sdk-go/aws"
@@ -34,14 +38,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb-forks/digest"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/version"
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
-	"go.mongodb.org/atlas-sdk/v20231115007/admin"
-	"go.mongodb.org/atlas/mongodbatlas"
-	realmAuth "go.mongodb.org/realm/auth"
-	"go.mongodb.org/realm/realm"
 )
 
 const (
@@ -51,7 +51,6 @@ const (
 )
 
 type MongoDBClient struct {
-	Atlas            *mongodbatlas.Client
 	Atlas20231115002 *admin20231115002.APIClient
 	AtlasSDK         *admin.APIClient
 	Config           *Config
@@ -78,10 +77,9 @@ type AssumeRole struct {
 }
 
 var (
-	toolName           = cfn
-	defaultLogLevel    = "warning"
-	userAgent          = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
-	terraformUserAgent = "terraform-provider-mongodbatlas"
+	toolName        = cfn
+	defaultLogLevel = "warning"
+	userAgent       = fmt.Sprintf("%s/%s (%s;%s)", toolName, version.Version, runtime.GOOS, runtime.GOARCH)
 )
 
 // EnsureAtlasRegion This takes either "us-east-1" or "US_EAST_1"
@@ -106,7 +104,7 @@ func GetRealmClient(ctx context.Context, req handler.Request, profileName *strin
 		return nil, err
 	}
 
-	optsRealm := []realm.ClientOpt{realm.SetUserAgent(terraformUserAgent)}
+	optsRealm := []realm.ClientOpt{realm.SetUserAgent(userAgent)}
 	authConfig := realmAuth.NewConfig(nil)
 	token, err := authConfig.NewTokenFromCredentials(ctx, p.PublicKey, p.PrivateKey)
 	if err != nil {
@@ -122,117 +120,17 @@ func GetRealmClient(ctx context.Context, req handler.Request, profileName *strin
 	return realmClient, nil
 }
 
-// createMongoDBClient creates a new Client using apikeys
-func createMongoDBClient(publicKey, privateKey string) (*mongodbatlas.Client, error) {
-	// setup a transport to handle digest
-	log.Printf("CreateMongoDBClient--- publicKey:%s", publicKey)
-	transport := digest.NewTransport(publicKey, privateKey)
-
-	// initialize the client
-	client, err := transport.Client()
-	if err != nil {
-		return nil, err
-	}
-
-	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
-	if baseURL := os.Getenv("MONGODB_ATLAS_BASE_URL"); baseURL != "" {
-		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
-	}
-
-	return mongodbatlas.New(client, opts...)
-}
-
-func NewMongoDBClient(req handler.Request, profileName *string) (*mongodbatlas.Client, *handler.ProgressEvent) {
-	p, err := profile.NewProfile(&req, profileName, true)
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
-	}
-
-	client, err := newHTTPClient(p)
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("Error creating mongoDB client : %s", err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	opts := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
-	if baseURL := p.NewBaseURL(); baseURL != "" {
-		opts = append(opts, mongodbatlas.SetBaseURL(baseURL))
-	}
-
-	mongodbClient, err := mongodbatlas.New(client, opts...)
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	return mongodbClient, nil
-}
-
-// NewAtlasClient func for creating atlas-go-sdk and mongodb-atlas-go client
 func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {
-	prof, err := profile.NewProfile(req, profileName, true)
-
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
-	}
-
-	// setup a transport to handle digest
-	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
-
-	// initialize the client
-	client, err := transport.Client()
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	optsAtlas := []mongodbatlas.ClientOpt{mongodbatlas.SetUserAgent(userAgent)}
-	if prof.BaseURL != "" {
-		optsAtlas = append(optsAtlas, mongodbatlas.SetBaseURL(prof.BaseURL))
-	}
-
-	// Initialize the MongoDB Atlas API Client.
-	atlasClient, err := mongodbatlas.New(client, optsAtlas...)
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	c := Config{BaseURL: prof.BaseURL}
-	// New SDK Client
-	sdkV2Client, err := c.NewSDKV2Client(client)
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	clients := &MongoDBClient{
-		Atlas:            atlasClient,
-		Atlas20231115002: sdkV2Client,
-		Config:           &c,
-	}
-
-	return clients, nil
+	return newAtlasV2Client(req, profileName, true)
 }
 
-// NewAtlasV2OnlyClient func for creating atlas-go-sdk and mongodb-atlas-go client
-func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileNamePrefixRequired bool) (*MongoDBClient, *handler.ProgressEvent) {
+// NewAtlasClientRemovingProfilePrefix creates a client using the provided profileName but without adding the common prefix (`cfn/atlas/profile`)
+// Only used for specific use case in organization resource.
+func NewAtlasClientRemovingProfilePrefix(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {
+	return newAtlasV2Client(req, profileName, false)
+}
+
+func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePrefixRequired bool) (*MongoDBClient, *handler.ProgressEvent) {
 	prof, err := profile.NewProfile(req, profileName, profileNamePrefixRequired)
 
 	if err != nil {
@@ -255,8 +153,18 @@ func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileName
 	}
 
 	c := Config{BaseURL: prof.BaseURL}
-	// New SDK Client
+
+	// new V2 version 20231115002 instance
 	sdkV2Client, err := c.NewSDKV2Client(client)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	// latest V2 instance
+	sdkV2LatestClient, err := c.NewSDKV2LatestClient(client)
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -266,6 +174,7 @@ func NewAtlasV2OnlyClient(req *handler.Request, profileName *string, profileName
 
 	clients := &MongoDBClient{
 		Atlas20231115002: sdkV2Client,
+		AtlasSDK:         sdkV2LatestClient,
 		Config:           &c,
 	}
 
@@ -279,54 +188,12 @@ func (c *Config) NewSDKV2Client(client *http.Client) (*admin20231115002.APIClien
 		admin20231115002.UseBaseURL(c.BaseURL),
 		admin20231115002.UseDebug(false)}
 
-	// Initialize the MongoDB Versioned Atlas Client.
 	sdkV2, err := admin20231115002.NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	return sdkV2, nil
-}
-
-// NewAtlasV2OnlyClientLatest creates atlas-go-sdk client with the most recent version of Atlas SDK
-func NewAtlasV2OnlyClientLatest(req *handler.Request, profileName *string, profileNamePrefixRequired bool) (*MongoDBClient, *handler.ProgressEvent) {
-	prof, err := profile.NewProfile(req, profileName, profileNamePrefixRequired)
-
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}
-	}
-
-	// setup a transport to handle digest
-	transport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
-
-	// initialize the client
-	client, err := transport.Client()
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	c := Config{BaseURL: prof.BaseURL}
-	// New SDK Client
-	sdkV2Client, err := c.NewSDKV2LatestClient(client)
-	if err != nil {
-		return nil, &handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
-	}
-
-	clients := &MongoDBClient{
-		AtlasSDK: sdkV2Client,
-		Config:   &c,
-	}
-
-	return clients, nil
 }
 
 func (c *Config) NewSDKV2LatestClient(client *http.Client) (*admin.APIClient, error) {
@@ -343,15 +210,6 @@ func (c *Config) NewSDKV2LatestClient(client *http.Client) (*admin.APIClient, er
 	}
 
 	return sdkV2, nil
-}
-
-func newHTTPClient(p *profile.Profile) (*http.Client, error) {
-	if p.AreKeysAvailable() {
-		return nil, errors.New("PublicKey and PrivateKey cannot be empty")
-	}
-
-	t := digest.NewTransport(p.NewPublicKey(), p.NewPrivateKey())
-	return t.Client()
 }
 
 // defaultLogLevel can be set during compile time with an ld flag to enable

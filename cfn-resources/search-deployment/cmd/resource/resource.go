@@ -52,7 +52,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, progressErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if progressErr != nil {
 		return *progressErr, nil
 	}
@@ -83,7 +83,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, progressErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if progressErr != nil {
 		return *progressErr, nil
 	}
@@ -110,7 +110,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, progressErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if progressErr != nil {
 		return *progressErr, nil
 	}
@@ -141,7 +141,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, progressErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, progressErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if progressErr != nil {
 		return *progressErr, nil
 	}

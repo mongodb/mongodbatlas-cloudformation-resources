@@ -1,0 +1,12 @@
+{
+  "Profile": "default",
+  "ProjectId": "",
+  "InstanceName": "",
+  "ClusterName": "",
+  "ConnectionName": "ConnectionNameCluster",
+  "Type": "Cluster",
+  "DbRoleToExecute": {
+    "Role": "readWrite",
+    "Type": "BUILT_IN"
+  }
+}

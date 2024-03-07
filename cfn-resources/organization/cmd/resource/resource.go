@@ -72,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	client, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.Profile, true)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -117,7 +117,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, constants.CREATE, err)
 	}
 
-	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasClientRemovingProfilePrefix(&req, currentModel.AwsSecretName)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -140,7 +140,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasClientRemovingProfilePrefix(&req, currentModel.AwsSecretName)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -163,7 +163,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasClientRemovingProfilePrefix(&req, currentModel.AwsSecretName)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -193,7 +193,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	newOrgClient, peErr := util.NewAtlasV2OnlyClientLatest(&req, currentModel.AwsSecretName, false)
+	newOrgClient, peErr := util.NewAtlasClientRemovingProfilePrefix(&req, currentModel.AwsSecretName)
 	if peErr != nil {
 		return *peErr, nil
 	}

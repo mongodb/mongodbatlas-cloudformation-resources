@@ -1,0 +1,12 @@
+{
+  "desiredResourceState": {
+    "InstanceName": "stream",
+    "ProjectId": "",
+    "DataProcessRegion": {
+      "CloudProvider": "AWS",
+      "Region": "VIRGINIA_USA"
+    },
+    "Profile": "default"
+  },
+  "previousResourceState": {}
+}

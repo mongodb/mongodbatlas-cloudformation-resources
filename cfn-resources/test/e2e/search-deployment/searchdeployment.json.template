@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template defines dedicated search nodes for a specific cluster, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "SearchDeployment": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Profile": "{{ .Profile }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "ClusterName": "{{ .ClusterName }}",
+        "Specs": [
+          {
+            "InstanceSize": "{{ .InstanceSize }}",
+            "NodeCount": {{ .NodeCount }}
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "SearchDeploymentId": {
+      "Description": "Search Deployment ID",
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchDeployment",
+          "Id"
+        ]
+      }
+    },
+    "SearchDeploymentStateName": {
+      "Description": "Search Deployment State",
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchDeployment",
+          "StateName"
+        ]
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a Project on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Description": "This template defines a project in Atlas.",
   "Mappings": {},
   "Resources": {
     "Project": {

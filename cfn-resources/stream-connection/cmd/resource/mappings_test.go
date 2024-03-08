@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"testing"
@@ -20,6 +20,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 
 	"github.com/aws/smithy-go/ptr"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-connection/cmd/resource"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +28,7 @@ func TestNewModelDBRoleToExecute(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    *admin.DBRoleToExecute
-		expected *DBRoleToExecute
+		expected *resource.DBRoleToExecute
 	}{
 		{
 			name:     "Nil Input",
@@ -40,7 +41,7 @@ func TestNewModelDBRoleToExecute(t *testing.T) {
 				Role: ptr.String("readWrite"),
 				Type: ptr.String("BUILT_IN"),
 			},
-			expected: &DBRoleToExecute{
+			expected: &resource.DBRoleToExecute{
 				Role: ptr.String("readWrite"),
 				Type: ptr.String("BUILT_IN"),
 			},
@@ -49,7 +50,7 @@ func TestNewModelDBRoleToExecute(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := newModelDBRoleToExecute(tt.input)
+			actual := resource.NewModelDBRoleToExecute(tt.input)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -59,7 +60,7 @@ func TestNewModelAuthentication(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    *admin.StreamsKafkaAuthentication
-		expected *StreamsKafkaAuthentication
+		expected *resource.StreamsKafkaAuthentication
 	}{
 		{
 			name:     "Nil Input",
@@ -73,7 +74,7 @@ func TestNewModelAuthentication(t *testing.T) {
 				Username:  ptr.String("testuser111"),
 				Password:  ptr.String("testpassword"),
 			},
-			expected: &StreamsKafkaAuthentication{
+			expected: &resource.StreamsKafkaAuthentication{
 				Mechanism: ptr.String("PLAIN"),
 				Username:  ptr.String("testuser111"),
 				Password:  ptr.String("testpassword"),
@@ -83,7 +84,7 @@ func TestNewModelAuthentication(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := newModelAuthentication(tt.input)
+			actual := resource.NewModelAuthentication(tt.input)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -93,7 +94,7 @@ func TestNewModelSecurity(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    *admin.StreamsKafkaSecurity
-		expected *StreamsKafkaSecurity
+		expected *resource.StreamsKafkaSecurity
 	}{
 		{
 			name:     "Nil Input",
@@ -106,7 +107,7 @@ func TestNewModelSecurity(t *testing.T) {
 				BrokerPublicCertificate: ptr.String("testcert"),
 				Protocol:                ptr.String("SSL"),
 			},
-			expected: &StreamsKafkaSecurity{
+			expected: &resource.StreamsKafkaSecurity{
 				BrokerPublicCertificate: ptr.String("testcert"),
 				Protocol:                ptr.String("SSL"),
 			},
@@ -115,7 +116,7 @@ func TestNewModelSecurity(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := newModelSecurity(tt.input)
+			actual := resource.NewModelSecurity(tt.input)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -124,7 +125,7 @@ func TestNewModelSecurity(t *testing.T) {
 func TestNewDBRoleToExecute(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    *DBRoleToExecute
+		input    *resource.DBRoleToExecute
 		expected *admin.DBRoleToExecute
 	}{
 		{
@@ -134,7 +135,7 @@ func TestNewDBRoleToExecute(t *testing.T) {
 		},
 		{
 			name: "Valid Input",
-			input: &DBRoleToExecute{
+			input: &resource.DBRoleToExecute{
 				Role: ptr.String("customroleadmin"),
 				Type: ptr.String("CUSTOM"),
 			},
@@ -147,7 +148,7 @@ func TestNewDBRoleToExecute(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := newDBRoleToExecute(tt.input)
+			actual := resource.NewDBRoleToExecute(tt.input)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -171,7 +172,7 @@ func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {
 	}
 
 	t.Run("With Nil Current Model", func(t *testing.T) {
-		result := getStreamConnectionModel(streamsConnKafka, nil)
+		result := resource.GetStreamConnectionModel(streamsConnKafka, nil)
 
 		assert.NotNil(t, result)
 		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
@@ -183,25 +184,25 @@ func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {
 	})
 
 	t.Run("With Non-Null Current Model", func(t *testing.T) {
-		currentModel := &Model{
+		currentModel := &resource.Model{
 			Profile:          ptr.String("default"),
 			ProjectId:        ptr.String("testProjectID"),
 			InstanceName:     ptr.String("TestInstance"),
 			ConnectionName:   ptr.String("TestConnection"),
 			Type:             ptr.String("Kafka"),
 			BootstrapServers: ptr.String("local.example.com:9192"),
-			Authentication: &StreamsKafkaAuthentication{
+			Authentication: &resource.StreamsKafkaAuthentication{
 				Mechanism: ptr.String("PLAIN"),
 				Username:  ptr.String("user1"),
 				Password:  ptr.String("passwrd"),
 			},
-			Security: &StreamsKafkaSecurity{
+			Security: &resource.StreamsKafkaSecurity{
 				BrokerPublicCertificate: ptr.String("cert1"),
 				Protocol:                ptr.String("SSL"),
 			},
 			Config: map[string]string{"retention.test": "60000"},
 		}
-		result := getStreamConnectionModel(streamsConnKafka, currentModel)
+		result := resource.GetStreamConnectionModel(streamsConnKafka, currentModel)
 
 		assert.Equal(t, currentModel, result)
 		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
@@ -227,7 +228,7 @@ func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
 	}
 
 	t.Run("With Nil Current Model", func(t *testing.T) {
-		result := getStreamConnectionModel(streamsConnKafka, nil)
+		result := resource.GetStreamConnectionModel(streamsConnKafka, nil)
 
 		assert.NotNil(t, result)
 		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)
@@ -237,19 +238,19 @@ func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
 	})
 
 	t.Run("With Non-Null Current Model", func(t *testing.T) {
-		currentModel := &Model{
+		currentModel := &resource.Model{
 			Profile:        ptr.String("default"),
 			ProjectId:      ptr.String("testProjectID"),
 			InstanceName:   ptr.String("TestInstance"),
 			ConnectionName: ptr.String("TestConnection"),
 			Type:           ptr.String("Kafka"),
 			ClusterName:    ptr.String("TestCluster"),
-			DbRoleToExecute: &DBRoleToExecute{
+			DbRoleToExecute: &resource.DBRoleToExecute{
 				Role: ptr.String("admin"),
 				Type: ptr.String("Custom"),
 			},
 		}
-		result := getStreamConnectionModel(streamsConnKafka, currentModel)
+		result := resource.GetStreamConnectionModel(streamsConnKafka, currentModel)
 
 		assert.Equal(t, currentModel, result)
 		assert.Equal(t, *streamsConnKafka.Name, *result.ConnectionName)

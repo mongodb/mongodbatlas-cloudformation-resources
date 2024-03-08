@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	streamInstanceCreateReq := newStreamsTenant(currentModel)
+	streamInstanceCreateReq := NewStreamsTenant(currentModel)
 
 	atlasV2 := client.AtlasSDK
 

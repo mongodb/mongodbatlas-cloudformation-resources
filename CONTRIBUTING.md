@@ -19,7 +19,8 @@ After the above 2 steps are completed and we've agreed on a path forward:
 
 ## Code and Test Best Practices
 
-- Each resource is implemented in a seperate directory within `./cfn-resources`. Under each resource directory operations will be implemented in `./cmd/resource/resource.go`, having a separate file `./cmd/resource/mappings.go` for defining conversion logic with respective SDK and CFN models. Associated unit testing files must defined for conversion logic, and can also exist for other business logic such as handling state transitions.
+- Each resource is implemented in a seperate directory within `./cfn-resources`. Under each resource directory operations will be implemented in `./cmd/resource/resource.go`, having a separate file `./cmd/resource/mappings.go` for defining conversion logic with respective SDK and CFN models. 
+- Associated unit testing files must be defined for conversion logic, and can also exist for other business logic such as handling state transitions. Unit tests are defined under `resource_test` package to minimize coupling.
 - [Testify Mock](https://pkg.go.dev/github.com/stretchr/testify/mock) and [Mockery](https://github.com/vektra/mockery) are used for test doubles in unit tests. Mocked interfaces are generated in folder `cfn-resources/testutil/mocksvc`.
 - We have a `/test/README.md` for every resource in `cfn-resources`. You will also find [TESTING.md](./TESTING.md) which provides testing practices common to all resources.
 

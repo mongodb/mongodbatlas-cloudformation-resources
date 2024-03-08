@@ -16,7 +16,7 @@ package resource
 
 import "go.mongodb.org/atlas-sdk/v20231115007/admin"
 
-func newStreamsTenant(model *Model) *admin.StreamsTenant {
+func NewStreamsTenant(model *Model) *admin.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion
 	streamTenant := &admin.StreamsTenant{
 		Name:    model.InstanceName,
@@ -70,7 +70,7 @@ func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurit
 	}
 }
 
-func newModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
+func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
 	if streamConfig == nil || len(*streamConfig) == 0 {
 		return nil
 	}
@@ -103,6 +103,6 @@ func newCFNModelFromStreamInstance(prevModel *Model, streamTenant admin.StreamsT
 		Id:                streamTenant.Id,
 		Hostnames:         streamTenant.GetHostnames(),
 		Profile:           prevModel.Profile,
-		Connections:       newModelConnections(streamTenant.Connections),
+		Connections:       NewModelConnections(streamTenant.Connections),
 	}
 }

@@ -26,12 +26,12 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
-func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
+func HandleStateTransition(connV2 admin.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), searchDeploymentDoesNotExistsError) {
+		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,
 				ResourceModel:   nil,
@@ -41,7 +41,7 @@ func handleStateTransition(connV2 admin.APIClient, currentModel *Model, targetSt
 		return progressevent.GetFailedEventByResponse(err.Error(), resp)
 	}
 
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
 	if util.SafeString(newModel.StateName) == targetState {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,

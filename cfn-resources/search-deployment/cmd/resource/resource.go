@@ -31,8 +31,8 @@ import (
 
 const (
 	callBackSeconds                    = 40
-	searchDeploymentDoesNotExistsError = "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST"
-	searchDeploymentAlreadyExistsError = "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS"
+	SearchDeploymentDoesNotExistsError = "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST"
+	SearchDeploymentAlreadyExistsError = "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS"
 )
 
 var createRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
@@ -60,18 +60,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
-		return handleStateTransition(*connV2, currentModel, constants.IdleState), nil
+		return HandleStateTransition(*connV2, currentModel, constants.IdleState), nil
 	}
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiReq := newSearchDeploymentReq(currentModel)
+	apiReq := NewSearchDeploymentReq(currentModel)
 	apiResp, resp, err := connV2.AtlasSearchApi.CreateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return handleError(resp, err)
 	}
 
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
 	return inProgressEvent("Creating Search Deployment", &newModel), nil
 }
 
@@ -98,7 +98,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   newCFNSearchDeployment(currentModel, apiResp),
+		ResourceModel:   NewCFNSearchDeployment(currentModel, apiResp),
 	}, nil
 }
 
@@ -118,18 +118,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
-		return handleStateTransition(*connV2, currentModel, constants.IdleState), nil
+		return HandleStateTransition(*connV2, currentModel, constants.IdleState), nil
 	}
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiReq := newSearchDeploymentReq(currentModel)
+	apiReq := NewSearchDeploymentReq(currentModel)
 	apiResp, res, err := connV2.AtlasSearchApi.UpdateAtlasSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
 		return handleError(res, err)
 	}
 
-	newModel := newCFNSearchDeployment(currentModel, apiResp)
+	newModel := NewCFNSearchDeployment(currentModel, apiResp)
 	return inProgressEvent("Updating Search Deployment", &newModel), nil
 }
 
@@ -149,7 +149,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
-		return handleStateTransition(*connV2, currentModel, constants.DeletedState), nil
+		return HandleStateTransition(*connV2, currentModel, constants.DeletedState), nil
 	}
 
 	projectID := util.SafeString(currentModel.ProjectId)
@@ -167,13 +167,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
 func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
-	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, searchDeploymentAlreadyExistsError) {
+	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, searchDeploymentDoesNotExistsError) {
+	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),

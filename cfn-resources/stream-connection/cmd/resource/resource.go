@@ -73,7 +73,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(apiResp, constants.CREATE, err)
 	}
 
-	resourceModel := getStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -96,7 +96,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(apiResp, constants.READ, err)
 	}
 
-	resourceModel := getStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -121,7 +121,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(apiResp, constants.UPDATE, err)
 	}
 
-	resourceModel := getStreamConnectionModel(streamConnResp, currentModel)
+	resourceModel := GetStreamConnectionModel(streamConnResp, currentModel)
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -169,7 +169,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	response := make([]interface{}, 0)
 	for i := range accumulatedStreamConns {
-		model := getStreamConnectionModel(&accumulatedStreamConns[i], nil)
+		model := GetStreamConnectionModel(&accumulatedStreamConns[i], nil)
 		model.ProjectId = currentModel.ProjectId
 		model.InstanceName = currentModel.InstanceName
 		model.Profile = currentModel.Profile

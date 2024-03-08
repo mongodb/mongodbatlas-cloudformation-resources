@@ -20,7 +20,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
-func getStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
+func GetStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel *Model) *Model {
 	model := new(Model)
 
 	if currentModel != nil {
@@ -32,11 +32,11 @@ func getStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 	model.ClusterName = streamsConn.ClusterName
 	model.BootstrapServers = streamsConn.BootstrapServers
 
-	model.DbRoleToExecute = newModelDBRoleToExecute(streamsConn.DbRoleToExecute)
+	model.DbRoleToExecute = NewModelDBRoleToExecute(streamsConn.DbRoleToExecute)
 
-	model.Authentication = newModelAuthentication(streamsConn.Authentication)
+	model.Authentication = NewModelAuthentication(streamsConn.Authentication)
 
-	model.Security = newModelSecurity(streamsConn.Security)
+	model.Security = NewModelSecurity(streamsConn.Security)
 
 	if streamsConn.Config != nil {
 		model.Config = *streamsConn.Config
@@ -45,7 +45,7 @@ func getStreamConnectionModel(streamsConn *admin.StreamsConnection, currentModel
 	return model
 }
 
-func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
+func NewModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
 	if dbRole == nil {
 		return nil
 	}
@@ -56,7 +56,7 @@ func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
 	}
 }
 
-func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
+func NewModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
 	if authentication == nil {
 		return nil
 	}
@@ -68,7 +68,7 @@ func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *S
 	}
 }
 
-func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
+func NewModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
 	if security == nil {
 		return nil
 	}
@@ -87,7 +87,7 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 
 	if util.SafeString(streamConnReq.Type) == ClusterConnectionType {
 		streamConnReq.ClusterName = model.ClusterName
-		streamConnReq.DbRoleToExecute = newDBRoleToExecute(model.DbRoleToExecute)
+		streamConnReq.DbRoleToExecute = NewDBRoleToExecute(model.DbRoleToExecute)
 	}
 
 	if util.SafeString(streamConnReq.Type) == KafkaConnectionType {
@@ -103,7 +103,7 @@ func newStreamConnectionReq(model *Model) *admin.StreamsConnection {
 	return &streamConnReq
 }
 
-func newDBRoleToExecute(dbRoleToExecuteModel *DBRoleToExecute) *admin.DBRoleToExecute {
+func NewDBRoleToExecute(dbRoleToExecuteModel *DBRoleToExecute) *admin.DBRoleToExecute {
 	if dbRoleToExecuteModel == nil {
 		return nil
 	}

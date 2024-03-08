@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"testing"
 
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
@@ -24,8 +25,8 @@ import (
 type sdkToCFNModelTestCase struct {
 	name          string
 	SDKResp       admin.ApiSearchDeploymentResponse
-	prevModel     Model
-	expectedModel Model
+	prevModel     resource.Model
+	expectedModel resource.Model
 }
 
 const (
@@ -42,7 +43,7 @@ func TestSDKToCFNModel(t *testing.T) {
 	testCases := []sdkToCFNModelTestCase{
 		{
 			name: "Complete SDK response",
-			prevModel: Model{
+			prevModel: resource.Model{
 				Profile:     admin.PtrString(profile),
 				ClusterName: admin.PtrString(clusterName),
 				ProjectId:   admin.PtrString(dummyProjectID),
@@ -58,13 +59,13 @@ func TestSDKToCFNModel(t *testing.T) {
 					},
 				},
 			},
-			expectedModel: Model{
+			expectedModel: resource.Model{
 				Profile:     admin.PtrString(profile),
 				ClusterName: admin.PtrString(clusterName),
 				ProjectId:   admin.PtrString(dummyProjectID),
 				Id:          admin.PtrString(dummyDeploymentID),
 				StateName:   admin.PtrString(stateName),
-				Specs: []ApiSearchDeploymentSpec{
+				Specs: []resource.ApiSearchDeploymentSpec{
 					{
 						InstanceSize: admin.PtrString(instanceSize),
 						NodeCount:    admin.PtrInt(nodeCount),
@@ -74,7 +75,7 @@ func TestSDKToCFNModel(t *testing.T) {
 		},
 		{
 			name: "Empty specs array",
-			prevModel: Model{
+			prevModel: resource.Model{
 				Profile:     admin.PtrString(profile),
 				ClusterName: admin.PtrString(clusterName),
 				ProjectId:   admin.PtrString(dummyProjectID),
@@ -85,20 +86,20 @@ func TestSDKToCFNModel(t *testing.T) {
 				StateName: admin.PtrString(stateName),
 				Specs:     &[]admin.ApiSearchDeploymentSpec{},
 			},
-			expectedModel: Model{
+			expectedModel: resource.Model{
 				Profile:     admin.PtrString(profile),
 				ClusterName: admin.PtrString(clusterName),
 				ProjectId:   admin.PtrString(dummyProjectID),
 				Id:          admin.PtrString(dummyDeploymentID),
 				StateName:   admin.PtrString(stateName),
-				Specs:       []ApiSearchDeploymentSpec{},
+				Specs:       []resource.ApiSearchDeploymentSpec{},
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resultModel := newCFNSearchDeployment(&tc.prevModel, &tc.SDKResp)
+			resultModel := resource.NewCFNSearchDeployment(&tc.prevModel, &tc.SDKResp)
 			assert.Equal(t, tc.expectedModel, resultModel)
 		})
 	}
@@ -106,19 +107,19 @@ func TestSDKToCFNModel(t *testing.T) {
 
 func TestCFNModelToSDK(t *testing.T) {
 	testCases := []struct {
-		model          Model
+		model          resource.Model
 		expectedSDKReq admin.ApiSearchDeploymentRequest
 		name           string
 	}{
 		{
 			name: "Complete CFN model",
-			model: Model{
+			model: resource.Model{
 				Profile:     admin.PtrString(profile),
 				ClusterName: admin.PtrString(clusterName),
 				ProjectId:   admin.PtrString(dummyProjectID),
 				Id:          admin.PtrString(dummyDeploymentID),
 				StateName:   admin.PtrString(stateName),
-				Specs: []ApiSearchDeploymentSpec{
+				Specs: []resource.ApiSearchDeploymentSpec{
 					{
 						InstanceSize: admin.PtrString(instanceSize),
 						NodeCount:    admin.PtrInt(nodeCount),
@@ -136,13 +137,13 @@ func TestCFNModelToSDK(t *testing.T) {
 		},
 		{
 			name: "Empty specs array",
-			model: Model{
+			model: resource.Model{
 				Profile:     admin.PtrString(profile),
 				ClusterName: admin.PtrString(clusterName),
 				ProjectId:   admin.PtrString(dummyProjectID),
 				Id:          admin.PtrString(dummyDeploymentID),
 				StateName:   admin.PtrString(stateName),
-				Specs:       []ApiSearchDeploymentSpec{},
+				Specs:       []resource.ApiSearchDeploymentSpec{},
 			},
 			expectedSDKReq: admin.ApiSearchDeploymentRequest{
 				Specs: &[]admin.ApiSearchDeploymentSpec{},
@@ -152,7 +153,7 @@ func TestCFNModelToSDK(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resultReq := newSearchDeploymentReq(&tc.model)
+			resultReq := resource.NewSearchDeploymentReq(&tc.model)
 			assert.Equal(t, tc.expectedSDKReq, resultReq)
 		})
 	}

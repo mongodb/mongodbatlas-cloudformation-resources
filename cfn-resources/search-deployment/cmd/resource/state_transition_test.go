@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"errors"
@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil/mocksvc"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/stretchr/testify/assert"
@@ -36,7 +37,7 @@ type stateTransitionTestCase struct {
 	expectedEventStatus handler.Status
 }
 
-var prevModel = Model{
+var prevModel = resource.Model{
 	Profile:     admin.PtrString(profile),
 	ClusterName: admin.PtrString(clusterName),
 	ProjectId:   admin.PtrString(dummyProjectID),
@@ -74,7 +75,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			respHTTP: &http.Response{
 				StatusCode: 400,
 			},
-			respError:           errors.New(searchDeploymentDoesNotExistsError),
+			respError:           errors.New(resource.SearchDeploymentDoesNotExistsError),
 			targetState:         constants.DeletedState,
 			expectedEventStatus: handler.Success,
 		},
@@ -111,7 +112,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			m.EXPECT().GetAtlasSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHTTP, tc.respError).Once()
 
 			client := admin.APIClient{AtlasSearchApi: m}
-			eventResult := handleStateTransition(client, &prevModel, tc.targetState)
+			eventResult := resource.HandleStateTransition(client, &prevModel, tc.targetState)
 			assert.Equal(t, tc.expectedEventStatus, eventResult.OperationStatus)
 		})
 	}

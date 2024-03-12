@@ -21,7 +21,7 @@ else
 fi
 
 atlas cluster watch "${clusterName}" --projectId "${projectId}" && status=0 || status=$?
-if [ $status -eq 0 ]; then
+if [ "$status" -eq 0 ]; then
 	echo "Cluster '${clusterName}' has been successfully watched until deletion."
 fi
 

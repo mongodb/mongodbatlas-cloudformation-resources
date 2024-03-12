@@ -263,6 +263,37 @@ func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
 	})
 }
 
+func TestGetStreamConnectionSampleTypeModel(t *testing.T) {
+	streamsConnSample := &admin.StreamsConnection{
+		Name: ptr.String("sample_stream_solar"),
+		Type: ptr.String("Sample"),
+	}
+	t.Run("With Nil Current Model", func(t *testing.T) {
+		result := resource.GetStreamConnectionModel(streamsConnSample, nil)
+
+		assert.NotNil(t, result)
+		assert.Equal(t, *streamsConnSample.Name, *result.ConnectionName)
+		assert.Equal(t, *streamsConnSample.Type, *result.Type)
+		assert.Nil(t, result.DbRoleToExecute)
+	})
+
+	t.Run("Sample Stream Solar dataset", func(t *testing.T) {
+		currentModel := &resource.Model{
+			Profile:        ptr.String("default"),
+			ProjectId:      ptr.String("testProjectID"),
+			InstanceName:   ptr.String("TestInstance"),
+			ConnectionName: ptr.String("sample_stream_solar"),
+		}
+		result := resource.GetStreamConnectionModel(streamsConnSample, currentModel)
+
+		assert.Equal(t, *currentModel.InstanceName, *result.InstanceName)
+		assert.Equal(t, *currentModel.Profile, *result.Profile)
+		assert.Equal(t, *currentModel.ProjectId, *result.ProjectId)
+		assert.Equal(t, *currentModel.ConnectionName, *result.ConnectionName)
+		assert.Equal(t, *currentModel.Type, *result.Type)
+	})
+}
+
 //nolint:gocritic
 func mapPtr(m map[string]string) *map[string]string {
 	return &m

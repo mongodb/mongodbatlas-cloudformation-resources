@@ -283,6 +283,7 @@ func TestGetStreamConnectionSampleTypeModel(t *testing.T) {
 			ProjectId:      ptr.String("testProjectID"),
 			InstanceName:   ptr.String("TestInstance"),
 			ConnectionName: ptr.String("sample_stream_solar"),
+			Type:           ptr.String("Sample"),
 		}
 		result := resource.GetStreamConnectionModel(streamsConnSample, currentModel)
 

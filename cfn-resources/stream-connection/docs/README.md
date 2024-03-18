@@ -1,6 +1,6 @@
 # MongoDB::Atlas::StreamConnection
 
-Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles.
+Returns, adds, edits, and removes one connection for a stream instance in the specified project. To use this resource, the requesting API Key must have the Project Owner roles. Note that Atlas Streams functionality is currently in [Public Preview](https://www.mongodb.com/blog/post/atlas-stream-processing-now-in-public-preview)
 
 ## Syntax
 
@@ -77,7 +77,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### ConnectionName
 
-Human-readable label that identifies the stream connection.
+Human-readable label that identifies the stream connection. In the case of the Sample type, this is the name of the sample source.
 
 _Required_: Yes
 
@@ -97,13 +97,13 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### Type
 
-Type of the connection. Can be either Cluster or Kafka.
+Type of the connection. Can be either Cluster, Kafka, or Sample.
 
 _Required_: Yes
 
 _Type_: String
 
-_Allowed Values_: <code>Kafka</code> | <code>Cluster</code>
+_Allowed Values_: <code>Kafka</code> | <code>Cluster</code> | <code>Sample</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

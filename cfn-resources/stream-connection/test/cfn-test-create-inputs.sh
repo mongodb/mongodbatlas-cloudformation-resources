@@ -72,3 +72,19 @@ jq --arg instance_name "$instanceName" \
    | .ProjectId?|=$project_id
    | .InstanceName?|=$instance_name' \
 	"$(dirname "$0")/inputs_2_update.json" >"inputs/inputs_2_update.json"
+
+jq --arg instance_name "$instanceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .InstanceName?|=$instance_name' \
+	"$(dirname "$0")/inputs_3_create.json" >"inputs/inputs_3_create.json"
+
+jq --arg instance_name "$instanceName" \
+	--arg project_id "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile
+   | .ProjectId?|=$project_id
+   | .InstanceName?|=$instance_name' \
+	"$(dirname "$0")/inputs_3_update.json" >"inputs/inputs_3_update.json"

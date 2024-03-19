@@ -14,6 +14,11 @@
     "InstanceName": {
       "Type": "String",
       "Description": "Human-readable label that identifies the stream instance"
+    },
+    "ConnectionName": {
+      "Type": "String",
+      "Default": "sample_stream_solar",
+      "Description": "Name of the sample dataset. Currently, only sample_stream_solar supported"
     }
   },
   "Mappings": {},
@@ -31,7 +36,9 @@
           "Ref": "InstanceName"
         },
         "Type": "Sample",
-        "ConnectionName": "sample_stream_solar"
+        "ConnectionName": {
+          "Ref": "ConnectionName"
+        }
       }
     }
   }

@@ -30,7 +30,7 @@ jobs:
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
      search-deployment: ${{ steps.filter.outputs.search-deployment }}
    steps:
-   - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+   - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
      if: ${{ github.event_name == 'push' }}
    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
      id: filter
@@ -79,7 +79,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -118,7 +118,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -157,7 +157,7 @@ jobs:
     steps:
     - name: setup Atlas CLI
       uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
     - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
       with:
        use-installer: true
@@ -196,7 +196,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -234,7 +234,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -272,7 +272,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -307,7 +307,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
          use-installer: true
@@ -345,7 +345,7 @@ jobs:
     steps:
     - name: setup Atlas CLI
       uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
     - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
       with:
        use-installer: true
@@ -385,7 +385,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -423,7 +423,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -461,7 +461,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -500,7 +500,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -538,7 +538,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -576,7 +576,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -614,7 +614,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -651,7 +651,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
         with:
           use-installer: true
@@ -688,7 +688,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true
@@ -723,7 +723,7 @@ jobs:
     steps:
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@fbfc94bafed8207bd2b9c3f1a724ab4127fab7ec
         with:
           use-installer: true

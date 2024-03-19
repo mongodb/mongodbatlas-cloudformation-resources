@@ -40,7 +40,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       AWS_REGION: ${{ github.event.inputs.region }}
     steps:
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       name: Pull Code
     - uses: FranzDiebold/github-env-vars-action@1791216cd180e6578dd1d67fb8d2852b883a5f53
     - name: Configure Environment Outputs

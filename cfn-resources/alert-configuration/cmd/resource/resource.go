@@ -325,28 +325,28 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	}
 
 	for ind := range notificationList {
-                notification := atlasSDK.AlertsNotificationRootForGroup{
-                        ApiToken:                 notificationList[ind].ApiToken,
-                        ChannelName:              notificationList[ind].ChannelName,
-                        DatadogApiKey:            notificationList[ind].DatadogApiKey,
-                        DatadogRegion:            notificationList[ind].DatadogRegion,
-                        EmailAddress:             notificationList[ind].EmailAddress,
-                        EmailEnabled:             notificationList[ind].EmailEnabled,
-                        IntervalMin:              util.Pointer(int(*notificationList[ind].IntervalMin)),
-                        MicrosoftTeamsWebhookUrl: notificationList[ind].MicrosoftTeamsWebhookUrl,
-                        MobileNumber:             notificationList[ind].MobileNumber,
-                        OpsGenieApiKey:           notificationList[ind].OpsGenieApiKey,
-                        OpsGenieRegion:           notificationList[ind].OpsGenieRegion,
-                        ServiceKey:               notificationList[ind].ServiceKey,
-                        SmsEnabled:               notificationList[ind].SmsEnabled,
-                        TeamId:                   notificationList[ind].TeamId,
-                        TypeName:                 notificationList[ind].TypeName,
-                        Username:                 notificationList[ind].Username,
-                        VictorOpsApiKey:          notificationList[ind].VictorOpsApiKey,
-                        VictorOpsRoutingKey:      notificationList[ind].VictorOpsRoutingKey,
-                        Roles:                    cast.ToStringSlice(notificationList[ind].Roles),
-                        DelayMin:                 notificationList[ind].DelayMin,
-                }
+		notification := atlasSDK.AlertsNotificationRootForGroup{
+			ApiToken:                 notificationList[ind].ApiToken,
+			ChannelName:              notificationList[ind].ChannelName,
+			DatadogApiKey:            notificationList[ind].DatadogApiKey,
+			DatadogRegion:            notificationList[ind].DatadogRegion,
+			EmailAddress:             notificationList[ind].EmailAddress,
+			EmailEnabled:             notificationList[ind].EmailEnabled,
+			IntervalMin:              util.Pointer(int(*notificationList[ind].IntervalMin)),
+			MicrosoftTeamsWebhookUrl: notificationList[ind].MicrosoftTeamsWebhookUrl,
+			MobileNumber:             notificationList[ind].MobileNumber,
+			OpsGenieApiKey:           notificationList[ind].OpsGenieApiKey,
+			OpsGenieRegion:           notificationList[ind].OpsGenieRegion,
+			ServiceKey:               notificationList[ind].ServiceKey,
+			SmsEnabled:               notificationList[ind].SmsEnabled,
+			TeamId:                   notificationList[ind].TeamId,
+			TypeName:                 notificationList[ind].TypeName,
+			Username:                 notificationList[ind].Username,
+			VictorOpsApiKey:          notificationList[ind].VictorOpsApiKey,
+			VictorOpsRoutingKey:      notificationList[ind].VictorOpsRoutingKey,
+			Roles:                    cast.ToStringSlice(notificationList[ind].Roles),
+			DelayMin:                 notificationList[ind].DelayMin,
+		}
 		notifications = append(notifications, notification)
 	}
 	return notifications, nil

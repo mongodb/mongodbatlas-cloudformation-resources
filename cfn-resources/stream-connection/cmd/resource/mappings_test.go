@@ -168,7 +168,7 @@ func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {
 			BrokerPublicCertificate: ptr.String("cert1"),
 			Protocol:                ptr.String("SSL"),
 		},
-		Config: mapPtr(map[string]string{"retention.test": "60000"}),
+		Config: &map[string]string{"retention.test": "60000"},
 	}
 
 	t.Run("With Nil Current Model", func(t *testing.T) {
@@ -263,7 +263,48 @@ func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
 	})
 }
 
-//nolint:gocritic
-func mapPtr(m map[string]string) *map[string]string {
-	return &m
+func TestGetStreamConnectionSampleTypeModel(t *testing.T) {
+	streamsConnSample := &admin.StreamsConnection{
+		Name: ptr.String("sample_stream_solar"),
+		Type: ptr.String("Sample"),
+	}
+	testCases := []struct {
+		name     string
+		model    *resource.Model
+		asserter func(input, result *resource.Model, a *assert.Assertions)
+	}{
+		{
+			name:  "With Nil Current Model",
+			model: nil,
+			asserter: func(_, result *resource.Model, a *assert.Assertions) {
+				a.NotNil(result)
+				a.Equal(*streamsConnSample.Name, *result.ConnectionName)
+				a.Equal(*streamsConnSample.Type, *result.Type)
+				a.Nil(result.DbRoleToExecute)
+			},
+		},
+		{
+			name: "Sample Stream Solar dataset",
+			model: &resource.Model{
+				Profile:        ptr.String("default"),
+				ProjectId:      ptr.String("testProjectID"),
+				InstanceName:   ptr.String("TestInstance"),
+				ConnectionName: ptr.String("sample_stream_solar"),
+				Type:           ptr.String("Sample"),
+			},
+			asserter: func(input, result *resource.Model, a *assert.Assertions) {
+				a.Equal(*input.InstanceName, *result.InstanceName)
+				a.Equal(*input.Profile, *result.Profile)
+				a.Equal(*input.ProjectId, *result.ProjectId)
+				a.Equal(*input.ConnectionName, *result.ConnectionName)
+				a.Equal(*input.Type, *result.Type)
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := resource.GetStreamConnectionModel(streamsConnSample, tc.model)
+			tc.asserter(tc.model, result, assert.New(t))
+		})
+	}
 }

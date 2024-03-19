@@ -333,6 +333,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 			EmailAddress:        notificationList[ind].EmailAddress,
 			EmailEnabled:        notificationList[ind].EmailEnabled,
 			IntervalMin:         util.Pointer(int(*notificationList[ind].IntervalMin)),
+			MicrosoftTeamsWebhookUrl: notificationList[ind].MicrosoftTeamsWebhookUrl,
 			MobileNumber:        notificationList[ind].MobileNumber,
 			OpsGenieApiKey:      notificationList[ind].OpsGenieApiKey,
 			OpsGenieRegion:      notificationList[ind].OpsGenieRegion,

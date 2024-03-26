@@ -19,7 +19,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 type sdkToCFNModelTestCase struct {

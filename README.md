@@ -65,6 +65,8 @@ Here are some examples of how to use this template:
   SecretValue = {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 
+**Note**: If you want to use a AWS KMS key to handle encyption of your secret you must define the appropriate resource policies so that AWS Secrets Manager has access to the key. The following [AWS documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html#security-encryption-policies) describes a key policy that allows access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager.
+
 ### 3. Provide the profile to your CloudFormation template
 
 All Atlas CloudFormation resources include a "Profile" property that specifies which profile to use. You'll need to provide the profile you created in the previous step to the CloudFormation template.

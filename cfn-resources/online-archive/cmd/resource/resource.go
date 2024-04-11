@@ -18,15 +18,17 @@ import (
 	"context"
 	"net/http"
 
+	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/spf13/cast"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}
@@ -244,13 +246,33 @@ func newCreateParams(currentModel *Model) (admin.BackupOnlineArchiveCreate, *han
 		DbName:   *currentModel.DbName,
 		CollName: *currentModel.CollName,
 	}
-	criteria, errHandler := mapCriteria(currentModel)
+	criteria, errHandler := newCriteria(currentModel)
 	if errHandler != nil {
 		return requestInput, errHandler
 	}
 	requestInput.Criteria = *criteria
-	requestInput.PartitionFields = mapPartitionFields(currentModel)
+	requestInput.PartitionFields = newPartitionFields(currentModel)
+	requestInput.Schedule = newOASchedule(currentModel)
 	return requestInput, nil
+}
+
+func newOASchedule(currentModel *Model) *admin.OnlineArchiveSchedule {
+	scheduleModel := currentModel.Schedule
+	if scheduleModel == nil {
+		return &admin.OnlineArchiveSchedule{}
+	}
+
+	scheduleInput := &admin.OnlineArchiveSchedule{
+		Type:        *scheduleModel.Type,
+		EndHour:     scheduleModel.EndHour,
+		EndMinute:   scheduleModel.EndMinute,
+		StartHour:   scheduleModel.StartHour,
+		StartMinute: scheduleModel.StartMinute,
+		DayOfWeek:   scheduleModel.DayOfWeek,
+		DayOfMonth:  scheduleModel.DayOfMonth,
+	}
+
+	return scheduleInput
 }
 
 func newUpdateParams(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
@@ -258,16 +280,17 @@ func newUpdateParams(currentModel *Model) (admin.BackupOnlineArchive, *handler.P
 		DbName:   currentModel.DbName,
 		CollName: currentModel.CollName,
 	}
-	criteria, errHandler := mapCriteria(currentModel)
+	criteria, errHandler := newCriteria(currentModel)
 	if errHandler != nil {
 		return requestInput, errHandler
 	}
 	requestInput.Criteria = criteria
-	requestInput.PartitionFields = mapPartitionFields(currentModel)
+	requestInput.PartitionFields = newPartitionFields(currentModel)
+	requestInput.Schedule = newOASchedule(currentModel)
 	return requestInput, nil
 }
 
-func mapCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) {
+func newCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) {
 	criteriaModel := *currentModel.Criteria
 	criteriaInput := &admin.Criteria{
 		Type:            criteriaModel.Type,
@@ -288,7 +311,7 @@ func mapCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) 
 	return criteriaInput, nil
 }
 
-func mapPartitionFields(currentModel *Model) []admin.PartitionField {
+func newPartitionFields(currentModel *Model) []admin.PartitionField {
 	partitionFields := make([]admin.PartitionField, len(currentModel.PartitionFields))
 
 	for i := range currentModel.PartitionFields {

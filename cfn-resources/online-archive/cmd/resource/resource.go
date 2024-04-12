@@ -259,7 +259,7 @@ func newCreateParams(currentModel *Model) (admin.BackupOnlineArchiveCreate, *han
 func newOASchedule(currentModel *Model) *admin.OnlineArchiveSchedule {
 	scheduleModel := currentModel.Schedule
 	if scheduleModel == nil {
-		return &admin.OnlineArchiveSchedule{}
+		return nil
 	}
 
 	scheduleInput := &admin.OnlineArchiveSchedule{

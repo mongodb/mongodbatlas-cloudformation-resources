@@ -43,22 +43,22 @@ clusterName=${ClusterName}
 collName="${2:-listingsAndReviews}"
 dbName="${3:-sample_airbnb}"
 
-jq --arg cluster_name "$clusterName" \
-	--arg coll_name "$collName" \
-	--arg db_name "$dbName" \
-	--arg project_id "$projectId" \
-	--arg profile "$profile" \
-	'.Profile?|=$profile | .ClusterName?|=$cluster_name
-   | .ProjectId?|=$project_id
-   | .DbName?|=$db_name | .CollName?|=$coll_name' \
-	"$(dirname "$0")/inputs_1_create.json" >"inputs/inputs_1_create.json"
+WORDTOREMOVE="template."
 
-jq --arg cluster_name "$clusterName" \
-	--arg coll_name "$collName" \
-	--arg db_name "$dbName" \
-	--arg project_id "$projectId" \
-	--arg profile "$profile" \
-	'.Profile?|=$profile | .ClusterName?|=$cluster_name
-    | .ProjectId?|=$project_id
-    | .DbName?|=$db_name | .CollName?|=$coll_name' \
-	"$(dirname "$0")/inputs_1_update.json" >"inputs/inputs_1_update.json"
+cd "$(dirname "$0")" || exit
+for inputFile in inputs_*; do
+	outputFile=${inputFile//$WORDTOREMOVE/}
+	jq --arg cluster_name "$clusterName" \
+		--arg coll_name "$collName" \
+		--arg db_name "$dbName" \
+		--arg project_id "$projectId" \
+		--arg profile "$profile" \
+		'.Profile?|=$profile | .ClusterName?|=$cluster_name
+		| .ProjectId?|=$project_id
+		| .DbName?|=$db_name | .CollName?|=$coll_name' \
+		"$inputFile" >"../inputs/$outputFile"
+done
+
+cd ..
+
+ls -l inputs

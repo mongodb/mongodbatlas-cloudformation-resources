@@ -1,0 +1,31 @@
+{
+  "Profile": "default",
+  "ClusterName": "",
+  "CollName": "rombo-bongo",
+  "Criteria": {
+    "Type": "DATE",
+    "DateField": "created",
+    "DateFormat": "ISODATE",
+    "ExpireAfterDays": "7"
+  },
+  "DbName": "testdb",
+  "ProjectId": "",
+  "PartitionFields": [
+    {
+      "FieldName": "created",
+      "Order": "0"
+    },
+    {
+      "FieldName": "lastName",
+      "Order": "1"
+    }
+  ],
+  "Schedule": {
+    "Type": "WEEKLY",
+    "EndHour": "15",
+    "EndMinute": "10",
+    "StartHour": "13",
+    "StartMinute": "10",
+    "DayOfWeek": "2"
+  }
+}

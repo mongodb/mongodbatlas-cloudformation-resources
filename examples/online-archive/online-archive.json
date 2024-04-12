@@ -54,7 +54,14 @@
             "FieldName": "lastName",
             "Order": "1"
           }
-        ]
+        ],
+        "Schedule": {
+          "Type": "DAILY",
+          "EndHour": "15",
+          "EndMinute": "10",
+          "StartHour": "13",
+          "StartMinute": "10"
+        }
       }
     }
   },

@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115007/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
@@ -91,7 +91,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if len(currentModel.ProjectApiKeys) > 0 {
 		for _, key := range currentModel.ProjectApiKeys {
 			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), *project.Id, *key.Key, &admin.UpdateAtlasProjectApiKey{
-				Roles: key.RoleNames,
+				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Assign Key Error: %s", err)
@@ -167,7 +167,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	event, model, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
@@ -196,7 +196,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	var projectID string
 	if currentModel.Id != nil {
@@ -226,7 +226,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				Message:          "Error while finding teams in project",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, teamsAssigned.Results)
+		newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, *teamsAssigned.Results)
 
 		// Remove Teams
 		for _, team := range removeTeams {
@@ -282,7 +282,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		// Add Keys
 		for _, key := range newAPIKeys {
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
-				Roles: key.RoleNames,
+				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
@@ -296,7 +296,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		// Update Key Roles
 		for _, key := range changedKeys {
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
-				Roles: key.RoleNames,
+				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {
 				_, _ = logger.Warnf("Error: %s", err)
@@ -335,7 +335,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
 		return *pe, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 	var id string
 	if currentModel.Id != nil {
 		id = *currentModel.Id
@@ -454,9 +454,9 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 
 	// Set teams
 	var teams []ProjectTeam
-	for _, team := range teamsAssigned.Results {
+	for _, team := range teamsAssigned.GetResults() {
 		if util.IsStringPresent(team.TeamId) {
-			teams = append(teams, ProjectTeam{TeamId: team.TeamId, RoleNames: team.RoleNames})
+			teams = append(teams, ProjectTeam{TeamId: team.TeamId, RoleNames: team.GetRoleNames()})
 		}
 	}
 
@@ -473,14 +473,14 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newT
 			matched := false
 			for _, oTeam := range oTeams {
 				if util.AreStringPtrEqual(nTeam.TeamId, oTeam.TeamId) {
-					changedTeams = append(changedTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
+					changedTeams = append(changedTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: &nTeam.RoleNames})
 					matched = true
 					break
 				}
 			}
 			// Add to newTeams
 			if !matched {
-				newTeams = append(newTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
+				newTeams = append(newTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: &nTeam.RoleNames})
 			}
 		}
 	}
@@ -506,7 +506,7 @@ func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	var newTeams []admin.TeamRole
 	for _, t := range teams {
 		if util.IsStringPresent(t.TeamId) {
-			newTeams = append(newTeams, admin.TeamRole{TeamId: t.TeamId, RoleNames: t.RoleNames})
+			newTeams = append(newTeams, admin.TeamRole{TeamId: t.TeamId, RoleNames: &t.RoleNames})
 		}
 	}
 	return newTeams

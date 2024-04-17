@@ -141,6 +141,22 @@ issues:
       linters:
         - gocritic
       text: "emptyStringTest: replace"
+    - path: 'cfn-resources/private-endpoint/cmd/resource/steps/privateendpoint/private_endpoint.go'
+      linters:
+        - gosec
+      text: "G601: Implicit memory aliasing in for loop"
+    - path: 'cfn-resources/cloud-backup-schedule/cmd/resource/resource.go'
+      linters:
+        - gosec
+      text: "G601: Implicit memory aliasing in for loop"
+    - path: 'cfn-resources/util/aws/utils.go'
+      linters:
+        - gosec
+      text: "G601: Implicit memory aliasing in for loop"
+    - path: cfn-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint/aws_vpc_endpoint.go
+      linters:
+        - gosec
+      text: "G601: Implicit memory aliasing in for loop"
 run:
   tests: true
   timeout: 5m

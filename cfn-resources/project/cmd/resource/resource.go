@@ -93,6 +93,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				_, _ = logger.Warn(errorMessage)
 				return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInvalidRequest), nil
 			}
+			key := key
 			apiKey := *key.Key
 			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, apiKey, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
@@ -245,6 +246,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 		// Add Keys
 		for _, key := range newAPIKeys {
+			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()
@@ -259,6 +261,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 		// Update Key Roles
 		for _, key := range changedKeys {
+			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()
@@ -428,6 +431,7 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newTeams []admin.TeamRole,
 	changedTeams []admin.TeamRole, removeTeams []admin.TeamRole) {
 	for _, nTeam := range currentTeams {
+		nTeam := nTeam
 		if util.IsStringPresent(nTeam.TeamId) {
 			matched := false
 			for _, oTeam := range oTeams {
@@ -464,6 +468,7 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newT
 func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	var newTeams []admin.TeamRole
 	for _, t := range teams {
+		t := t
 		if util.IsStringPresent(t.TeamId) {
 			newTeams = append(newTeams, admin.TeamRole{TeamId: t.TeamId, RoleNames: &t.RoleNames})
 		}

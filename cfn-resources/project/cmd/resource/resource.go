@@ -208,16 +208,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 		if teamsAssigned != nil && teamsAssigned.Results != nil {
-			err, errMsg := changeProjectTeams(*atlasV2, currentModel, teamsAssigned.GetResults())
+			errorMessage, err := changeProjectTeams(*atlasV2, currentModel, teamsAssigned.GetResults())
 			if err != nil {
 				_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          errMsg,
+					Message:          errorMessage,
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 				}, nil
 			}
-
 		}
 	}
 
@@ -513,31 +512,29 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 	return newKeys, changedKeys, removeKeys
 }
 
-func changeProjectTeams(atlasV2 admin.APIClient, currentModel *Model, newTeams []admin.TeamRole) (error, string) {
-
+func changeProjectTeams(atlasV2 admin.APIClient, currentModel *Model, newTeams []admin.TeamRole) (errorMessage string, err error) {
 	newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, newTeams)
 	projectID := *currentModel.Id
-	var err error
 	// Remove Teams
 	for _, team := range removeTeams {
 		_, err = atlasV2.TeamsApi.RemoveProjectTeam(context.Background(), projectID, util.SafeString(team.TeamId)).Execute()
 		if err != nil {
-			return err, "Error while deleting team from project"
+			return "Error while deleting team from project", err
 		}
 	}
 	// Add Teams
 	if len(newTeams) > 0 {
 		_, _, err = atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), projectID, &newTeams).Execute()
 		if err != nil {
-			return err, "Error while adding team to project"
+			return "Error while adding team to project", err
 		}
 	}
 	// Update Teams
 	for _, team := range changedTeams {
 		_, _, err = atlasV2.TeamsApi.UpdateTeamRoles(context.Background(), projectID, util.SafeString(team.TeamId), &admin.TeamRole{RoleNames: team.RoleNames}).Execute()
 		if err != nil {
-			return err, "Error while updating team roles in project"
+			return "Error while updating team roles in project", err
 		}
 	}
-	return nil, ""
+	return "", err
 }

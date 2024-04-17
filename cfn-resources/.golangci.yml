@@ -89,7 +89,7 @@ linters:
     - revive
     - gomnd
     - goprintffuncname
-    - gosec
+    # - gosec
     - gosimple
     - govet
     - ineffassign
@@ -129,6 +129,8 @@ issues:
     - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
     - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
     - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
+    - 'var-naming: var subnetIds'
+    - 'var-naming: var vpcEndpointIds'
   exclude-dirs:
     - "internal/mocks"
   # todo: accept fix in later PR

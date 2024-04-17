@@ -83,11 +83,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
 			res), nil
 	}
+	projectID := project.GetId()
 
 	// Add ApiKeys
 	if len(currentModel.ProjectApiKeys) > 0 {
 		for _, key := range currentModel.ProjectApiKeys {
-			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), *project.Id, *key.Key, &admin.UpdateAtlasProjectApiKey{
+			if key.Key == nil {
+				errorMessage := fmt.Sprintf("ApiKey is missing the configuration for projectID=%s", projectID)
+				_, _ = logger.Warn(errorMessage)
+				return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInvalidRequest), nil
+			}
+			apiKey := *key.Key
+			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, apiKey, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {

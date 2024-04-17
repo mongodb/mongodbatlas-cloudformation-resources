@@ -12,7 +12,8 @@ linters-settings:
       - hugeParam
       - paramTypeCombine
   govet:
-    check-shadowing: true
+    enable:
+      - shadow
   revive:
     # see https://github.com/mgechev/revive#available-rules for details.
     ignore-generated-header: true
@@ -46,14 +47,12 @@ linters-settings:
       #- name: unused-parameter
       - name: unreachable-code
       - name: redefines-builtin-id
-  maligned:
-    suggest-new: true
   depguard:
-    list-type: blacklist
-    packages:
-      # logging is allowed only by logutils.Log, logrus
-      # is allowed to use only in logutils package
-      - github.com/sirupsen/logrus
+    rules:
+      main:
+        deny:
+          # logging is allowed only by logutils.Log, logrus
+          - pkg: github.com/sirupsen/logrus
   misspell:
     locale: US
     ignore-words:
@@ -69,10 +68,9 @@ linters-settings:
     # minimal complexity of if statements to report, 5 by default
     min-complexity: 7
   gomnd:
-    settings:
-      mnd:
-        # don't include the "operation" and "assign"
-        checks: [case,return]
+    checks:
+      - case
+      - return
   funlen:
     lines: 360
     statements: 120
@@ -130,11 +128,11 @@ issues:
     - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
     - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
     - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
+  exclude-dirs:
+    - "internal/mocks"
 run:
   tests: true
   timeout: 5m
   build-tags:
     - integration
-  skip-dirs:
-    - internal/mocks
   modules-download-mode: readonly

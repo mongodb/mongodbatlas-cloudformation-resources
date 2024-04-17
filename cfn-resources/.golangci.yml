@@ -13,6 +13,7 @@ linters-settings:
       - paramTypeCombine
   govet:
     enable:
+      # - fieldalignment # todo: enable during cleanup
       - shadow
   revive:
     # see https://github.com/mgechev/revive#available-rules for details.
@@ -130,6 +131,16 @@ issues:
     - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
   exclude-dirs:
     - "internal/mocks"
+  # todo: accept fix in later PR
+  exclude-rules:
+    - path: 'cfn-resources/tool/markdown-generator/generate_version_markdown.go'
+      linters:
+        - gocritic
+      text: "rangeValCopy: each iteration copies (\\d+)"
+    - path: 'cfn-resources/util/util.go'
+      linters:
+        - gocritic
+      text: "emptyStringTest: replace"
 run:
   tests: true
   timeout: 5m

@@ -30,40 +30,37 @@ import (
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
+var ReadRequiredFields = []string{constants.ID}
 var UpdateRequiredFields = []string{constants.ID}
+var DeleteRequiredFields = []string{constants.ID}
 
 type UpdateAPIKey struct {
 	Key           string
 	UpdatePayload *admin.UpdateAtlasProjectApiKey
 }
 
-func setup() {
+func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-project")
-}
 
-// validateModel inputs based on the method
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if errEvent := validator.ValidateModel(requiredFields, currentModel); errEvent != nil {
+		return nil, errEvent
+	}
+
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return nil, peErr
+	}
+	return client.AtlasSDK, nil
 }
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	_, _ = logger.Debugf("Create currentModel: %+v", *currentModel)
-
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
-	}
-	atlasV2 := client.AtlasSDK
-
 	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
 		OrgId:                     *currentModel.OrgId,
@@ -159,15 +156,10 @@ func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handl
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, ReadRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
 
 	event, model, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
@@ -183,21 +175,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
-	setup()
-
-	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, UpdateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
-	}
-	atlasV2 := client.AtlasSDK
-
 	var projectID string
 	if currentModel.Id != nil {
 		projectID = *currentModel.Id
@@ -226,7 +207,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 				Message:          "Error while finding teams in project",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		if teamsAssigned != nil && teamsAssigned.Results != nil{
+		if teamsAssigned != nil && teamsAssigned.Results != nil {
 			err, errMsg := changeProjectTeams(*atlasV2, currentModel, teamsAssigned.GetResults())
 			if err != nil {
 				_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
@@ -236,7 +217,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
 				}, nil
 			}
-			
+
 		}
 	}
 
@@ -304,15 +285,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
-	setup()
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
 	var id string
 	if currentModel.Id != nil {
 		id = *currentModel.Id
@@ -537,8 +513,8 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 	return newKeys, changedKeys, removeKeys
 }
 
-func changeProjectTeams(atlasV2 admin.APIClient, currentModel Model, newTeams []admin.TeamRole) (error, string) {
-	
+func changeProjectTeams(atlasV2 admin.APIClient, currentModel *Model, newTeams []admin.TeamRole) (error, string) {
+
 	newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, newTeams)
 	projectID := *currentModel.Id
 	var err error

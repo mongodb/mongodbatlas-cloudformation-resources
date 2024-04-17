@@ -12,9 +12,7 @@ linters-settings:
       - hugeParam
       - paramTypeCombine
   govet:
-    enable:
-      # - fieldalignment # todo: enable during cleanup
-      - shadow
+    check-shadowing: true
   revive:
     # see https://github.com/mgechev/revive#available-rules for details.
     ignore-generated-header: true
@@ -48,12 +46,14 @@ linters-settings:
       #- name: unused-parameter
       - name: unreachable-code
       - name: redefines-builtin-id
+  maligned:
+    suggest-new: true
   depguard:
-    rules:
-      main:
-        deny:
-          # logging is allowed only by logutils.Log, logrus
-          - pkg: github.com/sirupsen/logrus
+    list-type: blacklist
+    packages:
+      # logging is allowed only by logutils.Log, logrus
+      # is allowed to use only in logutils package
+      - github.com/sirupsen/logrus
   misspell:
     locale: US
     ignore-words:
@@ -69,9 +69,10 @@ linters-settings:
     # minimal complexity of if statements to report, 5 by default
     min-complexity: 7
   gomnd:
-    checks:
-      - case
-      - return
+    settings:
+      mnd:
+        # don't include the "operation" and "assign"
+        checks: [case,return]
   funlen:
     lines: 360
     statements: 120
@@ -89,7 +90,7 @@ linters:
     - revive
     - gomnd
     - goprintffuncname
-    # - gosec
+    - gosec
     - gosimple
     - govet
     - ineffassign
@@ -129,39 +130,11 @@ issues:
     - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
     - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
     - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
-    - 'var-naming: var subnetIds'
-    - 'var-naming: var vpcEndpointIds'
-  exclude-dirs:
-    - "internal/mocks"
-  # todo: accept fix in later PR
-  exclude-rules:
-    - path: 'cfn-resources/tool/markdown-generator/generate_version_markdown.go'
-      linters:
-        - gocritic
-      text: "rangeValCopy: each iteration copies (\\d+)"
-    - path: 'cfn-resources/util/util.go'
-      linters:
-        - gocritic
-      text: "emptyStringTest: replace"
-    - path: 'cfn-resources/private-endpoint/cmd/resource/steps/privateendpoint/private_endpoint.go'
-      linters:
-        - gosec
-      text: "G601: Implicit memory aliasing in for loop"
-    - path: 'cfn-resources/cloud-backup-schedule/cmd/resource/resource.go'
-      linters:
-        - gosec
-      text: "G601: Implicit memory aliasing in for loop"
-    - path: 'cfn-resources/util/aws/utils.go'
-      linters:
-        - gosec
-      text: "G601: Implicit memory aliasing in for loop"
-    - path: cfn-resources/private-endpoint/cmd/resource/steps/awsvpcendpoint/aws_vpc_endpoint.go
-      linters:
-        - gosec
-      text: "G601: Implicit memory aliasing in for loop"
 run:
   tests: true
   timeout: 5m
   build-tags:
     - integration
+  skip-dirs:
+    - internal/mocks
   modules-download-mode: readonly

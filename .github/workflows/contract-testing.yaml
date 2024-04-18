@@ -686,9 +686,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true

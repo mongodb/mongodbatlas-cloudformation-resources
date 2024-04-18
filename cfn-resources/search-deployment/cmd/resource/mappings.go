@@ -45,5 +45,5 @@ func NewSearchDeploymentReq(model *Model) admin.ApiSearchDeploymentRequest {
 			NodeCount:    *spec.NodeCount,
 		}
 	}
-	return admin.ApiSearchDeploymentRequest{Specs: &requestSpecs}
+	return admin.ApiSearchDeploymentRequest{Specs: requestSpecs}
 }

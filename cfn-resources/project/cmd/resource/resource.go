@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -181,7 +182,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		return event, nil
 	}
 
-	if currentModel.Name != nil {
+	if currentModel.Name != nil || !reflect.DeepEqual(prevModel.Tags, currentModel.Tags) {
 		event, _, err = updateProject(atlasV2, currentModel)
 		if err != nil {
 			return event, err
@@ -311,6 +312,7 @@ func getProject(client *admin.APIClient, currentModel *Model) (event handler.Pro
 	currentModel.ClusterCount = util.Int64PtrToIntPtr(&project.ClusterCount)
 	currentModel.Id = project.Id
 	currentModel.RegionUsageRestrictions = project.RegionUsageRestrictions
+	currentModel.Tags = NewCfnTags(project.GetTags())
 	return handler.ProgressEvent{}, currentModel, nil
 }
 
@@ -329,7 +331,12 @@ func getProjectWithSettings(atlasV2 *admin.APIClient, currentModel *Model) (even
 }
 
 func updateProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *admin.Group, err error) {
-	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &admin.GroupUpdate{Name: currentModel.Name}).Execute()
+	adminTags := NewResourceTags(currentModel.Tags)
+	projectUpdate := admin.GroupUpdate{
+		Name: currentModel.Name,
+		Tags: &adminTags,
+	}
+	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &projectUpdate).Execute()
 	if err != nil {
 		if res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(

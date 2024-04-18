@@ -1,0 +1,8 @@
+{
+  "Name": "Name",
+  "OrgId": "$MONGODB_ATLAS_ORG_ID",
+  "Profile": "default",
+  "Tags": {
+    "Key1": "Value1-Updated"
+  }
+}

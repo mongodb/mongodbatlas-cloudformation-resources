@@ -59,3 +59,15 @@ jq --arg org "${org_id}" \
 	--arg team_id "$team_id" \
 	'.OrgId?|=$org | .Name?|=$name |.Profile?|=$profile | .ProjectApiKeys[0].Key?|=$key_id | .ProjectTeams[0].TeamId?|=$team_id' \
 	"test/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
+
+jq --arg org "${org_id}" \
+	--arg name "${project_name}-tags" \
+	--arg profile "${profile}" \
+	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile' \
+	"test/inputs_2_create.template.json" >"inputs/inputs_2_create.json"
+
+jq --arg org "${org_id}" \
+	--arg name "${project_name}"-tags \
+	--arg profile "${profile}" \
+	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile' \
+	"test/inputs_2_update.template.json" >"inputs/inputs_2_update.json"

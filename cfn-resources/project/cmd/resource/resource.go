@@ -23,47 +23,39 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
-var UpdateRequiredFields = []string{constants.ID}
+var ReadUpdateDeleteRequiredFields = []string{constants.ID}
 
 type UpdateAPIKey struct {
 	Key           string
 	UpdatePayload *admin.UpdateAtlasProjectApiKey
 }
 
-func setup() {
+func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-project")
-}
-
-// validateModel inputs based on the method
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
-
-// Create handles the Create event from the Cloudformation service.
-func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	_, _ = logger.Debugf("Create currentModel: %+v", *currentModel)
-
-	if errEvent := validateModel(CreateRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
-	}
-
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
-	}
-	atlasV2 := client.Atlas20231115002
 
+	if errEvent := validator.ValidateModel(requiredFields, currentModel); errEvent != nil {
+		return nil, errEvent
+	}
+
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return nil, peErr
+	}
+	return client.AtlasSDK, nil
+}
+
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
+	}
 	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
 		OrgId:                     *currentModel.OrgId,
@@ -82,31 +74,33 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	project, res, err := atlasV2.ProjectsApi.CreateProjectWithParams(context.Background(), &createProjectReq).Execute()
 
 	if err != nil {
-		_, _ = logger.Debugf("Create - error: %+v", err)
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
 			res), nil
 	}
+	projectID := project.GetId()
 
-	// Add ApiKeys
 	if len(currentModel.ProjectApiKeys) > 0 {
 		for _, key := range currentModel.ProjectApiKeys {
-			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), *project.Id, *key.Key, &admin.UpdateAtlasProjectApiKey{
-				Roles: key.RoleNames,
+			if key.Key == nil {
+				errorMessage := fmt.Sprintf("ApiKey is missing the configuration for projectID=%s", projectID)
+				return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInvalidRequest), nil
+			}
+			key := key
+			apiKey := *key.Key
+			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, apiKey, &admin.UpdateAtlasProjectApiKey{
+				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {
-				_, _ = logger.Warnf("Assign Key Error: %s", err)
 				return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error while Assigning Key to project : %s", err.Error()),
 					res), nil
 			}
 		}
 	}
 
-	// Add Teams
 	if len(currentModel.ProjectTeams) > 0 {
 		teams := readTeams(currentModel.ProjectTeams)
 		_, _, err := atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), *project.Id, &teams).Execute()
 		if err != nil {
-			_, _ = logger.Warnf("AddTeamsToProject Error: %s", err)
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error while adding teams to project : %s", err.Error()),
 				res), nil
 		}
@@ -124,7 +118,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	event, proj, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
-		_, _ = logger.Warnf("getProject Error: %s", err)
 		return event, err
 	}
 
@@ -137,7 +130,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handler.ProgressEvent, error) {
 	if currentModel.ProjectSettings != nil {
-		// Update project settings
 		projectSettings := admin.GroupSettings{
 			IsCollectDatabaseSpecificsStatisticsEnabled: currentModel.ProjectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
 			IsRealtimePerformancePanelEnabled:           currentModel.ProjectSettings.IsRealtimePerformancePanelEnabled,
@@ -149,7 +141,6 @@ func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handl
 
 		_, res, err := atlasV2.ProjectsApi.UpdateProjectSettings(context.Background(), *currentModel.Id, &projectSettings).Execute()
 		if err != nil {
-			_, _ = logger.Warnf("UpdateProjectSettings Error: %s", err)
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to update Project settings : %s", err.Error()),
 				res), err
 		}
@@ -157,17 +148,11 @@ func updateProjectSettings(currentModel *Model, atlasV2 *admin.APIClient) (handl
 	return handler.ProgressEvent{}, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, ReadUpdateDeleteRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
 
 	event, model, err := getProjectWithSettings(atlasV2, currentModel)
 	if err != nil {
@@ -181,23 +166,11 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
-	setup()
-
-	if errEvent := validateModel(UpdateRequiredFields, currentModel); errEvent != nil {
-		_, _ = logger.Warnf("Validation Error")
-		return *errEvent, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, ReadUpdateDeleteRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
-	}
-	atlasV2 := client.Atlas20231115002
-
 	var projectID string
 	if currentModel.Id != nil {
 		projectID = *currentModel.Id
@@ -208,7 +181,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		return event, nil
 	}
 
-	// Update Project
 	if currentModel.Name != nil {
 		event, _, err = updateProject(atlasV2, currentModel)
 		if err != nil {
@@ -217,61 +189,31 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}
 
 	if currentModel.ProjectTeams != nil {
-		// Get teams from project
 		teamsAssigned, _, err := atlasV2.TeamsApi.ListProjectTeams(context.Background(), projectID).Execute()
 		if err != nil {
-			_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Error while finding teams in project",
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
-		newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, teamsAssigned.Results)
-
-		// Remove Teams
-		for _, team := range removeTeams {
-			_, err = atlasV2.TeamsApi.RemoveProjectTeam(context.Background(), projectID, util.SafeString(team.TeamId)).Execute()
+		if teamsAssigned != nil && teamsAssigned.Results != nil {
+			errorMessage, err := changeProjectTeams(*atlasV2, currentModel, teamsAssigned.GetResults())
 			if err != nil {
-				_, _ = logger.Warnf("ProjectId : %s, Error: %s", projectID, err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
-					Message:          "Error while deleting team from project",
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-			}
-		}
-		// Add Teams
-		if len(newTeams) > 0 {
-			_, _, err = atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), projectID, &newTeams).Execute()
-			if err != nil {
-				_, _ = logger.Warnf("Error: %s", err)
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          "Error while adding team to project",
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
-			}
-		}
-		// Update Teams
-		for _, team := range changedTeams {
-			_, _, err = atlasV2.TeamsApi.UpdateTeamRoles(context.Background(), projectID, util.SafeString(team.TeamId), &admin.TeamRole{RoleNames: team.RoleNames}).Execute()
-			if err != nil {
-				_, _ = logger.Warnf("Error: %s", err)
-				return handler.ProgressEvent{
-					OperationStatus:  handler.Failed,
-					Message:          "Error while updating team roles in project",
-					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
+					Message:          errorMessage,
+					HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+				}, nil
 			}
 		}
 	}
 
 	if currentModel.ProjectApiKeys != nil {
-		// Get Change in ApiKeys
 		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
 
-		// Remove old keys
 		for _, key := range removeKeys {
 			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, *key.Key).Execute()
 			if err != nil {
-				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          fmt.Sprintf("Error while Un-assigning Key to project %s", err.Error()),
@@ -279,13 +221,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 			}
 		}
 
-		// Add Keys
 		for _, key := range newAPIKeys {
+			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
-				Roles: key.RoleNames,
+				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {
-				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          fmt.Sprintf("Error while Assigning Key to project %s", err.Error()),
@@ -293,13 +234,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 			}
 		}
 
-		// Update Key Roles
 		for _, key := range changedKeys {
+			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
-				Roles: key.RoleNames,
+				Roles: &key.RoleNames,
 			}).Execute()
 			if err != nil {
-				_, _ = logger.Warnf("Error: %s", err)
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
 					Message:          fmt.Sprintf("Error while Assigning Key to project %s", err.Error()),
@@ -325,17 +265,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}, nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event handler.ProgressEvent, err error) {
-	setup()
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, pe := util.NewAtlasClient(&req, currentModel.Profile)
-	if pe != nil {
-		_, _ = logger.Warnf("CreateMongoDBClient error: %v", *pe)
-		return *pe, nil
+	atlasV2, peErr := initEnvWithLatestClient(req, currentModel, ReadUpdateDeleteRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
 	var id string
 	if currentModel.Id != nil {
 		id = *currentModel.Id
@@ -345,11 +279,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	if err != nil {
 		return event, nil
 	}
-	_, _ = logger.Debugf("Deleting project with id(%s)", id)
 
 	_, res, err := atlasV2.ProjectsApi.DeleteProject(context.Background(), id).Execute()
 	if err != nil {
-		_, _ = logger.Warnf("####error deleting project with id(%s): %s", id, err)
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
 			res), nil
 	}
@@ -361,12 +293,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}, nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-// Read project
 func getProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	var project *admin.Group
 	event, project, err = getProjectByID(currentModel.Id, client)
@@ -384,7 +314,6 @@ func getProject(client *admin.APIClient, currentModel *Model) (event handler.Pro
 	return handler.ProgressEvent{}, currentModel, nil
 }
 
-// Read project
 func getProjectWithSettings(atlasV2 *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
 	event, currentModel, err = getProject(atlasV2, currentModel)
 	if err != nil {
@@ -400,7 +329,7 @@ func getProjectWithSettings(atlasV2 *admin.APIClient, currentModel *Model) (even
 }
 
 func updateProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *admin.Group, err error) {
-	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &admin.GroupName{Name: currentModel.Name}).Execute()
+	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &admin.GroupUpdate{Name: currentModel.Name}).Execute()
 	if err != nil {
 		if res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(
@@ -428,21 +357,17 @@ func getProjectByID(id *string, atlasV2 *admin.APIClient) (event handler.Progres
 }
 
 func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Model) (event handler.ProgressEvent, model *Model, err error) {
-	// Get teams from project
 	teamsAssigned, res, err := atlasV2.TeamsApi.ListProjectTeams(context.Background(), id).Execute()
 	if err != nil {
-		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), nil, err
 	}
 
 	projectSettings, _, err := atlasV2.ProjectsApi.GetProjectSettings(context.Background(), id).Execute()
 	if err != nil {
-		_, _ = logger.Warnf("ProjectId : %s, Error: %s", id, err)
 		return progressevent.GetFailedEventByResponse(err.Error(),
 			res), nil, err
 	}
-	// Set projectSettings
 	currentModel.ProjectSettings = &ProjectSettings{
 		IsCollectDatabaseSpecificsStatisticsEnabled: projectSettings.IsCollectDatabaseSpecificsStatisticsEnabled,
 		IsRealtimePerformancePanelEnabled:           projectSettings.IsRealtimePerformancePanelEnabled,
@@ -452,11 +377,10 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 		IsExtendedStorageSizesEnabled:               projectSettings.IsExtendedStorageSizesEnabled,
 	}
 
-	// Set teams
 	var teams []ProjectTeam
-	for _, team := range teamsAssigned.Results {
+	for _, team := range teamsAssigned.GetResults() {
 		if util.IsStringPresent(team.TeamId) {
-			teams = append(teams, ProjectTeam{TeamId: team.TeamId, RoleNames: team.RoleNames})
+			teams = append(teams, ProjectTeam{TeamId: team.TeamId, RoleNames: team.GetRoleNames()})
 		}
 	}
 
@@ -465,22 +389,21 @@ func readProjectSettings(atlasV2 *admin.APIClient, id string, currentModel *Mode
 	return handler.ProgressEvent{}, currentModel, err
 }
 
-// Get difference in Teams
 func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newTeams []admin.TeamRole,
 	changedTeams []admin.TeamRole, removeTeams []admin.TeamRole) {
-	for _, nTeam := range currentTeams {
+	for i := range currentTeams {
+		nTeam := currentTeams[i]
 		if util.IsStringPresent(nTeam.TeamId) {
 			matched := false
 			for _, oTeam := range oTeams {
 				if util.AreStringPtrEqual(nTeam.TeamId, oTeam.TeamId) {
-					changedTeams = append(changedTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
+					changedTeams = append(changedTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: &nTeam.RoleNames})
 					matched = true
 					break
 				}
 			}
-			// Add to newTeams
 			if !matched {
-				newTeams = append(newTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: nTeam.RoleNames})
+				newTeams = append(newTeams, admin.TeamRole{TeamId: nTeam.TeamId, RoleNames: &nTeam.RoleNames})
 			}
 		}
 	}
@@ -504,20 +427,19 @@ func getChangeInTeams(currentTeams []ProjectTeam, oTeams []admin.TeamRole) (newT
 
 func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	var newTeams []admin.TeamRole
-	for _, t := range teams {
-		if util.IsStringPresent(t.TeamId) {
-			newTeams = append(newTeams, admin.TeamRole{TeamId: t.TeamId, RoleNames: t.RoleNames})
+	for i := range teams {
+		team := teams[i]
+		if util.IsStringPresent(team.TeamId) {
+			newTeams = append(newTeams, admin.TeamRole{TeamId: team.TeamId, RoleNames: &team.RoleNames})
 		}
 	}
 	return newTeams
 }
 
 func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
-	// Create maps to efficiently check for the existence of keys by ID
 	currentKeyMap := make(map[string]ProjectApiKey)
 	previousKeyMap := make(map[string]ProjectApiKey)
 
-	// Populate the maps using the ID as the key
 	for _, key := range currentKeys {
 		if key.Key != nil {
 			currentKeyMap[*key.Key] = key
@@ -530,7 +452,6 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 		}
 	}
 
-	// Identify new keys, changed keys, and removed keys
 	for _, key := range currentKeys {
 		if key.Key == nil {
 			continue
@@ -541,7 +462,6 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 				changedKeys = append(changedKeys, key)
 			}
 		} else {
-			// Key exists in currentKeys but not in oKeys
 			newKeys = append(newKeys, key)
 		}
 	}
@@ -552,10 +472,33 @@ func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKe
 		}
 
 		if _, ok := currentKeyMap[*key.Key]; !ok {
-			// Key exists in oKeys but not in currentKeys
 			removeKeys = append(removeKeys, key)
 		}
 	}
 
 	return newKeys, changedKeys, removeKeys
+}
+
+func changeProjectTeams(atlasV2 admin.APIClient, currentModel *Model, newTeams []admin.TeamRole) (errorMessage string, err error) {
+	newTeams, changedTeams, removeTeams := getChangeInTeams(currentModel.ProjectTeams, newTeams)
+	projectID := *currentModel.Id
+	for _, team := range removeTeams {
+		_, err = atlasV2.TeamsApi.RemoveProjectTeam(context.Background(), projectID, util.SafeString(team.TeamId)).Execute()
+		if err != nil {
+			return "Error while deleting team from project", err
+		}
+	}
+	if len(newTeams) > 0 {
+		_, _, err = atlasV2.TeamsApi.AddAllTeamsToProject(context.Background(), projectID, &newTeams).Execute()
+		if err != nil {
+			return "Error while adding team to project", err
+		}
+	}
+	for _, team := range changedTeams {
+		_, _, err = atlasV2.TeamsApi.UpdateTeamRoles(context.Background(), projectID, util.SafeString(team.TeamId), &admin.TeamRole{RoleNames: team.RoleNames}).Execute()
+		if err != nil {
+			return "Error while updating team roles in project", err
+		}
+	}
+	return "", err
 }

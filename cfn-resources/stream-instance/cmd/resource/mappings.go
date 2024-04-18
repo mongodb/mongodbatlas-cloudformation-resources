@@ -14,7 +14,7 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20231115007/admin"
+import "go.mongodb.org/atlas-sdk/v20231115008/admin"
 
 func NewStreamsTenant(model *Model) *admin.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion

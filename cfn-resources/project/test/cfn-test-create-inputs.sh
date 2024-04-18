@@ -62,13 +62,13 @@ jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 jq --arg org "${org_id}" \
-	--arg name "${project_name}-tags" \
+	--arg name "${name}-tags" \
 	--arg profile "${profile}" \
 	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile' \
 	"test/inputs_2_create.template.json" >"inputs/inputs_2_create.json"
 
 jq --arg org "${org_id}" \
-	--arg name "${project_name}"-tags \
+	--arg name "${name}"-tags \
 	--arg profile "${profile}" \
 	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile' \
 	"test/inputs_2_update.template.json" >"inputs/inputs_2_update.json"

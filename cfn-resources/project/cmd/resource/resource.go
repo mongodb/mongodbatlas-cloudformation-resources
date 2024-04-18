@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115007/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
@@ -362,7 +362,7 @@ func getProjectWithSettings(atlasV2 *admin.APIClient, currentModel *Model) (even
 }
 
 func updateProject(client *admin.APIClient, currentModel *Model) (event handler.ProgressEvent, model *admin.Group, err error) {
-	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &admin.GroupName{Name: currentModel.Name}).Execute()
+	project, res, err := client.ProjectsApi.UpdateProject(context.Background(), *currentModel.Id, &admin.GroupUpdate{Name: currentModel.Name}).Execute()
 	if err != nil {
 		if res.StatusCode == 401 { // cfn test
 			return progressevent.GetFailedEventByCode(

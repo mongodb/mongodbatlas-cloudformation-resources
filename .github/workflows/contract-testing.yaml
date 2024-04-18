@@ -77,9 +77,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -116,9 +119,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.organization == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -155,9 +161,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+    - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+      with:
+        go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
       uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
     - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
       with:
        use-installer: true
@@ -194,9 +203,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -232,9 +244,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -270,9 +285,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -305,9 +323,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
          use-installer: true
@@ -343,9 +364,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.auditing == 'true' }}
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+    - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+      with:
+        go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
       uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
     - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
       with:
        use-installer: true
@@ -383,9 +407,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.privatelink-endpoint-service-data-federation-online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -421,9 +448,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.data-lake-pipeline == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -459,9 +489,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.  serverless-private-endpoint == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -498,9 +531,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -536,9 +572,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -574,9 +613,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-service == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -612,9 +654,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -649,9 +694,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -724,9 +772,12 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: aws-actions/setup-sam@342dcc4899c07fedf41f91cbb1e6c68925a85d37
         with:
           use-installer: true
@@ -759,7 +810,3 @@ jobs:
 
           make run-contract-testing
           make delete-test-resources
-
-
-
-  

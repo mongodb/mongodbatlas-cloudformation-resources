@@ -57,10 +57,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
+	adminTags := NewResourceTags(currentModel.Tags)
 	projectInput := &admin.Group{
 		Name:                      *currentModel.Name,
 		OrgId:                     *currentModel.OrgId,
 		WithDefaultAlertsSettings: currentModel.WithDefaultAlertsSettings,
+		Tags:                      &adminTags,
 	}
 	if currentModel.RegionUsageRestrictions != nil {
 		projectInput.RegionUsageRestrictions = currentModel.RegionUsageRestrictions

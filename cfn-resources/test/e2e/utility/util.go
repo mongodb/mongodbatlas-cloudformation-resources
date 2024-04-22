@@ -17,6 +17,7 @@ package utility
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"math/big"
@@ -98,7 +99,13 @@ func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin.APIClie
 func ExecuteGoTemplate(templatePath string, data any) (string, error) {
 	var cfnGoTemplateStr bytes.Buffer
 	name := path.Base(templatePath)
-	cfnGoTemplate, err := template.New(name).ParseFiles(templatePath)
+	cfnGoTemplate := template.New(name).Funcs(map[string]any{
+		"marshal": func(v interface{}) template.HTML {
+			a, _ := json.Marshal(v)
+			return template.HTML(a)
+		},
+	})
+	cfnGoTemplate, err := cfnGoTemplate.ParseFiles(templatePath)
 	if err != nil {
 		return "", err
 	}

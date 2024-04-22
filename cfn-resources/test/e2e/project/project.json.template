@@ -23,7 +23,8 @@
               "GROUP_OWNER"
             ]
           }
-        ]
+        ],
+        "Tags": {{ marshal .Tags }}
       }
     }
   },

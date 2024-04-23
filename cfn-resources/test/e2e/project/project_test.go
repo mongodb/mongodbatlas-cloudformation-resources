@@ -123,7 +123,6 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 
-	// create CFN template with updated project name and tags
 	c.projectTmplObj.Name += "-updated"
 	c.projectTmplObj.Tags = tagsUpdated
 	c.template, c.err = newCFNTemplate(c.projectTmplObj)

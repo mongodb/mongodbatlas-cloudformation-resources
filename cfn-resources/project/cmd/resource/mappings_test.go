@@ -15,12 +15,21 @@
 package resource_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
+
+// make test deterministic
+func sortResourceTags(tags []admin.ResourceTag) []admin.ResourceTag {
+	sort.Slice(tags, func(i, j int) bool {
+		return tags[i].Key < tags[j].Key
+	})
+	return tags
+}
 
 func TestNewResourceTags(t *testing.T) {
 	testCases := map[string]struct {
@@ -34,7 +43,7 @@ func TestNewResourceTags(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, tc.output, resource.NewResourceTags(tc.input))
+			assert.Equal(t, tc.output, sortResourceTags(resource.NewResourceTags(tc.input)))
 			assert.Equal(t, tc.input, resource.NewCfnTags(tc.output))
 		})
 	}

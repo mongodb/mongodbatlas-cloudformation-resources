@@ -4,6 +4,8 @@
 
 Resource for managing [Clusters](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Clusters).
 
+**WARNING:** `labels` attribute  is deprecated and will be removed in the future, use the `tags` attribute instead.
+
 ## Requirements
 
 Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.

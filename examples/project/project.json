@@ -102,9 +102,18 @@
     },
     "RegionUsageRestrictions": {
       "Type": "String",
-      "AllowedValues": ["GOV_REGIONS_ONLY","COMMERCIAL_FEDRAMP_REGIONS_ONLY","NONE"],
+      "AllowedValues": [
+        "GOV_REGIONS_ONLY",
+        "COMMERCIAL_FEDRAMP_REGIONS_ONLY",
+        "NONE"
+      ],
       "Description": "Region usage restrictions that designate the project's AWS region",
       "Default": "NONE"
+    },
+    "TagOwner": {
+      "Type": "String",
+      "Default": "AWS-CFN",
+      "Description": "Will be used as a value in: Tags.Owner={TagOwner}"
     }
   },
   "Mappings": {},
@@ -121,7 +130,9 @@
         "Profile": {
           "Ref": "Profile"
         },
-        "RegionUsageRestrictions": {"Ref": "RegionUsageRestrictions"},
+        "RegionUsageRestrictions": {
+          "Ref": "RegionUsageRestrictions"
+        },
         "ProjectSettings": {
           "IsCollectDatabaseSpecificsStatisticsEnabled": {
             "Ref": "IsCollectDatabaseSpecificsStatisticsEnabled"
@@ -161,7 +172,12 @@
               "Ref": "TeamRoles"
             }
           }
-        ]
+        ],
+        "Tags": {
+          "Owner": {
+            "Ref": "TagOwner"
+          }
+        }
       }
     }
   },

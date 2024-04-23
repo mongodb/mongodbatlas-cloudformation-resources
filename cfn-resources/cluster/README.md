@@ -4,7 +4,7 @@
 
 Resource for managing [Clusters](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Clusters).
 
-**WARNING:** `labels` attribute  is deprecated and will be removed in the future, use the `tags` attribute instead.
+**WARNING:** `labels` attribute  is deprecated and will be removed in the future, use the `tags` attribute instead. See https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/cluster/docs/tag.md 
 
 ## Requirements
 

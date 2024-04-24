@@ -225,12 +225,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  tenants}, nil
 }
 
-func closeResponse(response *http.Response) {
-	if response != nil {
-		response.Body.Close()
-	}
-}
-
 func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
 	_, _ = logger.Warnf("%s failed, error: %s", method, err.Error())
 	if response.StatusCode == http.StatusConflict {

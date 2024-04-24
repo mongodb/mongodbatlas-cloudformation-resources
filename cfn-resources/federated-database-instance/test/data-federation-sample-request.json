@@ -1,0 +1,17 @@
+{
+  "desiredResourceState": {
+    "TenantName": "oriol-tests-testing-locally-10",
+    "ProjectId": "65dca009938ec8392b94e7e6",
+    "Profile": "default-oriol",
+    "Storage": {
+      "Databases": [
+        {
+          "MaxWildcardCollections": "50",
+          "Name": "sample-mflix"
+        }
+      ]
+    }
+  },
+  "providerLogGroupName": "mongodb-atlas-data-federation-logs",
+  "previousResourceState": {}
+}

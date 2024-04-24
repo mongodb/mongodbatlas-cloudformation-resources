@@ -385,6 +385,13 @@ func IntPtrToStrPtr(i *int) *string {
 	return &str
 }
 
+func StringPtr(v string) *string {
+	if v != "" {
+		return &v
+	}
+	return nil
+}
+
 func SameStringSliceWithoutOrder(x, y []string) bool {
 	if len(x) != len(y) {
 		return false

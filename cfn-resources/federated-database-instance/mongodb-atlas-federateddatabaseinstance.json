@@ -356,10 +356,7 @@
   ],
   "required": [
     "ProjectId",
-    "TenantName",
-    "CloudProviderConfig/RoleId",
-    "CloudProviderConfig/TestS3Bucket",
-    "DataProcessRegion/Region"
+    "TenantName"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

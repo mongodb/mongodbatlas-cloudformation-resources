@@ -279,6 +279,10 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant)
 			Region:        *dataProcessRegion.Region,
 		}
 	}
+	if dataProcessRegion.Region != nil {
+		dataLakeTenant.DataProcessRegion.CloudProvider = constants.AWS
+		dataLakeTenant.DataProcessRegion.Region = *dataProcessRegion.Region
+	}
 
 	return dataLakeTenant
 }

@@ -75,7 +75,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			DataLakeTenant: &dataLakeTenantInput,
 		}).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, CREATE, err)
 	}
@@ -108,7 +107,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, READ, err)
 	}
@@ -149,7 +147,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, UPDATE, err)
 	}
@@ -182,7 +179,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	_, response, err := client.AtlasSDK.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, DELETE, err)
 	}
@@ -213,7 +209,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	dataLakeTenants, response, err := client.AtlasSDK.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, LIST, err)
 	}

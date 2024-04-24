@@ -28,7 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115008/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.TenantName}
@@ -70,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.CreateFederatedDatabaseWithParams(
 		context.Background(),
-		&atlasSDK.CreateFederatedDatabaseApiParams{
+		&admin.CreateFederatedDatabaseApiParams{
 			GroupId:        *currentModel.ProjectId,
 			DataLakeTenant: &dataLakeTenantInput,
 		}).Execute()
@@ -255,16 +255,16 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 		response), nil
 }
 
-func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant) {
-	dataLakeTenant = atlasSDK.DataLakeTenant{
+func (model *Model) setDataLakeTenant() (dataLakeTenant admin.DataLakeTenant) {
+	dataLakeTenant = admin.DataLakeTenant{
 		Name:    model.TenantName,
 		Storage: model.newDataFederationDataStorage(),
 	}
 
 	cloudProviderConfig := model.CloudProviderConfig
 	if cloudProviderConfig != nil && cloudProviderConfig.TestS3Bucket != nil && cloudProviderConfig.RoleId != nil {
-		dataLakeTenant.CloudProviderConfig = &atlasSDK.DataLakeCloudProviderConfig{
-			Aws: atlasSDK.DataLakeAWSCloudProviderConfig{
+		dataLakeTenant.CloudProviderConfig = &admin.DataLakeCloudProviderConfig{
+			Aws: admin.DataLakeAWSCloudProviderConfig{
 				TestS3Bucket: *cloudProviderConfig.TestS3Bucket,
 				RoleId:       *cloudProviderConfig.RoleId,
 			},
@@ -274,14 +274,14 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant)
 	dataProcessRegion := model.DataProcessRegion
 	if dataProcessRegion != nil && dataProcessRegion.CloudProvider != nil && dataProcessRegion.Region != nil {
 		dataLakeTenant.DataProcessRegion.CloudProvider = *dataProcessRegion.CloudProvider
-		dataLakeTenant.DataProcessRegion = &atlasSDK.DataLakeDataProcessRegion{
+		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
 			CloudProvider: *dataProcessRegion.CloudProvider,
 			Region:        *dataProcessRegion.Region,
 		}
 	}
 
 	if dataProcessRegion != nil && dataProcessRegion.Region != nil {
-		dataLakeTenant.DataProcessRegion = &atlasSDK.DataLakeDataProcessRegion{
+		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
 			CloudProvider: constants.AWS,
 			Region:        *dataProcessRegion.Region,
 		}
@@ -290,14 +290,14 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant)
 	return dataLakeTenant
 }
 
-func (model *Model) newDataFederationDataStorage() *atlasSDK.DataLakeStorage {
-	return &atlasSDK.DataLakeStorage{
+func (model *Model) newDataFederationDataStorage() *admin.DataLakeStorage {
+	return &admin.DataLakeStorage{
 		Databases: model.newDataFederationDatabase(),
 		Stores:    model.newStores(),
 	}
 }
 
-func (model *Model) newDataFederationDatabase() *[]atlasSDK.DataLakeDatabaseInstance {
+func (model *Model) newDataFederationDatabase() *[]admin.DataLakeDatabaseInstance {
 	if model.Storage == nil {
 		return nil
 	}
@@ -306,9 +306,9 @@ func (model *Model) newDataFederationDatabase() *[]atlasSDK.DataLakeDatabaseInst
 		return nil
 	}
 
-	dbs := make([]atlasSDK.DataLakeDatabaseInstance, len(storageDBs))
+	dbs := make([]admin.DataLakeDatabaseInstance, len(storageDBs))
 	for i := range storageDBs {
-		dbs[i] = atlasSDK.DataLakeDatabaseInstance{
+		dbs[i] = admin.DataLakeDatabaseInstance{
 			Name:        storageDBs[i].Name,
 			Collections: newDataFederationCollections(storageDBs[i].Collections),
 		}
@@ -320,14 +320,14 @@ func (model *Model) newDataFederationDatabase() *[]atlasSDK.DataLakeDatabaseInst
 	return &dbs
 }
 
-func newDataFederationCollections(storageDBCollections []Collection) *[]atlasSDK.DataLakeDatabaseCollection {
+func newDataFederationCollections(storageDBCollections []Collection) *[]admin.DataLakeDatabaseCollection {
 	if len(storageDBCollections) == 0 {
 		return nil
 	}
 
-	collections := make([]atlasSDK.DataLakeDatabaseCollection, len(storageDBCollections))
+	collections := make([]admin.DataLakeDatabaseCollection, len(storageDBCollections))
 	for i := range storageDBCollections {
-		collections[i] = atlasSDK.DataLakeDatabaseCollection{
+		collections[i] = admin.DataLakeDatabaseCollection{
 			Name:        storageDBCollections[i].Name,
 			DataSources: newDataFederationDataSource(storageDBCollections[i].DataSources),
 		}
@@ -336,13 +336,13 @@ func newDataFederationCollections(storageDBCollections []Collection) *[]atlasSDK
 	return &collections
 }
 
-func newDataFederationDataSource(dataSources []DataSource) *[]atlasSDK.DataLakeDatabaseDataSourceSettings {
+func newDataFederationDataSource(dataSources []DataSource) *[]admin.DataLakeDatabaseDataSourceSettings {
 	if len(dataSources) == 0 {
 		return nil
 	}
-	dataSourceSettings := make([]atlasSDK.DataLakeDatabaseDataSourceSettings, len(dataSources))
+	dataSourceSettings := make([]admin.DataLakeDatabaseDataSourceSettings, len(dataSources))
 	for i := range dataSources {
-		dataSourceSettings[i] = atlasSDK.DataLakeDatabaseDataSourceSettings{
+		dataSourceSettings[i] = admin.DataLakeDatabaseDataSourceSettings{
 			AllowInsecure:       dataSources[i].AllowInsecure,
 			Database:            dataSources[i].Database,
 			Collection:          dataSources[i].Collection,
@@ -357,7 +357,7 @@ func newDataFederationDataSource(dataSources []DataSource) *[]atlasSDK.DataLakeD
 	return &dataSourceSettings
 }
 
-func (model *Model) newStores() *[]atlasSDK.DataLakeStoreSettings {
+func (model *Model) newStores() *[]admin.DataLakeStoreSettings {
 	if model.Storage == nil {
 		return nil
 	}
@@ -366,9 +366,9 @@ func (model *Model) newStores() *[]atlasSDK.DataLakeStoreSettings {
 		return nil
 	}
 
-	dataLakeStores := make([]atlasSDK.DataLakeStoreSettings, len(stores))
+	dataLakeStores := make([]admin.DataLakeStoreSettings, len(stores))
 	for i := range stores {
-		dataLakeStores[i] = atlasSDK.DataLakeStoreSettings{
+		dataLakeStores[i] = admin.DataLakeStoreSettings{
 			Name:        stores[i].Name,
 			ProjectId:   stores[i].ProjectId,
 			ClusterName: stores[i].ClusterName,
@@ -381,7 +381,7 @@ func (model *Model) newStores() *[]atlasSDK.DataLakeStoreSettings {
 	return &dataLakeStores
 }
 
-func (model *Model) getDataLakeTenant(dataLakeTenant atlasSDK.DataLakeTenant) {
+func (model *Model) getDataLakeTenant(dataLakeTenant admin.DataLakeTenant) {
 	model.Storage = getDataLakeStorage(dataLakeTenant.Storage)
 	model.TenantName = dataLakeTenant.Name
 	model.ProjectId = dataLakeTenant.GroupId
@@ -399,7 +399,7 @@ func (model *Model) getDataLakeTenant(dataLakeTenant atlasSDK.DataLakeTenant) {
 	model.HostNames = dataLakeTenant.GetHostnames()
 }
 
-func getDataLakeStorage(storage *atlasSDK.DataLakeStorage) *Storage {
+func getDataLakeStorage(storage *admin.DataLakeStorage) *Storage {
 	atlasDataLakeStorage := &Storage{
 		Databases: getDataLakeDatabases(storage.GetDatabases()),
 		Stores:    getDataLakeStores(storage.GetStores()),
@@ -407,7 +407,7 @@ func getDataLakeStorage(storage *atlasSDK.DataLakeStorage) *Storage {
 	return atlasDataLakeStorage
 }
 
-func getDataLakeDatabases(dbs []atlasSDK.DataLakeDatabaseInstance) []Database {
+func getDataLakeDatabases(dbs []admin.DataLakeDatabaseInstance) []Database {
 	dataLakeDbs := make([]Database, len(dbs))
 	for i := range dbs {
 		dataLakeDbs[i] = getDataLakeDatabase(dbs[i])
@@ -415,7 +415,7 @@ func getDataLakeDatabases(dbs []atlasSDK.DataLakeDatabaseInstance) []Database {
 	return dataLakeDbs
 }
 
-func getDataLakeDatabase(db atlasSDK.DataLakeDatabaseInstance) Database {
+func getDataLakeDatabase(db admin.DataLakeDatabaseInstance) Database {
 	atlasDataLakeDatabase := Database{
 		Collections: getCollections(db.GetCollections()),
 		Name:        db.Name,
@@ -428,7 +428,7 @@ func getDataLakeDatabase(db atlasSDK.DataLakeDatabaseInstance) Database {
 	return atlasDataLakeDatabase
 }
 
-func getCollections(dbCollections []atlasSDK.DataLakeDatabaseCollection) []Collection {
+func getCollections(dbCollections []admin.DataLakeDatabaseCollection) []Collection {
 	collections := make([]Collection, len(dbCollections))
 
 	for i := range dbCollections {
@@ -440,7 +440,7 @@ func getCollections(dbCollections []atlasSDK.DataLakeDatabaseCollection) []Colle
 	return collections
 }
 
-func getDataSources(dss []atlasSDK.DataLakeDatabaseDataSourceSettings) []DataSource {
+func getDataSources(dss []admin.DataLakeDatabaseDataSourceSettings) []DataSource {
 	dataSources := make([]DataSource, len(dss))
 
 	for i := range dss {
@@ -460,7 +460,7 @@ func getDataSources(dss []atlasSDK.DataLakeDatabaseDataSourceSettings) []DataSou
 	return dataSources
 }
 
-func getViews(dlAPIBases []atlasSDK.DataLakeApiBase) []View {
+func getViews(dlAPIBases []admin.DataLakeApiBase) []View {
 	views := make([]View, len(dlAPIBases))
 	for i := range dlAPIBases {
 		views[i] = View{
@@ -472,7 +472,7 @@ func getViews(dlAPIBases []atlasSDK.DataLakeApiBase) []View {
 	return views
 }
 
-func getDataLakeStores(storeSettings []atlasSDK.DataLakeStoreSettings) []Store {
+func getDataLakeStores(storeSettings []admin.DataLakeStoreSettings) []Store {
 	var settings []Store
 	if storeSettings == nil {
 		return settings
@@ -490,7 +490,7 @@ func getDataLakeStores(storeSettings []atlasSDK.DataLakeStoreSettings) []Store {
 	return settings
 }
 
-func getReadPreference(storeReadPreference *atlasSDK.DataLakeAtlasStoreReadPreference) *ReadPreference {
+func getReadPreference(storeReadPreference *admin.DataLakeAtlasStoreReadPreference) *ReadPreference {
 	if storeReadPreference == nil {
 		return nil
 	}
@@ -504,7 +504,7 @@ func getReadPreference(storeReadPreference *atlasSDK.DataLakeAtlasStoreReadPrefe
 	return readPreference
 }
 
-func getTagSets(readRefTagSets [][]atlasSDK.DataLakeAtlasStoreReadPreferenceTag) [][]TagSet {
+func getTagSets(readRefTagSets [][]admin.DataLakeAtlasStoreReadPreferenceTag) [][]TagSet {
 	tagSets := make([][]TagSet, len(readRefTagSets))
 	for i := range readRefTagSets {
 		tagSet := make([]TagSet, len(readRefTagSets[i]))

@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.ClusterName}
@@ -56,7 +56,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	backupPolicy, resp, err := client.Atlas20231115002.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	backupPolicy, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -102,7 +102,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	backupPolicy, resp, err := client.Atlas20231115002.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	backupPolicy, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -111,7 +111,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err = client.Atlas20231115002.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	_, resp, err = client.AtlasSDK.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -140,8 +140,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 	if pe != nil {
 		return *pe, nil
 	}
-
-	_, resp, err := client.Atlas20231115002.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	_, resp, err := client.AtlasSDK.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -150,16 +149,16 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 
 	// From https://jira.mongodb.org/browse/HELP-55421
 	// Even after deleting and recreating the schedules, it is required to fetch the ID of the policy in order to be passed to the update request.
-	if len(params.Policies) == 1 && params.Policies[0].GetId() == "" {
-		backupSchedule, resp, err := client.Atlas20231115002.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	if len(params.GetPolicies()) == 1 && params.GetPolicies()[0].GetId() == "" {
+		backupSchedule, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
-		} else if len(backupSchedule.Policies) == 1 {
-			params.Policies[0].Id = backupSchedule.Policies[0].Id
+		} else if len(backupSchedule.GetPolicies()) == 1 {
+			params.GetPolicies()[0].Id = backupSchedule.GetPolicies()[0].Id
 		}
 	}
 
-	backupPolicy, resp, err := client.Atlas20231115002.CloudBackupsApi.UpdateBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, params).Execute()
+	backupPolicy, resp, err := client.AtlasSDK.CloudBackupsApi.UpdateBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -209,7 +208,7 @@ func validateExportDetails(currentModel *Model) (pe handler.ProgressEvent, err e
 }
 
 func validateExist(policy *admin.DiskBackupSnapshotSchedule) *handler.ProgressEvent {
-	if policy.Policies != nil && len(policy.Policies) > 0 && len(policy.Policies[0].PolicyItems) > 0 {
+	if policy.Policies != nil && len(policy.GetPolicies()) > 0 && len(policy.GetPolicies()[0].GetPolicyItems()) > 0 {
 		return nil
 	}
 	return &handler.ProgressEvent{
@@ -246,9 +245,9 @@ func (m *Model) newModel(policy *admin.DiskBackupSnapshotSchedule) *Model {
 		RestoreWindowDays:                 policy.RestoreWindowDays,
 		NextSnapshot:                      util.TimePtrToStringPtr(policy.NextSnapshot),
 		UseOrgAndGroupNamesInExportPrefix: policy.UseOrgAndGroupNamesInExportPrefix,
-		Policies:                          flattenPolicies(&policy.Policies),
-		Links:                             flattenLinks(&policy.Links),
-		CopySettings:                      flattenCopySettings(&policy.CopySettings),
+		Policies:                          flattenPolicies(policy.Policies),
+		Links:                             flattenLinks(policy.Links),
+		CopySettings:                      flattenCopySettings(policy.CopySettings),
 		Export:                            flattenExport(policy.Export, aws.BoolValue(policy.AutoExportEnabled)),
 	}
 }
@@ -274,7 +273,7 @@ func flattenExport(export *admin.AutoExportPolicy, enabled bool) *Export {
 	}
 }
 
-func expandPolicies(policies []ApiPolicyView) []admin.AdvancedDiskBackupSnapshotSchedulePolicy {
+func expandPolicies(policies []ApiPolicyView) *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy {
 	schedulePolicies := make([]admin.AdvancedDiskBackupSnapshotSchedulePolicy, 0)
 	for _, s := range policies {
 		policy := admin.AdvancedDiskBackupSnapshotSchedulePolicy{
@@ -283,7 +282,7 @@ func expandPolicies(policies []ApiPolicyView) []admin.AdvancedDiskBackupSnapshot
 		}
 		schedulePolicies = append(schedulePolicies, policy)
 	}
-	return schedulePolicies
+	return &schedulePolicies
 }
 
 func flattenPolicies(policies *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy) []ApiPolicyView {
@@ -291,14 +290,14 @@ func flattenPolicies(policies *[]admin.AdvancedDiskBackupSnapshotSchedulePolicy)
 	for _, policy := range *policies {
 		snapPolicy := ApiPolicyView{
 			ID:          policy.Id,
-			PolicyItems: flattenPolicyItems(policy.PolicyItems),
+			PolicyItems: flattenPolicyItems(*policy.PolicyItems),
 		}
 		snapPolicies = append(snapPolicies, snapPolicy)
 	}
 	return snapPolicies
 }
 
-func expandPolicyItems(cloudPolicyItems []ApiPolicyItemView) []admin.DiskBackupApiPolicyItem {
+func expandPolicyItems(cloudPolicyItems []ApiPolicyItemView) *[]admin.DiskBackupApiPolicyItem {
 	policyItems := make([]admin.DiskBackupApiPolicyItem, 0)
 	for _, policyItem := range cloudPolicyItems {
 		cPolicyItem := admin.DiskBackupApiPolicyItem{
@@ -310,7 +309,7 @@ func expandPolicyItems(cloudPolicyItems []ApiPolicyItemView) []admin.DiskBackupA
 		}
 		policyItems = append(policyItems, cPolicyItem)
 	}
-	return policyItems
+	return &policyItems
 }
 
 func flattenPolicyItems(policyItems []admin.DiskBackupApiPolicyItem) []ApiPolicyItemView {
@@ -328,7 +327,7 @@ func flattenPolicyItems(policyItems []admin.DiskBackupApiPolicyItem) []ApiPolicy
 	return cloudPolicyItems
 }
 
-func expandCopySettings(copySettings []ApiAtlasDiskBackupCopySettingView) []admin.DiskBackupCopySetting {
+func expandCopySettings(copySettings []ApiAtlasDiskBackupCopySettingView) *[]admin.DiskBackupCopySetting {
 	cloudCopySettings := make([]admin.DiskBackupCopySetting, 0)
 	for _, copySetting := range copySettings {
 		backupSetting := admin.DiskBackupCopySetting{
@@ -336,11 +335,11 @@ func expandCopySettings(copySettings []ApiAtlasDiskBackupCopySettingView) []admi
 			RegionName:        copySetting.RegionName,
 			ReplicationSpecId: copySetting.ReplicationSpecId,
 			ShouldCopyOplogs:  copySetting.ShouldCopyOplogs,
-			Frequencies:       copySetting.Frequencies,
+			Frequencies:       &copySetting.Frequencies,
 		}
 		cloudCopySettings = append(cloudCopySettings, backupSetting)
 	}
-	return cloudCopySettings
+	return &cloudCopySettings
 }
 
 func flattenCopySettings(copySettings *[]admin.DiskBackupCopySetting) []ApiAtlasDiskBackupCopySettingView {
@@ -351,13 +350,13 @@ func flattenCopySettings(copySettings *[]admin.DiskBackupCopySetting) []ApiAtlas
 			RegionName:        copySetting.RegionName,
 			ReplicationSpecId: copySetting.ReplicationSpecId,
 			ShouldCopyOplogs:  copySetting.ShouldCopyOplogs,
-			Frequencies:       copySetting.Frequencies,
+			Frequencies:       copySetting.GetFrequencies(),
 		})
 	}
 	return cloudCopySettings
 }
 
-func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView) []admin.DeleteCopiedBackups {
+func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView) *[]admin.DeleteCopiedBackups {
 	cloudDeleteCopiedBackups := make([]admin.DeleteCopiedBackups, 0)
 	for _, deleteCopiedBackup := range deleteCopiedBackups {
 		copiedSetting := admin.DeleteCopiedBackups{
@@ -367,7 +366,7 @@ func expandDeleteCopiedBackups(deleteCopiedBackups []ApiDeleteCopiedBackupsView)
 		}
 		cloudDeleteCopiedBackups = append(cloudDeleteCopiedBackups, copiedSetting)
 	}
-	return cloudDeleteCopiedBackups
+	return &cloudDeleteCopiedBackups
 }
 
 func flattenLinks(linksResult *[]admin.Link) []Link {

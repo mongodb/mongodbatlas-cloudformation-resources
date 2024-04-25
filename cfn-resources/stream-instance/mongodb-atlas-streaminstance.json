@@ -1,6 +1,6 @@
 {
   "typeName": "MongoDB::Atlas::StreamInstance",
-  "description": "Returns, adds, edits, and removes Atlas Stream Processing Instances. Note that Atlas Streams functionality is currently in [Public Preview](https://www.mongodb.com/blog/post/atlas-stream-processing-now-in-public-preview)",
+  "description": "Returns, adds, edits, and removes Atlas Stream Processing Instances.",
   "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources.git",
   "definitions": {
     "BaseStreamsRegion": {

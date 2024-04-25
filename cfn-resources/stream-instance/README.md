@@ -1,12 +1,8 @@
 # MongoDB::Atlas::StreamInstance
 
 ## Description
-Resource for managing [Stream Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Streams).
 
-> **NOTE**: 
-> - **Atlas Streams functionality is currently in [Public Preview](https://www.mongodb.com/blog/post/atlas-stream-processing-now-in-public-preview).** 
-> - Please review [Limitations](https://www.mongodb.com/docs/atlas/atlas-sp/limitations/#std-label-atlas-sp-limitations) of Atlas Streams Processing during this preview period.
-> - Please refer [our example section](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/examples/atlas-streams/README.md) for further details.
+Resource for managing [Stream Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Streams).
 
 ## Requirements
 

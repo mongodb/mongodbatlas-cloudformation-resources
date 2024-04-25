@@ -11,7 +11,7 @@
           "type": "string"
         },
         "FrequencyType": {
-          "description": "Frequency associated with the export policy. Value can be daily, weekly, or monthly.",
+          "description": "Frequency associated with the export policy. Value can be daily, weekly, monthly or yearly.",
           "type": "string"
         }
       },
@@ -25,7 +25,7 @@
           "type": "string"
         },
         "FrequencyType": {
-          "description": "Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly or monthly.",
+          "description": "Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly, monthly or yearly.",
           "type": "string"
         },
         "FrequencyInterval": {
@@ -37,7 +37,7 @@
           "type": "integer"
         },
         "RetentionUnit": {
-          "description": "Metric of duration of the backup policy item: days, weeks, or months.",
+          "description": "Metric of duration of the backup policy item: days, weeks, months or years.",
           "type": "string"
         }
       },

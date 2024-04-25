@@ -40,7 +40,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### FrequencyType
 
-Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly or monthly.
+Frequency associated with the backup policy item. One of the following values: hourly, daily, weekly, monthly or yearly.
 
 _Required_: No
 
@@ -70,7 +70,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### RetentionUnit
 
-Metric of duration of the backup policy item: days, weeks, or months.
+Metric of duration of the backup policy item: days, weeks, months or years.
 
 _Required_: No
 

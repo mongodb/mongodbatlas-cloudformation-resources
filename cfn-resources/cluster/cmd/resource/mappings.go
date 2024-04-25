@@ -16,6 +16,7 @@ package resource
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 
@@ -23,7 +24,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 func mapClusterToModel(model *Model, cluster *admin.AdvancedClusterDescription) {
@@ -37,13 +38,13 @@ func mapClusterToModel(model *Model, cluster *admin.AdvancedClusterDescription) 
 	model.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
 	model.DiskSizeGB = cluster.DiskSizeGB
 	model.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
-	model.Labels = flattenLabels(cluster.Labels)
+	model.Labels = flattenLabels(cluster.GetLabels())
 	model.MongoDBMajorVersion = cluster.MongoDBMajorVersion
 	model.MongoDBVersion = cluster.MongoDBVersion
 	model.Paused = cluster.Paused
 	model.PitEnabled = cluster.PitEnabled
 	model.RootCertType = cluster.RootCertType
-	model.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
+	model.ReplicationSpecs = flattenReplicationSpecs(cluster.GetReplicationSpecs())
 	model.StateName = cluster.StateName
 	model.VersionReleaseSystem = cluster.VersionReleaseSystem
 }
@@ -68,8 +69,8 @@ func expandBiConnector(biConnector *BiConnector) *admin.BiConnector {
 	}
 }
 
-func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin.ReplicationSpec {
-	var rSpecs []admin.ReplicationSpec
+func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) *[]admin.ReplicationSpec {
+	rSpecs := []admin.ReplicationSpec{}
 
 	for i := range replicationSpecs {
 		var numShards int
@@ -93,7 +94,7 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin.
 	}
 
 	fmt.Printf("specs: len %d %+v", len(replicationSpecs), rSpecs)
-	return rSpecs
+	return &rSpecs
 }
 
 func expandAutoScaling(scaling *AdvancedAutoScaling) *admin.AdvancedAutoScalingSettings {
@@ -123,12 +124,12 @@ func expandAutoScaling(scaling *AdvancedAutoScaling) *admin.AdvancedAutoScalingS
 	return advAutoScaling
 }
 
-func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) []admin.CloudRegionConfig {
-	var regionsConfigs []admin.CloudRegionConfig
+func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) *[]admin.CloudRegionConfig {
+	regionsConfigs := []admin.CloudRegionConfig{}
 	for _, regionCfg := range regionConfigs {
 		regionsConfigs = append(regionsConfigs, expandRegionConfig(regionCfg))
 	}
-	return regionsConfigs
+	return &regionsConfigs
 }
 
 func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig {
@@ -227,7 +228,7 @@ func expandRegionConfigSpec(spec *Specs) *admin.DedicatedHardwareSpec {
 	}
 }
 
-func expandLabelSlice(labels []Labels) []admin.ComponentLabel {
+func expandLabelSlice(labels []Labels) *[]admin.ComponentLabel {
 	res := make([]admin.ComponentLabel, len(labels))
 
 	for i := range labels {
@@ -244,7 +245,7 @@ func expandLabelSlice(labels []Labels) []admin.ComponentLabel {
 			Value: &value,
 		}
 	}
-	return res
+	return &res
 }
 
 func flattenAutoScaling(scaling *admin.AdvancedAutoScalingSettings) *AdvancedAutoScaling {
@@ -292,15 +293,23 @@ func flattenReplicationSpecs(replicationSpecs []admin.ReplicationSpec) []Advance
 	return rSpecs
 }
 
-func flattenRegionsConfig(regionConfigs []admin.CloudRegionConfig) []AdvancedRegionConfig {
+func flattenRegionsConfig(regionConfigs *[]admin.CloudRegionConfig) []AdvancedRegionConfig {
+	if regionConfigs == nil {
+		return []AdvancedRegionConfig{}
+	}
+	regionConfigsVar := *regionConfigs
 	var regionsConfigs []AdvancedRegionConfig
-	for i := range regionConfigs {
-		regionsConfigs = append(regionsConfigs, flattenRegionConfig(&regionConfigs[i]))
+	for i := range regionConfigsVar {
+		config := regionConfigsVar[i]
+		regionsConfigs = append(regionsConfigs, flattenRegionConfig(&config))
 	}
 	return regionsConfigs
 }
 
 func flattenRegionConfig(regionCfg *admin.CloudRegionConfig) AdvancedRegionConfig {
+	if regionCfg == nil {
+		return AdvancedRegionConfig{}
+	}
 	advRegConfig := AdvancedRegionConfig{
 		AutoScaling:          flattenAutoScaling(regionCfg.AutoScaling),
 		AnalyticsAutoScaling: flattenAutoScaling(regionCfg.AnalyticsAutoScaling),
@@ -388,14 +397,17 @@ func flattenConnectionStrings(clusterConnStrings *admin.ClusterConnectionStrings
 	return
 }
 
-func flattenPrivateEndpoint(pes []admin.ClusterDescriptionConnectionStringsPrivateEndpoint) privateEndpointConnectionStrings {
+func flattenPrivateEndpoint(pes *[]admin.ClusterDescriptionConnectionStringsPrivateEndpoint) privateEndpointConnectionStrings {
 	privateEndpoints := privateEndpointConnectionStrings{
 		PrivateEndpoints:                  make([]string, 0),
 		PrivateEndpointsSrv:               make([]string, 0),
 		SRVShardOptimizedConnectionString: make([]string, 0),
 	}
+	if pes == nil {
+		return privateEndpoints
+	}
 
-	for _, pe := range pes {
+	for _, pe := range *pes {
 		if util.IsStringPresent(pe.ConnectionString) {
 			privateEndpoints.PrivateEndpoints = append(privateEndpoints.PrivateEndpoints, *pe.ConnectionString)
 		}
@@ -478,21 +490,27 @@ func expandAdvancedSettings(processArgs ProcessArgs) *admin.ClusterDescriptionPr
 func flattenTags(clusterTags []admin.ResourceTag) (tags []Tag) {
 	for ind := range clusterTags {
 		tags = append(tags, Tag{
-			Key:   clusterTags[ind].Key,
-			Value: clusterTags[ind].Value,
+			Key:   &clusterTags[ind].Key,
+			Value: &clusterTags[ind].Value,
 		})
 	}
 	return
 }
 
-func expandTags(tags []Tag) (clusterTags []admin.ResourceTag) {
+func expandTags(tags []Tag) *[]admin.ResourceTag {
+	clusterTags := []admin.ResourceTag{}
 	for ind := range tags {
+		key := tags[ind].Key
+		value := tags[ind].Value
+		if key == nil || value == nil {
+			log.Fatal("unspecified tag key or value!")
+		}
 		clusterTags = append(clusterTags, admin.ResourceTag{
-			Key:   tags[ind].Key,
-			Value: tags[ind].Value,
+			Key:   *key,
+			Value: *value,
 		})
 	}
-	return
+	return &clusterTags
 }
 
 func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescription) {
@@ -524,7 +542,7 @@ func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescripti
 		currentModel.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
 	}
 	if currentModel.Labels != nil {
-		currentModel.Labels = flattenLabels(cluster.Labels)
+		currentModel.Labels = flattenLabels(cluster.GetLabels())
 	}
 	if currentModel.MongoDBMajorVersion != nil {
 		currentModel.MongoDBMajorVersion = cluster.MongoDBMajorVersion
@@ -542,7 +560,7 @@ func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescripti
 		currentModel.RootCertType = cluster.RootCertType
 	}
 	if currentModel.ReplicationSpecs != nil {
-		currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
+		currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.GetReplicationSpecs())
 	}
 	// Readonly
 	currentModel.StateName = cluster.StateName
@@ -551,7 +569,7 @@ func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescripti
 	}
 
 	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
-	currentModel.Tags = flattenTags(cluster.Tags)
+	currentModel.Tags = flattenTags(cluster.GetTags())
 }
 
 func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, handler.ProgressEvent, error) {

@@ -1,6 +1,6 @@
 # MongoDB::Atlas::Cluster tag
 
-Advanced configuration details to add for one cluster in the specified project.
+List that contains key-value pairs between 1 to 255 characters in length for tagging and categorizing the cluster.
 
 ## Syntax
 

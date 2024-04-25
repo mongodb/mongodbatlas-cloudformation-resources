@@ -290,7 +290,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
-	roles := []admin.DatabaseUserRole{}
+	roles := make([]admin.DatabaseUserRole, 0, len(currentModel.Roles))
 	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
 		role := admin.DatabaseUserRole{}
@@ -306,7 +306,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		roles = append(roles, role)
 	}
 
-	labels := []admin.ComponentLabel{}
+	labels := make([]admin.ComponentLabel, 0, len(currentModel.Labels))
 	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
 		label := admin.ComponentLabel{
@@ -316,7 +316,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		labels = append(labels, label)
 	}
 
-	scopes := []admin.UserScope{}
+	scopes := make([]admin.UserScope, 0, len(currentModel.Scopes))
 	for i := range currentModel.Scopes {
 		s := currentModel.Scopes[i]
 		scope := admin.UserScope{

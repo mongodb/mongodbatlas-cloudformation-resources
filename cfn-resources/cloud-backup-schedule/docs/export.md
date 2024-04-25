@@ -34,7 +34,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### FrequencyType
 
-Frequency associated with the export policy. Value can be daily, weekly, or monthly.
+Frequency associated with the export policy. Value can be daily, weekly, monthly or yearly.
 
 _Required_: No
 

@@ -41,6 +41,9 @@
           "description": "Name of the region to which the data lake routes client connections."
         }
       },
+      "required": [
+        "Region"
+      ],
       "additionalProperties": false
     },
     "Storage": {

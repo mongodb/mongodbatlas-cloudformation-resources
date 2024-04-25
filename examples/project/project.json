@@ -109,11 +109,6 @@
       ],
       "Description": "Region usage restrictions that designate the project's AWS region",
       "Default": "NONE"
-    },
-    "TagOwner": {
-      "Type": "String",
-      "Default": "AWS-CFN",
-      "Description": "Will be used as a value in: Tags.Owner={TagOwner}"
     }
   },
   "Mappings": {},
@@ -174,9 +169,8 @@
           }
         ],
         "Tags": {
-          "Owner": {
-            "Ref": "TagOwner"
-          }
+          "Environment": "Dev",
+          "Owner": "AWS-CFN"
         }
       }
     }

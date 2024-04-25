@@ -38,7 +38,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Name of the region to which the data lake routes client connections.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

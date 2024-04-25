@@ -41,6 +41,9 @@
           "description": "Name of the region to which the data lake routes client connections."
         }
       },
+      "required": [
+        "Region"
+      ],
       "additionalProperties": false
     },
     "Storage": {
@@ -356,10 +359,7 @@
   ],
   "required": [
     "ProjectId",
-    "TenantName",
-    "CloudProviderConfig/RoleId",
-    "CloudProviderConfig/TestS3Bucket",
-    "DataProcessRegion/Region"
+    "TenantName"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

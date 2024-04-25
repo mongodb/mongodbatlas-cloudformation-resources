@@ -28,13 +28,12 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
-var CreateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.DataFederationRoleID, constants.DataFederationTestS3Bucket, constants.DataProcessRegion}
+var CreateRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var ReadRequiredFields = []string{constants.ProjectID, constants.TenantName}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.DataFederationRoleID, constants.DataFederationTestS3Bucket, constants.SkipRoleValidation}
+var UpdateRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var DeleteRequiredFields = []string{constants.ProjectID, constants.TenantName}
 var ListRequiredFields = []string{constants.ProjectID}
 
@@ -69,16 +68,18 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	createFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.CreateFederatedDatabase(context.Background(), *currentModel.ProjectId, &dataLakeTenantInput)
-	dataLakeTenant, response, err := createFederatedDatabaseAPIRequest.Execute()
+	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.CreateFederatedDatabaseWithParams(
+		context.Background(),
+		&admin.CreateFederatedDatabaseApiParams{
+			GroupId:        *currentModel.ProjectId,
+			DataLakeTenant: &dataLakeTenantInput,
+		}).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, CREATE, err)
 	}
 	readModel := Model{ProjectId: currentModel.ProjectId, TenantName: currentModel.TenantName, Profile: currentModel.Profile}
 	readModel.getDataLakeTenant(*dataLakeTenant)
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Completed",
@@ -104,10 +105,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	getFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
-	dataLakeTenant, response, err := getFederatedDatabaseAPIRequest.Execute()
+	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, READ, err)
 	}
@@ -139,11 +138,15 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	updateFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
+	_, checkExistsResponse, checkExistsErr := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	if checkExistsErr != nil {
+		return handleError(checkExistsResponse, UPDATE, checkExistsErr)
+	}
+
+	updateFederatedDatabaseAPIRequest := client.AtlasSDK.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
 	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, UPDATE, err)
 	}
@@ -174,10 +177,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName)
-	_, response, err := deleteFederatedDatabaseAPIRequest.Execute()
+	_, response, err := client.AtlasSDK.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, DELETE, err)
 	}
@@ -206,11 +207,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listFederatedDatabaseAPIRequest := client.Atlas20231115002.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId)
+	dataLakeTenants, response, err := client.AtlasSDK.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 
-	dataLakeTenants, response, err := listFederatedDatabaseAPIRequest.Execute()
-
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, LIST, err)
 	}
@@ -227,12 +225,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  tenants}, nil
 }
 
-func closeResponse(response *http.Response) {
-	if response != nil {
-		response.Body.Close()
-	}
-}
-
 func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
 	_, _ = logger.Warnf("%s failed, error: %s", method, err.Error())
 	if response.StatusCode == http.StatusConflict {
@@ -241,42 +233,60 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
+	if response.StatusCode == http.StatusNotFound {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("%s:%s", method, err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
+	}
 
 	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()),
 		response), nil
 }
 
-func (model *Model) setDataLakeTenant() (dataLakeTenant atlasSDK.DataLakeTenant) {
-	cloudProvider := constants.AWS
-	if model.DataProcessRegion.CloudProvider != nil {
-		cloudProvider = *model.DataProcessRegion.CloudProvider
-	}
-	dataLakeTenant = atlasSDK.DataLakeTenant{
-		Name: model.TenantName,
-		CloudProviderConfig: &atlasSDK.DataLakeCloudProviderConfig{
-			Aws: atlasSDK.DataLakeAWSCloudProviderConfig{
-				TestS3Bucket: *model.CloudProviderConfig.TestS3Bucket,
-				RoleId:       *model.CloudProviderConfig.RoleId,
-			},
-		},
-		DataProcessRegion: &atlasSDK.DataLakeDataProcessRegion{
-			Region:        *model.DataProcessRegion.Region,
-			CloudProvider: cloudProvider,
-		},
-
+func (model *Model) setDataLakeTenant() (dataLakeTenant admin.DataLakeTenant) {
+	dataLakeTenant = admin.DataLakeTenant{
+		Name:    model.TenantName,
 		Storage: model.newDataFederationDataStorage(),
 	}
+
+	cloudProviderConfig := model.CloudProviderConfig
+	if cloudProviderConfig != nil && cloudProviderConfig.TestS3Bucket != nil && cloudProviderConfig.RoleId != nil {
+		dataLakeTenant.CloudProviderConfig = &admin.DataLakeCloudProviderConfig{
+			Aws: admin.DataLakeAWSCloudProviderConfig{
+				TestS3Bucket: *cloudProviderConfig.TestS3Bucket,
+				RoleId:       *cloudProviderConfig.RoleId,
+			},
+		}
+	}
+
+	dataProcessRegion := model.DataProcessRegion
+	if dataProcessRegion != nil && dataProcessRegion.CloudProvider != nil && dataProcessRegion.Region != nil {
+		dataLakeTenant.DataProcessRegion.CloudProvider = *dataProcessRegion.CloudProvider
+		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
+			CloudProvider: *dataProcessRegion.CloudProvider,
+			Region:        *dataProcessRegion.Region,
+		}
+	}
+
+	if dataProcessRegion != nil && dataProcessRegion.Region != nil {
+		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
+			CloudProvider: constants.AWS,
+			Region:        *dataProcessRegion.Region,
+		}
+	}
+
 	return dataLakeTenant
 }
 
-func (model *Model) newDataFederationDataStorage() *atlasSDK.DataLakeStorage {
-	return &atlasSDK.DataLakeStorage{
+func (model *Model) newDataFederationDataStorage() *admin.DataLakeStorage {
+	return &admin.DataLakeStorage{
 		Databases: model.newDataFederationDatabase(),
 		Stores:    model.newStores(),
 	}
 }
 
-func (model *Model) newDataFederationDatabase() []atlasSDK.DataLakeDatabaseInstance {
+func (model *Model) newDataFederationDatabase() *[]admin.DataLakeDatabaseInstance {
 	if model.Storage == nil {
 		return nil
 	}
@@ -285,44 +295,43 @@ func (model *Model) newDataFederationDatabase() []atlasSDK.DataLakeDatabaseInsta
 		return nil
 	}
 
-	dbs := make([]atlasSDK.DataLakeDatabaseInstance, len(storageDBs))
+	dbs := make([]admin.DataLakeDatabaseInstance, len(storageDBs))
 	for i := range storageDBs {
-		dbs[i] = atlasSDK.DataLakeDatabaseInstance{
+		dbs[i] = admin.DataLakeDatabaseInstance{
 			Name:        storageDBs[i].Name,
 			Collections: newDataFederationCollections(storageDBs[i].Collections),
 		}
 
 		if storageDBs[i].MaxWildcardCollections != nil {
-			maxWildColl := cast.ToInt(storageDBs[i].MaxWildcardCollections)
-			dbs[i].MaxWildcardCollections = &maxWildColl
+			dbs[i].MaxWildcardCollections = util.StrPtrToIntPtr(storageDBs[i].MaxWildcardCollections)
 		}
 	}
-	return dbs
+	return &dbs
 }
 
-func newDataFederationCollections(storageDBCollections []Collection) []atlasSDK.DataLakeDatabaseCollection {
+func newDataFederationCollections(storageDBCollections []Collection) *[]admin.DataLakeDatabaseCollection {
 	if len(storageDBCollections) == 0 {
 		return nil
 	}
 
-	collections := make([]atlasSDK.DataLakeDatabaseCollection, len(storageDBCollections))
+	collections := make([]admin.DataLakeDatabaseCollection, len(storageDBCollections))
 	for i := range storageDBCollections {
-		collections[i] = atlasSDK.DataLakeDatabaseCollection{
+		collections[i] = admin.DataLakeDatabaseCollection{
 			Name:        storageDBCollections[i].Name,
 			DataSources: newDataFederationDataSource(storageDBCollections[i].DataSources),
 		}
 	}
 
-	return collections
+	return &collections
 }
 
-func newDataFederationDataSource(dataSources []DataSource) []atlasSDK.DataLakeDatabaseDataSourceSettings {
+func newDataFederationDataSource(dataSources []DataSource) *[]admin.DataLakeDatabaseDataSourceSettings {
 	if len(dataSources) == 0 {
 		return nil
 	}
-	dataSourceSettings := make([]atlasSDK.DataLakeDatabaseDataSourceSettings, len(dataSources))
+	dataSourceSettings := make([]admin.DataLakeDatabaseDataSourceSettings, len(dataSources))
 	for i := range dataSources {
-		dataSourceSettings[i] = atlasSDK.DataLakeDatabaseDataSourceSettings{
+		dataSourceSettings[i] = admin.DataLakeDatabaseDataSourceSettings{
 			AllowInsecure:       dataSources[i].AllowInsecure,
 			Database:            dataSources[i].Database,
 			Collection:          dataSources[i].Collection,
@@ -331,13 +340,13 @@ func newDataFederationDataSource(dataSources []DataSource) []atlasSDK.DataLakeDa
 			Path:                dataSources[i].Path,
 			ProvenanceFieldName: dataSources[i].ProvenanceFieldName,
 			StoreName:           dataSources[i].StoreName,
-			Urls:                dataSources[i].Urls,
+			Urls:                &dataSources[i].Urls,
 		}
 	}
-	return dataSourceSettings
+	return &dataSourceSettings
 }
 
-func (model *Model) newStores() []atlasSDK.DataLakeStoreSettings {
+func (model *Model) newStores() *[]admin.DataLakeStoreSettings {
 	if model.Storage == nil {
 		return nil
 	}
@@ -346,9 +355,9 @@ func (model *Model) newStores() []atlasSDK.DataLakeStoreSettings {
 		return nil
 	}
 
-	dataLakeStores := make([]atlasSDK.DataLakeStoreSettings, len(stores))
+	dataLakeStores := make([]admin.DataLakeStoreSettings, len(stores))
 	for i := range stores {
-		dataLakeStores[i] = atlasSDK.DataLakeStoreSettings{
+		dataLakeStores[i] = admin.DataLakeStoreSettings{
 			Name:        stores[i].Name,
 			ProjectId:   stores[i].ProjectId,
 			ClusterName: stores[i].ClusterName,
@@ -358,36 +367,36 @@ func (model *Model) newStores() []atlasSDK.DataLakeStoreSettings {
 		}
 	}
 
-	return dataLakeStores
+	return &dataLakeStores
 }
 
-func (model *Model) getDataLakeTenant(dataLakeTenant atlasSDK.DataLakeTenant) {
+func (model *Model) getDataLakeTenant(dataLakeTenant admin.DataLakeTenant) {
 	model.Storage = getDataLakeStorage(dataLakeTenant.Storage)
 	model.TenantName = dataLakeTenant.Name
 	model.ProjectId = dataLakeTenant.GroupId
 	model.CloudProviderConfig = &CloudProviderConfig{
-		ExternalId:        dataLakeTenant.CloudProviderConfig.Aws.ExternalId,
-		IamAssumedRoleARN: dataLakeTenant.CloudProviderConfig.Aws.IamAssumedRoleARN,
-		IamUserARN:        dataLakeTenant.CloudProviderConfig.Aws.IamUserARN,
-		RoleId:            &dataLakeTenant.CloudProviderConfig.Aws.RoleId,
-		TestS3Bucket:      &dataLakeTenant.CloudProviderConfig.Aws.TestS3Bucket,
+		ExternalId:        dataLakeTenant.GetCloudProviderConfig().Aws.ExternalId,
+		IamAssumedRoleARN: dataLakeTenant.GetCloudProviderConfig().Aws.IamAssumedRoleARN,
+		IamUserARN:        dataLakeTenant.GetCloudProviderConfig().Aws.IamUserARN,
+		RoleId:            util.StringPtr(dataLakeTenant.GetCloudProviderConfig().Aws.RoleId),
+		TestS3Bucket:      util.StringPtr(dataLakeTenant.GetCloudProviderConfig().Aws.TestS3Bucket),
 	}
 	model.DataProcessRegion = &DataProcessRegion{
-		Region: &dataLakeTenant.DataProcessRegion.Region,
+		Region: util.StringPtr(dataLakeTenant.GetDataProcessRegion().Region),
 	}
 	model.State = dataLakeTenant.State
-	model.HostNames = dataLakeTenant.Hostnames
+	model.HostNames = dataLakeTenant.GetHostnames()
 }
 
-func getDataLakeStorage(storage *atlasSDK.DataLakeStorage) *Storage {
-	atlasDataLakeStorage := Storage{
-		Databases: getDataLakeDatabases(storage.Databases),
-		Stores:    getDataLakeStores(storage.Stores),
+func getDataLakeStorage(storage *admin.DataLakeStorage) *Storage {
+	atlasDataLakeStorage := &Storage{
+		Databases: getDataLakeDatabases(storage.GetDatabases()),
+		Stores:    getDataLakeStores(storage.GetStores()),
 	}
-	return &atlasDataLakeStorage
+	return atlasDataLakeStorage
 }
 
-func getDataLakeDatabases(dbs []atlasSDK.DataLakeDatabaseInstance) []Database {
+func getDataLakeDatabases(dbs []admin.DataLakeDatabaseInstance) []Database {
 	dataLakeDbs := make([]Database, len(dbs))
 	for i := range dbs {
 		dataLakeDbs[i] = getDataLakeDatabase(dbs[i])
@@ -395,33 +404,32 @@ func getDataLakeDatabases(dbs []atlasSDK.DataLakeDatabaseInstance) []Database {
 	return dataLakeDbs
 }
 
-func getDataLakeDatabase(db atlasSDK.DataLakeDatabaseInstance) Database {
+func getDataLakeDatabase(db admin.DataLakeDatabaseInstance) Database {
 	atlasDataLakeDatabase := Database{
-		Collections: getCollections(db.Collections),
+		Collections: getCollections(db.GetCollections()),
 		Name:        db.Name,
-		Views:       getViews(db.Views),
+		Views:       getViews(db.GetViews()),
 	}
 	if db.MaxWildcardCollections != nil {
-		maxWildCardCollCount := cast.ToString(*db.MaxWildcardCollections)
-		atlasDataLakeDatabase.MaxWildcardCollections = &maxWildCardCollCount
+		atlasDataLakeDatabase.MaxWildcardCollections = util.IntPtrToStrPtr(db.MaxWildcardCollections)
 	}
 
 	return atlasDataLakeDatabase
 }
 
-func getCollections(dbCollections []atlasSDK.DataLakeDatabaseCollection) []Collection {
+func getCollections(dbCollections []admin.DataLakeDatabaseCollection) []Collection {
 	collections := make([]Collection, len(dbCollections))
 
 	for i := range dbCollections {
 		collections[i] = Collection{
 			Name:        dbCollections[i].Name,
-			DataSources: getDataSources(dbCollections[i].DataSources),
+			DataSources: getDataSources(dbCollections[i].GetDataSources()),
 		}
 	}
 	return collections
 }
 
-func getDataSources(dss []atlasSDK.DataLakeDatabaseDataSourceSettings) []DataSource {
+func getDataSources(dss []admin.DataLakeDatabaseDataSourceSettings) []DataSource {
 	dataSources := make([]DataSource, len(dss))
 
 	for i := range dss {
@@ -435,13 +443,13 @@ func getDataSources(dss []atlasSDK.DataLakeDatabaseDataSourceSettings) []DataSou
 			Path:                dss[i].Path,
 			ProvenanceFieldName: dss[i].ProvenanceFieldName,
 			StoreName:           dss[i].StoreName,
-			Urls:                dss[i].Urls,
+			Urls:                dss[i].GetUrls(),
 		}
 	}
 	return dataSources
 }
 
-func getViews(dlAPIBases []atlasSDK.DataLakeApiBase) []View {
+func getViews(dlAPIBases []admin.DataLakeApiBase) []View {
 	views := make([]View, len(dlAPIBases))
 	for i := range dlAPIBases {
 		views[i] = View{
@@ -453,7 +461,7 @@ func getViews(dlAPIBases []atlasSDK.DataLakeApiBase) []View {
 	return views
 }
 
-func getDataLakeStores(storeSettings []atlasSDK.DataLakeStoreSettings) []Store {
+func getDataLakeStores(storeSettings []admin.DataLakeStoreSettings) []Store {
 	var settings []Store
 	if storeSettings == nil {
 		return settings
@@ -471,22 +479,21 @@ func getDataLakeStores(storeSettings []atlasSDK.DataLakeStoreSettings) []Store {
 	return settings
 }
 
-func getReadPreference(storeReadPreference *atlasSDK.DataLakeAtlasStoreReadPreference) *ReadPreference {
+func getReadPreference(storeReadPreference *admin.DataLakeAtlasStoreReadPreference) *ReadPreference {
 	if storeReadPreference == nil {
 		return nil
 	}
 	readPreference := &ReadPreference{
 		Mode:    storeReadPreference.Mode,
-		TagSets: getTagSets(storeReadPreference.TagSets),
+		TagSets: getTagSets(storeReadPreference.GetTagSets()),
 	}
 	if storeReadPreference.MaxStalenessSeconds != nil {
-		maxStaleness := cast.ToString(storeReadPreference.MaxStalenessSeconds)
-		readPreference.MaxStalenessSeconds = &maxStaleness
+		readPreference.MaxStalenessSeconds = util.IntPtrToStrPtr(storeReadPreference.MaxStalenessSeconds)
 	}
 	return readPreference
 }
 
-func getTagSets(readRefTagSets [][]atlasSDK.DataLakeAtlasStoreReadPreferenceTag) [][]TagSet {
+func getTagSets(readRefTagSets [][]admin.DataLakeAtlasStoreReadPreferenceTag) [][]TagSet {
 	tagSets := make([][]TagSet, len(readRefTagSets))
 	for i := range readRefTagSets {
 		tagSet := make([]TagSet, len(readRefTagSets[i]))

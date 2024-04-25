@@ -262,7 +262,6 @@ func (model *Model) setDataLakeTenant() (dataLakeTenant admin.DataLakeTenant) {
 
 	dataProcessRegion := model.DataProcessRegion
 	if dataProcessRegion != nil && dataProcessRegion.CloudProvider != nil && dataProcessRegion.Region != nil {
-		dataLakeTenant.DataProcessRegion.CloudProvider = *dataProcessRegion.CloudProvider
 		dataLakeTenant.DataProcessRegion = &admin.DataLakeDataProcessRegion{
 			CloudProvider: *dataProcessRegion.CloudProvider,
 			Region:        *dataProcessRegion.Region,

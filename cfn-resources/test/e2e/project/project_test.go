@@ -43,6 +43,7 @@ type testProject struct {
 	TeamID           string
 	ProjectName      string
 	ProjectID        string
+	Tags             map[string]string
 }
 
 const (
@@ -58,6 +59,8 @@ var (
 	testProjectName = "cfn-e2e-project" + e2eRandSuffix
 	testTeamName    = "cfn-e2e-team" + e2eRandSuffix
 	stackName       = "stack-project-e2e-" + e2eRandSuffix
+	tagsCreate      = map[string]string{"key1": "val1", "key2": "val2"}
+	tagsUpdated     = map[string]string{"key1": "val3", "key3": "val4"}
 )
 
 func TestProjectCFN(t *testing.T) {
@@ -109,16 +112,19 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 	teamsAssigned, _, _ := c.atlasClient.TeamsApi.ListProjectTeams(ctx.Background(), *project.Id).Execute()
 	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
+	tags := newCfnTags(project.GetTags())
+
 	a := assert.New(t)
 	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.GetResults()[0].TeamId)
 	a.Equal(200, getProjectResponse.StatusCode)
+	a.Equal(tagsCreate, tags)
 }
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
 
-	// create CFN template with updated project name
 	c.projectTmplObj.Name += "-updated"
+	c.projectTmplObj.Tags = tagsUpdated
 	c.template, c.err = newCFNTemplate(c.projectTmplObj)
 
 	output := utility.UpdateStack(t, c.cfnClient, stackName, c.template)
@@ -130,9 +136,12 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 	teamsAssigned, _, err := c.atlasClient.TeamsApi.ListProjectTeams(ctx.Background(), *project.Id).Execute()
 	utility.FailNowIfError(t, "Error when retrieving Project TeamsAssigned: %v", err)
 
+	tags := newCfnTags(project.GetTags())
+
 	a := assert.New(t)
 	a.Equal(c.projectTmplObj.TeamID, *teamsAssigned.GetResults()[0].TeamId)
 	a.Equal(project.Name, c.projectTmplObj.Name)
+	a.Equal(tagsUpdated, tags)
 }
 
 func testDeleteStack(t *testing.T, c *localTestContext) {
@@ -195,6 +204,7 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 		Profile:          profile,
 		TeamID:           *team.Id,
 		ResourceTypeName: os.Getenv("RESOURCE_TYPE_NAME_FOR_E2E"),
+		Tags:             tagsCreate,
 	}
 
 	// Read required data from resource CFN template
@@ -204,4 +214,12 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 
 func newCFNTemplate(tmpl testProject) (string, error) {
 	return utility.ExecuteGoTemplate(cfnTemplatePath, tmpl)
+}
+
+func newCfnTags(tags []admin.ResourceTag) map[string]string {
+	mapTags := make(map[string]string, len(tags))
+	for _, tag := range tags {
+		mapTags[tag.Key] = tag.Value
+	}
+	return mapTags
 }

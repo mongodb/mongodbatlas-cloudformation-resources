@@ -19,7 +19,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectteams" title="ProjectTeams">ProjectTeams</a>" : <i>[ <a href="projectteam.md">projectTeam</a>, ... ]</i>,
         "<a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>" : <i>[ <a href="projectapikey.md">projectApiKey</a>, ... ]</i>,
-        "<a href="#regionusagerestrictions" title="RegionUsageRestrictions">RegionUsageRestrictions</a>" : <i>String</i>
+        "<a href="#regionusagerestrictions" title="RegionUsageRestrictions">RegionUsageRestrictions</a>" : <i>String</i>,
+        "<a href="#tags" title="Tags">Tags</a>" : <i><a href="tags.md">Tags</a></i>
     }
 }
 </pre>
@@ -39,6 +40,7 @@ Properties:
     <a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>: <i>
       - <a href="projectapikey.md">projectApiKey</a></i>
     <a href="#regionusagerestrictions" title="RegionUsageRestrictions">RegionUsageRestrictions</a>: <i>String</i>
+    <a href="#tags" title="Tags">Tags</a>: <i><a href="tags.md">Tags</a></i>
 </pre>
 
 ## Properties
@@ -118,6 +120,16 @@ Region usage restrictions that designate the project's AWS region.Enum: "GOV_REG
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Tags
+
+Map that contains key values between 1 to 255 characters in length for tagging and categorizing the project. To learn more, see https://www.mongodb.com/docs/atlas/tags/
+
+_Required_: No
+
+_Type_: <a href="tags.md">Tags</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

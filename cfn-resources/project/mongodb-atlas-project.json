@@ -73,6 +73,16 @@
     "Roles": {
       "type": "string",
       "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.Items Enum: \"GROUP_CLUSTER_MANAGER\" \"GROUP_DATA_ACCESS_ADMIN\" \"GROUP_DATA_ACCESS_READ_ONLY\" \"GROUP_DATA_ACCESS_READ_WRITE\" \"GROUP_OWNER\" \"GROUP_READ_ONLY\""
+    },
+    "Tags": {
+      "type": "object",
+      "description": "Map that contains key values between 1 to 255 characters in length for tagging and categorizing the project. To learn more, see https://www.mongodb.com/docs/atlas/tags/",
+      "patternProperties": {
+        "^.*$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -139,6 +149,9 @@
       "type": "string",
       "description": "Region usage restrictions that designate the project's AWS region.Enum: \"GOV_REGIONS_ONLY\" \"COMMERCIAL_FEDRAMP_REGIONS_ONLY\" \"NONE\"",
       "default": "NONE"
+    },
+    "Tags": {
+      "$ref": "#/definitions/Tags"
     }
   },
   "additionalProperties": false,

@@ -74,13 +74,12 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
-	apiKeyRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKey(
+	apiKeyUserDetails, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		&apiKeyInput,
-	)
-	apiKeyUserDetails, response, err := apiKeyRequest.Execute()
-	defer closeResponse(response)
+	).Execute()
+
 	if err != nil {
 		return handleError(response, constants.CREATE, err)
 	}
@@ -137,7 +136,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	apiKeyUserDetails, arn, response, err := getAPIkeyDetails(&req, atlas, currentModel)
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
@@ -173,29 +171,25 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Desc:  currentModel.Description,
 		Roles: currentModel.Roles,
 	}
-	updateRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.UpdateApiKey(
+
+	apiKeyUserDetails, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.UpdateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
 		&apiKeyInput,
-	)
-	apiKeyUserDetails, response, err := updateRequest.Execute()
-	defer closeResponse(response)
+	).Execute()
+
 	if err != nil {
 		return handleError(response, constants.UPDATE, err)
 	}
 
-	defer closeResponse(response)
-	if err != nil {
-		return handleError(response, constants.READ, err)
-	}
 	existingModel := Model{APIUserId: currentModel.APIUserId, OrgId: currentModel.OrgId}
 	// Read response
 	existingModel.readAPIKeyDetails(*apiKeyUserDetails)
 
 	// update the project assignments
 	_, response, err = updateProjectAssignments(client, currentModel, &existingModel)
-	defer closeResponse(response)
+
 	if err != nil {
 		return handleError(response, constants.UPDATE, err)
 	}
@@ -224,13 +218,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKey(
+
+	_, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
-	)
-	_, response, err := deleteRequest.Execute()
-	defer closeResponse(response)
+	).Execute()
+
 	if err != nil {
 		return handleError(response, constants.DELETE, err)
 	}
@@ -277,7 +271,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	pagedAPIKeysList, response, err := apiKeyRequest.Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, constants.LIST, err)
 	}
@@ -297,16 +290,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "List Completed",
 		ResourceModels:  apiKeys}, nil
-}
-
-func closeResponse(response *http.Response) {
-	if response != nil {
-		err := response.Body.Close()
-		if err != nil {
-			_, _ = logger.Warnf("Error while closing response body: %s", err.Error())
-			return
-		}
-	}
 }
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
@@ -329,7 +312,6 @@ func handleError(response *http.Response, method constants.CfnFunctions, err err
 
 func assignProjects(client *util.MongoDBClient, project ProjectAssignment, apiUserID *string) (handler.ProgressEvent, error) {
 	_, updateResponse, err := updateOrgKeyProjectRoles(project, client, apiUserID)
-	defer closeResponse(updateResponse)
 	if err != nil {
 		return handleError(updateResponse, constants.CREATE, err)
 	}
@@ -387,7 +369,7 @@ func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Mod
 			break
 		}
 	}
-	defer closeResponse(response)
+
 	if err != nil {
 		return result, response, err
 	}
@@ -399,7 +381,7 @@ func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Mod
 			break
 		}
 	}
-	defer closeResponse(response)
+
 	if err != nil {
 		return result, response, err
 	}
@@ -411,7 +393,7 @@ func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Mod
 			break
 		}
 	}
-	defer closeResponse(response)
+
 	if err != nil {
 		return result, response, err
 	}

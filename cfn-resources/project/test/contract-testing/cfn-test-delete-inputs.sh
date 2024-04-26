@@ -39,8 +39,8 @@ atlas organizations apiKeys delete "${api_key_id}" --force
 #delete project
 projectId=$(atlas projects list --output json | jq --arg NAME "${project_name}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-	echo -e "No project found with \"${project_name}"
+	echo -e "No project found with name \"${project_name}"
 else
-	echo -e "project found with ${project_name} and id ${projectId}, deleting"
+	echo -e "project found with name ${project_name} and id ${projectId}, deleting"
 	atlas projects delete "${projectId}" --force
 fi

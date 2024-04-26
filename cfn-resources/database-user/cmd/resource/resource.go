@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.DatabaseName, constants.ProjectID, constants.Roles, constants.Username}
@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, resp, err := client.Atlas20231115002.DatabaseUsersApi.CreateDatabaseUser(context.Background(), groupID, dbUser).Execute()
+	_, resp, err := client.AtlasSDK.DatabaseUsersApi.CreateDatabaseUser(context.Background(), groupID, dbUser).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -99,7 +99,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
-	databaseUser, resp, err := client.Atlas20231115002.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
+	databaseUser, resp, err := client.AtlasSDK.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -119,8 +119,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	_, _ = logger.Debugf("databaseUser:%+v", databaseUser)
 	var roles []RoleDefinition
 
-	for i := range databaseUser.Roles {
-		r := databaseUser.Roles[i]
+	for _, r := range databaseUser.GetRoles() {
 		role := RoleDefinition{
 			CollectionName: r.CollectionName,
 			DatabaseName:   &r.DatabaseName,
@@ -133,8 +132,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	var labels []LabelDefinition
 
-	for i := range databaseUser.Labels {
-		l := databaseUser.Labels[i]
+	for _, l := range databaseUser.GetLabels() {
 		label := LabelDefinition{
 			Key:   l.Key,
 			Value: l.Value,
@@ -177,7 +175,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, resp, err := client.Atlas20231115002.DatabaseUsersApi.UpdateDatabaseUser(context.Background(), groupID, *currentModel.DatabaseName, *currentModel.Username, dbUser).Execute()
+	_, resp, err := client.AtlasSDK.DatabaseUsersApi.UpdateDatabaseUser(context.Background(), groupID, *currentModel.DatabaseName, *currentModel.Username, dbUser).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -209,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	databaseName := *currentModel.DatabaseName
 	username := *currentModel.Username
-	_, resp, err := client.Atlas20231115002.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupID, databaseName, username).Execute()
+	_, resp, err := client.AtlasSDK.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupID, databaseName, username).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -240,13 +238,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	dbUserModels := make([]interface{}, 0)
 
-	databaseUsers, resp, err := client.Atlas20231115002.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
+	databaseUsers, resp, err := client.AtlasSDK.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	for i := range databaseUsers.Results {
-		databaseUser := &databaseUsers.Results[i]
+	dbUserResults := databaseUsers.GetResults()
+	for i := range dbUserResults {
+		databaseUser := dbUserResults[i]
 		var model = Model{
 			DatabaseName: &databaseUser.DatabaseName,
 			LdapAuthType: databaseUser.LdapAuthType,
@@ -257,8 +256,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 		var roles []RoleDefinition
 
-		for i := range databaseUser.Roles {
-			r := databaseUser.Roles[i]
+		for _, r := range databaseUser.GetRoles() {
 			role := RoleDefinition{
 				CollectionName: r.CollectionName,
 				DatabaseName:   &r.DatabaseName,
@@ -271,8 +269,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 		var labels []LabelDefinition
 
-		for i := range databaseUser.Labels {
-			l := databaseUser.Labels[i]
+		for _, l := range databaseUser.GetLabels() {
 			label := LabelDefinition{
 				Key:   l.Key,
 				Value: l.Value,
@@ -293,7 +290,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
-	var roles []admin.DatabaseUserRole
+	roles := make([]admin.DatabaseUserRole, 0, len(currentModel.Roles))
 	for i := range currentModel.Roles {
 		r := currentModel.Roles[i]
 		role := admin.DatabaseUserRole{}
@@ -309,7 +306,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		roles = append(roles, role)
 	}
 
-	var labels []admin.ComponentLabel
+	labels := make([]admin.ComponentLabel, 0, len(currentModel.Labels))
 	for i := range currentModel.Labels {
 		l := currentModel.Labels[i]
 		label := admin.ComponentLabel{
@@ -319,7 +316,7 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 		labels = append(labels, label)
 	}
 
-	var scopes []admin.UserScope
+	scopes := make([]admin.UserScope, 0, len(currentModel.Scopes))
 	for i := range currentModel.Scopes {
 		s := currentModel.Scopes[i]
 		scope := admin.UserScope{
@@ -355,12 +352,12 @@ func setModel(currentModel *Model) (*admin.CloudDatabaseUser, error) {
 	}
 
 	user := &admin.CloudDatabaseUser{
-		Roles:           roles,
+		Roles:           &roles,
 		GroupId:         groupID,
 		Username:        *currentModel.Username,
 		DatabaseName:    *currentModel.DatabaseName,
-		Labels:          labels,
-		Scopes:          scopes,
+		Labels:          &labels,
+		Scopes:          &scopes,
 		LdapAuthType:    currentModel.LdapAuthType,
 		AwsIAMType:      currentModel.AWSIAMType,
 		X509Type:        currentModel.X509Type,

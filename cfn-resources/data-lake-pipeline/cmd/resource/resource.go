@@ -66,11 +66,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	createRequest := client.Atlas20231115002.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline)
+	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline).Execute()
 
-	pe, response, err := createRequest.Execute()
-
-	defer closeResponse(response)
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
 			return handler.ProgressEvent{
@@ -151,10 +148,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	readRequest := client.Atlas20231115002.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName)
-	pe, response, err := readRequest.Execute()
+	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
@@ -250,10 +245,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	pipelineName := *currentModel.Name
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	updateRequest := client.Atlas20231115002.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline)
-	pe, response, err := updateRequest.Execute()
+	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
 			return progress_events.GetFailedEventByCode(fmt.Sprintf("Error during execution : %s", err.Error()),
@@ -296,10 +289,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	deleteRequest := client.Atlas20231115002.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName)
-	_, response, err := deleteRequest.Execute()
+	_, response, err := client.Atlas20231115002.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
@@ -329,10 +320,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	groupID := *currentModel.ProjectId
-	readAllRequest := client.Atlas20231115002.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID)
+	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID).Execute()
 
-	pe, response, err := readAllRequest.Execute()
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
@@ -362,10 +351,4 @@ func handleError(response *http.Response, err error) (handler.ProgressEvent, err
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 	return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error during execution : %s", err.Error()), response), nil
-}
-
-func closeResponse(response *http.Response) {
-	if response != nil {
-		response.Body.Close()
-	}
 }

@@ -63,8 +63,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	readModel := Model{ProjectId: currentModel.ProjectId, EndpointId: currentModel.EndpointId}
-	readResponse, err := readModel.getPrivateEndpoint(atlas)
-	defer closeResponse(readResponse)
+	_, err := readModel.getPrivateEndpoint(atlas)
+
 	if err == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -74,14 +74,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	response, err := createOrUpdate(currentModel, atlas)
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
 
 	// Read endpoint
-	readResponse, err = currentModel.getPrivateEndpoint(atlas)
-	defer closeResponse(readResponse)
+	readResponse, err := currentModel.getPrivateEndpoint(atlas)
+
 	if err != nil {
 		return handleError(readResponse, err)
 	}
@@ -129,7 +128,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	response, err := currentModel.getPrivateEndpoint(atlas)
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
@@ -159,20 +157,19 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	readModel := Model{ProjectId: currentModel.ProjectId, EndpointId: currentModel.EndpointId}
 	readResponse, err := readModel.getPrivateEndpoint(atlas)
-	defer closeResponse(readResponse)
+
 	if err != nil {
 		return handleError(readResponse, err)
 	}
 	response, err := createOrUpdate(currentModel, atlas)
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
 
 	// Read endpoint
 	readResponse, err = currentModel.getPrivateEndpoint(atlas)
-	defer closeResponse(readResponse)
+
 	if err != nil {
 		return handleError(readResponse, err)
 	}
@@ -202,14 +199,12 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	deleteRequest := client.Atlas20231115002.DataFederationApi.DeleteDataFederationPrivateEndpoint(
+	_, response, err := client.Atlas20231115002.DataFederationApi.DeleteDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
 		*currentModel.EndpointId,
-	)
-	_, response, err := deleteRequest.Execute()
+	).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
@@ -238,13 +233,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	listRequest := client.Atlas20231115002.DataFederationApi.ListDataFederationPrivateEndpoints(
+	pe, response, err := client.Atlas20231115002.DataFederationApi.ListDataFederationPrivateEndpoints(
 		ctx.Background(),
 		*currentModel.ProjectId,
-	)
-	pe, response, err := listRequest.Execute()
+	).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		return handleError(response, err)
 	}
@@ -277,12 +270,6 @@ func (model *Model) getPrivateEndpoint(client *util.MongoDBClient) (*http.Respon
 	}
 	model.readPrivateEndpoint(paginatedPrivateNetworkEndpointIDEntry)
 	return response, err
-}
-
-func closeResponse(response *http.Response) {
-	if response != nil {
-		response.Body.Close()
-	}
 }
 
 func (model *Model) readPrivateEndpoint(pe *atlasSDK.PrivateNetworkEndpointIdEntry) *Model {

@@ -102,7 +102,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	createAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
 	_, response, err := createAccessListAPIKey.Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, CREATE, err)
@@ -158,7 +157,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, *access.IpAddress, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
-	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, READ, err)
@@ -218,7 +216,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	deleteAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, *access.IpAddress)
 	_, response, err := deleteAccessListAPIKey.Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, DELETE, err)
@@ -250,11 +247,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := *currentModel.OrgId
 	apiKeyID := *currentModel.APIUserId
 
-	listAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID)
-
-	accessListResponse, response, err := listAccessListAPIKey.Execute()
-
-	defer closeResponse(response)
+	accessListResponse, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -278,15 +271,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		Message:         "List Complete",
 		ResourceModels:  accessListModels,
 	}, nil
-}
-
-func closeResponse(response *http.Response) {
-	if response != nil {
-		err := response.Body.Close()
-		if err != nil {
-			return
-		}
-	}
 }
 
 func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {

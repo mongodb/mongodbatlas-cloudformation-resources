@@ -70,8 +70,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, response, err := getFederatedQueryLimit(atlas, currentModel)
-	defer closeResponse(response)
+	_, _, err := getFederatedQueryLimit(atlas, currentModel)
+
 	if err == nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -104,7 +104,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	queryLimit, response, err := getFederatedQueryLimit(atlas, currentModel)
 
-	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, READ, err)
@@ -137,7 +136,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	// Check already exists or not
 	_, response, err := getFederatedQueryLimit(atlas, currentModel)
-	defer closeResponse(response)
 
 	if err != nil && response.StatusCode == http.StatusNotFound {
 		return handler.ProgressEvent{
@@ -166,15 +164,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	deleteQueryLimitAPIRequest := client.Atlas20231115002.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
+	_, response, err := client.Atlas20231115002.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
 		*currentModel.LimitName,
-	)
-	_, response, err := deleteQueryLimitAPIRequest.Execute()
+	).Execute()
 
-	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, DELETE, err)
@@ -204,15 +200,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listQueryLimitsAPIRequest := client.Atlas20231115002.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
+	listQueryLimitsAPIResult, response, err := client.Atlas20231115002.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
-	)
+	).Execute()
 
-	listQueryLimitsAPIResult, response, err := listQueryLimitsAPIRequest.Execute()
-
-	defer closeResponse(response)
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
 		return handleError(response, LIST, err)
@@ -231,12 +224,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		OperationStatus: handler.Success,
 		Message:         "List Completed",
 		ResourceModels:  queryLimits}, nil
-}
-
-func closeResponse(response *http.Response) {
-	if response != nil {
-		response.Body.Close()
-	}
 }
 
 func handleError(response *http.Response, method string, err error) (handler.ProgressEvent, error) {
@@ -264,15 +251,14 @@ func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*a
 
 func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
 	queryLimitInput := currentModel.setQueryLimit()
-	createQueryLimitRequest := client.Atlas20231115002.DataFederationApi.CreateOneDataFederationQueryLimit(
+	queryLimit, response, err := client.Atlas20231115002.DataFederationApi.CreateOneDataFederationQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
 		*currentModel.LimitName,
 		queryLimitInput,
-	)
-	queryLimit, response, err := createQueryLimitRequest.Execute()
-	defer closeResponse(response)
+	).Execute()
+
 	if err != nil {
 		return handleError(response, method, err)
 	}

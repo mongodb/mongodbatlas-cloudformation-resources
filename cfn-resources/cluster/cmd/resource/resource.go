@@ -430,7 +430,8 @@ func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel
 	}
 
 	if currentModel.ReplicationSpecs != nil {
-		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
+		adminRepSpecs := expandReplicationSpecs(currentModel.ReplicationSpecs)
+		clusterRequest.ReplicationSpecs = &adminRepSpecs
 	}
 
 	if currentModel.RootCertType != nil {

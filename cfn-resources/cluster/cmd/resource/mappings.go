@@ -69,7 +69,7 @@ func expandBiConnector(biConnector *BiConnector) *admin.BiConnector {
 	}
 }
 
-func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) *[]admin.ReplicationSpec {
+func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []admin.ReplicationSpec {
 	rSpecs := []admin.ReplicationSpec{}
 
 	for i := range replicationSpecs {
@@ -94,7 +94,7 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) *[]admin
 	}
 
 	fmt.Printf("specs: len %d %+v", len(replicationSpecs), rSpecs)
-	return &rSpecs
+	return rSpecs
 }
 
 func expandAutoScaling(scaling *AdvancedAutoScaling) *admin.AdvancedAutoScalingSettings {
@@ -297,11 +297,11 @@ func flattenRegionsConfig(regionConfigs *[]admin.CloudRegionConfig) []AdvancedRe
 	if regionConfigs == nil {
 		return []AdvancedRegionConfig{}
 	}
-	regionConfigsVar := *regionConfigs
-	var regionsConfigs []AdvancedRegionConfig
-	for i := range regionConfigsVar {
-		config := regionConfigsVar[i]
-		regionsConfigs = append(regionsConfigs, flattenRegionConfig(&config))
+	adminConfigs := *regionConfigs
+	regionsConfigs := make([]AdvancedRegionConfig, 0, len(*regionConfigs))
+	for i := range adminConfigs {
+		adminConfig := adminConfigs[i]
+		regionsConfigs = append(regionsConfigs, flattenRegionConfig(&adminConfig))
 	}
 	return regionsConfigs
 }
@@ -574,9 +574,10 @@ func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescripti
 
 func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, handler.ProgressEvent, error) {
 	// Atlas client
+	adminRepSpecs := expandReplicationSpecs(currentModel.ReplicationSpecs)
 	clusterRequest := &admin.AdvancedClusterDescription{
 		Name:             currentModel.Name,
-		ReplicationSpecs: expandReplicationSpecs(currentModel.ReplicationSpecs),
+		ReplicationSpecs: &adminRepSpecs,
 	}
 
 	if currentModel.EncryptionAtRestProvider != nil {

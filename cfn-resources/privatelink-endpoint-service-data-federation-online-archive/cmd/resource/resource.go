@@ -63,7 +63,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	readModel := Model{ProjectId: currentModel.ProjectId, EndpointId: currentModel.EndpointId}
-	readResponse, err := readModel.getPrivateEndpoint(atlas)
+	_, err := readModel.getPrivateEndpoint(atlas)
 
 	if err == nil {
 		return handler.ProgressEvent{
@@ -79,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Read endpoint
-	readResponse, err = currentModel.getPrivateEndpoint(atlas)
+	readResponse, err := currentModel.getPrivateEndpoint(atlas)
 
 	if err != nil {
 		return handleError(readResponse, err)

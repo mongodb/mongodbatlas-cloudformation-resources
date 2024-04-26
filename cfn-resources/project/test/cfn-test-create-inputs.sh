@@ -21,6 +21,8 @@
 # This tool generates json files in the inputs/ for `cfn test`.
 #
 
+set -euo pipefail
+
 function usage {
 	echo "usage:$0 <project_name>"
 }
@@ -63,12 +65,12 @@ jq --arg org "$MONGODB_ATLAS_ORG_ID" \
 
 jq --arg org "${org_id}" \
 	--arg name "${name}-tags" \
-	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile' \
+	'.OrgId?|=$org |.Name?|=$name' \
 	"test/inputs_2_create.template.json" >"inputs/inputs_2_create.json"
 
 jq --arg org "${org_id}" \
 	--arg name "${name}"-tags \
-	'.OrgId?|=$org |.Name?|=$name |.Profile?|=$profile' \
+	'.OrgId?|=$org |.Name?|=$name' \
 	"test/inputs_2_update.template.json" >"inputs/inputs_2_update.json"
 
 ls -l inputs

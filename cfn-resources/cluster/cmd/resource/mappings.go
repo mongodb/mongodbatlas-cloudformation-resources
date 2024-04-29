@@ -15,12 +15,13 @@
 package resource
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/spf13/cast"
@@ -497,20 +498,23 @@ func flattenTags(clusterTags []admin.ResourceTag) (tags []Tag) {
 	return
 }
 
-func expandTags(tags []Tag) *[]admin.ResourceTag {
+func expandTags(tags []Tag) (*[]admin.ResourceTag, error) {
 	clusterTags := []admin.ResourceTag{}
 	for ind := range tags {
 		key := tags[ind].Key
 		value := tags[ind].Value
-		if key == nil || value == nil {
-			log.Fatal("unspecified tag key or value!")
+		if key == nil {
+			return &clusterTags, errors.New("tags Key is undefined")
+		}
+		if value == nil {
+			return &clusterTags, fmt.Errorf("tags Value is undefined for %s", *key)
 		}
 		clusterTags = append(clusterTags, admin.ResourceTag{
 			Key:   *key,
 			Value: *value,
 		})
 	}
-	return &clusterTags
+	return &clusterTags, nil
 }
 
 func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescription) {
@@ -572,12 +576,13 @@ func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescripti
 	currentModel.Tags = flattenTags(cluster.GetTags())
 }
 
-func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, handler.ProgressEvent, error) {
-	// Atlas client
-	adminRepSpecs := expandReplicationSpecs(currentModel.ReplicationSpecs)
+func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, *handler.ProgressEvent) {
 	clusterRequest := &admin.AdvancedClusterDescription{
-		Name:             currentModel.Name,
-		ReplicationSpecs: &adminRepSpecs,
+		Name: currentModel.Name,
+	}
+	if currentModel.ReplicationSpecs != nil {
+		adminRepSpecs := expandReplicationSpecs(currentModel.ReplicationSpecs)
+		clusterRequest.ReplicationSpecs = &adminRepSpecs
 	}
 
 	if currentModel.EncryptionAtRestProvider != nil {
@@ -600,7 +605,7 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
 	}
 
-	if len(currentModel.Labels) > 0 {
+	if currentModel.Labels != nil {
 		clusterRequest.Labels = expandLabelSlice(currentModel.Labels)
 	}
 
@@ -619,8 +624,16 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 	if currentModel.RootCertType != nil {
 		clusterRequest.RootCertType = currentModel.RootCertType
 	}
-	clusterRequest.Tags = expandTags(currentModel.Tags)
+	tags, err := expandTags(currentModel.Tags)
+	if err != nil {
+		return clusterRequest, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+		}
+	}
+	clusterRequest.Tags = tags
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
-	return clusterRequest, handler.ProgressEvent{}, nil
+	return clusterRequest, nil
 }

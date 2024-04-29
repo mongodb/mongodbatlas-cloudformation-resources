@@ -78,18 +78,13 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
-
-	var err error
-
 	currentModel.validateDefaultLabel()
-
-	// Prepare cluster request
-	clusterRequest, event, err := setClusterRequest(currentModel)
-	if err != nil {
-		return event, nil
+	clusterRequest, errEvent := setClusterRequest(currentModel)
+	if errEvent != nil {
+		return *errEvent, nil
 	}
 
-	// Create Cluster
+	var err error
 	cluster, res, err := client.AtlasSDK.ClustersApi.CreateCluster(context.Background(), *currentModel.ProjectId, clusterRequest).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
@@ -170,9 +165,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	currentModel.validateDefaultLabel()
+	adminCluster, errEvent := setClusterRequest(currentModel)
+	if errEvent != nil {
+		return *errEvent, nil
+	}
 
 	// Update Cluster
-	model, _, err := updateCluster(context.Background(), client, currentModel)
+	model, _, err := updateCluster(context.Background(), client, currentModel, adminCluster)
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -231,7 +230,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
-		return validateProgress(client, currentModel, constants.DeletingState, constants.DeletedState)
+		return validateProgress(client, currentModel, constants.DeletedState)
 	}
 
 	params := &admin.DeleteClusterApiParams{
@@ -315,7 +314,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func clusterCallback(client *util.MongoDBClient, currentModel *Model, projectID string) (handler.ProgressEvent, error) {
-	progressEvent, err := validateProgress(client, currentModel, constants.CreatingState, constants.IdleState)
+	progressEvent, err := validateProgress(client, currentModel, constants.IdleState)
 	if err != nil {
 		return progressEvent, nil
 	}
@@ -395,55 +394,7 @@ func readCluster(ctx context.Context, client *util.MongoDBClient, currentModel *
 	return currentModel, res, err
 }
 
-func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*Model, *http.Response, error) {
-	clusterRequest := &admin.AdvancedClusterDescription{}
-	if currentModel.BackupEnabled != nil {
-		clusterRequest.BackupEnabled = currentModel.BackupEnabled
-	}
-
-	if currentModel.BiConnector != nil {
-		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
-	}
-
-	if currentModel.ClusterType != nil {
-		clusterRequest.ClusterType = currentModel.ClusterType
-	}
-
-	if currentModel.DiskSizeGB != nil {
-		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
-	}
-
-	if currentModel.EncryptionAtRestProvider != nil {
-		clusterRequest.EncryptionAtRestProvider = currentModel.EncryptionAtRestProvider
-	}
-
-	if currentModel.Labels != nil {
-		clusterRequest.Labels = expandLabelSlice(currentModel.Labels)
-	}
-
-	if currentModel.MongoDBMajorVersion != nil {
-		clusterRequest.MongoDBMajorVersion = admin.PtrString(formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion))
-	}
-
-	if currentModel.PitEnabled != nil {
-		clusterRequest.PitEnabled = currentModel.PitEnabled
-	}
-
-	if currentModel.ReplicationSpecs != nil {
-		adminRepSpecs := expandReplicationSpecs(currentModel.ReplicationSpecs)
-		clusterRequest.ReplicationSpecs = &adminRepSpecs
-	}
-
-	if currentModel.RootCertType != nil {
-		clusterRequest.RootCertType = currentModel.RootCertType
-	}
-
-	if currentModel.VersionReleaseSystem != nil {
-		clusterRequest.VersionReleaseSystem = currentModel.VersionReleaseSystem
-	}
-
-	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
-
+func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model, clusterRequest *admin.AdvancedClusterDescription) (*Model, *http.Response, error) {
 	_, _ = log.Debugf("params : %+v %+v %+v", ctx, client, clusterRequest)
 	cluster, resp, err := client.AtlasSDK.ClustersApi.UpdateCluster(ctx, *currentModel.ProjectId, *currentModel.Name, clusterRequest).Execute()
 
@@ -460,7 +411,7 @@ func updateAdvancedCluster(ctx context.Context, client *util.MongoDBClient,
 }
 
 func updateClusterCallback(client *util.MongoDBClient, currentModel *Model, projectID string) (handler.ProgressEvent, error) {
-	progressEvent, err := validateProgress(client, currentModel, constants.UpdateState, constants.IdleState)
+	progressEvent, err := validateProgress(client, currentModel, constants.IdleState)
 	if err != nil {
 		return progressEvent, nil
 	}
@@ -509,7 +460,7 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 	return *pe, nil
 }
 
-func validateProgress(client *util.MongoDBClient, currentModel *Model, currentState, targetState string) (handler.ProgressEvent, error) {
+func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
 	_, _ = log.Debugf(" Cluster validateProgress() currentModel:%+v", currentModel)
 
 	isReady, state, cluster, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)

@@ -16,6 +16,12 @@ function usage {
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
+fi
+
 rm -rf inputs
 mkdir inputs
 
@@ -38,11 +44,13 @@ clusterName="${projectName}"
 jq --arg region "$region" \
 	--arg clusterName "$clusterName" \
 	--arg projectId "$projectId" \
-	'.Name?|=$clusterName | .ProjectId?|=$projectId ' \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg region "$region" \
 	--arg clusterName "$clusterName" \
 	--arg projectId "$projectId" \
-	'.Name?|=$clusterName | .ProjectId?|=$projectId ' \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"

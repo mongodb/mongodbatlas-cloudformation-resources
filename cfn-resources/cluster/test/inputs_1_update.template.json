@@ -38,7 +38,7 @@
   "Tags": [
     {
       "Key": "env",
-      "Value": "dev"
+      "Value": "stage"
     }
   ]
 }

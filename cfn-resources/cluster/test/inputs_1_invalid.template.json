@@ -1,0 +1,50 @@
+{
+  "ProjectId": "",
+  "Name": "",
+  "Profile": "default",
+  "AdvancedSettings": {
+    "DefaultReadConcern": "available",
+    "DefaultWriteConcern": "1",
+    "JavascriptEnabled": "true",
+    "MinimumEnabledTLSProtocol": "TLS1_2",
+    "NoTableScan": "false",
+    "OplogSizeMB": "4000",
+    "SampleSizeBIConnector": "110",
+    "SampleRefreshIntervalBIConnector": "310"
+  },
+  "BackupEnabled": "false",
+  "ClusterType": "REPLICASET",
+  "ReplicationSpecs": [
+    {
+      "NumShards": "1",
+      "AdvancedRegionConfigs": [
+        {
+          "AnalyticsSpecs": {
+            "EbsVolumeType": "STANDARD",
+            "InstanceSize": "M10",
+            "NodeCount": "1"
+          },
+          "ElectableSpecs": {
+            "EbsVolumeType": "STANDARD",
+            "InstanceSize": "M10",
+            "NodeCount": "3"
+          },
+          "Priority": "7",
+          "RegionName": "US_EAST_1"
+        }
+      ]
+    }
+  ],
+  "Tags": [
+    {
+      "Key": "env",
+      "Value": "dev"
+    },
+    {
+      "Key": "value-missing"
+    },
+    {
+      "Value": "key-missing"
+    }
+  ]
+}

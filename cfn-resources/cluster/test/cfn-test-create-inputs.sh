@@ -54,3 +54,10 @@ jq --arg region "$region" \
 	--arg profile "$profile" \
 	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
+
+jq --arg region "$region" \
+	--arg clusterName "$clusterName" \
+	--arg projectId "$projectId" \
+	--arg profile "$profile" \
+	'.Profile?|=$profile | .Name?|=$clusterName | .ProjectId?|=$projectId ' \
+	"$(dirname "$0")/inputs_1_invalid.template.json" >"inputs/inputs_1_invalid.json"

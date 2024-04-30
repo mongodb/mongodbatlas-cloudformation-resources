@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -90,7 +90,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.Id)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -128,7 +128,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.Id)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -155,7 +155,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
-	deletePrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	deletePrivateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.DeletePrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, *currentModel.Id)
 	_, response, err = deletePrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -191,7 +191,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.ListPrivateEndpointServices(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	if err != nil {
@@ -241,7 +241,7 @@ func (m *Model) completeByConnection(c admin.EndpointService) {
 	m.EndpointServiceName = c.EndpointServiceName
 	m.ErrorMessage = c.ErrorMessage
 	m.Status = c.Status
-	m.InterfaceEndpoints = c.InterfaceEndpoints
+	m.InterfaceEndpoints = c.GetInterfaceEndpoints()
 }
 
 type privateEndpointCreationCallBackContext struct {
@@ -259,7 +259,7 @@ func create(client *util.MongoDBClient, currentModel *Model) handler.ProgressEve
 		Region:       region,
 	}
 
-	createPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.CreatePrivateEndpointService(context.Background(),
+	createPrivateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.CreatePrivateEndpointService(context.Background(),
 		groupID,
 		privateEndpointRequest)
 	createPrivateEndpointResponse, response, err := createPrivateEndpointRequest.Execute()
@@ -295,7 +295,7 @@ func create(client *util.MongoDBClient, currentModel *Model) handler.ProgressEve
 func validateCreationCompletion(client *util.MongoDBClient, currentModel *Model, req handler.Request) handler.ProgressEvent {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 	PrivateEndpointCallBackContext.fillStruct(req.CallbackContext)
-	getPrivateEndpointRequest := client.Atlas20231115002.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
+	getPrivateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.GetPrivateEndpointService(context.Background(), *currentModel.ProjectId,
 		*currentModel.CloudProvider, PrivateEndpointCallBackContext.ID)
 	privateEndpointResponse, response, err := getPrivateEndpointRequest.Execute()
 	defer response.Body.Close()

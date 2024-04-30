@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	atlasSDK "go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointID}
@@ -98,7 +98,7 @@ func createOrUpdate(currentModel *Model, client *util.MongoDBClient) (*http.Resp
 		Type:       currentModel.Type,
 		Provider:   &provider,
 	}
-	createRequest := client.Atlas20231115002.DataFederationApi.CreateDataFederationPrivateEndpoint(
+	createRequest := client.AtlasSDK.DataFederationApi.CreateDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
 		&privateNetworkEndpointIDEntry,
@@ -199,7 +199,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, response, err := client.Atlas20231115002.DataFederationApi.DeleteDataFederationPrivateEndpoint(
+	_, response, err := client.AtlasSDK.DataFederationApi.DeleteDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
 		*currentModel.EndpointId,
@@ -233,7 +233,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	pe, response, err := client.Atlas20231115002.DataFederationApi.ListDataFederationPrivateEndpoints(
+	pe, response, err := client.AtlasSDK.DataFederationApi.ListDataFederationPrivateEndpoints(
 		ctx.Background(),
 		*currentModel.ProjectId,
 	).Execute()
@@ -241,14 +241,15 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if err != nil {
 		return handleError(response, err)
 	}
-	endpoints := make([]interface{}, len(pe.Results))
-	for i := range pe.Results {
+	endpoints := make([]interface{}, len(pe.GetResults()))
+	for i, e := range pe.GetResults() {
+		eID := e.GetEndpointId()
 		endpoints[i] = Model{
 			ProjectId:  currentModel.ProjectId,
 			Profile:    currentModel.Profile,
-			Comment:    pe.Results[i].Comment,
-			Type:       pe.Results[i].Type,
-			EndpointId: &pe.Results[i].EndpointId,
+			Comment:    e.Comment,
+			Type:       e.Type,
+			EndpointId: &eID,
 		}
 	}
 
@@ -259,7 +260,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func (model *Model) getPrivateEndpoint(client *util.MongoDBClient) (*http.Response, error) {
-	readRequest := client.Atlas20231115002.DataFederationApi.GetDataFederationPrivateEndpoint(
+	readRequest := client.AtlasSDK.DataFederationApi.GetDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*model.ProjectId,
 		*model.EndpointId,

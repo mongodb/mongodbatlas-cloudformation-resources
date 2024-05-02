@@ -5,7 +5,7 @@
   "AdvancedSettings": {
     "DefaultReadConcern": "available",
     "DefaultWriteConcern": "1",
-    "JavascriptEnabled": "false",
+    "JavascriptEnabled": "true",
     "MinimumEnabledTLSProtocol": "TLS1_2",
     "NoTableScan": "false",
     "OplogSizeMB": "4000",
@@ -38,7 +38,13 @@
   "Tags": [
     {
       "Key": "env",
-      "Value": "stage"
+      "Value": "dev"
+    },
+    {
+      "Key": "value-missing"
+    },
+    {
+      "Value": "key-missing"
     }
   ]
 }

@@ -27,7 +27,7 @@ if [ -z "$keyRegion" ]; then
 fi
 
 echo -e "--------------------------------delete aws bucket starts ----------------------------\n"
-bucketName="mongodb-atlas-cfn-test-1-df-${keyRegion}"
+bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
 aws s3 rb "s3://${bucketName}" --force
 echo -e "--------------------------------delete aws bucket ends ----------------------------\n"
 

@@ -21,3 +21,13 @@ else
 	(echo "Failed cleaning project:$projectId" && exit 1)
 fi
 
+keyRegion=$AWS_DEFAULT_REGION
+if [ -z "$keyRegion" ]; then
+	keyRegion=$(aws configure get region)
+fi
+
+echo -e "--------------------------------delete aws bucket starts ----------------------------\n"
+bucketName="mongodb-atlas-cfn-test-df-${keyRegion}"
+aws s3 rb "s3://${bucketName}" --force
+echo -e "--------------------------------delete aws bucket ends ----------------------------\n"
+

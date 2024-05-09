@@ -49,7 +49,6 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-data-federation")
 }
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 

@@ -12,14 +12,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: bootstrap
-      Runtime: go1.x
+      Runtime: provided.al2
       CodeUri: bin/
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
       Handler: bootstrap
-      Runtime: go1.x
+      Runtime: provided.al2
       CodeUri: bin/
       Environment:
         Variables:

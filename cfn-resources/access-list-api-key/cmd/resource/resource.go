@@ -147,16 +147,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	// TODO remove and fix this
-	var access admin.UserAccessListRequest
-	if currentModel.CidrBlock != nil {
-		access.CidrBlock = currentModel.CidrBlock
-	}
-	if currentModel.IpAddress != nil {
-		access.IpAddress = currentModel.IpAddress
-	}
-
-	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, *access.IpAddress, apiKeyID)
+	entry := getEntryAddress(currentModel)
+	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -206,15 +198,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	var access admin.UserAccessListRequest
-	if currentModel.CidrBlock != nil {
-		access.CidrBlock = currentModel.CidrBlock
-	}
-	if currentModel.IpAddress != nil {
-		access.IpAddress = currentModel.IpAddress
-	}
-
-	deleteAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, *access.IpAddress)
+	entry := getEntryAddress(currentModel)
+	deleteAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, entry)
 	_, response, err := deleteAccessListAPIKey.Execute()
 
 	if err != nil {
@@ -226,6 +211,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         "Delete Completed",
 		ResourceModel:   nil}, nil
+}
+
+func getEntryAddress(currentModel *Model) string {
+	var entry string
+	if currentModel.CidrBlock != nil {
+		entry = *currentModel.CidrBlock
+	}
+	if currentModel.IpAddress != nil {
+		entry = *currentModel.IpAddress
+	}
+	return entry
 }
 
 // List handles the List event from the Cloudformation service.

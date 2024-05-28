@@ -1,0 +1,53 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Creates the access list entries for the specified organization API key.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+      "Default": "default"
+    },
+    "OrgId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects.",
+      "Default": ""
+    },
+    "APIUserId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies this organization API key for which you want to return access list entries.",
+      "Default": ""
+    },
+    "CidrBlock": {
+      "Type": "String",
+      "Description": "multiple IP addresses represented as one CIDR block to limit requests to API resources in the specified organization."
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "AccessListAPIKeys": {
+      "Type": "MongoDB::Atlas::AccessListAPIKey",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "APIUserId": {
+          "Ref": "APIUserId"
+        },
+        "CidrBlock": {
+          "Ref": "CidrBlock"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "AccessListAPIKeys": {
+      "Description": "Access List API Keys Object",
+      "Value": {
+        "Ref": "AccessListAPIKeys"
+      }
+    }
+  }
+}

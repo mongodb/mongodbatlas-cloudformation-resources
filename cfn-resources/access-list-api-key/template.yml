@@ -24,4 +24,5 @@ Resources:
       Environment: 
         Variables: 
           MODE: Test
+          LOG_LEVEL: debug
 

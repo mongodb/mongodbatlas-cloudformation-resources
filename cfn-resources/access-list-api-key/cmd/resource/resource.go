@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -29,7 +30,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.APIUserID}
@@ -89,8 +90,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// createReq.ApiService.
-	entryList := make([]atlasSDK.UserAccessList, 0)
-	var access atlasSDK.UserAccessList
+	entryList := make([]admin.UserAccessListRequest, 0)
+	var access admin.UserAccessListRequest
 	if currentModel.CidrBlock != nil {
 		access.CidrBlock = currentModel.CidrBlock
 	}
@@ -99,7 +100,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	entryList = append(entryList, access)
 
-	createAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
+	createAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
 	_, response, err := createAccessListAPIKey.Execute()
 
 	if err != nil {
@@ -147,15 +148,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	var access atlasSDK.UserAccessList
-	if currentModel.CidrBlock != nil {
-		access.CidrBlock = currentModel.CidrBlock
-	}
-	if currentModel.IpAddress != nil {
-		access.IpAddress = currentModel.IpAddress
-	}
-
-	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, *access.IpAddress, apiKeyID)
+	entry := getEntryAddress(currentModel)
+	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -205,15 +199,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 	}
 
-	var access atlasSDK.UserAccessList
-	if currentModel.CidrBlock != nil {
-		access.CidrBlock = currentModel.CidrBlock
-	}
-	if currentModel.IpAddress != nil {
-		access.IpAddress = currentModel.IpAddress
-	}
-
-	deleteAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, *access.IpAddress)
+	entry := getEntryAddress(currentModel)
+	deleteAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, entry)
 	_, response, err := deleteAccessListAPIKey.Execute()
 
 	if err != nil {
@@ -225,6 +212,23 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		OperationStatus: handler.Success,
 		Message:         "Delete Completed",
 		ResourceModel:   nil}, nil
+}
+
+// If CIDR block is defined, subnet mask is removed so get and delete requests work correctly
+func getEntryAddress(currentModel *Model) string {
+	var entry string
+	if currentModel.CidrBlock != nil {
+		parts := strings.SplitN(*currentModel.CidrBlock, "/", 2)
+		if parts[1] == "32" {
+			entry = parts[0]
+		} else {
+			entry = *currentModel.CidrBlock
+		}
+	}
+	if currentModel.IpAddress != nil {
+		entry = *currentModel.IpAddress
+	}
+	return entry
 }
 
 // List handles the List event from the Cloudformation service.
@@ -247,7 +251,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := *currentModel.OrgId
 	apiKeyID := *currentModel.APIUserId
 
-	accessListResponse, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
+	accessListResponse, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -255,8 +259,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	accessListModels := make([]interface{}, 0)
-	for i := range accessListResponse.Results {
-		l := accessListResponse.Results[i]
+	apiResults := accessListResponse.GetResults()
+	for i := range apiResults {
+		l := apiResults[i]
 		label := Model{
 			CidrBlock: l.CidrBlock,
 			APIUserId: currentModel.APIUserId,

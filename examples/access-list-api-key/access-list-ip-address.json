@@ -19,7 +19,7 @@
     },
     "IpAddress": {
       "Type": "String",
-      "Description": "One IP address or multiple IP addresses represented as one CIDR block to limit requests to API resources in the specified organization."
+      "Description": "One IP address to limit requests to API resources in the specified organization."
     }
   },
   "Mappings": {},

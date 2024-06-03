@@ -10,11 +10,18 @@ set -o pipefail
 
 function usage {
 	echo "usage:$0 <project_name>"
-	echo "Creates a new project and an Cluster for testing"
+	echo "Creates a new project"
 }
 
 if [ "$#" -ne 2 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
+
+#set profile - relevant for contract tests which define a custom profile
+profile="default"
+if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
+	echo "profile set to ${MONGODB_ATLAS_PROFILE}"
+	profile=${MONGODB_ATLAS_PROFILE}
+fi
 
 rm -rf inputs
 mkdir inputs
@@ -34,10 +41,12 @@ mkdir inputs
 
 jq --arg group_id "$projectId" \
 	'.ProjectId?|=$group_id' \
+	'.Profile?|=$profile' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg group_id "$projectId" \
 	'.ProjectId?|=$group_id' \
+	'.Profile?|=$profile' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

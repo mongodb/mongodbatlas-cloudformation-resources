@@ -12,7 +12,7 @@ function usage {
 	echo "usage:$0 "
 }
 
-projectId=$(jq -r '.GroupId' ./inputs/inputs_1_create.json)
+projectId=$(jq -r '.ProjectId' ./inputs/inputs_1_create.json)
 
 #delete project
 if atlas projects delete "$projectId" --force; then

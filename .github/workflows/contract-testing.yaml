@@ -29,6 +29,7 @@ jobs:
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
      search-deployment: ${{ steps.filter.outputs.search-deployment }}
+     alert-configuration: ${{ steps.filter.outputs.alert-configuration }}
    steps:
    - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
      if: ${{ github.event_name == 'push' }}

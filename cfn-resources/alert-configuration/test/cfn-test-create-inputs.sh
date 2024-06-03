@@ -40,13 +40,13 @@ rm -rf inputs
 mkdir inputs
 
 jq --arg group_id "$projectId" \
-	'.ProjectId?|=$group_id' \
-	'.Profile?|=$profile' \
+	--arg profile "$profile" \
+	'.ProjectId?|=$group_id | .Profile?|=$profile' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg group_id "$projectId" \
-	'.ProjectId?|=$group_id' \
-	'.Profile?|=$profile' \
+	--arg profile "$profile" \
+	'.ProjectId?|=$group_id | .Profile?|=$profile' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

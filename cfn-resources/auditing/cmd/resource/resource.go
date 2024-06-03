@@ -27,7 +27,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -51,7 +51,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
@@ -110,7 +110,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
@@ -153,7 +153,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {
@@ -219,7 +219,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {

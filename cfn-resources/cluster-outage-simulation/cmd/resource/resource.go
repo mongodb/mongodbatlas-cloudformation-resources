@@ -30,7 +30,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 const (
@@ -79,13 +79,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
-	requestBody := atlasSDK.ClusterOutageSimulation{
+	requestBody := admin.ClusterOutageSimulation{
 		OutageFilters: newOutageFilters(currentModel),
 	}
 
 	_, _ = logger.Debugf("requestBody - : %+v", requestBody)
-	client.Atlas20231115002.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
-	simulationObject, res, err := client.Atlas20231115002.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
+	client.AtlasSDK.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
+	simulationObject, res, err := client.AtlasSDK.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("create Outage - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -131,7 +131,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 	// API call to read resource
-	outageSimulation, resp, err := client.Atlas20231115002.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil || outageSimulation == nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -187,7 +187,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	simulationObject, res, err := client.Atlas20231115002.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	simulationObject, res, err := client.AtlasSDK.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -222,18 +222,18 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func newOutageFilters(currentModel *Model) []atlasSDK.AtlasClusterOutageSimulationOutageFilter {
-	outageFilters := make([]atlasSDK.AtlasClusterOutageSimulationOutageFilter, 0)
+func newOutageFilters(currentModel *Model) *[]admin.AtlasClusterOutageSimulationOutageFilter {
+	outageFilters := make([]admin.AtlasClusterOutageSimulationOutageFilter, 0)
 
 	for ind := range currentModel.OutageFilters {
-		mMatcher := atlasSDK.AtlasClusterOutageSimulationOutageFilter{
+		mMatcher := admin.AtlasClusterOutageSimulationOutageFilter{
 			CloudProvider: currentModel.OutageFilters[ind].CloudProvider,
 			RegionName:    currentModel.OutageFilters[ind].Region,
 			Type:          currentModel.OutageFilters[ind].Type,
 		}
 		outageFilters = append(outageFilters, mMatcher)
 	}
-	return outageFilters
+	return &outageFilters
 }
 
 // function to track snapshot creation status
@@ -276,7 +276,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 
 // function to check if resource action is completed
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-	outageSimulation, resp, err := client.Atlas20231115002.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusNotFound {
 			return true, Complete, nil
@@ -294,7 +294,7 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 
 // function to check if resource action is active
 func isActive(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-	outageSimulation, resp, err := client.Atlas20231115002.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusNotFound {
 			return false, Complete, nil
@@ -319,7 +319,7 @@ func setup() {
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
-func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, currentModel *Model) *Model {
+func convertToUIModel(outageSimulation admin.ClusterOutageSimulation, currentModel *Model) *Model {
 	currentModel.SimulationId = outageSimulation.Id
 
 	if outageSimulation.StartRequestDate != nil {
@@ -330,11 +330,11 @@ func convertToUIModel(outageSimulation atlasSDK.ClusterOutageSimulation, current
 	if outageSimulation.State != nil {
 		currentModel.State = outageSimulation.State
 	}
-	currentModel.OutageFilters = convertOutageFiltersToModel(outageSimulation.OutageFilters)
+	currentModel.OutageFilters = convertOutageFiltersToModel(outageSimulation.GetOutageFilters())
 	return currentModel
 }
 
-func convertOutageFiltersToModel(outageFilters []atlasSDK.AtlasClusterOutageSimulationOutageFilter) []Filter {
+func convertOutageFiltersToModel(outageFilters []admin.AtlasClusterOutageSimulationOutageFilter) []Filter {
 	outageFilterList := make([]Filter, 0)
 
 	for ind := range outageFilters {

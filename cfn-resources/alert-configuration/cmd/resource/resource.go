@@ -31,7 +31,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.EventTypeName, constants.ProjectID}
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	// Check if  already exist
 	if currentModel.Id != nil && *currentModel.Id != "" {
@@ -79,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
 	}
 
-	alertConfigRequest := atlasSDK.GroupAlertsConfig{
+	alertConfigRequest := admin.GroupAlertsConfig{
 		GroupId:         currentModel.ProjectId,
 		EventTypeName:   currentModel.EventTypeName,
 		Enabled:         currentModel.Enabled,
@@ -123,7 +123,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
@@ -168,7 +168,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
@@ -194,13 +194,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Removing the computed attributes to recreate the original request
 	alertReq.Created = nil
 	alertReq.Updated = nil
-	var alertModel *atlasSDK.GroupAlertsConfig
+	var alertModel *admin.GroupAlertsConfig
 
 	// Cannot enable/disable ONLY via update (if only send enable as changed field server returns a 500 error)
 	// so have to use different method to change enabled.
-	if reflect.DeepEqual(alertReq, &atlasSDK.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
-		reflect.DeepEqual(alertReq, &atlasSDK.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
-		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfiguration(context.Background(), projectID, id, &atlasSDK.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
+	if reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(true)}) ||
+		reflect.DeepEqual(alertReq, &admin.GroupAlertsConfig{Enabled: aws.Bool(false)}) {
+		alertModel, res, err = atlasV2.AlertConfigurationsApi.ToggleAlertConfiguration(context.Background(), projectID, id, &admin.AlertsToggle{Enabled: alertReq.Enabled}).Execute()
 	} else {
 		alertModel, res, err = atlasV2.AlertConfigurationsApi.UpdateAlertConfiguration(context.Background(), projectID, id, alertReq).Execute()
 	}
@@ -235,7 +235,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
@@ -268,12 +268,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 // function to check if record already exist
-func isExist(currentModel *Model, client *atlasSDK.APIClient) bool {
+func isExist(currentModel *Model, client *admin.APIClient) bool {
 	alert, _, err := client.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	return err == nil && alert != nil
 }
 
-func expandAlertConfigurationMatchers(matchers []Matcher) []map[string]interface{} {
+func expandAlertConfigurationMatchers(matchers []Matcher) *[]map[string]interface{} {
 	mts := make([]map[string]interface{}, 0)
 	for ind := range matchers {
 		mMatcher := map[string]interface{}{
@@ -283,15 +283,15 @@ func expandAlertConfigurationMatchers(matchers []Matcher) []map[string]interface
 		}
 		mts = append(mts, mMatcher)
 	}
-	return mts
+	return &mts
 }
 
-func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *atlasSDK.ServerlessMetricThreshold {
+func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.ServerlessMetricThreshold {
 	threshold := currentModel.MetricThreshold
 	if threshold == nil {
 		return nil
 	}
-	return &atlasSDK.ServerlessMetricThreshold{
+	return &admin.ServerlessMetricThreshold{
 		MetricName: cast.ToString(threshold.MetricName),
 		Operator:   threshold.Operator,
 		Threshold:  threshold.Threshold,
@@ -300,11 +300,11 @@ func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *atlasSD
 	}
 }
 
-func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *atlasSDK.GreaterThanRawThreshold {
+func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin.GreaterThanRawThreshold {
 	if threshold == nil {
 		return nil
 	}
-	return &atlasSDK.GreaterThanRawThreshold{
+	return &admin.GreaterThanRawThreshold{
 		Operator:  threshold.Operator,
 		Threshold: util.Pointer(int(*threshold.Threshold)),
 		Units:     threshold.Units,
@@ -312,8 +312,8 @@ func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *atlasSD
 }
 
 // convert  model notification to mongodb atlas  notification
-func expandAlertConfigurationNotification(notificationList []NotificationView) ([]atlasSDK.AlertsNotificationRootForGroup, error) {
-	notifications := make([]atlasSDK.AlertsNotificationRootForGroup, 0)
+func expandAlertConfigurationNotification(notificationList []NotificationView) (*[]admin.AlertsNotificationRootForGroup, error) {
+	notifications := make([]admin.AlertsNotificationRootForGroup, 0)
 
 	for ind := range notificationList {
 		if notificationList[ind].IntervalMin != nil && *notificationList[ind].IntervalMin > cast.ToFloat64(0) {
@@ -325,7 +325,7 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 	}
 
 	for ind := range notificationList {
-		notification := atlasSDK.AlertsNotificationRootForGroup{
+		notification := admin.AlertsNotificationRootForGroup{
 			ApiToken:                 notificationList[ind].ApiToken,
 			ChannelName:              notificationList[ind].ChannelName,
 			DatadogApiKey:            notificationList[ind].DatadogApiKey,
@@ -344,17 +344,17 @@ func expandAlertConfigurationNotification(notificationList []NotificationView) (
 			Username:                 notificationList[ind].Username,
 			VictorOpsApiKey:          notificationList[ind].VictorOpsApiKey,
 			VictorOpsRoutingKey:      notificationList[ind].VictorOpsRoutingKey,
-			Roles:                    cast.ToStringSlice(notificationList[ind].Roles),
+			Roles:                    &notificationList[ind].Roles,
 			DelayMin:                 notificationList[ind].DelayMin,
 		}
 		notifications = append(notifications, notification)
 	}
-	return notifications, nil
+	return &notifications, nil
 }
 
-func convertToMongoModel(reqModel *atlasSDK.GroupAlertsConfig, currentModel *Model) *atlasSDK.GroupAlertsConfig {
+func convertToMongoModel(reqModel *admin.GroupAlertsConfig, currentModel *Model) *admin.GroupAlertsConfig {
 	if reqModel == nil {
-		reqModel = &atlasSDK.GroupAlertsConfig{}
+		reqModel = &admin.GroupAlertsConfig{}
 	}
 
 	// Only change the updated fields
@@ -379,7 +379,7 @@ func convertToMongoModel(reqModel *atlasSDK.GroupAlertsConfig, currentModel *Mod
 	return reqModel
 }
 
-func convertToUIModel(alertConfig *atlasSDK.GroupAlertsConfig, currentModel *Model) *Model {
+func convertToUIModel(alertConfig *admin.GroupAlertsConfig, currentModel *Model) *Model {
 	currentModel.Id = alertConfig.Id
 	if alertConfig.Created != nil {
 		currentModel.Created = util.TimePtrToStringPtr(alertConfig.Created)

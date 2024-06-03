@@ -31,7 +31,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Description, constants.AwsSecretName}
@@ -70,11 +70,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// Set the roles from model
-	apiKeyInput := atlasSDK.CreateAtlasOrganizationApiKey{
+	apiKeyInput := admin.CreateAtlasOrganizationApiKey{
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
-	apiKeyUserDetails, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.CreateApiKey(
+	apiKeyUserDetails, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.CreateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		&apiKeyInput,
@@ -167,12 +167,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 	// Set the roles from model
-	apiKeyInput := atlasSDK.UpdateAtlasOrganizationApiKey{
+	apiKeyInput := admin.UpdateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
-		Roles: currentModel.Roles,
+		Roles: &currentModel.Roles,
 	}
 
-	apiKeyUserDetails, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.UpdateApiKey(
+	apiKeyUserDetails, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.UpdateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -219,7 +219,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, response, err := client.Atlas20231115002.ProgrammaticAPIKeysApi.DeleteApiKey(
+	_, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -253,7 +253,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	apiKeyRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.ListApiKeys(
+	apiKeyRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.ListApiKeys(
 		context.Background(),
 		*currentModel.OrgId,
 	)
@@ -275,7 +275,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return handleError(response, constants.LIST, err)
 	}
 
-	apiKeyList := pagedAPIKeysList.Results
+	apiKeyList := pagedAPIKeysList.GetResults()
 	apiKeys := make([]interface{}, len(apiKeyList))
 	for i := range apiKeyList {
 		var model Model
@@ -318,8 +318,8 @@ func assignProjects(client *util.MongoDBClient, project ProjectAssignment, apiUs
 	return handler.ProgressEvent{}, err
 }
 
-func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*atlasSDK.ApiKeyUserDetails, *string, *http.Response, error) {
-	apiKeyRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKey(
+func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*admin.ApiKeyUserDetails, *string, *http.Response, error) {
+	apiKeyRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -333,12 +333,12 @@ func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentM
 	return apiKeyUserDetails, arn, response, err
 }
 
-func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*atlasSDK.ApiKeyUserDetails, *http.Response, error) {
+func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*admin.ApiKeyUserDetails, *http.Response, error) {
 	// Set the roles from model
-	projectAPIKeyInput := atlasSDK.UpdateAtlasProjectApiKey{
-		Roles: projectAssignment.Roles,
+	projectAPIKeyInput := admin.UpdateAtlasProjectApiKey{
+		Roles: &projectAssignment.Roles,
 	}
-	assignAPIRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
+	assignAPIRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,
@@ -349,7 +349,7 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.
 }
 
 func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (map[string]interface{}, *http.Response, error) {
-	unAssignAPIRequest := client.Atlas20231115002.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
+	unAssignAPIRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,
@@ -461,7 +461,7 @@ func areStringArraysEqualIgnoreOrder(arr1, arr2 []string) bool {
 	return true
 }
 
-func (model *Model) readAPIKeyDetails(apikey atlasSDK.ApiKeyUserDetails) Model {
+func (model *Model) readAPIKeyDetails(apikey admin.ApiKeyUserDetails) Model {
 	model.APIUserId = apikey.Id
 	model.Description = apikey.Desc
 	model.PublicKey = apikey.PublicKey
@@ -469,15 +469,16 @@ func (model *Model) readAPIKeyDetails(apikey atlasSDK.ApiKeyUserDetails) Model {
 	var roles []string
 	var projectAssignments []ProjectAssignment
 	var projectRolesMap = map[string][]string{}
-	for i := range apikey.Roles {
+	apiKeyRoles := apikey.GetRoles()
+	for i := range apiKeyRoles {
 		// org roles
-		if apikey.Roles[i].OrgId != nil && apikey.Roles[i].RoleName != nil {
-			roles = append(roles, *apikey.Roles[i].RoleName)
+		if apiKeyRoles[i].OrgId != nil && apiKeyRoles[i].RoleName != nil {
+			roles = append(roles, *apiKeyRoles[i].RoleName)
 		}
 		// project roles
-		if apikey.Roles[i].GroupId != nil {
-			if apikey.Roles[i].RoleName != nil {
-				projectRolesMap[*apikey.Roles[i].GroupId] = append(projectRolesMap[*apikey.Roles[i].GroupId], *apikey.Roles[i].RoleName)
+		if apiKeyRoles[i].GroupId != nil {
+			if apiKeyRoles[i].RoleName != nil {
+				projectRolesMap[*apiKeyRoles[i].GroupId] = append(projectRolesMap[*apiKeyRoles[i].GroupId], *apiKeyRoles[i].RoleName)
 			}
 		}
 	}

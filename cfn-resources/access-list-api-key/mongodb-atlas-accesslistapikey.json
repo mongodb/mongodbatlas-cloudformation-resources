@@ -22,7 +22,7 @@
     },
     "Entry": {
       "type": "string",
-      "description": "Contains the value of IpAddress or CidrBlock for uniquely identifying the resource."
+      "description": "Value that uniquely identifies the access list entry."
     },
     "IpAddress": {
       "description": "Network address that you want to add to the access list for the API key.",

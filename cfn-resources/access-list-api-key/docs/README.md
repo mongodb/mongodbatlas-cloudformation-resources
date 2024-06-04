@@ -107,5 +107,5 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### Entry
 
-Contains the value of IpAddress or CidrBlock for uniquely identifying the resource.
+Value that uniquely identifies the access list entry.
 

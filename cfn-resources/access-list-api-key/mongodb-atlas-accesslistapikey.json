@@ -20,6 +20,10 @@
       "description": "Range of network addresses that you want to add to the access list for the API key.",
       "type": "string"
     },
+    "Entry": {
+      "type": "string",
+      "description": "Contains the value of IpAddress or CidrBlock for uniquely identifying the resource."
+    },
     "IpAddress": {
       "description": "Network address that you want to add to the access list for the API key.",
       "type": "string"
@@ -39,10 +43,14 @@
     "/properties/APIUserId",
     "/properties/Profile"
   ],
+  "readOnlyProperties": [
+    "/properties/Entry"
+  ],
   "primaryIdentifier": [
     "/properties/OrgId",
     "/properties/APIUserId",
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/Entry"
   ],
   "handlers": {
     "create": {

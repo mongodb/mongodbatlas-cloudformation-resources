@@ -108,6 +108,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, CREATE, err)
 	}
 
+	setUniqueEntryInModel(currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -229,6 +231,16 @@ func getEntryAddress(currentModel *Model) string {
 		entry = *currentModel.IpAddress
 	}
 	return entry
+}
+
+// Populate Entry read-only property that is part of the primary id of the resource
+func setUniqueEntryInModel(currentModel *Model) {
+	if currentModel.CidrBlock != nil {
+		currentModel.Entry = currentModel.CidrBlock
+	}
+	if currentModel.IpAddress != nil {
+		currentModel.Entry = currentModel.IpAddress
+	}
 }
 
 // List handles the List event from the Cloudformation service.

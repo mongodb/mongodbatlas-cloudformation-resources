@@ -8,6 +8,7 @@ type Model struct {
 	APIUserId  *string `json:",omitempty"`
 	Profile    *string `json:",omitempty"`
 	CidrBlock  *string `json:",omitempty"`
+	Entry      *string `json:",omitempty"`
 	IpAddress  *string `json:",omitempty"`
 	TotalCount *int    `json:",omitempty"`
 }

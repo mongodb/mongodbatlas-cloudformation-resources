@@ -46,14 +46,13 @@ func setup() {
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
 	validationError := validateRequest(CreateRequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -64,7 +63,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	atlasV2 := client.AtlasSDK
 
-	// Check if  already exist
 	if currentModel.Id != nil && *currentModel.Id != "" {
 		_, _ = logger.Warnf("resource already exists for Id: %s", *currentModel.Id)
 		return handler.ProgressEvent{
@@ -73,7 +71,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
-	// API Request creation
 	notifications, err := expandAlertConfigurationNotification(currentModel.Notifications)
 	if err != nil {
 		return progressevents.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest), err
@@ -90,7 +87,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	projectID := *currentModel.ProjectId
-	// API call to create
 	var res *http.Response
 	alertConfig, res, err := atlasV2.AlertConfigurationsApi.CreateAlertConfiguration(context.Background(), projectID, &alertConfigRequest).Execute()
 	defer res.Body.Close()
@@ -107,14 +103,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
 	validationError := validateRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -125,7 +120,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	atlasV2 := client.AtlasSDK
 
-	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
 		return handler.ProgressEvent{
@@ -134,17 +128,14 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// API call to read resource
 	alertConfig, resp, err := atlasV2.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	defer resp.Body.Close()
 	if err != nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	// populate response model
 	currentModel = convertToUIModel(alertConfig, currentModel)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -152,14 +143,13 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
 	validationError := validateRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -170,7 +160,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	atlasV2 := client.AtlasSDK
 
-	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
 		return handler.ProgressEvent{
@@ -188,7 +177,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	// create request object
 	alertReq = convertToMongoModel(alertReq, currentModel)
 
 	// Removing the computed attributes to recreate the original request
@@ -219,14 +207,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
 	validationError := validateRequest(RequiredFields, currentModel)
 	if validationError != nil {
 		return *validationError, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -237,7 +224,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	atlasV2 := client.AtlasSDK
 
-	// Check if  already exist
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
 		return handler.ProgressEvent{
@@ -246,7 +232,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	// API call to delete
 	res, err := atlasV2.AlertConfigurationsApi.DeleteAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 
 	if err != nil {
@@ -254,7 +239,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 	}, nil
@@ -267,7 +251,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 }
 
-// function to check if record already exist
 func isExist(currentModel *Model, client *admin.APIClient) bool {
 	alert, _, err := client.AlertConfigurationsApi.GetAlertConfiguration(context.Background(), *currentModel.ProjectId, *currentModel.Id).Execute()
 	return err == nil && alert != nil
@@ -311,7 +294,6 @@ func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin.G
 	}
 }
 
-// convert  model notification to mongodb atlas  notification
 func expandAlertConfigurationNotification(notificationList []NotificationView) (*[]admin.AlertsNotificationRootForGroup, error) {
 	notifications := make([]admin.AlertsNotificationRootForGroup, 0)
 

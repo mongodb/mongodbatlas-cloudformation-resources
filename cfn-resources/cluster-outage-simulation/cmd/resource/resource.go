@@ -43,16 +43,13 @@ const (
 var RequiredFields = []string{constants.ClusterName, constants.ProjectID}
 var SimulationStatus = []string{Simulating, Starting, StartingRequested}
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
-	// Validate required fields in the request
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -70,7 +67,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
 
-	// check if already exist in active state
 	active, _, _ := isActive(client, projectID, clusterName, "nil")
 	if active {
 		return handler.ProgressEvent{
@@ -95,7 +91,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
-	log.Println("[INFO] Waiting for MongoDB Cluster Outage Simulation to start")
 
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -110,16 +105,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
+	setup()
 
-	// Validate required fields in the request
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -130,7 +122,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
-	// API call to read resource
 	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil || outageSimulation == nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
@@ -155,15 +146,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup() // logger setup
-	// Validate required fields in the request
+	setup()
 	if modelValidation := validateModel(RequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == constants.EmptyString {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -197,8 +185,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		defer res.Body.Close()
 	}
 
-	log.Println("[INFO] Waiting for MongoDB Cluster Outage Simulation to end")
-	// progress callback setup
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              constants.DeleteInProgress,
@@ -212,12 +198,10 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
@@ -274,7 +258,6 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	return p, nil
 }
 
-// function to check if resource action is completed
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
 	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
@@ -292,7 +275,6 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 	return *outageSimulation.State == targetState, *outageSimulation.State, nil
 }
 
-// function to check if resource action is active
 func isActive(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
 	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
@@ -310,12 +292,10 @@ func isActive(client *util.MongoDBClient, projectID, clusterName, targetState st
 	return true, Complete, nil
 }
 
-// logger setup function
 func setup() {
 	util.SetupLogger("mongodb-atlas-cloud-outage")
 }
 
-// function to validate inputs to all actions
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }

@@ -50,7 +50,6 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-api-key")
 }
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -59,7 +58,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -69,7 +67,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	// Set the roles from model
 	apiKeyInput := admin.CreateAtlasOrganizationApiKey{
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
@@ -84,7 +81,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, constants.CREATE, err)
 	}
 
-	// Read response
 	currentModel.APIUserId = apiKeyUserDetails.Id
 
 	// Save PrivateKey in AWS SecretManager
@@ -115,7 +111,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   currentModel}, nil
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -124,7 +119,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -157,7 +151,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -166,7 +159,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	// Set the roles from model
 	apiKeyInput := admin.UpdateAtlasOrganizationApiKey{
 		Desc:  currentModel.Description,
 		Roles: &currentModel.Roles,
@@ -184,10 +176,8 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	existingModel := Model{APIUserId: currentModel.APIUserId, OrgId: currentModel.OrgId}
-	// Read response
 	existingModel.readAPIKeyDetails(*apiKeyUserDetails)
 
-	// update the project assignments
 	_, response, err = updateProjectAssignments(client, currentModel, &existingModel)
 
 	if err != nil {
@@ -200,7 +190,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   currentModel}, nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -209,7 +198,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -235,7 +223,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   nil}, nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -244,7 +231,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -334,7 +320,6 @@ func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentM
 }
 
 func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*admin.ApiKeyUserDetails, *http.Response, error) {
-	// Set the roles from model
 	projectAPIKeyInput := admin.UpdateAtlasProjectApiKey{
 		Roles: &projectAssignment.Roles,
 	}

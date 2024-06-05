@@ -108,6 +108,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(response, CREATE, err)
 	}
 
+	setEntryInModel(currentModel)
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Create Complete",
@@ -231,6 +233,12 @@ func getEntryAddress(currentModel *Model) string {
 	return entry
 }
 
+// Populate Entry read-only property that is part of the primary id of the resource
+func setEntryInModel(currentModel *Model) {
+	uniqueAddress := getEntryAddress(currentModel)
+	currentModel.Entry = &uniqueAddress
+}
+
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
@@ -269,6 +277,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			Profile:   currentModel.Profile,
 			IpAddress: l.IpAddress,
 		}
+		setEntryInModel(&label) // having all results with the Entry property is required so the primary id is complete
 		accessListModels = append(accessListModels, label)
 	}
 	return handler.ProgressEvent{

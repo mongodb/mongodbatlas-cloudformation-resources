@@ -27,7 +27,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -40,7 +40,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("CREATE Validation Error")
@@ -51,7 +50,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
@@ -88,7 +87,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		ResourceModel:   currentModel,
@@ -99,7 +97,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("READ Validation Error")
@@ -110,7 +107,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
@@ -130,7 +127,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.AuditFilter = atlasAuditing.AuditFilter
 	currentModel.AuditAuthorizationSuccess = atlasAuditing.AuditAuthorizationSuccess
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "get successful",
@@ -142,7 +138,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
 
-	// Validation
 	modelValidation := validator.ValidateModel(RequiredFields, currentModel)
 	if modelValidation != nil {
 		_, _ = log.Debugf("UPDATE Validation Error")
@@ -153,7 +148,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {
@@ -197,7 +192,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.ConfigurationType = atlasAuditing.ConfigurationType
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         "Update success",
@@ -219,7 +213,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115002
+	atlasV2 := client.AtlasSDK
 
 	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {
@@ -251,7 +245,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 	}, nil

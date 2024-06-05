@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}
@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errHandler != nil {
 		return *errHandler, nil
 	}
-	outputRequest, resp, err := client.Atlas20231115002.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
+	outputRequest, resp, err := client.AtlasSDK.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -103,7 +103,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	olArchive, resp, err := client.Atlas20231115002.OnlineArchiveApi.GetOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
+	olArchive, resp, err := client.AtlasSDK.OnlineArchiveApi.GetOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -143,7 +143,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if ArchiveDeleted(ctx, client, currentModel) {
 		return progressevent.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
-	outputRequest, resp, err := client.Atlas20231115002.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
+	outputRequest, resp, err := client.AtlasSDK.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -181,7 +181,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 
-	_, resp, err := client.Atlas20231115002.OnlineArchiveApi.DeleteOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
+	_, resp, err := client.AtlasSDK.OnlineArchiveApi.DeleteOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -215,13 +215,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ItemsPerPage: currentModel.ItemsPerPage,
 		PageNum:      currentModel.PageNum,
 	}
-	archivesResponse, resp, err := client.Atlas20231115002.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
+	archivesResponse, resp, err := client.AtlasSDK.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	resources := make([]any, 0, len(archivesResponse.Results))
-	archives := archivesResponse.Results
+	archives := archivesResponse.GetResults()
+	resources := make([]any, 0, len(archives))
 	for i := range archives {
 		model := Model{
 			ArchiveId: archives[i].Id,
@@ -309,7 +309,7 @@ func newCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) 
 	return criteriaInput, nil
 }
 
-func newPartitionFields(currentModel *Model) []admin.PartitionField {
+func newPartitionFields(currentModel *Model) *[]admin.PartitionField {
 	partitionFields := make([]admin.PartitionField, len(currentModel.PartitionFields))
 
 	for i := range currentModel.PartitionFields {
@@ -326,7 +326,7 @@ func newPartitionFields(currentModel *Model) []admin.PartitionField {
 		partitionFields[i] = *partitionField
 	}
 
-	return partitionFields
+	return &partitionFields
 }
 
 func validateProgress(ctx context.Context, client *util.MongoDBClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
@@ -359,7 +359,7 @@ func validateProgress(ctx context.Context, client *util.MongoDBClient, currentMo
 }
 
 func ArchiveExists(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin.BackupOnlineArchive, error) {
-	archive, resp, err := client.Atlas20231115002.OnlineArchiveApi.GetOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
+	archive, resp, err := client.AtlasSDK.OnlineArchiveApi.GetOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			state := "DELETED"

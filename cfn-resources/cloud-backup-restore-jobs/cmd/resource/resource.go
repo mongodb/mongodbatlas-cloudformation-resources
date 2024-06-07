@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType, constants.InstanceType, constants.InstanceName}
@@ -96,14 +96,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if *currentModel.InstanceType == serverlessInstanceType {
 		params := paramsServerless(currentModel)
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.CreateServerlessBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
+		serverless, resp, err := client.AtlasSDK.CloudBackupsApi.CreateServerlessBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		currentModel.Id = serverless.Id
 	} else {
 		params := paramsServer(currentModel)
-		server, resp, err := client.Atlas20231115002.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
+		server, resp, err := client.AtlasSDK.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -203,7 +203,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	_, resp, err := client.Atlas20231115002.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
+	_, resp, err := client.AtlasSDK.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -228,13 +228,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	models := make([]interface{}, 0)
 	if *currentModel.InstanceType == serverlessInstanceType {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.ListServerlessBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		serverless, resp, err := client.AtlasSDK.CloudBackupsApi.ListServerlessBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		instanceType := serverlessInstanceType
-		for i := range serverless.Results {
-			job := &serverless.Results[i]
+		results := serverless.GetResults()
+		for i := range results {
+			job := &results[i]
 			model := &Model{
 				ProjectId:    currentModel.ProjectId,
 				InstanceType: &instanceType,
@@ -247,13 +248,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			}
 		}
 	} else {
-		server, resp, err := client.Atlas20231115002.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		server, resp, err := client.AtlasSDK.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		instanceType := clusterInstanceType
-		for i := range server.Results {
-			job := &server.Results[i]
+		results := server.GetResults()
+		for i := range results {
+			job := &results[i]
 			model := &Model{
 				ProjectId:    currentModel.ProjectId,
 				InstanceType: &instanceType,
@@ -351,14 +353,14 @@ func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
 
 func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *handler.ProgressEvent {
 	if *model.InstanceType == serverlessInstanceType {
-		serverless, resp, err := client.Atlas20231115002.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		serverless, resp, err := client.AtlasSDK.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
 		}
 		updateModelServerless(model, serverless)
 	} else {
-		server, resp, err := client.Atlas20231115002.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		server, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
@@ -379,8 +381,8 @@ func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) 
 	model.Timestamp = util.TimePtrToStringPtr(job.Timestamp)
 	model.Cancelled = job.Cancelled
 	model.Expired = job.Expired
-	model.DeliveryUrl = job.DeliveryUrl
-	model.Links = flattenLinks(job.Links)
+	model.DeliveryUrl = job.GetDeliveryUrl()
+	model.Links = flattenLinks(job.GetLinks())
 }
 
 func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
@@ -395,8 +397,8 @@ func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
 	model.Cancelled = job.Cancelled
 	model.Failed = job.Failed
 	model.Expired = job.Expired
-	model.DeliveryUrl = job.DeliveryUrl
-	model.Links = flattenLinks(job.Links)
+	model.DeliveryUrl = job.GetDeliveryUrl()
+	model.Links = flattenLinks(job.GetLinks())
 }
 
 func flattenLinks(linksResult []admin.Link) []Links {

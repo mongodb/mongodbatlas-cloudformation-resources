@@ -29,7 +29,7 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	atlasSDK "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateOrUpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName, constants.Value}
@@ -51,7 +51,6 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-federated-query-limit")
 }
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -60,7 +59,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -82,7 +80,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return createOrUpdateQueryLimit(currentModel, atlas, CREATE)
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -91,7 +88,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -125,7 +121,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -146,7 +141,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	return createOrUpdateQueryLimit(currentModel, atlas, UPDATE)
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -155,7 +149,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -164,7 +157,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_, response, err := client.Atlas20231115002.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
+	_, response, err := client.AtlasSDK.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -182,7 +175,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   nil}, nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -191,7 +183,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -200,7 +191,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listQueryLimitsAPIResult, response, err := client.Atlas20231115002.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
+	listQueryLimitsAPIResult, response, err := client.AtlasSDK.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -238,8 +229,8 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*atlasSDK.DataFederationTenantQueryLimit, *http.Response, error) {
-	getQueryLimitAPIRequest := client.Atlas20231115002.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
+func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*admin.DataFederationTenantQueryLimit, *http.Response, error) {
+	getQueryLimitAPIRequest := client.AtlasSDK.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -251,7 +242,7 @@ func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*a
 
 func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
 	queryLimitInput := currentModel.setQueryLimit()
-	queryLimit, response, err := client.Atlas20231115002.DataFederationApi.CreateOneDataFederationQueryLimit(
+	queryLimit, response, err := client.AtlasSDK.DataFederationApi.CreateOneDataFederationQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -271,8 +262,8 @@ func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, m
 		ResourceModel:   currentModel}, nil
 }
 
-func (model *Model) setQueryLimit() *atlasSDK.DataFederationTenantQueryLimit {
-	queryLimit := &atlasSDK.DataFederationTenantQueryLimit{
+func (model *Model) setQueryLimit() *admin.DataFederationTenantQueryLimit {
+	queryLimit := &admin.DataFederationTenantQueryLimit{
 		OverrunPolicy: model.OverrunPolicy,
 	}
 	if model.Value != nil {
@@ -280,7 +271,7 @@ func (model *Model) setQueryLimit() *atlasSDK.DataFederationTenantQueryLimit {
 	}
 	return queryLimit
 }
-func (model *Model) getQueryLimit(atlasQueryLimit *atlasSDK.DataFederationTenantQueryLimit) *Model {
+func (model *Model) getQueryLimit(atlasQueryLimit *admin.DataFederationTenantQueryLimit) *Model {
 	if atlasQueryLimit == nil {
 		return nil
 	}

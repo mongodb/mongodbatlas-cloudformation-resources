@@ -89,7 +89,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func generateDataLakeIntegrationPipeline(currentModel *Model) *admin.DataLakeIngestionPipeline {
-
 	partitionFieldsArr := make([]admin.DataLakePipelinesPartitionField, len(currentModel.Sink.PartitionFields))
 	for i, partitionField := range currentModel.Sink.PartitionFields {
 		partitionFieldsArr[i] = admin.DataLakePipelinesPartitionField{

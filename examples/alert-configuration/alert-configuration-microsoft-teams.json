@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template creates an encryption at rest on the MongoDB Atlas API, this will be billed to your Atlas account.",
+    "Description": "This template creates a Microsoft Teams alert configuration through the MongoDB Atlas Admin API, this will be billed to your Atlas account.",
     "Parameters": {
       "Profile": {
         "Type": "String",

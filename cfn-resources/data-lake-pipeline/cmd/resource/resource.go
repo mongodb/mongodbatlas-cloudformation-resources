@@ -92,8 +92,8 @@ func generateDataLakeIntegrationPipeline(currentModel *Model) *admin.DataLakeIng
 	partitionFieldsArr := make([]admin.DataLakePipelinesPartitionField, len(currentModel.Sink.PartitionFields))
 	for i, partitionField := range currentModel.Sink.PartitionFields {
 		partitionFieldsArr[i] = admin.DataLakePipelinesPartitionField{
-			FieldName: *partitionField.FieldName,
-			Order:     *partitionField.Order,
+			FieldName: util.SafeString(partitionField.FieldName),
+			Order:     util.SafeInt(partitionField.Order),
 		}
 	}
 

@@ -301,6 +301,13 @@ func SafeString(s *string) string {
 	return ""
 }
 
+func SafeInt(i *int) int {
+	if i != nil {
+		return *i
+	}
+	return 0
+}
+
 // TimePtrToStringPtr utility conversions that can potentially be defined in sdk
 func TimePtrToStringPtr(t *time.Time) *string {
 	if t == nil {

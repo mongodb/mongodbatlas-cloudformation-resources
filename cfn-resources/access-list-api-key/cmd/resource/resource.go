@@ -151,7 +151,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	entry := getEntryAddress(currentModel)
-	readAccessListAPIKey := client.Atlas20231115002.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
+	readAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())

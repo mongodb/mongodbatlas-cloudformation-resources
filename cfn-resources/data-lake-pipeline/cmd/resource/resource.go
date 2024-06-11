@@ -28,7 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20231115008/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Name, constants.Sink}
@@ -45,7 +45,6 @@ func setup() {
 	util.SetupLogger("mongodb-atlas-federated-query-limit")
 }
 
-// Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	modelValidation := validator.ValidateModel(CreateRequiredFields, currentModel)
@@ -53,7 +52,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -66,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline).Execute()
+	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline).Execute()
 
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
@@ -91,13 +89,29 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func generateDataLakeIntegrationPipeline(currentModel *Model) *admin.DataLakeIngestionPipeline {
+	partitionFieldsArr := make([]admin.DataLakePipelinesPartitionField, len(currentModel.Sink.PartitionFields))
+	for i, partitionField := range currentModel.Sink.PartitionFields {
+		partitionFieldsArr[i] = admin.DataLakePipelinesPartitionField{
+			FieldName: util.SafeString(partitionField.FieldName),
+			Order:     util.SafeInt(partitionField.Order),
+		}
+	}
+
+	transformationsFieldsArr := make([]admin.FieldTransformation, len(currentModel.Transformations))
+	for i, transformation := range currentModel.Transformations {
+		transformationsFieldsArr[i] = admin.FieldTransformation{
+			Field: transformation.Field,
+			Type:  transformation.Type,
+		}
+	}
+
 	dataLakeIntegrationPipeline := admin.DataLakeIngestionPipeline{
 		GroupId: currentModel.ProjectId,
 		Name:    currentModel.Name,
 		Sink: &admin.IngestionSink{
 			MetadataProvider: currentModel.Sink.MetadataProvider,
 			MetadataRegion:   currentModel.Sink.MetadataRegion,
-			PartitionFields:  make([]admin.DataLakePipelinesPartitionField, len(currentModel.Sink.PartitionFields)),
+			PartitionFields:  &partitionFieldsArr,
 		},
 		Source: &admin.IngestionSource{
 			Type:           currentModel.Source.Type,
@@ -106,27 +120,12 @@ func generateDataLakeIntegrationPipeline(currentModel *Model) *admin.DataLakeIng
 			DatabaseName:   currentModel.Source.DatabaseName,
 			GroupId:        currentModel.Source.GroupId,
 		},
-		Transformations: make([]admin.FieldTransformation, len(currentModel.Transformations)),
-	}
-
-	for i, partitionField := range currentModel.Sink.PartitionFields {
-		dataLakeIntegrationPipeline.Sink.PartitionFields[i] = admin.DataLakePipelinesPartitionField{
-			FieldName: *partitionField.FieldName,
-			Order:     *partitionField.Order,
-		}
-	}
-
-	for i, transformation := range currentModel.Transformations {
-		dataLakeIntegrationPipeline.Transformations[i] = admin.FieldTransformation{
-			Field: transformation.Field,
-			Type:  transformation.Type,
-		}
+		Transformations: &transformationsFieldsArr,
 	}
 
 	return &dataLakeIntegrationPipeline
 }
 
-// Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -135,7 +134,6 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -148,7 +146,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName).Execute()
+	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName).Execute()
 
 	if err != nil {
 		return handleError(response, err)
@@ -180,10 +178,11 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 		sink := Sink{}
 
 		if pe.Sink.PartitionFields != nil {
-			for i := range pe.Sink.PartitionFields {
+			partitionFields := pe.Sink.GetPartitionFields()
+			for i := range partitionFields {
 				partitionField := PartitionFields{
-					FieldName: &pe.Sink.PartitionFields[i].FieldName,
-					Order:     &pe.Sink.PartitionFields[i].Order,
+					FieldName: &partitionFields[i].FieldName,
+					Order:     &partitionFields[i].Order,
 				}
 				partitionArr = append(partitionArr, partitionField)
 			}
@@ -194,10 +193,11 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 		}
 		transformationsArr := []Transformations{}
 		if pe.Transformations != nil {
-			for i := range pe.Transformations {
+			transformations := pe.GetTransformations()
+			for i := range transformations {
 				transformations := Transformations{
-					Field: pe.Transformations[i].Field,
-					Type:  pe.Transformations[i].Type,
+					Field: transformations[i].Field,
+					Type:  transformations[i].Type,
 				}
 				transformationsArr = append(transformationsArr, transformations)
 			}
@@ -222,7 +222,6 @@ func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Mo
 	return nil
 }
 
-// Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -231,7 +230,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -245,7 +243,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	pipelineName := *currentModel.Name
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline).Execute()
+	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline).Execute()
 
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
@@ -267,7 +265,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   model}, nil
 }
 
-// Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -276,7 +273,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -289,7 +285,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	_, response, err := client.Atlas20231115002.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName).Execute()
+	_, response, err := client.AtlasSDK.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName).Execute()
 
 	if err != nil {
 		return handleError(response, err)
@@ -300,7 +296,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   nil}, nil
 }
 
-// List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
@@ -309,7 +304,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *modelValidation, nil
 	}
 
-	// Create atlas client
 	if currentModel.Profile == nil || *currentModel.Profile == "" {
 		currentModel.Profile = aws.String(profile.DefaultProfile)
 	}
@@ -320,7 +314,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	groupID := *currentModel.ProjectId
-	pe, response, err := client.Atlas20231115002.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID).Execute()
+	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID).Execute()
 
 	if err != nil {
 		return handleError(response, err)

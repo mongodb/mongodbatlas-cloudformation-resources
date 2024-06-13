@@ -1,0 +1,102 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This template creates a Microsoft Teams alert configuration through the MongoDB Atlas Admin API, this will be billed to your Atlas account.",
+    "Parameters": {
+      "Profile": {
+        "Type": "String",
+        "Description": "Your MongoDB Atlas Profile Name created in secret manager",
+        "Default": "default"
+      },
+      "ProjectId": {
+        "Type": "String",
+        "Description": "",
+        "Default": "",
+        "ConstraintDescription": ""
+      },
+      "Enabled": {
+        "Type": "String",
+        "Description": "",
+        "Default": "true",
+        "ConstraintDescription": ""
+      },
+      "MicrosoftTeamsWebhookUrl": {
+        "Type": "String",
+        "Description": "",
+        "Default": ""
+      }
+    },
+    "Mappings": {},
+    "Resources": {
+      "AlertConfiguration": {
+        "Type": "MongoDB::Atlas::AlertConfiguration",
+        "Properties": {
+          "Profile": {
+            "Ref": "Profile"
+          },
+          "ProjectId": {
+            "Ref": "ProjectId"
+          },
+          "Enabled": {
+            "Ref": "Enabled"
+          },
+          "EventTypeName": "OUTSIDE_METRIC_THRESHOLD",
+          "Notifications": [
+            {
+              "TypeName": "MICROSOFT_TEAMS",
+              "DelayMin": "0",
+              "MicrosoftTeamsWebhookUrl": {
+                "Ref": "MicrosoftTeamsWebhookUrl"
+              },
+              "IntervalMin": "15"
+            }
+          ],
+          "MetricThreshold": {
+            "MetricName": "NORMALIZED_SYSTEM_CPU_USER",
+            "Operator": "GREATER_THAN",
+            "Threshold": 5,
+            "Units": "RAW",
+            "Mode": "AVERAGE"
+          },
+          "Matchers": [
+            {
+              "FieldName": "TYPE_NAME",
+              "Operator": "EQUALS",
+              "Value": "STANDALONE"
+            }
+          ]
+        }
+      }
+    },
+    "Outputs": {
+      "AlertConfiguration": {
+        "Description": "AlertConfiguration object",
+        "Value": {
+          "Ref": "AlertConfiguration"
+        }
+      },
+      "Id": {
+        "Value": {
+          "Fn::GetAtt": [
+            "AlertConfiguration",
+            "Id"
+          ]
+        }
+      },
+      "Created": {
+        "Value": {
+          "Fn::GetAtt": [
+            "AlertConfiguration",
+            "Created"
+          ]
+        }
+      },
+      "Enabled": {
+        "Value": {
+          "Fn::GetAtt": [
+            "AlertConfiguration",
+            "Enabled"
+          ]
+        }
+      }
+    }
+  }

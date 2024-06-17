@@ -20,7 +20,7 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115008/admin"
+	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 // make test deterministic

@@ -19,6 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="connectionstrings.md">connectionStrings</a></i>,
         "<a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>" : <i>Double</i>,
         "<a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>" : <i>String</i>,
+        "<a href="#globalclusterselfmanagedsharding" title="GlobalClusterSelfManagedSharding">GlobalClusterSelfManagedSharding</a>" : <i>Boolean</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ [ <a href="labels.md">Labels</a>, ... ], ... ]</i>,
@@ -47,6 +48,7 @@ Properties:
     <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="connectionstrings.md">connectionStrings</a></i>
     <a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>: <i>Double</i>
     <a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>: <i>String</i>
+    <a href="#globalclusterselfmanagedsharding" title="GlobalClusterSelfManagedSharding">GlobalClusterSelfManagedSharding</a>: <i>Boolean</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
@@ -138,6 +140,16 @@ _Type_: String
 _Allowed Values_: <code>AWS</code> | <code>GCP</code> | <code>AZURE</code> | <code>NONE</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### GlobalClusterSelfManagedSharding
+
+Set this field to configure the Sharding Management Mode when creating a new Global Cluster. When set to false, the management mode is set to Atlas-Managed Sharding. This mode fully manages the sharding of your Global Cluster and is built to provide a seamless deployment experience. When set to true, the management mode is set to Self-Managed Sharding. This mode leaves the management of shards in your hands and is built to provide an advanced and flexible deployment experience. This setting cannot be changed once the cluster is deployed
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Profile
 

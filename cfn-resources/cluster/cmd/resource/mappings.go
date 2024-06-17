@@ -39,6 +39,7 @@ func mapClusterToModel(model *Model, cluster *admin.AdvancedClusterDescription) 
 	model.CreatedDate = util.TimePtrToStringPtr(cluster.CreateDate)
 	model.DiskSizeGB = cluster.DiskSizeGB
 	model.EncryptionAtRestProvider = cluster.EncryptionAtRestProvider
+	model.GlobalClusterSelfManagedSharding = cluster.GlobalClusterSelfManagedSharding
 	model.Labels = flattenLabels(cluster.GetLabels())
 	model.MongoDBMajorVersion = cluster.MongoDBMajorVersion
 	model.MongoDBVersion = cluster.MongoDBVersion
@@ -567,6 +568,10 @@ func setClusterData(currentModel *Model, cluster *admin.AdvancedClusterDescripti
 		currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.GetReplicationSpecs())
 	}
 	// Readonly
+	if currentModel.GlobalClusterSelfManagedSharding == nil {
+		currentModel.GlobalClusterSelfManagedSharding = cluster.GlobalClusterSelfManagedSharding
+	}
+	// Readonly
 	currentModel.StateName = cluster.StateName
 	if currentModel.VersionReleaseSystem != nil {
 		currentModel.VersionReleaseSystem = cluster.VersionReleaseSystem
@@ -603,6 +608,10 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 
 	if currentModel.DiskSizeGB != nil {
 		clusterRequest.DiskSizeGB = currentModel.DiskSizeGB
+	}
+
+	if currentModel.GlobalClusterSelfManagedSharding != nil {
+		clusterRequest.GlobalClusterSelfManagedSharding = currentModel.GlobalClusterSelfManagedSharding
 	}
 
 	if currentModel.Labels != nil {

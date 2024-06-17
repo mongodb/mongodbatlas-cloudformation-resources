@@ -14,6 +14,8 @@
 
 package main
 
+import "github.com/getkin/kin-openapi/openapi3"
+
 type CfnSchema struct {
 	AdditionalProperties bool        `json:"additionalProperties"`
 	Definitions          interface{} `json:"definitions,omitempty"`
@@ -43,7 +45,7 @@ type RequireParam struct {
 }
 
 type Definitions struct {
-	Type                 string              `json:"type,omitempty"`
+	Type                 *openapi3.Types     `json:"type,omitempty"`
 	Properties           map[string]Property `json:"properties,omitempty"`
 	AdditionalProperties bool                `json:"additionalProperties"`
 }
@@ -64,25 +66,25 @@ type Handlers struct {
 }
 
 type Property struct {
-	Type                 string        `json:"type,omitempty"`
-	Description          string        `json:"description,omitempty"`
-	MaxLength            *uint64       `json:"maxLength,omitempty"`
-	MinLength            uint64        `json:"minLength,omitempty"`
-	InsertionOrder       bool          `json:"insertionOrder,omitempty"`
-	Ref                  string        `json:"$ref,omitempty"`
-	AdditionalProperties bool          `json:"additionalProperties,omitempty"`
-	Enum                 []interface{} `json:"enum,omitempty"`
-	Pattern              string        `json:"pattern,omitempty"`
-	Items                *Items        `json:"items,omitempty"`
-	ReadOnly             bool          `json:"-"`
-	Required             []string      `json:"-"`
+	Type                 *openapi3.Types `json:"type,omitempty"`
+	Description          string          `json:"description,omitempty"`
+	MaxLength            *uint64         `json:"maxLength,omitempty"`
+	MinLength            uint64          `json:"minLength,omitempty"`
+	InsertionOrder       bool            `json:"insertionOrder,omitempty"`
+	Ref                  string          `json:"$ref,omitempty"`
+	AdditionalProperties bool            `json:"additionalProperties,omitempty"`
+	Enum                 []interface{}   `json:"enum,omitempty"`
+	Pattern              string          `json:"pattern,omitempty"`
+	Items                *Items          `json:"items,omitempty"`
+	ReadOnly             bool            `json:"-"`
+	Required             []string        `json:"-"`
 }
 
 type Items struct {
-	Ref         string        `json:"$ref,omitempty"`
-	Type        string        `json:"type,omitempty"`
-	Enum        []interface{} `json:"enum,omitempty"`
-	UniqueItems bool          `json:"uniqueItems,omitempty"`
+	Ref         string          `json:"$ref,omitempty"`
+	Type        *openapi3.Types `json:"type,omitempty"`
+	Enum        []interface{}   `json:"enum,omitempty"`
+	UniqueItems bool            `json:"uniqueItems,omitempty"`
 }
 
 var handler = `{

@@ -256,15 +256,15 @@ func isExist(currentModel *Model, client *admin.APIClient) bool {
 	return err == nil && alert != nil
 }
 
-func expandAlertConfigurationMatchers(matchers []Matcher) *[]map[string]interface{} {
-	mts := make([]map[string]interface{}, 0)
+func expandAlertConfigurationMatchers(matchers []Matcher) *[]admin.StreamsMatcher {
+	mts := make([]admin.StreamsMatcher, 0)
 	for ind := range matchers {
-		mMatcher := map[string]interface{}{
-			"fieldName": cast.ToString(matchers[ind].FieldName),
-			"operator":  cast.ToString(matchers[ind].Operator),
-			"value":     cast.ToString(matchers[ind].Value),
-		}
-		mts = append(mts, mMatcher)
+		mMatcher := admin.NewStreamsMatcher(
+			cast.ToString(matchers[ind].FieldName),
+			cast.ToString(matchers[ind].Operator),
+			cast.ToString(matchers[ind].Value),
+		)
+		mts = append(mts, *mMatcher)
 	}
 	return &mts
 }

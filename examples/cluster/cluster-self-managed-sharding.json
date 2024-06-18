@@ -1,0 +1,162 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
+  "Parameters": {
+    "ProjectId": {
+      "Type": "String",
+      "Description": "Unique 24-hexadecimal digit string that identifies your project"
+    },
+    "ClusterName": {
+      "Type": "String",
+      "Description": "Name to use for your Atlas Cluster"
+    },
+    "Profile": {
+      "Type": "String",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys"
+    },
+    "PitEnabled": {
+      "Type": "String",
+      "Description": "Enable Point in Time Recovery",
+      "Default": "false"
+    }
+  },
+  "Resources": {
+    "AtlasCluster": {
+      "Type": "MongoDB::Atlas::Cluster",
+      "Properties": {
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "Name": {
+          "Ref": "ClusterName"
+        },
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "AdvancedSettings": {
+          "DefaultReadConcern": "available",
+          "DefaultWriteConcern": "1",
+          "JavascriptEnabled": "true",
+          "MinimumEnabledTLSProtocol": "TLS1_2",
+          "NoTableScan": "false",
+          "OplogSizeMB": "2000",
+          "SampleSizeBIConnector": "110",
+          "SampleRefreshIntervalBIConnector": "310"
+        },
+        "BackupEnabled": "true",
+        "ClusterType": "GEOSHARDED",
+        "GlobalClusterSelfManagedSharding": "true",
+        "Paused": "false",
+        "PitEnabled": {
+          "Ref": "PitEnabled"
+        },
+        "BiConnector": {
+          "ReadPreference": "secondary",
+          "Enabled": "false"
+        },
+        "ReplicationSpecs": [
+          {
+            "NumShards": "1",
+            "ZoneName": "Zone 1",
+            "AdvancedRegionConfigs": [
+              {
+                "AutoScaling": {
+                  "DiskGB": {
+                    "Enabled": "true"
+                  },
+                  "Compute": {
+                    "Enabled": "false",
+                    "ScaleDownEnabled": "false"
+                  }
+                },
+                "AnalyticsSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "0"
+                },
+                "ElectableSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "3"
+                },
+                "ReadOnlySpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "0"
+                },
+                "Priority": "7",
+                "RegionName": "US_EAST_1",
+                "ProviderName": "AWS"
+              }
+            ]
+          },
+          {
+            "NumShards": "1",
+            "ZoneName": "Zone 2",
+            "AdvancedRegionConfigs": [
+              {
+                "AutoScaling": {
+                  "DiskGB": {
+                    "Enabled": "true"
+                  },
+                  "Compute": {
+                    "Enabled": "false",
+                    "ScaleDownEnabled": "false"
+                  }
+                },
+                "AnalyticsSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "0"
+                },
+                "ElectableSpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "3"
+                },
+                "ReadOnlySpecs": {
+                  "EbsVolumeType": "STANDARD",
+                  "InstanceSize": "M10",
+                  "NodeCount": "0"
+                },
+                "Priority": "7",
+                "RegionName": "EU_SOUTH_1",
+                "ProviderName": "AWS"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MongoDBAtlasConnectionStrings": {
+      "Description": "Cluster connection strings",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ConnectionStrings"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasCluster",
+          "ConnectionStrings.Standard"
+        ]
+      }
+    },
+    "MongoDBAtlasClusterID": {
+      "Description": "Cluster Id",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ID"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasCluster",
+          "Id"
+        ]
+      }
+    }
+  }
+}

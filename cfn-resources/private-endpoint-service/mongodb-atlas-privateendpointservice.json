@@ -1,140 +1,140 @@
 {
-    "typeName": "MongoDB::Atlas::PrivateEndpointService",
-    "description": "Creates one private endpoint service for the specified cloud service provider. This cloud service provider manages the private endpoint service for the project. When you create a private endpoint service, MongoDB Cloud creates a network container in the project for the cloud provider for which you create the private endpoint service if one doesn't already exist.",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-service",
-    "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-service/README.md",
-    "tagging": {
-        "taggable": false
-    },
-    "definitions": {
-        "PrivateEndpoint": {
-            "type": "object",
-            "properties": {
-                "VpcId": {
-                    "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-                    "type": "string"
-                },
-                "SubnetIds": {
-                    "type": "array",
-                    "description": "List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "InterfaceEndpointId": {
-                    "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
-                    "type": "string"
-                },
-                "AWSPrivateEndpointStatus": {
-                    "description": "Status of the AWS PrivateEndpoint connection.",
-                    "type": "string"
-                },
-                "AtlasPrivateEndpointStatus": {
-                    "description": "Status of the Atlas PrivateEndpoint connection.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
+  "typeName": "MongoDB::Atlas::PrivateEndpointService",
+  "description": "Creates one private endpoint service for the specified cloud service provider. This cloud service provider manages the private endpoint service for the project. When you create a private endpoint service, MongoDB Cloud creates a network container in the project for the cloud provider for which you create the private endpoint service if one doesn't already exist.",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-service",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-service/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "definitions": {
+    "PrivateEndpoint": {
+      "type": "object",
+      "properties": {
+        "VpcId": {
+          "description": "String Representing the AWS VPC ID (like: vpc-xxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+          "type": "string"
+        },
+        "SubnetIds": {
+          "type": "array",
+          "description": "List of string representing the AWS VPC Subnet ID (like: subnet-xxxxxxxxxxxxxxxxx) (Used For Creating the AWS VPC Endpoint)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "InterfaceEndpointId": {
+          "description": "Unique identifiers of the interface endpoints in your VPC that you added to the AWS PrivateLink connection.",
+          "type": "string"
+        },
+        "AWSPrivateEndpointStatus": {
+          "description": "Status of the AWS PrivateEndpoint connection.",
+          "type": "string"
+        },
+        "AtlasPrivateEndpointStatus": {
+          "description": "Status of the Atlas PrivateEndpoint connection.",
+          "type": "string"
         }
-    },
-    "properties": {
-        "Profile": {
-            "type": "string",
-            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)",
-            "default": "default"
-        },
-        "Id": {
-            "description": "The unique identifier of the private endpoint service.",
-            "type": "string"
-        },
-        "EndpointServiceName": {
-            "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
-            "type": "string"
-        },
-        "ErrorMessage": {
-            "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
-            "type": "string"
-        },
-        "Status": {
-            "description": "Status of the Atlas PrivateEndpoint service connection",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
-        },
-        "ProjectId": {
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "type": "string",
-            "pattern": "^([a-f0-9]{24})$"
-        },
-        "Region": {
-            "description": "Aws Region",
-            "type": "string"
-        },
-        "InterfaceEndpoints": {
-            "type": "array",
-            "insertionOrder" : false,
-            "description": "List of interface endpoint ids associated to the service",
-            "items": {
-                "type": "string"
-            }
-        },
-        "CloudProvider": {
-            "type": "string",
-            "description": "Cloud service provider that manages this private endpoint, default : AWS",
-            "enum": [
-                "AWS",
-                "AZURE",
-                "GCP"
-            ]
-        }
-    },
-    "additionalProperties": false,
-    "required": [
-        "ProjectId",
-        "Region",
-        "CloudProvider"
-    ],
-    "readOnlyProperties": [
-        "/properties/Id",
-        "/properties/EndpointServiceName",
-        "/properties/ErrorMessage",
-        "/properties/Status",
-        "/properties/InterfaceEndpoints"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/Region",
-        "/properties/Profile",
-        "/properties/CloudProvider"
-    ],
-    "primaryIdentifier": [
-        "/properties/Id",
-        "/properties/ProjectId",
-        "/properties/Region",
-        "/properties/Profile",
-        "/properties/CloudProvider"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "ec2:CreateVpcEndpoint",
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "ec2:DeleteVpcEndpoints",
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        }
+      },
+      "additionalProperties": false
     }
+  },
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)",
+      "default": "default"
+    },
+    "Id": {
+      "description": "The unique identifier of the private endpoint service.",
+      "type": "string"
+    },
+    "EndpointServiceName": {
+      "description": "Name of the AWS PrivateLink endpoint service. Atlas returns null while it is creating the endpoint service.",
+      "type": "string"
+    },
+    "ErrorMessage": {
+      "description": "Error message pertaining to the AWS PrivateLink connection. Returns null if there are no errors.",
+      "type": "string"
+    },
+    "Status": {
+      "description": "Status of the Atlas PrivateEndpoint service connection",
+      "type": "string",
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string",
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "Region": {
+      "description": "Aws Region",
+      "type": "string"
+    },
+    "InterfaceEndpoints": {
+      "type": "array",
+      "insertionOrder": false,
+      "description": "List of interface endpoint ids associated to the service",
+      "items": {
+        "type": "string"
+      }
+    },
+    "CloudProvider": {
+      "type": "string",
+      "description": "Cloud service provider that manages this private endpoint, default : AWS",
+      "enum": [
+        "AWS",
+        "AZURE",
+        "GCP"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "ProjectId",
+    "Region",
+    "CloudProvider"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id",
+    "/properties/EndpointServiceName",
+    "/properties/ErrorMessage",
+    "/properties/Status",
+    "/properties/InterfaceEndpoints"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/Region",
+    "/properties/Profile",
+    "/properties/CloudProvider"
+  ],
+  "primaryIdentifier": [
+    "/properties/Id",
+    "/properties/ProjectId",
+    "/properties/Region",
+    "/properties/Profile",
+    "/properties/CloudProvider"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "ec2:CreateVpcEndpoint",
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "ec2:DeleteVpcEndpoints",
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

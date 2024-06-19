@@ -19,6 +19,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="connectionstrings.md">connectionStrings</a></i>,
         "<a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>" : <i>Double</i>,
         "<a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>" : <i>String</i>,
+        "<a href="#globalclusterselfmanagedsharding" title="GlobalClusterSelfManagedSharding">GlobalClusterSelfManagedSharding</a>" : <i>Boolean</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ [ <a href="labels.md">Labels</a>, ... ], ... ]</i>,
@@ -47,6 +48,7 @@ Properties:
     <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="connectionstrings.md">connectionStrings</a></i>
     <a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>: <i>Double</i>
     <a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>: <i>String</i>
+    <a href="#globalclusterselfmanagedsharding" title="GlobalClusterSelfManagedSharding">GlobalClusterSelfManagedSharding</a>: <i>Boolean</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
@@ -138,6 +140,16 @@ _Type_: String
 _Allowed Values_: <code>AWS</code> | <code>GCP</code> | <code>AZURE</code> | <code>NONE</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### GlobalClusterSelfManagedSharding
+
+(Optional) Flag that indicates if cluster uses Atlas-Managed Sharding (false, default) or Self-Managed Sharding (true). It can only be enabled for Global Clusters (`GEOSHARDED`). It cannot be changed once the cluster is created. Use this mode if you're an advanced user and the default configuration is too restrictive for your workload. If you select this option, you must manually configure the sharding strategy, more info [here](https://www.mongodb.com/docs/atlas/tutorial/create-global-cluster/#select-your-sharding-configuration).
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### Profile
 

@@ -167,7 +167,7 @@
       }
     }
   },
-  "description": "View and manage your application's [triggers](https://www.mongodb.com/docs/atlas/app-services/triggers/overview/).",
+  "description": "View and manage your application's triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/",
   "handlers": {
     "create": {
       "permissions": [

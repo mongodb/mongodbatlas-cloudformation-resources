@@ -41,7 +41,7 @@ Properties:
 
 #### Profile
 
-The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)
+The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)
 
 _Required_: No
 

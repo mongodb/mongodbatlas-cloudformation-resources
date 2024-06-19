@@ -1,74 +1,74 @@
 {
-    "typeName": "MongoDB::Atlas::PrivateEndpointAWS",
-    "description": "Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported",
-    "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-aws",
-    "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-aws/README.md",
-    "tagging": {
-        "taggable": false
+  "typeName": "MongoDB::Atlas::PrivateEndpointAWS",
+  "description": "Creates one private endpoint for the specified cloud service provider. At this current version only AWS is supported",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/private-endpoint-aws",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/private-endpoint-aws/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "required": [
+    "ProjectId",
+    "EndpointServiceId"
+  ],
+  "properties": {
+    "Profile": {
+      "type": "string",
+      "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup](../../../examples/profile-secret.yaml)",
+      "default": "default"
     },
-    "required": [
-        "ProjectId",
-        "EndpointServiceId"
-    ],
-    "properties": {
-        "Profile": {
-            "type": "string",
-            "description": "The profile is defined in AWS Secret manager. See [Secret Manager Profile setup (../../../examples/profile-secret.yaml)",
-            "default": "default"
-        },
-        "ProjectId": {
-            "description": "Unique 24-hexadecimal digit string that identifies your project.",
-            "type": "string"
-        },
-        "EndpointServiceId": {
-            "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
-            "type": "string"
-        },
-        "Id": {
-            "description": "Unique string that identifies the private endpoint. for AWS is the VPC endpoint ID, example: vpce-xxxxxxxx",
-            "type": "string"
-        },
-        "EnforceConnectionSuccess": {
-            "description": "If this proper is set to TRUE, the cloud formation resource will return success Only if the private connection is Succeeded",
-            "type": "boolean"
-        },
-        "ConnectionStatus": {
-            "description": "State of the Amazon Web Service PrivateLink connection when MongoDB Cloud received this request.",
-            "type": "string"
-        },
-        "ErrorMessage": {
-            "description": "Error message returned when requesting private connection resource. The resource returns null if the request succeeded.",
-            "type": "string"
-        }
+    "ProjectId": {
+      "description": "Unique 24-hexadecimal digit string that identifies your project.",
+      "type": "string"
     },
-    "additionalProperties": false,
-    "primaryIdentifier": [
-        "/properties/ProjectId",
-        "/properties/Id",
-        "/properties/Profile",
-        "/properties/EndpointServiceId"
-    ],
-    "createOnlyProperties": [
-        "/properties/ProjectId",
-        "/properties/EndpointServiceId",
-        "/properties/Profile",
-        "/properties/Id"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "secretsmanager:GetSecretValue"
-            ]
-        }
+    "EndpointServiceId": {
+      "description": "Unique 24-hexadecimal digit string that identifies the private endpoint service for which you want to create a private endpoint.",
+      "type": "string"
+    },
+    "Id": {
+      "description": "Unique string that identifies the private endpoint. for AWS is the VPC endpoint ID, example: vpce-xxxxxxxx",
+      "type": "string"
+    },
+    "EnforceConnectionSuccess": {
+      "description": "If this proper is set to TRUE, the cloud formation resource will return success Only if the private connection is Succeeded",
+      "type": "boolean"
+    },
+    "ConnectionStatus": {
+      "description": "State of the Amazon Web Service PrivateLink connection when MongoDB Cloud received this request.",
+      "type": "string"
+    },
+    "ErrorMessage": {
+      "description": "Error message returned when requesting private connection resource. The resource returns null if the request succeeded.",
+      "type": "string"
     }
+  },
+  "additionalProperties": false,
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Id",
+    "/properties/Profile",
+    "/properties/EndpointServiceId"
+  ],
+  "createOnlyProperties": [
+    "/properties/ProjectId",
+    "/properties/EndpointServiceId",
+    "/properties/Profile",
+    "/properties/Id"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
+    }
+  }
 }

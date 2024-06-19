@@ -143,7 +143,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### GlobalClusterSelfManagedSharding
 
-Set this field to configure the Sharding Management Mode when creating a new Global Cluster. When set to false, the management mode is set to Atlas-Managed Sharding. This mode fully manages the sharding of your Global Cluster and is built to provide a seamless deployment experience. When set to true, the management mode is set to Self-Managed Sharding. This mode leaves the management of shards in your hands and is built to provide an advanced and flexible deployment experience. This setting cannot be changed once the cluster is deployed
+Flag that indicates if cluster uses Atlas-Managed Sharding (false) or Self-Managed Sharding (true).
 
 _Required_: No
 

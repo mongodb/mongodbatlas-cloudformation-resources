@@ -242,11 +242,11 @@ func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin.Replic
 func readFromAtlas(t *testing.T, c *localTestContext) (*admin.Group, *admin.AdvancedClusterDescription) {
 	t.Helper()
 
-	ctx := ctx.Background()
+	context := ctx.Background()
 	projectID := c.clusterTmplObj.ProjectID
-	project, getProjectResponse, err := c.atlasClient.ProjectsApi.GetProject(ctx, projectID).Execute()
+	project, getProjectResponse, err := c.atlasClient.ProjectsApi.GetProject(context, projectID).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
-	cluster, getClusterResponse, err := c.atlasClient.ClustersApi.GetCluster(ctx, projectID, c.clusterTmplObj.Name).Execute()
+	cluster, getClusterResponse, err := c.atlasClient.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.Name).Execute()
 	utility.FailNowIfError(t, "Err while retrieving Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, getProjectResponse.StatusCode)
 	assert.Equal(t, 200, getClusterResponse.StatusCode)

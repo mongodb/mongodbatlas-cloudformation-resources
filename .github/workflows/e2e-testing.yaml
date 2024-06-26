@@ -11,6 +11,7 @@ jobs:
       pull-requests: read
       repository-projects: read
     outputs:
+      cluster: ${{ steps.filter.outputs.cluster }}
       project: ${{ steps.filter.outputs.project }}
       search-deployment: ${{ steps.filter.outputs.search-deployment }}
     steps:

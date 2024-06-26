@@ -134,7 +134,7 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 	project, cluster := readFromAtlas(t, c)
 
 	a := assert.New(t)
-	a.Equal(1, project.ClusterCount)
+	a.Equal(int64(1), project.ClusterCount)
 	a.Equal(cluster.GetId(), clusterID)
 	replicationSpecs := cluster.GetReplicationSpecs()
 	checkReplicationSpecs(a, replicationSpecs, nodeCountCreate, 1)
@@ -257,7 +257,7 @@ func getClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
 	for i := 0; i < len(stackOutputs); i++ {
 		if *aws.String(*stackOutputs[i].OutputKey) == "MongoDBAtlasClusterID" {
-			return *aws.String(*stackOutputs[1].OutputValue)
+			return *aws.String(*stackOutputs[i].OutputValue)
 		}
 	}
 	return ""

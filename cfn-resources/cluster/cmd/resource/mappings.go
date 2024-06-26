@@ -649,7 +649,7 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 
 func PopulateReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {
 	zoneToID := map[string]string{}
-	providerRegionToId := map[string]string{}
+	providerRegionToID := map[string]string{}
 	usedIds := map[string]bool{}
 
 	for _, spec := range src {
@@ -661,7 +661,7 @@ func PopulateReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.Repl
 			zoneToID[zoneName] = specID
 		}
 		if providerRegion := asProviderRegion(spec); providerRegion != "" {
-			providerRegionToId[providerRegion] = spec.GetId()
+			providerRegionToID[providerRegion] = spec.GetId()
 		}
 	}
 	for i, spec := range dest {
@@ -676,7 +676,7 @@ func PopulateReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.Repl
 			dest[i].SetId(idZone)
 			continue
 		}
-		idProvider, foundProvider := providerRegionToId[asProviderRegion(spec)]
+		idProvider, foundProvider := providerRegionToID[asProviderRegion(spec)]
 		providerUsed := usedIds[idProvider]
 		if foundProvider && !providerUsed {
 			usedIds[idProvider] = true
@@ -685,7 +685,6 @@ func PopulateReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.Repl
 		}
 	}
 	return &dest
-
 }
 
 func asProviderRegion(spec admin.ReplicationSpec) string {

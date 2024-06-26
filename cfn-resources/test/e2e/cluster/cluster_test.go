@@ -83,7 +83,7 @@ var (
 	zone2                      = "zone2"
 	replicationSpecZone1Create = replicationSpec(nodeCountCreate, "US_EAST_1", zone1)
 	replicationSpecZone1Update = replicationSpec(nodeCountUpdate, "US_EAST_1", zone1)
-	replicationSpecZone2       = replicationSpec(nodeCountCreate, "EU_WEST_1", zone2)
+	replicationSpecZone2       = replicationSpec(nodeCountUpdate, "EU_WEST_1", zone2)
 	replicationSpecsCreate     = []resource.AdvancedReplicationSpec{replicationSpecZone1Create}
 	replicationSpecsUpdate     = []resource.AdvancedReplicationSpec{replicationSpecZone1Update, replicationSpecZone2}
 )

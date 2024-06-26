@@ -460,10 +460,6 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 				res), err
 		}
 	}
-	if len(cluster.GetReplicationSpecs()) > 0 {
-		log.Debug("setting replication specs on model\n")
-		currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.GetReplicationSpecs())
-	}
 	jsonStr, _ := json.Marshal(currentModel)
 	_, _ = log.Debugf("Cluster Response --- value: %s ", jsonStr)
 	return *pe, nil

@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
-func TestAsProviderRegion(t *testing.T) {
+func TestAddReplicationSpecIds(t *testing.T) {
 	testCases := map[string]struct {
 		from        []admin.ReplicationSpec
 		to          []admin.ReplicationSpec
@@ -63,7 +63,7 @@ func TestAsProviderRegion(t *testing.T) {
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			updated := resource.PopulateReplicationSpecIds(tc.from, tc.to)
+			updated := resource.AddReplicationSpecIds(tc.from, tc.to)
 			ids := []string{}
 			for _, spec := range *updated {
 				ids = append(ids, spec.GetId())

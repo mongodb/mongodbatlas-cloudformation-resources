@@ -647,7 +647,7 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 	return clusterRequest, nil
 }
 
-func PopulateReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {
+func AddReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {
 	zoneToID := map[string]string{}
 	providerRegionToID := map[string]string{}
 	usedIds := map[string]bool{}

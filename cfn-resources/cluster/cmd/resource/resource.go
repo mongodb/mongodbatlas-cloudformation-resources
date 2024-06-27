@@ -169,7 +169,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if len(adminCluster.GetReplicationSpecs()) > 0 {
 		currentCluster, _, _ := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
 		if currentCluster != nil {
-			adminCluster.ReplicationSpecs = PopulateReplicationSpecIds(currentCluster.GetReplicationSpecs(), adminCluster.GetReplicationSpecs())
+			adminCluster.ReplicationSpecs = AddReplicationSpecIds(currentCluster.GetReplicationSpecs(), adminCluster.GetReplicationSpecs())
 		}
 	}
 	if errEvent != nil {
@@ -460,6 +460,7 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 				res), err
 		}
 	}
+
 	jsonStr, _ := json.Marshal(currentModel)
 	_, _ = log.Debugf("Cluster Response --- value: %s ", jsonStr)
 	return *pe, nil

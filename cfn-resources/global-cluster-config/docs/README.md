@@ -1,6 +1,6 @@
 # MongoDB::Atlas::GlobalClusterConfig
 
-Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.
+Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings. This resource can only be used with Atlas-managed clusters, see doc for `GlobalClusterSelfManagedSharding` attribute in `Mongodb::Atlas::Cluster` resource for more info.
 
 ## Syntax
 

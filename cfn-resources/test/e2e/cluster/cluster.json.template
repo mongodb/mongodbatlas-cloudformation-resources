@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template creates a cluster and a project in Atlas.",
+  "Description": "This template creates a global GEOSHARDED cluster",
   "Mappings": {},
   "Resources": {
     "Cluster": {
@@ -27,7 +27,7 @@
           "ReadPreference": "secondary",
           "Enabled": "false"
         },
-         "ReplicationSpecs": {{ marshal .ReplicationSpecs }},
+        "ReplicationSpecs": {{ marshal .ReplicationSpecs }},
         "Tags": [
           {
             "Key": "env",

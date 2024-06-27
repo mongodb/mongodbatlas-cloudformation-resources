@@ -190,10 +190,6 @@ func cleanupPrerequisites(t *testing.T, c *localTestContext) {
 func (c *localTestContext) setupPrerequisites(t *testing.T) {
 	t.Helper()
 	t.Cleanup(func() {
-		if os.Getenv("SKIP_CLEANUP") != "" {
-			t.Log("skipping cleanup")
-			return
-		}
 		cleanupPrerequisites(t, c)
 		cleanupResources(t, c)
 	})
@@ -215,7 +211,6 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 		ReplicationSpecs: replicationSpecsCreate,
 	}
 
-	// Read required data from resource CFN template
 	c.template, c.err = newCFNTemplate(c.clusterTmplObj)
 	utility.FailNowIfError(t, "Error while reading CFN Template: %v", c.err)
 }

@@ -2,6 +2,7 @@
 
 ## Description
 Resource for managing [Global Cluster](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Global-Clusters) managed namespaces and custom zone mappings.
+This resource can only be used with Atlas-managed clusters, see doc for `GlobalClusterSelfManagedSharding` attribute in `Mongodb::Atlas::Cluster` resource for more info.
 
 ## Requirements
 

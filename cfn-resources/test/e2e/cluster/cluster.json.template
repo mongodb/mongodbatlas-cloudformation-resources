@@ -1,0 +1,70 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a global GEOSHARDED cluster",
+  "Mappings": {},
+  "Resources": {
+    "Cluster": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Name": "{{ .Name }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "Profile": "{{ .Profile }}",
+        "AdvancedSettings": {
+          "DefaultReadConcern": "available",
+          "DefaultWriteConcern": "1",
+          "JavascriptEnabled": "true",
+          "MinimumEnabledTLSProtocol": "TLS1_2",
+          "NoTableScan": "false",
+          "OplogSizeMB": "2000",
+          "SampleSizeBIConnector": "110",
+          "SampleRefreshIntervalBIConnector": "310"
+        },
+        "BackupEnabled": "false",
+        "ClusterType": "GEOSHARDED",
+        "Paused": "false",
+        "PitEnabled": "false",
+        "BiConnector": {
+          "ReadPreference": "secondary",
+          "Enabled": "false"
+        },
+        "ReplicationSpecs": {{ marshal .ReplicationSpecs }},
+        "Tags": [
+          {
+            "Key": "env",
+            "Value": "development"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+   "MongoDBAtlasConnectionStrings": {
+      "Description": "Cluster connection strings",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ConnectionStrings"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Cluster",
+          "ConnectionStrings.Standard"
+        ]
+      }
+    },
+    "MongoDBAtlasClusterID": {
+      "Description": "Cluster Id",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ID"
+        }
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Cluster",
+          "Id"
+        ]
+      }
+    }
+  }
+}

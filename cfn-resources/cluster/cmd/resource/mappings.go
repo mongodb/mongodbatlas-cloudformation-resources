@@ -646,3 +646,51 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 	return clusterRequest, nil
 }
+
+func AddReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {
+	zoneToID := map[string]string{}
+	providerRegionToID := map[string]string{}
+	usedIds := map[string]bool{}
+
+	for _, spec := range src {
+		specID := spec.GetId()
+		if specID == "" {
+			continue
+		}
+		if zoneName := spec.GetZoneName(); zoneName != "" {
+			zoneToID[zoneName] = specID
+		}
+		if providerRegion := asProviderRegion(spec); providerRegion != "" {
+			providerRegionToID[providerRegion] = spec.GetId()
+		}
+	}
+	for i, spec := range dest {
+		specID := spec.GetId()
+		if specID != "" {
+			continue
+		}
+		idZone, foundZone := zoneToID[spec.GetZoneName()]
+		zoneUsed := usedIds[idZone]
+		if foundZone && !zoneUsed {
+			usedIds[idZone] = true
+			dest[i].SetId(idZone)
+			continue
+		}
+		idProvider, foundProvider := providerRegionToID[asProviderRegion(spec)]
+		providerUsed := usedIds[idProvider]
+		if foundProvider && !providerUsed {
+			usedIds[idProvider] = true
+			dest[i].SetId(idProvider)
+			continue
+		}
+	}
+	return &dest
+}
+
+func asProviderRegion(spec admin.ReplicationSpec) string {
+	configs := spec.GetRegionConfigs()
+	if len(configs) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%s-%s", configs[0].GetProviderName(), configs[0].GetRegionName())
+}

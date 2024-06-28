@@ -11,6 +11,7 @@ jobs:
       pull-requests: read
       repository-projects: read
     outputs:
+      cluster: ${{ steps.filter.outputs.cluster }}
       project: ${{ steps.filter.outputs.project }}
       search-deployment: ${{ steps.filter.outputs.search-deployment }}
     steps:
@@ -20,12 +21,45 @@ jobs:
         id: filter
         with:
           filters: |
+            cluster:
+              - 'cfn-resources/cluster/**'
+              - 'cfn-resources/test/e2e/cluster/**'
             project:
               - 'cfn-resources/project/**'
               - 'cfn-resources/test/e2e/project/**'
             search-deployment:
               - 'cfn-resources/search-deployment/**'
               - 'cfn-resources/test/e2e/search-deployment/**'
+  cluster:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.cluster == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install cloudformation-cli-go-plugin
+      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - name: Run E2E test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_BASE_URL: https://cloud-dev.mongodb.com/
+          MONGODB_ATLAS_SECRET_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/test/e2e/cluster
+          go test -timeout 90m -v cluster_test.go
   project:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.project == 'true' }}

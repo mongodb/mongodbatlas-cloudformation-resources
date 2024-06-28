@@ -166,6 +166,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	currentModel.validateDefaultLabel()
 	adminCluster, errEvent := setClusterRequest(currentModel)
+	if len(adminCluster.GetReplicationSpecs()) > 0 {
+		currentCluster, _, _ := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
+		if currentCluster != nil {
+			adminCluster.ReplicationSpecs = AddReplicationSpecIds(currentCluster.GetReplicationSpecs(), adminCluster.GetReplicationSpecs())
+		}
+	}
 	if errEvent != nil {
 		return *errEvent, nil
 	}

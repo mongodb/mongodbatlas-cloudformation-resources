@@ -227,7 +227,10 @@
             "PORT",
             "REPLICA_SET_NAME",
             "SHARD_NAME",
-            "TYPE_NAME"
+            "TYPE_NAME",
+            "APPLICATION_ID",
+            "INSTANCE_NAME",
+            "PROCESSOR_NAME"
           ]
         },
         "Operator": {

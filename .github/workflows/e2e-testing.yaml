@@ -41,7 +41,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -71,7 +71,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -101,7 +101,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - run: pip install cloudformation-cli-go-plugin
-      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502

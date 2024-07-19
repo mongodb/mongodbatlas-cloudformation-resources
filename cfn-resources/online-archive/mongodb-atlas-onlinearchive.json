@@ -124,8 +124,7 @@
       "type": "string",
       "description": "Human-readable label that identifies the cluster that contains the collection from which you want to remove an online archive.",
       "maxLength": 64,
-      "minLength": 1,
-      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]){0,21}(?<!-)([\\w]{0,42}))$"
+      "minLength": 1
     },
     "CollName": {
       "type": "string",
@@ -216,7 +215,8 @@
   ],
   "createOnlyProperties": [
     "/properties/Profile",
-    "/properties/ProjectId"
+    "/properties/ProjectId",
+    "/properties/ClusterName"
   ],
   "handlers": {
     "create": {

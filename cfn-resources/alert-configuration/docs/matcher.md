@@ -32,7 +32,7 @@ _Required_: No
 
 _Type_: String
 
-_Allowed Values_: <code>CLUSTER_NAME</code> | <code>HOSTNAME</code> | <code>HOSTNAME_AND_PORT</code> | <code>PORT</code> | <code>REPLICA_SET_NAME</code> | <code>SHARD_NAME</code> | <code>TYPE_NAME</code> | <code>APPLICATION_ID</code> | <code>INSTANCE_NAME</code> | <code>PROCESSOR_NAME</code>
+_Allowed Values_: <code>CLUSTER_NAME</code> | <code>HOSTNAME</code> | <code>HOSTNAME_AND_PORT</code> | <code>PORT</code> | <code>REPLICA_SET_NAME</code> | <code>SHARD_NAME</code> | <code>TYPE_NAME</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

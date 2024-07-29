@@ -1,10 +1,10 @@
 {
-    "ProjectId" : "ProjectId",
-    "Profile" : "default",
-    "AwsKms": {
-        "CustomerMasterKeyID": "$KMS_KEY",
-        "Enabled": "true",
-        "Region": "$region",
-        "RoleID": "$KMS_ROLE"
-    }
+  "ProjectId": "ProjectId",
+  "Profile": "default",
+  "AwsKmsConfig": {
+    "CustomerMasterKeyID": "$KMS_KEY",
+    "Enabled": "true",
+    "Region": "$region",
+    "RoleID": "$KMS_ROLE"
+  }
 }

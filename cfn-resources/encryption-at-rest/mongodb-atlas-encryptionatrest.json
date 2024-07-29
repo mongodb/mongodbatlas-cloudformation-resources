@@ -2,7 +2,7 @@
   "typeName": "MongoDB::Atlas::EncryptionAtRest",
   "description": "Returns and edits the Encryption at Rest using Customer Key Management configuration.",
   "definitions": {
-    "AwsKms": {
+    "AwsKmsConfig": {
       "description": "Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.",
       "type": "object",
       "properties": {
@@ -27,8 +27,8 @@
     }
   },
   "properties": {
-    "AwsKms": {
-      "$ref": "#/definitions/AwsKms"
+    "AwsKmsConfig": {
+      "$ref": "#/definitions/AwsKmsConfig"
     },
     "Profile": {
       "type": "string",
@@ -46,7 +46,7 @@
   },
   "additionalProperties": false,
   "required": [
-    "AwsKms",
+    "AwsKmsConfig",
     "ProjectId"
   ],
   "createOnlyProperties": [

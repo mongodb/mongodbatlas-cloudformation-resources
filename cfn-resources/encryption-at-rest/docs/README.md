@@ -12,7 +12,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 {
     "Type" : "MongoDB::Atlas::EncryptionAtRest",
     "Properties" : {
-        "<a href="#awskms" title="AwsKms">AwsKms</a>" : <i><a href="awskms.md">AwsKms</a></i>,
+        "<a href="#awskmsconfig" title="AwsKmsConfig">AwsKmsConfig</a>" : <i><a href="awskmsconfig.md">AwsKmsConfig</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
     }
@@ -24,20 +24,20 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <pre>
 Type: MongoDB::Atlas::EncryptionAtRest
 Properties:
-    <a href="#awskms" title="AwsKms">AwsKms</a>: <i><a href="awskms.md">AwsKms</a></i>
+    <a href="#awskmsconfig" title="AwsKmsConfig">AwsKmsConfig</a>: <i><a href="awskmsconfig.md">AwsKmsConfig</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### AwsKms
+#### AwsKmsConfig
 
 Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.
 
 _Required_: Yes
 
-_Type_: <a href="awskms.md">AwsKms</a>
+_Type_: <a href="awskmsconfig.md">AwsKmsConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

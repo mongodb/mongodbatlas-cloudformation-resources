@@ -1,4 +1,4 @@
-# MongoDB::Atlas::EncryptionAtRest AwsKms
+# MongoDB::Atlas::EncryptionAtRest AwsKmsConfig
 
 Specifies AWS KMS configuration details and whether Encryption at Rest is enabled for an Atlas project.
 

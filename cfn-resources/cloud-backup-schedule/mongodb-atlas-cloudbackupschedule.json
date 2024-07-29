@@ -227,7 +227,6 @@
     "/properties/ClusterId",
     "/properties/NextSnapshot",
     "/properties/Policies/*/PolicyItems/*/ID",
-    "/properties/ClusterName",
     "/properties/Links"
   ],
   "createOnlyProperties": [

@@ -64,7 +64,6 @@
   ],
   "readOnlyProperties": [
     "/properties/CurrentUsage",
-    "/properties/DefaultLimit",
     "/properties/LastModifiedDate",
     "/properties/MaximumLimit",
     "/properties/DefaultLimit"

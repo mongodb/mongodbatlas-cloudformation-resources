@@ -112,14 +112,14 @@ jq --arg projectId "$projectId" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
-	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
+	'.AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .AwsKmsConfig.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKmsConfig.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
 
 jq --arg projectId "$projectId" \
 	--arg KMS_KEY "$cleanedKeyID" \
 	--arg KMS_ROLE "${roleID}" \
 	--arg region "$keyRegion" \
-	'.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .AwsKms.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKms.Region?|=$region ' \
+	'.AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .AwsKmsConfig.RoleID?|=$KMS_ROLE | .ProjectId?|=$projectId | .AwsKmsConfig.Region?|=$region ' \
 	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
 
 ls -l inputs

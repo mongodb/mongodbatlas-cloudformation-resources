@@ -85,10 +85,10 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	currentModel.AwsKms.CustomerMasterKeyID = info.AwsKms.CustomerMasterKeyID
-	currentModel.AwsKms.Enabled = info.AwsKms.Enabled
-	currentModel.AwsKms.RoleID = info.AwsKms.RoleId
-	currentModel.AwsKms.Region = info.AwsKms.Region
+	currentModel.AwsKmsConfig.CustomerMasterKeyID = info.AwsKms.CustomerMasterKeyID
+	currentModel.AwsKmsConfig.Enabled = info.AwsKms.Enabled
+	currentModel.AwsKmsConfig.RoleID = info.AwsKms.RoleId
+	currentModel.AwsKmsConfig.Region = info.AwsKms.Region
 
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -190,10 +190,10 @@ func randInt64() int64 {
 func (m *Model) getParams() *admin.EncryptionAtRest {
 	return &admin.EncryptionAtRest{
 		AwsKms: &admin.AWSKMSConfiguration{
-			Enabled:             m.AwsKms.Enabled,
-			CustomerMasterKeyID: m.AwsKms.CustomerMasterKeyID,
-			RoleId:              m.AwsKms.RoleID,
-			Region:              m.AwsKms.Region,
+			Enabled:             m.AwsKmsConfig.Enabled,
+			CustomerMasterKeyID: m.AwsKmsConfig.CustomerMasterKeyID,
+			RoleId:              m.AwsKmsConfig.RoleID,
+			Region:              m.AwsKmsConfig.Region,
 		},
 	}
 }

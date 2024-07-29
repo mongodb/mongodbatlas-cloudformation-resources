@@ -22,5 +22,5 @@ jq --arg projectID "$projectID" \
 	--arg KMS_KEY "$KMS_KEY" \
 	--arg KMS_ROLE "$KMS_ROLE" \
 	--arg region "$KMS_REGION" \
-	'.desiredResourceState.AwsKms.CustomerMasterKeyID?|=$KMS_KEY | .desiredResourceState.AwsKms.RoleID?|=$KMS_ROLE | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ProjectId?|=$projectID | .desiredResourceState.AwsKms.Region?|=$region ' \
+	'.desiredResourceState.AwsKmsConfig.CustomerMasterKeyID?|=$KMS_KEY | .desiredResourceState.AwsKmsConfig.RoleID?|=$KMS_ROLE | .desiredResourceState.ApiKeys.PublicKey?|=$pubkey | .desiredResourceState.ApiKeys.PrivateKey?|=$pvtkey | .desiredResourceState.ProjectId?|=$projectID | .desiredResourceState.AwsKmsConfig.Region?|=$region ' \
 	"$(dirname "$0")/encryptionatrest.sample-cfn-request.json"

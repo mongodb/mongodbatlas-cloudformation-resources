@@ -1,5 +1,5 @@
 ---
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::EncryptionAtRest
 Parameters:
   Profile:
@@ -22,16 +22,16 @@ Parameters:
     Type: String
     Default: ""
   RoleID:
-      Description: "ID of an AWS IAM role authorized to manage an AWS customer master key."
-      Type: String
-      Default: ""
+    Description: "ID of an AWS IAM role authorized to manage an AWS customer master key."
+    Type: String
+    Default: ""
 Resources:
   EncryptionAtRest:
     Type: MongoDB::Atlas::EncryptionAtRest
     Properties:
-      ProjectId:  !Ref "ProjectName"
-      Profile:    !Ref "Profile"
-      AwsKms:
+      ProjectId: !Ref "ProjectName"
+      Profile: !Ref "Profile"
+      AwsKmsConfig:
         CustomerMasterKeyID: !Ref "CustomerMasterKeyID"
         Enabled: !Ref "Enabled"
         Region: !Ref "Region"
@@ -41,4 +41,4 @@ Outputs:
     Description: "Info about encryption at rest in Atlas Project resource"
     Value: !Ref EncryptionAtRest
     Export:
-      Name: !Join [ "-", [ !Ref "AWS::StackName","EncryptionAtRest" ] ]
+      Name: !Join ["-", [!Ref "AWS::StackName", "EncryptionAtRest"]]

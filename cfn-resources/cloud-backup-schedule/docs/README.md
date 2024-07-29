@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::CloudBackupSchedule",
     "Properties" : {
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
+        "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
         "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#autoexportenabled" title="AutoExportEnabled">AutoExportEnabled</a>" : <i>Boolean</i>,
         "<a href="#useorgandgroupnamesinexportprefix" title="UseOrgAndGroupNamesInExportPrefix">UseOrgAndGroupNamesInExportPrefix</a>" : <i>Boolean</i>,
@@ -35,6 +36,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::CloudBackupSchedule
 Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
+    <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>
     <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#autoexportenabled" title="AutoExportEnabled">AutoExportEnabled</a>: <i>Boolean</i>
     <a href="#useorgandgroupnamesinexportprefix" title="UseOrgAndGroupNamesInExportPrefix">UseOrgAndGroupNamesInExportPrefix</a>: <i>Boolean</i>
@@ -63,6 +65,16 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### ClusterName
+
+The name of the Atlas cluster that contains the snapshots you want to retrieve.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Id
 
@@ -201,10 +213,6 @@ Timestamp in the number of seconds that have elapsed since the UNIX epoc when At
 #### ID
 
 Returns the <code>ID</code> value.
-
-#### ClusterName
-
-The name of the Atlas cluster that contains the snapshots you want to retrieve.
 
 #### Links
 

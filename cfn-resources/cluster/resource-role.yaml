@@ -31,6 +31,9 @@ Resources:
               - Effect: Allow
                 Action:
                 - "secretsmanager:GetSecretValue"
+                - "kms:Describe"
+                - "kms:Decrypt"
+                - "kms:Encrypt"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

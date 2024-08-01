@@ -74,8 +74,6 @@ const (
 	Pending          = "Pending"
 	ReadComplete     = "Read Complete"
 
-	CustomMasterKey        = "AwsKms.CustomerMasterKeyID"
-	RoleID                 = "AwsKms.RoleID"
 	ErrorCreateMongoClient = "error - Create MongoDB Client- Details: %+v"
 	ResourceNotFound       = "resource not found"
 

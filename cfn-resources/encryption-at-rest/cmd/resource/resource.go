@@ -33,9 +33,9 @@ import (
 )
 
 var (
-	CustomerMasterKey             = "AwsKmsConfig.CustomerMasterKeyID"
+	CustomerMasterKeyID           = "AwsKmsConfig.CustomerMasterKeyID"
 	RoleID                        = "AwsKmsConfig.RoleID"
-	CreateAndUpdateRequiredFields = []string{RoleID, CustomerMasterKey, constants.ProjectID}
+	CreateAndUpdateRequiredFields = []string{RoleID, CustomerMasterKeyID, constants.ProjectID}
 	ReadAndDeleteRequiredFields   = []string{constants.ProjectID}
 )
 

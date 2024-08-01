@@ -32,8 +32,12 @@ import (
 	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
-var CreateAndUpdateRequiredFields = []string{constants.RoleID, constants.CustomMasterKey, constants.RoleID, constants.ProjectID}
-var ReadAndDeleteRequiredFields = []string{constants.ProjectID}
+var (
+	CustomerMasterKey             = "AwsKmsConfig.CustomerMasterKeyID"
+	RoleID                        = "AwsKmsConfig.RoleID"
+	CreateAndUpdateRequiredFields = []string{RoleID, CustomerMasterKey, constants.ProjectID}
+	ReadAndDeleteRequiredFields   = []string{constants.ProjectID}
+)
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-encryption-at-rest")

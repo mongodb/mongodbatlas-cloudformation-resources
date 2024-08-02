@@ -23,7 +23,7 @@ on:
   
 jobs:
   publish:
-    env:
+    env: # env vars defined here can be referenced in env vars inside the steps
       MONGODB_ATLAS_BASE_URL: 'https://cloud.mongodb.com/'
       MONGODB_ATLAS_OUTPUT: 'json'
       MONGODB_ATLAS_ORG_ID: github.event.inputs.resourceName=='organization' && secrets.ATLAS_ORG_ID_DEV || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_ORG_ID_FOR_FEDERATION || secrets.ATLAS_ORG_ID_PUBLISHING

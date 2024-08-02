@@ -1,5 +1,5 @@
-name: Publish a CFN resource (NEW)
-run-name: Publish (NEW) ${{ inputs.resourceName }} ${{ inputs.resourceVersionPublishing }} 
+name: Publish (NEW, WIP)
+run-name: Publish (NEW, WIP) ${{ inputs.resourceName }} ${{ inputs.resourceVersionPublishing }} 
 on:
   workflow_dispatch:
     inputs:

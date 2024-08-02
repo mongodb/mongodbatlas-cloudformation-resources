@@ -23,6 +23,25 @@ on:
   
 jobs:
   publish:
+    env:
+      MONGODB_ATLAS_ORG_ID: | 
+        ${{ 
+          github.event.inputs.resourceName=='organization' && 'a1' ||
+          github.event.inputs.resourceName=='federated-settings-org-role-mapping' && 'a2' ||
+          secrets.ATLAS_ORG_ID_PUBLISHING
+        }}
+      MONGODB_ATLAS_PUBLIC_KEY: | 
+        ${{ 
+          github.event.inputs.resourceName=='organization' && 'b1' ||
+          github.event.inputs.resourceName=='federated-settings-org-role-mapping' && 'b2' ||
+          secrets.ATLAS_PUBLIC_KEY_PUBLISHING
+        }}
+      MONGODB_ATLAS_PRIVATE_KEY: | 
+        ${{ 
+          github.event.inputs.resourceName=='organization' && 'c1' ||
+          github.event.inputs.resourceName=='federated-settings-org-role-mapping' && 'c2' ||
+          secrets.ATLAS_PRIVATE_KEY_PUBLISHING
+        }}
     strategy:
       fail-fast: false
       max-parallel: ${{ fromJSON(github.event.inputs.maxParallelRegions) }}
@@ -55,31 +74,9 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install awscli cloudformation-cli cloudformation-cli-go-plugin
       - name: Run publishing script
-        run: 'echo "${{ github.event.inputs.resourceName }}"' # TEMPORARY
+        run: echo "az${{ env.MONGODB_ATLAS_PUBLIC_KEY }}za' # TEMPORARY
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
-          AWS_DEFAULT_REGION: ${{ matrix.region }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
-
-          # Atlas Profile
-          MONGODB_ATLAS_ORG_ID: | 
-            ${{ 
-              github.event.inputs.resourceName=='organization' && 'a1' ||
-              github.event.inputs.resourceName=='federated-settings-org-role-mapping' && 'a2' ||
-              secrets.ATLAS_ORG_ID_PUBLISHING
-            }}
-          MONGODB_ATLAS_PUBLIC_KEY: | 
-            ${{ 
-              github.event.inputs.resourceName=='organization' && 'b1' ||
-              github.event.inputs.resourceName=='federated-settings-org-role-mapping' && 'b2' ||
-              secrets.ATLAS_PUBLIC_KEY_PUBLISHING
-            }}
-          MONGODB_ATLAS_PRIVATE_KEY: | 
-            ${{ 
-              github.event.inputs.resourceName=='organization' && 'c1' ||
-              github.event.inputs.resourceName=='federated-settings-org-role-mapping' && 'c2' ||
-              secrets.ATLAS_PRIVATE_KEY_PUBLISHING
-            }}
           MONGODB_ATLAS_BASE_URL: 'https://cloud.mongodb.com/'
           MONGODB_ATLAS_OUTPUT: 'json'
           MCLI_ORG_ID: ${{ env.MONGODB_ATLAS_ORG_ID }}
@@ -87,6 +84,8 @@ jobs:
           MCLI_PRIVATE_API_KEY: ${{ env.MONGODB_ATLAS_PRIVATE_KEY }}
           MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}
           MCLI_OUTPUT: ${{ env.MONGODB_ATLAS_OUTPUT }}
+          AWS_DEFAULT_REGION: ${{ matrix.region }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
           MONGODB_ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
           ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
 

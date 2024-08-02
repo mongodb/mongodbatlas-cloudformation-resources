@@ -1,0 +1,105 @@
+name: Publish a CFN resource (NEW)
+run-name: Publish (NEW) ${{ inputs.resourceName }} ${{ inputs.resourceVersionPublishing }} 
+on:
+  workflow_dispatch:
+    inputs:
+      regions:
+        description: "Array of comma separated AWS regions"
+        default: "[af-south-1,ap-east-1,ap-northeast-1,ap-northeast-2,ap-northeast-3,ap-south-1,ap-southeast-1,ap-southeast-2,ap-southeast-3,ca-central-1,eu-central-1,eu-north-1,eu-south-1,eu-west-1,eu-west-2,eu-west-3,me-south-1,sa-east-1,us-east-1,us-east-2,us-west-1,us-west-2,ap-south-2,ap-southeast-4,eu-central-2,eu-south-2,me-central-1]"
+        required: true
+      resourceName:
+        description: "Folder name of the Resource in this Repo"
+        default: ""
+        required: true
+      resourceVersionPublishing:
+        description: "Version used to publish the resource, empty will use the next minor version"
+        default: ""
+        required: false
+      maxParallelRegions:
+        description: "Maximum number of regions to be updated concurrently"
+        default: "15"
+        required: true
+
+env:
+  RESOURCES: ${{ github.event.inputs.resourceName }}
+  RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
+  
+  # Atlas Profile
+  MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
+  MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
+  MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+
+  # Organization: atlas dev profile used for organization
+  # currently multi-org-payment-method is set up only in dev atlas account
+  ATLAS_PUBLIC_KEY_DEV: ${{ secrets.ATLAS_PUBLIC_KEY }}
+  ATLAS_PRIVATE_KEY_DEV: ${{ secrets.ATLAS_PRIVATE_KEY }}
+  ATLAS_ORG_ID_DEV: ${{ secrets.ATLAS_ORG_ID }}
+  # currently ATLAS_ORG_OWNER_ID and ATLAS_ORG_OWNER_ID_PUBLISHING also has same value
+  ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
+
+  # federated_settings_org_role_mapping
+  ATLAS_ORG_ID_FOR_FEDERATION: ${{ vars.ATLAS_ORG_ID_FOR_FEDERATION_PUBLISHING }}
+  ATLAS_PUBLIC_KEY_FOR_FEDERATION: ${{ secrets.ATLAS_PUBLIC_KEY_FOR_FEDERATION_PUBLISHING }}
+  ATLAS_PRIVATE_KEY_FOR_FEDERATION: ${{ secrets.ATLAS_PRIVATE_KEY_FOR_FEDERATION_PUBLISHING }}
+  ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
+
+  # AWS
+  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID_PUBLISHING}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING}}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
+
+  # LDAP config
+  LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}
+  LDAP_BIND_USER_NAME: ${{ secrets.LDAP_BIND_USER_NAME_PUBLISHING }}
+  LDAP_BIND_PASSWORD: ${{ secrets.LDAP_BIND_PASSWORD_PUBLISHING }}
+
+  # third party integration
+  WEBHOOK_CREATE_URL: ${{ secrets.WEBHOOK_CREATE_URL_PUBLISHING }}
+  WEBHOOK_UPDATE_URL: ${{ secrets.WEBHOOK_UPDATE_URL_PUBLISHING }}
+  WEBHOOK_UPDATE_SECRET: ${{ secrets.WEBHOOK_UPDATE_SECRET_PUBLISHING }}
+  PROMETHEUS_USER_NAME: ${{ secrets.PROMETHEUS_USER_NAME_PUBLISHING }}
+  PROMETHEUS_PASSWORD_NAME: ${{ secrets.PROMETHEUS_PASSWORD_NAME_PUBLISHING }}
+  PAGER_DUTY_CREATE_SERVICE_KEY: ${{ secrets.PAGER_DUTY_CREATE_SERVICE_KEY_PUBLISHING }}
+  PAGER_DUTY_UPDATE_SERVICE_KEY: ${{ secrets.PAGER_DUTY_UPDATE_SERVICE_KEY_PUBLISHING }}
+  DATA_DOG_CREATE_API_KEY: ${{ secrets.DATA_DOG_CREATE_API_KEY_PUBLISHING }}
+  DATA_DOG_UPDATE_API_KEY: ${{ secrets.DATA_DOG_UPDATE_API_KEY_PUBLISHING }}
+  OPS_GENIE_API_KEY: ${{ secrets.OPS_GENIE_API_KEY_PUBLISHING }}
+  MICROSOFT_TEAMS_WEBHOOK_CREATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_CREATE_URL_PUBLISHING }}
+  MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL_PUBLISHING }}
+    
+jobs:
+  publish:
+    strategy:
+      fail-fast: false
+      max-parallel: ${{ github.event.inputs.maxParallelRegions }}
+      matrix:
+        region: ${{ fromJSON(github.event.inputs.regions) }}
+    name: publish-${{ matrix.region }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
+      - uses: aws-actions/setup-sam@2360ef6d90015369947b45b496193ab9976a9b04
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISHING }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING }}
+          aws-region: ${{ matrix.region }}
+      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - name: Install AWS CLI & tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip install awscli cloudformation-cli cloudformation-cli-go-plugin
+          aws --version
+      - name: Run publishing script
+        run: echo "Run publishing script will go here"

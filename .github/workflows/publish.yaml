@@ -55,34 +55,35 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install awscli cloudformation-cli cloudformation-cli-go-plugin
       - name: Run publishing script
-        run: echo "Run publishing script will go here"
+        run: 'cd cfn-resources && ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"'
         env:
-          RESOURCES: ${{ github.event.inputs.resourceName }}
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
-          
+          AWS_DEFAULT_REGION: ${{ matrix.region }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
+
           # Atlas Profile
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
+          MCLI_PUBLIC_API_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
+          MCLI_PRIVATE_API_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+          MCLI_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+          MONGODB_ATLAS_BASE_URL: 'https://cloud.mongodb.com/'
+          MCLI_OPS_MANAGER_URL: 'https://cloud.mongodb.com/'
+          MONGODB_ATLAS_OUTPUT: 'json'
+          MCLI_OUTPUT: 'json'
 
-          # Organization: atlas dev profile used for organization
-          # currently multi-org-payment-method is set up only in dev atlas account
+          # Organization: Atlas dev profile used for organization, multi-org-payment-method is currently set up only in dev Atlas account
           ATLAS_PUBLIC_KEY_DEV: ${{ secrets.ATLAS_PUBLIC_KEY }}
           ATLAS_PRIVATE_KEY_DEV: ${{ secrets.ATLAS_PRIVATE_KEY }}
           ATLAS_ORG_ID_DEV: ${{ secrets.ATLAS_ORG_ID }}
-          # currently ATLAS_ORG_OWNER_ID and ATLAS_ORG_OWNER_ID_PUBLISHING also has same value
-          ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
+          ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }} # currently ATLAS_ORG_OWNER_ID and ATLAS_ORG_OWNER_ID_PUBLISHING also has same value
 
           # federated_settings_org_role_mapping
           ATLAS_ORG_ID_FOR_FEDERATION: ${{ vars.ATLAS_ORG_ID_FOR_FEDERATION_PUBLISHING }}
           ATLAS_PUBLIC_KEY_FOR_FEDERATION: ${{ secrets.ATLAS_PUBLIC_KEY_FOR_FEDERATION_PUBLISHING }}
           ATLAS_PRIVATE_KEY_FOR_FEDERATION: ${{ secrets.ATLAS_PRIVATE_KEY_FOR_FEDERATION_PUBLISHING }}
           ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
-
-          # AWS
-          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID_PUBLISHING}}
-          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING}}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
 
           # LDAP config
           LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}

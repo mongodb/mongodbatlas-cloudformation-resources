@@ -17,6 +17,7 @@ on:
         required: false
       maxParallelRegions:
         description: "Maximum number of regions to be updated concurrently"
+        type: number
         default: "15"
         required: true
 
@@ -71,7 +72,7 @@ jobs:
   publish:
     strategy:
       fail-fast: false
-      max-parallel: ${{ github.event.inputs.maxParallelRegions }}
+      max-parallel: ${{ fromJSON(github.event.inputs.maxParallelRegions) }}
       matrix:
         region: ${{ fromJSON(github.event.inputs.regions) }}
     name: publish-${{ matrix.region }}

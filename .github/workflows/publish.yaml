@@ -90,7 +90,7 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install awscli cloudformation-cli cloudformation-cli-go-plugin
       - name: Run publishing script
-        run: 'cd cfn-resources && ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"'
+        run: 'echo "${{ github.event.inputs.resourceName }}"' # TEMPORARY
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
           AWS_DEFAULT_REGION: ${{ matrix.region }}

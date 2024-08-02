@@ -24,6 +24,8 @@ on:
 jobs:
   publish:
     env:
+      MONGODB_ATLAS_BASE_URL: 'https://cloud.mongodb.com/'
+      MONGODB_ATLAS_OUTPUT: 'json'
       MONGODB_ATLAS_ORG_ID: | 
         ${{ 
           github.event.inputs.resourceName=='organization' && 'a1' ||
@@ -74,16 +76,16 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install awscli cloudformation-cli cloudformation-cli-go-plugin
       - name: Run publishing script
-        run: echo "az${{ env.MONGODB_ATLAS_PUBLIC_KEY }}za' # TEMPORARY
+        run: |
+          echo "az${{ env.MONGODB_ATLAS_PUBLIC_KEY }}za"
+          echo "az${{ env.MCLI_PUBLIC_API_KEY }}za"
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
-          MONGODB_ATLAS_BASE_URL: 'https://cloud.mongodb.com/'
-          MONGODB_ATLAS_OUTPUT: 'json'
+          MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}
+          MCLI_OUTPUT: ${{ env.MONGODB_ATLAS_OUTPUT }}
           MCLI_ORG_ID: ${{ env.MONGODB_ATLAS_ORG_ID }}
           MCLI_PUBLIC_API_KEY: ${{ env.MONGODB_ATLAS_PUBLIC_KEY }}
           MCLI_PRIVATE_API_KEY: ${{ env.MONGODB_ATLAS_PRIVATE_KEY }}
-          MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}
-          MCLI_OUTPUT: ${{ env.MONGODB_ATLAS_OUTPUT }}
           AWS_DEFAULT_REGION: ${{ matrix.region }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
           MONGODB_ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}

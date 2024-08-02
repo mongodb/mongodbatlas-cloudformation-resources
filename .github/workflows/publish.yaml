@@ -61,9 +61,7 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install awscli cloudformation-cli cloudformation-cli-go-plugin
       - name: Run publishing script
-        run: |
-          echo "az${{ env.MONGODB_ATLAS_PUBLIC_KEY }}za"
-          echo "az${{ env.MCLI_PUBLIC_API_KEY }}za"
+        run: 'cd cfn-resources && ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"'
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
           MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}

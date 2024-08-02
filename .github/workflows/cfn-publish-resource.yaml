@@ -1,5 +1,5 @@
 name: Publish (OLD)
-run-name: Publish (OLD) ${{ inputs.resourceNames }} ${{ inputs.resourceVersionPublishing }} 
+run-name: Publish ${{ inputs.resourceNames }} ${{ inputs.resourceVersionPublishing }} 
 on:
   workflow_dispatch:
     inputs:

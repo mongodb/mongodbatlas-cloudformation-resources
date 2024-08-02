@@ -22,7 +22,42 @@ on:
         required: true
   
 jobs:
+  get-params:
+    runs-on: ubuntu-latest
+    outputs:
+      MONGODB_ATLAS_ORG_ID: ${{ steps.params.outputs.MONGODB_ATLAS_ORG_ID }}
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ steps.params.outputs.MONGODB_ATLAS_PUBLIC_KEY }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ steps.params.outputs.MONGODB_ATLAS_PRIVATE_KEY }}
+    steps:
+      - id: params
+        run: |
+          case "${{ github.event.inputs.resourceName }}" in
+            "federated-settings-org-role-mapping")
+              echo 'MONGODB_ATLAS_ORG_ID="${{ github.event.inputs.resourceName }}1a"' >> "${GITHUB_OUTPUT}"
+              echo 'MONGODB_ATLAS_PUBLIC_KEY="${{ github.event.inputs.resourceName }}1b"' >> "${GITHUB_OUTPUT}"
+              echo 'MONGODB_ATLAS_PRIVATE_KEY="${{ github.event.inputs.resourceName }}1c"' >> "${GITHUB_OUTPUT}"
+              ;;
+  
+            "organization")
+              echo 'MONGODB_ATLAS_ORG_ID="${{ github.event.inputs.resourceName }}2a"' >> "${GITHUB_OUTPUT}"
+              echo 'MONGODB_ATLAS_PUBLIC_KEY="${{ github.event.inputs.resourceName }}2b"' >> "${GITHUB_OUTPUT}"
+              echo 'MONGODB_ATLAS_PRIVATE_KEY="${{ github.event.inputs.resourceName }}2c"' >> "${GITHUB_OUTPUT}"
+              ;;
+  
+            "trigger")
+              echo 'Sorry, trigger is not supported yet, PROJECT_ID,DB_NAME,COLLECTION_NAME, FUNC_NAME,FUNC_ID,SERVICE_ID and APP_ID must be defined'
+              exit 1
+              ;;
+  
+            *)
+              echo 'MONGODB_ATLAS_ORG_ID="${{ secrets.ATLAS_ORG_ID_PUBLISHING }}"' >> "${GITHUB_OUTPUT}"
+              echo 'MONGODB_ATLAS_PUBLIC_KEY="${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}"' >> "${GITHUB_OUTPUT}"
+              echo 'MONGODB_ATLAS_PRIVATE_KEY="${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}"' >> "${GITHUB_OUTPUT}"
+              ;;
+          esac
+  
   publish:
+    needs: get-params
     strategy:
       fail-fast: false
       max-parallel: ${{ fromJSON(github.event.inputs.maxParallelRegions) }}
@@ -62,12 +97,12 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
 
           # Atlas Profile
-          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
-          MCLI_PUBLIC_API_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
-          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
-          MCLI_PRIVATE_API_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
-          MCLI_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ needs.get-params.outputs.MONGODB_ATLAS_PUBLIC_KEY }}
+          MCLI_PUBLIC_API_KEY: ${{ needs.get-params.outputs.MONGODB_ATLAS_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ needs.get-params.outputs.MONGODB_ATLAS_PRIVATE_KEY }}
+          MCLI_PRIVATE_API_KEY: ${{ needs.get-params.outputs.MONGODB_ATLAS_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ needs.get-params.outputs.MONGODB_ATLAS_ORG_ID }}
+          MCLI_ORG_ID: ${{ needs.get-params.outputs.MONGODB_ATLAS_ORG_ID }}
           MONGODB_ATLAS_BASE_URL: 'https://cloud.mongodb.com/'
           MCLI_OPS_MANAGER_URL: 'https://cloud.mongodb.com/'
           MONGODB_ATLAS_OUTPUT: 'json'

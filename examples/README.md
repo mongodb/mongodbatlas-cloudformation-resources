@@ -25,7 +25,7 @@ To create the execution role, do one of the following steps:
 - Use the [AWS Console](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/roles) or another method of your choice.
 
 ### Activate the MongoDB Atlas CloudFormation public extensions
-You have two options for activating the extensions, for example `MongoDB::Atlas::Cluster`:
+You have the following options for activating the extensions, for example `MongoDB::Atlas::Cluster`:
 
 1. Use the [Cloudformation service in the AWS Console](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY)
    1. Ensure you are in the correct AWS region

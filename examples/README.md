@@ -19,10 +19,10 @@ Use [this template](profile-secret.yaml) to create a [new CloudFormation stack](
 CloudFormation extensions use an *execution role* ([IAM Role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)) to access AWS resources.
 You must configure this role must with at least a policy allowing `secretsmanager:GetSecretValue` to access the configured [profile](../README.md#2-configure-your-profile).
 
-To create the execution role you can either:
-1. Use the [execution-role.yaml](execution-role.yaml) template
-2. Create the execution-role as part of the [next step](#activate-the-mongodb-atlas-cloudformation-public-extensions)
-3. Use the [AWS Console](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/roles) or another method of your choice.
+To create the execution role, do one of the following steps:
+- Use the [execution-role.yaml](execution-role.yaml) template
+- Create the execution-role as part of the [next step](#activate-the-mongodb-atlas-cloudformation-public-extensions)
+- Use the [AWS Console](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/roles) or another method of your choice.
 
 ### Activate the MongoDB Atlas CloudFormation public extensions
 You have two options for activating the extensions, for example `MongoDB::Atlas::Cluster`:

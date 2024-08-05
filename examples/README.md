@@ -80,7 +80,7 @@ The recommended options include:
   ```
   - replace `123456789` with your [AWS account ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
   - replace `{YOUR_REGION}` with the CFN region, e.g., `us-east-1`
-2. Use `kms:decrypt` on the `execution role` and [enable IAM policies](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-root-enable-iam) on the KMS key:
+- Use `kms:decrypt` on the `execution role` and [enable IAM policies](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-root-enable-iam) on the KMS key:
   ```json
   {
     "Statement": [

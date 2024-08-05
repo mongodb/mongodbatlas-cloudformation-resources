@@ -11,7 +11,7 @@ You must [configure API keys](https://www.mongodb.com/docs/atlas/configure-api-a
 ### AWS
 
 ### CloudFormation Profile
-A profile should be created in the AWS Secrets Manager, containing the MongoDB Atlas Programmatic API Key.
+You should create a profile in the AWS Secrets Manager that contains the MongoDB Atlas Programmatic API Key.
 
 Use [this template](profile-secret.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) for the default profile that all resources will attempt to use unless a different override is specified.
 

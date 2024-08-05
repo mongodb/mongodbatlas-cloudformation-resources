@@ -99,7 +99,7 @@ Our two recommended options are:
     }
   ```
   - replace `123456789` with your [AWS account ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
-  - ensure `execution role` has `kms:decrypt` permission:
+  - ensure the IAM Execution Role has `kms:decrypt` permission:
   ```json
   {
     "Statement": [

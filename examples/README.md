@@ -27,14 +27,14 @@ To create the execution role, do one of the following steps:
 ### Activate the MongoDB Atlas CloudFormation public extensions
 You have the following options for activating the extensions, for example `MongoDB::Atlas::Cluster`:
 
-1. Use the [Cloudformation service in the AWS Console](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY)
-   1. Ensure you are in the correct AWS region
-   2. Select Publisher=`ThirdParty`
-   3. Extension name prefix = `MongoDB::Atlas`
-   4. Select the resource type and click `Activate`
-   5. In the *Execution role ARN* specify the role arn, for example `arn:aws:iam::123456789012:role/cfn-execution-role`, from the previous step
-2. Use the provided [CFN template](activate-mongodb-atlas-resources.template.yaml) to create an IAM execution role and activate all MongoDB Atlas extensions
-   1. Specify the Region
+- Use the [Cloudformation service in the AWS Console](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY):
+   1. Ensure you are in the correct AWS region.
+   2. Select Publisher=`ThirdParty`.
+   3. Extension name prefix = `MongoDB::Atlas`.
+   4. Select the resource type and click `Activate`.
+   5. In the *Execution role ARN* specify the role arn, for example `arn:aws:iam::123456789012:role/cfn-execution-role`, from the previous step.
+- Use the provided [CFN template](activate-mongodb-atlas-resources.template.yaml) to create an IAM execution role and activate all MongoDB Atlas extensions:
+   1. Specify the Region.
    2. [Create the stack](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringText=&filteringStatus=active&viewNested=true). If the stack has been run before in the same region, you will run into failures as AWS does not allow to use `TypeActivation` to re-activate extensions.
 
 ### Configure your KMS Key Policy

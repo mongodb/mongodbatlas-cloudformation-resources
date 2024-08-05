@@ -65,7 +65,7 @@ Here are some examples of how to use this template:
   SecretValue = {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 
-**Note**: If you want to use a AWS KMS key to handle encryption of your secret you must define the appropriate resource policies so that AWS Secrets Manager has access to the key. The following [AWS documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html#security-encryption-policies) describes a key policy that allows access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager.
+**Note**: If you want to use a AWS KMS key to handle encryption of your secret, see the [Configure your KMS Key Policy](./examples/README.md#configure-your-kms-key-policy) documentation.
 
 ### 3. Provide the profile to your CloudFormation template
 

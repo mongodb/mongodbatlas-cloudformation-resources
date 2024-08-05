@@ -38,10 +38,10 @@ You have the following options for activating the extensions, for example `Mongo
    2. [Create the stack](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringText=&filteringStatus=active&viewNested=true). If the stack has been run before in the same region, you will run into failures as AWS does not allow to use `TypeActivation` to re-activate extensions.
 
 ### Configure your KMS Key Policy
-If your profile secret is encrypted with a KMS Customer Managed Key (CMK) the key must be configured to allow access.
-To give the `execution role` access to the CMK you will need to configure a [KMS Key Policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html).
-Our two recommended options are:
-1. [Allow access via Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html#security-encryption-policies)
+If your profile secret is encrypted with a KMS Customer Managed Key (CMK), you must configure the key to allow access.
+To give the `execution role` access to the CMK, you must configure a [KMS Key Policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html).
+The recommended options include:
+- [Allow access via Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html#security-encryption-policies):
   ```json
   {
     "Statement": [

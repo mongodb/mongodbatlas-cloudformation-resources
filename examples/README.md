@@ -17,7 +17,7 @@ Use [this template](profile-secret.yaml) to create a [new CloudFormation stack](
 
 ### Configure the IAM Execution Role
 CloudFormation extensions use an *execution role* ([IAM Role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)) to access AWS resources.
-This role must be configured with at least a policy allowing `secretsmanager:GetSecretValue` to access the configured [profile](../README.md#2-configure-your-profile).
+You must configure this role must with at least a policy allowing `secretsmanager:GetSecretValue` to access the configured [profile](../README.md#2-configure-your-profile).
 
 To create the execution role you can either:
 1. Use the [execution-role.yaml](execution-role.yaml) template

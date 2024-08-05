@@ -13,7 +13,7 @@ You must [configure API keys](https://www.mongodb.com/docs/atlas/configure-api-a
 ### CloudFormation Profile
 You should create a profile in the AWS Secrets Manager that contains the MongoDB Atlas Programmatic API Key.
 
-Use [this template](profile-secret.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) for the default profile that all resources will attempt to use unless a different override is specified.
+Use [this template](profile-secret.yaml) to create a [new CloudFormation stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) for the default profile that all resources attempt to use unless you specify a different override.
 
 ### Configure the IAM Execution Role
 CloudFormation extensions use an *execution role* ([IAM Role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)) to access AWS resources.

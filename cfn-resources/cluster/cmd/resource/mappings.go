@@ -161,7 +161,7 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig 
 		advRegionConfig.AnalyticsSpecs = expandRegionConfigSpec(regionCfg.AnalyticsSpecs)
 	}
 	if regionCfg.ElectableSpecs != nil {
-		advRegionConfig.ElectableSpecs = newHardwareSpec(regionCfg.ElectableSpecs)
+		advRegionConfig.ElectableSpecs = NewHardwareSpec(regionCfg.ElectableSpecs)
 	}
 	if regionCfg.ReadOnlySpecs != nil {
 		advRegionConfig.ReadOnlySpecs = expandRegionConfigSpec(regionCfg.ReadOnlySpecs)
@@ -172,7 +172,7 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig 
 	return advRegionConfig
 }
 
-func newHardwareSpec(spec *Specs) *admin.HardwareSpec {
+func NewHardwareSpec(spec *Specs) *admin.HardwareSpec {
 	if spec == nil {
 		return nil
 	}

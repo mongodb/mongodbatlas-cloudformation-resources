@@ -82,7 +82,7 @@
       "type": "object",
       "properties": {
         "DiskIOPS": {
-          "type": "string",
+          "type": "integer",
           "description": "Target throughput desired for storage attached to your AWS-provisioned cluster. Only change this parameter if you:\n\nset \"replicationSpecs[n].regionConfigs[m].providerName\" : \"AWS\".\nset \"replicationSpecs[n].regionConfigs[m].electableSpecs.instanceSize\" : \"M30\" or greater not including Mxx_NVME tiers.\nThe maximum input/output operations per second (IOPS) depend on the selected .instanceSize and .diskSizeGB. This parameter defaults to the cluster tier's standard IOPS value. Changing this value impacts cluster cost. MongoDB Cloud enforces minimum ratios of storage capacity to system memory for given cluster tiers. This keeps cluster performance consistent with large datasets.\n\nInstance sizes M10 to M40 have a ratio of disk capacity to system memory of 60:1.\nInstance sizes greater than M40 have a ratio of 120:1."
         },
         "EbsVolumeType": {

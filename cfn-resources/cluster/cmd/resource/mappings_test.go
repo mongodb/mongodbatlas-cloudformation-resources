@@ -110,9 +110,9 @@ func TestNewHardwareSpec(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			hardwareSpec := resource.NewHardwareSpec(&tc.spec)
-			hwSpecJson, err := json.Marshal(hardwareSpec)
+			hwSpecJSON, err := json.Marshal(hardwareSpec)
 			assert.Nil(t, err)
-			assert.Equal(t, tc.expected, string(hwSpecJson))
+			assert.Equal(t, tc.expected, string(hwSpecJSON))
 		})
 	}
 }

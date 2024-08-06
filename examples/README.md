@@ -35,7 +35,7 @@ You have the following options for activating the extensions, for example `Mongo
    5. In the *Execution role ARN* specify the role arn, for example `arn:aws:iam::123456789012:role/cfn-execution-role`, from the previous step.
 - Use the provided [CFN template](activate-mongodb-atlas-resources.template.yaml) to create an IAM execution role and activate all MongoDB Atlas extensions:
    1. Specify the Region.
-   2. [Create the stack](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringText=&filteringStatus=active&viewNested=true). If the stack has been run before in the same region, you will run into failures as AWS does not allow to use `TypeActivation` to re-activate extensions.
+   2. [Create the stack](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringText=&filteringStatus=active&viewNested=true). If the stack has been run before in the same region, you will need to delete the previous stack and re-create the stack to re-activate the extensions.
 
 ### Configure your KMS Key Policy
 If your profile secret is encrypted with a KMS Customer Managed Key (CMK), you must configure the key to allow access.

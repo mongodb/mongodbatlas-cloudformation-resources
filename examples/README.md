@@ -118,8 +118,8 @@ The recommended options include:
 ## Using the examples
 Once your prerequisites are configured, use the examples in this folder as a starting template for a resource to quickly create a CloudFormation stack. 
 
-For example, the [cluster example](cluster/cluster.json) creates a project & cluster in your MongoDB Atlas organization. The template requires the following properties to be configured:
-* OrgId - The name of the MongoDB Atlas Organization created earlier
-* Profile - The name of the profile that contains your API key information
-* ProjectName - The name of your new project
-* ClusterName - The name of your new cluster
+For example, the [cluster example](cluster/project-cluster.json) creates a project & cluster in your MongoDB Atlas organization. The template requires the following properties to be configured:
+- OrgId - The name of the MongoDB Atlas Organization created earlier
+- Profile - The name of the profile that contains your API key information
+- ProjectName - The name of your new project
+- ClusterName - The name of your new cluster

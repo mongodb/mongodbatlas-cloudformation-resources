@@ -82,13 +82,37 @@ func regionConfig(provider, region string) *[]admin.CloudRegionConfig {
 }
 
 func TestNewHardwareSpec(t *testing.T) {
-	hardwareSpec := resource.NewHardwareSpec(
-		&resource.Specs{
-			InstanceSize: util.StringPtr("M10"),
-			NodeCount:   util.IntPtr(3),
+	testCases := map[string]struct {
+		expected string
+		spec     resource.Specs
+	}{
+		"empty": {
+			expected: `{}`,
+			spec:     resource.Specs{},
 		},
-	)
-	hwSpecJson, err := json.Marshal(hardwareSpec)
-	assert.Nil(t, err)
-	assert.Equal(t, `{"instanceSize":"M10","nodeCount":3}`, string(hwSpecJson))
+		"instanceSizeAndCount": {
+			expected: `{"instanceSize":"M10","nodeCount":3}`,
+			spec: resource.Specs{
+				InstanceSize: util.StringPtr("M10"),
+				NodeCount:    util.IntPtr(3),
+			},
+		},
+		"allAttributes": {
+			expected: `{"diskIOPS":100,"ebsVolumeType":"STANDARD","instanceSize":"M10","nodeCount":3}`,
+			spec: resource.Specs{
+				DiskIOPS:      util.IntPtr(100),
+				EbsVolumeType: util.StringPtr("STANDARD"),
+				InstanceSize:  util.StringPtr("M10"),
+				NodeCount:     util.IntPtr(3),
+			},
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			hardwareSpec := resource.NewHardwareSpec(&tc.spec)
+			hwSpecJson, err := json.Marshal(hardwareSpec)
+			assert.Nil(t, err)
+			assert.Equal(t, tc.expected, string(hwSpecJson))
+		})
+	}
 }

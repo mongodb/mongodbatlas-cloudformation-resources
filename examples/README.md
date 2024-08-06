@@ -41,7 +41,7 @@ You have the following options for activating the extensions, for example `Mongo
 If your profile secret is encrypted with a KMS Customer Managed Key (CMK), you must configure the key to allow access.
 To give the `execution role` access to the CMK, you must configure a [KMS Key Policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html).
 The recommended options include:
-- [Allow access via Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html#security-encryption-policies):
+- [No `kms` permissions on the `execution role`, allow access via Secrets Manager Service](https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html#security-encryption-policies):
   ```json
   {
     "Statement": [
@@ -50,7 +50,7 @@ The recommended options include:
             "Sid": "Enable IAM User Permissions",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::123456789:root"
+                "AWS": "arn:aws:iam::123456789:root" // can limit to a specific user/group/role for more restrictive access
             },
             "Action": "kms:*",
             "Resource": "*"

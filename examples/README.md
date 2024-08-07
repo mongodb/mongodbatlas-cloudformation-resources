@@ -46,59 +46,74 @@ The recommended options include:
   {
     "Statement": [
         // other statements
-                {
-            "Sid": "Enable IAM User Permissions",
+        {
+            "Sid": "Enable full access to IAM Admin Users",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::123456789:root" // can limit to a specific user/group/role for more restrictive access
+                "AWS": "arn:aws:iam::{CFN_ACCOUNT}:root" // can limit to a specific user/group/role for more restrictive access
             },
             "Action": "kms:*",
             "Resource": "*"
         },
         {
+            "Sid": "Allow access through AWS Secrets Manager for the CFN Execution Role",
             "Action": [
                 "kms:Decrypt"
             ],
-            "Condition": {
-                "StringEquals": {
-                    "kms:CallerAccount": "123456789",
-                    "kms:ViaService": "secretsmanager.{YOUR_REGION}.amazonaws.com"
-                }
-            },
             "Effect": "Allow",
             "Principal": {
-                "AWS": [
-                    "arn:aws:iam::123456789:role/YOUR_CFN_EXECUTION_ROLE" // or "*" to allow all of your IAM user/roles
-                ]
+                "AWS": "*"
             },
             "Resource": "*",
-            "Sid": "Allow access through AWS Secrets Manager for the CFN Execution Role"
+            "Condition": {
+                "StringEquals": {
+                    "kms:CallerAccount": "{CFN_ACCOUNT}",
+                    "kms:ViaService": "secretsmanager.{REGION}.amazonaws.com",
+                    "aws:PrincipalArn": "arn:aws:iam::{CFN_ACCOUNT}:role/CFN_EXECUTION_ROLE" // optional clause to limit to your execution role only
+                }
+            }
         }
     ],
     "Version": "2012-10-17"
   }
   ```
-  - replace `123456789` with your [AWS account ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
-  - replace `{YOUR_REGION}` with the CFN region, e.g., `us-east-1`
+  - replace `{CFN_ACCOUNT}` with your [AWS account ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
+  - replace `{REGION}` with the CFN region, e.g., `us-east-1`
 - Use `kms:decrypt` on the `execution role` and [enable IAM policies](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-root-enable-iam) on the KMS key:
   ```json
   {
     "Statement": [
-    // other statements
+        // other statements
         {
-            "Sid": "Enable IAM User Permissions",
+            "Sid": "Enable full access to IAM Admin Users",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::123456789:root"
+                "AWS": "arn:aws:iam::{CFN_ACCOUNT}:root" // can limit to a specific user/group/role for more restrictive access
             },
             "Action": "kms:*",
             "Resource": "*"
+        },
+        {
+            "Sid": "Enable Decryption for the CFN Execution Role",
+            "Action": "kms:Decrypt",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Resource": "*",
+            "Condition": { // see comment below
+                "StringEquals": {
+                    "aws:PrincipalArn": "{EXECUTION_ROLE_ARN}" 
+                }
         }
+    }
+    // role specific access
     ],
     "Version": "2012-10-17"
     }
   ```
-  - replace `123456789` with your [AWS account ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
+  - replace `CFN_ACCOUNT` with your [AWS account ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
+  - `Condition` can contain more open permissions, for example: `aws:PrincipalOrgID`, `aws:SourceOrgID`, and `aws:SourceAccount`, to learn more see the [AWS User Guide.](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html)
   - ensure the IAM Execution Role has `kms:decrypt` permission:
   ```json
   {

@@ -8,7 +8,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>" : <i>Integer</i>,
+    "<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>" : <i>String</i>,
     "<a href="#ebsvolumetype" title="EbsVolumeType">EbsVolumeType</a>" : <i>String</i>,
     "<a href="#instancesize" title="InstanceSize">InstanceSize</a>" : <i>String</i>,
     "<a href="#nodecount" title="NodeCount">NodeCount</a>" : <i>Integer</i>
@@ -18,7 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>: <i>Integer</i>
+<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>: <i>String</i>
 <a href="#ebsvolumetype" title="EbsVolumeType">EbsVolumeType</a>: <i>String</i>
 <a href="#instancesize" title="InstanceSize">InstanceSize</a>: <i>String</i>
 <a href="#nodecount" title="NodeCount">NodeCount</a>: <i>Integer</i>
@@ -39,7 +39,7 @@ Instance sizes greater than M40 have a ratio of 120:1.
 
 _Required_: No
 
-_Type_: Integer
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -15,6 +15,7 @@
 package resource_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cluster/cmd/resource"
@@ -78,4 +79,40 @@ func regionConfig(provider, region string) *[]admin.CloudRegionConfig {
 		RegionName:   &region,
 		ProviderName: &provider,
 	}}
+}
+
+func TestNewHardwareSpec(t *testing.T) {
+	testCases := map[string]struct {
+		expected string
+		spec     resource.Specs
+	}{
+		"empty": {
+			expected: `{}`,
+			spec:     resource.Specs{},
+		},
+		"instanceSizeAndCount": {
+			expected: `{"instanceSize":"M10","nodeCount":3}`,
+			spec: resource.Specs{
+				InstanceSize: util.StringPtr("M10"),
+				NodeCount:    util.IntPtr(3),
+			},
+		},
+		"allAttributes": {
+			expected: `{"diskIOPS":100,"ebsVolumeType":"STANDARD","instanceSize":"M10","nodeCount":3}`,
+			spec: resource.Specs{
+				DiskIOPS:      util.StringPtr("100"),
+				EbsVolumeType: util.StringPtr("STANDARD"),
+				InstanceSize:  util.StringPtr("M10"),
+				NodeCount:     util.IntPtr(3),
+			},
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			hardwareSpec := resource.NewHardwareSpec(&tc.spec)
+			hwSpecJSON, err := json.Marshal(hardwareSpec)
+			assert.Nil(t, err)
+			assert.Equal(t, tc.expected, string(hwSpecJSON))
+		})
+	}
 }

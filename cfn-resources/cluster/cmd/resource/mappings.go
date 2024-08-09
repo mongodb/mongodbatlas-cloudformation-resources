@@ -18,7 +18,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strconv"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -135,11 +134,6 @@ func expandRegionsConfig(regionConfigs []AdvancedRegionConfig) *[]admin.CloudReg
 }
 
 func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig {
-	var region string
-	if regionCfg.RegionName != nil {
-		region = *regionCfg.RegionName
-	}
-
 	providerName := constants.AWS
 	if regionCfg.ProviderName != nil {
 		providerName = *regionCfg.ProviderName
@@ -147,7 +141,7 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig 
 
 	advRegionConfig := admin.CloudRegionConfig{
 		ProviderName: &providerName,
-		RegionName:   &region,
+		RegionName:   regionCfg.RegionName,
 		Priority:     regionCfg.Priority,
 	}
 
@@ -161,7 +155,7 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig 
 		advRegionConfig.AnalyticsSpecs = expandRegionConfigSpec(regionCfg.AnalyticsSpecs)
 	}
 	if regionCfg.ElectableSpecs != nil {
-		advRegionConfig.ElectableSpecs = newHardwareSpec(regionCfg.ElectableSpecs)
+		advRegionConfig.ElectableSpecs = NewHardwareSpec(regionCfg.ElectableSpecs)
 	}
 	if regionCfg.ReadOnlySpecs != nil {
 		advRegionConfig.ReadOnlySpecs = expandRegionConfigSpec(regionCfg.ReadOnlySpecs)
@@ -172,31 +166,14 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) admin.CloudRegionConfig 
 	return advRegionConfig
 }
 
-func newHardwareSpec(spec *Specs) *admin.HardwareSpec {
+func NewHardwareSpec(spec *Specs) *admin.HardwareSpec {
 	if spec == nil {
 		return nil
 	}
-
-	var ebsVolumeType string
-	var instanceSize string
-	if spec.EbsVolumeType != nil {
-		ebsVolumeType = *spec.EbsVolumeType
-	}
-	if spec.InstanceSize != nil {
-		instanceSize = *spec.InstanceSize
-	}
-	var val int64
-	if spec.DiskIOPS != nil {
-		v, err := strconv.ParseInt(*spec.DiskIOPS, 10, 64)
-		if err == nil {
-			val = v
-		}
-	}
-
 	return &admin.HardwareSpec{
-		DiskIOPS:      util.Int64PtrToIntPtr(&val),
-		EbsVolumeType: &ebsVolumeType,
-		InstanceSize:  &instanceSize,
+		DiskIOPS:      util.StrPtrToIntPtr(spec.DiskIOPS),
+		EbsVolumeType: spec.EbsVolumeType,
+		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
 	}
 }
@@ -205,27 +182,10 @@ func expandRegionConfigSpec(spec *Specs) *admin.DedicatedHardwareSpec {
 	if spec == nil {
 		return nil
 	}
-
-	var ebsVolumeType string
-	var instanceSize string
-	if spec.EbsVolumeType != nil {
-		ebsVolumeType = *spec.EbsVolumeType
-	}
-	if spec.InstanceSize != nil {
-		instanceSize = *spec.InstanceSize
-	}
-	var val int64
-	if spec.DiskIOPS != nil {
-		v, err := strconv.ParseInt(*spec.DiskIOPS, 10, 64)
-		if err == nil {
-			val = v
-		}
-	}
-
 	return &admin.DedicatedHardwareSpec{
-		DiskIOPS:      util.Int64PtrToIntPtr(&val),
-		EbsVolumeType: &ebsVolumeType,
-		InstanceSize:  &instanceSize,
+		DiskIOPS:      util.StrPtrToIntPtr(spec.DiskIOPS),
+		EbsVolumeType: spec.EbsVolumeType,
+		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
 	}
 }
@@ -336,13 +296,8 @@ func flattenElectableSpecs(spec *admin.HardwareSpec) *Specs {
 	if spec == nil {
 		return nil
 	}
-	var diskIops string
-	if spec.DiskIOPS != nil {
-		diskIops = strconv.Itoa(*spec.DiskIOPS)
-	}
-
 	return &Specs{
-		DiskIOPS:      &diskIops,
+		DiskIOPS:      util.IntPtrToStrPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
@@ -353,13 +308,8 @@ func flattenRegionConfigSpec(spec *admin.DedicatedHardwareSpec) *Specs {
 	if spec == nil {
 		return nil
 	}
-	var diskIops string
-	if spec.DiskIOPS != nil {
-		diskIops = strconv.Itoa(*spec.DiskIOPS)
-	}
-
 	return &Specs{
-		DiskIOPS:      &diskIops,
+		DiskIOPS:      util.IntPtrToStrPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
@@ -370,7 +320,6 @@ func flattenBiConnectorConfig(biConnector *admin.BiConnector) *BiConnector {
 	if biConnector == nil {
 		return nil
 	}
-
 	return &BiConnector{
 		ReadPreference: biConnector.ReadPreference,
 		Enabled:        biConnector.Enabled,

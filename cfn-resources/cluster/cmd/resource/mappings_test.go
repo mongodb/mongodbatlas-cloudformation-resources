@@ -100,7 +100,7 @@ func TestNewHardwareSpec(t *testing.T) {
 		"allAttributes": {
 			expected: `{"diskIOPS":100,"ebsVolumeType":"STANDARD","instanceSize":"M10","nodeCount":3}`,
 			spec: resource.Specs{
-				DiskIOPS:      util.IntPtr(100),
+				DiskIOPS:      util.StringPtr("100"),
 				EbsVolumeType: util.StringPtr("STANDARD"),
 				InstanceSize:  util.StringPtr("M10"),
 				NodeCount:     util.IntPtr(3),

@@ -171,7 +171,7 @@ func NewHardwareSpec(spec *Specs) *admin.HardwareSpec {
 		return nil
 	}
 	return &admin.HardwareSpec{
-		DiskIOPS:      spec.DiskIOPS,
+		DiskIOPS:      util.StrPtrToIntPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
@@ -182,9 +182,8 @@ func expandRegionConfigSpec(spec *Specs) *admin.DedicatedHardwareSpec {
 	if spec == nil {
 		return nil
 	}
-
 	return &admin.DedicatedHardwareSpec{
-		DiskIOPS:      spec.DiskIOPS,
+		DiskIOPS:      util.StrPtrToIntPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
@@ -298,7 +297,7 @@ func flattenElectableSpecs(spec *admin.HardwareSpec) *Specs {
 		return nil
 	}
 	return &Specs{
-		DiskIOPS:      spec.DiskIOPS,
+		DiskIOPS:      util.IntPtrToStrPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,
@@ -310,7 +309,7 @@ func flattenRegionConfigSpec(spec *admin.DedicatedHardwareSpec) *Specs {
 		return nil
 	}
 	return &Specs{
-		DiskIOPS:      spec.DiskIOPS,
+		DiskIOPS:      util.IntPtrToStrPtr(spec.DiskIOPS),
 		EbsVolumeType: spec.EbsVolumeType,
 		InstanceSize:  spec.InstanceSize,
 		NodeCount:     spec.NodeCount,

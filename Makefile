@@ -28,7 +28,7 @@ tools:  ## Install dev tools
 	go install github.com/google/addlicense@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/google/go-licenses@latest
-	go install mvdan.cc/sh/v3/cmd/shfmt@v3.8.0
+	go install mvdan.cc/sh/v3/cmd/shfmt@v3.8.0 ## locking version until we have upgraded to go 1.22
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install go.uber.org/mock/mockgen@latest
 	go install github.com/vektra/mockery/v2@$(MOCKERY_VERSION)

@@ -60,7 +60,13 @@ for resource in ${resources}; do
 	sleep 5
 
 	# get latest submit version of the resource
-	latestVersion=$(aws cloudformation list-type-versions --type RESOURCE --type-name "${res_type}" | jq -r '.TypeVersionSummaries[-1].VersionId')
+	versionResp=$(aws cloudformation list-type-versions --type RESOURCE --type-name "${res_type}")
+	nextPageToken=$(echo "${versionResp}" | jq -r '.NextToken')
+	while [ "${nextPageToken}" != "null" ]; do
+		versionResp=$(aws cloudformation list-type-versions --type RESOURCE --type-name "${res_type}" --next-token "${nextPageToken}")
+		nextPageToken=$(echo "${versionResp}" | jq -r '.NextToken')
+	done
+	latestVersion=$(echo "${versionResp}" | jq -r '.TypeVersionSummaries[-1].VersionId')
 
 	echo "Setting default version to ${latestVersion} "
 	aws cloudformation set-type-default-version --type RESOURCE --type-name "${res_type}" --version-id "${latestVersion}"

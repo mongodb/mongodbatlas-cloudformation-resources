@@ -92,7 +92,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       - name: 'Setup cfn-lint'
-        uses: scottbrenner/cfn-lint-action@62f1746de817410fa0058034b4c108ac2692ec81
+        uses: scottbrenner/cfn-lint-action@c422b7baca772cd375807fea634a0a60008e8f52
       - name: 'Run cfn-lint'
         run: |
           shopt -s globstar # enable globbing

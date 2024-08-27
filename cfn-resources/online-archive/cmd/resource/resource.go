@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20240805001/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}

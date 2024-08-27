@@ -21,7 +21,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cluster/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20240805001/admin"
 )
 
 func TestAddReplicationSpecIds(t *testing.T) {

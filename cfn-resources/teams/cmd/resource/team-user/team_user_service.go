@@ -19,7 +19,7 @@ import (
 	"context"
 	"net/http"
 
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	atlasv2 "go.mongodb.org/atlas-sdk/v20240805001/admin"
 )
 
 // Service interface was defined over mocking direct SDK as specific mapping of input parameters to responses is needed

@@ -23,7 +23,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20240805001/admin"
 )
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

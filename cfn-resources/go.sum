@@ -47,7 +47,7 @@ github.com/go-openapi/jsonpointer v0.21.0/go.mod h1:IUyH9l/+uyhIYQ/PXVA41Rexl+kO
 github.com/go-openapi/swag v0.23.0 h1:vsEVJDUo2hPJ2tu0/Xc+4noaxyEffXNIs3cOULZ+GrE=
 github.com/go-openapi/swag v0.23.0/go.mod h1:esZ8ITTYEsH1V2trKHjAN8Ai7xHb8RV+YSZ577vPjgQ=
 github.com/go-test/deep v1.0.7/go.mod h1:QV8Hv/iy04NyLBxAdO9njL0iVPN1S4d/A3NVv1V36o8=
-github.com/go-test/deep v1.1.0 h1:WOcxcdHcvdgThNXjw0t76K42FXTU7HpNQWHpA2HHNlg=
+github.com/go-test/deep v1.1.1 h1:0r/53hagsehfO4bzD2Pgr/+RgHqhmf+k1Bpse2cTu1U=
 github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/go-querystring v1.1.0 h1:AnCroh3fv4ZBgVIf1Iwtovgjaw/GiKJo8M8yD/fhyJ8=
@@ -97,10 +97,8 @@ github.com/tidwall/pretty v1.2.1/go.mod h1:ITEVvHYasfjBbM0u2Pg8T2nJnzm8xPwvNhhso
 github.com/ugorji/go/codec v1.2.7 h1:YPXUKf7fYbp/y8xloBqZOw2qaVggbfwMlI8WM3wZUJ0=
 go.mongodb.org/atlas v0.12.0 h1:/vnHX3rh8jdPrP8mRznuU/2VrGH+cCdz8/Esrzpvaus=
 go.mongodb.org/atlas v0.12.0/go.mod h1:wVCnHcm/7/IfTjEB6K8K35PLG70yGz8BdkRwX0oK9/M=
-go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0 h1:x6nnq2pUIP9mN4WLD4/EseBzV88OmSgexxYchPilgno=
-go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0/go.mod h1:el7cm23kEiiw72HAYimhNweKqp/ubHsNJk+Mk30yJhM=
-go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0 h1:hN7x3m6THf03q/tE48up1j0U/26lJmx+s1LXB/qvHHc=
-go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0/go.mod h1:pCl46YnWOIde8lq27whXDwUseNeUvtAy3vy5ZDeTcBA=
+go.mongodb.org/atlas-sdk/v20240805001 v20240805001.1.0 h1:n4M+ioyBLv3qofUnNACO2KTJSJIS93NOl2WaLZh5zLg=
+go.mongodb.org/atlas-sdk/v20240805001 v20240805001.1.0/go.mod h1:0aHEphVfsYbpg3CiEUcXeAU7OVoOFig1tltXdLjYiSQ=
 go.mongodb.org/realm v0.1.0 h1:zJiXyLaZrznQ+Pz947ziSrDKUep39DO4SfA0Fzx8M4M=
 go.mongodb.org/realm v0.1.0/go.mod h1:4Vj6iy+Puo1TDERcoh4XZ+pjtwbOzPpzqy3Cwe8ZmDM=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=

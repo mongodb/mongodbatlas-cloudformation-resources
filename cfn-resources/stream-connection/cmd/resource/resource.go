@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20240805001/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 

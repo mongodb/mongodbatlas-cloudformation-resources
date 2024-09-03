@@ -1,9 +1,0 @@
-{
-  "inputs": {
-    "regions": "me-south-1,ap-south-2",
-    "resourceNames": "federated-settings-org-role-mapping",
-    "otherParams": "",
-    "targetLocationsMaxConcurrency": "30",
-    "branchName": "master"
-  }
-}

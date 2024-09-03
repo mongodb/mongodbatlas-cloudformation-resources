@@ -7,7 +7,8 @@ goarch=amd64
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
-MOCKERY_VERSION=v2.38.0
+MOCKERY_VERSION=v2.45.0
+GOLANGCI_VERSION=v1.60.3 # Also update golangci-lint GH action in code-health.yml when updating this version
 
 .PHONY: submit
 submit:
@@ -24,11 +25,11 @@ fmt: ## Format changed go and sh
 .PHONY: tools
 tools:  ## Install dev tools
 	@echo "==> Installing dev tools..."
-	go install github.com/icholy/gomajor@v0.11.0
+	go install github.com/icholy/gomajor@latest
 	go install github.com/google/addlicense@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/google/go-licenses@latest
-	go install mvdan.cc/sh/v3/cmd/shfmt@v3.8.0 ## locking version until we have upgraded to go 1.22
+	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install go.uber.org/mock/mockgen@latest
 	go install github.com/vektra/mockery/v2@$(MOCKERY_VERSION)

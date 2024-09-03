@@ -8,6 +8,7 @@ ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLo
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
 MOCKERY_VERSION=v2.42.1
+GOLANGCI_VERSION=v1.60.3 # Also update golangci-lint GH action in code-health.yml when updating this version
 
 .PHONY: submit
 submit:

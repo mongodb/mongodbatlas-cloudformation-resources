@@ -1,6 +1,6 @@
 module github.com/mongodb/mongodbatlas-cloudformation-resources
 
-go 1.20
+go 1.23
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0

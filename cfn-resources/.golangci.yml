@@ -6,6 +6,10 @@ linters-settings:
       - opinionated
       - performance
       - style
+    disabled-checks:
+      # cfn handlers generated automatically, below are exempted for the same
+      - hugeParam
+      - paramTypeCombine
   govet:
     enable-all: true
 

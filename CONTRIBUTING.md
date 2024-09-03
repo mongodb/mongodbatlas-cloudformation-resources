@@ -92,7 +92,7 @@ make update-atlas-sdk
 ## Prerequisites
 - [AWS CloudFormation CLI](https://github.com/aws-cloudformation/cloudformation-cli)
 - (Optional - only need if building from source) [AWS CloudFormation CLI Go Plugin](https://github.com/aws-cloudformation/cloudformation-cli-go-plugin/) > v1.0
-- (Optional - only need if building from source) [Go](https://golang.org/doc/install) v1.20
+- (Optional - only need if building from source) [Go](https://golang.org/doc/install) v1.23
 
 ## Testing the Provider
 Please see README for each resource for details on unit and integrated AWS testing.

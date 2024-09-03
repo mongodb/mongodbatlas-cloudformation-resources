@@ -72,7 +72,7 @@ linters-settings:
     settings:
       mnd:
         # don't include the "operation" and "assign"
-        checks: [case,return]
+        checks: [case, return]
   funlen:
     lines: 360
     statements: 120

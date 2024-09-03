@@ -13,7 +13,7 @@ require (
 	github.com/getkin/kin-openapi v0.127.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/mongodb-forks/digest v1.1.0
-	github.com/rs/xid v1.5.0
+	github.com/rs/xid v1.6.0
 	github.com/spf13/cast v1.7.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/pretty v1.2.1

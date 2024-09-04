@@ -26,11 +26,11 @@ import (
 func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
 	var newUsers []atlasv2.AddUserToTeam
 
-	validUsernames, _, err := validateUsernames(c, usernames)
+	validUsernames, _, err := ValidateUsernames(c, usernames)
 	if err != nil {
 		return err
 	}
-	usersToAdd, usersToRemove, err := getChangesForTeamUsers(existingTeamUsers.Results, validUsernames)
+	usersToAdd, usersToRemove, err := GetChangesForTeamUsers(existingTeamUsers.Results, validUsernames)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppU
 	return nil
 }
 
-func validateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
+func ValidateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
 	var validUsers []atlasv2.CloudAppUser
 	for _, elem := range usernames {
 		userToAdd, httpResp, err := c.GetUserByUsername(context.Background(), elem)
@@ -70,7 +70,7 @@ func validateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUs
 	return validUsers, nil, nil
 }
 
-func initUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
+func InitUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
 	usersSet := make(map[string]interface{}, len(users))
 	for i := 0; i < len(users); i++ {
 		usersSet[users[i].GetId()] = true
@@ -78,10 +78,10 @@ func initUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
 	return usersSet
 }
 
-func getChangesForTeamUsers(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
+func GetChangesForTeamUsers(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
 	// Create two sets to store the elements in A and B
-	currentUsersSet := initUserSet(currentUsers)
-	newUsersSet := initUserSet(newUsers)
+	currentUsersSet := InitUserSet(currentUsers)
+	newUsersSet := InitUserSet(newUsers)
 
 	// Create two arrays to store the elements to be added and deleted
 	toAdd = []string{}

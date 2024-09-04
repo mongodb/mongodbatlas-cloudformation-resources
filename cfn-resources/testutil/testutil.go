@@ -17,14 +17,14 @@ package testutil
 type TestOperation int
 
 type TestCase struct {
+	TestHandler TestHandler
 	Name        string
 	Steps       []TestStep
-	TestHandler TestHandler
 }
 
 type TestStep struct {
-	Config    string
 	Check     TestCheckFunc
+	Config    string
 	Operation TestOperation
 }
 

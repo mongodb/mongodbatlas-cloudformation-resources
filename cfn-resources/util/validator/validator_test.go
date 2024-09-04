@@ -29,10 +29,10 @@ var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey", "Cl
 type testModel struct {
 	FirstRequiredField  *string
 	SecondRequiredField *int
-	ThirdRequiredField  []string
 	FourthRequiredField *bool
 	RequiredStruct      *RequiredStructProperty
 	NotRequiredField    *int
+	ThirdRequiredField  []string
 }
 
 type RequiredStructProperty struct {

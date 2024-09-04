@@ -26,16 +26,16 @@ import (
 )
 
 type localTestContext struct {
+	projectTmplObj testProject
+	err            error
 	cfnClient      *cloudformation.Client
 	atlasClient    *admin.APIClient
-	projectTmplObj testProject
 	resourceCtx    utility.ResourceContext
-
-	template string
-	err      error
+	template       string
 }
 
 type testProject struct {
+	Tags             map[string]string
 	ResourceTypeName string
 	Name             string
 	OrgID            string
@@ -43,7 +43,6 @@ type testProject struct {
 	TeamID           string
 	ProjectName      string
 	ProjectID        string
-	Tags             map[string]string
 }
 
 const (

@@ -27,9 +27,9 @@ import (
 type localTestContext struct {
 	cfnClient    *cloudformation.Client
 	atlasClient  *admin.APIClient
-	templateData testData
 	resourceCtx  utility.ResourceContext
 	template     string
+	templateData testData
 }
 
 type testData struct {

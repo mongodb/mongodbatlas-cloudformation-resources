@@ -84,8 +84,8 @@ func regionConfig(provider, region string) *[]admin.CloudRegionConfig {
 
 func TestNewHardwareSpec(t *testing.T) {
 	testCases := map[string]struct {
-		expected string
 		spec     resource.Specs
+		expected string
 	}{
 		"empty": {
 			expected: `{}`,

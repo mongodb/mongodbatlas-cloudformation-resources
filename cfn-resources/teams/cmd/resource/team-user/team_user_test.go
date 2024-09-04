@@ -155,11 +155,11 @@ func TestUpdateTeamUsers(t *testing.T) {
 	invaliduser1 := "invaliduser1"
 
 	testCases := []struct {
-		testName             string
 		mockFuncExpectations func(*mocksvc.TeamUsersAPI)
 		existingTeamUsers    *atlasv2.PaginatedApiAppUser
-		usernames            []string
 		expectError          require.ErrorAssertionFunc
+		testName             string
+		usernames            []string
 	}{
 		{
 			testName: "succeeds but no changes are required",

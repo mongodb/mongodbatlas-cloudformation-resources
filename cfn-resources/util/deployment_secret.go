@@ -25,10 +25,10 @@ import (
 )
 
 type DeploymentSecret struct {
-	PublicKey  string              `json:"PublicKey"`
-	PrivateKey string              `json:"PrivateKey"`
 	ResourceID *ResourceIdentifier `json:"ResourceID"`
 	Properties *map[string]string  `json:"Properties"`
+	PublicKey  string              `json:"PublicKey"`
+	PrivateKey string              `json:"PrivateKey"`
 }
 
 func CreateDeploymentSecret(req *handler.Request, cfnID *ResourceIdentifier, publicKey, privateKey string, properties map[string]string) (*string, error) {

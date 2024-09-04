@@ -17,26 +17,26 @@ package main
 import "github.com/getkin/kin-openapi/openapi3"
 
 type CfnSchema struct {
-	AdditionalProperties bool        `json:"additionalProperties"`
 	Definitions          interface{} `json:"definitions,omitempty"`
-	Description          string      `json:"description"`
-	Handlers             Handlers    `json:"handlers"`
-	PrimaryIdentifier    []string    `json:"primaryIdentifier"`
 	Properties           interface{} `json:"properties"`
-	ReadOnlyProperties   []string    `json:"readOnlyProperties,omitempty"`
-	Required             []string    `json:"required,omitempty"`
+	Description          string      `json:"description"`
 	TypeName             string      `json:"typeName"`
 	SourceURL            string      `json:"sourceUrl"`
 	FileName             string      `json:"-"`
+	Handlers             Handlers    `json:"handlers"`
+	PrimaryIdentifier    []string    `json:"primaryIdentifier"`
+	ReadOnlyProperties   []string    `json:"readOnlyProperties,omitempty"`
+	Required             []string    `json:"required,omitempty"`
+	AdditionalProperties bool        `json:"additionalProperties"`
 }
 
 type RequiredParams struct {
+	FileName     string       `json:"-"`
 	CreateFields RequireParam `json:"CreateFields"`
 	ReadFields   RequireParam `json:"ReadFields"`
 	UpdateFields RequireParam `json:"UpdateFields"`
 	DeleteFields RequireParam `json:"DeleteFields"`
 	ListFields   RequireParam `json:"ListFields"`
-	FileName     string       `json:"-"`
 }
 
 type RequireParam struct {
@@ -67,17 +67,17 @@ type Handlers struct {
 
 type Property struct {
 	Type                 *openapi3.Types `json:"type,omitempty"`
-	Description          string          `json:"description,omitempty"`
 	MaxLength            *uint64         `json:"maxLength,omitempty"`
+	Items                *Items          `json:"items,omitempty"`
+	Description          string          `json:"description,omitempty"`
+	Ref                  string          `json:"$ref,omitempty"`
+	Pattern              string          `json:"pattern,omitempty"`
+	Enum                 []interface{}   `json:"enum,omitempty"`
+	Required             []string        `json:"-"`
 	MinLength            uint64          `json:"minLength,omitempty"`
 	InsertionOrder       bool            `json:"insertionOrder,omitempty"`
-	Ref                  string          `json:"$ref,omitempty"`
 	AdditionalProperties bool            `json:"additionalProperties,omitempty"`
-	Enum                 []interface{}   `json:"enum,omitempty"`
-	Pattern              string          `json:"pattern,omitempty"`
-	Items                *Items          `json:"items,omitempty"`
 	ReadOnly             bool            `json:"-"`
-	Required             []string        `json:"-"`
 }
 
 type Items struct {
@@ -105,7 +105,7 @@ var handler = `{
 type OpenAPIMapping struct {
 	Resources []struct {
 		TypeName     string   `json:"typeName"`
-		OpenAPIPaths []string `json:"openApiPath"`
 		ContentType  string   `json:"contentType"`
+		OpenAPIPaths []string `json:"openApiPath"`
 	} `json:"resources"`
 }

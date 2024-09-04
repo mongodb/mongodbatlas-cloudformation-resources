@@ -33,8 +33,8 @@ var CreateRequiredFields = []string{constants.OrgID, constants.Name}
 var ReadUpdateDeleteRequiredFields = []string{constants.ID}
 
 type UpdateAPIKey struct {
-	Key           string
 	UpdatePayload *admin.UpdateAtlasProjectApiKey
+	Key           string
 }
 
 func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {

@@ -28,14 +28,13 @@ import (
 )
 
 type localTestContext struct {
-	cfnClient      *cloudformation.Client
-	atlasClient    *admin.APIClient
-	clusterTmplObj testCluster
-	resourceCtx    utility.ResourceContext
-
-	template            string
 	err                 error
+	cfnClient           *cloudformation.Client
+	atlasClient         *admin.APIClient
+	resourceCtx         utility.ResourceContext
+	template            string
 	replicationIDCreate string
+	clusterTmplObj      testCluster
 }
 
 type testCluster struct {
@@ -43,8 +42,8 @@ type testCluster struct {
 	Name             string
 	Profile          string
 	ProjectID        string
-	NodeCount        int
 	ReplicationSpecs []resource.AdvancedReplicationSpec
+	NodeCount        int
 }
 
 const (

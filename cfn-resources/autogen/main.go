@@ -300,12 +300,12 @@ func capitalize(key string) string {
 }
 
 type RequiredParams struct {
+	FileName     string       `json:"-"`
 	CreateFields RequireParam `json:"CreateFields"`
 	ReadFields   RequireParam `json:"ReadFields"`
 	UpdateFields RequireParam `json:"UpdateFields"`
 	DeleteFields RequireParam `json:"DeleteFields"`
 	ListFields   RequireParam `json:"ListFields"`
-	FileName     string       `json:"-"`
 }
 
 type RequireParam struct {

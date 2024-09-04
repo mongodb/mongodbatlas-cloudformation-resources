@@ -30,16 +30,16 @@ func newEc2Client(region string, req handler.Request) *ec2.EC2 {
 }
 
 type PrivateEndpointInput struct {
+	InterfaceEndpointID *string
 	VpcID               string
 	SubnetIDs           []string
-	InterfaceEndpointID *string
 }
 
 type PrivateEndpointOutput struct {
 	VpcID               string
-	SubnetIDs           []string
 	InterfaceEndpointID string
 	Region              string
+	SubnetIDs           []string
 }
 
 func convertToAWSRegion(region string) string {

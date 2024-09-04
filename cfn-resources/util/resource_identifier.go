@@ -30,11 +30,11 @@ import (
 // instance of this resource.
 
 type ResourceIdentifier struct {
+	Parent       *ResourceIdentifier
 	ServiceName  string
 	DeploymentID string
 	ResourceType string // TODO - make enum for this?
 	ResourceID   string
-	Parent       *ResourceIdentifier
 }
 
 // Note string version is "+" delimited string of the fields, in proper heirachry

@@ -26,9 +26,9 @@ import (
 
 func TestNewModelDBRoleToExecute(t *testing.T) {
 	tests := []struct {
-		name     string
 		input    *admin.DBRoleToExecute
 		expected *resource.DBRoleToExecute
+		name     string
 	}{
 		{
 			name:     "Nil Input",
@@ -58,9 +58,9 @@ func TestNewModelDBRoleToExecute(t *testing.T) {
 
 func TestNewModelAuthentication(t *testing.T) {
 	tests := []struct {
-		name     string
 		input    *admin.StreamsKafkaAuthentication
 		expected *resource.StreamsKafkaAuthentication
+		name     string
 	}{
 		{
 			name:     "Nil Input",
@@ -92,9 +92,9 @@ func TestNewModelAuthentication(t *testing.T) {
 
 func TestNewModelSecurity(t *testing.T) {
 	tests := []struct {
-		name     string
 		input    *admin.StreamsKafkaSecurity
 		expected *resource.StreamsKafkaSecurity
+		name     string
 	}{
 		{
 			name:     "Nil Input",
@@ -124,9 +124,9 @@ func TestNewModelSecurity(t *testing.T) {
 
 func TestNewDBRoleToExecute(t *testing.T) {
 	tests := []struct {
-		name     string
 		input    *resource.DBRoleToExecute
 		expected *admin.DBRoleToExecute
+		name     string
 	}{
 		{
 			name:     "Nil Input",
@@ -269,9 +269,9 @@ func TestGetStreamConnectionSampleTypeModel(t *testing.T) {
 		Type: ptr.String("Sample"),
 	}
 	testCases := []struct {
-		name     string
 		model    *resource.Model
 		asserter func(input, result *resource.Model, a *assert.Assertions)
+		name     string
 	}{
 		{
 			name:  "With Nil Current Model",

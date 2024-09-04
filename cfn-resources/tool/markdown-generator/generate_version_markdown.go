@@ -58,7 +58,8 @@ func getVersions(regions, resourceTypes []string) map[string][]string {
 	for i, region := range regions {
 		typeSummaries := getTypeSummariesOfRegion(region)
 
-		for _, typeSummary := range typeSummaries {
+		for j := range typeSummaries {
+			typeSummary := &typeSummaries[j]
 			fmt.Printf("Region: %s, type name: %s, version: %s, date: %s\n", region, *typeSummary.TypeName, *typeSummary.LatestPublicVersion, typeSummary.LastUpdated.String())
 			if _, exists := resourceValues[*typeSummary.TypeName]; exists {
 				if typeSummary.LatestPublicVersion != nil && typeSummary.LastUpdated != nil {

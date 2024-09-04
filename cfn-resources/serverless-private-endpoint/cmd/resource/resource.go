@@ -108,9 +108,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 		currentModel = progressEvent.ResourceModel.(*Model)
 
-		awsPrivateEndpoint, peError := createAwsPrivateEndpoint(currentModel, req)
+		awsPrivateEndpoint, peErr := createAwsPrivateEndpoint(currentModel, req)
 		if peErr != nil {
-			return *peError, nil
+			return *peErr, nil
 		}
 
 		return assignAwsPrivateEndpoint(req, client, *awsPrivateEndpoint, currentModel), nil

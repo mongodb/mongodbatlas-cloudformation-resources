@@ -151,7 +151,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if privateEndpointResponse == nil {
-		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error deleting resource, private Endpoint Response is null : %s", err.Error()),
+		return progressevent.GetFailedEventByCode("Error deleting resource, private Endpoint Response is null",
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 

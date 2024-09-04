@@ -46,16 +46,16 @@ type privateEndpointCreationCallBackContext struct {
 
 type AtlasPrivateEndpointCallBack struct {
 	VpcID               string
-	SubnetIDs           []string
 	InterfaceEndpointID string
 	Status              string
+	SubnetIDs           []string
 }
 
 type AtlasPrivateEndpointInput struct {
-	VpcID               string
-	SubnetIDs           []string
-	InterfaceEndpointID string
 	Status              *string
+	VpcID               string
+	InterfaceEndpointID string
+	SubnetIDs           []string
 }
 
 func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {

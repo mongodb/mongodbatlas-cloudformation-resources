@@ -51,19 +51,15 @@ func (m *Model) newAwsPrivateEndpointInput() []awsvpcendpoint.AwsPrivateEndpoint
 	awsInput := make([]awsvpcendpoint.AwsPrivateEndpointInput, len(m.PrivateEndpoints))
 
 	for i, ep := range m.PrivateEndpoints {
-		subnetIds := make([]string, len(ep.SubnetIds))
-
-		copy(subnetIds, m.PrivateEndpoints[i].SubnetIds)
-
+		subnetIDs := make([]string, len(ep.SubnetIds))
+		copy(subnetIDs, m.PrivateEndpoints[i].SubnetIds)
 		endpoint := awsvpcendpoint.AwsPrivateEndpointInput{
 			VpcID:               *ep.VpcId,
-			SubnetIDs:           subnetIds,
+			SubnetIDs:           subnetIDs,
 			InterfaceEndpointID: ep.InterfaceEndpointId,
 		}
-
 		awsInput[i] = endpoint
 	}
-
 	return awsInput
 }
 
@@ -219,7 +215,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if privateEndpointResponse == nil {
-		return progressevent.GetFailedEventByCode(fmt.Sprintf("Error deleting resource, private Endpoint Response is null : %s", err.Error()),
+		return progressevent.GetFailedEventByCode("Error deleting resource, private Endpoint Response is null",
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 

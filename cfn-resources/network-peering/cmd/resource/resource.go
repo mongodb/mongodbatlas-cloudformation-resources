@@ -318,6 +318,9 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 	if err != nil {
 		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInvalidRequest)
 	}
+	if state == StatusFailed {
+		return progressevent.GetFailedEventByCode("Creation failed", cloudformation.HandlerErrorCodeInternalFailure)
+	}
 
 	if state == StatusPendingAcceptance || state == StatusAvailable {
 		return handler.ProgressEvent{
@@ -325,10 +328,6 @@ func validateCreationProcess(client *util.MongoDBClient, currentModel *Model) ha
 			Message:         "Complete",
 			ResourceModel:   currentModel,
 		}
-	}
-
-	if state == StatusFailed {
-		return progressevent.GetFailedEventByCode(err.Error(), cloudformation.HandlerErrorCodeInternalFailure)
 	}
 
 	return progressevent.GetInProgressProgressEvent("Creating",

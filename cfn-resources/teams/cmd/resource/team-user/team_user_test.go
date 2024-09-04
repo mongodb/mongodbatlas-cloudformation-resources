@@ -11,13 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package teamuser
+package teamuser_test
 
 import (
 	"context"
 	"errors"
 	"testing"
 
+	teamuser "github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil/mocksvc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,8 +36,8 @@ func TestInitUserSet(t *testing.T) {
 		{Id: &user3},
 	}
 
-	// Call the initUserSet function to create a map of user IDs
-	usersSet := initUserSet(users)
+	// Call the InitUserSet function to create a map of user IDs
+	usersSet := teamuser.InitUserSet(users)
 
 	// Check that the map contains the expected user IDs
 	assert.Contains(t, usersSet, user1)
@@ -62,7 +63,7 @@ func TestValidateUsernames(t *testing.T) {
 	mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
 
 	// Call the ValidateUsernames function
-	validUsers, _, err := validateUsernames(mockClient, usernames)
+	validUsers, _, err := teamuser.ValidateUsernames(mockClient, usernames)
 
 	require.NoError(t, err)
 
@@ -85,7 +86,7 @@ func TestValidateUsernamesWithInvalidInput(t *testing.T) {
 	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
 
 	// Call the ValidateUsernames function
-	_, _, err := validateUsernames(mockAtlasV2Client, usernames)
+	_, _, err := teamuser.ValidateUsernames(mockAtlasV2Client, usernames)
 
 	require.Error(t, err)
 }
@@ -141,7 +142,7 @@ func TestGetChangesForTeamUsers(t *testing.T) {
 	// Run test cases
 	for _, testCase := range testCases {
 		t.Run(testCase.testName, func(t *testing.T) {
-			toAdd, toDelete, err := getChangesForTeamUsers(testCase.currentUsers, testCase.newUsers)
+			toAdd, toDelete, err := teamuser.GetChangesForTeamUsers(testCase.currentUsers, testCase.newUsers)
 			require.NoError(t, err)
 			assert.ElementsMatch(t, testCase.expectedToAdd, toAdd)
 			assert.ElementsMatch(t, testCase.expectedToDelete, toDelete)
@@ -155,11 +156,11 @@ func TestUpdateTeamUsers(t *testing.T) {
 	invaliduser1 := "invaliduser1"
 
 	testCases := []struct {
-		testName             string
 		mockFuncExpectations func(*mocksvc.TeamUsersAPI)
 		existingTeamUsers    *atlasv2.PaginatedApiAppUser
-		usernames            []string
 		expectError          require.ErrorAssertionFunc
+		testName             string
+		usernames            []string
 	}{
 		{
 			testName: "succeeds but no changes are required",
@@ -230,7 +231,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 		t.Run(testCase.testName, func(t *testing.T) {
 			mockAtlasV2Client := mocksvc.NewTeamUsersAPI(t)
 			testCase.mockFuncExpectations(mockAtlasV2Client)
-			testCase.expectError(t, UpdateTeamUsers(mockAtlasV2Client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID"))
+			testCase.expectError(t, teamuser.UpdateTeamUsers(mockAtlasV2Client, testCase.existingTeamUsers, testCase.usernames, "orgID", "teamID"))
 		})
 	}
 }

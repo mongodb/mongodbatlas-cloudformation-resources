@@ -33,8 +33,8 @@ var CreateRequiredFields = []string{constants.OrgID, constants.Name}
 var ReadUpdateDeleteRequiredFields = []string{constants.ID}
 
 type UpdateAPIKey struct {
-	Key           string
 	UpdatePayload *admin.UpdateAtlasProjectApiKey
+	Key           string
 }
 
 func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
@@ -88,7 +88,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				errorMessage := fmt.Sprintf("ApiKey is missing the configuration for projectID=%s", projectID)
 				return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInvalidRequest), nil
 			}
-			key := key
 			apiKey := *key.Key
 			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, apiKey, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
@@ -212,7 +211,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}
 
 	if currentModel.ProjectApiKeys != nil {
-		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
+		newAPIKeys, changedKeys, removeKeys := GetChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
 
 		for _, key := range removeKeys {
 			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, *key.Key).Execute()
@@ -225,7 +224,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 
 		for _, key := range newAPIKeys {
-			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()
@@ -238,7 +236,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 
 		for _, key := range changedKeys {
-			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()
@@ -445,7 +442,7 @@ func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	return newTeams
 }
 
-func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
+func GetChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
 	currentKeyMap := make(map[string]ProjectApiKey)
 	previousKeyMap := make(map[string]ProjectApiKey)
 

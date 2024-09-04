@@ -358,7 +358,7 @@ func Int64PtrToIntPtr(i64 *int64) *int {
 }
 
 func IsStringPresent(strPtr *string) bool {
-	return strPtr != nil && len(*strPtr) > 0
+	return strPtr != nil && *strPtr != ""
 }
 
 func AreStringPtrEqual(p1, p2 *string) bool {

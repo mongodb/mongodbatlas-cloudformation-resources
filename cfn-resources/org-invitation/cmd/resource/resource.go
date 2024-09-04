@@ -69,10 +69,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	currentModel.Id = invitation.Id
 
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
-	}
-
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,

@@ -37,9 +37,9 @@ var (
 
 func TestNewStreamsTenant(t *testing.T) {
 	testCases := []struct {
-		name     string
 		input    *resource.Model
 		expected *admin.StreamsTenant
+		name     string
 	}{
 		{
 			name: "Model with StreamConfig",

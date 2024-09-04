@@ -1,4 +1,7 @@
 linters-settings:
+  exhaustive:
+    default-signifies-exhaustive: true
+
   gocritic:
     enabled-tags:
       - diagnostic
@@ -7,12 +10,12 @@ linters-settings:
       - performance
       - style
     disabled-checks:
-      - octalLiteral
       # cfn handlers generated automatically, below are exempted for the same
       - hugeParam
       - paramTypeCombine
   govet:
-    check-shadowing: true
+    enable-all: true
+
   revive:
     # see https://github.com/mgechev/revive#available-rules for details.
     ignore-generated-header: true
@@ -46,41 +49,31 @@ linters-settings:
       #- name: unused-parameter
       - name: unreachable-code
       - name: redefines-builtin-id
-  maligned:
-    suggest-new: true
-  depguard:
-    list-type: blacklist
-    packages:
-      # logging is allowed only by logutils.Log, logrus
-      # is allowed to use only in logutils package
-      - github.com/sirupsen/logrus
   misspell:
     locale: US
     ignore-words:
       - cancelled
   lll:
     # Default is 120. '\t' is counted as 1 character.
-    # set our project to 200, as things like v3_structs with inline comments end up being a touch long
+    # set our project to 500, as we are adding open api field description in the schema.
     # also, for anyone using vscode, use the following configs:
-    # "rewrap.wrappingColumn": 200 ... requires the rewrap plugin
-    # "editor.rulers": [200]
-    line-length: 200
+    # "rewrap.wrappingColumn": 500 ... requires the rewrap plugin
+    # "editor.rulers": [500]
+    line-length: 500
   nestif:
     # minimal complexity of if statements to report, 5 by default
     min-complexity: 7
-  gomnd:
-    settings:
-      mnd:
-        # don't include the "operation" and "assign"
-        checks: [case, return]
+  mnd:
+    checks:
+      - case
+      - operation
+      - return
   funlen:
     lines: 360
     statements: 120
 linters:
   disable-all: true
   enable:
-    - deadcode
-    - depguard
     - dogsled
     - errcheck
     - funlen
@@ -88,7 +81,7 @@ linters:
     - gofmt
     - goimports
     - revive
-    - gomnd
+    - mnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -99,17 +92,26 @@ linters:
     - nakedret
     - nolintlint
     - rowserrcheck
-    - exportloopref
+    - copyloopvar
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
-    - thelper
     - unconvert
     - unused
-    - varcheck
     - whitespace
+    - thelper
+    - testifylint
+    - exhaustive
+    - makezero
+    - noctx
+    - tenv
+    - testpackage
+
   # don't enable:
+  #   - deadcode
+  #   - varcheck
+  #   - structcheck
+  #   - depguard # Go linter that checks if package imports are in a list of acceptable packages [fast: true, auto-fix: false]
   #   - gocyclo # we already have funlen lint
   #   - dupl  # we have a lot of duplicate test cases
   #   - gochecknoinits # we need the init function for the provider
@@ -120,21 +122,17 @@ linters:
   #   - gocognit
 issues:
   exclude:
-    - composite literal uses unkeyed fields
-    - Using the variable on range scope .* in function literal
     - declaration of ".*" shadows declaration at line .*
-    - only one cuddle assignment allowed before if statement
-    - func `testAccMongoDBAtlasThirdPartyIntegrationDataSourceConfig` is unused
-    - func `testAccMongoDBAtlasAlertConfigurationConfigWithThresholdUpdated` is unused
-    - func `testAccMongoDBAtlasAlertConfigurationConfigWithMatchers` is unused
-    - func `testAccDSMongoDBAtlasAlertConfigurationConfigWithThreshold` is unused
-    - func `testAccMongoDBAtlasCloudProviderSnapshotRestoreJobConfigPointInTime` is unused
-    - func `testAccMongoDBAtlasCloudBackupScheduleExportPoliciesConfig` is unused
+  exclude-rules:
+    - linters:
+        - staticcheck
+      text: "SA1019:" # d.GetOkExists is deprecated: usage is discouraged due to undefined behaviors and may be removed in a future version of the SDK
+    - linters:
+        - gocritic
+      text: "^hugeParam: req is heavy"
 run:
+  timeout: 10m
   tests: true
-  timeout: 5m
   build-tags:
     - integration
-  skip-dirs:
-    - internal/mocks
   modules-download-mode: readonly

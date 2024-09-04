@@ -169,7 +169,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if len(adminCluster.GetReplicationSpecs()) > 0 {
 		currentCluster, _, _ := client.AtlasSDK.ClustersApi.GetCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
 		if currentCluster != nil {
-			adminCluster.ReplicationSpecs = AddReplicationSpecIds(currentCluster.GetReplicationSpecs(), adminCluster.GetReplicationSpecs())
+			adminCluster.ReplicationSpecs = AddReplicationSpecIDs(currentCluster.GetReplicationSpecs(), adminCluster.GetReplicationSpecs())
 		}
 	}
 	if errEvent != nil {
@@ -310,7 +310,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 				res), nil
 		}
 		model.AdvancedSettings = flattenProcessArgs(processArgs)
-		models = append(models, model)
+		models[i] = model
 	}
 
 	return handler.ProgressEvent{

@@ -23,10 +23,10 @@ import (
 )
 
 type sdkToCFNModelTestCase struct {
-	name          string
-	SDKResp       admin.ApiSearchDeploymentResponse
 	prevModel     resource.Model
 	expectedModel resource.Model
+	SDKResp       admin.ApiSearchDeploymentResponse
+	name          string
 }
 
 const (
@@ -108,8 +108,8 @@ func TestSDKToCFNModel(t *testing.T) {
 func TestCFNModelToSDK(t *testing.T) {
 	testCases := []struct {
 		model          resource.Model
-		expectedSDKReq admin.ApiSearchDeploymentRequest
 		name           string
+		expectedSDKReq admin.ApiSearchDeploymentRequest
 	}{
 		{
 			name: "Complete CFN model",

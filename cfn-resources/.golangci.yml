@@ -123,13 +123,6 @@ linters:
 issues:
   exclude:
     - declaration of ".*" shadows declaration at line .*
-  exclude-rules:
-    - linters:
-        - staticcheck
-      text: "SA1019:" # d.GetOkExists is deprecated: usage is discouraged due to undefined behaviors and may be removed in a future version of the SDK
-    - linters:
-        - gocritic
-      text: "^hugeParam: req is heavy"
 run:
   timeout: 10m
   tests: true

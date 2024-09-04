@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"reflect"
 	"testing"
 
 	"github.com/aws/smithy-go/ptr"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-index/cmd/resource"
 	"go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
@@ -26,7 +27,7 @@ func TestConvertToAnySliceEmptyList(t *testing.T) {
 	var input []string
 	var expected []any
 
-	result, err := convertToAnySlice(input)
+	result, err := resource.ConvertToAnySlice(input)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -45,7 +46,7 @@ func TestConvertToAnySliceValidJSON(t *testing.T) {
 		map[string]any{"type": "icuNormalize"},
 	}
 
-	result, err := convertToAnySlice(input)
+	result, err := resource.ConvertToAnySlice(input)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -62,7 +63,7 @@ func TestConvertToAnySliceInvalidJSON(t *testing.T) {
 	}
 	var expected []any
 
-	result, err := convertToAnySlice(input)
+	result, err := resource.ConvertToAnySlice(input)
 
 	if err == nil {
 		t.Errorf("Expected an error, but got nil")
@@ -74,9 +75,9 @@ func TestConvertToAnySliceInvalidJSON(t *testing.T) {
 }
 
 func TestNewTokenizerModelWithNilInput(t *testing.T) {
-	var tokenizer *ApiAtlasFTSAnalyzersTokenizer
+	var tokenizer *resource.ApiAtlasFTSAnalyzersTokenizer
 
-	result := newTokenizerModel(tokenizer)
+	result := resource.NewTokenizerModel(tokenizer)
 
 	expected := admin.ApiAtlasFTSAnalyzersTokenizer{}
 	if !reflect.DeepEqual(result, expected) {
@@ -85,7 +86,7 @@ func TestNewTokenizerModelWithNilInput(t *testing.T) {
 }
 
 func TestNewTokenizerModelWithPartialParameters(t *testing.T) {
-	tokenizer := &ApiAtlasFTSAnalyzersTokenizer{
+	tokenizer := &resource.ApiAtlasFTSAnalyzersTokenizer{
 		MaxGram:        nil,
 		MinGram:        nil,
 		Type:           ptr.String("standard"),
@@ -94,7 +95,7 @@ func TestNewTokenizerModelWithPartialParameters(t *testing.T) {
 		MaxTokenLength: ptr.Int(10),
 	}
 
-	result := newTokenizerModel(tokenizer)
+	result := resource.NewTokenizerModel(tokenizer)
 
 	expected := admin.ApiAtlasFTSAnalyzersTokenizer{
 		MaxGram:        nil,

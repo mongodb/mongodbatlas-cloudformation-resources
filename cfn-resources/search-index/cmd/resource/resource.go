@@ -320,12 +320,12 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 	}
 	analyzers := make([]admin.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
 	for i := range currentModel.Analyzers {
-		charFilters, err := convertToAnySlice(currentModel.Analyzers[i].CharFilters)
+		charFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].CharFilters)
 		if err != nil {
 			return nil, err
 		}
 
-		tokenFilters, err := convertToAnySlice(currentModel.Analyzers[i].TokenFilters)
+		tokenFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].TokenFilters)
 		if err != nil {
 			return nil, err
 		}
@@ -334,7 +334,7 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 			CharFilters:  charFilters,
 			Name:         *currentModel.Analyzers[i].Name,
 			TokenFilters: tokenFilters,
-			Tokenizer:    newTokenizerModel(currentModel.Analyzers[i].Tokenizer),
+			Tokenizer:    NewTokenizerModel(currentModel.Analyzers[i].Tokenizer),
 		}
 		analyzers = append(analyzers, s)
 	}
@@ -359,7 +359,7 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 	return searchIndex, nil
 }
 
-func convertToAnySlice(input []string) ([]any, error) {
+func ConvertToAnySlice(input []string) ([]any, error) {
 	var result []any
 
 	for _, jsonStr := range input {
@@ -374,7 +374,7 @@ func convertToAnySlice(input []string) ([]any, error) {
 	return result, nil
 }
 
-func newTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasFTSAnalyzersTokenizer {
+func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasFTSAnalyzersTokenizer {
 	if tokenizer == nil {
 		return admin.ApiAtlasFTSAnalyzersTokenizer{}
 	}

@@ -211,7 +211,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 	}
 
 	if currentModel.ProjectApiKeys != nil {
-		newAPIKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
+		newAPIKeys, changedKeys, removeKeys := GetChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
 
 		for _, key := range removeKeys {
 			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, *key.Key).Execute()
@@ -442,7 +442,7 @@ func readTeams(teams []ProjectTeam) []admin.TeamRole {
 	return newTeams
 }
 
-func getChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
+func GetChangeInAPIKeys(currentKeys []ProjectApiKey, previousKeys []ProjectApiKey) (newKeys, changedKeys, removeKeys []ProjectApiKey) {
 	currentKeyMap := make(map[string]ProjectApiKey)
 	previousKeyMap := make(map[string]ProjectApiKey)
 

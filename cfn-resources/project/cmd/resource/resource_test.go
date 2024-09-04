@@ -12,27 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package resource
+package resource_test
 
 import (
 	"reflect"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 )
 
 func TestGetChangeInAPIKeys_AddedButNotChangedOrRemoved(t *testing.T) {
-	currentKeys := []ProjectApiKey{
+	currentKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
-	previousKeys := []ProjectApiKey{
+	previousKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 	}
 
-	newKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentKeys, previousKeys)
+	newKeys, changedKeys, removeKeys := resource.GetChangeInAPIKeys(currentKeys, previousKeys)
 
-	expectedNewKeys := []ProjectApiKey{
+	expectedNewKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
 
@@ -42,22 +43,22 @@ func TestGetChangeInAPIKeys_AddedButNotChangedOrRemoved(t *testing.T) {
 }
 
 func TestGetChangeInAPIKeys_ChangedButNotAddedOrRemoved(t *testing.T) {
-	currentKeys := []ProjectApiKey{
+	currentKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1", "role1b"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
-	previousKeys := []ProjectApiKey{
+	previousKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1b", "role1"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role3", "role2"}},
 	}
 
-	newKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentKeys, previousKeys)
+	newKeys, changedKeys, removeKeys := resource.GetChangeInAPIKeys(currentKeys, previousKeys)
 
 	if len(newKeys) > 0 || len(removeKeys) > 0 {
 		t.Errorf("Test case failed. No new or removed keys expected.")
 	}
 
-	expectedChangedKeys := []ProjectApiKey{
+	expectedChangedKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
 
@@ -67,21 +68,21 @@ func TestGetChangeInAPIKeys_ChangedButNotAddedOrRemoved(t *testing.T) {
 }
 
 func TestGetChangeInAPIKeys_RemovedButNotAddedOrChanged(t *testing.T) {
-	currentKeys := []ProjectApiKey{
+	currentKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 	}
-	previousKeys := []ProjectApiKey{
+	previousKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
 
-	newKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentKeys, previousKeys)
+	newKeys, changedKeys, removeKeys := resource.GetChangeInAPIKeys(currentKeys, previousKeys)
 
 	if len(newKeys) > 0 || len(changedKeys) > 0 {
 		t.Errorf("Test case failed. No new or changed keys expected.")
 	}
 
-	expectedRemoveKeys := []ProjectApiKey{
+	expectedRemoveKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
 
@@ -91,29 +92,29 @@ func TestGetChangeInAPIKeys_RemovedButNotAddedOrChanged(t *testing.T) {
 }
 
 func TestGetChangeInAPIKeys_AddedChangedRemovedMixed(t *testing.T) {
-	previousKeys := []ProjectApiKey{
+	previousKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 		{Key: aws.String("key5"), RoleNames: []string{"role5"}},
 		{Key: aws.String("key6"), RoleNames: []string{"role6"}},
 	}
-	currentKeys := []ProjectApiKey{
+	currentKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role9"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 		{Key: aws.String("key3"), RoleNames: []string{"role3"}},
 		{Key: aws.String("key4"), RoleNames: []string{"role4"}},
 	}
 
-	newKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentKeys, previousKeys)
+	newKeys, changedKeys, removeKeys := resource.GetChangeInAPIKeys(currentKeys, previousKeys)
 
-	expectedNewKeys := []ProjectApiKey{
+	expectedNewKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key3"), RoleNames: []string{"role3"}},
 		{Key: aws.String("key4"), RoleNames: []string{"role4"}},
 	}
-	expectedChangedKeys := []ProjectApiKey{
+	expectedChangedKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role9"}},
 	}
-	expectedRemoveKeys := []ProjectApiKey{
+	expectedRemoveKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key5"), RoleNames: []string{"role5"}},
 		{Key: aws.String("key6"), RoleNames: []string{"role6"}},
 	}
@@ -124,16 +125,16 @@ func TestGetChangeInAPIKeys_AddedChangedRemovedMixed(t *testing.T) {
 }
 
 func TestGetChangeInAPIKeys_NoneAddedChangedOrRemoved(t *testing.T) {
-	currentKeys := []ProjectApiKey{
+	currentKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
-	previousKeys := []ProjectApiKey{
+	previousKeys := []resource.ProjectApiKey{
 		{Key: aws.String("key1"), RoleNames: []string{"role1"}},
 		{Key: aws.String("key2"), RoleNames: []string{"role2"}},
 	}
 
-	newKeys, changedKeys, removeKeys := getChangeInAPIKeys(currentKeys, previousKeys)
+	newKeys, changedKeys, removeKeys := resource.GetChangeInAPIKeys(currentKeys, previousKeys)
 
 	if len(newKeys) > 0 || len(changedKeys) > 0 || len(removeKeys) > 0 {
 		t.Errorf("Test case failed. No new, changed, or removed keys expected.")

@@ -169,7 +169,7 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 	_, resp, _ := c.atlasClient.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
 
 	a := assert.New(t)
-	a.Equal(resp.StatusCode, 404)
+	a.Equal(404, resp.StatusCode)
 }
 
 func cleanupResources(t *testing.T, c *localTestContext) {

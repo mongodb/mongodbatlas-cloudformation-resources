@@ -21,14 +21,15 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/cluster/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
-func TestAddReplicationSpecIds(t *testing.T) {
+func TestAddReplicationSpecIDs(t *testing.T) {
 	testCases := map[string]struct {
 		from        []admin.ReplicationSpec
 		to          []admin.ReplicationSpec
-		expectedIds []string
+		expectedIDs []string
 	}{
 		"emptyIsOk": {[]admin.ReplicationSpec{}, []admin.ReplicationSpec{}, []string{}},
 		"zoneNameMatch": {
@@ -64,12 +65,12 @@ func TestAddReplicationSpecIds(t *testing.T) {
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			updated := resource.AddReplicationSpecIds(tc.from, tc.to)
+			updated := resource.AddReplicationSpecIDs(tc.from, tc.to)
 			ids := []string{}
 			for _, spec := range *updated {
 				ids = append(ids, spec.GetId())
 			}
-			assert.Equal(t, tc.expectedIds, ids)
+			assert.Equal(t, tc.expectedIDs, ids)
 		})
 	}
 }
@@ -111,7 +112,7 @@ func TestNewHardwareSpec(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			hardwareSpec := resource.NewHardwareSpec(&tc.spec)
 			hwSpecJSON, err := json.Marshal(hardwareSpec)
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, string(hwSpecJSON))
 		})
 	}

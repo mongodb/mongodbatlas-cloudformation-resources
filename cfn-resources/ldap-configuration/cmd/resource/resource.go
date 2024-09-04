@@ -185,17 +185,16 @@ func (m *Model) CompleteByResponse(resp admin.UserSecurity) {
 	m.AuthenticationEnabled = resp.Ldap.AuthenticationEnabled
 	m.AuthorizationEnabled = resp.Ldap.AuthorizationEnabled
 
-	mapping := make([]ApiAtlasNDSUserToDNMappingView, len(resp.Ldap.UserToDNMapping))
+	mappings := make([]ApiAtlasNDSUserToDNMappingView, len(resp.Ldap.UserToDNMapping))
 
 	for i := range resp.Ldap.UserToDNMapping {
-		ndsMap := ApiAtlasNDSUserToDNMappingView{
+		mappings[i] = ApiAtlasNDSUserToDNMappingView{
 			Match:        &resp.Ldap.UserToDNMapping[i].Match,
 			Substitution: resp.Ldap.UserToDNMapping[i].Substitution,
 			LdapQuery:    resp.Ldap.UserToDNMapping[i].LdapQuery,
 		}
-		mapping = append(mapping, ndsMap)
 	}
-	m.UserToDNMapping = mapping
+	m.UserToDNMapping = mappings
 }
 
 func get(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *handler.ProgressEvent) {
@@ -246,18 +245,15 @@ func (m *Model) GetAtlasModel() *admin.UserSecurity {
 }
 
 func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin.UserToDNMapping {
-	mapping := make([]admin.UserToDNMapping, len(ndsUserMapping))
-
+	mappings := make([]admin.UserToDNMapping, len(ndsUserMapping))
 	for i := range ndsUserMapping {
-		ndsMap := admin.UserToDNMapping{
+		mappings[i] = admin.UserToDNMapping{
 			Match:        *ndsUserMapping[i].Match,
 			Substitution: ndsUserMapping[i].Substitution,
 			LdapQuery:    ndsUserMapping[i].LdapQuery,
 		}
-		mapping = append(mapping, ndsMap)
 	}
-
-	return mapping
+	return mappings
 }
 
 func isResourceEnabled(ldapConf *admin.UserSecurity) bool {

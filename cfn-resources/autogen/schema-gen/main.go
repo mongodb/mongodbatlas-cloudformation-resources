@@ -15,6 +15,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -254,17 +255,17 @@ func sortProperties[V any](properties map[string]V) (props map[string]interface{
 	return props
 }
 
-func downloadOpenAPISpec(url, fileName string) (err error) {
-	spaceClient := http.Client{
-		Timeout: time.Second * 5,
-	}
+func downloadOpenAPISpec(fileName string) (err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	req, err := http.NewRequest(http.MethodGet, OpenAPISpecPath, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, OpenAPISpecPath, http.NoBody)
 	if err != nil {
 		return err
 	}
 
-	res, getErr := spaceClient.Do(req)
+	client := http.Client{}
+	res, getErr := client.Do(req)
 	if getErr != nil {
 		return getErr
 	}
@@ -278,7 +279,7 @@ func downloadOpenAPISpec(url, fileName string) (err error) {
 		return readErr
 	}
 
-	err = os.WriteFile(fileName, body, 0600)
+	err = os.WriteFile(fileName, body, 0o600)
 	return err
 }
 
@@ -304,7 +305,7 @@ func readConfig() ([]byte, *openapi3.T, error) {
 	}
 
 	openAPISpecFile := fmt.Sprintf("%s/swagger.yaml", dir)
-	if err := downloadOpenAPISpec(OpenAPISpecPath, openAPISpecFile); err != nil {
+	if err := downloadOpenAPISpec(openAPISpecFile); err != nil {
 		return []byte{}, nil, err
 	}
 
@@ -490,7 +491,7 @@ func generateSchemas(chn chan CfnSchema, done chan bool) {
 
 		schemaFilePath := fmt.Sprintf("%s/mongodb-atlas-%s.json", schemaDir, strings.ToLower(cfn.FileName))
 
-		err = os.WriteFile(schemaFilePath, result, 0600)
+		err = os.WriteFile(schemaFilePath, result, 0o600)
 		if err != nil {
 			print(err)
 			done <- true
@@ -517,7 +518,7 @@ func generateReqFields(reqChan chan RequiredParams, reqDone chan bool) {
 		}
 
 		fileName := fmt.Sprintf("%s/mongodb-atlas-%s-req.json", SchemasDir, strings.ToLower(reqFlds.FileName))
-		err = os.WriteFile(fileName, result, 0600)
+		err = os.WriteFile(fileName, result, 0o600)
 		if err != nil {
 			print(err)
 		}

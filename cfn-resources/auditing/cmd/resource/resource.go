@@ -241,10 +241,6 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
-	}
-
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 	}, nil

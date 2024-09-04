@@ -88,7 +88,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				errorMessage := fmt.Sprintf("ApiKey is missing the configuration for projectID=%s", projectID)
 				return progressevent.GetFailedEventByCode(errorMessage, cloudformation.HandlerErrorCodeInvalidRequest), nil
 			}
-			key := key
 			apiKey := *key.Key
 			_, res, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, apiKey, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
@@ -225,7 +224,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 
 		for _, key := range newAPIKeys {
-			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()
@@ -238,7 +236,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		}
 
 		for _, key := range changedKeys {
-			key := key
 			_, _, err := atlasV2.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(context.Background(), projectID, *key.Key, &admin.UpdateAtlasProjectApiKey{
 				Roles: &key.RoleNames,
 			}).Execute()

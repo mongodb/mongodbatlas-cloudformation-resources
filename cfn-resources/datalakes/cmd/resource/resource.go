@@ -261,16 +261,16 @@ func flattenDataLakeProcessRegion(processRegion *admin.DataLakeDataProcessRegion
 }
 
 func flattenDataLakeStorageDatabases(databases []admin.DataLakeDatabaseInstance) []DataLakeDatabaseView {
-	database := make([]DataLakeDatabaseView, len(databases))
-	for ind := range databases {
-		database = append(database, DataLakeDatabaseView{
-			Name:                   databases[ind].Name,
-			Collections:            flattenDataLakeStorageDatabaseCollections(databases[ind].Collections),
-			Views:                  flattenDataLakeStorageDatabaseViews(databases[ind].Views),
-			MaxWildcardCollections: databases[ind].MaxWildcardCollections,
-		})
+	views := make([]DataLakeDatabaseView, len(databases))
+	for i := range databases {
+		views[i] = DataLakeDatabaseView{
+			Name:                   databases[i].Name,
+			Collections:            flattenDataLakeStorageDatabaseCollections(databases[i].Collections),
+			Views:                  flattenDataLakeStorageDatabaseViews(databases[i].Views),
+			MaxWildcardCollections: databases[i].MaxWildcardCollections,
+		}
 	}
-	return database
+	return views
 }
 
 func flattenDataLakeStorageDatabaseCollections(collections []admin.DataLakeDatabaseCollection) []DataLakeDatabaseCollectionView {
@@ -403,17 +403,8 @@ func isExist(currentModel *Model, client *util.MongoDBClient) bool {
 
 // function to check if snapshot already exist in atlas
 func dataLakeIsReady(client *util.MongoDBClient, projectID, name, targetState string) (isReady bool, status string, err error) {
-	dataLake, resp, err := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, name).Execute()
+	dataLake, _, err := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, name).Execute()
 	if err != nil {
-		return false, "", err
-	}
-	if err != nil {
-		if dataLake == nil && resp == nil {
-			return false, "", err
-		}
-		if resp != nil && resp.StatusCode == 404 {
-			return true, "deleted", nil
-		}
 		return false, "", err
 	}
 

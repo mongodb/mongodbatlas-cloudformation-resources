@@ -151,7 +151,7 @@ func testDeleteStack(t *testing.T, c *localTestContext) {
 	_, resp, _ := c.atlasClient.ProjectsApi.GetProject(ctx.Background(), c.projectTmplObj.ProjectID).Execute()
 
 	a := assert.New(t)
-	a.Equal(resp.StatusCode, 404)
+	a.Equal(404, resp.StatusCode)
 }
 
 func getProjectIDFromStack(output *cloudformation.DescribeStacksOutput) string {

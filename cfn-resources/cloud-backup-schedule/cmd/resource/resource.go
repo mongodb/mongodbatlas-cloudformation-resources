@@ -171,12 +171,12 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 }
 
 func validatePolicies(currentModel *Model) (pe handler.ProgressEvent, err error) {
-	if currentModel.Policies == nil || len(currentModel.Policies) == 0 {
+	if len(currentModel.Policies) == 0 {
 		msg := "validation error: policies cannot be empty"
 		return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
 	}
 	for _, policy := range currentModel.Policies {
-		if policy.PolicyItems == nil || len(policy.PolicyItems) == 0 {
+		if len(policy.PolicyItems) == 0 {
 			msg := "validation error: policy items cannot be empty"
 			return progressevent.GetFailedEventByCode(msg, cloudformation.HandlerErrorCodeInvalidRequest), errors.New(msg)
 		}

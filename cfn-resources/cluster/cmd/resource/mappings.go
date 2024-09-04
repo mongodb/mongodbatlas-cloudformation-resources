@@ -596,10 +596,10 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 	return clusterRequest, nil
 }
 
-func AddReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {
+func AddReplicationSpecIDs(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {
 	zoneToID := map[string]string{}
 	providerRegionToID := map[string]string{}
-	usedIds := map[string]bool{}
+	usedIDs := map[string]bool{}
 
 	for _, spec := range src {
 		specID := spec.GetId()
@@ -619,16 +619,16 @@ func AddReplicationSpecIds(src, dest []admin.ReplicationSpec) *[]admin.Replicati
 			continue
 		}
 		idZone, foundZone := zoneToID[spec.GetZoneName()]
-		zoneUsed := usedIds[idZone]
+		zoneUsed := usedIDs[idZone]
 		if foundZone && !zoneUsed {
-			usedIds[idZone] = true
+			usedIDs[idZone] = true
 			dest[i].SetId(idZone)
 			continue
 		}
 		idProvider, foundProvider := providerRegionToID[asProviderRegion(spec)]
-		providerUsed := usedIds[idProvider]
+		providerUsed := usedIDs[idProvider]
 		if foundProvider && !providerUsed {
-			usedIds[idProvider] = true
+			usedIDs[idProvider] = true
 			dest[i].SetId(idProvider)
 			continue
 		}

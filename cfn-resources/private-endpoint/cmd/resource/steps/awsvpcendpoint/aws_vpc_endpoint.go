@@ -50,20 +50,20 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 
 	vcpType := "Interface"
 
-	subnetIds := make([]AwsPrivateEndpointOutput, len(privateEndpointInputs))
+	subnetIDs := make([]AwsPrivateEndpointOutput, len(privateEndpointInputs))
 
 	for i, pe := range privateEndpointInputs {
-		subnetIdsIn := make([]*string, len(pe.SubnetIDs))
+		subnetIDsIn := make([]*string, len(pe.SubnetIDs))
 
 		for i := range pe.SubnetIDs {
-			subnetIdsIn[i] = &(pe.SubnetIDs[i])
+			subnetIDsIn[i] = &(pe.SubnetIDs[i])
 		}
 
 		connection := ec2.CreateVpcEndpointInput{
 			VpcId:           &pe.VpcID,
 			ServiceName:     &endpointServiceName,
 			VpcEndpointType: &vcpType,
-			SubnetIds:       subnetIdsIn,
+			SubnetIds:       subnetIDsIn,
 		}
 
 		vpcE, err := svc.CreateVpcEndpoint(&connection)
@@ -73,32 +73,30 @@ func Create(req handler.Request, endpointServiceName string, region string, priv
 			return nil, &fpe
 		}
 
-		subnetIds[i] = AwsPrivateEndpointOutput{
+		subnetIDs[i] = AwsPrivateEndpointOutput{
 			VpcID:               pe.VpcID,
 			SubnetIDs:           pe.SubnetIDs,
 			InterfaceEndpointID: *vpcE.VpcEndpoint.VpcEndpointId,
 		}
 	}
 
-	return subnetIds, nil
+	return subnetIDs, nil
 }
 
 func Delete(req handler.Request, interfaceEndpoints []string, region string) *handler.ProgressEvent {
 	svc := newEc2Client(convertToAWSRegion(region), req)
 
-	vpcEndpointIds := make([]*string, 0)
-
+	vpcEndpointIDs := make([]*string, 0)
 	for i := range interfaceEndpoints {
-		vpcEndpointIds = append(vpcEndpointIds, &interfaceEndpoints[i])
+		vpcEndpointIDs = append(vpcEndpointIDs, &interfaceEndpoints[i])
 	}
 
 	connection := ec2.DeleteVpcEndpointsInput{
 		DryRun:         nil,
-		VpcEndpointIds: vpcEndpointIds,
+		VpcEndpointIds: vpcEndpointIDs,
 	}
 
 	_, err := svc.DeleteVpcEndpoints(&connection)
-
 	if err != nil {
 		fpe := progressevent.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
 			cloudformation.HandlerErrorCodeGeneralServiceException)

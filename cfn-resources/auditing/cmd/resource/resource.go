@@ -50,7 +50,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
@@ -107,7 +107,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 	var res *http.Response
 
 	atlasAuditing, res, err := atlasV2.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
@@ -148,7 +148,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {
@@ -213,7 +213,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	resourceEnabled, handlerEvent := isEnabled(*atlasV2, *currentModel)
 	if handlerEvent != nil {

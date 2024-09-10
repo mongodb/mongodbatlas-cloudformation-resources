@@ -143,7 +143,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	createServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
+	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
 	serverlessPrivateEndpoint, response, err := createServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -200,7 +200,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		PrivateEndpointIpAddress: currentModel.PrivateEndpointIpAddress,
 	}
 
-	createServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.UpdateServerlessPrivateEndpoint(context.Background(),
+	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.UpdateServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id, &serverlessPrivateEndpointInput)
 	serverlessPrivateEndpoint, response, err := createServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -263,7 +263,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
-	deleteServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.DeleteServerlessPrivateEndpoint(context.Background(),
+	deleteServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.DeleteServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
 	_, response, err := deleteServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -300,7 +300,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	listServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.ListServerlessPrivateEndpoints(context.Background(),
+	listServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.ListServerlessPrivateEndpoints(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName)
 	serverlessPrivateEndpoints, response, err := listServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -332,7 +332,7 @@ func createAwsPrivateEndpoint(currentModel *Model, req handler.Request) (*aws_ut
 }
 
 func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.MongoDBClient, req handler.Request) *handler.ProgressEvent {
-	createServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
+	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id)
 	serverlessPrivateEndpoint, response, err := createServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -362,7 +362,7 @@ func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.M
 func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient) (*admin.ServerlessTenantEndpoint, *handler.ProgressEvent) {
 	serverlessPrivateEndpointInput := admin.ServerlessTenantCreateRequest{Comment: currentModel.Comment}
 
-	createServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.CreateServerlessPrivateEndpoint(context.Background(),
+	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.CreateServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, &serverlessPrivateEndpointInput)
 	serverlessPrivateEndpoint, response, err := createServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -390,7 +390,7 @@ func assignAwsPrivateEndpoint(req handler.Request, client *util.MongoDBClient, a
 		CloudProviderEndpointId: &awsPrivateEndpoint.InterfaceEndpointID,
 	}
 
-	createServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.UpdateServerlessPrivateEndpoint(context.Background(),
+	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.UpdateServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id, &serverlessPrivateEndpointInput)
 	serverlessPrivateEndpoint, response, err := createServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()
@@ -454,7 +454,7 @@ func isRequestInProgress(req handler.Request) bool {
 func validateCompletion(req handler.Request, currentModel *Model, client *util.MongoDBClient, targetStatus enums.AtlasPrivateEndpointStatus, cfnFunction constants.CfnFunctions) handler.ProgressEvent {
 	privateEndpointID := fmt.Sprint(req.CallbackContext[id])
 
-	getServerlessPrivateEndpointRequest := client.AtlasSDK.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
+	getServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.GetServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, privateEndpointID)
 	serverlessPrivateEndpoint, response, err := getServerlessPrivateEndpointRequest.Execute()
 	defer response.Body.Close()

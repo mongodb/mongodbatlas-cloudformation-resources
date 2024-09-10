@@ -56,7 +56,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.AtlasSDK
+	connV2 := client.Atlas20231115014
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
@@ -87,7 +87,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.AtlasSDK
+	connV2 := client.Atlas20231115014
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
@@ -114,7 +114,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.AtlasSDK
+	connV2 := client.Atlas20231115014
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {
@@ -145,7 +145,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if progressErr != nil {
 		return *progressErr, nil
 	}
-	connV2 := client.AtlasSDK
+	connV2 := client.Atlas20231115014
 
 	// handling of subsequent retry calls
 	if _, ok := req.CallbackContext[constants.ID]; ok {

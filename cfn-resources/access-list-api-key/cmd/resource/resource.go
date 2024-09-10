@@ -100,7 +100,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	entryList = append(entryList, access)
 
-	createAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
+	createAccessListAPIKey := client.Atlas20231115014.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
 	_, response, err := createAccessListAPIKey.Execute()
 
 	if err != nil {
@@ -151,7 +151,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	entry := getEntryAddress(currentModel)
-	readAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
+	readAccessListAPIKey := client.Atlas20231115014.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -202,7 +202,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	entry := getEntryAddress(currentModel)
-	deleteAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, entry)
+	deleteAccessListAPIKey := client.Atlas20231115014.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, entry)
 	_, response, err := deleteAccessListAPIKey.Execute()
 
 	if err != nil {
@@ -259,7 +259,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := *currentModel.OrgId
 	apiKeyID := *currentModel.APIUserId
 
-	accessListResponse, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
+	accessListResponse, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())

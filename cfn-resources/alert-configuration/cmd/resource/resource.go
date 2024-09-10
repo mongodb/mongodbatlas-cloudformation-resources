@@ -61,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	if currentModel.Id != nil && *currentModel.Id != "" {
 		_, _ = logger.Warnf("resource already exists for Id: %s", *currentModel.Id)
@@ -118,7 +118,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -158,7 +158,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -222,7 +222,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)

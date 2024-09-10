@@ -59,7 +59,7 @@ func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 		c.BaseURL = baseURL
 	}
 	// New SDK Client
-	sdkV2Client, err := c.NewSDKV2LatestClient(client)
+	sdkV2Client, err := c.NewSDKv20231115014Client(client)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create Atlas client")
 	}

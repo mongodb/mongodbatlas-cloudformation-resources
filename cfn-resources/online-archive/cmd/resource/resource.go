@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if errHandler != nil {
 		return *errHandler, nil
 	}
-	outputRequest, resp, err := client.AtlasSDK.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
+	outputRequest, resp, err := client.Atlas20231115014.OnlineArchiveApi.CreateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -103,7 +103,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	olArchive, resp, err := client.AtlasSDK.OnlineArchiveApi.GetOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
+	olArchive, resp, err := client.Atlas20231115014.OnlineArchiveApi.GetOnlineArchive(context.Background(), *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -143,7 +143,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if ArchiveDeleted(ctx, client, currentModel) {
 		return progressevent.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
-	outputRequest, resp, err := client.AtlasSDK.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
+	outputRequest, resp, err := client.Atlas20231115014.OnlineArchiveApi.UpdateOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName, &params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -181,7 +181,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse("Archive not found", &http.Response{StatusCode: 404}), nil
 	}
 
-	_, resp, err := client.AtlasSDK.OnlineArchiveApi.DeleteOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
+	_, resp, err := client.Atlas20231115014.OnlineArchiveApi.DeleteOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -215,7 +215,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ItemsPerPage: currentModel.ItemsPerPage,
 		PageNum:      currentModel.PageNum,
 	}
-	archivesResponse, resp, err := client.AtlasSDK.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
+	archivesResponse, resp, err := client.Atlas20231115014.OnlineArchiveApi.ListOnlineArchivesWithParams(context.Background(), &params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -359,7 +359,7 @@ func validateProgress(ctx context.Context, client *util.MongoDBClient, currentMo
 }
 
 func ArchiveExists(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin.BackupOnlineArchive, error) {
-	archive, resp, err := client.AtlasSDK.OnlineArchiveApi.GetOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
+	archive, resp, err := client.Atlas20231115014.OnlineArchiveApi.GetOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			state := "DELETED"

@@ -73,7 +73,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	regPrivateEndpointSetting, response, err := client.AtlasSDK.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
+	regPrivateEndpointSetting, response, err := client.Atlas20231115014.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), response), nil
 	}
@@ -136,7 +136,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *util.MongoDBClient, enabled bool) (handler.ProgressEvent, error) {
-	_, response, err := client.AtlasSDK.PrivateEndpointServicesApi.ToggleRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId,
+	_, response, err := client.Atlas20231115014.PrivateEndpointServicesApi.ToggleRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId,
 		&admin.ProjectSettingItem{
 			Enabled: enabled,
 		}).Execute()
@@ -152,7 +152,7 @@ func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *util
 }
 
 func isRegModeSettingExists(currentModel *Model, client *util.MongoDBClient) bool {
-	regModeSetting, _, err := client.AtlasSDK.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
+	regModeSetting, _, err := client.Atlas20231115014.PrivateEndpointServicesApi.GetRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId).Execute()
 	if err != nil {
 		return false
 	}

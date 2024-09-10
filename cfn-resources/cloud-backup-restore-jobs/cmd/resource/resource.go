@@ -96,14 +96,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if *currentModel.InstanceType == serverlessInstanceType {
 		params := paramsServerless(currentModel)
-		serverless, resp, err := client.AtlasSDK.CloudBackupsApi.CreateServerlessBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
+		serverless, resp, err := client.Atlas20231115014.CloudBackupsApi.CreateServerlessBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
 		currentModel.Id = serverless.Id
 	} else {
 		params := paramsServer(currentModel)
-		server, resp, err := client.AtlasSDK.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
+		server, resp, err := client.Atlas20231115014.CloudBackupsApi.CreateBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, params).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -203,7 +203,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 
-	_, resp, err := client.AtlasSDK.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
+	_, resp, err := client.Atlas20231115014.CloudBackupsApi.CancelBackupRestoreJob(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, *currentModel.Id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -228,7 +228,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	models := make([]interface{}, 0)
 	if *currentModel.InstanceType == serverlessInstanceType {
-		serverless, resp, err := client.AtlasSDK.CloudBackupsApi.ListServerlessBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		serverless, resp, err := client.Atlas20231115014.CloudBackupsApi.ListServerlessBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -248,7 +248,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			}
 		}
 	} else {
-		server, resp, err := client.AtlasSDK.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
+		server, resp, err := client.Atlas20231115014.CloudBackupsApi.ListBackupRestoreJobs(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		}
@@ -353,14 +353,14 @@ func isTimeOutReached(startTime string, timeOutInSeconds int) bool {
 
 func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *handler.ProgressEvent {
 	if *model.InstanceType == serverlessInstanceType {
-		serverless, resp, err := client.AtlasSDK.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		serverless, resp, err := client.Atlas20231115014.CloudBackupsApi.GetServerlessBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe
 		}
 		updateModelServerless(model, serverless)
 	} else {
-		server, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
+		server, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupRestoreJob(context.Background(), *model.ProjectId, *model.InstanceName, *model.Id).Execute()
 		if err != nil {
 			pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
 			return &pe

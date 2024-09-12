@@ -19,7 +19,7 @@ require (
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
 	go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0
-	go.mongodb.org/atlas-sdk/v20240805003 v20240805003.2.0
+	go.mongodb.org/atlas-sdk/v20240805004 v20240805004.0.0
 	go.mongodb.org/realm v0.1.0
 )
 
@@ -49,7 +49,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	go.mongodb.org/atlas v0.12.0 // indirect
+	go.mongodb.org/atlas v0.12.0
 	gopkg.in/validator.v2 v2.0.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

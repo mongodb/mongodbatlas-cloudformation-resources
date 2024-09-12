@@ -27,7 +27,8 @@ import (
 	"time"
 
 	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20240805003/admin"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"
 
@@ -52,6 +53,7 @@ const (
 
 type MongoDBClient struct {
 	Atlas20231115002 *admin20231115002.APIClient
+	Atlas20231115014 *admin20231115014.APIClient
 	AtlasSDK         *admin.APIClient
 	Config           *Config
 }
@@ -155,7 +157,16 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 	c := Config{BaseURL: prof.BaseURL}
 
 	// new V2 version 20231115002 instance
-	sdkV2Client, err := c.NewSDKV2Client(client)
+	sdk20231115002Client, err := c.NewSDKv20231115002Client(client)
+	if err != nil {
+		return nil, &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
+	}
+
+	// new V2 version 20231115014 instance
+	sdk20231115014Client, err := c.NewSDKv20231115014Client(client)
 	if err != nil {
 		return nil, &handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -173,7 +184,8 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 	}
 
 	clients := &MongoDBClient{
-		Atlas20231115002: sdkV2Client,
+		Atlas20231115002: sdk20231115002Client,
+		Atlas20231115014: sdk20231115014Client,
 		AtlasSDK:         sdkV2LatestClient,
 		Config:           &c,
 	}
@@ -181,7 +193,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 	return clients, nil
 }
 
-func (c *Config) NewSDKV2Client(client *http.Client) (*admin20231115002.APIClient, error) {
+func (c *Config) NewSDKv20231115002Client(client *http.Client) (*admin20231115002.APIClient, error) {
 	opts := []admin20231115002.ClientModifier{
 		admin20231115002.UseHTTPClient(client),
 		admin20231115002.UseUserAgent(userAgent),
@@ -189,6 +201,21 @@ func (c *Config) NewSDKV2Client(client *http.Client) (*admin20231115002.APIClien
 		admin20231115002.UseDebug(false)}
 
 	sdkV2, err := admin20231115002.NewClient(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return sdkV2, nil
+}
+
+func (c *Config) NewSDKv20231115014Client(client *http.Client) (*admin20231115014.APIClient, error) {
+	opts := []admin20231115014.ClientModifier{
+		admin20231115014.UseHTTPClient(client),
+		admin20231115014.UseUserAgent(userAgent),
+		admin20231115014.UseBaseURL(c.BaseURL),
+		admin20231115014.UseDebug(false)}
+
+	sdkV2, err := admin20231115014.NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}

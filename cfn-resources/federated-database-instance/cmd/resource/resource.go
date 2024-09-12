@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.CreateFederatedDatabaseWithParams(
+	dataLakeTenant, response, err := client.Atlas20231115014.DataFederationApi.CreateFederatedDatabaseWithParams(
 		context.Background(),
 		&admin.CreateFederatedDatabaseApiParams{
 			GroupId:        *currentModel.ProjectId,
@@ -105,7 +105,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	dataLakeTenant, response, err := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	dataLakeTenant, response, err := client.Atlas20231115014.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
 	if err != nil {
 		return handleError(response, READ, err)
@@ -138,12 +138,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, checkExistsResponse, checkExistsErr := client.AtlasSDK.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	_, checkExistsResponse, checkExistsErr := client.Atlas20231115014.DataFederationApi.GetFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 	if checkExistsErr != nil {
 		return handleError(checkExistsResponse, UPDATE, checkExistsErr)
 	}
 
-	updateFederatedDatabaseAPIRequest := client.AtlasSDK.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
+	updateFederatedDatabaseAPIRequest := client.Atlas20231115014.DataFederationApi.UpdateFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName, &dataLakeTenantInput)
 	updateFederatedDatabaseAPIRequest = updateFederatedDatabaseAPIRequest.SkipRoleValidation(*currentModel.SkipRoleValidation)
 	dataLakeTenant, response, err := updateFederatedDatabaseAPIRequest.Execute()
 
@@ -177,7 +177,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_, response, err := client.AtlasSDK.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
+	_, response, err := client.Atlas20231115014.DataFederationApi.DeleteFederatedDatabase(context.Background(), *currentModel.ProjectId, *currentModel.TenantName).Execute()
 
 	if err != nil {
 		return handleError(response, DELETE, err)
@@ -207,7 +207,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	dataLakeTenants, response, err := client.AtlasSDK.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
+	dataLakeTenants, response, err := client.Atlas20231115014.DataFederationApi.ListFederatedDatabases(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {
 		return handleError(response, LIST, err)

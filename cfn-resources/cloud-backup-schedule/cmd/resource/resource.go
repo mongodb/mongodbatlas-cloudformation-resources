@@ -56,7 +56,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *pe, nil
 	}
 
-	backupPolicy, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	backupPolicy, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -102,7 +102,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	backupPolicy, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	backupPolicy, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -111,7 +111,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	_, resp, err = client.AtlasSDK.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	_, resp, err = client.Atlas20231115014.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -140,7 +140,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 	if pe != nil {
 		return *pe, nil
 	}
-	_, resp, err := client.AtlasSDK.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+	_, resp, err := client.Atlas20231115014.CloudBackupsApi.DeleteAllBackupSchedules(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -150,7 +150,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 	// From https://jira.mongodb.org/browse/HELP-55421
 	// Even after deleting and recreating the schedules, it is required to fetch the ID of the policy in order to be passed to the update request.
 	if len(params.GetPolicies()) == 1 && params.GetPolicies()[0].GetId() == "" {
-		backupSchedule, resp, err := client.AtlasSDK.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
+		backupSchedule, resp, err := client.Atlas20231115014.CloudBackupsApi.GetBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 		} else if len(backupSchedule.GetPolicies()) == 1 {
@@ -158,7 +158,7 @@ func cloudBackupScheduleCreateOrUpdate(req handler.Request, prevModel *Model, cu
 		}
 	}
 
-	backupPolicy, resp, err := client.AtlasSDK.CloudBackupsApi.UpdateBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, params).Execute()
+	backupPolicy, resp, err := client.Atlas20231115014.CloudBackupsApi.UpdateBackupSchedule(context.Background(), *currentModel.ProjectId, *currentModel.ClusterName, params).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}

@@ -80,8 +80,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	_, _ = logger.Debugf("requestBody - : %+v", requestBody)
-	client.AtlasSDK.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
-	simulationObject, res, err := client.AtlasSDK.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
+	client.Atlas20231115014.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody)
+	simulationObject, res, err := client.Atlas20231115014.ClusterOutageSimulationApi.StartOutageSimulation(context.Background(), projectID, clusterName, &requestBody).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("create Outage - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -122,7 +122,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	clusterName := cast.ToString(currentModel.ClusterName)
 	projectID := cast.ToString(currentModel.ProjectId)
-	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.Atlas20231115014.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil || outageSimulation == nil {
 		return progressevents.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -175,7 +175,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 	}
 
-	simulationObject, res, err := client.AtlasSDK.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	simulationObject, res, err := client.Atlas20231115014.ClusterOutageSimulationApi.EndOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Delete - error: %+v", err)
 		return progressevents.GetFailedEventByResponse(err.Error(), res), nil
@@ -259,7 +259,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 }
 
 func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.Atlas20231115014.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusNotFound {
 			return true, Complete, nil
@@ -276,7 +276,7 @@ func isCompleted(client *util.MongoDBClient, projectID, clusterName, targetState
 }
 
 func isActive(client *util.MongoDBClient, projectID, clusterName, targetState string) (isExist bool, status string, err error) {
-	outageSimulation, resp, err := client.AtlasSDK.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
+	outageSimulation, resp, err := client.Atlas20231115014.ClusterOutageSimulationApi.GetOutageSimulation(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp.StatusCode == http.StatusNotFound {
 			return false, Complete, nil

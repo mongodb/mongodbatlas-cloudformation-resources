@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	streamInstanceCreateReq := NewStreamsTenant(currentModel)
 
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	createdStreamInstance, resp, err := atlasV2.StreamsApi.CreateStreamInstance(context.Background(), *currentModel.ProjectId, streamInstanceCreateReq).Execute()
 	if err != nil {
@@ -89,7 +89,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	streamInstance, resp, err := atlasV2.StreamsApi.GetStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 	if err != nil {
@@ -123,7 +123,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Region:        *currentModel.DataProcessRegion.Region,
 	}
 
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	updatedStreamInstance, resp, err := atlasV2.StreamsApi.UpdateStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName, updateRequest).Execute()
 	if err != nil {
@@ -152,7 +152,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	_, resp, err := atlasV2.StreamsApi.DeleteStreamInstance(context.Background(), *currentModel.ProjectId, *currentModel.InstanceName).Execute()
 	if err != nil {
@@ -177,7 +177,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *handlerError, errors.New(handlerError.Message)
 	}
 
-	atlasV2 := client.AtlasSDK
+	atlasV2 := client.Atlas20231115014
 
 	accumulatedStreamInstances, apiResp, err := getAllStreamInstances(context.Background(), atlasV2, *currentModel.ProjectId)
 	if err != nil {

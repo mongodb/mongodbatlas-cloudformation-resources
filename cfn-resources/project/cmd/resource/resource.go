@@ -49,7 +49,7 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 	if peErr != nil {
 		return nil, peErr
 	}
-	return client.AtlasSDK, nil
+	return client.Atlas20231115014, nil
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {

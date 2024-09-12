@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.AtlasSDK
+	conn := client.Atlas20231115014
 	ctx := context.Background()
 
 	_, _, err := secrets.Get(&req, *currentModel.AwsSecretName)
@@ -121,7 +121,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn = newOrgClient.AtlasSDK
+	conn = newOrgClient.Atlas20231115014
 	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
 		return handleError(response, constants.CREATE, err)
 	}
@@ -145,7 +145,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.AtlasSDK, currentModel)
+	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.Atlas20231115014, currentModel)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
@@ -167,7 +167,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := newOrgClient.AtlasSDK
+	conn := newOrgClient.Atlas20231115014
 	ctx := context.Background()
 
 	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name}
@@ -197,7 +197,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := newOrgClient.AtlasSDK
+	conn := newOrgClient.Atlas20231115014
 	ctx := context.Background()
 
 	// Callback

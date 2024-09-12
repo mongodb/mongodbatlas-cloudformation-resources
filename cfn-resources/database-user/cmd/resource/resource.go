@@ -68,7 +68,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, resp, err := client.AtlasSDK.DatabaseUsersApi.CreateDatabaseUser(context.Background(), groupID, dbUser).Execute()
+	_, resp, err := client.Atlas20231115014.DatabaseUsersApi.CreateDatabaseUser(context.Background(), groupID, dbUser).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -99,7 +99,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	username := *currentModel.Username
 	dbName := *currentModel.DatabaseName
-	databaseUser, resp, err := client.AtlasSDK.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
+	databaseUser, resp, err := client.Atlas20231115014.DatabaseUsersApi.GetDatabaseUser(context.Background(), groupID, dbName, username).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -175,7 +175,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	groupID := *currentModel.ProjectId
 
-	_, resp, err := client.AtlasSDK.DatabaseUsersApi.UpdateDatabaseUser(context.Background(), groupID, *currentModel.DatabaseName, *currentModel.Username, dbUser).Execute()
+	_, resp, err := client.Atlas20231115014.DatabaseUsersApi.UpdateDatabaseUser(context.Background(), groupID, *currentModel.DatabaseName, *currentModel.Username, dbUser).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -207,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	databaseName := *currentModel.DatabaseName
 	username := *currentModel.Username
-	_, resp, err := client.AtlasSDK.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupID, databaseName, username).Execute()
+	_, resp, err := client.Atlas20231115014.DatabaseUsersApi.DeleteDatabaseUser(context.Background(), groupID, databaseName, username).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
@@ -238,7 +238,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	dbUserModels := make([]interface{}, 0)
 
-	databaseUsers, resp, err := client.AtlasSDK.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
+	databaseUsers, resp, err := client.Atlas20231115014.DatabaseUsersApi.ListDatabaseUsers(context.Background(), groupID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}

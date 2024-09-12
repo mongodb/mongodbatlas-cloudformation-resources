@@ -64,7 +64,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline).Execute()
+	pe, response, err := client.Atlas20231115014.DataLakePipelinesApi.CreatePipeline(ctx.Background(), groupID, dataLakeIntegrationPipeline).Execute()
 
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
@@ -146,7 +146,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName).Execute()
+	pe, response, err := client.Atlas20231115014.DataLakePipelinesApi.GetPipeline(ctx.Background(), groupID, pipelineName).Execute()
 
 	if err != nil {
 		return handleError(response, err)
@@ -243,7 +243,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	pipelineName := *currentModel.Name
 	dataLakeIntegrationPipeline := generateDataLakeIntegrationPipeline(currentModel)
 
-	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline).Execute()
+	pe, response, err := client.Atlas20231115014.DataLakePipelinesApi.UpdatePipeline(ctx.Background(), groupID, pipelineName, dataLakeIntegrationPipeline).Execute()
 
 	if err != nil {
 		if response.StatusCode == http.StatusBadRequest {
@@ -285,7 +285,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	groupID := *currentModel.ProjectId
 	pipelineName := *currentModel.Name
 
-	_, response, err := client.AtlasSDK.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName).Execute()
+	_, response, err := client.Atlas20231115014.DataLakePipelinesApi.DeletePipeline(ctx.Background(), groupID, pipelineName).Execute()
 
 	if err != nil {
 		return handleError(response, err)
@@ -314,7 +314,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	groupID := *currentModel.ProjectId
-	pe, response, err := client.AtlasSDK.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID).Execute()
+	pe, response, err := client.Atlas20231115014.DataLakePipelinesApi.ListPipelines(ctx.Background(), groupID).Execute()
 
 	if err != nil {
 		return handleError(response, err)

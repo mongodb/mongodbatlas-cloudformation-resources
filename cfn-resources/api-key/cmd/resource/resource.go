@@ -71,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
-	apiKeyUserDetails, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.CreateApiKey(
+	apiKeyUserDetails, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.CreateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		&apiKeyInput,
@@ -164,7 +164,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Roles: &currentModel.Roles,
 	}
 
-	apiKeyUserDetails, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.UpdateApiKey(
+	apiKeyUserDetails, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.UpdateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -207,7 +207,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKey(
+	_, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.DeleteApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -239,7 +239,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	apiKeyRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.ListApiKeys(
+	apiKeyRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.ListApiKeys(
 		context.Background(),
 		*currentModel.OrgId,
 	)
@@ -305,7 +305,7 @@ func assignProjects(client *util.MongoDBClient, project ProjectAssignment, apiUs
 }
 
 func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*admin.ApiKeyUserDetails, *string, *http.Response, error) {
-	apiKeyRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.GetApiKey(
+	apiKeyRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -323,7 +323,7 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.
 	projectAPIKeyInput := admin.UpdateAtlasProjectApiKey{
 		Roles: &projectAssignment.Roles,
 	}
-	assignAPIRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
+	assignAPIRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,
@@ -334,7 +334,7 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.
 }
 
 func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (map[string]interface{}, *http.Response, error) {
-	unAssignAPIRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
+	unAssignAPIRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,

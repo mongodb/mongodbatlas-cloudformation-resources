@@ -1,13 +1,16 @@
 package resource
 
 import (
+	"context"
+	"fmt"
+	"net/http"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+	"go.mongodb.org/atlas-sdk/v20240805004/admin"
 )
 
 var CreateRequiredFields = []string{"Name", "Policies", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
@@ -16,265 +19,146 @@ var UpdateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 var DeleteRequiredFields = []string{"OrgId", "ResourcePolicyId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
 
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
+func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
+	util.SetupLogger("mongodb-atlas-resource-policy")
 
-func setup() {
-	util.SetupLogger("mongodb-atlas-resourcepolicy")
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+
+	if errEvent := validator.ValidateModel(requiredFields, currentModel); errEvent != nil {
+		return nil, errEvent
+	}
+
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return nil, peErr
+	}
+	return client.AtlasSDK, nil
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	log.Debugf("Create() currentModel:%+v", currentModel)
-
-	// Validation
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	ctx := context.Background()
+
+	orgID := currentModel.OrgId
+	resourcePolicyReq := NewResourcePolicyCreateReq(currentModel)
+	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.CreateAtlasResourcePolicy(ctx, *orgID, resourcePolicyReq).Execute()
 	if err != nil {
-		log.Debugf("Create - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return handleError(apiResp, constants.CREATE, err)
 	}
-	var res *mongodbatlas.Response
 
-	/*
-	   Considerable params from currentModel:
-	   Version, CreatedByUser, ResourcePolicyId, Name, Policies, Id, LastUpdatedDate, CreatedDate, LastUpdatedByUser, OrgId, ...
-	*/
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Resourcepolicy.Create(context.Background(),&mongodbatlas.Resourcepolicy{
-	   	Version:currentModel.Version,
-	   	CreatedByUser:currentModel.CreatedByUser,
-	   	ResourcePolicyId:currentModel.ResourcePolicyId,
-	   	Name:currentModel.Name,
-	   	Policies:currentModel.Policies,
-	   	Id:currentModel.Id,
-	   	LastUpdatedDate:currentModel.LastUpdatedDate,
-	   	CreatedDate:currentModel.CreatedDate,
-	   	LastUpdatedByUser:currentModel.LastUpdatedByUser,
-	   	OrgId:currentModel.OrgId,
-	   })
+	resourceModel := GetResourcePolicyModel(resourcePolicyResp, currentModel)
 
-	*/
-
-	if err != nil {
-		log.Debugf("Create - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	log.Debugf("Atlas Client %v", client)
-
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		Message:         "Create Completed",
+		ResourceModel:   resourceModel,
 	}, nil
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	log.Debugf("Read() currentModel:%+v", currentModel)
-
-	// Validation
-	modelValidation := validateModel(ReadRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	ctx := context.Background()
+
+	orgID := currentModel.OrgId
+	resourcePolicyID := currentModel.ResourcePolicyId
+	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.GetAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
 	if err != nil {
-		log.Debugf("Read - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return handleError(apiResp, constants.CREATE, err)
 	}
-	var res *mongodbatlas.Response
 
-	/*
-	   Considerable params from currentModel:
-	   OrgId, ...
-	*/
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Resourcepolicy.Read(context.Background(),&mongodbatlas.Resourcepolicy{
-	   	OrgId:currentModel.OrgId,
-	   })
+	resourceModel := GetResourcePolicyModel(resourcePolicyResp, currentModel)
 
-	*/
-
-	if err != nil {
-		log.Debugf("Read - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	log.Debugf("Atlas Client %v", client)
-
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		ResourceModel:   resourceModel,
 	}, nil
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	log.Debugf("Update() currentModel:%+v", currentModel)
-
-	// Validation
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	ctx := context.Background()
+
+	orgID := currentModel.OrgId
+	resourcePolicyID := currentModel.ResourcePolicyId
+	resourcePolicyReq := NewResourcePolicyUpdateReq(currentModel)
+	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.UpdateAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID, resourcePolicyReq).Execute()
 	if err != nil {
-		log.Debugf("Update - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return handleError(apiResp, constants.CREATE, err)
 	}
-	var res *mongodbatlas.Response
 
-	/*
-	   Considerable params from currentModel:
-	   ResourcePolicyId, Name, Policies, Id, LastUpdatedDate, CreatedDate, LastUpdatedByUser, OrgId, Version, CreatedByUser, ...
-	*/
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Resourcepolicy.Update(context.Background(),&mongodbatlas.Resourcepolicy{
-	   	ResourcePolicyId:currentModel.ResourcePolicyId,
-	   	Name:currentModel.Name,
-	   	Policies:currentModel.Policies,
-	   	Id:currentModel.Id,
-	   	LastUpdatedDate:currentModel.LastUpdatedDate,
-	   	CreatedDate:currentModel.CreatedDate,
-	   	LastUpdatedByUser:currentModel.LastUpdatedByUser,
-	   	OrgId:currentModel.OrgId,
-	   	Version:currentModel.Version,
-	   	CreatedByUser:currentModel.CreatedByUser,
-	   })
+	resourceModel := GetResourcePolicyModel(resourcePolicyResp, currentModel)
 
-	*/
-
-	if err != nil {
-		log.Debugf("Update - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	log.Debugf("Atlas Client %v", client)
-
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		Message:         "Update Completed",
+		ResourceModel:   resourceModel,
 	}, nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	log.Debugf("Delete() currentModel:%+v", currentModel)
-
-	// Validation
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	conn, peErr := initEnvWithLatestClient(req, currentModel, DeleteRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
-	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+	ctx := context.Background()
+
+	orgID := currentModel.OrgId
+	resourcePolicyID := currentModel.ResourcePolicyId
+	if _, apiResp, err := conn.AtlasResourcePoliciesApi.DeleteAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute(); err != nil {
+		return handleError(apiResp, constants.DELETE, err)
 	}
-	var res *mongodbatlas.Response
 
-	/*
-	   Considerable params from currentModel:
-	   OrgId, ResourcePolicyId, ...
-	*/
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Resourcepolicy.Delete(context.Background(),&mongodbatlas.Resourcepolicy{
-	   	OrgId:currentModel.OrgId,
-	   	ResourcePolicyId:currentModel.ResourcePolicyId,
-	   })
-
-	*/
-
-	if err != nil {
-		log.Debugf("Delete - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
-	}
-	log.Debugf("Atlas Client %v", client)
-
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
-	}, nil
+		Message:         "Delete Completed",
+		ResourceModel:   nil}, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	log.Debugf("List() currentModel:%+v", currentModel)
-
-	// Validation
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	conn, peErr := initEnvWithLatestClient(req, currentModel, ListRequiredFields)
+	if peErr != nil {
+		return *peErr, nil
 	}
 
-	// Create atlas client
-	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	ctx := context.Background()
+
+	orgID := currentModel.OrgId
+
+	resourcePolicies, apiResp, err := conn.AtlasResourcePoliciesApi.GetAtlasResourcePolicies(ctx, *orgID).Execute()
 	if err != nil {
-		log.Debugf("List - error: %+v", err)
-		return handler.ProgressEvent{
-			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-		}, nil
+		return handleError(apiResp, constants.LIST, err)
 	}
-	var res *mongodbatlas.Response
 
-	//
-	/*
-	    // Pseudocode:
-	    res , resModel, err := client.Resourcepolicy.List(context.Background(),&mongodbatlas.Resourcepolicy{
-	   })
+	response := make([]interface{}, 0)
+	for i := range resourcePolicies {
+		model := GetResourcePolicyModel(&resourcePolicies[i], nil)
+		model.OrgId = currentModel.OrgId
+		model.Profile = currentModel.Profile
 
-	*/
-
-	if err != nil {
-		log.Debugf("List - error: %+v", err)
-		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+		response = append(response, model)
 	}
-	log.Debugf("Atlas Client %v", client)
 
-	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
+		ResourceModels:  response,
 	}, nil
+}
+
+func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
+	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
+
+	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }

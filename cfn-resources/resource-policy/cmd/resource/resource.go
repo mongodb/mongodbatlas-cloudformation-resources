@@ -85,7 +85,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	resourcePolicyID := currentModel.ResourcePolicyId
 	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.GetAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
 	if err != nil {
-		return handleError(apiResp, constants.CREATE, err)
+		return handleError(apiResp, constants.READ, err)
 	}
 
 	resourceModel := GetResourcePolicyModel(resourcePolicyResp, currentModel)
@@ -109,7 +109,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	resourcePolicyReq := NewResourcePolicyUpdateReq(currentModel)
 	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.UpdateAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID, resourcePolicyReq).Execute()
 	if err != nil {
-		return handleError(apiResp, constants.CREATE, err)
+		return handleError(apiResp, constants.UPDATE, err)
 	}
 
 	resourceModel := GetResourcePolicyModel(resourcePolicyResp, currentModel)

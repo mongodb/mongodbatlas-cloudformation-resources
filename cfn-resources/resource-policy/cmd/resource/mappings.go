@@ -64,20 +64,25 @@ func GetResourcePolicyModel(resourcePolicyResp *admin.ApiAtlasResourcePolicy, cu
 	if currentModel != nil {
 		model = currentModel
 	}
-	model.CreatedByUser = newAPIAtlasUserMetadata(resourcePolicyResp.CreatedByUser)
-	model.CreatedDate = util.TimePtrToStringPtr(resourcePolicyResp.CreatedDate)
-	model.Id = resourcePolicyResp.Id
-	model.LastUpdatedByUser = newAPIAtlasUserMetadata(resourcePolicyResp.LastUpdatedByUser)
-	model.LastUpdatedDate = util.TimePtrToStringPtr(resourcePolicyResp.LastUpdatedDate)
-	model.Name = resourcePolicyResp.Name
-	model.OrgId = resourcePolicyResp.OrgId
-	model.Policies = sdkPoliciesToModelPolicies(resourcePolicyResp.Policies)
-	model.ResourcePolicyId = resourcePolicyResp.Id
-	model.Version = resourcePolicyResp.Version
+	if resourcePolicyResp != nil {
+		model.CreatedByUser = newAPIAtlasUserMetadata(resourcePolicyResp.CreatedByUser)
+		model.CreatedDate = util.TimePtrToStringPtr(resourcePolicyResp.CreatedDate)
+		model.Id = resourcePolicyResp.Id
+		model.LastUpdatedByUser = newAPIAtlasUserMetadata(resourcePolicyResp.LastUpdatedByUser)
+		model.LastUpdatedDate = util.TimePtrToStringPtr(resourcePolicyResp.LastUpdatedDate)
+		model.Name = resourcePolicyResp.Name
+		model.OrgId = resourcePolicyResp.OrgId
+		model.Policies = sdkPoliciesToModelPolicies(resourcePolicyResp.Policies)
+		model.ResourcePolicyId = resourcePolicyResp.Id
+		model.Version = resourcePolicyResp.Version
+	}
 	return model
 }
 
 func newAPIAtlasUserMetadata(userMetadata *admin.ApiAtlasUserMetadata) *ApiAtlasUserMetadata {
+	if userMetadata == nil {
+		return nil
+	}
 	return &ApiAtlasUserMetadata{
 		Id:   userMetadata.Id,
 		Name: userMetadata.Name,

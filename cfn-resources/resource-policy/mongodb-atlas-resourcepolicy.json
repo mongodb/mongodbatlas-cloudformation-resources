@@ -91,13 +91,6 @@
       "insertionOrder": false,
       "description": "List of policies that make up the atlas resource policy."
     },
-    "ResourcePolicyId": {
-      "type": "string",
-      "maxLength": 24,
-      "description": "Unique 24-hexadecimal digit string that identifies an atlas resource policy.",
-      "pattern": "^([a-f0-9]{24})$",
-      "minLength": 24
-    },
     "Version": {
       "type": "string",
       "description": "A string that identifies the version of the atlas resource policy."
@@ -126,26 +119,16 @@
     }
   },
   "primaryIdentifier": [
-    "/definitions/ApiAtlasPolicy/Id",
-    "/definitions/ApiAtlasUserMetadata/Id",
     "/properties/Id",
     "/properties/OrgId",
-    "/properties/ResourcePolicyId",
     "/properties/Profile"
   ],
   "readOnlyProperties": [
-    "/definitions/ApiAtlasPolicy/Body",
-    "/definitions/ApiAtlasPolicy/Id",
-    "/definitions/ApiAtlasUserMetadata/Id",
-    "/definitions/ApiAtlasUserMetadata/Name",
     "/properties/CreatedByUser",
     "/properties/CreatedDate",
     "/properties/Id",
     "/properties/LastUpdatedByUser",
     "/properties/LastUpdatedDate",
-    "/properties/Name",
-    "/properties/Policies",
-    "/properties/ResourcePolicyId",
     "/properties/Version"
   ],
   "createOnlyProperties": [

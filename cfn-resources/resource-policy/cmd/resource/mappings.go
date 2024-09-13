@@ -73,7 +73,6 @@ func GetResourcePolicyModel(resourcePolicyResp *admin.ApiAtlasResourcePolicy, cu
 		model.Name = resourcePolicyResp.Name
 		model.OrgId = resourcePolicyResp.OrgId
 		model.Policies = sdkPoliciesToModelPolicies(resourcePolicyResp.Policies)
-		model.ResourcePolicyId = resourcePolicyResp.Id
 		model.Version = resourcePolicyResp.Version
 	}
 	return model

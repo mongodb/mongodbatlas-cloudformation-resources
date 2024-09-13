@@ -2,7 +2,7 @@
   "desiredResourceState": {
     "OrgId": "60ddf55c27a5a20955a707d7",
     "Profile": "default-oriol",
-    "ResourcePolicyId": "66e42b5d4e034f109c0b2049"
+    "Id": "66e432b7040b34770038ce48"
   },
   "providerLogGroupName": "mongodb-atlas-resource-policy",
   "previousResourceState": {}

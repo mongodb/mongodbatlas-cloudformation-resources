@@ -28,9 +28,9 @@ import (
 )
 
 var CreateRequiredFields = []string{"OrgId", "Name", "Policies"}
-var ReadRequiredFields = []string{"OrgId", "ResourcePolicyId"}
-var UpdateRequiredFields = []string{"OrgId", "ResourcePolicyId"}
-var DeleteRequiredFields = []string{"OrgId", "ResourcePolicyId"}
+var ReadRequiredFields = []string{"OrgId", "Id"}
+var UpdateRequiredFields = []string{"OrgId", "Id"}
+var DeleteRequiredFields = []string{"OrgId", "Id"}
 var ListRequiredFields = []string{"OrgId"}
 
 func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
@@ -82,7 +82,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ctx := context.Background()
 
 	orgID := currentModel.OrgId
-	resourcePolicyID := currentModel.ResourcePolicyId
+	resourcePolicyID := currentModel.Id
 	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.GetAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
@@ -105,7 +105,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	orgID := currentModel.OrgId
-	resourcePolicyID := currentModel.ResourcePolicyId
+	resourcePolicyID := currentModel.Id
+	_, apiResp, err := conn.AtlasResourcePoliciesApi.GetAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
+	if err != nil {
+		return handleError(apiResp, constants.UPDATE, err)
+	}
 	resourcePolicyReq := NewResourcePolicyUpdateReq(currentModel)
 	resourcePolicyResp, apiResp, err := conn.AtlasResourcePoliciesApi.UpdateAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID, resourcePolicyReq).Execute()
 	if err != nil {
@@ -130,7 +134,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ctx := context.Background()
 
 	orgID := currentModel.OrgId
-	resourcePolicyID := currentModel.ResourcePolicyId
+	resourcePolicyID := currentModel.Id
 	if _, apiResp, err := conn.AtlasResourcePoliciesApi.DeleteAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute(); err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}

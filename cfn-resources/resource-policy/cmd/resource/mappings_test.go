@@ -96,11 +96,10 @@ func TestNewResourcePolicyUpdateReq(t *testing.T) {
 				Version: ptr.String(version),
 			},
 			expected: &resource.Model{
-				Id:               ptr.String(id),
-				Name:             ptr.String(name),
-				OrgId:            ptr.String(orgID),
-				Version:          ptr.String(version),
-				ResourcePolicyId: ptr.String(id),
+				Id:      ptr.String(id),
+				Name:    ptr.String(name),
+				OrgId:   ptr.String(orgID),
+				Version: ptr.String(version),
 			},
 		},
 	}

@@ -4,7 +4,7 @@ Description: AWS SAM template for the MongoDB::Atlas::ResourcePolicy resource ty
 
 Globals:
   Function:
-    Timeout: 180  # docker start-up times can be long for SAM CLI
+    Timeout: 180 # docker start-up times can be long for SAM CLI
     MemorySize: 256
 
 Resources:
@@ -21,7 +21,7 @@ Resources:
       Handler: bootstrap
       Runtime: provided.al2
       CodeUri: bin/
-      Environment: 
-        Variables: 
+      Environment:
+        Variables:
           MODE: Test
-
+          LOG_LEVEL: debug

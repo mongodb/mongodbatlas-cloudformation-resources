@@ -12,7 +12,6 @@ type Model struct {
 	Name              *string               `json:",omitempty"`
 	OrgId             *string               `json:",omitempty"`
 	Policies          []ApiAtlasPolicy      `json:",omitempty"`
-	ResourcePolicyId  *string               `json:",omitempty"`
 	Version           *string               `json:",omitempty"`
 	Profile           *string               `json:",omitempty"`
 }

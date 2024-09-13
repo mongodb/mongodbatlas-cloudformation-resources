@@ -146,5 +146,8 @@
     "/properties/ResourcePolicyId",
     "/properties/Version"
   ],
+  "createOnlyProperties": [
+    "properties/OrgId"
+  ],
   "additionalProperties": false
 }

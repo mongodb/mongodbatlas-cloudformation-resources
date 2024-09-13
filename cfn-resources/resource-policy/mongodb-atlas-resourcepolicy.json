@@ -88,6 +88,7 @@
         "$ref": "#/definitions/ApiAtlasPolicy",
         "type": "object"
       },
+      "insertionOrder": false,
       "description": "List of policies that make up the atlas resource policy."
     },
     "ResourcePolicyId": {
@@ -147,7 +148,7 @@
     "/properties/Version"
   ],
   "createOnlyProperties": [
-    "properties/OrgId"
+    "/properties/OrgId"
   ],
   "additionalProperties": false
 }

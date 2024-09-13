@@ -15,6 +15,6 @@ if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
 fi
 
 # setting projectName
-orgName="ct-resource-policy-$((1 + RANDOM % 10000))"
+policyName="ct-resource-policy-$((1 + RANDOM % 10000))"
 
-./test/cfn-test-create-inputs.sh $orgName
+./test/cfn-test-create-inputs.sh $policyName

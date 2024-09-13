@@ -18,21 +18,16 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-orgName="${1}"
-echo "$orgName"
-orgId=$(atlas organization list --output json | jq --arg NAME "${orgName}" -r '.results[] | select(.name==$NAME) | .id')
-if [ -z "$orgId" ]; then
-	orgId=$(atlas organization create "${orgName}" --output=json | jq -r '.id')
-
-	echo -e "Created organization \"${orgName}\" with id: ${orgId}\n"
-else
-	echo -e "FOUND project \"${orgName}\" with id: ${orgId}\n"
+if [ -z "${MONGODB_ATLAS_PUBLIC_API_KEY+x}" ] || [ -z "${MONGODB_ATLAS_PRIVATE_API_KEY+x}" ]; then
+	echo "Error: MONGODB_ATLAS_PUBLIC_API_KEY  and MONGODB_ATLAS_PRIVATE_API_KEY environment variables must be set"
+	exit 1
 fi
-echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delete ${orgId} --force\n====="
+
+orgId="${MONGODB_ATLAS_ORG_ID}"
 
 WORDTOREMOVE="template."
 
-policyName="${2}"
+policyName="${1}"
 echo "$policyName"
 
 cd "$(dirname "$0")" || exit

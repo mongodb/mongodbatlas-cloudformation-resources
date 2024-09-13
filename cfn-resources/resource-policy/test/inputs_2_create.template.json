@@ -2,7 +2,9 @@
   "Name": "Name",
   "OrgId": "OrgId",
   "Profile": "default",
-  "Policies": {
-    "Body": "Body"
-  }
+  "Policies": [
+    {
+      "Body": "forbid (principal,action == cloud::Action::'cluster.createEdit',resource) when {context.cluster.cloudProviders.containsAny([cloud::cloudProvider::'aws'])};"
+    }
+  ]
 }

@@ -6,6 +6,9 @@ import (
 )
 
 func NewResourcePolicyCreateReq(model *Model) *admin.ApiAtlasResourcePolicyCreate {
+	if model == nil {
+		return nil
+	}
 	return &admin.ApiAtlasResourcePolicyCreate{
 		Name:     *model.Name,
 		Policies: *modelPoliciesToSDKPolicies(model.Policies),
@@ -21,10 +24,9 @@ func modelPoliciesToSDKPolicies(policy []ApiAtlasPolicy) *[]admin.ApiAtlasPolicy
 }
 
 func sdkPoliciesToModelPolicies(policies *[]admin.ApiAtlasPolicy) []ApiAtlasPolicy {
-	if policies != nil {
+	if policies == nil {
 		return nil
 	}
-
 	sdkPolicies := make([]ApiAtlasPolicy, len(*policies))
 	for i, v := range sdkPolicies {
 		sdkPolicies[i].Body = v.Body
@@ -33,6 +35,9 @@ func sdkPoliciesToModelPolicies(policies *[]admin.ApiAtlasPolicy) []ApiAtlasPoli
 }
 
 func NewResourcePolicyUpdateReq(model *Model) *admin.ApiAtlasResourcePolicyEdit {
+	if model == nil {
+		return nil
+	}
 	return &admin.ApiAtlasResourcePolicyEdit{
 		Name:     model.Name,
 		Policies: modelPoliciesToSDKPolicies(model.Policies),
@@ -45,7 +50,6 @@ func GetResourcePolicyModel(resourcePolicyResp *admin.ApiAtlasResourcePolicy, cu
 	if currentModel != nil {
 		model = currentModel
 	}
-
 	model.CreatedByUser = newAPIAtlasUserMetadata(resourcePolicyResp.CreatedByUser)
 	model.CreatedDate = util.TimePtrToStringPtr(resourcePolicyResp.CreatedDate)
 	model.Id = resourcePolicyResp.Id

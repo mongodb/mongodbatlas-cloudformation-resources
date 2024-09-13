@@ -13,11 +13,11 @@ import (
 	"go.mongodb.org/atlas-sdk/v20240805004/admin"
 )
 
-var CreateRequiredFields = []string{"Name", "Policies", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ReadRequiredFields = []string{"OrgId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var UpdateRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var DeleteRequiredFields = []string{"OrgId", "ResourcePolicyId", "ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
-var ListRequiredFields = []string{"ApiKeys.PublicKey", "ApiKeys.PrivateKey"}
+var CreateRequiredFields = []string{"OrgId", "ResourcePolicyId", "Name", "Policies"}
+var ReadRequiredFields = []string{"OrgId", "ResourcePolicyId"}
+var UpdateRequiredFields = []string{"OrgId", "ResourcePolicyId"}
+var DeleteRequiredFields = []string{"OrgId", "ResourcePolicyId"}
+var ListRequiredFields = []string{"OrgId"}
 
 func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-resource-policy")
@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	conn, peErr := initEnvWithLatestClient(req, currentModel, ReadRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
 	}
@@ -83,7 +83,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
+	conn, peErr := initEnvWithLatestClient(req, currentModel, UpdateRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
 	}

@@ -29,6 +29,7 @@ jobs:
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
      search-deployment: ${{ steps.filter.outputs.search-deployment }}
      alert-configuration: ${{ steps.filter.outputs.alert-configuration }}
+     resource-policy: ${{ steps.filter.outputs.resource-policy }}
    steps:
    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
      if: ${{ github.event_name == 'push' }}
@@ -72,6 +73,8 @@ jobs:
           - 'cfn-resources/search-deployment/**'
         alert-configuration:
           - 'cfn-resources/alert-configuration/**'
+        resource-policy:
+          - 'cfn-resources/resource-policy/**'
   federated-database-instance:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
@@ -806,6 +809,49 @@ jobs:
           make create-test-resources
 
           cat inputs/inputs_1_create.json
+
+          make run-contract-testing
+          make delete-test-resources
+  resource-policy:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.resource-policy == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - name: setup Atlas CLI
+        uses: mongodb/atlas-github-action@07d212bf80c068dfcfbf6e15b22c61ae6e66d96e
+      - uses: aws-actions/setup-sam@2360ef6d90015369947b45b496193ab9976a9b04
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: eu-west-1
+      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
+      - name: Run the Contract test
+        shell: bash
+        env:
+          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+          MONGODB_ATLAS_OPS_MANAGER_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+        run: |
+          cd cfn-resources/resource-policy
+          make create-test-resources
+
+          cat inputs/inputs_1_create.json
+          cat inputs/inputs_1_update.json
+          cat inputs/inputs_2_create.json
+          cat inputs/inputs_2_update.json
 
           make run-contract-testing
           make delete-test-resources

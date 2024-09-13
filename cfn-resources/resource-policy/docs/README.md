@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#createdbyuser" title="CreatedByUser">CreatedByUser</a>" : <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>,
         "<a href="#lastupdatedbyuser" title="LastUpdatedByUser">LastUpdatedByUser</a>" : <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
+        "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
     }
 }
 </pre>
@@ -27,6 +28,7 @@ Properties:
     <a href="#createdbyuser" title="CreatedByUser">CreatedByUser</a>: <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>
     <a href="#lastupdatedbyuser" title="LastUpdatedByUser">LastUpdatedByUser</a>: <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
+    <a href="#profile" title="Profile">Profile</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -60,6 +62,16 @@ _Minimum Length_: <code>24</code>
 _Maximum Length_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Profile
+
+Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

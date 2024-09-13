@@ -100,6 +100,11 @@
     "Version": {
       "type": "string",
       "description": "A string that identifies the version of the atlas resource policy."
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     }
   },
   "description": "Atlas Resource Policies",

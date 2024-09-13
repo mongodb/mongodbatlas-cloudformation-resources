@@ -20,7 +20,7 @@ fi
 
 orgName="${1}"
 echo "$orgName"
-orgId=$(atlas organization list --output json | jq --arg NAME "${organizationName}" -r '.results[] | select(.name==$NAME) | .id')
+orgId=$(atlas organization list --output json | jq --arg NAME "${orgName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$orgId" ]; then
 	orgId=$(atlas organization create "${orgName}" --output=json | jq -r '.id')
 
@@ -33,14 +33,16 @@ echo -e "=====\nrun this command to clean up\n=====\nmongocli iam projects delet
 WORDTOREMOVE="template."
 
 policyName="${2}"
+echo "$policyName"
+
 cd "$(dirname "$0")" || exit
 for inputFile in inputs_*; do
 	outputFile=${inputFile//$WORDTOREMOVE/}
 	jq --arg Name "$policyName" \
 		--arg OrgId "$orgId" \
 		--arg profile "$profile" \
-		'.Profile?|=$profile | .Name?|=$policyName
-		| .OrgId?|=$orgId ' \
+		'.Profile?|=$profile | .Name?|=$Name
+		| .OrgId?|=$OrgId ' \
 		"$inputFile" >"../inputs/$outputFile"
 done
 

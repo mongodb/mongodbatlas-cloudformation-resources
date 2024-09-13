@@ -37,17 +37,6 @@ func modelPoliciesToSDKPolicies(policy []ApiAtlasPolicy) *[]admin.ApiAtlasPolicy
 	return &policiesCreate
 }
 
-func sdkPoliciesToModelPolicies(policies *[]admin.ApiAtlasPolicy) []ApiAtlasPolicy {
-	if policies == nil {
-		return nil
-	}
-	sdkPolicies := make([]ApiAtlasPolicy, len(*policies))
-	for i, v := range sdkPolicies {
-		sdkPolicies[i].Body = v.Body
-	}
-	return sdkPolicies
-}
-
 func NewResourcePolicyUpdateReq(model *Model) *admin.ApiAtlasResourcePolicyEdit {
 	if model == nil {
 		return nil
@@ -72,7 +61,6 @@ func GetResourcePolicyModel(resourcePolicyResp *admin.ApiAtlasResourcePolicy, cu
 		model.LastUpdatedDate = util.TimePtrToStringPtr(resourcePolicyResp.LastUpdatedDate)
 		model.Name = resourcePolicyResp.Name
 		model.OrgId = resourcePolicyResp.OrgId
-		model.Policies = sdkPoliciesToModelPolicies(resourcePolicyResp.Policies)
 		model.Version = resourcePolicyResp.Version
 	}
 	return model

@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/atlas-sdk/v20240805004/admin"
 )
 
-var CreateRequiredFields = []string{"OrgId", "ResourcePolicyId", "Name", "Policies"}
+var CreateRequiredFields = []string{"OrgId", "Name", "Policies"}
 var ReadRequiredFields = []string{"OrgId", "ResourcePolicyId"}
 var UpdateRequiredFields = []string{"OrgId", "ResourcePolicyId"}
 var DeleteRequiredFields = []string{"OrgId", "ResourcePolicyId"}

@@ -130,7 +130,8 @@
     "/definitions/ApiAtlasUserMetadata/Id",
     "/properties/Id",
     "/properties/OrgId",
-    "/properties/ResourcePolicyId"
+    "/properties/ResourcePolicyId",
+    "/properties/Profile"
   ],
   "readOnlyProperties": [
     "/definitions/ApiAtlasPolicy/Body",
@@ -148,7 +149,8 @@
     "/properties/Version"
   ],
   "createOnlyProperties": [
-    "/properties/OrgId"
+    "/properties/OrgId",
+    "/properties/Profile"
   ],
   "additionalProperties": false
 }

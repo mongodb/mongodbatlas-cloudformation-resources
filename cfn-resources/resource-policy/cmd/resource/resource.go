@@ -173,6 +173,5 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func handleError(response *http.Response, method constants.CfnFunctions, err error) (handler.ProgressEvent, error) {
 	errMsg := fmt.Sprintf("%s error:%s", method, err.Error())
-
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }

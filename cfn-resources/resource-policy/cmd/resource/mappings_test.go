@@ -68,7 +68,7 @@ func TestNewResourcePolicyCreateReq(t *testing.T) {
 	}
 }
 
-func TestNewResourcePolicyUpdateReq(t *testing.T) {
+func TestGetResourcePolicyModel(t *testing.T) {
 	var (
 		id      = "id"
 		name    = "name"
@@ -112,7 +112,7 @@ func TestNewResourcePolicyUpdateReq(t *testing.T) {
 	}
 }
 
-func TestGetResourcePolicyModel(t *testing.T) {
+func TestNewResourcePolicyUpdateReq(t *testing.T) {
 	var (
 		body = "body"
 		name = "name"

@@ -854,4 +854,3 @@ jobs:
           cat inputs/inputs_2_update.json
 
           make run-contract-testing
-          make delete-test-resources

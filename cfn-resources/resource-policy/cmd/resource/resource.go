@@ -139,7 +139,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	orgID := currentModel.OrgId
 	resourcePolicyID := currentModel.Id
-	if _, apiResp, err := conn.AtlasResourcePoliciesApi.DeleteAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute(); err != nil {
+	_, apiResp, err := conn.AtlasResourcePoliciesApi.DeleteAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
+	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
 

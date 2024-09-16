@@ -62,6 +62,7 @@ func GetResourcePolicyModel(resourcePolicyResp *admin.ApiAtlasResourcePolicy, cu
 		model.Name = resourcePolicyResp.Name
 		model.OrgId = resourcePolicyResp.OrgId
 		model.Version = resourcePolicyResp.Version
+		model.Policies = sdkPoliciesToModelPolicies(resourcePolicyResp.Policies)
 	}
 	return model
 }
@@ -74,4 +75,16 @@ func newAPIAtlasUserMetadata(userMetadata *admin.ApiAtlasUserMetadata) *ApiAtlas
 		Id:   userMetadata.Id,
 		Name: userMetadata.Name,
 	}
+}
+
+func sdkPoliciesToModelPolicies(policies *[]admin.ApiAtlasPolicy) []ApiAtlasPolicy {
+	if policies == nil {
+		return nil
+	}
+	sdkPolicies := make([]ApiAtlasPolicy, len(*policies))
+	for i, v := range *policies {
+		sdkPolicies[i].Body = v.Body
+		sdkPolicies[i].Id = v.Id
+	}
+	return sdkPolicies
 }

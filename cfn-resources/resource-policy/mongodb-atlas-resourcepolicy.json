@@ -129,7 +129,8 @@
     "/properties/Id",
     "/properties/LastUpdatedByUser",
     "/properties/LastUpdatedDate",
-    "/properties/Version"
+    "/properties/Version",
+    "/properties/Policies/*/Id"
   ],
   "createOnlyProperties": [
     "/properties/OrgId",

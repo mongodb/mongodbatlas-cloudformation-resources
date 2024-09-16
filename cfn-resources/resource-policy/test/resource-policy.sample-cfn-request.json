@@ -2,7 +2,13 @@
   "desiredResourceState": {
     "OrgId": "",
     "Profile": "",
-    "Id": ""
+    "Id": "",
+    "Name": "",
+    "Policies": [
+      {
+        "Body": ""
+      }
+    ]
   },
   "providerLogGroupName": "mongodb-atlas-resource-policy",
   "previousResourceState": {}

@@ -132,3 +132,7 @@ Date and time in UTC when the atlas resource policy was last updated.
 
 A string that identifies the version of the atlas resource policy.
 
+#### Id
+
+Returns the <code>Id</code> value.
+

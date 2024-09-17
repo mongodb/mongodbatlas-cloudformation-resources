@@ -1,0 +1,27 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "MongoDB::Atlas::ResourcePolicy",
+    "language": "go",
+    "runtime": "provided.al2",
+    "entrypoint": "bootstrap",
+    "testEntrypoint": "bootstrap",
+    "settings": {
+        "version": false,
+        "subparser_name": null,
+        "verbose": 0,
+        "force": false,
+        "type_name": "MongoDB::Atlas::ResourcePolicy",
+        "artifact_type": "r",
+        "endpoint_url": null,
+        "region": null,
+        "target_schemas": [],
+        "profile": null,
+        "import_path": "github.com/mongodb/mongodbatlas-cloudformation-resources/resource-policy",
+        "protocolVersion": "2.0.0"
+    },
+    "canarySettings": {
+        "contract_test_file_names": [
+            "inputs_1.json"
+        ]
+    }
+}

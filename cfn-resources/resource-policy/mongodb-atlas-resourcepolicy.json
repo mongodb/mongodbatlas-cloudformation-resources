@@ -1,0 +1,140 @@
+{
+  "definitions": {
+    "ApiAtlasPolicy": {
+      "type": "object",
+      "properties": {
+        "Body": {
+          "type": "string",
+          "description": "A string that defines the permissions for the policy. The syntax used is the Cedar Policy language."
+        },
+        "Id": {
+          "type": "string",
+          "maxLength": 24,
+          "description": "Unique 24-hexadecimal character string that identifies the policy.",
+          "pattern": "^([a-f0-9]{24})$",
+          "minLength": 24
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasPolicyCreate": {
+      "type": "object",
+      "properties": {
+        "Body": {
+          "type": "string",
+          "description": "A string that defines the permissions for the policy. The syntax used is the Cedar Policy language."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ApiAtlasUserMetadata": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "string",
+          "maxLength": 24,
+          "description": "Unique 24-hexadecimal character string that identifies a user.",
+          "pattern": "^([a-f0-9]{24})$",
+          "minLength": 24
+        },
+        "Name": {
+          "type": "string",
+          "description": "Human-readable label that describes a user."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "CreatedByUser": {
+      "type": "object",
+      "description": "The user that last updated the atlas resource policy.",
+      "$ref": "#/definitions/ApiAtlasUserMetadata"
+    },
+    "CreatedDate": {
+      "type": "string",
+      "description": "Date and time in UTC when the atlas resource policy was created."
+    },
+    "Id": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Unique 24-hexadecimal character string that identifies the atlas resource policy.",
+      "pattern": "^([a-f0-9]{24})$",
+      "minLength": 24
+    },
+    "LastUpdatedByUser": {
+      "type": "object",
+      "description": "The user that last updated the atlas resource policy.",
+      "$ref": "#/definitions/ApiAtlasUserMetadata"
+    },
+    "LastUpdatedDate": {
+      "type": "string",
+      "description": "Date and time in UTC when the atlas resource policy was last updated."
+    },
+    "Name": {
+      "type": "string",
+      "description": "Human-readable label that describes the atlas resource policy."
+    },
+    "OrgId": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects. Use the [/orgs](#tag/Organizations/operation/listOrganizations) endpoint to retrieve all organizations to which the authenticated user has access.",
+      "pattern": "^([a-f0-9]{24})$",
+      "minLength": 24
+    },
+    "Policies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ApiAtlasPolicy",
+        "type": "object"
+      },
+      "insertionOrder": false,
+      "description": "List of policies that make up the atlas resource policy."
+    },
+    "Version": {
+      "type": "string",
+      "description": "A string that identifies the version of the atlas resource policy."
+    },
+    "Profile": {
+      "type": "string",
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
+    }
+  },
+  "description": "Atlas Resource Policies",
+  "typeName": "MongoDB::Atlas::ResourcePolicy",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": [
+    "/properties/Id",
+    "/properties/OrgId",
+    "/properties/Profile"
+  ],
+  "readOnlyProperties": [
+    "/properties/CreatedByUser",
+    "/properties/CreatedDate",
+    "/properties/Id",
+    "/properties/LastUpdatedByUser",
+    "/properties/LastUpdatedDate",
+    "/properties/Version",
+    "/properties/Policies/*/Id"
+  ],
+  "createOnlyProperties": [
+    "/properties/OrgId",
+    "/properties/Profile"
+  ],
+  "additionalProperties": false
+}

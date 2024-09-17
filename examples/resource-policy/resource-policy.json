@@ -1,0 +1,58 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a Resource Policy.",
+  "Parameters": {
+    "Profile": {
+      "Type": "String",
+      "Default": "default",
+      "Description": "Secret Manager Profile that contains the Atlas Programmatic keys."
+    },
+    "OrgId": {
+      "Type": "String",
+      "Description": "Org Id."
+    },
+    "Name": {
+      "Type": "String",
+      "Description": "Resource policy name."
+    },
+    "Policies": {
+      "Type": "String",
+      "Description": "Policies description"
+    }
+  },
+  "Mappings": {},
+  "Resources": {
+    "ResourcePolicy": {
+      "Type": "MongoDB::Atlas::ResourcePolicy",
+      "Properties": {
+        "Profile": {
+          "Ref": "Profile"
+        },
+        "OrgId": {
+          "Ref": "OrgId"
+        },
+        "Name": {
+          "Ref": "Name"
+        },
+        "Policies": [
+          {
+            "Body": {
+              "Ref": "Policies"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ResourcePolicyId": {
+      "Description": "Resource Policy ID",
+      "Value": {
+        "Fn::GetAtt": [
+          "ResourcePolicy",
+          "Id"
+        ]
+      }
+    }
+  }
+}

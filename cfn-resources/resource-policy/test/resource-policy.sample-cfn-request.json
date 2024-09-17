@@ -1,0 +1,15 @@
+{
+  "desiredResourceState": {
+    "OrgId": "",
+    "Profile": "",
+    "Id": "",
+    "Name": "",
+    "Policies": [
+      {
+        "Body": ""
+      }
+    ]
+  },
+  "providerLogGroupName": "mongodb-atlas-resource-policy",
+  "previousResourceState": {}
+}

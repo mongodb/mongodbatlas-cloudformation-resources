@@ -74,6 +74,7 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
           MONGODB_ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
           ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
+          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
 
           # LDAP config
           LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}

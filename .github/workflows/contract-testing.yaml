@@ -11,25 +11,25 @@ jobs:
      pull-requests: read
      repository-projects: read
    outputs:
-     federated-database-instance: ${{ steps.filter.outputs.federated-database-instance }}
-     organization: ${{ steps.filter.outputs.organization }}
-     project: ${{ steps.filter.outputs.project }}
-     federated-query-limit: ${{ steps.filter.outputs.federated-query-limit }}
-     auditing: ${{ steps.filter.outputs.auditing }}
-     access-list-api-key: ${{ steps.filter.outputs.access-list-api-key }}
+     access-list-api-key: ${{ steps.filter.outputs.access-list-api-key }} 
+     alert-configuration: ${{ steps.filter.outputs.alert-configuration }}
      api-key: ${{ steps.filter.outputs.api-key }}
-     privatelink-endpoint-service-data-federation-online-archive: ${{ steps.filter.outputs.privatelink-endpoint-service-data-federation-online-archive }}
-     cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
-     serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
+     auditing: ${{ steps.filter.outputs.auditing }}
      cloud-backup-restore-jobs: ${{ steps.filter.outputs.cloud-backup-restore-jobs }}
+     cluster-outage-simulation: ${{ steps.filter.outputs.cluster-outage-simulation }}
+     federated-database-instance: ${{ steps.filter.outputs.federated-database-instance }}
+     federated-query-limit: ${{ steps.filter.outputs.federated-query-limit }}
      online-archive: ${{ steps.filter.outputs.online-archive }}
+     organization: ${{ steps.filter.outputs.organization }}
      private-endpoint-aws: ${{ steps.filter.outputs.private-endpoint-aws }}
      private-endpoint-service: ${{ steps.filter.outputs.private-endpoint-service }}
+     privatelink-endpoint-service-data-federation-online-archive: ${{ steps.filter.outputs.privatelink-endpoint-service-data-federation-online-archive }}
+     project: ${{ steps.filter.outputs.project }}
+     resource-policy: ${{ steps.filter.outputs.resource-policy }}
+     search-deployment: ${{ steps.filter.outputs.search-deployment }}
+     serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
-     search-deployment: ${{ steps.filter.outputs.search-deployment }}
-     alert-configuration: ${{ steps.filter.outputs.alert-configuration }}
-     resource-policy: ${{ steps.filter.outputs.resource-policy }}
    steps:
    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
      if: ${{ github.event_name == 'push' }}
@@ -37,44 +37,44 @@ jobs:
      id: filter
      with:
       filters: |
-        federated-database-instance:
-          - 'cfn-resources/federated-database-instance/**'
-        organization:
-          - 'cfn-resources/organization/**'
-        project:
-          - 'cfn-resources/project/**'
-        federated-query-limit:
-          - 'cfn-resources/federated-query-limit/**'
-        auditing:
-          - 'cfn-resources/auditing/**'
         access-list-api-key:
           - 'cfn-resources/access-list-api-key/**'
+        alert-configuration:
+          - 'cfn-resources/alert-configuration/**'
         api-key:
           - 'cfn-resources/api-key/**'
-        privatelink-endpoint-service-data-federation-online-archive:
-          - 'cfn-resources/privatelink-endpoint-service-data-federation-online-archive/**'
-        cluster-outage-simulation:
-          - 'cfn-resources/cluster-outage-simulation/**'
-        online-archive:
-          - 'cfn-resources/online-archive/**'
-        serverless-private-endpoint:
-          - 'cfn-resources/serverless-private-endpoint/**'
+        auditing:
+          - 'cfn-resources/auditing/**'
         cloud-backup-restore-jobs:
           - 'cfn-resources/cloud-backup-restore-jobs/**'
+        cluster-outage-simulation:
+          - 'cfn-resources/cluster-outage-simulation/**'
+        federated-database-instance:
+          - 'cfn-resources/federated-database-instance/**'
+        federated-query-limit:
+          - 'cfn-resources/federated-query-limit/**'
+        online-archive:
+          - 'cfn-resources/online-archive/**'
+        organization:
+          - 'cfn-resources/organization/**'
         private-endpoint-aws:
           - 'cfn-resources/private-endpoint-aws/**'
         private-endpoint-service:
           - 'cfn-resources/private-endpoint-service/**'
+        privatelink-endpoint-service-data-federation-online-archive:
+          - 'cfn-resources/privatelink-endpoint-service-data-federation-online-archive/**'
+        project:
+          - 'cfn-resources/project/**'
+        resource-policy:
+          - 'cfn-resources/resource-policy/**'
+        search-deployment:
+          - 'cfn-resources/search-deployment/**'
+        serverless-private-endpoint:
+          - 'cfn-resources/serverless-private-endpoint/**'
         stream-connection:
           - 'cfn-resources/stream-connection/**'
         stream-instance:
           - 'cfn-resources/stream-instance/**'
-        search-deployment:
-          - 'cfn-resources/search-deployment/**'
-        alert-configuration:
-          - 'cfn-resources/alert-configuration/**'
-        resource-policy:
-          - 'cfn-resources/resource-policy/**'
   federated-database-instance:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}

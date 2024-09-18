@@ -18,11 +18,6 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-if [ -z "${MONGODB_ATLAS_PUBLIC_API_KEY+x}" ] || [ -z "${MONGODB_ATLAS_PRIVATE_API_KEY+x}" ]; then
-	echo "Error: MONGODB_ATLAS_PUBLIC_API_KEY  and MONGODB_ATLAS_PRIVATE_API_KEY environment variables must be set"
-	exit 1
-fi
-
 orgId="${MONGODB_ATLAS_ORG_ID}"
 
 WORDTOREMOVE="template."

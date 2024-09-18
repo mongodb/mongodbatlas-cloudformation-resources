@@ -9,11 +9,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-if [ -z "${AWS_DEFAULT_REGION+x}" ]; then
-	echo "AWS_DEFAULT_REGION must be set"
-	exit 1
-fi
-
 # setting projectName
 policyName="ct-resource-policy-$((1 + RANDOM % 10000))"
 

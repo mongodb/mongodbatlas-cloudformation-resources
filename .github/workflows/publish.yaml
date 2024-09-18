@@ -30,6 +30,7 @@ jobs:
       MONGODB_ATLAS_ORG_ID: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_ORG_ID_DEV || github.event.inputs.resourceName=='resource-policy' && vars.MONGODB_ATLAS_RP_ORG_ID_QA || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_ORG_ID_FOR_FEDERATION || secrets.ATLAS_ORG_ID_PUBLISHING }}
       MONGODB_ATLAS_PUBLIC_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_PUBLIC_KEY_DEV || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PUBLIC_KEY_QA || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_PUBLIC_KEY_FOR_FEDERATION || secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
       MONGODB_ATLAS_PRIVATE_KEY: ${{ github.event.inputs.resourceName=='organization' && secrets.ATLAS_PRIVATE_KEY_DEV || github.event.inputs.resourceName=='resource-policy' && secrets.MONGODB_ATLAS_RP_PRIVATE_KEY_QA || github.event.inputs.resourceName=='federated-settings-org-role-mapping' && secrets.ATLAS_PRIVATE_KEY_FOR_FEDERATION || secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
+      MONGODB_ATLAS_PROFILE: ${{ github.event.inputs.resourceName=='resource-policy' && 'qa-cloud-profile' || 'default' }}
     strategy:
       fail-fast: false
       max-parallel: ${{ fromJSON(github.event.inputs.maxParallelRegions) }}
@@ -74,7 +75,7 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_PUBLISHING}}
           MONGODB_ATLAS_ORG_OWNER_ID: ${{ secrets.ATLAS_ORG_OWNER_ID_PUBLISHING }}
           ATLAS_FEDERATED_SETTINGS_ID: ${{ secrets.ATLAS_FEDERATED_SETTINGS_ID_PUBLISHING }}
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
+          MONGODB_ATLAS_PROFILE: ${{ env.MONGODB_ATLAS_PROFILE }}
 
           # LDAP config
           LDAP_HOST_NAME: ${{ secrets.LDAP_HOST_NAME_PUBLISHING }}

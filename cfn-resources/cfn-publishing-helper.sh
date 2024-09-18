@@ -26,7 +26,7 @@ set -e
 # shellcheck source=/dev/null
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
-#echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
+echo $MONGODB_ATLAS_PROFILE
 
 _DRY_RUN=${DRY_RUN:-false}
 # shellcheck disable=SC2034
@@ -37,13 +37,13 @@ _PUBLISH_ONLY=${PUBLISH_ONLY:-false}
 _DEFAULT_LOG_LEVEL=${LOG_LEVEL:-info}
 _CFN_TEST_LOG_BUCKET=${CFN_TEST_LOG_BUCKET:-mongodb-cfn-testing}
 version="${2:-00000001}"
+profile=$MONGODB_ATLAS_PROFILE
 
 #echo " ******************** version : ${version}"
 [[ "${_DRY_RUN}" == "true" ]] && echo "*************** DRY_RUN mode enabled **************"
 
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-project}"
-#  database-user project-ip-access-list network-peering cluster (isolate Project ^^ for 11/7/22 testing)
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
@@ -70,7 +70,7 @@ for resource in ${resources}; do
 	echo "res_type=${res_type}"
 	version=$(aws cloudformation list-types --output=json | jq --arg typeName "${res_type}" '.TypeSummaries[] | select(.TypeName==$typeName)' | jq -r '.DefaultVersionId')
 	echo "version from cfn-publishing-helper=${version}"
-	arn=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}" | jq -r '.TypeVersionArn')
+	arn=$(aws cloudformation test-type --profile "${profile}" --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}" --profile "${profile}" | jq -r '.TypeVersionArn')
 	echo "arn from cfn-publishing-helper=${arn}"
 
 	echo "********** Initiated test-type command ***********"
@@ -82,7 +82,7 @@ for resource in ${resources}; do
 	# sometime the status is not_tested after triggering the test, so keeping delay
 	status=$(echo "${dt}" | jq -r '.TypeTestsStatus')
 	if [[ "$status" == "NOT_TESTED" ]]; then
-		test_type_resp=$(aws cloudformation test-type --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}")
+		test_type_resp=$(aws cloudformation test-type --profile "${profile}" --type RESOURCE --type-name "${res_type}" --log-delivery-bucket "${_CFN_TEST_LOG_BUCKET}" --version-id "${version}")
 		arn=$(echo "${test_type_resp}" | jq -r '.TypeVersionArn')
 		sleep 60
 	fi

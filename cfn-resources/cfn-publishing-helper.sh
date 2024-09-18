@@ -11,7 +11,6 @@
 # There are some options.
 #
 # TEST_ONLY=true|false
-# PUBLISH_ONLY=true|false
 # LOG_LEVEL=logrus valid string loglevel
 #
 # Example with DEBUG logging enabled by default for set of resources:
@@ -54,10 +53,6 @@ fi
 for resource in ${resources}; do
 	echo "Working on resource:${resource}"
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
-	if [[ "${_PUBLISH_ONLY}" == "true" ]]; then
-		echo "_PUBLISH_ONLY was true, not running 'cfn test' in cloud"
-		continue
-	fi
 
 	cd "${resource}"
 	echo "resource: ${resource}"

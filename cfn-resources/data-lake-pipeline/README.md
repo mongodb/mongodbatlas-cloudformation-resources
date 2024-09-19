@@ -1,5 +1,6 @@
 # MongoDB::Atlas::DataLakePipeline
 
+**WARNING:** Data Lake is deprecated. As of September 2024, Data Lake is deprecated and will reach end-of-life. It will be removed on September 30, 2025. If you use Data Lake, you should migrate to alternative solutions before the service is removed. To learn more, see <https://dochub.mongodb.org/core/data-lake-deprecation>
 
 ## Description
 Resource for managing [DataLakePipelines](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Data-Lake-Pipelines/operation/createPipeline)

@@ -11,7 +11,6 @@
 # There are some options.
 #
 # TEST_ONLY=true|false
-# PUBLISH_ONLY=true|false
 # LOG_LEVEL=logrus valid string loglevel
 #
 # Example with DEBUG logging enabled by default for set of resources:
@@ -26,7 +25,6 @@ set -e
 # shellcheck source=/dev/null
 . ./cfn-publishing-helper.config
 env | grep CFN_PUBLISH_
-#echo "AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}"
 
 _DRY_RUN=${DRY_RUN:-false}
 # shellcheck disable=SC2034
@@ -43,7 +41,6 @@ version="${2:-00000001}"
 
 # Default, find all the directory names with the json custom resource schema files.
 resources="${1:-project}"
-#  database-user project-ip-access-list network-peering cluster (isolate Project ^^ for 11/7/22 testing)
 echo "$(basename "$0") running for the following resources: ${resources}"
 
 echo "Step 1/2: cfn test in the cloud...."
@@ -56,10 +53,6 @@ fi
 for resource in ${resources}; do
 	echo "Working on resource:${resource}"
 	[[ "${_DRY_RUN}" == "true" ]] && echo "[dry-run] would have run make on:${resource}" && continue
-	if [[ "${_PUBLISH_ONLY}" == "true" ]]; then
-		echo "_PUBLISH_ONLY was true, not running 'cfn test' in cloud"
-		continue
-	fi
 
 	cd "${resource}"
 	echo "resource: ${resource}"

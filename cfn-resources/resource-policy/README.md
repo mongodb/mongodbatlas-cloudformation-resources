@@ -1,13 +1,21 @@
 # MongoDB::Atlas::ResourcePolicy
 
-Congratulations on starting development!
+## Description
 
-Next steps:
+Resource for managing [Resource Policies](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Atlas-Resource-Policies).
 
-1. Populate the JSON schema describing your resource, `mongodb-atlas-resourcepolicy.json`
-2. The RPDK will automatically generate the correct resource model from the
-   schema whenever the project is built via Make.
-   You can also do this manually with the following command: `cfn-cli generate`
-3. Implement your resource handlers by adding code to provision your resources in your resource handler's methods.
+## Requirements
 
-Please don't modify files `model.go and main.go`, as they will be automatically overwritten.
+Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.
+For instructions on setting up a profile, [see here](/README.md#mongodb-atlas-api-keys-credential-management).
+
+**NOTE:** Resource Policies is currently in Preview, you'll need to enable `Atlas Resource Policies` Beta Feature in your organization to use it. 
+
+## Attributes and Parameters
+
+See the [resource docs](./docs/README.md).
+
+## CloudFormation Examples
+
+See the examples [CFN Template](/examples/project-invitation/project-invitation.json) for example resource.
+

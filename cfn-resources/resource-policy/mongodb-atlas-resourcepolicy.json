@@ -103,7 +103,8 @@
   },
   "description": "Atlas Resource Policies",
   "typeName": "MongoDB::Atlas::ResourcePolicy",
-  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/resource-policy/README.md",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/resource-policy",
   "handlers": {
     "create": {
       "permissions": []

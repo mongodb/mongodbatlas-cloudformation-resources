@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 A string that defines the permissions for the policy. The syntax used is the Cedar Policy language.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

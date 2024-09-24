@@ -64,6 +64,7 @@ type Config struct {
 	PrivateKey   string
 	BaseURL      string
 	RealmBaseURL string
+	DebugClient  bool
 }
 
 type AssumeRole struct {
@@ -154,7 +155,7 @@ func newAtlasV2Client(req *handler.Request, profileName *string, profileNamePref
 			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}
 	}
 
-	c := Config{BaseURL: prof.BaseURL}
+	c := Config{BaseURL: prof.BaseURL, DebugClient: prof.UseDebug()}
 
 	// new V2 version 20231115002 instance
 	sdk20231115002Client, err := c.NewSDKv20231115002Client(client)
@@ -198,7 +199,7 @@ func (c *Config) NewSDKv20231115002Client(client *http.Client) (*admin2023111500
 		admin20231115002.UseHTTPClient(client),
 		admin20231115002.UseUserAgent(userAgent),
 		admin20231115002.UseBaseURL(c.BaseURL),
-		admin20231115002.UseDebug(false)}
+		admin20231115002.UseDebug(c.DebugClient)}
 
 	sdkV2, err := admin20231115002.NewClient(opts...)
 	if err != nil {
@@ -213,7 +214,7 @@ func (c *Config) NewSDKv20231115014Client(client *http.Client) (*admin2023111501
 		admin20231115014.UseHTTPClient(client),
 		admin20231115014.UseUserAgent(userAgent),
 		admin20231115014.UseBaseURL(c.BaseURL),
-		admin20231115014.UseDebug(false)}
+		admin20231115014.UseDebug(c.DebugClient)}
 
 	sdkV2, err := admin20231115014.NewClient(opts...)
 	if err != nil {
@@ -228,7 +229,7 @@ func (c *Config) NewSDKV2LatestClient(client *http.Client) (*admin.APIClient, er
 		admin.UseHTTPClient(client),
 		admin.UseUserAgent(userAgent),
 		admin.UseBaseURL(c.BaseURL),
-		admin.UseDebug(false)}
+		admin.UseDebug(c.DebugClient)}
 
 	// Initialize the MongoDB Versioned Atlas Client.
 	sdkV2, err := admin.NewClient(opts...)

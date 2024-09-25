@@ -15,7 +15,10 @@
           "minLength": 24
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "required": [
+        "Body"
+      ]
     },
     "ApiAtlasPolicyCreate": {
       "type": "object",
@@ -137,5 +140,10 @@
     "/properties/OrgId",
     "/properties/Profile"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "required": [
+    "Name",
+    "OrgId",
+    "Policies"
+  ]
 }

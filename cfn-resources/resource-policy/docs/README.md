@@ -58,7 +58,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Human-readable label that describes the atlas resource policy.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -68,7 +68,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 Unique 24-hexadecimal digit string that identifies the organization that contains your projects. Use the [/orgs](#tag/Organizations/operation/listOrganizations) endpoint to retrieve all organizations to which the authenticated user has access.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -84,7 +84,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 List of policies that make up the atlas resource policy.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: List of <a href="apiatlaspolicy.md">ApiAtlasPolicy</a>
 

@@ -30,9 +30,10 @@ const (
 )
 
 type Profile struct {
-	PublicKey  string `json:"PublicKey"`
-	PrivateKey string `json:"PrivateKey"`
-	BaseURL    string `json:"BaseUrl,omitempty"`
+	DebugClient *bool  `json:"DebugClient,omitempty"`
+	PublicKey   string `json:"PublicKey"`
+	PrivateKey  string `json:"PrivateKey"`
+	BaseURL     string `json:"BaseUrl,omitempty"`
 }
 
 func NewProfile(req *handler.Request, profileName *string, prefixRequired bool) (*Profile, error) {
@@ -85,6 +86,16 @@ func (p *Profile) NewPrivateKey() string {
 
 func (p *Profile) AreKeysAvailable() bool {
 	return p.NewPublicKey() == "" || p.PrivateKey == ""
+}
+
+func (p *Profile) UseDebug() bool {
+	if debug := os.Getenv("MONGODB_ATLAS_DEBUG"); debug != "" {
+		return debug == "true"
+	}
+	if p.DebugClient != nil {
+		return *p.DebugClient
+	}
+	return false
 }
 
 func SecretNameWithPrefix(name string) string {

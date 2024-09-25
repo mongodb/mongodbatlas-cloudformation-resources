@@ -54,7 +54,7 @@ func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 	t := digest.NewTransport(atlasEnv.PublicKey, atlasEnv.PrivateKey)
 	client, _ := t.Client()
 
-	c := util.Config{}
+	c := util.Config{DebugClient: true}
 	if baseURL := atlasEnv.BaseURL; baseURL != "" {
 		c.BaseURL = baseURL
 	}

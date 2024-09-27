@@ -168,7 +168,6 @@
   "readOnlyProperties": [
     "/properties/Id",
     "/properties/Created",
-    "/properties/ProjectOwnerId",
     "/properties/ClusterCount"
   ],
   "primaryIdentifier": [

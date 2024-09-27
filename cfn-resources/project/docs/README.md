@@ -14,6 +14,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Properties" : {
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
+        "<a href="#projectownerid" title="ProjectOwnerId">ProjectOwnerId</a>" : <i>String</i>,
         "<a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>" : <i>Boolean</i>,
         "<a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>" : <i><a href="projectsettings.md">projectSettings</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
@@ -32,6 +33,7 @@ Type: MongoDB::Atlas::Project
 Properties:
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
+    <a href="#projectownerid" title="ProjectOwnerId">ProjectOwnerId</a>: <i>String</i>
     <a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>: <i>Boolean</i>
     <a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>: <i><a href="projectsettings.md">projectSettings</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
@@ -60,6 +62,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 Unique identifier of the organization within which to create the project.
 
 _Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ProjectOwnerId
+
+Unique identifier of the organization within which to create the project.
+
+_Required_: No
 
 _Type_: String
 
@@ -148,10 +160,6 @@ The unique identifier of the project.
 #### Created
 
 The ISO-8601-formatted timestamp of when Atlas created the project.
-
-#### ProjectOwnerId
-
-Unique identifier of the organization within which to create the project.
 
 #### ClusterCount
 

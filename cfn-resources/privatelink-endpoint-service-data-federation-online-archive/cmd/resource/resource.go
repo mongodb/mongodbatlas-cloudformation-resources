@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	Atlas20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	Atlas20231115014 "go.mongodb.org/atlas-sdk/v20240805004/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointID}

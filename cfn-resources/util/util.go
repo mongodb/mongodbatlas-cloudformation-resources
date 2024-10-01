@@ -26,8 +26,8 @@ import (
 	"strings"
 	"time"
 
-	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20240805004/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20240805004/admin"
 	"go.mongodb.org/atlas-sdk/v20240805004/admin"
 	realmAuth "go.mongodb.org/realm/auth"
 	"go.mongodb.org/realm/realm"

@@ -96,8 +96,9 @@ jobs:
       - name: 'Run cfn-lint'
         run: |
           shopt -s globstar # enable globbing
-          cfn-lint
-        shell: bash
+          cfn-lint --version
+      - run: cfn-lint -t ./**/*.yaml
+      - run: cfn-lint -t ./**/*.yml
   unit-test:
     runs-on: ubuntu-latest
     steps:

@@ -99,6 +99,7 @@ jobs:
           cfn-lint --version
       - run: cfn-lint ./cfn-resources/**/*.yml
       - run: cfn-lint ./cfn-resources/**/*.yaml
+        if: always() # run even if previous step fails to lint all files
   unit-test:
     runs-on: ubuntu-latest
     steps:

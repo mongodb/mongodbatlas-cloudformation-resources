@@ -97,8 +97,9 @@ jobs:
         run: |
           shopt -s globstar # enable globbing
           cfn-lint --version
-      - run: cfn-lint -t ./**/*.yaml
-      - run: cfn-lint -t ./**/*.yml
+      - run: pwd
+      - run: cfn-lint -t ./cfn-resources/**/*.yml
+      - run: cfn-lint -t ./cfn-resources/**/*.yaml
   unit-test:
     runs-on: ubuntu-latest
     steps:

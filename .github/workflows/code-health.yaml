@@ -92,12 +92,14 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - name: 'Setup cfn-lint'
-        uses: scottbrenner/cfn-lint-action@62f1746de817410fa0058034b4c108ac2692ec81
+        uses: scottbrenner/cfn-lint-action@e8cae79d8188308e12a5d3e0771308f8658ef547
       - name: 'Run cfn-lint'
         run: |
           shopt -s globstar # enable globbing
-          cfn-lint
-        shell: bash
+          cfn-lint --version
+      - run: cfn-lint ./cfn-resources/**/*.yml
+      - run: cfn-lint ./cfn-resources/**/*.yaml
+        if: always() # run even if previous step fails to lint all files
   unit-test:
     runs-on: ubuntu-latest
     steps:

@@ -4,10 +4,10 @@ Description: AWS SAM template for the MongoDB::Atlas::CustomDnsConfigurationClus
 
 Globals:
   Function:
-    Timeout: 180  # docker start-up times can be long for SAM CLI
+    Timeout: 180 # docker start-up times can be long for SAM CLI
     MemorySize: 256
 
-Resources:
+ResourcesYml:
   TypeFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -26,4 +26,3 @@ Resources:
           MODE: Test
           LOG_LEVEL: debug
           MONGODB_ATLAS_BASE_URL:
-

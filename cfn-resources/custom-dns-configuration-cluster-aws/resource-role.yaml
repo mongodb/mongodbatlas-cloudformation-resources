@@ -3,13 +3,13 @@ Description: >
   This CloudFormation template creates a role assumed by CloudFormation
   during CRUDL operations to mutate resources on behalf of the customer.
 
-ResourcesYaml:
+Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       MaxSessionDuration: 8400
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -19,11 +19,11 @@ ResourcesYaml:
       Policies:
         - PolicyName: ResourceTypePolicy
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
-                  - "secretsmanager:GetSecretValue"
+                - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

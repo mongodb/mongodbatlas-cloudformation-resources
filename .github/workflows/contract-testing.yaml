@@ -31,7 +31,7 @@ jobs:
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
    steps:
-   - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+   - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
      if: ${{ github.event_name == 'push' }}
    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
      id: filter
@@ -80,7 +80,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -118,7 +118,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.alert-configuration == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -158,7 +158,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.api-key == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -199,7 +199,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.auditing == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+    - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
     - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -242,7 +242,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.cloud-backup-restore-jobs == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -283,7 +283,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.cluster-outage-simulation == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -324,7 +324,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-database-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -365,7 +365,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.federated-query-limit == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -406,7 +406,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -446,7 +446,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.organization == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -488,7 +488,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -529,7 +529,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.private-endpoint-service == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -570,7 +570,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.privatelink-endpoint-service-data-federation-online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -611,7 +611,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.project == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+    - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
     - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
       with:
         go-version-file: 'cfn-resources/go.mod'
@@ -653,7 +653,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.resource-policy == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -696,7 +696,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.search-deployment == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -736,7 +736,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.  serverless-private-endpoint == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -778,7 +778,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'
@@ -821,7 +821,7 @@ jobs:
     if: ${{ needs.change-detection.outputs.stream-instance == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           go-version-file: 'cfn-resources/go.mod'

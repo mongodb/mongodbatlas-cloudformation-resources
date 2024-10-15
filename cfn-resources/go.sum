@@ -109,8 +109,8 @@ go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0 h1:x6nnq2pUIP9mN4WLD4/Ese
 go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0/go.mod h1:el7cm23kEiiw72HAYimhNweKqp/ubHsNJk+Mk30yJhM=
 go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0 h1:hN7x3m6THf03q/tE48up1j0U/26lJmx+s1LXB/qvHHc=
 go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0/go.mod h1:pCl46YnWOIde8lq27whXDwUseNeUvtAy3vy5ZDeTcBA=
-go.mongodb.org/atlas-sdk/v20240805004 v20240805004.6.0 h1:Ee5Med1KFGZ63KOvcDyn6xlKRP7+Yddt0kGI8M/CbWk=
-go.mongodb.org/atlas-sdk/v20240805004 v20240805004.6.0/go.mod h1:7KSDRNJm1Dxc+ggk2MOggp2/4zUpM4aRcP12evvsrQ4=
+go.mongodb.org/atlas-sdk/v20240805004 v20240805004.7.0 h1:v899BXuHGSWZAPXtckDSG2ih2Xop87JhJxQeG7X4gFw=
+go.mongodb.org/atlas-sdk/v20240805004 v20240805004.7.0/go.mod h1:7KSDRNJm1Dxc+ggk2MOggp2/4zUpM4aRcP12evvsrQ4=
 go.mongodb.org/realm v0.1.0 h1:zJiXyLaZrznQ+Pz947ziSrDKUep39DO4SfA0Fzx8M4M=
 go.mongodb.org/realm v0.1.0/go.mod h1:4Vj6iy+Puo1TDERcoh4XZ+pjtwbOzPpzqy3Cwe8ZmDM=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=

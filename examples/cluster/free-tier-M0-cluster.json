@@ -36,11 +36,6 @@
             "NumShards": "1",
             "AdvancedRegionConfigs": [
               {
-                "AnalyticsSpecs": {
-                  "EbsVolumeType": "STANDARD",
-                  "InstanceSize": "M0",
-                  "NodeCount": "1"
-                },
                 "ElectableSpecs": {
                   "EbsVolumeType": "STANDARD",
                   "InstanceSize": "M0",

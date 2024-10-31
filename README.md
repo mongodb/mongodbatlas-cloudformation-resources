@@ -128,7 +128,12 @@ The following are common issues encountered when using AWS CloudFormation/CDK wi
    * The machine making the API call to the 3rd-party MongoDB Atlas API would be various AWS servers hosting Lambda functions and won't be static. 
    * Review the [AWS IP address ranges](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html) and contact AWS Support directly who can help confirm the CIDR range to be used in your Atlas PAK IP Whitelist.
 
-### Error: The CFN stack remains in the `CREATE_IN_PROGRESS` state before failing after an hour or so
+### Error: The CFN stack remains in the `CREATE_IN_PROGRESS` state before failing after 30 min or more
+The problem might be due to the IAM role:
+1. [Misconfigured IAM Role's trust relationship](#misconfigured-iam-roles-trust-relationship)
+2. [Activate Type IAM Role deleted](#activate-type-iam-role-deleted)
+
+### Misconfigured IAM Role's trust relationship
 The problem is caused by incorrect trust relationships linked to the role that you used to activate CFN resources or run the CFN stack. To resolve the issue, ensure that your IAM role's trust relationships include `resources.cloudformation.amazonaws.com`, `cloudformation.amazonaws.com`, `lambda.amazonaws.com`. The following YAML code shows an example of the correct trust relationships:
 ```yaml
  AssumeRolePolicyDocument:
@@ -146,6 +151,15 @@ Use the [execution-role.yaml](examples/execution-role.yaml) file to generate an 
 
 Alternatively, you can set the trust relationships of your role via AWS Console: in the IAM dashboard, select your role and click **Trust Relationships**:
 ![Screenshot 2023-03-31 at 17 32 55](https://user-images.githubusercontent.com/5663078/230436500-fb4ee057-b70e-4580-a94d-f56191728117.png)
+
+### Activate Type IAM Role deleted
+The IAM Role used to Activate the resource type might have been deleted (also applies when using a different IAM Role when creating the stack).
+To verify this you can:
+
+1. ![alt text](docs/images/activate_type_iam_role1.png)
+2. ![alt text](docs/images/activate_type_iam_role2.png)
+3. ![alt text](docs/images/activate_type_iam_role3.png)
+   * Ensure this IAM Role exists
 
 ## Error: 404 (request "INVALID_GROUP_ID") An invalid group ID <YOUR-PROJECT-ID>|default was specified
 The problem is caused by using the project resource identifier (ID + Profile Name) as the input parameter `ProjectID` of another CFN resource. The correct approach is to use [GetAttr](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html) function to get the ProjectId from the project resource and use that value as input parameter to the next CFN resource.

@@ -150,15 +150,15 @@ The problem is caused by incorrect trust relationships linked to the role that y
 Use the [execution-role.yaml](examples/execution-role.yaml) file to generate an IAM role that you can use to activate the CFN resources and run your CFN stacks.
 
 Alternatively, you can set the trust relationships of your role via AWS Console: in the IAM dashboard, select your role and click **Trust Relationships**:
-![Screenshot 2023-03-31 at 17 32 55](https://user-images.githubusercontent.com/5663078/230436500-fb4ee057-b70e-4580-a94d-f56191728117.png)
+![trust relationship IAM config](https://user-images.githubusercontent.com/5663078/230436500-fb4ee057-b70e-4580-a94d-f56191728117.png)
 
 ### Activate Type IAM Role deleted
 The IAM Role used to Activate the resource type might have been deleted (also applies when using a different IAM Role when creating the stack).
 To verify this you can:
 
-1. ![alt text](docs/images/activate_type_iam_role1.png)
-2. ![alt text](docs/images/activate_type_iam_role2.png)
-3. ![alt text](docs/images/activate_type_iam_role3.png)
+1. ![select third-party resource](docs/images/activate_type_iam_role1.png)
+2. ![edit execution role](docs/images/activate_type_iam_role2.png)
+3. ![verify execution role exists](docs/images/activate_type_iam_role3.png)
    * Ensure this IAM Role exists
 
 ## Error: 404 (request "INVALID_GROUP_ID") An invalid group ID <YOUR-PROJECT-ID>|default was specified

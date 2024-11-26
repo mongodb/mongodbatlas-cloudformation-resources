@@ -15,7 +15,7 @@ require (
 	github.com/mongodb-forks/digest v1.1.0
 	github.com/rs/xid v1.6.0
 	github.com/spf13/cast v1.7.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
 	go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0

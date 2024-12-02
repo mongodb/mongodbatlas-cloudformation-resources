@@ -104,19 +104,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
 
-	currentModel.DatabaseName = &databaseUser.DatabaseName
-
-	if currentModel.LdapAuthType != nil {
-		currentModel.LdapAuthType = databaseUser.LdapAuthType
-	}
-	if currentModel.AWSIAMType != nil {
-		currentModel.AWSIAMType = databaseUser.AwsIAMType
-	}
-	if currentModel.X509Type != nil {
-		currentModel.X509Type = databaseUser.X509Type
-	}
-	currentModel.Username = &databaseUser.Username
 	_, _ = logger.Debugf("databaseUser:%+v", databaseUser)
+	currentModel.DatabaseName = &databaseUser.DatabaseName
+	currentModel.LdapAuthType = databaseUser.LdapAuthType
+	currentModel.AWSIAMType = databaseUser.AwsIAMType
+	currentModel.X509Type = databaseUser.X509Type
+	currentModel.Username = &databaseUser.Username
 	var roles []RoleDefinition
 
 	for _, r := range databaseUser.GetRoles() {

@@ -141,7 +141,15 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		labels = append(labels, label)
 	}
 	currentModel.Labels = labels
-
+	var scopes []ScopeDefinition
+	for _, s := range databaseUser.GetScopes() {
+		scope := ScopeDefinition{
+			Name: &s.Name,
+			Type: &s.Type,
+		}
+		scopes = append(scopes, scope)
+	}
+	currentModel.Scopes = scopes
 	updateUserCFNIdentifier(currentModel)
 
 	return handler.ProgressEvent{

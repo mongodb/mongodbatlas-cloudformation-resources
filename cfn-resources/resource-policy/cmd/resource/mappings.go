@@ -16,7 +16,7 @@ package resource
 
 import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"go.mongodb.org/atlas-sdk/v20241113002/admin"
+	"go.mongodb.org/atlas-sdk/v20241113003/admin"
 )
 
 func NewResourcePolicyCreateReq(model *Model) *admin.ApiAtlasResourcePolicyCreate {

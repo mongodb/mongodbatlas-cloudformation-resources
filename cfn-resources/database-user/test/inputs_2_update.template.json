@@ -7,14 +7,14 @@
   "Roles": [
     {
       "RoleName": "readWrite",
-      "DatabaseName": "testdb",
+      "DatabaseName": "testdb2",
       "CollectionName": "col2"
     }
   ],
   "Scopes": [
     {
       "Type": "CLUSTER",
-      "Name": "testdb"
+      "Name": "testdb2"
     }
   ]
 }

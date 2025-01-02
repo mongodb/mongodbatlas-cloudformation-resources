@@ -75,6 +75,8 @@ jobs:
           - 'cfn-resources/stream-connection/**'
         stream-instance:
           - 'cfn-resources/stream-instance/**'
+        trigger:
+          - 'cfn-resources/trigger/**'
   access-list-api-key:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
@@ -854,3 +856,60 @@ jobs:
           cat inputs/inputs_1_create.json
           make run-contract-testing
           make delete-test-resources
+  trigger:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.trigger == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+      MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+      MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+      MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+      
+      FOLDER_PATH: cfn-resources/trigger
+      # Atlas Init CLI Terminal formatting
+      COLUMNS: 140
+      FORCE_COLOR: "yes"
+      TF_INPUT: "false"
+      NON_INTERACTIVE: "true"
+      # Atlas Init CLI Variables
+      ATLAS_INIT_CFN_PROFILE: profile-${{ github.run_id }}
+      ATLAS_INIT_CFN_REGION: "us-east-1"
+      ATLAS_INIT_CFN_USE_KMS_KEY: "false"
+      ATLAS_INIT_PROFILE: ${{ format('profile-{0}',github.run_id) }}
+      ATLAS_INIT_PROJECT_NAME: ${{ format('gh-ci-{0}', github.run_id) }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+        with:
+          go-version-file: 'cfn-resources/go.mod'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - uses: aws-actions/setup-sam@2360ef6d90015369947b45b496193ab9976a9b04
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: us-east-1
+      - uses: yezz123/setup-uv@v4
+        with:
+            uv-version: "0.4.18"
+      - name: setup Atlas Init CLI
+        run: |
+          uv pip install -U atlas-init==0.4.0 cloudformation-cli cloudformation-cli-go-plugin setuptools --system
+          mkdir -p profiles/${{ env.ATLAS_INIT_PROFILE }}
+          echo "ATLAS_INIT_PROFILES_PATH=$(pwd)/profiles" >> $GITHUB_ENV
+      - name: atlas-init-init
+        run: atlas-init init
+      - name: atlas-init-apply
+        run: ${{ env.FOLDER_PATH }} && atlas-init apply -auto-approve
+      - name: atlas-init-contract-test-dry-run
+        run: ${{ env.FOLDER_PATH }} && atlas-init --dry-run cfn contract-test
+      - name: atlas-init-contract-test
+        run: ${{ env.FOLDER_PATH }} && atlas-init cfn contract-test
+      - name: atlas-init-destroy
+        run: ${{ env.FOLDER_PATH }} && atlas-init destroy -auto-approve
+        if: always()

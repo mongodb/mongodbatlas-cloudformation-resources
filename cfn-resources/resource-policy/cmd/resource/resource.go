@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20241113003/admin"
+	"go.mongodb.org/atlas-sdk/v20241113004/admin"
 )
 
 var CreateRequiredFields = []string{"OrgId", "Name", "Policies"}

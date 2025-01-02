@@ -15,3 +15,13 @@ See the [resource docs](docs/README.md).
 ## Cloudformation Examples
 
 See the examples [CFN Template](../../examples/trigger/trigger.json) for example resource.
+
+## Development
+```shell
+uvx atlas-init@0.4.0
+atlas-init init
+cd cfn-resources/trigger
+atlas-init apply
+atlas-init cfn contract-test # use --help to see more options
+atlas-init destroy
+```

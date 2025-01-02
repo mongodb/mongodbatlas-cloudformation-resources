@@ -30,6 +30,7 @@ jobs:
      serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
+     trigger: ${{ steps.filter.outputs.trigger }}
    steps:
    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
      if: ${{ github.event_name == 'push' }}
@@ -883,7 +884,7 @@ jobs:
       - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
         with:
           go-version-file: 'cfn-resources/go.mod'
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
         with:
           python-version: "3.12"
       - uses: aws-actions/setup-sam@2360ef6d90015369947b45b496193ab9976a9b04
@@ -894,14 +895,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: us-east-1
-      - uses: yezz123/setup-uv@v4
+      - uses: yezz123/setup-uv@ab6be5a42627f19dc36e57b548592a5e52cece4a
         with:
             uv-version: "0.4.18"
       - name: setup Atlas Init CLI
         run: |
           uv pip install -U atlas-init==0.4.0 cloudformation-cli cloudformation-cli-go-plugin setuptools --system
           mkdir -p profiles/${{ env.ATLAS_INIT_PROFILE }}
-          echo "ATLAS_INIT_PROFILES_PATH=$(pwd)/profiles" >> $GITHUB_ENV
+          echo "ATLAS_INIT_PROFILES_PATH=$(pwd)/profiles" >> "$GITHUB_ENV"
       - name: atlas-init-init
         run: atlas-init init
       - name: atlas-init-apply

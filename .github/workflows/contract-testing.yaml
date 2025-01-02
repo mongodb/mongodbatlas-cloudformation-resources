@@ -898,6 +898,10 @@ jobs:
       - uses: yezz123/setup-uv@ab6be5a42627f19dc36e57b548592a5e52cece4a
         with:
             uv-version: "0.4.18"
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        name: configure terraform
+        with:
+          terraform_version: "1.10.2"
       - name: setup Atlas Init CLI
         run: |
           uv pip install -U atlas-init==0.4.0 cloudformation-cli cloudformation-cli-go-plugin setuptools --system

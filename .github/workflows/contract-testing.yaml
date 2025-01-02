@@ -862,8 +862,8 @@ jobs:
     if: ${{ needs.change-detection.outputs.trigger == 'true' }}
     runs-on: ubuntu-latest
     env:
-      MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-      MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
       MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
       MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
       
@@ -906,11 +906,11 @@ jobs:
       - name: atlas-init-init
         run: atlas-init init
       - name: atlas-init-apply
-        run: ${{ env.FOLDER_PATH }} && atlas-init apply -auto-approve
+        run: cd ${{ env.FOLDER_PATH }} && atlas-init apply -auto-approve
       - name: atlas-init-contract-test-dry-run
-        run: ${{ env.FOLDER_PATH }} && atlas-init --dry-run cfn contract-test
+        run: cd ${{ env.FOLDER_PATH }} && atlas-init --dry-run cfn contract-test
       - name: atlas-init-contract-test
-        run: ${{ env.FOLDER_PATH }} && atlas-init cfn contract-test
+        run: cd ${{ env.FOLDER_PATH }} && atlas-init cfn contract-test
       - name: atlas-init-destroy
-        run: ${{ env.FOLDER_PATH }} && atlas-init destroy -auto-approve
+        run: cd ${{ env.FOLDER_PATH }} && atlas-init destroy -auto-approve
         if: always()

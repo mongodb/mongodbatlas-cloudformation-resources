@@ -18,7 +18,7 @@ See the examples [CFN Template](../../examples/trigger/trigger.json) for example
 
 ## Development
 ```shell
-uvx atlas-init@0.4.0
+uvx atlas-init@0.4.1
 atlas-init init
 cd cfn-resources/trigger
 atlas-init apply

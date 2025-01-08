@@ -881,14 +881,6 @@ jobs:
       ATLAS_INIT_PROJECT_NAME: ${{ format('gh-ci-{0}', github.run_id) }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup_atlas_init
-        uses: "EspenAlbert/atlas-init/.github/templates/setup_steps@8a1e10c8363727d66b4229cf3beeecba07c93c9b"
-        with:
-          tf_version: "1.10.2"
-          extra_pypi_packages: "cloudformation-cli cloudformation-cli-go-plugin setuptools"
       - uses: aws-actions/setup-sam@2360ef6d90015369947b45b496193ab9976a9b04
         with:
           use-installer: true
@@ -897,14 +889,18 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
           aws-region: us-east-1
-      - name: atlas-init-init
-        run: atlas-init init
-      - name: atlas-init-apply
-        run: cd ${{ env.FOLDER_PATH }} && atlas-init apply -auto-approve
-      - name: atlas-init-contract-test-dry-run
-        run: cd ${{ env.FOLDER_PATH }} && atlas-init --dry-run cfn contract-test
-      - name: atlas-init-contract-test
-        run: cd ${{ env.FOLDER_PATH }} && atlas-init cfn contract-test
-      - name: atlas-init-destroy
-        run: cd ${{ env.FOLDER_PATH }} && atlas-init destroy -auto-approve
-        if: always()
+      - name: setup-atlas-init
+        uses: "EspenAlbert/atlas-init/.github/templates/external-setup@6ec12c3992b57f62e400bd8cdf98697fe244b532"
+        with:
+          version: "0.4.1"
+          tf-version: "1.10.2"
+          extra-pypi-packages: "cloudformation-cli cloudformation-cli-go-plugin setuptools"
+          go-version-fie: 'cfn-resources/go.mod'
+      - name: run-atlas-init
+        uses: "EspenAlbert/atlas-init/.github/templates/external-run-with-tf@6ec12c3992b57f62e400bd8cdf98697fe244b532"
+        with:
+          cli-command: "cfn contract-test"
+          step-name: contract-test
+          cwd: ${{ env.FOLDER_PATH}}
+          profile-name: ${{ env.ATLAS_INIT_PROFILE }}
+          dry-run-first: "true"

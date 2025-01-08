@@ -904,7 +904,7 @@ jobs:
           terraform_version: "1.10.2"
       - name: setup Atlas Init CLI
         run: |
-          uv pip install -U atlas-init==0.4.0 cloudformation-cli cloudformation-cli-go-plugin setuptools --system
+          uv pip install -U atlas-init==0.4.1 cloudformation-cli cloudformation-cli-go-plugin setuptools --system
           mkdir -p profiles/${{ env.ATLAS_INIT_PROFILE }}
           echo "ATLAS_INIT_PROFILES_PATH=$(pwd)/profiles" >> "$GITHUB_ENV"
       - name: atlas-init-init

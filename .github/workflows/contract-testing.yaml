@@ -895,7 +895,7 @@ jobs:
           version: "0.4.1"
           tf-version: "1.10.2"
           extra-pypi-packages: "cloudformation-cli cloudformation-cli-go-plugin setuptools"
-          go-version-fie: 'cfn-resources/go.mod'
+          go-version-file: 'cfn-resources/go.mod'
       - name: run-atlas-init
         uses: "EspenAlbert/atlas-init/.github/templates/external-run-with-tf@6ec12c3992b57f62e400bd8cdf98697fe244b532"
         with:

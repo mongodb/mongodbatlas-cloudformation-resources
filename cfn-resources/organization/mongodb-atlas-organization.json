@@ -51,6 +51,11 @@
       "description": "AwsSecretName used to set newly created Org credentials information.",
       "default": "default"
     },
+    "SkipDefaultAlertsSettings": {
+      "type": "boolean",
+      "description": "Disables automatic alert creation. When set to `true`, Atlas doesn't automatically create organization-level alerts. Defaults to `true` for new Atlas Organizations created with the provider to prevent infrastructure drift caused by creation of new alerts.",
+      "default": "true"
+    },
     "OrgId": {
       "type": "string",
       "description": "Unique 24-hexadecimal digit string that identifies the organization that contains your projects. Use the /orgs endpoint to retrieve all organizations to which the authenticated user has access.",

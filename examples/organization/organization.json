@@ -61,6 +61,26 @@
         "false"
       ],
       "Default": "false"
+    },
+    "SkipDefaultAlertsSettings": {
+      "Type": "String",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true",
+      "Description": "SkipDefaultAlertsSettings"
+    },
+    "GenAIFeaturesEnabled": {
+      "Type": "String",
+      "ConstraintDescription": "boolean",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true",
+      "Description": "Flag that indicates whether this organization has access to generative AI features. This setting only applies to Atlas Commercial and defaults to `true`. With this setting on, Project Owners may be able to enable or disable individual AI features at the project level. To learn more, see https://www.mongodb.com/docs/generative-ai-faq/"
     }
   },
   "Mappings": {},
@@ -113,6 +133,12 @@
         },
         "RestrictEmployeeAccess": {
           "Ref": "RestrictEmployeeAccess"
+        },
+        "SkipDefaultAlertsSettings": {
+          "Ref": "SkipDefaultAlertsSettings"
+        },
+        "GenAIFeaturesEnabled": {
+          "Ref": "GenAIFeaturesEnabled"
         }
       }
     }

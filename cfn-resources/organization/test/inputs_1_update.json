@@ -13,5 +13,6 @@
   "MultiFactorAuthRequired": "true",
   "RestrictEmployeeAccess": "true",
   "ApiAccessListRequired": "false",
-  "SkipDefaultAlertsSettings": "false"
+  "SkipDefaultAlertsSettings": "false",
+  "GenAIFeaturesEnabled": "false"
 }

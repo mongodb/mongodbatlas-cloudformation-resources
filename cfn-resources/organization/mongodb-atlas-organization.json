@@ -54,7 +54,12 @@
     "SkipDefaultAlertsSettings": {
       "type": "boolean",
       "description": "Disables automatic alert creation. When set to `true`, Atlas doesn't automatically create organization-level alerts. Defaults to `true` for new Atlas Organizations created with the provider to prevent infrastructure drift caused by creation of new alerts.",
-      "default": "true"
+      "default": true
+    },
+    "GenAIFeaturesEnabled": {
+      "type": "boolean",
+      "description": "Flag that indicates whether this organization has access to generative AI features. This setting only applies to Atlas Commercial and defaults to `true`. With this setting on, Project Owners may be able to enable or disable individual AI features at the project level. To learn more, see https://www.mongodb.com/docs/generative-ai-faq/",
+      "default": true
     },
     "OrgId": {
       "type": "string",

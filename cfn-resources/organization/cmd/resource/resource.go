@@ -88,6 +88,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	apikeyInputs := setAPIkeyInputs(currentModel)
+	setDefaultsIfNotDefined(currentModel)
 
 	// Set the roles from model
 	orgInput := &admin.CreateOrganizationRequest{
@@ -171,7 +172,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
 
+	setDefaultsIfNotDefined(currentModel)
 	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name, SkipDefaultAlertsSettings: currentModel.SkipDefaultAlertsSettings}
+
 	if _, response, err := conn.OrganizationsApi.UpdateOrganization(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
 		return handleError(response, constants.UPDATE, err)
 	}
@@ -311,6 +314,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.ApiAccessListRequired = settings.ApiAccessListRequired
 	model.MultiFactorAuthRequired = settings.MultiFactorAuthRequired
 	model.RestrictEmployeeAccess = settings.RestrictEmployeeAccess
+	model.GenAIFeaturesEnabled = settings.GenAIFeaturesEnabled
 
 	return model, response, nil
 }
@@ -354,5 +358,19 @@ func newOrganizationSettings(model *Model) *admin.OrganizationSettings {
 		ApiAccessListRequired:   model.ApiAccessListRequired,
 		MultiFactorAuthRequired: model.MultiFactorAuthRequired,
 		RestrictEmployeeAccess:  model.RestrictEmployeeAccess,
+		GenAIFeaturesEnabled:    model.GenAIFeaturesEnabled,
 	}
+}
+
+func setDefaultsIfNotDefined(m *Model) {
+	if m == nil {
+		return
+	}
+	if m.SkipDefaultAlertsSettings == nil {
+		m.SkipDefaultAlertsSettings = util.Pointer(true)
+	}
+	if m.GenAIFeaturesEnabled == nil {
+		m.GenAIFeaturesEnabled = util.Pointer(true)
+	}
+
 }

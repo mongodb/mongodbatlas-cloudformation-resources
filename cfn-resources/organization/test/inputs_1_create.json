@@ -12,5 +12,7 @@
   },
   "MultiFactorAuthRequired": "true",
   "RestrictEmployeeAccess": "false",
-  "ApiAccessListRequired": "false"
+  "ApiAccessListRequired": "false",
+  "SkipDefaultAlertsSettings": "true",
+  "GenAIFeaturesEnabled": "true"
 }

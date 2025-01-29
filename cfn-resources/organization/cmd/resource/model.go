@@ -11,6 +11,7 @@ type Model struct {
 	Profile                   *string `json:",omitempty"`
 	AwsSecretName             *string `json:",omitempty"`
 	SkipDefaultAlertsSettings *bool   `json:",omitempty"`
+	GenAIFeaturesEnabled      *bool   `json:",omitempty"`
 	OrgId                     *string `json:",omitempty"`
 	IsDeleted                 *bool   `json:",omitempty"`
 	ApiAccessListRequired     *bool   `json:",omitempty"`

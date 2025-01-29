@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20241113004/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := client.Atlas20231115014
+	conn := client.AtlasSDK
 	ctx := context.Background()
 
 	_, _, err := secrets.Get(&req, *currentModel.AwsSecretName)
@@ -88,12 +88,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	apikeyInputs := setAPIkeyInputs(currentModel)
+	setDefaultsIfNotDefined(currentModel)
 
 	// Set the roles from model
 	orgInput := &admin.CreateOrganizationRequest{
-		ApiKey:     apikeyInputs,
-		OrgOwnerId: currentModel.OrgOwnerId,
-		Name:       *currentModel.Name,
+		ApiKey:                    apikeyInputs,
+		OrgOwnerId:                currentModel.OrgOwnerId,
+		Name:                      *currentModel.Name,
+		SkipDefaultAlertsSettings: currentModel.SkipDefaultAlertsSettings,
 	}
 	if currentModel.FederatedSettingsId != nil {
 		orgInput.FederationSettingsId = currentModel.FederatedSettingsId
@@ -121,7 +123,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn = newOrgClient.Atlas20231115014
+	conn = newOrgClient.AtlasSDK
 	if _, _, errUpdate := conn.OrganizationsApi.UpdateOrganizationSettings(ctx, orgID, newOrganizationSettings(currentModel)).Execute(); errUpdate != nil {
 		return handleError(response, constants.CREATE, err)
 	}
@@ -145,7 +147,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.Atlas20231115014, currentModel)
+	model, response, err := currentModel.getOrgDetails(context.Background(), newOrgClient.AtlasSDK, currentModel)
 	if err != nil {
 		return handleError(response, constants.READ, err)
 	}
@@ -167,11 +169,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := newOrgClient.Atlas20231115014
+	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
 
-	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name}
-	if _, response, err := conn.OrganizationsApi.RenameOrganization(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
+	setDefaultsIfNotDefined(currentModel)
+	atlasOrg := admin.AtlasOrganization{Id: currentModel.OrgId, Name: *currentModel.Name, SkipDefaultAlertsSettings: currentModel.SkipDefaultAlertsSettings}
+
+	if _, response, err := conn.OrganizationsApi.UpdateOrganization(ctx, *currentModel.OrgId, &atlasOrg).Execute(); err != nil {
 		return handleError(response, constants.UPDATE, err)
 	}
 
@@ -197,7 +201,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	conn := newOrgClient.Atlas20231115014
+	conn := newOrgClient.AtlasSDK
 	ctx := context.Background()
 
 	// Callback
@@ -301,6 +305,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.Name = util.Pointer(org.Name)
 	model.OrgId = org.Id
 	model.IsDeleted = org.IsDeleted
+	model.SkipDefaultAlertsSettings = org.SkipDefaultAlertsSettings
 
 	settings, _, err := conn.OrganizationsApi.GetOrganizationSettings(ctx, org.GetId()).Execute()
 	if err != nil {
@@ -309,6 +314,7 @@ func (model *Model) getOrgDetails(ctx context.Context, conn *admin.APIClient, cu
 	model.ApiAccessListRequired = settings.ApiAccessListRequired
 	model.MultiFactorAuthRequired = settings.MultiFactorAuthRequired
 	model.RestrictEmployeeAccess = settings.RestrictEmployeeAccess
+	model.GenAIFeaturesEnabled = settings.GenAIFeaturesEnabled
 
 	return model, response, nil
 }
@@ -352,5 +358,18 @@ func newOrganizationSettings(model *Model) *admin.OrganizationSettings {
 		ApiAccessListRequired:   model.ApiAccessListRequired,
 		MultiFactorAuthRequired: model.MultiFactorAuthRequired,
 		RestrictEmployeeAccess:  model.RestrictEmployeeAccess,
+		GenAIFeaturesEnabled:    model.GenAIFeaturesEnabled,
+	}
+}
+
+func setDefaultsIfNotDefined(m *Model) {
+	if m == nil {
+		return
+	}
+	if m.SkipDefaultAlertsSettings == nil {
+		m.SkipDefaultAlertsSettings = util.Pointer(true)
+	}
+	if m.GenAIFeaturesEnabled == nil {
+		m.GenAIFeaturesEnabled = util.Pointer(true)
 	}
 }

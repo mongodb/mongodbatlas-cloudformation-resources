@@ -18,6 +18,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#orgownerid" title="OrgOwnerId">OrgOwnerId</a>" : <i>String</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
         "<a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>" : <i>String</i>,
+        "<a href="#skipdefaultalertssettings" title="SkipDefaultAlertsSettings">SkipDefaultAlertsSettings</a>" : <i>Boolean</i>,
+        "<a href="#genaifeaturesenabled" title="GenAIFeaturesEnabled">GenAIFeaturesEnabled</a>" : <i>Boolean</i>,
         "<a href="#isdeleted" title="IsDeleted">IsDeleted</a>" : <i>Boolean</i>,
         "<a href="#apiaccesslistrequired" title="ApiAccessListRequired">ApiAccessListRequired</a>" : <i>Boolean</i>,
         "<a href="#multifactorauthrequired" title="MultiFactorAuthRequired">MultiFactorAuthRequired</a>" : <i>Boolean</i>,
@@ -37,6 +39,8 @@ Properties:
     <a href="#orgownerid" title="OrgOwnerId">OrgOwnerId</a>: <i>String</i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
     <a href="#awssecretname" title="AwsSecretName">AwsSecretName</a>: <i>String</i>
+    <a href="#skipdefaultalertssettings" title="SkipDefaultAlertsSettings">SkipDefaultAlertsSettings</a>: <i>Boolean</i>
+    <a href="#genaifeaturesenabled" title="GenAIFeaturesEnabled">GenAIFeaturesEnabled</a>: <i>Boolean</i>
     <a href="#isdeleted" title="IsDeleted">IsDeleted</a>: <i>Boolean</i>
     <a href="#apiaccesslistrequired" title="ApiAccessListRequired">ApiAccessListRequired</a>: <i>Boolean</i>
     <a href="#multifactorauthrequired" title="MultiFactorAuthRequired">MultiFactorAuthRequired</a>: <i>Boolean</i>
@@ -108,6 +112,26 @@ _Required_: Yes
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### SkipDefaultAlertsSettings
+
+Disables automatic alert creation. When set to `true`, Atlas doesn't automatically create organization-level alerts. Defaults to `true` for new Atlas Organizations created with the provider to prevent infrastructure drift caused by creation of new alerts.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### GenAIFeaturesEnabled
+
+Flag that indicates whether this organization has access to generative AI features. This setting only applies to Atlas Commercial and defaults to `true`. With this setting on, Project Owners may be able to enable or disable individual AI features at the project level. To learn more, see https://www.mongodb.com/docs/generative-ai-faq/
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### IsDeleted
 

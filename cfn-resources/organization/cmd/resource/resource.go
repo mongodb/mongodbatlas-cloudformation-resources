@@ -372,5 +372,4 @@ func setDefaultsIfNotDefined(m *Model) {
 	if m.GenAIFeaturesEnabled == nil {
 		m.GenAIFeaturesEnabled = util.Pointer(true)
 	}
-
 }

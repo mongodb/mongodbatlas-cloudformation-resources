@@ -30,6 +30,7 @@ jobs:
      serverless-private-endpoint: ${{ steps.filter.outputs.serverless-private-endpoint }}
      stream-connection: ${{ steps.filter.outputs.stream-connection }}
      stream-instance: ${{ steps.filter.outputs.stream-instance }}
+     trigger: ${{ steps.filter.outputs.trigger }}
    steps:
    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
      if: ${{ github.event_name == 'push' }}
@@ -75,6 +76,8 @@ jobs:
           - 'cfn-resources/stream-connection/**'
         stream-instance:
           - 'cfn-resources/stream-instance/**'
+        trigger:
+          - 'cfn-resources/trigger/**'
   access-list-api-key:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}
@@ -854,3 +857,50 @@ jobs:
           cat inputs/inputs_1_create.json
           make run-contract-testing
           make delete-test-resources
+  trigger:
+    needs: change-detection
+    if: ${{ needs.change-detection.outputs.trigger == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
+      MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
+      MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
+      MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+      
+      FOLDER_PATH: cfn-resources/trigger
+      # Atlas Init CLI Terminal formatting
+      COLUMNS: 140
+      FORCE_COLOR: "yes"
+      TF_INPUT: "false"
+      NON_INTERACTIVE: "true"
+      # Atlas Init CLI Variables
+      ATLAS_INIT_CFN_PROFILE: profile-${{ github.run_id }}
+      ATLAS_INIT_CFN_REGION: "us-east-1"
+      ATLAS_INIT_CFN_USE_KMS_KEY: "false"
+      ATLAS_INIT_PROFILE: ${{ format('profile-{0}',github.run_id) }}
+      ATLAS_INIT_PROJECT_NAME: ${{ format('gh-ci-{0}', github.run_id) }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: aws-actions/setup-sam@2360ef6d90015369947b45b496193ab9976a9b04
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
+          aws-region: us-east-1
+      - name: setup-atlas-init
+        uses: "EspenAlbert/atlas-init/.github/templates/external-setup@6ec12c3992b57f62e400bd8cdf98697fe244b532"
+        with:
+          version: "0.4.1"
+          tf-version: "1.10.2"
+          extra-pypi-packages: "cloudformation-cli cloudformation-cli-go-plugin setuptools"
+          go-version-file: 'cfn-resources/go.mod'
+      - name: run-atlas-init
+        uses: "EspenAlbert/atlas-init/.github/templates/external-run-with-tf@6ec12c3992b57f62e400bd8cdf98697fe244b532"
+        with:
+          cli-command: "cfn contract-test"
+          step-name: contract-test
+          cwd: ${{ env.FOLDER_PATH}}
+          profile-name: ${{ env.ATLAS_INIT_PROFILE }}
+          dry-run-first: "true"

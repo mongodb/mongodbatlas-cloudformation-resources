@@ -6,7 +6,7 @@ on:
     - cron: "0 3 * * *" # workflow runs every day at 03:00 AM
 
 jobs:  
-  cleanup-test-env-general:
+  cleanup-dev-cfn-test-github:
     runs-on: ubuntu-latest
     steps:
       - name: terraform-provider-mongodbatlas-checkout
@@ -21,7 +21,23 @@ jobs:
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
           MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
-          MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"  
+          MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"
+  cleanup-dev-cfntest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: terraform-provider-mongodbatlas-checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: mongodb/terraform-provider-mongodbatlas
+          ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
+      - name: Cleanup cloud-dev CFN Test
+        uses: ./.github/templates/clean-atlas-org
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_CFN_TEST_PRIVATE_KEY }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_CFN_TEST_ORG_ID }}
+          MONGODB_ATLAS_BASE_URL: ${{ vars.MONGODB_ATLAS_BASE_URL }}
+          MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"
   cleanup-qa-env-rp:
     runs-on: ubuntu-latest
     steps:

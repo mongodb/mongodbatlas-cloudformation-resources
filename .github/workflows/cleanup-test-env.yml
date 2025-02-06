@@ -16,8 +16,6 @@ jobs:
           ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test GitHub
         uses: ./.github/templates/clean-atlas-org
-        with:
-          dry-run: 'true'
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
@@ -34,8 +32,6 @@ jobs:
           ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test GitHub
         uses: ./.github/templates/clean-atlas-org
-        with:
-          dry-run: 'true'
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_RP_PUBLIC_KEY_QA }}
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_RP_PRIVATE_KEY_QA }}
@@ -52,10 +48,23 @@ jobs:
           ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test GitHub
         uses: ./.github/templates/clean-atlas-org
-        with:
-          dry-run: 'true'
         env:
           MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_PUBLISHING }}
           MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_PUBLISHING }}
           MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_PUBLISHING }}
+          MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"  
+  cleanup-prod-data-federation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: terraform-provider-mongodbatlas-checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: mongodb/terraform-provider-mongodbatlas
+          ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
+      - name: Cleanup cloud-dev CFN Test GitHub
+        uses: ./.github/templates/clean-atlas-org
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY_FOR_FEDERATION }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY_FOR_FEDERATION }}
+          MONGODB_ATLAS_ORG_ID: ${{ secrets.ATLAS_ORG_ID_FOR_FEDERATION }}
           MONGODB_ATLAS_CLEAN_RETRY_ATTEMPTS: "1"  

@@ -13,7 +13,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: mongodb/terraform-provider-mongodbatlas
-          ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test GitHub
         uses: ./.github/templates/clean-atlas-org
         env:
@@ -29,7 +28,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: mongodb/terraform-provider-mongodbatlas
-          ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test
         uses: ./.github/templates/clean-atlas-org
         env:
@@ -45,7 +43,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: mongodb/terraform-provider-mongodbatlas
-          ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test GitHub
         uses: ./.github/templates/clean-atlas-org
         env:
@@ -61,7 +58,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: mongodb/terraform-provider-mongodbatlas
-          ref: 133ee57735e0c8f2b22e74bbd9f8c3fdd8da2f9c
       - name: Cleanup cloud-dev CFN Test GitHub
         uses: ./.github/templates/clean-atlas-org
         env:

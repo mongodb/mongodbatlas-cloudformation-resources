@@ -1,14 +1,14 @@
 {
-  "Name": "materializeMonthlyProductSales46",
+  "Name": "cfn-test-trigger-${RANDOM_INT_100K}",
   "Type": "DATABASE",
-  "Profile": "default",
+  "Profile": "${MONGODB_ATLAS_PROFILE}",
   "DatabaseTrigger": {
     "OperationTypes": [
       "INSERT"
     ],
     "Database": "store",
     "Collection": "sales",
-    "ServiceId": "6387aee08659af5254b0a51e",
+    "ServiceId": "${MONGODB_REALM_SERVICE_ID}",
     "FullDocument": "true",
     "FullDocumentBeforeChange": "false",
     "Unordered": "false",
@@ -19,14 +19,14 @@
   "EventProcessors": {
     "FUNCTION": {
       "FuncConfig": {
-        "FunctionName": "cfn_func",
-        "FunctionId": "63862553ac0702272aa701ba"
+        "FunctionName": "${MONGODB_REALM_FUNCTION_NAME}",
+        "FunctionId": "${MONGODB_REALM_FUNCTION_ID}"
       }
     },
     "AWSEVENTBRIDGE": {
       "AWSConfig": {}
     }
   },
-  "AppId": "638624a5167f5659feb75971",
-  "ProjectId": "625454459c4e6108393d650d"
+  "AppId": "${MONGODB_REALM_APP_ID}",
+  "ProjectId": "${MONGODB_ATLAS_PROJECT_ID}"
 }

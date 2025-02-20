@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"runtime"
 	"strconv"
@@ -109,6 +110,15 @@ func GetRealmClient(ctx context.Context, req handler.Request, profileName *strin
 
 	optsRealm := []realm.ClientOpt{realm.SetUserAgent(userAgent)}
 	authConfig := realmAuth.NewConfig(nil)
+
+	if p.BaseURL != "" {
+		if strings.Contains(p.BaseURL, "-dev.") {
+			adminURL := "https://services.cloud-dev.mongodb.com/api/admin/v3.0/"
+			optsRealm = append(optsRealm, realm.SetBaseURL(adminURL))
+			authConfig.AuthURL, _ = url.Parse(adminURL + "auth/providers/mongodb-cloud/login")
+		}
+	}
+
 	token, err := authConfig.NewTokenFromCredentials(ctx, p.PublicKey, p.PrivateKey)
 	if err != nil {
 		return nil, err

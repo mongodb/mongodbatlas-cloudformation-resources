@@ -27,6 +27,7 @@ update.json
 **/functions/packages
 **/taskcat_outputs/
 **/inputs/**
+**/samples/**
 pytestdebug.log
 !/cdk/**/.*
 *.DS_Store

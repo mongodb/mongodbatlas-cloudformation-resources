@@ -13,6 +13,7 @@ type Model struct {
 	ClusterCount              *int              `json:",omitempty"`
 	ProjectSettings           *ProjectSettings  `json:",omitempty"`
 	Profile                   *string           `json:",omitempty"`
+	LambdaProxyArn            *string           `json:",omitempty"`
 	ProjectTeams              []ProjectTeam     `json:",omitempty"`
 	ProjectApiKeys            []ProjectApiKey   `json:",omitempty"`
 	RegionUsageRestrictions   *string           `json:",omitempty"`

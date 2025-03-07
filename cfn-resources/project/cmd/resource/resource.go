@@ -20,13 +20,15 @@ import (
 	"fmt"
 	"reflect"
 
+	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
@@ -45,7 +47,8 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 		return nil, errEvent
 	}
 
-	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	//  client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	client, peErr := util.NewAtlasClientWithLambdaProxySupport(&req, currentModel.Profile, currentModel.LambdaProxyArn)
 	if peErr != nil {
 		return nil, peErr
 	}

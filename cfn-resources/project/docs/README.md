@@ -18,6 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>" : <i>Boolean</i>,
         "<a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>" : <i><a href="projectsettings.md">projectSettings</a></i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>,
+        "<a href="#lambdaproxyarn" title="LambdaProxyArn">LambdaProxyArn</a>" : <i>String</i>,
         "<a href="#projectteams" title="ProjectTeams">ProjectTeams</a>" : <i>[ <a href="projectteam.md">projectTeam</a>, ... ]</i>,
         "<a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>" : <i>[ <a href="projectapikey.md">projectApiKey</a>, ... ]</i>,
         "<a href="#regionusagerestrictions" title="RegionUsageRestrictions">RegionUsageRestrictions</a>" : <i>String</i>,
@@ -37,6 +38,7 @@ Properties:
     <a href="#withdefaultalertssettings" title="WithDefaultAlertsSettings">WithDefaultAlertsSettings</a>: <i>Boolean</i>
     <a href="#projectsettings" title="ProjectSettings">ProjectSettings</a>: <i><a href="projectsettings.md">projectSettings</a></i>
     <a href="#profile" title="Profile">Profile</a>: <i>String</i>
+    <a href="#lambdaproxyarn" title="LambdaProxyArn">LambdaProxyArn</a>: <i>String</i>
     <a href="#projectteams" title="ProjectTeams">ProjectTeams</a>: <i>
       - <a href="projectteam.md">projectTeam</a></i>
     <a href="#projectapikeys" title="ProjectApiKeys">ProjectApiKeys</a>: <i>
@@ -104,6 +106,16 @@ _Required_: No
 _Type_: String
 
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### LambdaProxyArn
+
+lambda arn
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### ProjectTeams
 

@@ -147,13 +147,10 @@ func newAtlasV2ClientWithLambdaProxySupport(req *handler.Request, profileName *s
 
 	var client *http.Client
 	if lambdaArn != nil && *lambdaArn != "" {
-		// Chain the digest transport with the lambda forwarding transport
 		log.Printf("Using chained digest transport with Lambda forwarding. Lambda ARN: %s", *lambdaArn)
-		// Create the Lambda forwarding transport
 		lambdaTransport := newLambdaForwardingTransport(req, *lambdaArn)
-		// Create the digest transport
 		digestTransport := digest.NewTransport(prof.PublicKey, prof.PrivateKey)
-		// IMPORTANT: Set the underlying transport to our Lambda transport
+		// Set the underlying transport to our Lambda transport
 		digestTransport.Transport = lambdaTransport
 		// Use the digest transport as the client transport
 		client = &http.Client{Transport: digestTransport}

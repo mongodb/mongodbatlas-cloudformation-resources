@@ -68,7 +68,7 @@ All MongoDB Atlas AWS CloudFormation resources support the import operation, all
 
 1. **DeletionPolicy Attribute**: Your resource template must include the [DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html) attribute in order to specify what happens to the resource when it is removed from the stack.
 
-2. **UPDATE Operation Required**: The import operation executes the UPDATE operation behind the scenes. Therefore, UPDATE functionality must be properly implemented for the resource type to support import.
+2. **UPDATE Operation Required**: The import operation executes the UPDATE operation behind the scenes. Therefore, UPDATE functionality must be properly implemented for the resource type to support import. For more datails on when the update is run, please see [Create a stack from existing resources using the AWS Management Console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-new-stack.html#resource-import-new-stack-console) or [Import an existing resource into a stack using the AWS Management Console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html#resource-import-existing-stack-console) or 
 
 3. **Outputs Restrictions**: As part of the import operation, you cannot modify or add [Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) to the template. However, you can add outputs after the import is complete.
 

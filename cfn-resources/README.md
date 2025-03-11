@@ -60,6 +60,18 @@ Note these are also hosted on AWS CloudFormation Public Registry under Third Par
 | 47  | stream-connection                                        | ![Build](https://img.shields.io/badge/GA-green) | [example](../examples/atlas-streams/stream-connection/stream-connection.json)                                                                                      | [./stream-connection/test](./stream-connection/test)  
 |47  | resource-policy                                        | ![Build](https://img.shields.io/badge/Beta-yellow) | [example](../examples/resource-policy/resource-policy.json)                                                                                      | [./resource-policy/test](./resource-policy/test)  
 
+## Resource Import Operations
+
+MongoDB Atlas AWS CloudFormation resources support the import operation, allowing you to bring existing Atlas resources under CloudFormation management. When importing resources, please consider the following:
+
+### Import Requirements and Considerations
+
+1. **DeletionPolicy Attribute**: Your resource template must include the [DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html) attribute in order to specify what happens to the resource when it is removed from the stack.
+
+2. **Outputs Restrictions**: As part of the import operation, you cannot modify or add [Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) to the template. However, you can add outputs after the import is complete.
+
+For more details, refer to the [official AWS Resource Import documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html).
+
 Legend
 ---
 | Badge | Meaning |

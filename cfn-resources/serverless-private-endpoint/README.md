@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ServerlessPrivateEndpoint
 
-**WARNING:** This resource is deprecated and will be removed in May 2025. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/).
+**WARNING:** This resource is deprecated and will be removed in May 2025. If you try to create a ServerlessPrivateEndpoint for a newly created ServerlessInstance, it will fail because the newly created ServerlessInstance are now Flex clusters. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/).
 
 Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Serverless-Private-Endpoints).
 

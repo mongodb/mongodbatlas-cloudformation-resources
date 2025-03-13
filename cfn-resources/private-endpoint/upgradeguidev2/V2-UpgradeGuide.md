@@ -15,12 +15,7 @@ leverage the new split private endpoint version, all without the necessity of de
 MongoDB Atlas or AWS private endpoints
 
 ## Cloud Formation Limitations
-before we start with the upgrade progress we need to understand the next limitations:
-
-- For the migration we will be using the IMPORT feature provided by CloudFormation, the import process is not fully supported for third party resources, and it has the next limitations:
-  
-  - the import does not support UPDATE DELETE or CREATE resources, it can only READ existing resources
-  - the import process does not support changes or additions on any Output, so all the outputs that we want to modify or any reference to the imported resources, must be removed or hardcoded before the import, and later updated 
+For the migration we will be using the IMPORT feature provided by CloudFormation. Before we start with the upgrade progress we need to understand the [Import Requirements and Considerations](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/README.md#resource-import-operations)
 
 ## Update process:
 In this example, we will walk through a recommended update procedure. We'll start with an existing stack that includes a project and a private endpoint (V1), and then proceed to upgrade it to utilize the new Splited private endpoint V2, all without needing to make any changes to your existing MongoDB Atlas resources

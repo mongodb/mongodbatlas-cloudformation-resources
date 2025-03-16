@@ -12,8 +12,9 @@
     "FullDocument": "true",
     "FullDocumentBeforeChange": "false",
     "Unordered": "false",
-    "SkipCatchupEvents": "false",
-    "Match" : "{\"$and\":[{\"fullDocument.availability.value\":\"AVAILABLE\"},{\"$ne\":[\"fullDocument.retailPrice\",\"fullDocumentBeforeChange.retailPrice\"]}]}"
+    "SkipCatchupEvents": "true",
+    "TolerateResumeErrors": "true",
+    "Match": "{\"$and\":[{\"fullDocument.availability.value\":\"AVAILABLE\"},{\"$ne\":[\"fullDocument.retailPrice\",\"fullDocumentBeforeChange.retailPrice\"]}]}"
   },
   "Disabled": "false",
   "EventProcessors": {

@@ -18,6 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#fulldocumentbeforechange" title="FullDocumentBeforeChange">FullDocumentBeforeChange</a>" : <i>Boolean</i>,
     "<a href="#skipcatchupevents" title="SkipCatchupEvents">SkipCatchupEvents</a>" : <i>Boolean</i>,
     "<a href="#tolerateresumeerrors" title="TolerateResumeErrors">TolerateResumeErrors</a>" : <i>Boolean</i>,
+    "<a href="#maximumthroughput" title="MaximumThroughput">MaximumThroughput</a>" : <i>Boolean</i>,
     "<a href="#unordered" title="Unordered">Unordered</a>" : <i>Boolean</i>
 }
 </pre>
@@ -36,6 +37,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#fulldocumentbeforechange" title="FullDocumentBeforeChange">FullDocumentBeforeChange</a>: <i>Boolean</i>
 <a href="#skipcatchupevents" title="SkipCatchupEvents">SkipCatchupEvents</a>: <i>Boolean</i>
 <a href="#tolerateresumeerrors" title="TolerateResumeErrors">TolerateResumeErrors</a>: <i>Boolean</i>
+<a href="#maximumthroughput" title="MaximumThroughput">MaximumThroughput</a>: <i>Boolean</i>
 <a href="#unordered" title="Unordered">Unordered</a>: <i>Boolean</i>
 </pre>
 
@@ -154,6 +156,16 @@ cannot be found in the cluster's oplog, the Trigger automatically resumes
 processing events at the next relevant change stream event.
 All change stream events from when the Trigger was suspended until the Trigger
 resumes execution do not have the Trigger fire for them.
+
+_Required_: No
+
+_Type_: Boolean
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### MaximumThroughput
+
+If `true`, the trigger will use the maximize throughput option (https://www.mongodb.com/docs/atlas/app-services/triggers/database-triggers/#std-label-triggers-maximum-throughput).
 
 _Required_: No
 

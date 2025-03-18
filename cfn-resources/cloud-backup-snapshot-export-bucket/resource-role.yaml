@@ -24,7 +24,6 @@ Resources:
               - Effect: Allow
                 Action:
                 - "secretsmanager:CreateSecret"
-                - "secretsmanager:CreateSecretInput"
                 - "secretsmanager:DescribeSecret"
                 - "secretsmanager:GetSecretValue"
                 - "secretsmanager:PutSecretValue"

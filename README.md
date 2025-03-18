@@ -50,6 +50,7 @@ SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 
 To create a new secret for a default profile, use the [PROFILE SECRET TEMPLATE](/examples/profile-secret.yaml) file provided in this repository.
+The secret must exist in the same AWS account and AWS region where the Cloudformation stack is run.
 
 Here are some examples of how to use this template:
 

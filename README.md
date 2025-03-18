@@ -14,14 +14,15 @@ See the [`cfn` examples](examples/README.md) to setup prerequisites and get star
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
 
 ## Limitations
-1. [Resource import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html) is not supported for third-party resources.
-
-2. Any third-party resource must support all CRUD operations. MongoDB Atlas for CloudFormation does not support the following MongoDB Atlas resources because they do not support all CRUD operations: 
+1. Any third-party resource must support all CRUD operations. MongoDB Atlas for CloudFormation does not support the following MongoDB Atlas resources because they do not support all CRUD operations: 
 
 * cloud-backup-snapshot-export-job
 * cloud-provider-access
 * federated-settings-identity-provider
 * federated-settings-org-configs
+
+## Import Support
+CloudFormation import is supported for MongoDB Atlas resources. This allows you to bring existing resources under CloudFormation management. For more details, please see [Resource Import Operations](https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/README.md#resource-import-operations) section.
 
 ## Support, Bugs, Feature Requests
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
@@ -49,6 +50,7 @@ SecretValue: {"PublicKey": "YourPublicKey", "PrivateKey": "YourPrivateKey"}
 ```
 
 To create a new secret for a default profile, use the [PROFILE SECRET TEMPLATE](/examples/profile-secret.yaml) file provided in this repository.
+The secret must exist in the same AWS account and AWS region where the Cloudformation stack is run.
 
 Here are some examples of how to use this template:
 

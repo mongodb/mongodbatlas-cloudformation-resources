@@ -1,6 +1,6 @@
 # MongoDB::Atlas::ServerlessPrivateEndpoint
 
-Returns, adds, edits, and removes private endpoints for serverless instances. To learn more, see the Atlas Administration API tab on the following tutorial.
+**WARNING:** This resource is deprecated and will be removed in May 2025. If you try to create a new ServerlessInstance, you will create a Flex cluster. As a result, you can't create ServerlessPrivateEndpoints for these new instances. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/). Returns, adds, edits, and removes private endpoints for serverless instances. To learn more, see the Atlas Administration API tab on the following tutorial.
 
 ## Syntax
 

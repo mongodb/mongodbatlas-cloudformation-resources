@@ -34,7 +34,7 @@
                   "project": {
                       "id": "10984"
                   },
-                  "summary": "HELP: GitHub Issue n. '"${ISSUE_NUMBER}"'",
+                  "summary": "CFN HELP: GitHub Issue n. '"${ISSUE_NUMBER}"'",
                   "issuetype": {
                       "id": "12"
                   },
@@ -79,7 +79,7 @@
             ISSUE_NUMBER=${{ github.event.issue.number }}
             JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
 
-            JIRA_QUERY="project = CLOUDP AND issuetype = Story AND resolution = Declined AND text ~ \"HELP: GitHub Issue n. $ISSUE_NUMBER\""
+            JIRA_QUERY="project = CLOUDP AND issuetype = Story AND resolution = Declined AND text ~ \"CFN HELP: GitHub Issue n. $ISSUE_NUMBER\""
             
             # URL encode the query
             JIRA_URL=$(echo "$JIRA_QUERY" | jq -s -R -r @uri)            
@@ -127,7 +127,7 @@
             ISSUE_NUMBER=${{ github.event.issue.number }}
             JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
 
-            JIRA_QUERY="project = CLOUDP AND issuetype = Story AND resolution = Unresolved AND text ~ \"HELP: GitHub Issue n. $ISSUE_NUMBER\""
+            JIRA_QUERY="project = CLOUDP AND issuetype = Story AND resolution = Unresolved AND text ~ \"CFN HELP: GitHub Issue n. $ISSUE_NUMBER\""
             
             # URL encode the query
             JIRA_URL=$(echo "$JIRA_QUERY" | jq -s -R -r @uri)            

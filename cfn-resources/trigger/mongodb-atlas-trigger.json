@@ -146,6 +146,11 @@
           "default": false,
           "description": "If `true`, when this Trigger's resume token\ncannot be found in the cluster's oplog, the Trigger automatically resumes\nprocessing events at the next relevant change stream event.\nAll change stream events from when the Trigger was suspended until the Trigger\nresumes execution do not have the Trigger fire for them."
         },
+        "MaximumThroughput": {
+          "type": "boolean",
+          "default": false,
+          "description": "If `true`, the trigger will use the maximize throughput option (https://www.mongodb.com/docs/atlas/app-services/triggers/database-triggers/#std-label-triggers-maximum-throughput)."
+        },
         "Unordered": {
           "type": "boolean",
           "description": "If `true`, event ordering is disabled and this Trigger\ncan process events in parallel. If `false`, event\nordering is enabled and the Trigger executes events\nserially."

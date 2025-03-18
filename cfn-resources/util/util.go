@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"runtime"
 	"strconv"
@@ -29,9 +28,7 @@ import (
 
 	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
-	"go.mongodb.org/atlas-sdk/v20241023001/admin"
-	realmAuth "go.mongodb.org/realm/auth"
-	"go.mongodb.org/realm/realm"
+	"go.mongodb.org/atlas-sdk/v20241113004/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/logging"
@@ -40,6 +37,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/mongodb-forks/digest"
+	"github.com/mongodb-labs/go-client-mongodb-atlas-app-services/appservices"
+	appServicesAuth "github.com/mongodb-labs/go-client-mongodb-atlas-app-services/auth"
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
@@ -60,12 +59,12 @@ type MongoDBClient struct {
 }
 
 type Config struct {
-	AssumeRole   *AssumeRole
-	PublicKey    string
-	PrivateKey   string
-	BaseURL      string
-	RealmBaseURL string
-	DebugClient  bool
+	AssumeRole         *AssumeRole
+	PublicKey          string
+	PrivateKey         string
+	BaseURL            string
+	AppServicesBaseURL string
+	DebugClient        bool
 }
 
 type AssumeRole struct {
@@ -102,35 +101,26 @@ func EnsureAWSRegion(region string) string {
 	return r
 }
 
-func GetRealmClient(ctx context.Context, req handler.Request, profileName *string) (*realm.Client, error) {
+func GetAppServicesClient(ctx context.Context, req handler.Request, profileName *string) (*appservices.Client, error) {
 	p, err := profile.NewProfile(&req, profileName, true)
 	if err != nil {
 		return nil, err
 	}
 
-	optsRealm := []realm.ClientOpt{realm.SetUserAgent(userAgent)}
-	authConfig := realmAuth.NewConfig(nil)
-
-	if p.BaseURL != "" {
-		if strings.Contains(p.BaseURL, "-dev.") {
-			adminURL := "https://services.cloud-dev.mongodb.com/api/admin/v3.0/"
-			optsRealm = append(optsRealm, realm.SetBaseURL(adminURL))
-			authConfig.AuthURL, _ = url.Parse(adminURL + "auth/providers/mongodb-cloud/login")
-		}
-	}
-
+	optsAppServices := []appservices.ClientOpt{appservices.SetUserAgent(userAgent)}
+	authConfig := appServicesAuth.NewConfig(nil)
 	token, err := authConfig.NewTokenFromCredentials(ctx, p.PublicKey, p.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
 
-	clientRealm := realmAuth.NewClient(realmAuth.BasicTokenSource(token))
-	realmClient, err := realm.New(clientRealm, optsRealm...)
+	clientAppServices := appServicesAuth.NewClient(appServicesAuth.BasicTokenSource(token))
+	appServicesClient, err := appservices.New(clientAppServices, optsAppServices...)
 	if err != nil {
 		return nil, err
 	}
 
-	return realmClient, nil
+	return appServicesClient, nil
 }
 
 func NewAtlasClient(req *handler.Request, profileName *string) (*MongoDBClient, *handler.ProgressEvent) {

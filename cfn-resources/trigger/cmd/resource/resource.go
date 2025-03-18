@@ -24,13 +24,14 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb-labs/go-client-mongodb-atlas-app-services/appservices"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/realm/realm"
 )
 
 type TriggerType string
@@ -63,9 +64,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setProfileIfAbsent(currentModel)
 
 	ctx := context.Background()
-	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
+	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
@@ -99,9 +100,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setProfileIfAbsent(currentModel)
 
 	ctx := context.Background()
-	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
+	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
@@ -130,9 +131,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setProfileIfAbsent(currentModel)
 
 	ctx := context.Background()
-	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
+	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
@@ -165,9 +166,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setProfileIfAbsent(currentModel)
 
 	ctx := context.Background()
-	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
+	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
@@ -189,9 +190,9 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setProfileIfAbsent(currentModel)
 
 	ctx := context.Background()
-	client, err := util.GetRealmClient(ctx, req, currentModel.Profile)
+	client, err := util.GetAppServicesClient(ctx, req, currentModel.Profile)
 	if err != nil {
-		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating realm client : %s", err.Error()),
+		return progressevents.GetFailedEventByCode(fmt.Sprintf("Error creating App Services client : %s", err.Error()),
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
@@ -213,8 +214,8 @@ func setProfileIfAbsent(model *Model) {
 	}
 }
 
-func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
-	et := realm.EventTriggerRequest{Disabled: model.Disabled}
+func newEventTrigger(model *Model) (*appservices.EventTriggerRequest, error) {
+	et := appservices.EventTriggerRequest{Disabled: model.Disabled}
 	if model.Name != nil {
 		et.Name = *model.Name
 	}
@@ -224,7 +225,7 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 	if model.FunctionId != nil {
 		et.FunctionID = *model.FunctionId
 	}
-	conf := realm.EventTriggerConfig{}
+	conf := appservices.EventTriggerConfig{}
 	if model.DatabaseTrigger != nil {
 		conf.Database = *model.DatabaseTrigger.Database
 	}
@@ -255,6 +256,9 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 		conf.FullDocument = dTrigger.FullDocument
 		conf.FullDocumentBeforeChange = dTrigger.FullDocumentBeforeChange
 		conf.Unordered = dTrigger.Unordered
+		conf.TolerateResumeErrors = dTrigger.TolerateResumeErrors
+		conf.SkipCatchupEvents = dTrigger.SkipCatchupEvents
+		conf.MaximumThroughput = dTrigger.MaximumThroughput
 	}
 
 	if model.ScheduleTrigger != nil &&
@@ -296,7 +300,7 @@ func newEventTrigger(model *Model) (*realm.EventTriggerRequest, error) {
 	return &et, nil
 }
 
-func newEventProcessor(model *Model, et realm.EventTriggerRequest) (realm.EventTriggerRequest, error) {
+func newEventProcessor(model *Model, et appservices.EventTriggerRequest) (appservices.EventTriggerRequest, error) {
 	ep := EventProcess{}
 	if model.EventProcessors.FUNCTION != nil && model.EventProcessors.FUNCTION.FuncConfig != nil {
 		ep.FUNCTION = new(FUNC)

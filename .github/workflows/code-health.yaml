@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
     - name: Set up Go
-      uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+      uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
       with:
         go-version-file: 'cfn-resources/go.mod'
     - name: Build
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Set up Go
-        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: Generate mocks
@@ -45,12 +45,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
         with:
           go-version-file: 'cfn-resources/go.mod'
           cache: false # see https://github.com/golangci/golangci-lint-action/issues/807
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@971e284b6050e8a5849b72094c50ab08da042db8
+        uses: golangci/golangci-lint-action@55c2c1448f86e01eaae002a5a3a9624417608d84
         with:
           version: v1.60.3 # Also update GOLANGCI_VERSION variable in Makefile when updating this version
           working-directory: cfn-resources
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: install tools
@@ -78,7 +78,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@4081bf99e2866ebe428fc0477b69eb4fcda7220a
+        uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019
   shellcheck:
     name: shellcheck
     runs-on: ubuntu-latest
@@ -92,7 +92,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: 'Setup cfn-lint'
-        uses: scottbrenner/cfn-lint-action@ee477703112bdb0bf078bd06b361ee16aaeb24d9
+        uses: scottbrenner/cfn-lint-action@2d3d07f3527aab48a973d3ee6e66009e87ea3491
       - name: 'Run cfn-lint'
         run: |
           shopt -s globstar # enable globbing
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
         with:
           go-version-file: 'cfn-resources/go.mod'
       - name: run-unit-test

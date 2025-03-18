@@ -12,8 +12,8 @@ The following components use this resource and are potentially impacted by any c
 All these resources need to be manually provided. Follow the steps below.
 - Atlas project (PROJECT_ID)
 - Atlas Cluster loaded with database and a collection (DB_NAME,COLLECTION_NAME)
-- Realm App (APP_ID)
-- Realm Service (SERVICE_ID)
+- App Services App (APP_ID)
+- App Services Service (SERVICE_ID)
 - Atlas Function (FUNC_NAME,FUNC_ID)
 
 

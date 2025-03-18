@@ -63,7 +63,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 #### InstanceType
 
-Type of instance specified on the Instance Name serverless or cluster
+Type of instance specified on the Instance Name serverless or cluster. **WARNING:** `serverless` instance type is deprecated and will be removed in January 2026. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/).
 
 _Required_: Yes
 

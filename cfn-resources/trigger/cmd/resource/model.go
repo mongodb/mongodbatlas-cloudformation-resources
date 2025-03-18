@@ -31,6 +31,7 @@ type DatabaseConfig struct {
 	FullDocumentBeforeChange *bool    `json:",omitempty"`
 	SkipCatchupEvents        *bool    `json:",omitempty"`
 	TolerateResumeErrors     *bool    `json:",omitempty"`
+	MaximumThroughput        *bool    `json:",omitempty"`
 	Unordered                *bool    `json:",omitempty"`
 }
 

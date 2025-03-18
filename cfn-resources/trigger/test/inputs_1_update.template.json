@@ -13,7 +13,8 @@
     "FullDocumentBeforeChange": "false",
     "Unordered": "false",
     "SkipCatchupEvents": "false",
-    "Match" : "{\"$and\":[{\"fullDocument.availability.value\":\"AVAILABLE\"},{\"$ne\":[\"fullDocument.retailPrice\",\"fullDocumentBeforeChange.retailPrice\"]}]}"
+    "MaximumThroughput": "true",
+    "Match": "{\"$and\":[{\"fullDocument.availability.value\":\"AVAILABLE\"},{\"$ne\":[\"fullDocument.retailPrice\",\"fullDocumentBeforeChange.retailPrice\"]}]}"
   },
   "Disabled": "false",
   "EventProcessors": {

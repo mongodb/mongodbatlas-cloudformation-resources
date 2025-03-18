@@ -76,6 +76,8 @@ github.com/mongodb-forks/digest v1.1.0 h1:7eUdsR1BtqLv0mdNm4OXs6ddWvR4X2/OsLwdKk
 github.com/mongodb-forks/digest v1.1.0/go.mod h1:rb+EX8zotClD5Dj4NdgxnJXG9nwrlx3NWKJ8xttz1Dg=
 github.com/mongodb-labs/go-client-mongodb-atlas-app-services v1.0.0-pre h1:ikBZOTvFcpgKPcheKKqn1xnBc0REvkmlTbR+grJjcb8=
 github.com/mongodb-labs/go-client-mongodb-atlas-app-services v1.0.0-pre/go.mod h1:AJpBaQM0zT9fIFib9E0GPKS0HHjS2Qm6Ti/cPJDgsJw=
+github.com/mongodb-labs/go-client-mongodb-atlas-app-services v1.0.0 h1:96odFUHQA0qn/7OP7L8CieQbuDhm6s2JBIvqY4suptk=
+github.com/mongodb-labs/go-client-mongodb-atlas-app-services v1.0.0/go.mod h1:AJpBaQM0zT9fIFib9E0GPKS0HHjS2Qm6Ti/cPJDgsJw=
 github.com/oasdiff/yaml v0.0.0-20241210131133-6b86fb107d80 h1:nZspmSkneBbtxU9TopEAE0CY+SBJLxO8LPUlw2vG4pU=
 github.com/oasdiff/yaml v0.0.0-20241210131133-6b86fb107d80/go.mod h1:7tFDb+Y51LcDpn26GccuUgQXUk6t0CXZsivKjyimYX8=
 github.com/oasdiff/yaml3 v0.0.0-20241210130736-a94c01f36349 h1:t05Ww3DxZutOqbMN+7OIuqDwXbhl32HiZGpLy26BAPc=

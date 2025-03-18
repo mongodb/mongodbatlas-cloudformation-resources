@@ -127,6 +127,10 @@
       "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
       "default": "default"
     },
+    "LambdaProxyArn": {
+      "type": "string",
+      "description": "lambda arn"
+    },
     "ProjectTeams": {
       "items": {
         "$ref": "#/definitions/projectTeam"
@@ -177,22 +181,30 @@
   "handlers": {
     "create": {
       "permissions": [
-        "secretsmanager:GetSecretValue"
+        "secretsmanager:GetSecretValue",
+        "lambda:InvokeFunction",
+        "lambda:GetFunction"
       ]
     },
     "read": {
       "permissions": [
-        "secretsmanager:GetSecretValue"
+        "secretsmanager:GetSecretValue",
+        "lambda:InvokeFunction",
+        "lambda:GetFunction"
       ]
     },
     "update": {
       "permissions": [
-        "secretsmanager:GetSecretValue"
+        "secretsmanager:GetSecretValue",
+        "lambda:InvokeFunction",
+        "lambda:GetFunction"
       ]
     },
     "delete": {
       "permissions": [
-        "secretsmanager:GetSecretValue"
+        "secretsmanager:GetSecretValue",
+        "lambda:InvokeFunction",
+        "lambda:GetFunction"
       ]
     }
   },

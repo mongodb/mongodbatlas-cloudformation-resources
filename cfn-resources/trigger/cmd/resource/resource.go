@@ -230,28 +230,26 @@ func newEventTrigger(model *Model) (*appservices.EventTriggerRequest, error) {
 		conf.Database = *model.DatabaseTrigger.Database
 	}
 	dTrigger := model.DatabaseTrigger
-
-	if dTrigger.Match != nil {
-		jsonData := []byte(*dTrigger.Match)
-		// convert the JSON string to a map
-		var m interface{}
-		if err := json.Unmarshal(jsonData, &m); err != nil {
-			return nil, errors.New("error unmarshalling Match field - " + err.Error())
-		}
-		conf.Match = m
-	}
-
-	if dTrigger.Project != nil {
-		jsonData := []byte(*dTrigger.Project)
-		// convert the JSON string to a map
-		var m interface{}
-		if err := json.Unmarshal(jsonData, &m); err != nil {
-			return nil, errors.New("error unmarshalling Project field - " + err.Error())
-		}
-		conf.Project = m
-	}
-
 	if dTrigger != nil {
+		if dTrigger.Match != nil {
+			jsonData := []byte(*dTrigger.Match)
+			// convert the JSON string to a map
+			var m interface{}
+			if err := json.Unmarshal(jsonData, &m); err != nil {
+				return nil, errors.New("error unmarshalling Match field - " + err.Error())
+			}
+			conf.Match = m
+		}
+
+		if dTrigger.Project != nil {
+			jsonData := []byte(*dTrigger.Project)
+			// convert the JSON string to a map
+			var m interface{}
+			if err := json.Unmarshal(jsonData, &m); err != nil {
+				return nil, errors.New("error unmarshalling Project field - " + err.Error())
+			}
+			conf.Project = m
+		}
 		conf.Collection = aws.StringValue(dTrigger.Collection)
 		conf.ServiceID = aws.StringValue(dTrigger.ServiceId)
 		conf.OperationTypes = dTrigger.OperationTypes

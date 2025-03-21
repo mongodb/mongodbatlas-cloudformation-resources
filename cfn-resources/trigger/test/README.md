@@ -49,7 +49,7 @@ we are going to use the application service provided by atlas, in order to use t
 with this CURL:
 ``` bash
 curl --request POST \
-  --url https://services.cloud.mongodb.com/api/admin/v3.0/auth/providers/mongodb-cloud/loginn \
+  --url https://services.cloud.mongodb.com/api/admin/v3.0/auth/providers/mongodb-cloud/login \
   --header 'Accept: application json' \
   --header 'Content-Type: application/json' \
   --data '{"username": {your pub key}, "apiKey": {your pvt key}}'

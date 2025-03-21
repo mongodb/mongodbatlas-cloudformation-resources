@@ -251,7 +251,7 @@
     "EventProcessors": {
       "type": "object",
       "$ref": "#/definitions/Event",
-      "description": "An object where each field name is an event processor ID and\neach value is an object that configures its corresponding\nevent processor. For an example configuration object, see\n[Send Trigger Events to AWS\nEventBridge](https://www.mongodb.com/docs/realm/triggers/examples/send-events-aws-eventbridge#std-label-event_processor_example)."
+      "description": "An object where each field name is an event processor ID and\neach value is an object that configures its corresponding\nevent processor. For an example configuration object, see\n[Send Trigger Events to AWS\nEventBridge](https://www.mongodb.com/docs/atlas/app-services/triggers/aws-eventbridge/#std-label-event_processor_example)."
     },
     "AppId": {
       "type": "string",

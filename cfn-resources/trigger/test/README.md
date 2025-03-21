@@ -21,7 +21,7 @@ All these resources need to be manually provided. Follow the steps below.
 
 ### Prerequisite steps:
 
-This guide will help you set up your MongoDB Realm configuration for testing a trigger resource.
+This guide will help you set up your MongoDB App Services configuration for testing a trigger resource.
 You'll define properties and create essential components such as a project, application, service, and function.
 
 Required Properties:
@@ -49,7 +49,7 @@ we are going to use the application service provided by atlas, in order to use t
 with this CURL:
 ``` bash
 curl --request POST \
-  --url https://realm.mongodb.com/api/admin/v3.0/auth/providers/mongodb-cloud/login \
+  --url https://services.cloud.mongodb.com/api/admin/v3.0/auth/providers/mongodb-cloud/login \
   --header 'Accept: application json' \
   --header 'Content-Type: application/json' \
   --data '{"username": {your pub key}, "apiKey": {your pvt key}}'
@@ -60,13 +60,13 @@ this will throw an "access_token" we need to save this access token because we w
 Before creating a new app we should validate if our project already contains an app:
 ``` bash
 curl --request GET \
---url https://realm.mongodb.com/api/admin/v3.0/groups/64bad960538ae76ec5c70050/apps \
+--url https://services.cloud.mongodb.com/api/admin/v3.0/groups/64bad960538ae76ec5c70050/apps \
 --header 'Authorization: Bearer {Your Access Token}'
 ```
 if not we can create a new one with this Curl:
 ``` bash
 curl --request POST \
---url https://realm.mongodb.com/api/admin/v3.0/groups/650e24611a33225d7e9b90d5/apps \
+--url https://services.cloud.mongodb.com/api/admin/v3.0/groups/650e24611a33225d7e9b90d5/apps \
 --header 'Authorization: Bearer {Your access token}' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -95,7 +95,7 @@ APP_ID: Application Identifier.
 to create a service we need to use the next curl:
 ```
 curl --request POST \
---url https://realm.mongodb.com/api/admin/v3.0/groups/64bad960538ae76ec5c70050/apps/64c00d91250e0ebe36dc6bc6/services \
+--url https://services.cloud.mongodb.com/api/admin/v3.0/groups/64bad960538ae76ec5c70050/apps/64c00d91250e0ebe36dc6bc6/services \
 --header 'Authorization: Bearer HERE_THE_access_token' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -114,7 +114,7 @@ we can extract the SERVICE_ID from this result
 finally we require a Function we can use the next curl call:
 ```
 curl --request POST \
---url https://realm.mongodb.com/api/admin/v3.0/groups/{groupId}/apps/{appid}/functions \
+--url https://services.cloud.mongodb.com/api/admin/v3.0/groups/{groupId}/apps/{appid}/functions \
 --header 'Authorization: Bearer HERE_THE_access_token' \
 --header 'Content-Type: application/json' \
 --data '{

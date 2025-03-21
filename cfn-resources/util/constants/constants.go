@@ -128,10 +128,7 @@ const (
 	Serverless          = "SERVERLESS"
 	Duplicate           = "DUPLICATE"
 
-	AppID       = "AppId"
-	RealmPubKey = "RealmConfig.PublicKey"
-	RealmPvtKey = "RealmConfig.PrivateKey"
-
+	AppID                = "AppId"
 	FederationSettingsID = "FederationSettingsId"
 
 	ExportBucketID             = "ExportBucketId"

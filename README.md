@@ -2,9 +2,12 @@
 [![Code Health](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml)
 [![Contract Testing](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml)
 
-Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+- Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+- See our MongoDB Atlas and AWS CloudFormation [documentation](https://www.mongodb.com/products/integrations/aws-cloudformation) for quick starts and common questions.
+- See [MongoDB Atlas AWS CloudFormation Custom Resource Type](cfn-resources/README.md) for a list of supported resources you can activate in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY).
+  - We only support resources enabled in the AWS Third Party Registry.
+  - We only support adding updates and fixes to the latest release and that we strongly encourage users to keep updated to the latest version of the resources.
 
-Partner Solutions (formally AWS Quick Starts) are automated reference deployments built by Amazon Web Services (AWS) solutions architects and AWS Partners. Partner Solutions help you deploy popular technologies to AWS according to AWS best practices. The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Partner Solution Deployment directly from the AWS Management Console.
 
 ## Getting Started
 ### MongoDB Atlas CloudFormation

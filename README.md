@@ -2,15 +2,12 @@
 [![Code Health](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml)
 [![Contract Testing](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml)
 
-Use [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). See our [documentation](https://www.mongodb.com/products/integrations/aws-cloudformation) for quick starts and common questions. For a list of supported resources you can activate in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY), see [here](cfn-resources/README.md).
-
-- We **only** support resources enabled in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").
-- We **only** add features and fix bugs in the latest release. We strongly encourage all users to update to the latest version to benefit from these improvements.
-
+Use [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). See our [documentation](https://www.mongodb.com/products/integrations/aws-cloudformation) for quick starts and common questions. For a list of supported resources, see [here](cfn-resources/README.md).
 
 ## Getting Started
 ### MongoDB Atlas CloudFormation
-See the [`cfn` examples](examples/README.md) to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates.
+
+See the [`cfn` examples](examples/README.md) to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates. For all examples, first enable resources in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").
 
 ### MongoDB Atlas AWS CDK
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
@@ -30,6 +27,10 @@ CloudFormation import is supported for MongoDB Atlas resources. This allows you 
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
 
 Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. In addition, support questions submitted under the Issues section of this repo are also being monitored. Bugs should be filed under the Issues section of this repo.
+
+**Please note**:
+- We **only** support resources enabled in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").
+- We **only** add features and fix bugs in the latest release. We strongly encourage all users to update to the latest version to benefit from these improvements.
 
 ## MongoDB Atlas API Keys Credential Management
 Atlas API keys Configuration are required for both CloudFormation and CDK resources, and this Atlas API key pair are provided as input by the use of a Profile

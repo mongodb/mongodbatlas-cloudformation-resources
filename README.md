@@ -2,11 +2,10 @@
 [![Code Health](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml)
 [![Contract Testing](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml)
 
-- Use [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-- See our MongoDB Atlas and AWS CloudFormation [documentation](https://www.mongodb.com/products/integrations/aws-cloudformation) for quick starts and common questions.
-- For a list of supported resources you can activate in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY), see [here](cfn-resources/README.md).
-  - We **only** support resources enabled in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").
-  - We **only** add features and fix bugs in the latest release. We strongly encourage all users to update to the latest version to benefit from these improvements.
+Use [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). See our [documentation](https://www.mongodb.com/products/integrations/aws-cloudformation) for quick starts and common questions. For a list of supported resources you can activate in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY), see [here](cfn-resources/README.md).
+
+- We **only** support resources enabled in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").
+- We **only** add features and fix bugs in the latest release. We strongly encourage all users to update to the latest version to benefit from these improvements.
 
 
 ## Getting Started

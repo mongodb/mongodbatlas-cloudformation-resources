@@ -16,7 +16,7 @@ jobs:
       - name: Update files
         run:  make tools update-atlas-sdk generate-mocks
       - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@9437562cb29a5a1120dd9f02cc760ec9e5d4651a
+        uses: tj-actions/verify-changed-files@a1c6acee9df209257a246f2cc6ae8cb6581c1edf
         id: verify-changed-files
       - name: Create PR
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e

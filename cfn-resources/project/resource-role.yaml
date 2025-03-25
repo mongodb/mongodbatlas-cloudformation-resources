@@ -30,6 +30,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                - "lambda:GetFunction"
+                - "lambda:InvokeFunction"
                 - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:

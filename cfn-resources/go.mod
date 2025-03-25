@@ -20,7 +20,7 @@ require (
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
 	go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0
-	go.mongodb.org/atlas-sdk/v20241113004 v20241113004.1.0
+	go.mongodb.org/atlas-sdk/v20250312001 v20250312001.0.0
 )
 
 require (
@@ -50,7 +50,7 @@ require (
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	go.mongodb.org/atlas v0.37.0 // indirect
-	golang.org/x/oauth2 v0.24.0 // indirect
+	golang.org/x/oauth2 v0.28.0 // indirect
 	gopkg.in/validator.v2 v2.0.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

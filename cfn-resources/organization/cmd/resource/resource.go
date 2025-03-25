@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20241113004/admin"
+	"go.mongodb.org/atlas-sdk/v20250312001/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"

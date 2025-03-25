@@ -1,14 +1,14 @@
 {
   "Name": "cfn-test-trigger-${RANDOM_INT_100K}",
   "Type": "DATABASE",
-  "Profile": "${MONGODB_ATLAS_PROFILE}",
+  "Profile": "default",
   "DatabaseTrigger": {
     "OperationTypes": [
       "INSERT"
     ],
     "Database": "store",
     "Collection": "sales",
-    "ServiceId": "${MONGODB_REALM_SERVICE_ID}",
+    "ServiceId": "",
     "FullDocument": "true",
     "FullDocumentBeforeChange": "false",
     "Unordered": "false",
@@ -20,14 +20,14 @@
   "EventProcessors": {
     "FUNCTION": {
       "FuncConfig": {
-        "FunctionName": "${MONGODB_REALM_FUNCTION_NAME}",
-        "FunctionId": "${MONGODB_REALM_FUNCTION_ID}"
+        "FunctionName": "",
+        "FunctionId": ""
       }
     },
     "AWSEVENTBRIDGE": {
       "AWSConfig": {}
     }
   },
-  "AppId": "${MONGODB_REALM_APP_ID}",
-  "ProjectId": "${MONGODB_ATLAS_PROJECT_ID}"
+  "AppId": "",
+  "ProjectId": ""
 }

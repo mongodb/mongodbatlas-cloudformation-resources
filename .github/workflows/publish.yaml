@@ -95,4 +95,13 @@ jobs:
           OPS_GENIE_API_KEY: ${{ secrets.OPS_GENIE_API_KEY_PUBLISHING }}
           MICROSOFT_TEAMS_WEBHOOK_CREATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_CREATE_URL_PUBLISHING }}
           MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL_PUBLISHING }}
+
+          # Trigger
+          PROJECT_ID: '5555555'
+          APP_ID: '44444444'
+          DB_NAME: 'testDB'
+          COLLECTION_NAME: 'collection'
+          FUNC_NAME: 'func2'
+          FUNC_ID: '2222222'
+          SERVICE_ID: '111111'
           

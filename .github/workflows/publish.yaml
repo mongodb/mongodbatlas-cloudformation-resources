@@ -97,11 +97,11 @@ jobs:
           MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL_PUBLISHING }}
 
           # Trigger
-          PROJECT_ID: '5555555'
-          APP_ID: '44444444'
-          DB_NAME: 'testDB'
-          COLLECTION_NAME: 'collection'
-          FUNC_NAME: 'func2'
-          FUNC_ID: '2222222'
-          SERVICE_ID: '111111'
+          PROJECT_ID: '67e52690518cb3468aad6c09' # existing project
+          APP_ID: '67e527bc20d289ab7cd2922e' #
+          DB_NAME: 'sample_airbnb' 
+          COLLECTION_NAME: 'listingsAndReviews'
+          FUNC_NAME: 'Function_0'
+          FUNC_ID: '67e527e78c5472bda7564977'
+          SERVICE_ID: '67e527bd20d289ab7cd292a9'
           

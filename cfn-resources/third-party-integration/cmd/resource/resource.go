@@ -326,11 +326,8 @@ func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) 
 }
 
 func integrationToModel(currentModel Model, integration *admin.ThridPartyIntegration) Model {
-	enabled := false
 	// if "Enabled" is not set in the inputs we dont want to return "Enabled" in outputs
-	if currentModel.Enabled != nil {
-		enabled = true
-	}
+	enabled := currentModel.Enabled != nil
 
 	/*
 	   The variables from the thirdparty integration are not returned back in reposnse because most of the variables are sensitive variables.

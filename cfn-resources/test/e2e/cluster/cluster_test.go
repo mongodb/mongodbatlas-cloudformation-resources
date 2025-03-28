@@ -225,9 +225,10 @@ func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin.Replic
 			hwSpec := config.GetElectableSpecs()
 			a.Equal(nodeCount, hwSpec.GetNodeCount())
 		}
-		if i == 0 {
+		switch i {
+		case 0:
 			a.Equal(zone1, spec.GetZoneName())
-		} else if i == 1 {
+		case 1:
 			a.Equal(zone2, spec.GetZoneName())
 		}
 	}

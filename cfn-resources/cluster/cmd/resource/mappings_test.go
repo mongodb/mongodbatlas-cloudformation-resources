@@ -113,7 +113,7 @@ func TestNewHardwareSpec(t *testing.T) {
 			hardwareSpec := resource.NewHardwareSpec(&tc.spec)
 			hwSpecJSON, err := json.Marshal(hardwareSpec)
 			require.NoError(t, err)
-			assert.Equal(t, tc.expected, string(hwSpecJSON))
+			assert.JSONEq(t, tc.expected, string(hwSpecJSON))
 		})
 	}
 }

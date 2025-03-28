@@ -1,7 +1,5 @@
 version: "2"
 run:
-  build-tags:
-    - integration
   modules-download-mode: readonly
   tests: true
 linters:
@@ -103,17 +101,7 @@ linters:
     rules:
       - path: (.+)\.go$
         text: declaration of ".*" shadows declaration at line .*
-    paths:
-      - third_party$
-      - builtin$
-      - examples$
 formatters:
   enable:
     - gofmt
     - goimports
-  exclusions:
-    generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$

@@ -29,8 +29,8 @@ Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mon
 Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions via the [Support Portal](https://support.mongodb.com/). Support questions submitted under the Issues section of this repo are monitored but have no SLA and are best effort. Bugs should be filed under the Issues section of this repo.
 
 **Please note**:
-- In order to ensure the highest quality experience and support, we only support resources published via the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").  Any usage outside of this workflow is not supported or recommended.  
-- New features, functionality, and fix bugs are only included in the latest release. Hence, we strongly encourage all users to always update to the latest version to benefit from these improvements.
+- In order to ensure the highest quality experience and support, we only support resources published via the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas"). Any usage outside of this workflow is not supported or recommended.  
+* New features, functionality, and fix bugs are only included in the latest release. Hence, we strongly encourage all users to always update to the latest version to benefit from these improvements. See the [Upgrade the MongoDB Atlas CloudFormation public extensions](examples/README.md#upgrade-the-mongodb-atlas-cloudformation-public-extensions) for how to upgrade.
 
 ## MongoDB Atlas API Keys Credential Management
 Atlas API keys Configuration are required for both CloudFormation and CDK resources, and this Atlas API key pair are provided as input by the use of a Profile

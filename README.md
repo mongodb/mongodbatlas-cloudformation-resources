@@ -7,7 +7,7 @@ Use [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to manage [Mong
 ## Getting Started
 ### MongoDB Atlas CloudFormation
 
-See the [`cfn` examples](examples/README.md) to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates. For all examples, first enable resources in the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas").
+See the [`cfn` examples](examples/README.md) to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates. Follow the steps in [Activate the MongoDB Atlas CloudFormation public extensions](examples/README.md#activate-the-mongodb-atlas-cloudformation-public-extensions) for each AWS Account and Region where you want to deploy your MongoDB Atlas resources.
 
 ### MongoDB Atlas AWS CDK
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.

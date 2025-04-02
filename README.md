@@ -1,14 +1,13 @@
-# MongoDB Atlas AWS CloudFormation Resources & AWS Partner Solution Deployments 
+# MongoDB Atlas AWS CloudFormation Resources
 [![Code Health](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/code-health.yaml)
 [![Contract Testing](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml/badge.svg?branch=master)](https://github.com/mongodb/mongodbatlas-cloudformation-resources/actions/workflows/contract-testing.yaml)
 
-Use AWS CloudFormation to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-
-Partner Solutions (formally AWS Quick Starts) are automated reference deployments built by Amazon Web Services (AWS) solutions architects and AWS Partners. Partner Solutions help you deploy popular technologies to AWS according to AWS best practices. The quickest way to get started is to launch the official [MongoDB Atlas on AWS](https://aws.amazon.com/quickstart/architecture/mongodb-atlas/) Partner Solution Deployment directly from the AWS Management Console.
+Use [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to manage [MongoDB Atlas](https://www.mongodb.com/cloud/atlas). See our [documentation](https://www.mongodb.com/products/integrations/aws-cloudformation) for quick starts and common questions. For a list of supported resources, see [here](cfn-resources/README.md).
 
 ## Getting Started
 ### MongoDB Atlas CloudFormation
-See the [`cfn` examples](examples/README.md) to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates.
+
+See the [`cfn` examples](examples/README.md) to setup prerequisites and get started with your first cluster using our sample CloudFormation Stack templates. Follow the steps in [Activate the MongoDB Atlas CloudFormation public extensions](examples/README.md#activate-the-mongodb-atlas-cloudformation-public-extensions) for each AWS Account and Region where you want to deploy your MongoDB Atlas resources.
 
 ### MongoDB Atlas AWS CDK
 See the [cdk examples](https://github.com/mongodb/awscdk-resources-mongodbatlas/blob/main/examples/README.md) to setup prerequisites and get started with your first cluster using our AWS CDK sample code.
@@ -27,7 +26,11 @@ CloudFormation import is supported for MongoDB Atlas resources. This allows you 
 ## Support, Bugs, Feature Requests
 Feature requests can be submitted at [feedback.mongodb.com](https://feedback.mongodb.com/forums/924145-atlas/category/392596-atlas-cloudformation-resources) - just select "Atlas CloudFormation Resources" as the category or vote for an already suggested feature.
 
-Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions within the Atlas UI. In addition, support questions submitted under the Issues section of this repo are also being monitored. Bugs should be filed under the Issues section of this repo.
+Support for the MongoDB Atlas Resource Provider for CloudFormation is provided under MongoDB Atlas support plans, starting with Developer. Please submit support questions via the [Support Portal](https://support.mongodb.com/). Support questions submitted under the Issues section of this repo are monitored but have no SLA and are best effort. Bugs should be filed under the Issues section of this repo.
+
+**Please note**:
+- In order to ensure the highest quality experience and support, we only support resources published via the [AWS Cloudformation Third Party registry](https://console.aws.amazon.com/cloudformation/home#/registry/public-extensions?visibility=PUBLIC&type=RESOURCE&category=THIRD_PARTY) (select "Third party" as `Provider` and search by "MongoDB::Atlas"). Any usage outside of this workflow is not supported or recommended.  
+* New features, functionality, and fix bugs are only included in the latest release. Hence, we strongly encourage all users to always update to the latest version to benefit from these improvements. See the [Upgrade the MongoDB Atlas CloudFormation public extensions](examples/README.md#upgrade-the-mongodb-atlas-cloudformation-public-extensions) for how to upgrade.
 
 ## MongoDB Atlas API Keys Credential Management
 Atlas API keys Configuration are required for both CloudFormation and CDK resources, and this Atlas API key pair are provided as input by the use of a Profile

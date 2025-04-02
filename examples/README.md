@@ -132,6 +132,14 @@ The recommended options include:
   ```
   - replace `{KEY_ARN}` with your kms key arn
 
+## Upgrade the MongoDB Atlas CloudFormation public extensions
+To upgrade an existing `MongoDB::Atlas` resource type you need to: (see [Activate the MongoDB Atlas CloudFormation public extensions](#activate-the-mongodb-atlas-cloudformation-public-extensions) to activate a new resource type):
+
+1. Navigate to the [Cloudformation -> Registry -> Activated extensions](https://eu-north-1.console.aws.amazon.com/cloudformation/home?region=eu-north-1#/registry/activated-extensions/resource-types?category=ACTIVATED&type=RESOURCE).
+2. Select the resource type you want to update.
+3. Click Actions -> Update (if you enabled Automatic Updates when activating the resource type, any minor, for example `1.0.0` to `1.1.0` will be automaticlly updated).
+4. Re run the [stacks](https://eu-north-1.console.aws.amazon.com/cloudformation/home?region=eu-north-1#/stacks?filteringText=&filteringStatus=active&viewNested=true) using the upgraded resource type.
+
 ## Using the examples
 Once your prerequisites are configured, use the examples in this folder as a starting template for a resource to quickly create a CloudFormation stack. 
 

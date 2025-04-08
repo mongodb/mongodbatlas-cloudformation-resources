@@ -1,12 +1,13 @@
 module github.com/mongodb/mongodbatlas-cloudformation-resources
 
 go 1.23.1
+
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
-	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.59.0
+	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.59.1
 	github.com/aws/smithy-go v1.22.3
 	github.com/dave/jennifer v1.7.1
 	github.com/getkin/kin-openapi v0.131.0

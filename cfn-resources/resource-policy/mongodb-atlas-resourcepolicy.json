@@ -78,6 +78,10 @@
       "type": "string",
       "description": "Human-readable label that describes the atlas resource policy."
     },
+    "Description": {
+      "type": "string",
+      "description": "Description of the Atlas resource policy.."
+    },
     "OrgId": {
       "type": "string",
       "maxLength": 24,

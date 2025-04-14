@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#createdbyuser" title="CreatedByUser">CreatedByUser</a>" : <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>,
         "<a href="#lastupdatedbyuser" title="LastUpdatedByUser">LastUpdatedByUser</a>" : <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
+        "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#orgid" title="OrgId">OrgId</a>" : <i>String</i>,
         "<a href="#policies" title="Policies">Policies</a>" : <i>[ <a href="apiatlaspolicy.md">ApiAtlasPolicy</a>, ... ]</i>,
         "<a href="#profile" title="Profile">Profile</a>" : <i>String</i>
@@ -30,6 +31,7 @@ Properties:
     <a href="#createdbyuser" title="CreatedByUser">CreatedByUser</a>: <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>
     <a href="#lastupdatedbyuser" title="LastUpdatedByUser">LastUpdatedByUser</a>: <i><a href="apiatlasusermetadata.md">ApiAtlasUserMetadata</a></i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
+    <a href="#description" title="Description">Description</a>: <i>String</i>
     <a href="#orgid" title="OrgId">OrgId</a>: <i>String</i>
     <a href="#policies" title="Policies">Policies</a>: <i>
       - <a href="apiatlaspolicy.md">ApiAtlasPolicy</a></i>
@@ -59,6 +61,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 Human-readable label that describes the atlas resource policy.
 
 _Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Description
+
+Description of the Atlas resource policy..
+
+_Required_: No
 
 _Type_: String
 

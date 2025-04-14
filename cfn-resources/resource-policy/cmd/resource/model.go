@@ -10,6 +10,7 @@ type Model struct {
 	LastUpdatedByUser *ApiAtlasUserMetadata `json:",omitempty"`
 	LastUpdatedDate   *string               `json:",omitempty"`
 	Name              *string               `json:",omitempty"`
+	Description       *string               `json:",omitempty"`
 	OrgId             *string               `json:",omitempty"`
 	Policies          []ApiAtlasPolicy      `json:",omitempty"`
 	Version           *string               `json:",omitempty"`

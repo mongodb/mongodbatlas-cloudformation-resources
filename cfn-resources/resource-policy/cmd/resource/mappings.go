@@ -26,7 +26,7 @@ func NewResourcePolicyCreateReq(model *Model) *admin.ApiAtlasResourcePolicyCreat
 	}
 	return &admin.ApiAtlasResourcePolicyCreate{
 		Name:        *model.Name,
-		Description: *&model.Description,
+		Description: model.Description,
 		Policies:    *modelPoliciesToSDKPolicies(model.Policies),
 	}
 }

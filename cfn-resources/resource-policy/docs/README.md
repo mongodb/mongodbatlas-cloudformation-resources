@@ -68,7 +68,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### Description
 
-Description of the Atlas resource policy..
+Description of the Atlas resource policy.
 
 _Required_: No
 

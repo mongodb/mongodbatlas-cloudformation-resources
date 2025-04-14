@@ -15,6 +15,10 @@
       "Type": "String",
       "Description": "Resource policy name."
     },
+    "Description": {
+      "Type": "String",
+      "Description": "Description of the Atlas resource policy."
+    },
     "Policies": {
       "Type": "String",
       "Description": "Policies description"
@@ -33,6 +37,9 @@
         },
         "Name": {
           "Ref": "Name"
+        },
+        "Description": {
+          "Ref": "Description"
         },
         "Policies": [
           {

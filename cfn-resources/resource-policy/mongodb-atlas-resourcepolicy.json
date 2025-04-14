@@ -80,7 +80,7 @@
     },
     "Description": {
       "type": "string",
-      "description": "Description of the Atlas resource policy.."
+      "description": "Description of the Atlas resource policy."
     },
     "OrgId": {
       "type": "string",

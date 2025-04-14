@@ -230,7 +230,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
-		_, response, err := deleteRequest.Execute()
+		response, err := deleteRequest.Execute()
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 

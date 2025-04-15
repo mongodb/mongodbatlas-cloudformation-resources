@@ -15,8 +15,9 @@
 package resource
 
 import (
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 )
 
 func NewResourcePolicyCreateReq(model *Model) *admin.ApiAtlasResourcePolicyCreate {
@@ -24,8 +25,9 @@ func NewResourcePolicyCreateReq(model *Model) *admin.ApiAtlasResourcePolicyCreat
 		return nil
 	}
 	return &admin.ApiAtlasResourcePolicyCreate{
-		Name:     *model.Name,
-		Policies: *modelPoliciesToSDKPolicies(model.Policies),
+		Name:        *model.Name,
+		Description: model.Description,
+		Policies:    *modelPoliciesToSDKPolicies(model.Policies),
 	}
 }
 
@@ -42,8 +44,9 @@ func NewResourcePolicyUpdateReq(model *Model) *admin.ApiAtlasResourcePolicyEdit 
 		return nil
 	}
 	return &admin.ApiAtlasResourcePolicyEdit{
-		Name:     model.Name,
-		Policies: modelPoliciesToSDKPolicies(model.Policies),
+		Name:        model.Name,
+		Description: model.Description,
+		Policies:    modelPoliciesToSDKPolicies(model.Policies),
 	}
 }
 

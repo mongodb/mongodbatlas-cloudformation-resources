@@ -1,6 +1,7 @@
 {
   "Name": "Name",
   "OrgId": "OrgId",
+  "Description": "test description",
   "Id": "",
   "Profile": "default",
   "Policies": [

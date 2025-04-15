@@ -250,7 +250,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		databaseUser := dbUserResults[i]
 		var model = Model{
 			DatabaseName: &databaseUser.DatabaseName,
-			Description: databaseUser.Description,
+			Description:  databaseUser.Description,
 			LdapAuthType: databaseUser.LdapAuthType,
 			X509Type:     databaseUser.X509Type,
 			Username:     &databaseUser.Username,

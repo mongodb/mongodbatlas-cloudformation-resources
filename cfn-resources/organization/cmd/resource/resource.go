@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"go.mongodb.org/atlas-sdk/v20241113004/admin"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -230,7 +230,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	responseChan := make(chan DeleteResponse, 1)
 	go func() {
-		_, response, err := deleteRequest.Execute()
+		response, err := deleteRequest.Execute()
 		responseChan <- DeleteResponse{Error: err, Response: response}
 	}()
 

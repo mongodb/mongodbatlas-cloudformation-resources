@@ -17,7 +17,7 @@ package resource_test
 import (
 	"testing"
 
-	"go.mongodb.org/atlas-sdk/v20241113004/admin"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
 
 	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/resource-policy/cmd/resource"

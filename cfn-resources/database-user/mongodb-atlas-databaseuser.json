@@ -89,6 +89,10 @@
       "description": "MongoDB database against which the MongoDB database user authenticates. MongoDB database users must provide both a username and authentication database to log into MongoDB.  Default value is `admin`.",
       "type": "string"
     },
+    "Description": {
+      "description": "Description of this database user.",
+      "type": "string"
+    },
     "Labels": {
       "description": "List that contains the key-value pairs for tagging and categorizing the MongoDB database user. The labels that you define do not appear in the console.",
       "items": {

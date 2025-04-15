@@ -24,6 +24,10 @@
       "Type": "String",
       "NoEcho": "true",
       "Description": "Alphanumeric string that authenticates this database user against the database specified in databaseName. To authenticate with SCRAM-SHA, you must specify this parameter"
+    },
+    "Description": {
+      "Type": "String",
+      "Description": "Description of this database user."
     }
   },
   "Mappings": {},
@@ -48,6 +52,9 @@
         },
         "DatabaseName": {
           "Ref": "DatabaseName"
+        },
+        "Description": {
+          "Ref": "Description"
         },
         "Roles": [
           {

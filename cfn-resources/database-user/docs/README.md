@@ -15,6 +15,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#deleteafterdate" title="DeleteAfterDate">DeleteAfterDate</a>" : <i>String</i>,
         "<a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>" : <i>String</i>,
         "<a href="#databasename" title="DatabaseName">DatabaseName</a>" : <i>String</i>,
+        "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#labels" title="Labels">Labels</a>" : <i>[ <a href="labeldefinition.md">labelDefinition</a>, ... ]</i>,
         "<a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>" : <i>String</i>,
         "<a href="#x509type" title="X509Type">X509Type</a>" : <i>String</i>,
@@ -36,6 +37,7 @@ Properties:
     <a href="#deleteafterdate" title="DeleteAfterDate">DeleteAfterDate</a>: <i>String</i>
     <a href="#awsiamtype" title="AWSIAMType">AWSIAMType</a>: <i>String</i>
     <a href="#databasename" title="DatabaseName">DatabaseName</a>: <i>String</i>
+    <a href="#description" title="Description">Description</a>: <i>String</i>
     <a href="#labels" title="Labels">Labels</a>: <i>
       - <a href="labeldefinition.md">labelDefinition</a></i>
     <a href="#ldapauthtype" title="LdapAuthType">LdapAuthType</a>: <i>String</i>
@@ -79,6 +81,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 MongoDB database against which the MongoDB database user authenticates. MongoDB database users must provide both a username and authentication database to log into MongoDB.  Default value is `admin`.
 
 _Required_: Yes
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Description
+
+Description of this database user.
+
+_Required_: No
 
 _Type_: String
 

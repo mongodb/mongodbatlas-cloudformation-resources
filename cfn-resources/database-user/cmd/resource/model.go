@@ -7,6 +7,7 @@ type Model struct {
 	DeleteAfterDate   *string           `json:",omitempty"`
 	AWSIAMType        *string           `json:",omitempty"`
 	DatabaseName      *string           `json:",omitempty"`
+	Description       *string           `json:",omitempty"`
 	Labels            []LabelDefinition `json:",omitempty"`
 	LdapAuthType      *string           `json:",omitempty"`
 	X509Type          *string           `json:",omitempty"`

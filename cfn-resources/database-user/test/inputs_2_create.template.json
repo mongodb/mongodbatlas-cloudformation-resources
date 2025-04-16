@@ -1,9 +1,10 @@
 {
   "Username": "arn:aws:iam::111111967292:role/cfn-admin",
   "AWSIAMType": "ROLE",
-  "ProjectId": "ProjectId",
-  "Profile": "default",
+  "ProjectId": "${MONGODB_ATLAS_PROJECT_ID}",
+  "Profile": "${MONGODB_ATLAS_PROFILE}",
   "DatabaseName": "$external",
+  "Description": "Desc 1",
   "Roles": [
     {
       "RoleName": "readWrite",

@@ -20,13 +20,15 @@ import (
 	"net/http"
 	"strings"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 const (
@@ -167,13 +169,13 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
 func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
-	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
+	if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
-	if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
+	if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
 			Message:          err.Error(),

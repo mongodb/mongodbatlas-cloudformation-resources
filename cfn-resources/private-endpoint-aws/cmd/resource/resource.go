@@ -21,16 +21,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func setup() {
@@ -118,7 +119,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Id: currentModel.Id,
 	}
 
-	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.CreatePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		CloudProvider, *currentModel.EndpointServiceId, &endpointRequest)
 
 	_, response, err := privateEndpointRequest.Execute()
@@ -145,7 +146,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 }
 
 func getPrivateEndpoint(client *util.MongoDBClient, model *Model) (*admin.PrivateLinkEndpoint, *http.Response, error) {
-	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.GetPrivateEndpoint(context.Background(), *model.ProjectId,
 		CloudProvider, *model.Id, *model.EndpointServiceId)
 	privateEndpoint, response, err := privateEndpointRequest.Execute()
 
@@ -231,9 +232,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}}, nil
 	}
 
-	privateEndpointRequest := client.Atlas20231115014.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
+	privateEndpointRequest := client.AtlasSDK.PrivateEndpointServicesApi.DeletePrivateEndpoint(context.Background(), *currentModel.ProjectId,
 		CloudProvider, *currentModel.Id, *currentModel.EndpointServiceId)
-	_, response, err := privateEndpointRequest.Execute()
+	response, err := privateEndpointRequest.Execute()
 	defer response.Body.Close()
 	if err != nil {
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("error creating Serverless Private Endpoint %s",

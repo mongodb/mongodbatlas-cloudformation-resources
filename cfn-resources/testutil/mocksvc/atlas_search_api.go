@@ -4,10 +4,9 @@ package mocksvc
 
 import (
 	context "context"
-
-	admin "go.mongodb.org/atlas-sdk/v20231115014/admin"
-
 	http "net/http"
+
+	admin "go.mongodb.org/atlas-sdk/v20250312002/admin"
 
 	mock "github.com/stretchr/testify/mock"
 )

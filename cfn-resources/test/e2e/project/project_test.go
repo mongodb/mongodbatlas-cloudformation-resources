@@ -18,11 +18,13 @@ import (
 	"os"
 	"testing"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 )
 
 type localTestContext struct {

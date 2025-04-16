@@ -21,17 +21,19 @@ import (
 	"reflect"
 	"strings"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/spf13/cast"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.EventTypeName, constants.ProjectID}
@@ -61,7 +63,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if currentModel.Id != nil && *currentModel.Id != "" {
 		_, _ = logger.Warnf("resource already exists for Id: %s", *currentModel.Id)
@@ -118,7 +120,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -158,7 +160,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -222,7 +224,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	atlasV2 := client.Atlas20231115014
+	atlasV2 := client.AtlasSDK
 
 	if !isExist(currentModel, atlasV2) {
 		_, _ = logger.Warnf("resource not exist for Id: %s", *currentModel.Id)
@@ -269,12 +271,12 @@ func expandAlertConfigurationMatchers(matchers []Matcher) *[]admin.StreamsMatche
 	return &mts
 }
 
-func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.ServerlessMetricThreshold {
+func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.FlexClusterMetricThreshold {
 	threshold := currentModel.MetricThreshold
 	if threshold == nil {
 		return nil
 	}
-	return &admin.ServerlessMetricThreshold{
+	return &admin.FlexClusterMetricThreshold{
 		MetricName: cast.ToString(threshold.MetricName),
 		Operator:   threshold.Operator,
 		Threshold:  threshold.Threshold,
@@ -283,13 +285,13 @@ func expandAlertConfigurationMetricThresholdConfig(currentModel *Model) *admin.S
 	}
 }
 
-func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin.GreaterThanRawThreshold {
+func expandAlertConfigurationThreshold(threshold *IntegerThresholdView) *admin.StreamProcessorMetricThreshold {
 	if threshold == nil {
 		return nil
 	}
-	return &admin.GreaterThanRawThreshold{
+	return &admin.StreamProcessorMetricThreshold{
 		Operator:  threshold.Operator,
-		Threshold: util.Pointer(int(*threshold.Threshold)),
+		Threshold: util.Pointer(float64(*threshold.Threshold)),
 		Units:     threshold.Units,
 	}
 }

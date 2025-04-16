@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
@@ -53,7 +53,7 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 	if peErr != nil {
 		return nil, peErr
 	}
-	return client.Atlas20231115014, nil
+	return client.AtlasSDK, nil
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -141,7 +141,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := currentModel.ProjectId
 	instanceName := currentModel.InstanceName
 	connectionName := currentModel.ConnectionName
-	if _, apiResp, err := conn.StreamsApi.DeleteStreamConnection(ctx, *projectID, *instanceName, *connectionName).Execute(); err != nil {
+	if apiResp, err := conn.StreamsApi.DeleteStreamConnection(ctx, *projectID, *instanceName, *connectionName).Execute(); err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
 

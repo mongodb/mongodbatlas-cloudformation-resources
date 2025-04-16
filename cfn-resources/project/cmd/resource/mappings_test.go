@@ -18,9 +18,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/project/cmd/resource"
 )
 
 // make test deterministic

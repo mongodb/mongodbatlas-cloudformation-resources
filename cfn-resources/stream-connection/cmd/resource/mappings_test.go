@@ -17,11 +17,12 @@ package resource_test
 import (
 	"testing"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
 
 	"github.com/aws/smithy-go/ptr"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-connection/cmd/resource"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-connection/cmd/resource"
 )
 
 func TestNewModelDBRoleToExecute(t *testing.T) {

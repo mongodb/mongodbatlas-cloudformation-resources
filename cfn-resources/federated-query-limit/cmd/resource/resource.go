@@ -19,17 +19,19 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/spf13/cast"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateOrUpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName, constants.Value}
@@ -157,7 +159,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_, response, err := client.Atlas20231115014.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
+	response, err := client.AtlasSDK.DataFederationApi.DeleteOneDataFederationInstanceQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -191,7 +193,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	listQueryLimitsAPIResult, response, err := client.Atlas20231115014.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
+	listQueryLimitsAPIResult, response, err := client.AtlasSDK.DataFederationApi.ReturnFederatedDatabaseQueryLimits(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -230,7 +232,7 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 }
 
 func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*admin.DataFederationTenantQueryLimit, *http.Response, error) {
-	getQueryLimitAPIRequest := client.Atlas20231115014.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
+	getQueryLimitAPIRequest := client.AtlasSDK.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,
@@ -242,7 +244,7 @@ func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*a
 
 func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, method string) (handler.ProgressEvent, error) {
 	queryLimitInput := currentModel.setQueryLimit()
-	queryLimit, response, err := client.Atlas20231115014.DataFederationApi.CreateOneDataFederationQueryLimit(
+	queryLimit, response, err := client.AtlasSDK.DataFederationApi.CreateOneDataFederationQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
 		*currentModel.TenantName,

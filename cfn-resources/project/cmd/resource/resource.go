@@ -20,13 +20,15 @@ import (
 	"fmt"
 	"reflect"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Name}
@@ -49,7 +51,7 @@ func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredF
 	if peErr != nil {
 		return nil, peErr
 	}
-	return client.Atlas20231115014, nil
+	return client.AtlasSDK, nil
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -214,7 +216,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		newAPIKeys, changedKeys, removeKeys := GetChangeInAPIKeys(currentModel.ProjectApiKeys, prevModel.ProjectApiKeys)
 
 		for _, key := range removeKeys {
-			_, _, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, *key.Key).Execute()
+			_, err = atlasV2.ProgrammaticAPIKeysApi.RemoveProjectApiKey(context.Background(), projectID, *key.Key).Execute()
 			if err != nil {
 				return handler.ProgressEvent{
 					OperationStatus:  handler.Failed,
@@ -280,7 +282,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (event h
 		return event, nil
 	}
 
-	_, res, err := atlasV2.ProjectsApi.DeleteProject(context.Background(), id).Execute()
+	res, err := atlasV2.ProjectsApi.DeleteProject(context.Background(), id).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Failed to Create Project : %s", err.Error()),
 			res), nil

@@ -19,13 +19,15 @@ import (
 	"net/http"
 	"testing"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil/mocksvc"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 type stateTransitionTestCase struct {

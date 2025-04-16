@@ -21,16 +21,18 @@ import (
 	"net/http"
 	"strings"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.APIUserID}
@@ -100,7 +102,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	entryList = append(entryList, access)
 
-	createAccessListAPIKey := client.Atlas20231115014.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
+	createAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.CreateApiKeyAccessList(context.Background(), orgID, apiKeyID, &entryList)
 	_, response, err := createAccessListAPIKey.Execute()
 
 	if err != nil {
@@ -151,7 +153,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	entry := getEntryAddress(currentModel)
-	readAccessListAPIKey := client.Atlas20231115014.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
+	readAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.GetApiKeyAccessList(context.Background(), orgID, entry, apiKeyID)
 	_, response, err := readAccessListAPIKey.Execute()
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -202,8 +204,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	entry := getEntryAddress(currentModel)
-	deleteAccessListAPIKey := client.Atlas20231115014.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, entry)
-	_, response, err := deleteAccessListAPIKey.Execute()
+	deleteAccessListAPIKey := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKeyAccessListEntry(context.Background(), orgID, apiKeyID, entry)
+	response, err := deleteAccessListAPIKey.Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())
@@ -259,7 +261,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	orgID := *currentModel.OrgId
 	apiKeyID := *currentModel.APIUserId
 
-	accessListResponse, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
+	accessListResponse, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.ListApiKeyAccessListsEntries(context.Background(), orgID, apiKeyID).Execute()
 
 	if err != nil {
 		_, _ = logger.Warnf("Execute error: %s", err.Error())

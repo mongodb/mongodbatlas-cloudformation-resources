@@ -20,9 +20,12 @@ import (
 	"net/http"
 	"sort"
 
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
@@ -30,8 +33,6 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/secrets"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Description, constants.AwsSecretName}
@@ -71,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Desc:  util.SafeString(currentModel.Description),
 		Roles: currentModel.Roles,
 	}
-	apiKeyUserDetails, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.CreateApiKey(
+	apiKeyUserDetails, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.CreateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		&apiKeyInput,
@@ -164,7 +165,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Roles: &currentModel.Roles,
 	}
 
-	apiKeyUserDetails, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.UpdateApiKey(
+	apiKeyUserDetails, response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.UpdateApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -178,7 +179,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	existingModel := Model{APIUserId: currentModel.APIUserId, OrgId: currentModel.OrgId}
 	existingModel.readAPIKeyDetails(*apiKeyUserDetails)
 
-	_, response, err = updateProjectAssignments(client, currentModel, &existingModel)
+	response, err = updateProjectAssignments(client, currentModel, &existingModel)
 
 	if err != nil {
 		return handleError(response, constants.UPDATE, err)
@@ -207,7 +208,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, response, err := client.Atlas20231115014.ProgrammaticAPIKeysApi.DeleteApiKey(
+	response, err := client.AtlasSDK.ProgrammaticAPIKeysApi.DeleteApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -239,7 +240,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	apiKeyRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.ListApiKeys(
+	apiKeyRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.ListApiKeys(
 		context.Background(),
 		*currentModel.OrgId,
 	)
@@ -305,7 +306,7 @@ func assignProjects(client *util.MongoDBClient, project ProjectAssignment, apiUs
 }
 
 func getAPIkeyDetails(req *handler.Request, client *util.MongoDBClient, currentModel *Model) (*admin.ApiKeyUserDetails, *string, *http.Response, error) {
-	apiKeyRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.GetApiKey(
+	apiKeyRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.GetApiKey(
 		context.Background(),
 		*currentModel.OrgId,
 		*currentModel.APIUserId,
@@ -323,7 +324,7 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.
 	projectAPIKeyInput := admin.UpdateAtlasProjectApiKey{
 		Roles: &projectAssignment.Roles,
 	}
-	assignAPIRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
+	assignAPIRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.UpdateApiKeyRoles(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,
@@ -333,8 +334,8 @@ func updateOrgKeyProjectRoles(projectAssignment ProjectAssignment, client *util.
 	return assignAPIRequest.Execute()
 }
 
-func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (map[string]interface{}, *http.Response, error) {
-	unAssignAPIRequest := client.Atlas20231115014.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
+func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util.MongoDBClient, orgKeyID *string) (*http.Response, error) {
+	unAssignAPIRequest := client.AtlasSDK.ProgrammaticAPIKeysApi.RemoveProjectApiKey(
 		context.Background(),
 		*projectAssignment.ProjectId,
 		*orgKeyID,
@@ -343,47 +344,47 @@ func unAssignProjectFromOrgKey(projectAssignment ProjectAssignment, client *util
 	return unAssignAPIRequest.Execute()
 }
 
-func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Model, existingModel *Model) (result interface{}, response *http.Response, err error) {
+func updateProjectAssignments(atlasClient *util.MongoDBClient, currentModel *Model, existingModel *Model) (response *http.Response, err error) {
 	// update projectAssignments
 	newAssignments, updateAssignments, removeAssignments := getChangesInProjectAssignments(currentModel.ProjectAssignments, existingModel.ProjectAssignments)
 
 	// Assignment
 	for i := range newAssignments {
-		result, response, err = updateOrgKeyProjectRoles(newAssignments[i], atlasClient, currentModel.APIUserId)
+		_, response, err = updateOrgKeyProjectRoles(newAssignments[i], atlasClient, currentModel.APIUserId)
 		if err != nil {
 			break
 		}
 	}
 
 	if err != nil {
-		return result, response, err
+		return response, err
 	}
 
 	// Update Project Roles
 	for i := range updateAssignments {
-		result, response, err = updateOrgKeyProjectRoles(updateAssignments[i], atlasClient, currentModel.APIUserId)
+		_, response, err = updateOrgKeyProjectRoles(updateAssignments[i], atlasClient, currentModel.APIUserId)
 		if err != nil {
 			break
 		}
 	}
 
 	if err != nil {
-		return result, response, err
+		return response, err
 	}
 
 	// Remove Assignment
 	for i := range removeAssignments {
-		result, response, err = unAssignProjectFromOrgKey(removeAssignments[i], atlasClient, currentModel.APIUserId)
+		response, err = unAssignProjectFromOrgKey(removeAssignments[i], atlasClient, currentModel.APIUserId)
 		if err != nil {
 			break
 		}
 	}
 
 	if err != nil {
-		return result, response, err
+		return response, err
 	}
 
-	return result, response, err
+	return response, err
 }
 
 func getChangesInProjectAssignments(

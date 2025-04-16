@@ -15,7 +15,7 @@
 package resource
 
 import (
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312002/admin"
 )
 
 func NewResourceTags(tags map[string]string) []admin.ResourceTag {

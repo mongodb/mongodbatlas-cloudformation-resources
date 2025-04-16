@@ -19,15 +19,17 @@ import (
 	"fmt"
 	"net/http"
 
+	Atlas20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	Atlas20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.EndpointID}
@@ -199,7 +201,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	_, response, err := client.Atlas20231115014.DataFederationApi.DeleteDataFederationPrivateEndpoint(
+	response, err := client.Atlas20231115014.DataFederationApi.DeleteDataFederationPrivateEndpoint(
 		ctx.Background(),
 		*currentModel.ProjectId,
 		*currentModel.EndpointId,

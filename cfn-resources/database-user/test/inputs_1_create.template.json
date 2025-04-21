@@ -1,20 +1,21 @@
 {
-    "Username" : "DataUser1",
-    "Password" : "MongoDB12345%",
-    "ProjectId" : "ProjectId",
-    "Profile" : "default",
-    "DatabaseName": "admin",
-    "Roles": [
-        { "RoleName": "readWrite",
-          "DatabaseName": "testdb",
-          "CollectionName": "col1"
-        }
-    ],
-    "Scopes": [    
-        { "Type": "CLUSTER",
-          "Name": "testdb"
-        }
-    ]
-
-
+  "Username": "DataUser1",
+  "Password": "MongoDB12345%",
+  "ProjectId": "${MONGODB_ATLAS_PROJECT_ID}",
+  "Profile": "${MONGODB_ATLAS_PROFILE}",
+  "DatabaseName": "admin",
+  "Description": "Desc 1",
+  "Roles": [
+    {
+      "RoleName": "readWrite",
+      "DatabaseName": "testdb",
+      "CollectionName": "col1"
+    }
+  ],
+  "Scopes": [
+    {
+      "Type": "CLUSTER",
+      "Name": "testdb"
+    }
+  ]
 }

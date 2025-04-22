@@ -19,6 +19,7 @@ rm -rf inputs
 mkdir inputs
 
 projectName="${1}"
+MONGODB_ATLAS_PROFILE=${MONGODB_ATLAS_PROFILE:-"default"}
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
 	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
@@ -30,10 +31,12 @@ fi
 
 echo "Created project \"${projectName}\" with id: ${projectId}"
 
-jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_create.template.json" >"inputs/inputs_1_create.json"
-
-jq --arg projectId "$projectId" \
-	'.ProjectId?|=$projectId ' \
-	"$(dirname "$0")/inputs_1_update.template.json" >"inputs/inputs_1_update.json"
+cd "$(dirname "$0")" || exit
+WORDTOREMOVE="template."
+for inputFile in inputs_*; do
+	outputFile=${inputFile//$WORDTOREMOVE/}
+	jq --arg ProjectId "$projectId" --arg Profile "${MONGODB_ATLAS_PROFILE}" \
+		'.ProjectId?|=$ProjectId | .Profile?|=$Profile' \
+		"$inputFile" >"../inputs/$outputFile"
+done
+cd ..

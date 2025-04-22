@@ -249,11 +249,11 @@ func (r Resource) toAtlasResource() admin.DatabasePermittedNamespaceResource {
 	out := admin.DatabasePermittedNamespaceResource{
 		Cluster: false,
 	}
-	if util.IsStringPresent(r.Collection) {
+	if r.Collection != nil {
 		out.Collection = *r.Collection
 	}
 
-	if util.IsStringPresent(r.DB) {
+	if r.DB != nil {
 		out.Db = *r.DB
 	}
 

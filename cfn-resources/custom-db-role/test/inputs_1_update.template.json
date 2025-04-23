@@ -1,5 +1,5 @@
 {
-  "ProjectId": "",
+  "ProjectId": "${MONGODB_ATLAS_PROJECT_ID}",
   "Actions": [
     {
       "Action": "FIND",
@@ -9,8 +9,17 @@
           "DB": "sample_airbnb"
         }
       ]
+    },
+    {
+      "Action": "INSERT",
+      "Resources": [
+        {
+          "Collection": "listingsAndReviews",
+          "DB": "sample_airbnb"
+        }
+      ]
     }
   ],
   "RoleName": "testcreate",
-  "Profile": "default"
+  "Profile": "${MONGODB_ATLAS_PROFILE}"
 }

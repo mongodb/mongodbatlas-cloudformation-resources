@@ -5,12 +5,12 @@
       "Action": "FIND",
       "Resources": [
         {
-          "Collection": "listingsAndReviews",
-          "DB": "sample_airbnb"
+          "Collection": "",
+          "DB": ""
         }
       ]
     }
   ],
-  "RoleName": "testcreate",
+  "RoleName": "testcreate-cfn-empty-db",
   "Profile": "${MONGODB_ATLAS_PROFILE}"
 }

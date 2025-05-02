@@ -37,6 +37,8 @@ type ProcessArgs struct {
 	FailIndexKeyTooLong              *bool    `json:",omitempty"`
 	JavascriptEnabled                *bool    `json:",omitempty"`
 	MinimumEnabledTLSProtocol        *string  `json:",omitempty"`
+	TlsCipherConfigMode              *string  `json:",omitempty"`
+	CustomOpensslCipherConfigTls12   []string `json:",omitempty"`
 	NoTableScan                      *bool    `json:",omitempty"`
 	OplogSizeMB                      *int     `json:",omitempty"`
 	SampleSizeBIConnector            *int     `json:",omitempty"`

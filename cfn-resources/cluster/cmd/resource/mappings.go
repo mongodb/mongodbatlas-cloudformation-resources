@@ -19,12 +19,14 @@ import (
 	"fmt"
 	"reflect"
 
+	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/spf13/cast"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func mapClusterToModel(model *Model, cluster *admin.AdvancedClusterDescription) {
@@ -374,13 +376,12 @@ func flattenPrivateEndpoint(pes *[]admin.ClusterDescriptionConnectionStringsPriv
 	return privateEndpoints
 }
 
-func flattenProcessArgs(p *admin.ClusterDescriptionProcessArgs) *ProcessArgs {
-	return &ProcessArgs{
+func flattenProcessArgs(p *admin.ClusterDescriptionProcessArgs, cluster *admin.AdvancedClusterDescription) *ProcessArgs {
+	res := &ProcessArgs{
 		DefaultReadConcern:               p.DefaultReadConcern,
 		DefaultWriteConcern:              p.DefaultWriteConcern,
 		FailIndexKeyTooLong:              p.FailIndexKeyTooLong,
 		JavascriptEnabled:                p.JavascriptEnabled,
-		MinimumEnabledTLSProtocol:        p.MinimumEnabledTlsProtocol,
 		NoTableScan:                      p.NoTableScan,
 		OplogSizeMB:                      p.OplogSizeMB,
 		SampleSizeBIConnector:            p.SampleSizeBIConnector,
@@ -388,6 +389,14 @@ func flattenProcessArgs(p *admin.ClusterDescriptionProcessArgs) *ProcessArgs {
 		OplogMinRetentionHours:           p.OplogMinRetentionHours,
 		TransactionLifetimeLimitSeconds:  util.Int64PtrToIntPtr(p.TransactionLifetimeLimitSeconds),
 	}
+
+	if advConfig := cluster.AdvancedConfiguration; advConfig != nil {
+		res.MinimumEnabledTLSProtocol = advConfig.MinimumEnabledTlsProtocol
+		res.TlsCipherConfigMode = advConfig.TlsCipherConfigMode
+		res.CustomOpensslCipherConfigTls12 = *advConfig.CustomOpensslCipherConfigTls12
+	}
+
+	return res
 }
 
 func flattenLabels(clusterLabels []admin.ComponentLabel) []Labels {
@@ -412,9 +421,7 @@ func expandAdvancedSettings(processArgs ProcessArgs) *admin.ClusterDescriptionPr
 		args.DefaultWriteConcern = processArgs.DefaultWriteConcern
 	}
 	args.JavascriptEnabled = processArgs.JavascriptEnabled
-	if processArgs.MinimumEnabledTLSProtocol != nil {
-		args.MinimumEnabledTlsProtocol = processArgs.MinimumEnabledTLSProtocol
-	}
+
 	args.NoTableScan = processArgs.NoTableScan
 
 	if processArgs.OplogSizeMB != nil {
@@ -593,7 +600,23 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 	clusterRequest.Tags = tags
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
+
+	clusterRequest.AdvancedConfiguration = expandClusterAdvancedConfiguration(*currentModel.AdvancedSettings)
 	return clusterRequest, nil
+}
+
+func expandClusterAdvancedConfiguration(processArgs ProcessArgs) *admin.ApiAtlasClusterAdvancedConfiguration {
+	var args admin.ApiAtlasClusterAdvancedConfiguration
+
+	if processArgs.MinimumEnabledTLSProtocol != nil {
+		args.MinimumEnabledTlsProtocol = processArgs.MinimumEnabledTLSProtocol
+	}
+	if processArgs.TlsCipherConfigMode != nil {
+		args.TlsCipherConfigMode = processArgs.TlsCipherConfigMode
+	}
+	args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
+
+	return &args
 }
 
 func AddReplicationSpecIDs(src, dest []admin.ReplicationSpec) *[]admin.ReplicationSpec {

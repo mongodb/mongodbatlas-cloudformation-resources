@@ -393,7 +393,7 @@ func flattenProcessArgs(p *admin.ClusterDescriptionProcessArgs, cluster *admin.A
 	if advConfig := cluster.AdvancedConfiguration; advConfig != nil {
 		res.MinimumEnabledTLSProtocol = advConfig.MinimumEnabledTlsProtocol
 		res.TlsCipherConfigMode = advConfig.TlsCipherConfigMode
-		res.CustomOpensslCipherConfigTls12 = *advConfig.CustomOpensslCipherConfigTls12
+		res.CustomOpensslCipherConfigTls12 = advConfig.GetCustomOpensslCipherConfigTls12()
 	}
 
 	return res

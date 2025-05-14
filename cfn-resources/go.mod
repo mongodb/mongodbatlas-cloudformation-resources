@@ -2,7 +2,7 @@ module github.com/mongodb/mongodbatlas-cloudformation-resources
 
 go 1.23.1
 
-replace go.mongodb.org/atlas-sdk/v20231115014 => ../vendor1/go.mongodb.org/atlas-sdk/v20231115014
+replace go.mongodb.org/atlas-sdk/v20231115014 => ../atlas-sdk-local-v20231115014/go.mongodb.org/atlas-sdk/v20231115014
 
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0

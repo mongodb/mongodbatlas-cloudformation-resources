@@ -17,7 +17,12 @@
           "NoTableScan": "false",
           "OplogSizeMB": "2000",
           "SampleSizeBIConnector": "110",
-          "SampleRefreshIntervalBIConnector": "310"
+          "SampleRefreshIntervalBIConnector": "310",
+          "TlsCipherConfigMode": "CUSTOM",
+          "CustomOpensslCipherConfigTls12": [
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+          ]
         },
         "BackupEnabled": "false",
         "ClusterType": "GEOSHARDED",

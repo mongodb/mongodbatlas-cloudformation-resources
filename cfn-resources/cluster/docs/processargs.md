@@ -15,6 +15,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#failindexkeytoolong" title="FailIndexKeyTooLong">FailIndexKeyTooLong</a>" : <i>Boolean</i>,
     "<a href="#javascriptenabled" title="JavascriptEnabled">JavascriptEnabled</a>" : <i>Boolean</i>,
     "<a href="#minimumenabledtlsprotocol" title="MinimumEnabledTLSProtocol">MinimumEnabledTLSProtocol</a>" : <i>String</i>,
+    "<a href="#tlscipherconfigmode" title="TlsCipherConfigMode">TlsCipherConfigMode</a>" : <i>String</i>,
+    "<a href="#customopensslcipherconfigtls12" title="CustomOpensslCipherConfigTls12">CustomOpensslCipherConfigTls12</a>" : <i>[ String, ... ]</i>,
     "<a href="#notablescan" title="NoTableScan">NoTableScan</a>" : <i>Boolean</i>,
     "<a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>" : <i>Integer</i>,
     "<a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>" : <i>Integer</i>,
@@ -32,6 +34,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#failindexkeytoolong" title="FailIndexKeyTooLong">FailIndexKeyTooLong</a>: <i>Boolean</i>
 <a href="#javascriptenabled" title="JavascriptEnabled">JavascriptEnabled</a>: <i>Boolean</i>
 <a href="#minimumenabledtlsprotocol" title="MinimumEnabledTLSProtocol">MinimumEnabledTLSProtocol</a>: <i>String</i>
+<a href="#tlscipherconfigmode" title="TlsCipherConfigMode">TlsCipherConfigMode</a>: <i>String</i>
+<a href="#customopensslcipherconfigtls12" title="CustomOpensslCipherConfigTls12">CustomOpensslCipherConfigTls12</a>: <i>
+      - String</i>
 <a href="#notablescan" title="NoTableScan">NoTableScan</a>: <i>Boolean</i>
 <a href="#oplogsizemb" title="OplogSizeMB">OplogSizeMB</a>: <i>Integer</i>
 <a href="#samplesizebiconnector" title="SampleSizeBIConnector">SampleSizeBIConnector</a>: <i>Integer</i>
@@ -89,6 +94,26 @@ Minimum Transport Layer Security (TLS) version that the cluster accepts for inco
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TlsCipherConfigMode
+
+The TLS cipher suite configuration mode. Valid values include `CUSTOM` or `DEFAULT`. The `DEFAULT` mode uses the default cipher suites. The `CUSTOM` mode allows you to specify custom cipher suites for both TLS 1.2 and TLS 1.3. To unset, this should be set back to `DEFAULT`.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### CustomOpensslCipherConfigTls12
+
+The custom OpenSSL cipher suite list for TLS 1.2. This field is only valid when `tls_cipher_config_mode` is set to `CUSTOM`.
+
+_Required_: No
+
+_Type_: List of String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

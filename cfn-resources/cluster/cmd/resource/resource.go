@@ -21,16 +21,18 @@ import (
 	"net/http"
 	"strings"
 
+	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/spf13/cast"
+
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 const (
@@ -309,7 +311,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
 				res), nil
 		}
-		model.AdvancedSettings = flattenProcessArgs(processArgs)
+		model.AdvancedSettings = flattenProcessArgs(processArgs, &clusterResults[i])
 		models[i] = model
 	}
 
@@ -395,7 +397,7 @@ func readCluster(ctx context.Context, client *util.MongoDBClient, currentModel *
 		if errr != nil || resp.StatusCode != http.StatusOK {
 			return currentModel, resp, errr
 		}
-		currentModel.AdvancedSettings = flattenProcessArgs(processArgs)
+		currentModel.AdvancedSettings = flattenProcessArgs(processArgs, cluster)
 	}
 	return currentModel, res, err
 }

@@ -2,6 +2,9 @@ module github.com/mongodb/mongodbatlas-cloudformation-resources
 
 go 1.23.1
 
+// Replacing with local copy of Atlas SDK v20231115014 to support new AdvancedConfiguration in *admin.AdvancedClusterDescription
+replace go.mongodb.org/atlas-sdk/v20231115014 => ../vendor/go.mongodb.org/atlas-sdk/v20231115014
+
 require (
 	github.com/aws-cloudformation/cloudformation-cli-go-plugin v1.2.0
 	github.com/aws/aws-sdk-go v1.55.7
@@ -19,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/pretty v1.2.1
 	go.mongodb.org/atlas-sdk/v20231115002 v20231115002.1.0
-	go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.1
+	go.mongodb.org/atlas-sdk/v20231115014 v20231115014.0.0
 	go.mongodb.org/atlas-sdk/v20250312002 v20250312002.0.0
 )
 

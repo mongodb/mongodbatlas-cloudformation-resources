@@ -48,7 +48,7 @@ jobs:
       - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@f24d7193d98baebaeacc7e2227925dd47cc267f5
+      - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PUBLISHING }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PUBLISHING }}

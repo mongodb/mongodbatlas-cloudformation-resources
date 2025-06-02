@@ -601,7 +601,9 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 
-	clusterRequest.AdvancedConfiguration = expandClusterAdvancedConfiguration(*currentModel.AdvancedSettings)
+	if currentModel.AdvancedSettings != nil {
+		clusterRequest.AdvancedConfiguration = expandClusterAdvancedConfiguration(*currentModel.AdvancedSettings)
+	}
 	return clusterRequest, nil
 }
 
@@ -614,8 +616,9 @@ func expandClusterAdvancedConfiguration(processArgs ProcessArgs) *admin.ApiAtlas
 	if processArgs.TlsCipherConfigMode != nil {
 		args.TlsCipherConfigMode = processArgs.TlsCipherConfigMode
 	}
-	args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
-
+	if processArgs.CustomOpensslCipherConfigTls12 != nil {
+		args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
+	}
 	return &args
 }
 

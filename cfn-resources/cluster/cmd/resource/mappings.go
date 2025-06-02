@@ -201,7 +201,7 @@ func expandLabelSlice(labels []Labels) *[]admin.ComponentLabel {
 			key = *labels[i].Key
 		}
 		var value string
-		if labels[i].Key != nil {
+		if labels[i].Value != nil {
 			value = *labels[i].Value
 		}
 		res[i] = admin.ComponentLabel{
@@ -601,7 +601,9 @@ func setClusterRequest(currentModel *Model) (*admin.AdvancedClusterDescription, 
 
 	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 
-	clusterRequest.AdvancedConfiguration = expandClusterAdvancedConfiguration(*currentModel.AdvancedSettings)
+	if currentModel.AdvancedSettings != nil {
+		clusterRequest.AdvancedConfiguration = expandClusterAdvancedConfiguration(*currentModel.AdvancedSettings)
+	}
 	return clusterRequest, nil
 }
 

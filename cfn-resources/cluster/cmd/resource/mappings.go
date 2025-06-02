@@ -616,9 +616,8 @@ func expandClusterAdvancedConfiguration(processArgs ProcessArgs) *admin.ApiAtlas
 	if processArgs.TlsCipherConfigMode != nil {
 		args.TlsCipherConfigMode = processArgs.TlsCipherConfigMode
 	}
-	if processArgs.CustomOpensslCipherConfigTls12 != nil {
-		args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
-	}
+	args.CustomOpensslCipherConfigTls12 = &processArgs.CustomOpensslCipherConfigTls12
+
 	return &args
 }
 

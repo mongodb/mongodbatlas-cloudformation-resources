@@ -86,8 +86,6 @@ jobs:
         search-deployment:
           - 'cfn-resources/search-deployment/**'
           - '!cfn-resources/search-deployment/compliance/**'
-        serverless-private-endpoint:
-          - 'cfn-resources/serverless-private-endpoint/**'
         stream-connection:
           - 'cfn-resources/stream-connection/**'
           - '!cfn-resources/stream-connection/compliance/**'
@@ -748,48 +746,6 @@ jobs:
 
           cat inputs/inputs_1_create.json
 
-          make run-contract-testing
-          make delete-test-resources
-  serverless-private-endpoint:
-    needs: change-detection
-    if: ${{ needs.change-detection.outputs.  serverless-private-endpoint == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
-        with:
-          go-version-file: 'cfn-resources/go.mod'
-      - name: setup Atlas CLI
-        uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
-        with:
-          use-installer: true
-      - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TEST_ENV }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST_ENV }}
-          aws-region: eu-west-1
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-      - run: pip install cloudformation-cli cloudformation-cli-go-plugin
-      - name: Run the Contract test
-        shell: bash
-        env:
-          MONGODB_ATLAS_PUBLIC_API_KEY: ${{ secrets.CLOUD_DEV_PUBLIC_KEY }}
-          MONGODB_ATLAS_PRIVATE_API_KEY: ${{ secrets.CLOUD_DEV_PRIVATE_KEY }}
-          MONGODB_ATLAS_ORG_ID: ${{ secrets.CLOUD_DEV_ORG_ID }}
-          MONGODB_ATLAS_TEAM_ID: 641490b0207f4d22f4d8f2fd
-          MONGODB_ATLAS_OPS_MANAGER_URL: https://cloud-dev.mongodb.com/
-          MONGODB_ATLAS_PROFILE: cfn-cloud-dev-github-action
-        run: |
-          pushd cfn-resources/serverless-private-endpoint
-          make create-test-resources
-          
-          cat inputs/inputs_1_create.json
-          cat inputs/inputs_1_update.json
-          
           make run-contract-testing
           make delete-test-resources
   stream-connection:

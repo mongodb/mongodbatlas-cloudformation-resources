@@ -15,6 +15,13 @@ Resources:
             Principal:
               Service: resources.cloudformation.amazonaws.com
             Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount:
+                  Ref: AWS::AccountId
+              StringLike:
+                aws:SourceArn:
+                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/MongoDB-Atlas-ClusterOutageSimulation/*
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
@@ -23,7 +30,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "secretsmanager:GetSecretValue"
+                - "secretsmanager:GetSecretValue"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

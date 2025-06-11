@@ -1,4 +1,4 @@
-.PHONY: build debug clean create-test-resources delete-test-resources run-contract-testing
+.PHONY: build test clean
 tags=logging callback metrics scheduler
 cgo=0
 goos=linux

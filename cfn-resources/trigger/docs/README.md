@@ -1,6 +1,6 @@
 # MongoDB::Atlas::Trigger
 
-View and manage your application's [triggers](https://www.mongodb.com/docs/atlas/app-services/triggers/overview/).
+View and manage your application's triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/
 
 ## Syntax
 

@@ -18,6 +18,10 @@ jobs:
       run: | 
         cd cfn-resources
         go build -v ./...
+    - name: Generate purls for all resources
+      run: make gen-purls
+    - name: Check purls for all resources
+      run: make check-purls
   mock-generation:
     runs-on: ubuntu-latest
     steps:

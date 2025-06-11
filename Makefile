@@ -63,3 +63,10 @@ generate-mocks: # uses mockery to generate mocks in folder `cfn-resources/testut
 generate-resource-versions-markdown: 
 	(cd cfn-resources && go run tool/markdown-generator/*.go)
 
+.PHONY: gen-purls
+gen-purls:
+	./scripts/generate-purls.sh
+
+.PHONY: check-purls
+check-purls:
+	./scripts/check-purls.sh

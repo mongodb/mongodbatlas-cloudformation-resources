@@ -39,42 +39,60 @@ jobs:
       filters: |
         access-list-api-key:
           - 'cfn-resources/access-list-api-key/**'
+          - '!cfn-resources/access-list-api-key/compliance/**'
         alert-configuration:
           - 'cfn-resources/alert-configuration/**'
+          - '!cfn-resources/alert-configuration/compliance/**'
         api-key:
           - 'cfn-resources/api-key/**'
+          - '!cfn-resources/api-key/compliance/**'
         auditing:
           - 'cfn-resources/auditing/**'
+          - '!cfn-resources/auditing/compliance/**'
         cloud-backup-restore-jobs:
           - 'cfn-resources/cloud-backup-restore-jobs/**'
+          - '!cfn-resources/cloud-backup-restore-jobs/compliance/**'
         cluster-outage-simulation:
           - 'cfn-resources/cluster-outage-simulation/**'
+          - '!cfn-resources/cluster-outage-simulation/compliance/**'
         federated-database-instance:
           - 'cfn-resources/federated-database-instance/**'
+          - '!cfn-resources/federated-database-instance/compliance/**'
         federated-query-limit:
           - 'cfn-resources/federated-query-limit/**'
+          - '!cfn-resources/federated-query-limit/compliance/**'
         online-archive:
           - 'cfn-resources/online-archive/**'
+          - '!cfn-resources/online-archive/compliance/**'
         organization:
           - 'cfn-resources/organization/**'
+          - '!cfn-resources/organization/compliance/**'
         private-endpoint-aws:
           - 'cfn-resources/private-endpoint-aws/**'
+          - '!cfn-resources/private-endpoint-aws/compliance/**'
         private-endpoint-service:
           - 'cfn-resources/private-endpoint-service/**'
+          - '!cfn-resources/private-endpoint-service/compliance/**'
         privatelink-endpoint-service-data-federation-online-archive:
           - 'cfn-resources/privatelink-endpoint-service-data-federation-online-archive/**'
+          - '!cfn-resources/privatelink-endpoint-service-data-federation-online-archive/compliance/**'
         project:
           - 'cfn-resources/project/**'
+          - '!cfn-resources/project/compliance/**'
         resource-policy:
           - 'cfn-resources/resource-policy/**'
+          - '!cfn-resources/resource-policy/compliance/**'
         search-deployment:
           - 'cfn-resources/search-deployment/**'
+          - '!cfn-resources/search-deployment/compliance/**'
         serverless-private-endpoint:
           - 'cfn-resources/serverless-private-endpoint/**'
         stream-connection:
           - 'cfn-resources/stream-connection/**'
+          - '!cfn-resources/stream-connection/compliance/**'
         stream-instance:
           - 'cfn-resources/stream-instance/**'
+          - '!cfn-resources/stream-instance/compliance/**'
   access-list-api-key:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.access-list-api-key == 'true' }}

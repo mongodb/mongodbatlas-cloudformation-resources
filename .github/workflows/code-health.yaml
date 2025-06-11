@@ -18,6 +18,8 @@ jobs:
       run: | 
         cd cfn-resources
         go build -v ./...
+    - name: Install CloudFormation CLI
+      run: pip install cloudformation-cli cloudformation-cli-go-plugin
     - name: Generate purls for all resources
       run: make gen-purls
     - name: Check purls for all resources

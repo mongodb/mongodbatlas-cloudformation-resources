@@ -1,0 +1,16 @@
+pkg:golang/../vendor/go.mongodb.org/atlas-sdk/v20231115014@(devel)
+pkg:golang/github.com/aws-cloudformation/cloudformation-cli-go-plugin@v1.2.0
+pkg:golang/github.com/aws/aws-lambda-go@v1.37.0
+pkg:golang/github.com/aws/aws-sdk-go@v1.55.7
+pkg:golang/github.com/google/go-querystring@v1.1.0
+pkg:golang/github.com/jmespath/go-jmespath@v0.4.0
+pkg:golang/github.com/mongodb-forks/digest@v1.1.0
+pkg:golang/github.com/mongodb-labs/go-client-mongodb-atlas-app-services@v1.0.0
+pkg:golang/github.com/rs/xid@v1.6.0
+pkg:golang/github.com/segmentio/ksuid@v1.0.4
+pkg:golang/go.mongodb.org/atlas-sdk/v20231115002@v20231115002.1.0
+pkg:golang/go.mongodb.org/atlas-sdk/v20231115014@v20231115014.0.0
+pkg:golang/go.mongodb.org/atlas-sdk/v20250312002@v20250312002.0.0
+pkg:golang/go.mongodb.org/atlas@v0.37.0
+pkg:golang/golang.org/x/oauth2@v0.28.0
+pkg:golang/gopkg.in/validator.v2@v2.0.1

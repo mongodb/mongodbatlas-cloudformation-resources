@@ -67,7 +67,7 @@ jobs:
         run: |
           cd cfn-resources
           ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"
-          echo "published_version=$(cat published_version.txt)" >> $GITHUB_OUTPUT
+          echo "published_version=$(cat published_version.txt)" >> "$GITHUB_OUTPUT"
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
           MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}

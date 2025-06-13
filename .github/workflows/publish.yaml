@@ -42,6 +42,7 @@ jobs:
           file_to_commit: 'cfn-resources/${{ github.event.inputs.resourceName }}/compliance/v*/*'
           commit_message:
             "chore: Update SSDLC report for ${{ github.event.inputs.resourceVersionPublishing }}"
+          repo-path: "cfn-resources/"
         env:
           KONDUKTO_TOKEN: ${{ secrets.KONDUKTO_TOKEN }}
           SILKBOMB_IMG: ${{ vars.SILKBOMB_IMG }}

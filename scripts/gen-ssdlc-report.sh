@@ -13,9 +13,17 @@ VERSION="$2"
 
 export DATE="${release_date}"
 
+# Debug logging
+echo "PWD: $(pwd)"
+echo "Listing templates directory:"
+ls -l templates || echo "templates directory not found"
+echo "Listing cfn-resources directory:"
+ls -l cfn-resources || echo "cfn-resources directory not found"
+
 if [ -z "${AUTHOR:-}" ]; then
 	AUTHOR=$(git config user.name)
 fi
+echo "AUTHOR: ${AUTHOR}"
 
 if [ "${AUGMENTED_REPORT:-false}" = "true" ]; then
 	target_dir="."
@@ -31,6 +39,9 @@ else # If not augmented, generate the standard report
       - https://github.com/mongodb/mongodbatlas-cloudformation-resources/cfn-resources/${RESOURCE}/compliance/v${VERSION}/sbom.json"
 	# Ensure terraform-provider-mongodbatlas version directory exists
 	mkdir -p "${target_dir}"
+	echo "target_dir: ${target_dir}"
+	echo "file_name: ${file_name}"
+	echo "SBOM_TEXT: ${SBOM_TEXT}"
 fi
 
 export AUTHOR

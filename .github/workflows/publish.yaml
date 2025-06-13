@@ -31,7 +31,7 @@ jobs:
           repository: mongodb/terraform-provider-mongodbatlas
           ref: make-run-script-gha-reusable # TODO: change master
       - name: Generate SSDLC report
-        uses: ./.github/templates/run-script-and-commit
+        uses: mongodb/terraform-provider-mongodbatlas/.github/templates/run-script-and-commit@make-run-script-gha-reusable
         with:
           script_call: |
             AUTHOR="${{ github.actor }}"

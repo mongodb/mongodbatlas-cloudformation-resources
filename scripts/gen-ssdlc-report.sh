@@ -20,9 +20,6 @@ ls -l templates || echo "templates directory not found"
 echo "Listing cfn-resources directory:"
 ls -l cfn-resources || echo "cfn-resources directory not found"
 
-if [ -z "${AUTHOR:-}" ]; then
-	AUTHOR=$(git config user.name)
-fi
 echo "AUTHOR: ${AUTHOR}"
 
 if [ "${AUGMENTED_REPORT:-false}" = "true" ]; then

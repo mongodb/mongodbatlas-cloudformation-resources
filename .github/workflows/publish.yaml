@@ -34,6 +34,8 @@ jobs:
         uses: ./.github/templates/run-script-and-commit
         with:
           script_call: |
+            AUTHOR="${{ github.actor }}"
+            export AUTHOR
             make gen-sbom-and-ssdlc-report RESOURCE=${{ github.event.inputs.resourceName }} VERSION=${{ github.event.inputs.resourceVersionPublishing }}
           apix_bot_pat: ${{ secrets.APIX_BOT_PAT }}
           remote: https://svc-apix-bot:${{ secrets.APIX_BOT_PAT }}@github.com/${{ github.repository }}

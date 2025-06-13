@@ -68,4 +68,3 @@ gen-sbom-and-ssdlc-report:
 	./scripts/gen-purl.sh $(RESOURCE)
 	./scripts/generate-sbom.sh $(RESOURCE) $(VERSION)
 	./scripts/gen-ssdlc-report.sh $(RESOURCE) $(VERSION)
-	./scripts/upload-sbom.sh $(RESOURCE) $(VERSION)

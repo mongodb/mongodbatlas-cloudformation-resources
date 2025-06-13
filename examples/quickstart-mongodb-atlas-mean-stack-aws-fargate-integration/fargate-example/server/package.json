@@ -13,7 +13,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.21.2",
-    "mongodb": "^4.12.0"
+    "mongodb": "^6.5.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

@@ -3,7 +3,7 @@ set -euo pipefail
 
 : "${RELEASE_VERSION:?RELEASE_VERSION environment variable not set}"
 : "${RESOURCE:?RESOURCE environment variable not set}"
-DATE=$(date +'%Y-%m-%d')
+DATE="${DATE:-$(date +'%Y-%m-%d')}"
 
 echo "Augmenting SBOM..."
 docker run \

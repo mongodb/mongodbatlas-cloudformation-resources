@@ -1,0 +1,63 @@
+name: Augment SBOM
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version (e.g. 1.35.1)"
+        required: true
+        type: string
+      resource:
+        description: "Resource name (e.g. organization, project, etc.)"
+        required: true
+        type: string
+
+
+permissions:  
+  id-token: write  
+  contents: read  
+
+jobs:
+  augment-sbom:
+    runs-on: ubuntu-latest
+
+    env:
+      KONDUKTO_TOKEN: ${{ secrets.KONDUKTO_TOKEN }}
+      KONDUKTO_REPO: ${{ vars.KONDUKTO_REPO }}
+      KONDUKTO_BRANCH_PREFIX: ${{ vars.KONDUKTO_BRANCH_PREFIX }}
+      SILKBOMB_IMG: ${{ vars.SILKBOMB_IMG }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
+        with:
+            go-version-file: 'go.mod'
+
+      - name: Get current date
+        id: date
+        run: |
+          echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Augment SBOM with Kondukto
+        env:
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          RESOURCE: ${{ inputs.resource }}
+        run: |
+          make augment-sbom
+
+      - name: Generate SSDLC report
+        env:
+            AUTHOR: ${{ github.actor }}
+            VERSION: ${{ inputs.release_version }}
+            AUGMENTED_REPORT: "true"
+        run: ./scripts/gen-ssdlc-report.sh
+
+      - name: Upload augmented SBOM as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: augmented_sbom_and_ssdlc_report
+          path: |
+            cfn-resources/${{ inputs.resource }}/compliance/augmented-sbom-v${{ inputs.release_version }}-${{ steps.date.outputs.date }}.json
+            cfn-resources/${{ inputs.resource }}/compliance/ssdlc-compliance-${{ inputs.release_version }}-${{ steps.date.outputs.date }}.md
+          if-no-files-found: error

@@ -113,7 +113,12 @@ for resource in ${resources}; do
 	fi
 	command="aws cloudformation publish-type --type RESOURCE --arn ${type_arn} ${version_param}"
 	echo "${command}"
-	${command}
+	publish_output=$(${command})
+	echo "${publish_output}"
+
+	# Extract and store the published version from PublicTypeArn
+	published_version=$(echo "${publish_output}" | jq -r '.PublicTypeArn' | awk -F'/' '{print $NF}')
+	echo "$published_version" >published_version.txt
 
 	echo "Deleting role stack as it is not needeed anymore"
 	roleStack="mongodb-atlas-${resource//-/}-role-stack"

@@ -63,3 +63,9 @@ generate-mocks: # uses mockery to generate mocks in folder `cfn-resources/testut
 generate-resource-versions-markdown: 
 	(cd cfn-resources && go run tool/markdown-generator/*.go)
 
+.PHONY: gen-sbom-and-ssdlc-report
+gen-sbom-and-ssdlc-report:
+	./scripts/gen-purl.sh $(RESOURCE)
+	./scripts/generate-sbom.sh $(RESOURCE) $(VERSION)
+	./scripts/gen-ssdlc-report.sh $(RESOURCE) $(VERSION)
+	./scripts/upload-sbom.sh $(RESOURCE) $(VERSION)

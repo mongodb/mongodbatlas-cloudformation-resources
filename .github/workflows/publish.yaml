@@ -18,7 +18,7 @@ on:
       maxParallelRegions:
         description: "Maximum number of regions to be updated concurrently"
         type: number
-        default: "15"
+        default: 15
         required: true
   
 jobs:
@@ -63,7 +63,11 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install awscli cloudformation-cli cloudformation-cli-go-plugin
       - name: Run publishing script
-        run: 'cd cfn-resources && ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"'
+        id: publish
+        run: |
+          cd cfn-resources
+          ./cfn-publish.sh "${{ github.event.inputs.resourceName }}"
+          echo "published_version=$(cat published_version.txt)" >> "$GITHUB_OUTPUT"
         env:
           RESOURCE_VERSION_PUBLISHING: ${{ github.event.inputs.resourceVersionPublishing }}
           MCLI_OPS_MANAGER_URL: ${{ env.MONGODB_ATLAS_BASE_URL }}
@@ -95,4 +99,35 @@ jobs:
           OPS_GENIE_API_KEY: ${{ secrets.OPS_GENIE_API_KEY_PUBLISHING }}
           MICROSOFT_TEAMS_WEBHOOK_CREATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_CREATE_URL_PUBLISHING }}
           MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL: ${{ secrets.MICROSOFT_TEAMS_WEBHOOK_UPDATE_URL_PUBLISHING }}
-          
+    outputs:
+      published_version: ${{ steps.publish.outputs.published_version }}
+
+  compliance:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: terraform-provider-mongodbatlas-checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: mongodb/terraform-provider-mongodbatlas
+          ref: master
+      - name: Generate SSDLC report
+        uses: mongodb/terraform-provider-mongodbatlas/.github/templates/run-script-and-commit@master
+        with:
+          script_call: |
+            AUTHOR="${{ github.actor }}"
+            export AUTHOR
+            make gen-sbom-and-ssdlc-report RESOURCE=${{ github.event.inputs.resourceName }} VERSION=${{ needs.publish.outputs.published_version }}
+          apix_bot_pat: ${{ secrets.APIX_BOT_PAT }}
+          remote: https://svc-apix-bot:${{ secrets.APIX_BOT_PAT }}@github.com/${{ github.repository }}
+          gpg_private_key: ${{ secrets.APIX_BOT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.APIX_BOT_PASSPHRASE }}
+          file_to_commit: 'cfn-resources/${{ github.event.inputs.resourceName }}/compliance/v*/*'
+          commit_message:
+            "chore: Update SSDLC report for ${{ needs.publish.outputs.published_version }}"
+          repo-path: "cfn-resources/"
+        env:
+          KONDUKTO_TOKEN: ${{ secrets.KONDUKTO_TOKEN }}
+          SILKBOMB_IMG: ${{ vars.SILKBOMB_IMG }}
+          KONDUKTO_REPO: ${{ vars.KONDUKTO_REPO }}
+          KONDUKTO_BRANCH_PREFIX: ${{ vars.KONDUKTO_BRANCH_PREFIX }}

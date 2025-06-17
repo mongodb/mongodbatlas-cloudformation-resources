@@ -69,3 +69,7 @@ gen-sbom-and-ssdlc-report:
 	./scripts/generate-sbom.sh $(RESOURCE) $(VERSION)
 	./scripts/gen-ssdlc-report.sh $(RESOURCE) $(VERSION)
 	./scripts/upload-sbom.sh $(RESOURCE) $(VERSION)
+
+.PHONY: augment-sbom
+augment-sbom:
+	./scripts/augment-sbom.sh $(RESOURCE) $(VERSION)

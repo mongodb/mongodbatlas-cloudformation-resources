@@ -1,6 +1,6 @@
 # MongoDB::Atlas::CustomDBRole
 
-Returns, adds, edits, and removes [Custom Database Roles](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Custom-Database-Roles).
+Returns, adds, edits, and removes [Custom Database Roles](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-custom-database-roles).
 
 ## Requirements
 

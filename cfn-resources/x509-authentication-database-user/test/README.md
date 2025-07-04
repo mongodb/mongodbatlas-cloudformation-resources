@@ -38,5 +38,5 @@ A certificate for you will be generated in test.cert file.
 2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/X.509-Authentication/operation/createDatabaseUserCertificate)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-createdatabaseusercertificate)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-self-managed-x509/#set-up-self-managed-x.509-authentication)

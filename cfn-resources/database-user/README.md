@@ -1,7 +1,7 @@
 # MongoDB::Atlas::DatabaseUser
 
 ## Description
-Resource for managing [Database Users](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Database-Users).
+Resource for managing [Database Users](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-database-users).
 
 ## Attributes & Parameters
 

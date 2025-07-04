@@ -2,7 +2,7 @@
 
 
 ## Description
-Resource for managing [APIKeys](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Programmatic-API-Keys).
+Resource for managing [APIKeys](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-programmatic-api-keys).
 
 ## Requirements
 Set up an AWS profile to securely give CloudFormation access to your Atlas credentials.

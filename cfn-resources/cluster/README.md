@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Clusters](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Clusters).
+Resource for managing [Clusters](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-clusters).
 
 ## Requirements
 

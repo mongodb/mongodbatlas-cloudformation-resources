@@ -1,7 +1,7 @@
 # MongoDB::Atlas::APIKey
 
 ## Description
-Resource for managing [APIKeys](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Programmatic-API-Keys).
+Resource for managing [APIKeys](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-programmatic-api-keys).
 The API keys created as result, will be securely stored in AWS Secret Manager, ensuring the highest level of data protection and access control.
 ## Requirements
 

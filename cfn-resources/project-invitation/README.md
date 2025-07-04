@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Project Invitations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Projects/operation/listProjectInvitations).
+Resource for managing [Project Invitations](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-listprojectinvitations).
 
 ## Requirements
 

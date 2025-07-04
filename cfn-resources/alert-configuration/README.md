@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Alert](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Alerts) conditions.
+Resource for managing [Alert](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-alerts) conditions.
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::SearchIndex
 
 ## Description
-Resource for managing [Atlas Search](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams) indexes.
+Resource for managing [Atlas Search](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-teams) indexes.
 Also returns and updates user-defined analyzers.
 
 ## Requirements

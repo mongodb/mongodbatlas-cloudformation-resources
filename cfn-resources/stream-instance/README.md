@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Stream Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Streams).
+Resource for managing [Stream Instances](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-streams).
 
 ## Requirements
 

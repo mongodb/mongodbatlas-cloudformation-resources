@@ -27,5 +27,5 @@ Please follow the steps in [TESTING.md](../../../TESTING.md). Make sure to use a
 2. Ensure general [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Atlas-Search)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-atlas-search)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/atlas-search/create-index/)

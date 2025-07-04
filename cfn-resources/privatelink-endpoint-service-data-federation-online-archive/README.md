@@ -1,7 +1,7 @@
 # MongoDB::Atlas::PrivatelinkEndpointServiceDataFederationOnlineArchive
 
 ## Description
-Resource for managing [PrivatelinkEndpointServiceDataFederationOnlineArchive](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Data-Federation/operation/createDataFederationPrivateEndpoint).
+Resource for managing [PrivatelinkEndpointServiceDataFederationOnlineArchive](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-createdatafederationprivateendpoint).
 
 ## Requirements
 

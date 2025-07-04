@@ -1,6 +1,6 @@
 # MongoDB::Atlas::StreamConnection
 
-Resource for creating and managing [Connections for an Atlas Stream Instance](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Streams/operation/createStreamConnection).
+Resource for creating and managing [Connections for an Atlas Stream Instance](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-createstreamconnection).
 
 ## Requirements
 

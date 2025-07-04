@@ -1,7 +1,7 @@
 # MongoDB::Atlas::OrgInvitation
 
 ## Description
-Resource for managing [Organization](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Organizations) invitations.
+Resource for managing [Organization](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-organizations) invitations.
 
 ## Requirements
 

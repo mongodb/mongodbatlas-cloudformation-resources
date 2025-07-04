@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Cloud Backups](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Cloud-Backups) snapshots.
+Resource for managing [Cloud Backups](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-backups) snapshots.
 
 ## Requirements
 

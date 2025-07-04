@@ -2,7 +2,7 @@
 
 > WARNING: THIS RESOURCE IS CURRENTLY DEPRECATED, WE SUGGEST MIGRATING TO MongoDB::Atlas::PrivateEndpointAWS, please refere to [V2 Upgrade Guide](upgradeguidev2/V2-UpgradeGuide.md)
 
-Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services).
+Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-private-endpoint-services).
 
 ## Requirements
 

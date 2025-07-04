@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Organization
 
 ## Description
-Resource for managing [Organizations](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Organizations).
+Resource for managing [Organizations](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-organizations).
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::NetworkPeering
 
 ## Description
-Resource for managing [Network Peering](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Network-Peering).
+Resource for managing [Network Peering](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-network-peering).
 
 ## Requirements
 

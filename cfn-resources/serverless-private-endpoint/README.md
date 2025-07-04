@@ -2,7 +2,7 @@
 
 **WARNING:** This resource is deprecated and will be removed in May 2025. If you try to create a new ServerlessInstance, you will create a Flex cluster. As a result, you can't create ServerlessPrivateEndpoints for these new instances. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/).
 
-Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Serverless-Private-Endpoints).
+Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-serverless-private-endpoints).
 
 If the CreateAndAssignAWSPrivateEndpoint Only the Atlas private endpoint will be deleted, the AWS private endpoint will remain and might need to be deleted manually
 

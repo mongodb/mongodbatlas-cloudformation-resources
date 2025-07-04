@@ -14,7 +14,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 1. Ensure general [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) for this resource is met.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Atlas-Resource-Policies)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-atlas-resource-policies)
 
 ## Unit Testing Locally
 

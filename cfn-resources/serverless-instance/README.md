@@ -3,7 +3,7 @@
 **WARNING:** This resource is deprecated and will be removed in January 2026. For more details, see [Migrate your programmatic tools from M2, M5, or Serverless Instances to Flex Clusters](https://www.mongodb.com/docs/atlas/flex-migration/).
 
 ## Description
-Resource for managing [Serverless Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Serverless-Instances).
+Resource for managing [Serverless Instances](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-serverless-instances).
 
 ## Requirements
 

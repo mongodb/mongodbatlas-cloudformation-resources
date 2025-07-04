@@ -24,5 +24,5 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects/operation/createProjectInvitation)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-createprojectinvitation)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/invitations/)

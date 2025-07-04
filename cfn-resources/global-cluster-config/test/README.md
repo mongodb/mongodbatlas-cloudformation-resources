@@ -28,7 +28,7 @@ This can be validated via GET API call at URL:
 ![image](https://user-images.githubusercontent.com/122359335/229160264-92715616-656e-4e7c-bd33-b6241041f9ae.png)
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Global-Clusters)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-global-clusters)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/global-clusters/)
 
 ## Unit Testing Locally

@@ -1,6 +1,6 @@
 # MongoDB::Atlas::PrivateEndpointAWS
 
-Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services).
+Resource for creating and managing [Private Endpoint Services](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-private-endpoint-services).
 
 # V2 Migration Guideline
 

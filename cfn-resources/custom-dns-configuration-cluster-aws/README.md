@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Custom DNS for Atlas Clusters Deployed to AWS](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-custom-dns-for-atlas-clusters-deployed-to-aws).
+Resource for managing [Custom DNS for Atlas Clusters Deployed to AWS](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-aws-clusters-dns).
 
 ## Requirements
 

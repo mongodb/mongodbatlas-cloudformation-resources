@@ -26,5 +26,5 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md).
 - You should see the option "Encryption at Rest using your Key Management" enabled in the "Advanced" page:
 ![image](https://user-images.githubusercontent.com/5663078/227896265-7e489e9e-2666-4faa-8d10-5c8b3ee77620.png)
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Encryption-at-Rest-using-Customer-Key-Management/operation/updateEncryptionAtRest)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-updateencryptionatrest)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-kms-encryption/)

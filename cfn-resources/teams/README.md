@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Teams
 
 ## Description
-Resource for managing [Teams](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams)
+Resource for managing [Teams](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-teams)
 in Atlas Organization and Atlas Project.
 
 ## Requirements

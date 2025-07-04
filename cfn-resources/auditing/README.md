@@ -1,6 +1,6 @@
 # MongoDB::Atlas::Auditing
 
-Returns and edits database [Auditing](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Auditing) settings for MongoDB Cloud projects.
+Returns and edits database [Auditing](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-auditing) settings for MongoDB Cloud projects.
 
 ## Requirements
 

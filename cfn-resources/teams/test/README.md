@@ -29,5 +29,5 @@ The Atlas organization must be manually provided.
 2. General [CFN resource success criteria](/TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Teams)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-teams)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/access/manage-teams-in-orgs/)

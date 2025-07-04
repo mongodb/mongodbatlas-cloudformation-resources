@@ -1,7 +1,7 @@
 # MongoDB::Atlas::FederatedQueryLimit
 
 ## Description
-Resource for managing [FederatedQueryLimits](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Data-Federation).
+Resource for managing [FederatedQueryLimits](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-data-federation).
 
 ## Requirements
 

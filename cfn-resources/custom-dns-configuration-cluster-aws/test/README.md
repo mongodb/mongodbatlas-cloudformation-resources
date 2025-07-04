@@ -16,7 +16,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ### Success criteria when testing the resource
-1. AWS custom DNS should be enabled for the project. This can be validated via a [GET API](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/AWS-Clusters-DNS/operation/getAWSCustomDNS) call as:
+1. AWS custom DNS should be enabled for the project. This can be validated via a [GET API](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-getawscustomdns) call as:
 ```
 https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/awsCustomDNS
 ```
@@ -27,7 +27,7 @@ https://cloud-dev.mongodb.com/api/atlas/v1.0/groups/<ATLAS_PROJECT_ID>/awsCustom
 
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/AWS-Clusters-DNS/operation/toggleAWSCustomDNS)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-toggleawscustomdns)
 
 
 ## Local Testing

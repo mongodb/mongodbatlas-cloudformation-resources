@@ -1,7 +1,7 @@
 # MongoDB::Atlas::Project
 
 ## Description
-Resource for managing [Projects](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Projects).
+Resource for managing [Projects](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-projects).
 
 ## Requirements
 

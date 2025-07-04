@@ -45,7 +45,7 @@ curl --user "<PublicKey>:<PrivateKey>" -X GET --digest \
 ```
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups/operation/listExportBuckets)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/operation/operation-listexportbuckets)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/data-federation/config/config-aws-s3/)
 
 ## Local Testing

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::PrivateEndPointRegionalMode
 
 ## Description
-Resource for managing the [Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services) setting for private endpoints.
+Resource for managing the [Private Endpoint Regionalized Mode](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-private-endpoint-services) setting for private endpoints.
 
 ## Requirements
 

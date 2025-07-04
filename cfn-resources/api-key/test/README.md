@@ -20,7 +20,7 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md).
 ![image](https://user-images.githubusercontent.com/5663078/227519864-2d147a0b-4e57-48f8-8de8-48370f1cd037.png)
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Auditing)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-auditing)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/database-auditing/)
 
 ## Local Testing

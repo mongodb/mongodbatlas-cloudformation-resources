@@ -16,7 +16,7 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md.md).
 
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Organizations)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-organizations)
 
 ## Local Testing
 

@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Third Party Service Integration](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Third-Party-Service-Integrations) configurations. MongoDB Cloud sends alerts to each third-party service that you configure.
+Resource for managing [Third Party Service Integration](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-third-party-service-integrations) configurations. MongoDB Cloud sends alerts to each third-party service that you configure.
 
 ## Requirements
 

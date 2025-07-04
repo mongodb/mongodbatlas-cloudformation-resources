@@ -32,7 +32,7 @@ The VPD ID and subnet ID is to be manually provided.
 2. General [CFN resource success criteria](../../../TESTING.md.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Private-Endpoint-Services)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-private-endpoint-services)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/security-cluster-private-endpoint/#set-up-a-private-endpoint-for-a-dedicated-cluster)
 
 ## Local Testing

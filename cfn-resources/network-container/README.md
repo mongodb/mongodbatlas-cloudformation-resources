@@ -1,7 +1,7 @@
 # MongoDB::Atlas::NetworkContainer
 
 ## Description
-Resource for managing [Network Containers](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Network-Peering) in Atlas.
+Resource for managing [Network Containers](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-network-peering) in Atlas.
 
 ## Requirements
 

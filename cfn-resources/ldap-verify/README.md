@@ -1,7 +1,7 @@
 # MongoDB::Atlas::LDAPVerify
 
 ## Description
-Resource for managing [Teams](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/LDAP-Configuration)
+Resource for managing [Teams](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-ldap-configuration)
 in Atlas Organization and Atlas Project.
 
 Requests a verification of an LDAP configuration over TLS for an Atlas project.

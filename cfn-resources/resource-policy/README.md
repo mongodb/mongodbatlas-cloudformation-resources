@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Resource Policies](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Atlas-Resource-Policies).
+Resource for managing [Resource Policies](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-atlas-resource-policies).
 
 ## Requirements
 

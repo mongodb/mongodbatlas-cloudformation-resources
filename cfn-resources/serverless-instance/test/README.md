@@ -28,7 +28,7 @@ The following components use this resource and are potentially impacted by any c
 2. General [CFN resource success criteria](../../../TESTING.md#success-criteria-when-testing-the-resource) should be satisfied.
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Serverless-Instances)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-serverless-instances)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/tutorial/create-serverless-instance/)
 
 ## Local Testing

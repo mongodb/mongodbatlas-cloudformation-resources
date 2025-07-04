@@ -1,7 +1,7 @@
 # MongoDB::Atlas::DataLakes
 
 ## Description
-Resource for managing [Federated Database Instances](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Data-Federation).
+Resource for managing [Federated Database Instances](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-data-federation).
 
 ## Requirements
 

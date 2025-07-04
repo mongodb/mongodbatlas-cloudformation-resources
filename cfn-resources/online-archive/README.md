@@ -1,7 +1,7 @@
 # MongoDB::Atlas::OnlineArchive
 
 ## Description
-Resource for managing [Online Archive](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Online-Archive).
+Resource for managing [Online Archive](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-online-archive).
 
 ## Requirements
 

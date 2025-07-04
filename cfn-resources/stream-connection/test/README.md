@@ -26,7 +26,7 @@ Please follow the steps in [TESTING.md](../../../TESTING.md).
 
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Streams)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-streams)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/atlas-sp/overview/)
 
 ## Unit Testing Locally

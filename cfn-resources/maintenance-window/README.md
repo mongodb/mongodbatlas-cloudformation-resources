@@ -1,7 +1,7 @@
 # Mongodb::Atlas::MaintenanceWindow
 
 ## Description
-Resource for retrieving and updating [Maintenance Windows](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Maintenance-Windows).
+Resource for retrieving and updating [Maintenance Windows](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-maintenance-windows).
 
 ## Requirements
 

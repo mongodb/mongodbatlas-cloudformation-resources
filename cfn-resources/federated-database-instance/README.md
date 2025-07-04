@@ -1,6 +1,6 @@
 # MongoDB::Atlas::FederatedDatabaseInstance
 
-Resource for creating and managing [Federated Database endpoint](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/v2/#tag/Data-Federation).
+Resource for creating and managing [Federated Database endpoint](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-data-federation).
 
 ## Requirements
 

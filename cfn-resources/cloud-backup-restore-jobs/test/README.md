@@ -24,7 +24,7 @@ Please, follows the steps in [TESTING.md](../../../TESTING.md).
 
 
 ## Important Links
-- [API Documentation](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Cloud-Backups)
+- [API Documentation](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-backups)
 - [Resource Usage Documentation](https://www.mongodb.com/docs/atlas/backup/cloud-backup/restore-overview/)
 
 ## Unit Testing Locally

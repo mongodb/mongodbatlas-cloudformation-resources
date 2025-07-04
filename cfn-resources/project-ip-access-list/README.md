@@ -1,7 +1,7 @@
 # MongoDB::Atlas::ProjectIpAccessLisp
 
 ## Description
-Resource for managing a [Project IP Access List](https://www.mongodb.com/docs/atlas/reference/api-resources-spec/#tag/Project-IP-Access-List).
+Resource for managing a [Project IP Access List](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-project-ip-access-list).
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # MongoDB::Atlas::CloudBackupSchedule
 
 ## Description
-Resource for managing [Cloud Backup Schedule](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-backups-schedule).
+Resource for managing [Cloud Backup Schedule](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-backups).
 
 ## Requirements
 

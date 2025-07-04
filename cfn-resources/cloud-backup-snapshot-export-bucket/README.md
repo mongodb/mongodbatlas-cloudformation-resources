@@ -2,7 +2,7 @@
 
 ## Description
 
-Resource for managing [Cloud Backup Export](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-backup-export) access.
+Resource for managing [Cloud Backup Export](https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/group/endpoint-cloud-backup) access.
 
 ## Requirements
 

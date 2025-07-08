@@ -86,7 +86,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -124,7 +124,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -164,7 +164,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
          use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -205,7 +205,7 @@ jobs:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
       uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-    - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+    - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
       with:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -248,7 +248,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -289,7 +289,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -330,7 +330,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -371,7 +371,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -412,7 +412,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -452,7 +452,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -494,7 +494,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -535,7 +535,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -576,7 +576,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -617,7 +617,7 @@ jobs:
         go-version-file: 'cfn-resources/go.mod'
     - name: setup Atlas CLI
       uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-    - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+    - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
       with:
        use-installer: true
     - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -659,7 +659,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -702,7 +702,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -742,7 +742,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -784,7 +784,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
@@ -827,7 +827,7 @@ jobs:
           go-version-file: 'cfn-resources/go.mod'
       - name: setup Atlas CLI
         uses: mongodb/atlas-github-action@15663d068c40a8582d881560961fce9d45e0df9a
-      - uses: aws-actions/setup-sam@819220f63fb333a9a394dd0a5cab2d8303fd17e2
+      - uses: aws-actions/setup-sam@f664fad9e12492edfc187a31f575537dfbb0ff63
         with:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df

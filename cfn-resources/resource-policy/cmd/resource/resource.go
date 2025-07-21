@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20250312002/admin"
+	"go.mongodb.org/atlas-sdk/v20250312005/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -62,7 +62,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	orgID := currentModel.OrgId
 	resourcePolicyReq := NewResourcePolicyCreateReq(currentModel)
-	resourcePolicyResp, apiResp, err := conn.ResourcePoliciesApi.CreateAtlasResourcePolicy(ctx, *orgID, resourcePolicyReq).Execute()
+	resourcePolicyResp, apiResp, err := conn.ResourcePoliciesApi.CreateOrgResourcePolicy(ctx, *orgID, resourcePolicyReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.CREATE, err)
 	}
@@ -85,7 +85,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	orgID := currentModel.OrgId
 	resourcePolicyID := currentModel.Id
-	resourcePolicyResp, apiResp, err := conn.ResourcePoliciesApi.GetAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
+	resourcePolicyResp, apiResp, err := conn.ResourcePoliciesApi.GetOrgResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.READ, err)
 	}
@@ -108,7 +108,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	orgID := currentModel.OrgId
 	resourcePolicyID := currentModel.Id
-	_, _, err := conn.ResourcePoliciesApi.GetAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
+	_, _, err := conn.ResourcePoliciesApi.GetOrgResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
 	if err != nil {
 		return handler.ProgressEvent{
 			OperationStatus:  handler.Failed,
@@ -117,7 +117,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}, nil
 	}
 	resourcePolicyReq := NewResourcePolicyUpdateReq(currentModel)
-	resourcePolicyResp, apiResp, err := conn.ResourcePoliciesApi.UpdateAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID, resourcePolicyReq).Execute()
+	resourcePolicyResp, apiResp, err := conn.ResourcePoliciesApi.UpdateOrgResourcePolicy(ctx, *orgID, *resourcePolicyID, resourcePolicyReq).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.UPDATE, err)
 	}
@@ -141,7 +141,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	orgID := currentModel.OrgId
 	resourcePolicyID := currentModel.Id
-	apiResp, err := conn.ResourcePoliciesApi.DeleteAtlasResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
+	apiResp, err := conn.ResourcePoliciesApi.DeleteOrgResourcePolicy(ctx, *orgID, *resourcePolicyID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.DELETE, err)
 	}
@@ -162,7 +162,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	orgID := currentModel.OrgId
 
-	resourcePolicies, apiResp, err := conn.ResourcePoliciesApi.GetAtlasResourcePolicies(ctx, *orgID).Execute()
+	resourcePolicies, apiResp, err := conn.ResourcePoliciesApi.ListOrgResourcePolicies(ctx, *orgID).Execute()
 	if err != nil {
 		return handleError(apiResp, constants.LIST, err)
 	}

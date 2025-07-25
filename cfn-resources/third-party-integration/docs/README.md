@@ -31,7 +31,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#scheme" title="Scheme">Scheme</a>" : <i>String</i>,
         "<a href="#enabled" title="Enabled">Enabled</a>" : <i>Boolean</i>,
         "<a href="#listenaddress" title="ListenAddress">ListenAddress</a>" : <i>String</i>,
-        "<a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>" : <i>String</i>
+        "<a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>" : <i>String</i>,
+        "<a href="#senduserprovidedresourcetags" title="SendUserProvidedResourceTags">SendUserProvidedResourceTags</a>" : <i>Boolean</i>
     }
 }
 </pre>
@@ -61,6 +62,7 @@ Properties:
     <a href="#enabled" title="Enabled">Enabled</a>: <i>Boolean</i>
     <a href="#listenaddress" title="ListenAddress">ListenAddress</a>: <i>String</i>
     <a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>: <i>String</i>
+    <a href="#senduserprovidedresourcetags" title="SendUserProvidedResourceTags">SendUserProvidedResourceTags</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -268,6 +270,16 @@ Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SendUserProvidedResourceTags
+
+Flag that indicates whether to send user-provided resource tags.
+
+_Required_: No
+
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

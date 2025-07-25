@@ -54,7 +54,8 @@
     "/properties/UserName",
     "/properties/ServiceDiscovery",
     "/properties/Scheme",
-    "/properties/Enabled"
+    "/properties/Enabled",
+    "/properties/SendUserProvidedResourceTags"
   ],
   "properties": {
     "ProjectId": {
@@ -156,6 +157,10 @@
     "TlsPemPath": {
       "type": "string",
       "description": "Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (PEM) key and certificate file on the host."
+    },
+    "SendUserProvidedResourceTags": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to send user-provided resource tags."
     }
   },
   "typeName": "MongoDB::Atlas::ThirdPartyIntegration",

@@ -25,7 +25,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	"go.mongodb.org/atlas-sdk/v20250312005/admin"
 )
 
 var RequiredFields = []string{constants.IntegrationType, constants.ProjectID}
@@ -76,7 +76,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	requestBody := modelToIntegration(currentModel)
-	integrations, resModel, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
+	integrations, resModel, err := client.AtlasSDK.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
@@ -108,7 +108,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	integration, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -139,13 +139,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	integration, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
+	integration, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.GetThirdPartyIntegration(context.Background(), *ProjectID, *IntegrationType).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
 	updateIntegrationFromSchema(currentModel, integration)
-	integrations, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
+	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.UpdateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, integration).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -156,7 +156,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThridPartyIntegration) {
+func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThirdPartyIntegration) {
 	if util.IsStringPresent(currentModel.Url) && !util.AreStringPtrEqual(currentModel.Url, integration.Url) {
 		integration.Url = currentModel.Url
 	}
@@ -196,11 +196,12 @@ func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThridPa
 	if util.IsStringPresent(currentModel.ServiceDiscovery) && !util.AreStringPtrEqual(currentModel.ServiceDiscovery, integration.ServiceDiscovery) {
 		integration.ServiceDiscovery = currentModel.ServiceDiscovery
 	}
-	if util.IsStringPresent(currentModel.Scheme) && !util.AreStringPtrEqual(currentModel.Scheme, integration.Scheme) {
-		integration.Scheme = currentModel.Scheme
-	}
 	if currentModel.Enabled != nil && currentModel.Enabled != integration.Enabled {
 		integration.Enabled = currentModel.Enabled
+	}
+
+	if currentModel.SendUserProvidedResourceTags != nil {
+		integration.SendUserProvidedResourceTags = currentModel.SendUserProvidedResourceTags
 	}
 }
 
@@ -223,7 +224,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	ProjectID := currentModel.ProjectId
 	IntegrationType := currentModel.Type
 
-	_, res, err = client.Atlas20231115002.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
+	res, err = client.AtlasSDK.ThirdPartyIntegrationsApi.DeleteThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID).Execute()
 
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
@@ -251,7 +252,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 	var res *http.Response
 	ProjectID := currentModel.ProjectId
-	integrations, res, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.ListThirdPartyIntegrations(context.Background(), *ProjectID).Execute()
+	integrations, res, err := client.AtlasSDK.ThirdPartyIntegrationsApi.ListThirdPartyIntegrations(context.Background(), *ProjectID).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
@@ -270,17 +271,14 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) {
-	out = &admin.ThridPartyIntegration{}
+func modelToIntegration(currentModel *Model) (out *admin.ThirdPartyIntegration) {
+	out = &admin.ThirdPartyIntegration{}
 
 	if util.IsStringPresent(currentModel.Type) {
 		out.Type = currentModel.Type
 	}
 	if currentModel.Enabled != nil {
 		out.Enabled = currentModel.Enabled
-	}
-	if util.IsStringPresent(currentModel.Scheme) {
-		out.Scheme = currentModel.Scheme
 	}
 	if util.IsStringPresent(currentModel.ServiceDiscovery) {
 		out.ServiceDiscovery = currentModel.ServiceDiscovery
@@ -322,10 +320,13 @@ func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) 
 		out.ApiKey = currentModel.ApiKey
 	}
 
+	if currentModel.SendUserProvidedResourceTags != nil {
+		out.SendUserProvidedResourceTags = currentModel.SendUserProvidedResourceTags
+	}
 	return out
 }
 
-func integrationToModel(currentModel Model, integration *admin.ThridPartyIntegration) Model {
+func integrationToModel(currentModel Model, integration *admin.ThirdPartyIntegration) Model {
 	// if "Enabled" is not set in the inputs we dont want to return "Enabled" in outputs
 	enabled := currentModel.Enabled != nil
 
@@ -341,5 +342,6 @@ func integrationToModel(currentModel Model, integration *admin.ThridPartyIntegra
 	if !enabled {
 		out.Enabled = nil
 	}
+
 	return out
 }

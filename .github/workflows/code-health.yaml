@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Run ShellCheck
-        uses: bewuethr/shellcheck-action@d01912909579c4b1a335828b8fca197fbb8e0aa4
+        uses: bewuethr/shellcheck-action@80bac2daa9fcf95d648200a793d00060857e6dc4
   cfn-lint:
     runs-on: ubuntu-latest
     steps:

@@ -78,16 +78,21 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	requestBody := modelToIntegration(currentModel)
 	integrations, resModel, err := client.AtlasSDK.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
+		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusConflict {
 			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 
 		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil
 	}
 
+	if !integrations.HasResults() || len(integrations.GetResults()) == 0 {
+		return progressevent.GetFailedEventByResponse("No integration returned from create", resModel), nil
+	}
+
+	results := integrations.GetResults()
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   integrationToModel(*currentModel, &integrations.Results[0]),
+		ResourceModel:   integrationToModel(*currentModel, &results[0]),
 	}, nil
 }
 
@@ -150,9 +155,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
+	if !integrations.HasResults() || len(integrations.GetResults()) == 0 {
+		return progressevent.GetFailedEventByResponse("No integration returned from update", res), nil
+	}
+
+	results := integrations.GetResults()
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   integrationToModel(*currentModel, &integrations.Results[0]),
+		ResourceModel:   integrationToModel(*currentModel, &results[0]),
 	}, nil
 }
 
@@ -258,9 +268,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	for i := range integrations.Results {
-		m := integrationToModel(*currentModel, &integrations.Results[i])
-		mm = append(mm, m)
+	if integrations.HasResults() {
+		results := integrations.GetResults()
+		for i := range results {
+			m := integrationToModel(*currentModel, &results[i])
+			mm = append(mm, m)
+		}
 	}
 
 	// Response

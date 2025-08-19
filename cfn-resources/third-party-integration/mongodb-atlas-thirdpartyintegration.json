@@ -152,7 +152,7 @@
     },
     "SendUserProvidedResourceTags": {
       "type": "boolean",
-      "description": "Flag that indicates whether to send user-provided resource tags."
+      "description": "Flag that indicates whether to include user-defined resource tags when sending metrics and alerts to third-party services."
     }
   },
   "typeName": "MongoDB::Atlas::ThirdPartyIntegration",

@@ -261,7 +261,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### SendUserProvidedResourceTags
 
-Flag that indicates whether to send user-provided resource tags.
+Flag that indicates whether to include user-defined resource tags when sending metrics and alerts to third-party services.
 
 _Required_: No
 

@@ -28,7 +28,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#username" title="UserName">UserName</a>" : <i>String</i>,
         "<a href="#password" title="Password">Password</a>" : <i>String</i>,
         "<a href="#servicediscovery" title="ServiceDiscovery">ServiceDiscovery</a>" : <i>String</i>,
-        "<a href="#scheme" title="Scheme">Scheme</a>" : <i>String</i>,
         "<a href="#enabled" title="Enabled">Enabled</a>" : <i>Boolean</i>,
         "<a href="#listenaddress" title="ListenAddress">ListenAddress</a>" : <i>String</i>,
         "<a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>" : <i>String</i>,
@@ -58,7 +57,6 @@ Properties:
     <a href="#username" title="UserName">UserName</a>: <i>String</i>
     <a href="#password" title="Password">Password</a>: <i>String</i>
     <a href="#servicediscovery" title="ServiceDiscovery">ServiceDiscovery</a>: <i>String</i>
-    <a href="#scheme" title="Scheme">Scheme</a>: <i>String</i>
     <a href="#enabled" title="Enabled">Enabled</a>: <i>Boolean</i>
     <a href="#listenaddress" title="ListenAddress">ListenAddress</a>: <i>String</i>
     <a href="#tlspempath" title="TlsPemPath">TlsPemPath</a>: <i>String</i>
@@ -228,18 +226,6 @@ _Required_: No
 _Type_: String
 
 _Allowed Values_: <code>http</code> | <code>file</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Scheme
-
-Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.
-
-_Required_: No
-
-_Type_: String
-
-_Allowed Values_: <code>http</code> | <code>https</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

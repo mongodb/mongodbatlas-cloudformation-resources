@@ -137,14 +137,6 @@
         "file"
       ]
     },
-    "Scheme": {
-      "type": "string",
-      "description": "Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.",
-      "enum": [
-        "http",
-        "https"
-      ]
-    },
     "Enabled": {
       "type": "boolean",
       "description": "Flag that indicates whether someone has activated the Prometheus integration."

@@ -20,7 +20,6 @@ type Model struct {
 	UserName                     *string `json:",omitempty"`
 	Password                     *string `json:",omitempty"`
 	ServiceDiscovery             *string `json:",omitempty"`
-	Scheme                       *string `json:",omitempty"`
 	Enabled                      *bool   `json:",omitempty"`
 	ListenAddress                *string `json:",omitempty"`
 	TlsPemPath                   *string `json:",omitempty"`

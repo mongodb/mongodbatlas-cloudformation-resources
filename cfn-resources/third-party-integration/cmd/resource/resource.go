@@ -41,7 +41,7 @@ var requiredPerType = map[string][]string{
 	"FLOWDOCK":        {"FlowName", "ApiToken", "OrgName"},
 	"WEBHOOK":         {"Url"},
 	"MICROSOFT_TEAMS": {"MicrosoftTeamsWebhookUrl"},
-	"PROMETHEUS":      {"UserName", "Password", "ServiceDiscovery", "Scheme", "Enabled"},
+	"PROMETHEUS":      {"UserName", "Password", "ServiceDiscovery", "Enabled"},
 }
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {

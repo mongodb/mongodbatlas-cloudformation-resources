@@ -2,5 +2,6 @@
     "ProjectId": "$ATLAS_PROJECT_ID",
     "Profile": "default",
     "Type": "WEBHOOK",
-    "Url": ""
+    "Url": "",
+    "SendUserProvidedResourceTags": false
 }

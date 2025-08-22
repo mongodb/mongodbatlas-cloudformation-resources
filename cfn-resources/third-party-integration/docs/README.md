@@ -69,7 +69,7 @@ Properties:
 
 Unique 24-hexadecimal digit string that identifies your project.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
@@ -89,7 +89,7 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 
 Human-readable label that identifies the service to which you want to integrate with MongoDB Cloud. The value must match the third-party service integration type.
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 

@@ -268,7 +268,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	if integrations == nil || len(integrations.GetResults()) == 0 {
+	if integrations == nil {
 		results := integrations.GetResults()
 		for i := range results {
 			m := integrationToModel(*currentModel, &results[i])

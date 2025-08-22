@@ -3,5 +3,6 @@
     "Profile": "default",
     "Type": "WEBHOOK",
     "Url": "https://www.google.com",
-    "Secret": ""
+    "Secret": "",
+    "SendUserProvidedResourceTags": true
 }

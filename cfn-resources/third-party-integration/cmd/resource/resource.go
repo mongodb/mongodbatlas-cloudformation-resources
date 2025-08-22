@@ -85,7 +85,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil
 	}
 
-	if integrations == nil {
+	if integrations == nil || len(integrations.GetResults()) == 0 {
 		return progressevent.GetFailedEventByResponse("No integration returned from create", resModel), nil
 	}
 
@@ -155,7 +155,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if integrations == nil {
+	if integrations == nil || len(integrations.GetResults()) == 0 {
 		return progressevent.GetFailedEventByResponse("No integration returned from update", res), nil
 	}
 
@@ -268,7 +268,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	if integrations == nil {
+	if integrations == nil || len(integrations.GetResults()) == 0 {
 		results := integrations.GetResults()
 		for i := range results {
 			m := integrationToModel(*currentModel, &results[i])

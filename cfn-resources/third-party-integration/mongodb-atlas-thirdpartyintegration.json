@@ -2,6 +2,10 @@
   "additionalProperties": false,
   "definitions": {},
   "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
+  "required": [
+    "ProjectId",
+    "Type"
+  ],
   "handlers": {
     "create": {
       "permissions": [
@@ -53,8 +57,7 @@
     "/properties/MicrosoftTeamsWebhookUrl",
     "/properties/UserName",
     "/properties/ServiceDiscovery",
-    "/properties/Enabled",
-    "/properties/SendUserProvidedResourceTags"
+    "/properties/Enabled"
   ],
   "properties": {
     "ProjectId": {

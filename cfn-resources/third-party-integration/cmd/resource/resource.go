@@ -85,7 +85,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), resModel), nil
 	}
 
-	if !integrations.HasResults() || len(integrations.GetResults()) == 0 {
+	if integrations == nil {
 		return progressevent.GetFailedEventByResponse("No integration returned from create", resModel), nil
 	}
 
@@ -155,7 +155,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	if !integrations.HasResults() || len(integrations.GetResults()) == 0 {
+	if integrations == nil {
 		return progressevent.GetFailedEventByResponse("No integration returned from update", res), nil
 	}
 
@@ -268,7 +268,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	mm := make([]interface{}, 0)
-	if integrations.HasResults() {
+	if integrations == nil {
 		results := integrations.GetResults()
 		for i := range results {
 			m := integrationToModel(*currentModel, &results[i])
@@ -332,7 +332,6 @@ func modelToIntegration(currentModel *Model) (out *admin.ThirdPartyIntegration) 
 	if util.IsStringPresent(currentModel.ApiKey) {
 		out.ApiKey = currentModel.ApiKey
 	}
-
 	if currentModel.SendUserProvidedResourceTags != nil {
 		out.SendUserProvidedResourceTags = currentModel.SendUserProvidedResourceTags
 	}
@@ -342,7 +341,6 @@ func modelToIntegration(currentModel *Model) (out *admin.ThirdPartyIntegration) 
 func integrationToModel(currentModel Model, integration *admin.ThirdPartyIntegration) Model {
 	// if "Enabled" is not set in the inputs we dont want to return "Enabled" in outputs
 	enabled := currentModel.Enabled != nil
-	sendUserProvidedResourceTags := currentModel.SendUserProvidedResourceTags != nil
 
 	/*
 	   The variables from the thirdparty integration are not returned back in reposnse because most of the variables are sensitive variables.
@@ -355,10 +353,6 @@ func integrationToModel(currentModel Model, integration *admin.ThirdPartyIntegra
 
 	if !enabled {
 		out.Enabled = nil
-	}
-
-	if !sendUserProvidedResourceTags {
-		out.SendUserProvidedResourceTags = nil
 	}
 
 	return out

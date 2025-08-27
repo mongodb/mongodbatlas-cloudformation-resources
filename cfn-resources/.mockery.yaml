@@ -1,16 +1,14 @@
-with-expecter: true
-disable-version-string: true
 dir: testutil/mocksvc
-outpkg: mocksvc
+structname: '{{.InterfaceName}}'
+pkgname: mocksvc
+template: testify
+template-data:
+  unroll-variadic: true
 filename: "{{ .InterfaceName | snakecase }}.go"
-mockname: "{{.InterfaceName}}"
-
 packages:
-  go.mongodb.org/atlas-sdk/v20231115014/admin:
-    interfaces:
-      AtlasSearchApi:
-  
   github.com/mongodb/mongodbatlas-cloudformation-resources/teams/cmd/resource/team-user:
     interfaces:
-      TeamUsersAPI:
-  
+      TeamUsersAPI: {}
+  go.mongodb.org/atlas-sdk/v20231115014/admin:
+    interfaces:
+      AtlasSearchApi: {}

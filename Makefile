@@ -7,7 +7,7 @@ goarch=amd64
 ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
-MOCKERY_VERSION=v2.42.1
+MOCKERY_VERSION=v3.5.3
 GOLANGCI_VERSION=v2.3.1 # Also update golangci-lint GH action in code-health.yml when updating this version
 
 .PHONY: submit
@@ -32,7 +32,7 @@ tools:  ## Install dev tools
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install go.uber.org/mock/mockgen@latest
-	go install github.com/vektra/mockery/v2@$(MOCKERY_VERSION)
+	go install github.com/vektra/mockery/v3@$(MOCKERY_VERSION)
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_VERSION)
 
 .PHONY: link-git-hooks

@@ -13,7 +13,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.64.1
 	github.com/aws/smithy-go v1.22.5
 	github.com/dave/jennifer v1.7.1
-	github.com/getkin/kin-openapi v0.132.0
+	github.com/getkin/kin-openapi v0.133.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/mongodb-forks/digest v1.1.0
 	github.com/mongodb-labs/go-client-mongodb-atlas-app-services v1.0.0
@@ -52,6 +52,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/woodsbury/decimal128 v1.3.0 // indirect
 	go.mongodb.org/atlas v0.37.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	gopkg.in/validator.v2 v2.0.1 // indirect

@@ -16,6 +16,7 @@ package utility
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
@@ -76,7 +77,8 @@ func PublishToPrivateRegistry(t *testing.T, rctx ResourceContext) {
 
 func runShScript(t *testing.T, scriptPath string) ([]byte, error) {
 	t.Helper()
-	cmd := exec.Command(scriptPath)
+	ctx := context.Background()
+	cmd := exec.CommandContext(ctx, scriptPath)
 	resp, err := cmd.CombinedOutput()
 
 	t.Logf("runShScript Output: %v", string(resp))

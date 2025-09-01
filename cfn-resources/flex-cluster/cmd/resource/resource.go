@@ -33,9 +33,9 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_ = client
+	_ = client // TODO: implement
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Create")
+	return handler.ProgressEvent{}, errors.New("not implemented: Create")
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -46,9 +46,9 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_ = client
+	_ = client // TODO: implement
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Read")
+	return handler.ProgressEvent{}, errors.New("not implemented: Read")
 }
 
 // Update handles the Update event from the Cloudformation service.
@@ -62,9 +62,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_ = client
+	_ = client // TODO: implement
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Update")
+	return handler.ProgressEvent{}, errors.New("not implemented: Update")
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -78,9 +78,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_ = client
+	_ = client // TODO: implement
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: Delete")
+	return handler.ProgressEvent{}, errors.New("not implemented: Delete")
 }
 
 // List handles the List event from the Cloudformation service.
@@ -94,7 +94,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if peErr != nil {
 		return *peErr, nil
 	}
-	_ = client
+	_ = client // TODO: implement
 
-	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }

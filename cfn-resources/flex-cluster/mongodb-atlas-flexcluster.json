@@ -1,46 +1,69 @@
 {
+  "typeName": "MongoDB::Atlas::FlexCluster",
+  "description": "The flex cluster resource provides access to your flex cluster configurations. The resource lets you create, edit and delete flex clusters. The resource requires your Project ID.",
   "definitions": {},
   "properties": {
-    "GroupId": {
+    "Profile": {
       "type": "string",
-      "description": "Unique 24-hexadecimal digit string that identifies your project. Use the [/groups](#tag/Projects/operation/listProjects) endpoint to retrieve all projects to which the authenticated user has access.\n\n**NOTE**: Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.",
-      "pattern": "^([a-f0-9]{24})$"
+      "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "default": "default"
     },
-    "IncludeCount": {
-      "type": "boolean",
-      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
-    },
-    "ItemsPerPage": {
-      "type": "integer",
-      "description": "Number of items that the response returns per page."
+    "ProjectId": {
+      "description": "Unique identifier of the project the cluster belongs to.",
+      "type": "string"
     },
     "Name": {
-      "type": "string",
-      "description": "Human-readable label that identifies the flex cluster.",
-      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]*$"
+      "description": "Human-readable label that identifies the advanced cluster.",
+      "type": "string"
     },
-    "PageNum": {
-      "type": "integer",
-      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    "Id": {
+      "description": "Unique identifier of the cluster.",
+      "type": "string"
     }
   },
-  "description": "Returns, adds, edits, and removes flex clusters.",
-  "typeName": "MongoDB::Atlas::FlexCluster",
-  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
+  "additionalProperties": false,
+  "required": [
+    "Name",
+    "ProjectId"
+  ],
+  "readOnlyProperties": [
+    "/properties/Id"
+  ],
+  "createOnlyProperties": [
+    "/properties/Name",
+    "/properties/ProjectId",
+    "/properties/Profile"
+  ],
+  "primaryIdentifier": [
+    "/properties/ProjectId",
+    "/properties/Name",
+    "/properties/Profile"
+  ],
   "handlers": {
     "create": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "read": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "update": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     },
     "delete": {
-      "permissions": []
+      "permissions": [
+        "secretsmanager:GetSecretValue"
+      ]
     }
   },
-  "primaryIdentifier": null,
-  "additionalProperties": false
+  "documentationUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/blob/master/cfn-resources/flex-cluster/README.md",
+  "tagging": {
+    "taggable": false
+  },
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/cfn-resources/flex-cluster"
 }

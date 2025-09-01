@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: AWS SAM template for the MongoDB::Atlas::FlexCluster resource type
+Description: AWS SAM template for the MongoDB::Atlas::Flex-Cluster resource type
 
 Globals:
   Function:
-    Timeout: 180  # docker start-up times can be long for SAM CLI
-    MemorySize: 256
+    Timeout: 3600 # this file is only used locally so we can have large limits
+    MemorySize: 1024
 
 Resources:
   TypeFunction:
@@ -18,10 +18,10 @@ Resources:
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: bootstrap
-      Runtime: provided.al2
+      Handler: debug
+      Runtime: go1.x # ok to use this deprecated runtime for local debug mode
       CodeUri: bin/
-      Environment: 
-        Variables: 
+      Environment:
+        Variables:
           MODE: Test
-
+          LOG_LEVEL: debug

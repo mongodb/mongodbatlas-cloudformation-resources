@@ -4,8 +4,8 @@ Description: AWS SAM template for the MongoDB::Atlas::Flex-Cluster resource type
 
 Globals:
   Function:
-    Timeout: 3600 # this file is only used locally so we can have large limits
-    MemorySize: 1024
+    Timeout: 900
+    MemorySize: 1024 # this file is only used locally so we can have large limits
 
 Resources:
   TypeFunction:
@@ -19,6 +19,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: debug
+      # cfn-lint-disable-next-line E2531
       Runtime: go1.x # ok to use this deprecated runtime for local debug mode
       CodeUri: bin/
       Environment:

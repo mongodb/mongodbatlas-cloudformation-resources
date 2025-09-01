@@ -1,0 +1,46 @@
+{
+  "definitions": {},
+  "properties": {
+    "GroupId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal digit string that identifies your project. Use the [/groups](#tag/Projects/operation/listProjects) endpoint to retrieve all projects to which the authenticated user has access.\n\n**NOTE**: Groups and projects are synonymous terms. Your group id is the same as your project id. For existing groups, your group/project id remains the same. The resource and corresponding endpoints use the term groups.",
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "IncludeCount": {
+      "type": "boolean",
+      "description": "Flag that indicates whether the response returns the total number of items (**totalCount**) in the response."
+    },
+    "ItemsPerPage": {
+      "type": "integer",
+      "description": "Number of items that the response returns per page."
+    },
+    "Name": {
+      "type": "string",
+      "description": "Human-readable label that identifies the flex cluster.",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-]*$"
+    },
+    "PageNum": {
+      "type": "integer",
+      "description": "Number of the page that displays the current set of the total objects that the response returns."
+    }
+  },
+  "description": "Returns, adds, edits, and removes flex clusters.",
+  "typeName": "MongoDB::Atlas::FlexCluster",
+  "sourceUrl": "https://github.com/mongodb/mongodbatlas-cloudformation-resources",
+  "handlers": {
+    "create": {
+      "permissions": []
+    },
+    "read": {
+      "permissions": []
+    },
+    "update": {
+      "permissions": []
+    },
+    "delete": {
+      "permissions": []
+    }
+  },
+  "primaryIdentifier": null,
+  "additionalProperties": false
+}

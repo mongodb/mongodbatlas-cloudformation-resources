@@ -73,3 +73,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Unique identifier of the cluster.
 
+#### StateName
+
+Current state of the cluster.
+

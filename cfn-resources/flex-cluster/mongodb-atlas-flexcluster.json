@@ -19,6 +19,10 @@
     "Id": {
       "description": "Unique identifier of the cluster.",
       "type": "string"
+    },
+    "StateName": {
+      "description": "Current state of the cluster.",
+      "type": "string"
     }
   },
   "additionalProperties": false,
@@ -27,7 +31,8 @@
     "ProjectId"
   ],
   "readOnlyProperties": [
-    "/properties/Id"
+    "/properties/Id",
+    "/properties/StateName"
   ],
   "createOnlyProperties": [
     "/properties/Name",

@@ -8,4 +8,5 @@ type Model struct {
 	ProjectId *string `json:",omitempty"`
 	Name      *string `json:",omitempty"`
 	Id        *string `json:",omitempty"`
+	StateName *string `json:",omitempty"`
 }

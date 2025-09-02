@@ -92,8 +92,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-	currentModel.StateName = flexResp.StateName
-
+	updateModel(currentModel, flexResp)
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create FlexCluster `%s`", flexResp.GetStateName()),
@@ -126,8 +125,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			OperationStatus:  handler.Failed,
 			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
 	}
-	currentModel.StateName = flexResp.StateName
-	currentModel.Id = flexResp.Id
+	updateModel(currentModel, flexResp)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         constants.ReadComplete,
@@ -226,4 +224,11 @@ func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName s
 		return constants.Error, fmt.Errorf("error fetching flex cluster info (%s): %s", clusterName, err)
 	}
 	return *cluster.StateName, nil
+}
+
+func updateModel(currentModel *Model, flexResp *admin.FlexClusterDescription20241113) {
+	currentModel.ProjectId = flexResp.GroupId
+	currentModel.Name = flexResp.Name
+	currentModel.Id = flexResp.Id
+	currentModel.StateName = flexResp.StateName
 }

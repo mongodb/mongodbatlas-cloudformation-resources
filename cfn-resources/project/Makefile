@@ -35,5 +35,3 @@ run-contract-testing:
 	make build
 	sam local start-lambda &
 	cfn test --function-name TestEntrypoint --verbose
-
-# temporary change

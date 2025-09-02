@@ -101,8 +101,6 @@ linters:
     rules:
       - path: (.+)\.go$
         text: declaration of ".*" shadows declaration at line .*
-      - path: util/.*\.go$
-        text: "var-naming: avoid meaningless package names"
 formatters:
   enable:
     - gofmt

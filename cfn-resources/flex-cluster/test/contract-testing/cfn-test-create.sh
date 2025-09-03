@@ -15,4 +15,4 @@ echo "projectId: $projectId"
 echo "projectName: $projectName"
 echo "clusterName: $clusterName"
 
-./test/cfn-test-create-inputs.sh $projectId $clusterName
+./test/cfn-test-create-inputs.sh "$projectId" "$clusterName"

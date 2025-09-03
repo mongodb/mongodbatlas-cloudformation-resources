@@ -1,0 +1,9 @@
+{
+  "desiredResourceState": {
+    "ProjectId": "",
+    "Name": "",
+    "Profile": "default"
+  },
+  "providerLogGroupName": "mongodb-atlas-flexcluster-logs",
+  "previousResourceState": {}
+}

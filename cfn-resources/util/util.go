@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util //nolint:revive // util is an established package name in this codebase
+package util
 
 import (
 	"context"

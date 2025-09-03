@@ -4,8 +4,7 @@ Description: AWS SAM template for the MongoDB::Atlas::Flex-Cluster resource type
 
 Globals:
   Function:
-    Timeout: 900
-    MemorySize: 1024 # this file is only used locally so we can have large limits
+    Timeout: 60
 
 Resources:
   TypeFunction:

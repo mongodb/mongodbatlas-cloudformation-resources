@@ -17,14 +17,9 @@ Resources:
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
-    Metadata:
-      cfn-lint:
-        config:
-          ignore_checks:
-            - E2531 # Ignore deprecated runtime warning
     Properties:
-      Handler: debug
-      Runtime: go1.x # ok to use this deprecated runtime for local debug mode
+      Handler: bootstrap
+      Runtime: provided.al2
       CodeUri: bin/
       Environment:
         Variables:

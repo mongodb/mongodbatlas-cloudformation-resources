@@ -56,7 +56,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		return handleCallback(client, currentModel, false, "Create Success"), nil
 	}
-	flexReq := buildCreateRequest(currentModel)
+	flexReq := &admin.FlexClusterDescriptionCreate20241113{
+		Name: *currentModel.Name,
+		ProviderSettings: admin.FlexProviderSettingsCreate20241113{
+			BackingProviderName: *currentModel.ProviderSettings.BackingProviderName,
+			RegionName:          *currentModel.ProviderSettings.RegionName,
+		},
+		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
+		Tags:                         expandTags(currentModel.Tags),
+	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *currentModel.ProjectId, flexReq).Execute()
 	if err != nil {
 		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, constants.Duplicate) {
@@ -105,7 +113,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		return handleCallback(client, currentModel, false, "Update Success"), nil
 	}
-	updateReq := buildUpdateRequest(currentModel)
+	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
+		TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
+		Tags:                         expandTags(currentModel.Tags),
+	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name, updateReq).Execute()
 	if err != nil {
 		return handleUpdateError(err, resp), nil
@@ -157,32 +168,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-func buildCreateRequest(model *Model) *admin.FlexClusterDescriptionCreate20241113 {
-	req := &admin.FlexClusterDescriptionCreate20241113{
-		Name: *model.Name,
-		ProviderSettings: admin.FlexProviderSettingsCreate20241113{
-			BackingProviderName: *model.ProviderSettings.BackingProviderName,
-			RegionName:          *model.ProviderSettings.RegionName,
-		},
-		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
-	}
-	if tags := convertModelTagsToAtlas(model.Tags); tags != nil {
-		req.Tags = tags
-	}
-	return req
-}
-
-func buildUpdateRequest(model *Model) *admin.FlexClusterDescriptionUpdate20241113 {
-	req := &admin.FlexClusterDescriptionUpdate20241113{
-		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
-	}
-	if tags := convertModelTagsToAtlas(model.Tags); tags != nil {
-		req.Tags = tags
-	}
-	return req
-}
-
-func convertModelTagsToAtlas(modelTags []Tag) *[]admin.ResourceTag {
+func expandTags(modelTags []Tag) *[]admin.ResourceTag {
 	tags := make([]admin.ResourceTag, len(modelTags))
 	for i, tag := range modelTags {
 		tags[i] = admin.ResourceTag{
@@ -193,7 +179,7 @@ func convertModelTagsToAtlas(modelTags []Tag) *[]admin.ResourceTag {
 	return &tags
 }
 
-func convertAtlasTagsToModel(atlasTags *[]admin.ResourceTag) []Tag {
+func flattenTags(atlasTags *[]admin.ResourceTag) []Tag {
 	if atlasTags == nil {
 		return []Tag{}
 	}
@@ -234,7 +220,7 @@ func updateModel(model *Model, flexResp *admin.FlexClusterDescription20241113) {
 			StandardSrv: flexResp.ConnectionStrings.StandardSrv,
 		}
 	}
-	model.Tags = convertAtlasTagsToModel(flexResp.Tags)
+	model.Tags = flattenTags(flexResp.Tags)
 }
 
 func handleCallback(client *util.MongoDBClient, model *Model, isDelete bool, successMessage string) handler.ProgressEvent {

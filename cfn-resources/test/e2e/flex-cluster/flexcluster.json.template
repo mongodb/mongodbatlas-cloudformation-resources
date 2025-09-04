@@ -12,7 +12,13 @@
         "ProviderSettings": {
           "BackingProviderName": "AWS",
           "RegionName": "US_EAST_1"
-        }
+        }{{ if .Tags }},
+        "Tags": [{{ range $i, $tag := .Tags }}{{ if $i }},{{ end }}
+          {
+            "Key": "{{ $tag.Key }}",
+            "Value": "{{ $tag.Value }}"
+          }{{ end }}
+        ]{{ end }}
       }
     }
   },

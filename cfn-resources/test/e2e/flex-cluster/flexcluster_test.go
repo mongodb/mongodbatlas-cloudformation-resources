@@ -41,14 +41,18 @@ type testData struct {
 	ClusterName      string
 	InstanceSize     string
 	NodeCount        int
+	Tags             []Tag
+}
+
+type Tag struct {
+	Key   string
+	Value string
 }
 
 const (
-	resourceTypeName    = "MongoDB::Atlas::FlexCluster"
-	resourceDirectory   = "flex-cluster"
-	cfnTemplatePath     = "flexcluster.json.template"
-	InstanceSize        = "S20_HIGHCPU_NVME"
-	InstanceSizeUpdated = "S30_HIGHCPU_NVME" // TODO: update values
+	resourceTypeName  = "MongoDB::Atlas::FlexCluster"
+	resourceDirectory = "flex-cluster"
+	cfnTemplatePath   = "flexcluster.json.template"
 )
 
 var (
@@ -62,19 +66,15 @@ var (
 
 func TestFlexClusterCFN(t *testing.T) {
 	testCtx := setupSuite(t)
-
 	t.Run("Validate Template", func(t *testing.T) {
 		utility.TestIsTemplateValid(t, testCtx.cfnClient, testCtx.template)
 	})
-
 	t.Run("Create Stack", func(t *testing.T) {
 		testCreateStack(t, testCtx)
 	})
-
 	t.Run("Update Stack", func(t *testing.T) {
 		testUpdateStack(t, testCtx)
 	})
-
 	t.Run("Delete Stack", func(t *testing.T) {
 		testDeleteStack(t, testCtx)
 	})
@@ -104,22 +104,26 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 	utility.FailNowIfError(t, "Error while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
 	assert.NotNil(t, resp)
-	// TODO: assert.Equal(t, instanceSize, resp.GetFlexSpecs()[0].GetInstanceSize())
+	assert.True(t, resp.Tags == nil || len(*resp.Tags) == 0)
 }
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-	t.Skip("Skipping update stack") // TODO: implement update stack
-	// TODO: c.templateData.InstanceSize = instanceSizeUpdated
+	c.templateData.Tags = []Tag{
+		{Key: "environment", Value: "development"},
+		{Key: "team", Value: "platform"}}
 	var err error
 	c.template, err = newCFNTemplate(c.templateData)
 	utility.FailNowIfError(t, "Error while reading updated CFN Template: %v", err)
 	utility.UpdateStack(t, c.cfnClient, stackName, c.template)
 	resp, httpResp, err := c.atlasClient.FlexClustersApi.GetFlexCluster(ctx.Background(), c.templateData.ProjectID, c.templateData.ClusterName).Execute()
-	utility.FailNowIfError(t, "Error while retrieving Search Deployment from Atlas: %v", err)
+	utility.FailNowIfError(t, "Error while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, httpResp.StatusCode)
 	assert.NotNil(t, resp)
-	// TODO: assert.Equal(t, instanceSizeUpdated, resp.GetSpecs()[0].GetInstanceSize())
+	assert.NotNil(t, resp.Tags)
+	assert.Len(t, *resp.Tags, 2)
+	assert.Contains(t, *resp.Tags, admin.ResourceTag{Key: "environment", Value: "development"})
+	assert.Contains(t, *resp.Tags, admin.ResourceTag{Key: "team", Value: "platform"})
 }
 
 func testDeleteStack(t *testing.T, c *localTestContext) {
@@ -148,7 +152,6 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 		Profile:          profile,
 		ProjectID:        projectID,
 		ClusterName:      clusterName,
-		// TODO: InstanceSize:     instanceSize,
 	}
 	var err error
 	c.template, err = newCFNTemplate(c.templateData)

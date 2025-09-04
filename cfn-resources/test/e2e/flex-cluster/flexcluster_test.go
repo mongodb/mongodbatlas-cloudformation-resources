@@ -40,8 +40,8 @@ type testData struct {
 	ProjectID        string
 	ClusterName      string
 	InstanceSize     string
-	NodeCount        int
 	Tags             []Tag
+	NodeCount        int
 }
 
 type Tag struct {

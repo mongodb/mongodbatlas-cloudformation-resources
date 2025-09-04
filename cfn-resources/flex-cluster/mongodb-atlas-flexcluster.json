@@ -68,6 +68,10 @@
           "type": "string"
         }
       },
+      "required": [
+        "Key",
+        "Value"
+      ],
       "additionalProperties": false
     }
   },
@@ -125,6 +129,7 @@
     "Tags": {
       "description": "Map that contains key-value pairs between 1 to 255 characters in length for tagging and categorizing the flex cluster.",
       "type": "array",
+      "insertionOrder": false,
       "items": {
         "$ref": "#/definitions/tag"
       }

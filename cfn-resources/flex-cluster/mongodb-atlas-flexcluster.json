@@ -1,11 +1,80 @@
 {
   "typeName": "MongoDB::Atlas::FlexCluster",
   "description": "The flex cluster resource provides access to your flex cluster configurations. The resource lets you create, edit and delete flex clusters. The resource requires your Project ID.",
-  "definitions": {},
+  "definitions": {
+    "ProviderSettings": {
+      "description": "Group of cloud provider settings that configure the provisioned MongoDB flex cluster.",
+      "type": "object",
+      "properties": {
+        "BackingProviderName": {
+          "description": "Cloud service provider on which MongoDB Cloud provisioned the flex cluster.",
+          "type": "string"
+        },
+        "RegionName": {
+          "description": "Human-readable label that identifies the geographic location of your MongoDB flex cluster. The region you choose can affect network latency for clients accessing your databases.",
+          "type": "string"
+        },
+        "DiskSizeGB": {
+          "description": "Storage capacity available to the flex cluster expressed in gigabytes.",
+          "type": "number"
+        },
+        "ProviderName": {
+          "description": "Human-readable label that identifies the cloud service provider.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "BackingProviderName",
+        "RegionName"
+      ],
+      "additionalProperties": false
+    },
+    "BackupSettings": {
+      "type": "object",
+      "description": "Flex backup configuration",
+      "properties": {
+        "Enabled": {
+          "description": "Flag that indicates whether backups are performed for this flex cluster. Backup uses flex cluster backups.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ConnectionStrings": {
+      "type": "object",
+      "description": "Collection of Uniform Resource Locators that point to the MongoDB database.",
+      "properties": {
+        "Standard": {
+          "description": "Public connection string that you can use to connect to this cluster. This connection string uses the mongodb:// protocol.",
+          "type": "string"
+        },
+        "StandardSrv": {
+          "description": "Public connection string that you can use to connect to this flex cluster. This connection string uses the mongodb+srv:// protocol.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tag": {
+      "type": "object",
+      "description": "List that contains key-value pairs between 1 to 255 characters in length for tagging and categorizing the cluster.",
+      "properties": {
+        "Key": {
+          "description": "Constant that defines the set of the tag. For example, environment in the environment : production tag.",
+          "type": "string"
+        },
+        "Value": {
+          "description": "Variable that belongs to the set of the tag. For example, production in the environment : production tag.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
   "properties": {
     "Profile": {
-      "type": "string",
       "description": "Profile used to provide credentials information, (a secret with the cfn/atlas/profile/{Profile}, is required), if not provided default is used",
+      "type": "string",
       "default": "default"
     },
     "ProjectId": {
@@ -13,31 +82,78 @@
       "type": "string"
     },
     "Name": {
-      "description": "Human-readable label that identifies the advanced cluster.",
+      "description": "Human-readable label that identifies the flex cluster.",
       "type": "string"
     },
     "Id": {
-      "description": "Unique identifier of the cluster.",
+      "description": "Unique 24-hexadecimal digit string that identifies the flex cluster.",
       "type": "string"
     },
     "StateName": {
-      "description": "Current state of the cluster.",
+      "description": "Human-readable label that indicates the current operating condition of this flex cluster.",
       "type": "string"
+    },
+    "ProviderSettings": {
+      "$ref": "#/definitions/ProviderSettings"
+    },
+    "BackupSettings": {
+      "$ref": "#/definitions/BackupSettings"
+    },
+    "ClusterType": {
+      "description": "Flex cluster topology.",
+      "type": "string"
+    },
+    "ConnectionStrings": {
+      "$ref": "#/definitions/ConnectionStrings"
+    },
+    "CreateDate": {
+      "description": "Date and time when MongoDB Cloud created this flex cluster. This parameter expresses its value in ISO 8601 format in UTC.",
+      "type": "string"
+    },
+    "MongoDBVersion": {
+      "description": "Version of MongoDB that the flex cluster runs.",
+      "type": "string"
+    },
+    "TerminationProtectionEnabled": {
+      "description": "Flag that indicates whether termination protection is enabled on the cluster. If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB Cloud will delete the cluster.",
+      "type": "boolean"
+    },
+    "VersionReleaseSystem": {
+      "description": "Method by which the cluster maintains the MongoDB versions.",
+      "type": "string"
+    },
+    "Tags": {
+      "description": "Map that contains key-value pairs between 1 to 255 characters in length for tagging and categorizing the flex cluster.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/tag"
+      }
     }
   },
   "additionalProperties": false,
   "required": [
     "Name",
-    "ProjectId"
+    "ProjectId",
+    "ProviderSettings"
   ],
   "readOnlyProperties": [
     "/properties/Id",
-    "/properties/StateName"
+    "/properties/StateName",
+    "/properties/BackupSettings",
+    "/properties/ClusterType",
+    "/properties/ConnectionStrings",
+    "/properties/CreateDate",
+    "/properties/MongoDBVersion",
+    "/properties/VersionReleaseSystem",
+    "/properties/ProviderSettings/DiskSizeGB",
+    "/properties/ProviderSettings/ProviderName"
   ],
   "createOnlyProperties": [
     "/properties/Name",
     "/properties/ProjectId",
-    "/properties/Profile"
+    "/properties/Profile",
+    "/properties/ProviderSettings/BackingProviderName",
+    "/properties/ProviderSettings/RegionName"
   ],
   "primaryIdentifier": [
     "/properties/ProjectId",

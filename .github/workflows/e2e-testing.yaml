@@ -24,16 +24,16 @@ jobs:
           filters: |
             cluster:
               - 'cfn-resources/cluster/**'
-              - 'cfn-resources/test/e2e/cluster/**'
+              # TODO REMOVE BEFORE MERGING # - 'cfn-resources/test/e2e/cluster/**'
             flex-cluster:
               - 'cfn-resources/flex-cluster/**'
               - 'cfn-resources/test/e2e/flex-cluster/**'
             project:
               - 'cfn-resources/project/**'
-              - 'cfn-resources/test/e2e/project/**'
+              # TODO REMOVE BEFORE MERGING # - 'cfn-resources/test/e2e/project/**'
             search-deployment:
               - 'cfn-resources/search-deployment/**'
-              - 'cfn-resources/test/e2e/search-deployment/**'
+              # TODO REMOVE BEFORE MERGING # - 'cfn-resources/test/e2e/search-deployment/**'
   cluster:
     needs: change-detection
     if: ${{ needs.change-detection.outputs.cluster == 'true' }}

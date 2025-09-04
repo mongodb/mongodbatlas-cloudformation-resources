@@ -8,7 +8,11 @@
       "Properties": {
         "Profile": "{{ .Profile }}",
         "ProjectId": "{{ .ProjectID }}",
-        "Name": "{{ .ClusterName }}"
+        "Name": "{{ .ClusterName }}",
+        "ProviderSettings": {
+          "BackingProviderName": "AWS",
+          "RegionName": "US_EAST_1"
+        }
       }
     }
   },

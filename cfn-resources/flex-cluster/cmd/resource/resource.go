@@ -35,7 +35,8 @@ const (
 	callBackSeconds = 10
 )
 
-var createUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+var createRequiredFields = []string{constants.ProjectID, constants.Name, "ProviderSettings"}
+var updateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-flexcluster")
@@ -49,7 +50,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if modelValidation := validateModel(createUpdateDeleteRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(createRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -70,17 +71,34 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressEvent, nil
 	}
 
-	// TODO: fill from model
+	// Build create request from model
 	flexReq := &admin.FlexClusterDescriptionCreate20241113{
 		Name: *currentModel.Name,
-		ProviderSettings: admin.FlexProviderSettingsCreate20241113{
-			BackingProviderName: "AWS",       // Write only field.
-			RegionName:          "US_EAST_1", // Write only field.
-			DiskSizeGB:          nil,         // Read only field.
-			ProviderName:        nil,         // Read only field.
-		},
-		Tags:                         nil,
-		TerminationProtectionEnabled: nil,
+	}
+
+	// Set ProviderSettings
+	if currentModel.ProviderSettings != nil {
+		flexReq.ProviderSettings = admin.FlexProviderSettingsCreate20241113{
+			BackingProviderName: *currentModel.ProviderSettings.BackingProviderName,
+			RegionName:          *currentModel.ProviderSettings.RegionName,
+		}
+	}
+
+	// Set Tags if provided
+	if len(currentModel.Tags) > 0 {
+		tags := make([]admin.ResourceTag, len(currentModel.Tags))
+		for i, tag := range currentModel.Tags {
+			tags[i] = admin.ResourceTag{
+				Key:   *tag.Key,
+				Value: *tag.Value,
+			}
+		}
+		flexReq.Tags = &tags
+	}
+
+	// Set TerminationProtectionEnabled if provided
+	if currentModel.TerminationProtectionEnabled != nil {
+		flexReq.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *currentModel.ProjectId, flexReq).Execute()
 	if err != nil {
@@ -136,7 +154,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if modelValidation := validateModel(createUpdateDeleteRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(updateDeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -157,7 +175,28 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressEvent, nil
 	}
 
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
+	// Build update request - only Tags and TerminationProtectionEnabled are updatable
+	updateReq := &admin.FlexClusterDescriptionUpdate20241113{}
+
+	// Update Tags if provided
+	if len(currentModel.Tags) > 0 {
+		tags := make([]admin.ResourceTag, len(currentModel.Tags))
+		for i, tag := range currentModel.Tags {
+			tags[i] = admin.ResourceTag{
+				Key:   *tag.Key,
+				Value: *tag.Value,
+			}
+		}
+		updateReq.Tags = &tags
+	}
+
+	// Update TerminationProtectionEnabled if provided
+	if currentModel.TerminationProtectionEnabled != nil {
+		updateReq.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
+	}
+
+	// Perform the update
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name, updateReq).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return handler.ProgressEvent{
@@ -192,7 +231,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
-	if modelValidation := validateModel(createUpdateDeleteRequiredFields, currentModel); modelValidation != nil {
+	if modelValidation := validateModel(updateDeleteRequiredFields, currentModel); modelValidation != nil {
 		return *modelValidation, nil
 	}
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -277,4 +316,45 @@ func updateModel(currentModel *Model, flexResp *admin.FlexClusterDescription2024
 	currentModel.Name = flexResp.Name
 	currentModel.Id = flexResp.Id
 	currentModel.StateName = flexResp.StateName
+	currentModel.ClusterType = flexResp.ClusterType
+	currentModel.CreateDate = util.TimePtrToStringPtr(flexResp.CreateDate)
+	currentModel.MongoDBVersion = flexResp.MongoDBVersion
+	currentModel.VersionReleaseSystem = flexResp.VersionReleaseSystem
+	currentModel.TerminationProtectionEnabled = flexResp.TerminationProtectionEnabled
+
+	// Update ProviderSettings (not a pointer type in the SDK)
+	if currentModel.ProviderSettings == nil {
+		currentModel.ProviderSettings = &ProviderSettings{}
+	}
+	currentModel.ProviderSettings.BackingProviderName = flexResp.ProviderSettings.BackingProviderName
+	currentModel.ProviderSettings.RegionName = flexResp.ProviderSettings.RegionName
+	currentModel.ProviderSettings.DiskSizeGB = flexResp.ProviderSettings.DiskSizeGB
+	currentModel.ProviderSettings.ProviderName = flexResp.ProviderSettings.ProviderName
+
+	// Update BackupSettings
+	if flexResp.BackupSettings != nil {
+		currentModel.BackupSettings = &BackupSettings{
+			Enabled: flexResp.BackupSettings.Enabled,
+		}
+	}
+
+	// Update ConnectionStrings
+	if flexResp.ConnectionStrings != nil {
+		currentModel.ConnectionStrings = &ConnectionStrings{
+			Standard:    flexResp.ConnectionStrings.Standard,
+			StandardSrv: flexResp.ConnectionStrings.StandardSrv,
+		}
+	}
+
+	// Update Tags
+	if flexResp.Tags != nil && len(*flexResp.Tags) > 0 {
+		tags := make([]Tag, len(*flexResp.Tags))
+		for i, tag := range *flexResp.Tags {
+			tags[i] = Tag{
+				Key:   &tag.Key,
+				Value: &tag.Value,
+			}
+		}
+		currentModel.Tags = tags
+	}
 }

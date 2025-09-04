@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -36,6 +35,7 @@ const callBackSeconds = 10
 var (
 	createRequiredFields       = []string{constants.ProjectID, constants.Name, "ProviderSettings"}
 	updateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+	listRequiredFields         = []string{constants.ProjectID}
 )
 
 func setup() {
@@ -161,7 +161,36 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	return handler.ProgressEvent{}, errors.New("not implemented: List")
+	setup()
+	if modelValidation := validateModel(listRequiredFields, currentModel); modelValidation != nil {
+		return *modelValidation, nil
+	}
+	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
+	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
+	if peErr != nil {
+		return *peErr, nil
+	}
+	listOptions := &admin.ListFlexClustersApiParams{
+		GroupId:      *currentModel.ProjectId,
+		ItemsPerPage: admin.PtrInt(100),
+		PageNum:      admin.PtrInt(1),
+	}
+	flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
+	if err != nil {
+		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing flex clusters: %s", err.Error()), resp), nil
+	}
+	results := flexListResp.GetResults()
+	models := make([]*Model, len(results))
+	for i := range results {
+		model := &Model{}
+		updateModel(model, &results[i])
+		models[i] = model
+	}
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "List",
+		ResourceModel:   models,
+	}, nil
 }
 
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {

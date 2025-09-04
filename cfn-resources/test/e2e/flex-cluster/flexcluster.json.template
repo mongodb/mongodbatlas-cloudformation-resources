@@ -1,0 +1,35 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template defines dedicated search nodes for a specific cluster, this will be billed to your Atlas account.",
+  "Mappings": {},
+  "Resources": {
+    "AtlasFlexCluster": {
+      "Type": "{{ .ResourceTypeName }}",
+      "Properties": {
+        "Profile": "{{ .Profile }}",
+        "ProjectId": "{{ .ProjectID }}",
+        "Name": "{{ .ClusterName }}"
+      }
+    }
+  },
+  "Outputs": {
+    "AtlasFlexClusterId": {
+      "Description": "Flex Cluster ID",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "Id"
+        ]
+      }
+    },
+    "AtlasFlexClusterStateName": {
+      "Description": "Flex Cluster State",
+      "Value": {
+        "Fn::GetAtt": [
+          "AtlasFlexCluster",
+          "StateName"
+        ]
+      }
+    }
+  }
+}

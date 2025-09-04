@@ -2,10 +2,6 @@
   "ProjectId": "",
   "Name": "",
   "Profile": "default",
-  "ProviderSettings": {
-    "BackingProviderName": "AWS",
-    "RegionName": "US_EAST_1"
-  },
   "Tags": [
     {
       "Key": "environment",

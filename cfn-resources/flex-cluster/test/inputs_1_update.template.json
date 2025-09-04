@@ -5,5 +5,15 @@
   "ProviderSettings": {
     "BackingProviderName": "AWS",
     "RegionName": "US_EAST_1"
-  }
+  },
+  "Tags": [
+    {
+      "Key": "environment",
+      "Value": "development"
+    },
+    {
+      "Key": "team",
+      "Value": "platform"
+    }
+  ]
 }

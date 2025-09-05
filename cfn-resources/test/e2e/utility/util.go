@@ -100,6 +100,8 @@ func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin.APIClie
 	return cfnClient, atlasClient
 }
 
+// NewClients20231115014 exists because cluster resource needs that version (see go.mod comment for more info),
+// but it's recommended that e2e tests use NewClients with the latest SDK when possible.
 func NewClients20231115014(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin20231115014.APIClient) {
 	t.Helper()
 

@@ -128,26 +128,36 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	listOptions := &admin.ListFlexClustersApiParams{
-		GroupId:      *model.ProjectId,
-		ItemsPerPage: admin.PtrInt(100),
-		PageNum:      admin.PtrInt(1),
+	var allModels []*Model
+	pageNum := 1
+	itemsPerPage := 100
+	for {
+		listOptions := &admin.ListFlexClustersApiParams{
+			GroupId:      *model.ProjectId,
+			ItemsPerPage: admin.PtrInt(itemsPerPage),
+			PageNum:      admin.PtrInt(pageNum),
+			IncludeCount: admin.PtrBool(true),
+		}
+		flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
+		if pe := handleError(err, resp); pe != nil {
+			return *pe, nil
+		}
+		results := flexListResp.GetResults()
+		for i := range results {
+			modelItem := &Model{}
+			updateModel(modelItem, &results[i])
+			allModels = append(allModels, modelItem)
+		}
+		if len(allModels) >= flexListResp.GetTotalCount() || len(results) < itemsPerPage {
+			break
+		}
+		pageNum++
 	}
-	flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
-	if pe := handleError(err, resp); pe != nil {
-		return *pe, nil
-	}
-	results := flexListResp.GetResults()
-	models := make([]*Model, len(results))
-	for i := range results {
-		modelItem := &Model{}
-		updateModel(modelItem, &results[i])
-		models[i] = modelItem
-	}
+
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         constants.Complete,
-		ResourceModel:   models,
+		ResourceModel:   allModels,
 	}, nil
 }
 

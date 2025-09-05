@@ -23,7 +23,8 @@ import (
 
 	"github.com/mongodb-forks/digest"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312006/admin"
 )
 
 type AtlasEnvOptions struct {
@@ -33,9 +34,9 @@ type AtlasEnvOptions struct {
 	BaseURL    string
 }
 
-func NewAtlasTeam(ctx context.Context, client *admin.APIClient, name string, orgID string) (*admin.Team, error) {
+func NewAtlasTeam(ctx context.Context, client *admin20231115014.APIClient, name string, orgID string) (*admin20231115014.Team, error) {
 	orgUser, _ := getExistingOrgUser(ctx, client, orgID)
-	teamRequest := admin.Team{
+	teamRequest := admin20231115014.Team{
 		Name:      name,
 		Usernames: &[]string{orgUser.Username},
 	}
@@ -59,6 +60,27 @@ func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 		c.BaseURL = baseURL
 	}
 	// New SDK Client
+	sdkV2Client, err := c.NewSDKV2LatestClient(client)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create Atlas client")
+	}
+
+	return sdkV2Client, nil
+}
+
+func NewMongoDBClient20231115014() (atlasClient *admin20231115014.APIClient, err error) {
+	atlasEnv, err := getAtlasEnv()
+	if err != nil {
+		return nil, err
+	}
+	t := digest.NewTransport(atlasEnv.PublicKey, atlasEnv.PrivateKey)
+	client, _ := t.Client()
+
+	c := util.Config{DebugClient: true}
+	if baseURL := atlasEnv.BaseURL; baseURL != "" {
+		c.BaseURL = baseURL
+	}
+	// New SDK Client
 	sdkV2Client, err := c.NewSDKv20231115014Client(client)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create Atlas client")
@@ -67,9 +89,9 @@ func NewMongoDBClient() (atlasClient *admin.APIClient, err error) {
 	return sdkV2Client, nil
 }
 
-func CreateProject(t *testing.T, atlasClient *admin.APIClient, orgID, projectName string) string {
+func CreateProject(t *testing.T, atlasClient *admin20231115014.APIClient, orgID, projectName string) string {
 	t.Helper()
-	projectParams := &admin.Group{
+	projectParams := &admin20231115014.Group{
 		Name:  projectName,
 		OrgId: orgID,
 	}
@@ -78,7 +100,7 @@ func CreateProject(t *testing.T, atlasClient *admin.APIClient, orgID, projectNam
 	return resp.GetId()
 }
 
-func DeleteProject(t *testing.T, atlasClient *admin.APIClient, projectID string) {
+func DeleteProject(t *testing.T, atlasClient *admin20231115014.APIClient, projectID string) {
 	t.Helper()
 	_, _, err := atlasClient.ProjectsApi.DeleteProject(context.Background(), projectID).Execute()
 	if err != nil {
@@ -86,22 +108,22 @@ func DeleteProject(t *testing.T, atlasClient *admin.APIClient, projectID string)
 	}
 }
 
-func CreateCluster(t *testing.T, atlasClient *admin.APIClient, projectID, clusterName string) {
+func CreateCluster(t *testing.T, atlasClient *admin20231115014.APIClient, projectID, clusterName string) {
 	t.Helper()
-	clusterParams := &admin.AdvancedClusterDescription{
+	clusterParams := &admin20231115014.AdvancedClusterDescription{
 		Name:        &clusterName,
-		ClusterType: admin.PtrString("REPLICASET"),
-		ReplicationSpecs: &[]admin.ReplicationSpec{
+		ClusterType: admin20231115014.PtrString("REPLICASET"),
+		ReplicationSpecs: &[]admin20231115014.ReplicationSpec{
 			{
-				NumShards: admin.PtrInt(1),
-				RegionConfigs: &[]admin.CloudRegionConfig{
+				NumShards: admin20231115014.PtrInt(1),
+				RegionConfigs: &[]admin20231115014.CloudRegionConfig{
 					{
-						ProviderName: admin.PtrString("AWS"),
-						RegionName:   admin.PtrString("US_EAST_1"),
-						Priority:     admin.PtrInt(7),
-						ElectableSpecs: &admin.HardwareSpec{
-							InstanceSize: admin.PtrString("M10"),
-							NodeCount:    admin.PtrInt(3),
+						ProviderName: admin20231115014.PtrString("AWS"),
+						RegionName:   admin20231115014.PtrString("US_EAST_1"),
+						Priority:     admin20231115014.PtrInt(7),
+						ElectableSpecs: &admin20231115014.HardwareSpec{
+							InstanceSize: admin20231115014.PtrString("M10"),
+							NodeCount:    admin20231115014.PtrInt(3),
 						},
 					},
 				},
@@ -113,7 +135,7 @@ func CreateCluster(t *testing.T, atlasClient *admin.APIClient, projectID, cluste
 	waitCluster(t, atlasClient, projectID, clusterName)
 }
 
-func DeleteCluster(t *testing.T, atlasClient *admin.APIClient, projectID, clusterName string) {
+func DeleteCluster(t *testing.T, atlasClient *admin20231115014.APIClient, projectID, clusterName string) {
 	t.Helper()
 	_, err := atlasClient.ClustersApi.DeleteCluster(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
@@ -123,7 +145,7 @@ func DeleteCluster(t *testing.T, atlasClient *admin.APIClient, projectID, cluste
 	waitCluster(t, atlasClient, projectID, clusterName)
 }
 
-func waitCluster(t *testing.T, atlasClient *admin.APIClient, projectID, clusterName string) {
+func waitCluster(t *testing.T, atlasClient *admin20231115014.APIClient, projectID, clusterName string) {
 	t.Helper()
 	for {
 		time.Sleep(time.Second * 30)
@@ -152,7 +174,7 @@ func getAtlasEnv() (atlasEnvOpts *AtlasEnvOptions, err error) {
 	return &AtlasEnvOptions{orgID, privateKey, publicKey, baseURL}, nil
 }
 
-func getExistingOrgUser(ctx context.Context, client *admin.APIClient, orgID string) (*admin.CloudAppUser, error) {
+func getExistingOrgUser(ctx context.Context, client *admin20231115014.APIClient, orgID string) (*admin20231115014.CloudAppUser, error) {
 	usersResponse, _, err := client.OrganizationsApi.ListOrganizationUsers(ctx, orgID).Execute()
 	if err != nil {
 		return nil, err

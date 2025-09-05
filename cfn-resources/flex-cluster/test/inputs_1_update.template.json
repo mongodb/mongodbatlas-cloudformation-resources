@@ -1,5 +1,15 @@
 {
   "ProjectId": "",
   "Name": "",
-  "Profile": "default"
+  "Profile": "default",
+  "Tags": [
+    {
+      "Key": "environment",
+      "Value": "development"
+    },
+    {
+      "Key": "team",
+      "Value": "platform"
+    }
+  ]
 }

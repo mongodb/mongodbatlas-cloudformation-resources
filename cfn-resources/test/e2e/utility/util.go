@@ -26,8 +26,10 @@ import (
 	"path"
 	"testing"
 
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	"go.mongodb.org/atlas-sdk/v20250312006/admin"
+
 	cfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func GetRandNum() *big.Int {
@@ -90,6 +92,21 @@ func NewClients(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin.APIClie
 
 	t.Log("Setting clients")
 	atlasClient, err := NewMongoDBClient()
+	FailNowIfError(t, "Unable to create atlas client: %v", err)
+
+	cfnClient, err = NewCFNClient()
+	FailNowIfError(t, "Unable to create AWS client, please check AWS config is correctly setup: %v", err)
+
+	return cfnClient, atlasClient
+}
+
+// NewClients20231115014 exists because cluster resource needs that version (see go.mod comment for more info),
+// but it's recommended that e2e tests use NewClients with the latest SDK when possible.
+func NewClients20231115014(t *testing.T) (cfnClient *cfn.Client, atlasClient *admin20231115014.APIClient) {
+	t.Helper()
+
+	t.Log("Setting clients")
+	atlasClient, err := NewMongoDBClient20231115014()
 	FailNowIfError(t, "Unable to create atlas client: %v", err)
 
 	cfnClient, err = NewCFNClient()

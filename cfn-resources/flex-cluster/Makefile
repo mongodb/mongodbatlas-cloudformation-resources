@@ -19,4 +19,20 @@ clean:
 	rm -rf bin
 
 submit: clean build # submit to private registry must use release build not debug build
+	@echo "==> Submitting to private registry for testing"
 	 cfn submit --set-default --region us-east-1
+
+create-test-resources:
+	@echo "==> Creating test files and resources for contract testing"
+	./test/contract-testing/cfn-test-create.sh
+
+delete-test-resources:
+	@echo "==> Delete test resources used for contract testing"
+	./test/contract-testing/cfn-test-delete.sh
+
+run-contract-testing:
+	@echo "==> Run contract testing"
+	make build
+	sam local start-lambda &
+	cfn test --function-name TestEntrypoint --verbose
+

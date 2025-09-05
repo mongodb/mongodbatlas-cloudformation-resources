@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -147,7 +146,7 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "List",
+		Message:         constants.Complete,
 		ResourceModel:   models,
 	}, nil
 }
@@ -193,7 +192,7 @@ func flattenTags(atlasTags *[]admin.ResourceTag) []Tag {
 }
 
 func updateModel(model *Model, flexResp *admin.FlexClusterDescription20241113) {
-	if model == nil || flexResp == nil {
+	if flexResp == nil {
 		return
 	}
 	model.ProjectId = flexResp.GroupId
@@ -254,39 +253,35 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 }
 
 func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
-	state, err := getState(client, *model.ProjectId, *model.Name)
-	if pe := handleError(err, nil); pe != nil {
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
+	if pe := handleError(err, nil); pe != nil && !notFound {
 		return *pe
 	}
-	model.StateName = &state
+	updateModel(model, flexResp)
+	state := *model.StateName
+	if notFound {
+		state = constants.DeletedState
+	}
 	targetState := constants.IdleState
 	if isDelete {
 		targetState = constants.DeletedState
-		model = nil // Delete event shouldn't have model in the response.
 	}
-	if state == targetState {
+	if state != targetState {
 		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         constants.Complete,
-			ResourceModel:   model,
+			OperationStatus:      handler.InProgress,
+			Message:              constants.Pending,
+			ResourceModel:        model,
+			CallbackDelaySeconds: callBackSeconds,
+			CallbackContext:      callbackContext,
 		}
+	}
+	if isDelete {
+		model = nil // Delete event must not have model in the Complete response.
 	}
 	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              constants.Pending,
-		ResourceModel:        model,
-		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext:      callbackContext,
+		OperationStatus: handler.Success,
+		Message:         constants.Complete,
+		ResourceModel:   model,
 	}
-}
-
-func getState(client *util.MongoDBClient, projectID, clusterName string) (string, error) {
-	cluster, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), projectID, clusterName).Execute()
-	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return constants.DeletedState, nil
-		}
-		return constants.Error, fmt.Errorf("error fetching flex cluster info (%s): %s", clusterName, err)
-	}
-	return *cluster.StateName, nil
 }

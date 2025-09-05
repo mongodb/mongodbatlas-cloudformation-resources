@@ -144,9 +144,10 @@
   "readOnlyProperties": [
     "/properties/Id",
     "/properties/StateName",
-    "/properties/BackupSettings",
+    "/properties/BackupSettings/Enabled",
     "/properties/ClusterType",
-    "/properties/ConnectionStrings",
+    "/properties/ConnectionStrings/Standard",
+    "/properties/ConnectionStrings/StandardSrv",
     "/properties/CreateDate",
     "/properties/MongoDBVersion",
     "/properties/VersionReleaseSystem",

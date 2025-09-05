@@ -19,6 +19,11 @@
       "Type": "String",
       "Description": "Cloud service provider on which MongoDB Cloud provisioned the flex cluster",
       "Default": "AWS",
+      "AllowedValues": [
+        "AWS",
+        "GCP",
+        "AZURE"
+      ]
     },
     "RegionName": {
       "Type": "String",
@@ -32,6 +37,16 @@
       "AllowedValues": [
         "true",
         "false"
+      ]
+    }
+  },
+  "Conditions": {
+    "IsTerminationProtectionEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "TerminationProtectionEnabled"
+        },
+        "true"
       ]
     }
   },
@@ -57,11 +72,10 @@
           }
         },
         "TerminationProtectionEnabled": {
-          "Fn::Equals": [
-            {
-              "Ref": "TerminationProtectionEnabled"
-            },
-            "true"
+          "Fn::If": [
+            "IsTerminationProtectionEnabled",
+            true,
+            false
           ]
         }
       }
@@ -70,6 +84,11 @@
   "Outputs": {
     "FlexClusterId": {
       "Description": "Unique identifier of the flex cluster",
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-ClusterId"
+        }
+      },
       "Value": {
         "Fn::GetAtt": [
           "AtlasFlexCluster",

@@ -16,6 +16,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#projectid" title="ProjectId">ProjectId</a>" : <i>String</i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
         "<a href="#providersettings" title="ProviderSettings">ProviderSettings</a>" : <i><a href="providersettings.md">ProviderSettings</a></i>,
+        "<a href="#backupsettings" title="BackupSettings">BackupSettings</a>" : <i><a href="backupsettings.md">BackupSettings</a></i>,
+        "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="connectionstrings.md">ConnectionStrings</a></i>,
         "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>,
         "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">tag</a>, ... ]</i>
     }
@@ -31,6 +33,8 @@ Properties:
     <a href="#projectid" title="ProjectId">ProjectId</a>: <i>String</i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
     <a href="#providersettings" title="ProviderSettings">ProviderSettings</a>: <i><a href="providersettings.md">ProviderSettings</a></i>
+    <a href="#backupsettings" title="BackupSettings">BackupSettings</a>: <i><a href="backupsettings.md">BackupSettings</a></i>
+    <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="connectionstrings.md">ConnectionStrings</a></i>
     <a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>: <i>Boolean</i>
     <a href="#tags" title="Tags">Tags</a>: <i>
       - <a href="tag.md">tag</a></i>
@@ -78,6 +82,26 @@ _Type_: <a href="providersettings.md">ProviderSettings</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### BackupSettings
+
+Flex backup configuration
+
+_Required_: No
+
+_Type_: <a href="backupsettings.md">BackupSettings</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### ConnectionStrings
+
+Collection of Uniform Resource Locators that point to the MongoDB database.
+
+_Required_: No
+
+_Type_: <a href="connectionstrings.md">ConnectionStrings</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### TerminationProtectionEnabled
 
 Flag that indicates whether termination protection is enabled on the cluster. If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB Cloud will delete the cluster.
@@ -114,17 +138,21 @@ Unique 24-hexadecimal digit string that identifies the flex cluster.
 
 Human-readable label that indicates the current operating condition of this flex cluster.
 
-#### BackupSettings
+#### Enabled
 
-Flex backup configuration
+Returns the <code>Enabled</code> value.
 
 #### ClusterType
 
 Flex cluster topology.
 
-#### ConnectionStrings
+#### Standard
 
-Collection of Uniform Resource Locators that point to the MongoDB database.
+Returns the <code>Standard</code> value.
+
+#### StandardSrv
+
+Returns the <code>StandardSrv</code> value.
 
 #### CreateDate
 

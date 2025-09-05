@@ -63,14 +63,8 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		Tags:                         expandTags(model.Tags),
 	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *model.ProjectId, flexReq).Execute()
-	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, constants.Duplicate) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
-		}
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	if pe := handleError(err, resp); pe != nil {
+		return *pe, nil
 	}
 	return inProgressEvent(model, flexResp, "Create flex cluster"), nil
 }
@@ -82,8 +76,8 @@ func Read(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 		return *setupErr, nil
 	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
-	if err != nil {
-		return handleReadError(err, resp), nil
+	if pe := handleError(err, resp); pe != nil {
+		return *pe, nil
 	}
 	updateModel(model, flexResp)
 	return handler.ProgressEvent{
@@ -107,8 +101,8 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		Tags:                         expandTags(model.Tags),
 	}
 	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
-	if err != nil {
-		return handleUpdateError(err, resp), nil
+	if pe := handleError(err, resp); pe != nil {
+		return *pe, nil
 	}
 	return inProgressEvent(model, flexResp, "Update flex cluster"), nil
 }
@@ -123,14 +117,8 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		return validateProgress(client, model, true), nil
 	}
 	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
-	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, constants.Duplicate) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
-		}
-		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
+	if pe := handleError(err, resp); pe != nil {
+		return *pe, nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
@@ -153,8 +141,8 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 		PageNum:      admin.PtrInt(1),
 	}
 	flexListResp, resp, err := client.AtlasSDK.FlexClustersApi.ListFlexClustersWithParams(context.Background(), listOptions).Execute()
-	if err != nil {
-		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing flex clusters: %s", err.Error()), resp), nil
+	if pe := handleError(err, resp); pe != nil {
+		return *pe, nil
 	}
 	results := flexListResp.GetResults()
 	models := make([]*Model, len(results))
@@ -252,38 +240,21 @@ func handleCallback(client *util.MongoDBClient, model *Model, isDelete bool, suc
 	return progressEvent
 }
 
-func handleReadError(err error, resp *http.Response) handler.ProgressEvent {
+func handleError(err error, resp *http.Response) *handler.ProgressEvent {
+	if err == nil {
+		return nil
+	}
+	pe := progressevent.GetFailedEventByResponse(err.Error(), resp)
+	if resp != nil && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), constants.Duplicate) {
+		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeAlreadyExists
+	}
 	if resp != nil && resp.StatusCode == http.StatusNotFound {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
-		}
+		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
 	}
-	return handler.ProgressEvent{
-		Message:          err.Error(),
-		OperationStatus:  handler.Failed,
-		HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
-	}
-}
-
-func handleUpdateError(err error, resp *http.Response) handler.ProgressEvent {
-	if resp != nil && resp.StatusCode == http.StatusNotFound {
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
-		}
-	}
-	code := cloudformation.HandlerErrorCodeServiceInternalError
 	if strings.Contains(err.Error(), "not exist") || strings.Contains(err.Error(), "being deleted") {
-		code = cloudformation.HandlerErrorCodeNotFound
+		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
 	}
-	return handler.ProgressEvent{
-		Message:          err.Error(),
-		OperationStatus:  handler.Failed,
-		HandlerErrorCode: code,
-	}
+	return &pe
 }
 
 func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription20241113, message string) handler.ProgressEvent {
@@ -299,12 +270,8 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 
 func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
 	state, err := getState(client, *model.ProjectId, *model.Name)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
-		}
+	if pe := handleError(err, nil); pe != nil {
+		return *pe
 	}
 	model.StateName = &state
 	targetState := constants.IdleState
@@ -331,7 +298,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 func getState(client *util.MongoDBClient, projectID, clusterName string) (string, error) {
 	cluster, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return constants.DeletedState, nil
 		}
 		return constants.Error, fmt.Errorf("error fetching flex cluster info (%s): %s", clusterName, err)

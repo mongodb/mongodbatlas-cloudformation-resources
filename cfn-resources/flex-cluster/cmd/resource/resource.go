@@ -258,27 +258,24 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 	if pe := handleError(err, nil); pe != nil && !notFound {
 		return *pe
 	}
-	updateModel(model, flexResp)
-	state := *model.StateName
-	if notFound {
-		state = constants.DeletedState
+	state := constants.DeletedState
+	if flexResp != nil {
+		state = *flexResp.StateName
 	}
 	targetState := constants.IdleState
 	if isDelete {
 		targetState = constants.DeletedState
 	}
 	if state != targetState {
+		return inProgressEvent(model, flexResp)
+	}
+	if isDelete { // Delete event must not have model in the Complete response.
 		return handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              constants.Pending,
-			ResourceModel:        model,
-			CallbackDelaySeconds: callBackSeconds,
-			CallbackContext:      callbackContext,
+			OperationStatus: handler.Success,
+			Message:         constants.Complete,
 		}
 	}
-	if isDelete {
-		model = nil // Delete event must not have model in the Complete response.
-	}
+	updateModel(model, flexResp)
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
 		Message:         constants.Complete,

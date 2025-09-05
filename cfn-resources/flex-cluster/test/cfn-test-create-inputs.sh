@@ -9,12 +9,12 @@ set -o nounset
 set -o pipefail
 
 function usage {
-	echo "usage:$0 <project_id> <cluster_name>"
+	echo "usage:$0 <project_id>"
 	echo "Adjust flex cluster test input files"
 	exit 0
 }
 
-if [ "$#" -ne 2 ]; then usage; fi
+if [ "$#" -ne 1 ]; then usage; fi
 if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
@@ -28,7 +28,8 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 fi
 
 projectId="${1}"
-clusterName="${2}"
+clusterName="cfn-test-bot-$((1 + RANDOM % 10000))"
+echo "clusterName: $clusterName"
 
 WORDTOREMOVE="template."
 cd "$(dirname "$0")" || exit

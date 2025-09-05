@@ -1,8 +1,12 @@
 {
   "desiredResourceState": {
-    "ProjectId": "<PROJECT_ID",
+    "ProjectId": "<PROJECT_ID>",
     "Name": "<CLUSTER_NAME>",
-    "Profile": "default"
+    "Profile": "default",
+    "ProviderSettings": {
+      "BackingProviderName": "AWS",
+      "RegionName": "US_EAST_1"
+    }
   },
   "providerLogGroupName": "mongodb-atlas-flexcluster-logs",
   "previousResourceState": {}

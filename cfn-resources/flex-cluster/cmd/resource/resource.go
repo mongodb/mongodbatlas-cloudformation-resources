@@ -269,7 +269,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 	if state != targetState {
 		return inProgressEvent(model, flexResp)
 	}
-	if isDelete { // Delete event must not have model in the Complete response.
+	if isDelete { // Delete event must not have model in the Success response.
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
 			Message:         constants.Complete,

@@ -51,7 +51,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		return *setupErr, nil
 	}
 	if isCallback(&req) {
-		return handleCallback(client, model, false, "Create Success"), nil
+		return validateProgress(client, model, false), nil
 	}
 	flexReq := &admin.FlexClusterDescriptionCreate20241113{
 		Name: *model.Name,
@@ -94,7 +94,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		return *setupErr, nil
 	}
 	if isCallback(&req) {
-		return handleCallback(client, model, false, "Update Success"), nil
+		return validateProgress(client, model, false), nil
 	}
 	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
 		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
@@ -226,18 +226,6 @@ func updateModel(model *Model, flexResp *admin.FlexClusterDescription20241113) {
 		}
 	}
 	model.Tags = flattenTags(flexResp.Tags)
-}
-
-func handleCallback(client *util.MongoDBClient, model *Model, isDelete bool, successMessage string) handler.ProgressEvent {
-	progressEvent := validateProgress(client, model, isDelete)
-	if progressEvent.Message == constants.Complete {
-		return handler.ProgressEvent{
-			OperationStatus: handler.Success,
-			Message:         successMessage,
-			ResourceModel:   model,
-		}
-	}
-	return progressEvent
 }
 
 func handleError(err error, resp *http.Response) *handler.ProgressEvent {

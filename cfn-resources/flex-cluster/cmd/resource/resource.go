@@ -129,9 +129,8 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 		return *setupErr, nil
 	}
 	var allModels []*Model
-	pageNum := 1
-	itemsPerPage := 100
-	for {
+	const itemsPerPage = 100
+	for pageNum := 1; ; pageNum++ {
 		listOptions := &admin.ListFlexClustersApiParams{
 			GroupId:      *model.ProjectId,
 			ItemsPerPage: admin.PtrInt(itemsPerPage),
@@ -151,7 +150,6 @@ func List(req handler.Request, prevModel *Model, model *Model) (handler.Progress
 		if len(allModels) >= flexListResp.GetTotalCount() || len(results) < itemsPerPage {
 			break
 		}
-		pageNum++
 	}
 
 	return handler.ProgressEvent{

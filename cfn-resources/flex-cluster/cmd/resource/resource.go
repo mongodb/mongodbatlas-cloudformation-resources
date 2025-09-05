@@ -66,7 +66,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if pe := handleError(err, resp); pe != nil {
 		return *pe, nil
 	}
-	return inProgressEvent(model, flexResp, "Create flex cluster"), nil
+	return inProgressEvent(model, flexResp), nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -104,7 +104,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if pe := handleError(err, resp); pe != nil {
 		return *pe, nil
 	}
-	return inProgressEvent(model, flexResp, "Update flex cluster"), nil
+	return inProgressEvent(model, flexResp), nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -120,13 +120,7 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if pe := handleError(err, resp); pe != nil {
 		return *pe, nil
 	}
-	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              constants.DeleteInProgress,
-		ResourceModel:        model,
-		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext:      callbackContext,
-	}, nil
+	return inProgressEvent(model, nil), nil
 }
 
 // List handles the List event from the Cloudformation service.
@@ -199,6 +193,9 @@ func flattenTags(atlasTags *[]admin.ResourceTag) []Tag {
 }
 
 func updateModel(model *Model, flexResp *admin.FlexClusterDescription20241113) {
+	if model == nil || flexResp == nil {
+		return
+	}
 	model.ProjectId = flexResp.GroupId
 	model.Name = flexResp.Name
 	model.Id = flexResp.Id
@@ -245,11 +242,11 @@ func handleError(err error, resp *http.Response) *handler.ProgressEvent {
 	return &pe
 }
 
-func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription20241113, message string) handler.ProgressEvent {
+func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription20241113) handler.ProgressEvent {
 	updateModel(model, flexResp)
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              message,
+		Message:              constants.Pending,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
 		CallbackContext:      callbackContext,

@@ -36,7 +36,13 @@ var (
 	createRequiredFields           = []string{constants.ProjectID, constants.Name, "ProviderSettings"}
 	readUpdateDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
 	listRequiredFields             = []string{constants.ProjectID}
+	callbackContext                = map[string]any{"callback": true}
 )
+
+func isCallback(req *handler.Request) bool {
+	_, found := req.CallbackContext["callback"]
+	return found
+}
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, model *Model) (handler.ProgressEvent, error) {
@@ -44,7 +50,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
+	if isCallback(&req) {
 		return handleCallback(client, model, false, "Create Success"), nil
 	}
 	flexReq := &admin.FlexClusterDescriptionCreate20241113{
@@ -66,8 +72,7 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		}
 		return progressevent.GetFailedEventByResponse(err.Error(), resp), nil
 	}
-	updateModel(model, flexResp)
-	return inProgressEvent(model, flexResp.GetStateName(), fmt.Sprintf("Create FlexCluster `%s`", flexResp.GetStateName())), nil
+	return inProgressEvent(model, flexResp, "Create flex cluster"), nil
 }
 
 // Read handles the Read event from the Cloudformation service.
@@ -94,7 +99,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
+	if isCallback(&req) {
 		return handleCallback(client, model, false, "Update Success"), nil
 	}
 	updateReq := &admin.FlexClusterDescriptionUpdate20241113{
@@ -105,8 +110,7 @@ func Update(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if err != nil {
 		return handleUpdateError(err, resp), nil
 	}
-	updateModel(model, flexResp)
-	return inProgressEvent(model, flexResp.GetStateName(), fmt.Sprintf("Update Cluster, state: %s", flexResp.GetStateName())), nil
+	return inProgressEvent(model, flexResp, "Update flex cluster"), nil
 }
 
 // Delete handles the Delete event from the Cloudformation service.
@@ -115,7 +119,7 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
+	if isCallback(&req) {
 		return validateProgress(client, model, true), nil
 	}
 	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
@@ -133,9 +137,8 @@ func Delete(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 		Message:              constants.DeleteInProgress,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext: map[string]any{
-			constants.StateName: constants.DeletingState,
-		}}, nil
+		CallbackContext:      callbackContext,
+	}, nil
 }
 
 // List handles the List event from the Cloudformation service.
@@ -283,15 +286,14 @@ func handleUpdateError(err error, resp *http.Response) handler.ProgressEvent {
 	}
 }
 
-func inProgressEvent(model *Model, stateName, message string) handler.ProgressEvent {
+func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription20241113, message string) handler.ProgressEvent {
+	updateModel(model, flexResp)
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              message,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext: map[string]any{
-			constants.StateName: stateName,
-		},
+		CallbackContext:      callbackContext,
 	}
 }
 
@@ -322,9 +324,7 @@ func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) h
 		Message:              constants.Pending,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext: map[string]any{
-			constants.StateName: state,
-		},
+		CallbackContext:      callbackContext,
 	}
 }
 

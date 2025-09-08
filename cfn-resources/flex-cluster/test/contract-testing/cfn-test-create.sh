@@ -13,4 +13,4 @@ projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
 echo "projectId: $projectId"
 echo "projectName: $projectName"
 
-./test/cfn-test-create-inputs.sh "$projectId"
+./test/cfn-test-create-inputs.sh "$projectName"

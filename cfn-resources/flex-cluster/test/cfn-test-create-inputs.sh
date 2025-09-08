@@ -9,8 +9,8 @@ set -o nounset
 set -o pipefail
 
 function usage {
-	echo "usage:$0 <project_id>"
-	echo "Adjust flex cluster test input files"
+	echo "usage:$0 <project_name>"
+	echo "Generates test input files for flex cluster"
 	exit 0
 }
 
@@ -27,7 +27,15 @@ if [ ${MONGODB_ATLAS_PROFILE+x} ]; then
 	profile=${MONGODB_ATLAS_PROFILE}
 fi
 
-projectId="${1}"
+projectName="${1}"
+projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
+
 clusterName="cfn-test-bot-$((1 + RANDOM % 10000))"
 echo "clusterName: $clusterName"
 

@@ -10,7 +10,7 @@ set -o pipefail
 
 function usage {
 	echo "usage:$0 <project_name>"
-	echo "Generates test input files for flex cluster using an existing project"
+	echo "Generates test input files for flex cluster"
 	exit 0
 }
 
@@ -30,8 +30,8 @@ fi
 projectName="${1}"
 projectId=$(atlas projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
-	echo "ERROR: Project \"${projectName}\" does not exist. Please create the project first."
-	exit 1
+	projectId=$(atlas projects create "${projectName}" --output=json | jq -r '.id')
+	echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
 else
 	echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
 fi

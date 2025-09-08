@@ -19,13 +19,13 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/search-deployment/cmd/resource"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 type sdkToCFNModelTestCase struct {
 	prevModel     resource.Model
 	expectedModel resource.Model
-	SDKResp       admin.ApiSearchDeploymentResponse
+	SDKResp       admin20231115014.ApiSearchDeploymentResponse
 	name          string
 }
 
@@ -44,15 +44,15 @@ func TestSDKToCFNModel(t *testing.T) {
 		{
 			name: "Complete SDK response",
 			prevModel: resource.Model{
-				Profile:     admin.PtrString(profile),
-				ClusterName: admin.PtrString(clusterName),
-				ProjectId:   admin.PtrString(dummyProjectID),
+				Profile:     admin20231115014.PtrString(profile),
+				ClusterName: admin20231115014.PtrString(clusterName),
+				ProjectId:   admin20231115014.PtrString(dummyProjectID),
 			},
-			SDKResp: admin.ApiSearchDeploymentResponse{
-				Id:        admin.PtrString(dummyDeploymentID),
-				GroupId:   admin.PtrString(dummyProjectID),
-				StateName: admin.PtrString(stateName),
-				Specs: &[]admin.ApiSearchDeploymentSpec{
+			SDKResp: admin20231115014.ApiSearchDeploymentResponse{
+				Id:        admin20231115014.PtrString(dummyDeploymentID),
+				GroupId:   admin20231115014.PtrString(dummyProjectID),
+				StateName: admin20231115014.PtrString(stateName),
+				Specs: &[]admin20231115014.ApiSearchDeploymentSpec{
 					{
 						InstanceSize: instanceSize,
 						NodeCount:    nodeCount,
@@ -60,15 +60,15 @@ func TestSDKToCFNModel(t *testing.T) {
 				},
 			},
 			expectedModel: resource.Model{
-				Profile:     admin.PtrString(profile),
-				ClusterName: admin.PtrString(clusterName),
-				ProjectId:   admin.PtrString(dummyProjectID),
-				Id:          admin.PtrString(dummyDeploymentID),
-				StateName:   admin.PtrString(stateName),
+				Profile:     admin20231115014.PtrString(profile),
+				ClusterName: admin20231115014.PtrString(clusterName),
+				ProjectId:   admin20231115014.PtrString(dummyProjectID),
+				Id:          admin20231115014.PtrString(dummyDeploymentID),
+				StateName:   admin20231115014.PtrString(stateName),
 				Specs: []resource.ApiSearchDeploymentSpec{
 					{
-						InstanceSize: admin.PtrString(instanceSize),
-						NodeCount:    admin.PtrInt(nodeCount),
+						InstanceSize: admin20231115014.PtrString(instanceSize),
+						NodeCount:    admin20231115014.PtrInt(nodeCount),
 					},
 				},
 			},
@@ -76,22 +76,22 @@ func TestSDKToCFNModel(t *testing.T) {
 		{
 			name: "Empty specs array",
 			prevModel: resource.Model{
-				Profile:     admin.PtrString(profile),
-				ClusterName: admin.PtrString(clusterName),
-				ProjectId:   admin.PtrString(dummyProjectID),
+				Profile:     admin20231115014.PtrString(profile),
+				ClusterName: admin20231115014.PtrString(clusterName),
+				ProjectId:   admin20231115014.PtrString(dummyProjectID),
 			},
-			SDKResp: admin.ApiSearchDeploymentResponse{
-				Id:        admin.PtrString(dummyDeploymentID),
-				GroupId:   admin.PtrString(dummyProjectID),
-				StateName: admin.PtrString(stateName),
-				Specs:     &[]admin.ApiSearchDeploymentSpec{},
+			SDKResp: admin20231115014.ApiSearchDeploymentResponse{
+				Id:        admin20231115014.PtrString(dummyDeploymentID),
+				GroupId:   admin20231115014.PtrString(dummyProjectID),
+				StateName: admin20231115014.PtrString(stateName),
+				Specs:     &[]admin20231115014.ApiSearchDeploymentSpec{},
 			},
 			expectedModel: resource.Model{
-				Profile:     admin.PtrString(profile),
-				ClusterName: admin.PtrString(clusterName),
-				ProjectId:   admin.PtrString(dummyProjectID),
-				Id:          admin.PtrString(dummyDeploymentID),
-				StateName:   admin.PtrString(stateName),
+				Profile:     admin20231115014.PtrString(profile),
+				ClusterName: admin20231115014.PtrString(clusterName),
+				ProjectId:   admin20231115014.PtrString(dummyProjectID),
+				Id:          admin20231115014.PtrString(dummyDeploymentID),
+				StateName:   admin20231115014.PtrString(stateName),
 				Specs:       []resource.ApiSearchDeploymentSpec{},
 			},
 		},
@@ -109,25 +109,25 @@ func TestCFNModelToSDK(t *testing.T) {
 	testCases := []struct {
 		model          resource.Model
 		name           string
-		expectedSDKReq admin.ApiSearchDeploymentRequest
+		expectedSDKReq admin20231115014.ApiSearchDeploymentRequest
 	}{
 		{
 			name: "Complete CFN model",
 			model: resource.Model{
-				Profile:     admin.PtrString(profile),
-				ClusterName: admin.PtrString(clusterName),
-				ProjectId:   admin.PtrString(dummyProjectID),
-				Id:          admin.PtrString(dummyDeploymentID),
-				StateName:   admin.PtrString(stateName),
+				Profile:     admin20231115014.PtrString(profile),
+				ClusterName: admin20231115014.PtrString(clusterName),
+				ProjectId:   admin20231115014.PtrString(dummyProjectID),
+				Id:          admin20231115014.PtrString(dummyDeploymentID),
+				StateName:   admin20231115014.PtrString(stateName),
 				Specs: []resource.ApiSearchDeploymentSpec{
 					{
-						InstanceSize: admin.PtrString(instanceSize),
-						NodeCount:    admin.PtrInt(nodeCount),
+						InstanceSize: admin20231115014.PtrString(instanceSize),
+						NodeCount:    admin20231115014.PtrInt(nodeCount),
 					},
 				},
 			},
-			expectedSDKReq: admin.ApiSearchDeploymentRequest{
-				Specs: []admin.ApiSearchDeploymentSpec{
+			expectedSDKReq: admin20231115014.ApiSearchDeploymentRequest{
+				Specs: []admin20231115014.ApiSearchDeploymentSpec{
 					{
 						InstanceSize: instanceSize,
 						NodeCount:    nodeCount,
@@ -138,15 +138,15 @@ func TestCFNModelToSDK(t *testing.T) {
 		{
 			name: "Empty specs array",
 			model: resource.Model{
-				Profile:     admin.PtrString(profile),
-				ClusterName: admin.PtrString(clusterName),
-				ProjectId:   admin.PtrString(dummyProjectID),
-				Id:          admin.PtrString(dummyDeploymentID),
-				StateName:   admin.PtrString(stateName),
+				Profile:     admin20231115014.PtrString(profile),
+				ClusterName: admin20231115014.PtrString(clusterName),
+				ProjectId:   admin20231115014.PtrString(dummyProjectID),
+				Id:          admin20231115014.PtrString(dummyDeploymentID),
+				StateName:   admin20231115014.PtrString(stateName),
 				Specs:       []resource.ApiSearchDeploymentSpec{},
 			},
-			expectedSDKReq: admin.ApiSearchDeploymentRequest{
-				Specs: []admin.ApiSearchDeploymentSpec{},
+			expectedSDKReq: admin20231115014.ApiSearchDeploymentRequest{
+				Specs: []admin20231115014.ApiSearchDeploymentSpec{},
 			},
 		},
 	}

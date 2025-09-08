@@ -25,12 +25,12 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 type stateTransitionTestCase struct {
 	name                string
-	respModel           *admin.ApiSearchDeploymentResponse
+	respModel           *admin20231115014.ApiSearchDeploymentResponse
 	respHTTP            *http.Response
 	respError           error
 	targetState         string
@@ -38,17 +38,17 @@ type stateTransitionTestCase struct {
 }
 
 var prevModel = resource.Model{
-	Profile:     admin.PtrString(profile),
-	ClusterName: admin.PtrString(clusterName),
-	ProjectId:   admin.PtrString(dummyProjectID),
+	Profile:     admin20231115014.PtrString(profile),
+	ClusterName: admin20231115014.PtrString(clusterName),
+	ProjectId:   admin20231115014.PtrString(dummyProjectID),
 }
 
 func TestStateTransitionProgressEvents(t *testing.T) {
 	testCases := []stateTransitionTestCase{
 		{
 			name: "State in WORKING with target IDLE should return in progress event",
-			respModel: &admin.ApiSearchDeploymentResponse{
-				StateName: admin.PtrString("UPDATING"),
+			respModel: &admin20231115014.ApiSearchDeploymentResponse{
+				StateName: admin20231115014.PtrString("UPDATING"),
 			},
 			respHTTP: &http.Response{
 				StatusCode: 200,
@@ -59,8 +59,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		},
 		{
 			name: "State in IDLE with target IDLE should return success event",
-			respModel: &admin.ApiSearchDeploymentResponse{
-				StateName: admin.PtrString("IDLE"),
+			respModel: &admin20231115014.ApiSearchDeploymentResponse{
+				StateName: admin20231115014.PtrString("IDLE"),
 			},
 			respHTTP: &http.Response{
 				StatusCode: 200,
@@ -81,8 +81,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		},
 		{
 			name: "State in WORKING with target DELETED should return in progress event",
-			respModel: &admin.ApiSearchDeploymentResponse{
-				StateName: admin.PtrString("UPDATING"),
+			respModel: &admin20231115014.ApiSearchDeploymentResponse{
+				StateName: admin20231115014.PtrString("UPDATING"),
 			},
 			respHTTP: &http.Response{
 				StatusCode: 200,
@@ -93,8 +93,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		},
 		{
 			name: "State in IDLE with target DELETED should return in progress event",
-			respModel: &admin.ApiSearchDeploymentResponse{
-				StateName: admin.PtrString("IDLE"),
+			respModel: &admin20231115014.ApiSearchDeploymentResponse{
+				StateName: admin20231115014.PtrString("IDLE"),
 			},
 			respHTTP: &http.Response{
 				StatusCode: 200,
@@ -108,10 +108,10 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m := mocksvc.NewAtlasSearchApi(t)
-			m.EXPECT().GetAtlasSearchDeployment(mock.Anything, mock.Anything, mock.Anything).Return(admin.GetAtlasSearchDeploymentApiRequest{ApiService: m}).Once()
+			m.EXPECT().GetAtlasSearchDeployment(mock.Anything, mock.Anything, mock.Anything).Return(admin20231115014.GetAtlasSearchDeploymentApiRequest{ApiService: m}).Once()
 			m.EXPECT().GetAtlasSearchDeploymentExecute(mock.Anything).Return(tc.respModel, tc.respHTTP, tc.respError).Once()
 
-			client := admin.APIClient{AtlasSearchApi: m}
+			client := admin20231115014.APIClient{AtlasSearchApi: m}
 			eventResult := resource.HandleStateTransition(client, &prevModel, tc.targetState)
 			assert.Equal(t, tc.expectedEventStatus, eventResult.OperationStatus)
 		})

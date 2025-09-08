@@ -23,7 +23,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.Username}
@@ -58,7 +58,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	atlasV2 := client.Atlas20231115002
 
-	invitationReq := &admin.OrganizationInvitationRequest{
+	invitationReq := &admin20231115002.OrganizationInvitationRequest{
 		TeamIds:  currentModel.TeamIds,
 		Roles:    currentModel.Roles,
 		Username: currentModel.Username,
@@ -134,7 +134,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	atlasV2 := client.Atlas20231115002
 
-	invitationReq := &admin.OrganizationInvitationUpdateRequest{
+	invitationReq := &admin20231115002.OrganizationInvitationUpdateRequest{
 		TeamIds: currentModel.TeamIds,
 		Roles:   currentModel.Roles,
 	}
@@ -203,7 +203,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 	atlasV2 := client.Atlas20231115002
 
-	invitations, res, err := atlasV2.OrganizationsApi.ListOrganizationInvitationsWithParams(context.Background(), &admin.ListOrganizationInvitationsApiParams{
+	invitations, res, err := atlasV2.OrganizationsApi.ListOrganizationInvitationsWithParams(context.Background(), &admin20231115002.ListOrganizationInvitationsApiParams{
 		OrgId:    *currentModel.OrgId,
 		Username: currentModel.Username,
 	}).Execute()
@@ -226,7 +226,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func readAtlasOrgInvitation(invitation *admin.OrganizationInvitation, currentModel *Model) (model *Model) {
+func readAtlasOrgInvitation(invitation *admin20231115002.OrganizationInvitation, currentModel *Model) (model *Model) {
 	currentModel.Username = invitation.Username
 	currentModel.OrgId = invitation.OrgId
 	currentModel.Id = invitation.Id
@@ -238,7 +238,7 @@ func readAtlasOrgInvitation(invitation *admin.OrganizationInvitation, currentMod
 	return currentModel
 }
 
-func validateOrgInvitationAlreadyAccepted(ctx context.Context, atlasV2 *admin.APIClient, username, orgID string) (bool, error) {
+func validateOrgInvitationAlreadyAccepted(ctx context.Context, atlasV2 *admin20231115002.APIClient, username, orgID string) (bool, error) {
 	user, _, err := atlasV2.MongoDBCloudUsersApi.GetUserByUsername(ctx, username).Execute()
 	if err != nil {
 		return false, err

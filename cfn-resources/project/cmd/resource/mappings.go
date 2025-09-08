@@ -15,19 +15,19 @@
 package resource
 
 import (
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
-func NewResourceTags(tags map[string]string) []admin.ResourceTag {
-	sliceTags := make([]admin.ResourceTag, 0, len(tags))
+func NewResourceTags(tags map[string]string) []admin20231115014.ResourceTag {
+	sliceTags := make([]admin20231115014.ResourceTag, 0, len(tags))
 	for k, v := range tags {
-		tag := admin.NewResourceTag(k, v)
+		tag := admin20231115014.NewResourceTag(k, v)
 		sliceTags = append(sliceTags, *tag)
 	}
 	return sliceTags
 }
 
-func NewCfnTags(tags []admin.ResourceTag) map[string]string {
+func NewCfnTags(tags []admin20231115014.ResourceTag) map[string]string {
 	mapTags := make(map[string]string, len(tags))
 	for _, tag := range tags {
 		mapTags[tag.Key] = tag.Value

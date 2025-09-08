@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -181,7 +181,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func (m *Model) CompleteByResponse(resp admin.UserSecurity) {
+func (m *Model) CompleteByResponse(resp admin20231115002.UserSecurity) {
 	m.AuthenticationEnabled = resp.Ldap.AuthenticationEnabled
 	m.AuthorizationEnabled = resp.Ldap.AuthorizationEnabled
 
@@ -197,7 +197,7 @@ func (m *Model) CompleteByResponse(resp admin.UserSecurity) {
 	m.UserToDNMapping = mappings
 }
 
-func get(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *handler.ProgressEvent) {
+func get(client *util.MongoDBClient, groupID string) (*admin20231115002.UserSecurity, *handler.ProgressEvent) {
 	ctx := context.Background()
 	ldapConf, resp, err := client.Atlas20231115002.LDAPConfigurationApi.GetLDAPConfiguration(ctx, groupID).Execute()
 	if err != nil {
@@ -213,10 +213,10 @@ func get(client *util.MongoDBClient, groupID string) (*admin.UserSecurity, *hand
 	return ldapConf, nil
 }
 
-func (m *Model) GetAtlasModel() *admin.UserSecurity {
+func (m *Model) GetAtlasModel() *admin20231115002.UserSecurity {
 	DNMapping := getUserToDNMapping(m.UserToDNMapping)
 
-	ldap := &admin.LDAPSecuritySettings{
+	ldap := &admin20231115002.LDAPSecuritySettings{
 		AuthenticationEnabled: aws.Bool(true),
 		Hostname:              m.Hostname,
 		Port:                  m.Port,
@@ -225,7 +225,7 @@ func (m *Model) GetAtlasModel() *admin.UserSecurity {
 		BindPassword:          m.BindPassword,
 	}
 
-	ldapReq := &admin.UserSecurity{
+	ldapReq := &admin20231115002.UserSecurity{
 		Ldap: ldap,
 	}
 
@@ -244,10 +244,10 @@ func (m *Model) GetAtlasModel() *admin.UserSecurity {
 	return ldapReq
 }
 
-func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin.UserToDNMapping {
-	mappings := make([]admin.UserToDNMapping, len(ndsUserMapping))
+func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin20231115002.UserToDNMapping {
+	mappings := make([]admin20231115002.UserToDNMapping, len(ndsUserMapping))
 	for i := range ndsUserMapping {
-		mappings[i] = admin.UserToDNMapping{
+		mappings[i] = admin20231115002.UserToDNMapping{
 			Match:        *ndsUserMapping[i].Match,
 			Substitution: ndsUserMapping[i].Substitution,
 			LdapQuery:    ndsUserMapping[i].LdapQuery,
@@ -256,6 +256,6 @@ func getUserToDNMapping(ndsUserMapping []ApiAtlasNDSUserToDNMappingView) []admin
 	return mappings
 }
 
-func isResourceEnabled(ldapConf *admin.UserSecurity) bool {
+func isResourceEnabled(ldapConf *admin20231115002.UserSecurity) bool {
 	return ldapConf.Ldap.AuthenticationEnabled != nil && *ldapConf.Ldap.AuthenticationEnabled
 }

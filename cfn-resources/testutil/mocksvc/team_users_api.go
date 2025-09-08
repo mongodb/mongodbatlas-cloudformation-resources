@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	mock "github.com/stretchr/testify/mock"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 // NewTeamUsersAPI creates a new instance of TeamUsersAPI. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -40,34 +40,34 @@ func (_m *TeamUsersAPI) EXPECT() *TeamUsersAPI_Expecter {
 }
 
 // AddTeamUser provides a mock function for the type TeamUsersAPI
-func (_mock *TeamUsersAPI) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin.AddUserToTeam) (*admin.PaginatedApiAppUser, *http.Response, error) {
+func (_mock *TeamUsersAPI) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin20231115002.AddUserToTeam) (*admin20231115002.PaginatedApiAppUser, *http.Response, error) {
 	ret := _mock.Called(ctx, orgID, teamID, addUserToTeam)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AddTeamUser")
 	}
 
-	var r0 *admin.PaginatedApiAppUser
+	var r0 *admin20231115002.PaginatedApiAppUser
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *[]admin.AddUserToTeam) (*admin.PaginatedApiAppUser, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *[]admin20231115002.AddUserToTeam) (*admin20231115002.PaginatedApiAppUser, *http.Response, error)); ok {
 		return returnFunc(ctx, orgID, teamID, addUserToTeam)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *[]admin.AddUserToTeam) *admin.PaginatedApiAppUser); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *[]admin20231115002.AddUserToTeam) *admin20231115002.PaginatedApiAppUser); ok {
 		r0 = returnFunc(ctx, orgID, teamID, addUserToTeam)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.PaginatedApiAppUser)
+			r0 = ret.Get(0).(*admin20231115002.PaginatedApiAppUser)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, string, string, *[]admin.AddUserToTeam) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, string, *[]admin20231115002.AddUserToTeam) *http.Response); ok {
 		r1 = returnFunc(ctx, orgID, teamID, addUserToTeam)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(context.Context, string, string, *[]admin.AddUserToTeam) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(context.Context, string, string, *[]admin20231115002.AddUserToTeam) error); ok {
 		r2 = returnFunc(ctx, orgID, teamID, addUserToTeam)
 	} else {
 		r2 = ret.Error(2)
@@ -84,12 +84,12 @@ type TeamUsersAPI_AddTeamUser_Call struct {
 //   - ctx context.Context
 //   - orgID string
 //   - teamID string
-//   - addUserToTeam *[]admin.AddUserToTeam
+//   - addUserToTeam *[]admin20231115002.AddUserToTeam
 func (_e *TeamUsersAPI_Expecter) AddTeamUser(ctx interface{}, orgID interface{}, teamID interface{}, addUserToTeam interface{}) *TeamUsersAPI_AddTeamUser_Call {
 	return &TeamUsersAPI_AddTeamUser_Call{Call: _e.mock.On("AddTeamUser", ctx, orgID, teamID, addUserToTeam)}
 }
 
-func (_c *TeamUsersAPI_AddTeamUser_Call) Run(run func(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin.AddUserToTeam)) *TeamUsersAPI_AddTeamUser_Call {
+func (_c *TeamUsersAPI_AddTeamUser_Call) Run(run func(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin20231115002.AddUserToTeam)) *TeamUsersAPI_AddTeamUser_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -103,9 +103,9 @@ func (_c *TeamUsersAPI_AddTeamUser_Call) Run(run func(ctx context.Context, orgID
 		if args[2] != nil {
 			arg2 = args[2].(string)
 		}
-		var arg3 *[]admin.AddUserToTeam
+		var arg3 *[]admin20231115002.AddUserToTeam
 		if args[3] != nil {
-			arg3 = args[3].(*[]admin.AddUserToTeam)
+			arg3 = args[3].(*[]admin20231115002.AddUserToTeam)
 		}
 		run(
 			arg0,
@@ -117,35 +117,35 @@ func (_c *TeamUsersAPI_AddTeamUser_Call) Run(run func(ctx context.Context, orgID
 	return _c
 }
 
-func (_c *TeamUsersAPI_AddTeamUser_Call) Return(paginatedApiAppUser *admin.PaginatedApiAppUser, response *http.Response, err error) *TeamUsersAPI_AddTeamUser_Call {
+func (_c *TeamUsersAPI_AddTeamUser_Call) Return(paginatedApiAppUser *admin20231115002.PaginatedApiAppUser, response *http.Response, err error) *TeamUsersAPI_AddTeamUser_Call {
 	_c.Call.Return(paginatedApiAppUser, response, err)
 	return _c
 }
 
-func (_c *TeamUsersAPI_AddTeamUser_Call) RunAndReturn(run func(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin.AddUserToTeam) (*admin.PaginatedApiAppUser, *http.Response, error)) *TeamUsersAPI_AddTeamUser_Call {
+func (_c *TeamUsersAPI_AddTeamUser_Call) RunAndReturn(run func(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin20231115002.AddUserToTeam) (*admin20231115002.PaginatedApiAppUser, *http.Response, error)) *TeamUsersAPI_AddTeamUser_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetUserByUsername provides a mock function for the type TeamUsersAPI
-func (_mock *TeamUsersAPI) GetUserByUsername(ctx context.Context, userName string) (*admin.CloudAppUser, *http.Response, error) {
+func (_mock *TeamUsersAPI) GetUserByUsername(ctx context.Context, userName string) (*admin20231115002.CloudAppUser, *http.Response, error) {
 	ret := _mock.Called(ctx, userName)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetUserByUsername")
 	}
 
-	var r0 *admin.CloudAppUser
+	var r0 *admin20231115002.CloudAppUser
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*admin.CloudAppUser, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*admin20231115002.CloudAppUser, *http.Response, error)); ok {
 		return returnFunc(ctx, userName)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *admin.CloudAppUser); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *admin20231115002.CloudAppUser); ok {
 		r0 = returnFunc(ctx, userName)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.CloudAppUser)
+			r0 = ret.Get(0).(*admin20231115002.CloudAppUser)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) *http.Response); ok {
@@ -193,12 +193,12 @@ func (_c *TeamUsersAPI_GetUserByUsername_Call) Run(run func(ctx context.Context,
 	return _c
 }
 
-func (_c *TeamUsersAPI_GetUserByUsername_Call) Return(cloudAppUser *admin.CloudAppUser, response *http.Response, err error) *TeamUsersAPI_GetUserByUsername_Call {
+func (_c *TeamUsersAPI_GetUserByUsername_Call) Return(cloudAppUser *admin20231115002.CloudAppUser, response *http.Response, err error) *TeamUsersAPI_GetUserByUsername_Call {
 	_c.Call.Return(cloudAppUser, response, err)
 	return _c
 }
 
-func (_c *TeamUsersAPI_GetUserByUsername_Call) RunAndReturn(run func(ctx context.Context, userName string) (*admin.CloudAppUser, *http.Response, error)) *TeamUsersAPI_GetUserByUsername_Call {
+func (_c *TeamUsersAPI_GetUserByUsername_Call) RunAndReturn(run func(ctx context.Context, userName string) (*admin20231115002.CloudAppUser, *http.Response, error)) *TeamUsersAPI_GetUserByUsername_Call {
 	_c.Call.Return(run)
 	return _c
 }

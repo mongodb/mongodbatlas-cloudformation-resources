@@ -29,7 +29,7 @@ import (
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateOrUpdateRequiredFields = []string{constants.ProjectID, constants.TenantName, constants.LimitName, constants.Value}
@@ -229,7 +229,7 @@ func handleError(response *http.Response, method string, err error) (handler.Pro
 	return progress_events.GetFailedEventByResponse(errMsg, response), nil
 }
 
-func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*admin.DataFederationTenantQueryLimit, *http.Response, error) {
+func getFederatedQueryLimit(client *util.MongoDBClient, currentModel *Model) (*admin20231115014.DataFederationTenantQueryLimit, *http.Response, error) {
 	getQueryLimitAPIRequest := client.Atlas20231115014.DataFederationApi.ReturnFederatedDatabaseQueryLimit(
 		context.Background(),
 		*currentModel.ProjectId,
@@ -262,8 +262,8 @@ func createOrUpdateQueryLimit(currentModel *Model, client *util.MongoDBClient, m
 		ResourceModel:   currentModel}, nil
 }
 
-func (model *Model) setQueryLimit() *admin.DataFederationTenantQueryLimit {
-	queryLimit := &admin.DataFederationTenantQueryLimit{
+func (model *Model) setQueryLimit() *admin20231115014.DataFederationTenantQueryLimit {
+	queryLimit := &admin20231115014.DataFederationTenantQueryLimit{
 		OverrunPolicy: model.OverrunPolicy,
 	}
 	if model.Value != nil {
@@ -271,7 +271,7 @@ func (model *Model) setQueryLimit() *admin.DataFederationTenantQueryLimit {
 	}
 	return queryLimit
 }
-func (model *Model) getQueryLimit(atlasQueryLimit *admin.DataFederationTenantQueryLimit) *Model {
+func (model *Model) getQueryLimit(atlasQueryLimit *admin20231115014.DataFederationTenantQueryLimit) *Model {
 	if atlasQueryLimit == nil {
 		return nil
 	}

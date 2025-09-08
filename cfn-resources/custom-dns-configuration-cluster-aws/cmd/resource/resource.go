@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -136,7 +136,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 }
 
 func resourceCustomAWSDNSUpdate(req handler.Request, prevModel *Model, currentModel *Model, client *util.MongoDBClient) (handler.ProgressEvent, error) {
-	customAWSDNSRequest := &admin.AWSCustomDNSEnabled{
+	customAWSDNSRequest := &admin20231115002.AWSCustomDNSEnabled{
 		Enabled: *currentModel.Enabled,
 	}
 	customAWSDNSModel, response, err := client.Atlas20231115002.AWSClustersDNSApi.ToggleAWSCustomDNS(context.Background(), *currentModel.ProjectId, customAWSDNSRequest).Execute()
@@ -166,7 +166,7 @@ func isCustomAWSDNSSettingExists(currentModel *Model, client *util.MongoDBClient
 	return isExists
 }
 
-func customAWSDNSToModel(currentModel Model, regPrivateMode *admin.AWSCustomDNSEnabled) *Model {
+func customAWSDNSToModel(currentModel Model, regPrivateMode *admin20231115002.AWSCustomDNSEnabled) *Model {
 	out := &Model{
 		Profile:   currentModel.Profile,
 		Enabled:   &regPrivateMode.Enabled,

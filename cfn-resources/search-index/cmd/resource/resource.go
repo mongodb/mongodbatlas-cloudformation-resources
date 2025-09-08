@@ -28,7 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -295,8 +295,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
-	searchIndex := &admin.ClusterSearchIndex{
+func newSearchIndex(currentModel *Model) (*admin20231115002.ClusterSearchIndex, error) {
+	searchIndex := &admin20231115002.ClusterSearchIndex{
 		Analyzer:       currentModel.Analyzer,
 		CollectionName: aws.StringValue(currentModel.CollectionName),
 		Database:       aws.StringValue(currentModel.Database),
@@ -318,7 +318,7 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 		}
 		searchIndex.Mappings = mapping
 	}
-	analyzers := make([]admin.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
+	analyzers := make([]admin20231115002.ApiAtlasFTSAnalyzers, 0, len(currentModel.Analyzers))
 	for i := range currentModel.Analyzers {
 		charFilters, err := ConvertToAnySlice(currentModel.Analyzers[i].CharFilters)
 		if err != nil {
@@ -330,7 +330,7 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 			return nil, err
 		}
 
-		s := admin.ApiAtlasFTSAnalyzers{
+		s := admin20231115002.ApiAtlasFTSAnalyzers{
 			CharFilters:  charFilters,
 			Name:         *currentModel.Analyzers[i].Name,
 			TokenFilters: tokenFilters,
@@ -342,12 +342,12 @@ func newSearchIndex(currentModel *Model) (*admin.ClusterSearchIndex, error) {
 		searchIndex.Analyzers = analyzers
 	}
 
-	synonyms := make([]admin.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
+	synonyms := make([]admin20231115002.SearchSynonymMappingDefinition, 0, len(currentModel.Synonyms))
 	for i := range currentModel.Synonyms {
-		s := admin.SearchSynonymMappingDefinition{
+		s := admin20231115002.SearchSynonymMappingDefinition{
 			Analyzer: *currentModel.Synonyms[i].Analyzer,
 			Name:     *currentModel.Synonyms[i].Name,
-			Source: admin.SynonymSource{
+			Source: admin20231115002.SynonymSource{
 				Collection: *currentModel.Synonyms[i].Source.Collection,
 			},
 		}
@@ -374,11 +374,11 @@ func ConvertToAnySlice(input []string) ([]any, error) {
 	return result, nil
 }
 
-func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasFTSAnalyzersTokenizer {
+func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin20231115002.ApiAtlasFTSAnalyzersTokenizer {
 	if tokenizer == nil {
-		return admin.ApiAtlasFTSAnalyzersTokenizer{}
+		return admin20231115002.ApiAtlasFTSAnalyzersTokenizer{}
 	}
-	return admin.ApiAtlasFTSAnalyzersTokenizer{
+	return admin20231115002.ApiAtlasFTSAnalyzersTokenizer{
 		MaxGram:        tokenizer.MaxGram,
 		MinGram:        tokenizer.MinGram,
 		Type:           tokenizer.Type,
@@ -388,7 +388,7 @@ func NewTokenizerModel(tokenizer *ApiAtlasFTSAnalyzersTokenizer) admin.ApiAtlasF
 	}
 }
 
-func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
+func newMappings(currentModel *Model) (*admin20231115002.ApiAtlasFTSMappings, error) {
 	if currentModel.Mappings == nil {
 		return nil, nil
 	}
@@ -397,7 +397,7 @@ func newMappings(currentModel *Model) (*admin.ApiAtlasFTSMappings, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &admin.ApiAtlasFTSMappings{
+	return &admin20231115002.ApiAtlasFTSMappings{
 		Dynamic: currentModel.Mappings.Dynamic,
 		Fields:  fields,
 	}, nil
@@ -437,7 +437,7 @@ func status(currentModel *Model) handler.Status {
 	return cloudformation.OperationStatusPending
 }
 
-func validateProgress(ctx context.Context, client *admin.APIClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
+func validateProgress(ctx context.Context, client *admin20231115002.APIClient, currentModel *Model, targetState string) (event handler.ProgressEvent, err error) {
 	index, err := SearchIndexExists(ctx, client, currentModel)
 	if err != nil {
 		_, _ = logger.Debugf("Error Cluster validate progress() err: %+v", err)
@@ -459,7 +459,7 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 		return p, nil
 	}
 	p := handler.NewProgressEvent()
-	if util.AreStringPtrEqual(index.Status, admin.PtrString(cloudformation.OperationStatusFailed)) {
+	if util.AreStringPtrEqual(index.Status, admin20231115002.PtrString(cloudformation.OperationStatusFailed)) {
 		p.OperationStatus = cloudformation.OperationStatusFailed
 		p.Message = "Failed"
 		p.HandlerErrorCode = cloudformation.HandlerErrorCodeInvalidRequest
@@ -474,11 +474,11 @@ func validateProgress(ctx context.Context, client *admin.APIClient, currentModel
 	return p, nil
 }
 
-func SearchIndexExists(ctx context.Context, atlasV2 *admin.APIClient, currentModel *Model) (*admin.ClusterSearchIndex, error) {
+func SearchIndexExists(ctx context.Context, atlasV2 *admin20231115002.APIClient, currentModel *Model) (*admin20231115002.ClusterSearchIndex, error) {
 	index, resp, err := atlasV2.AtlasSearchApi.GetAtlasSearchIndex(ctx, *currentModel.ProjectId, *currentModel.ClusterName, *currentModel.IndexId).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return &admin.ClusterSearchIndex{Status: admin.PtrString("DELETED")}, nil
+			return &admin20231115002.ClusterSearchIndex{Status: admin20231115002.PtrString("DELETED")}, nil
 		}
 	}
 	return index, err

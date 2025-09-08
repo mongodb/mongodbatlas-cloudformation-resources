@@ -22,44 +22,44 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 func TestAddReplicationSpecIDs(t *testing.T) {
 	testCases := map[string]struct {
-		from        []admin.ReplicationSpec
-		to          []admin.ReplicationSpec
+		from        []admin20231115014.ReplicationSpec
+		to          []admin20231115014.ReplicationSpec
 		expectedIDs []string
 	}{
-		"emptyIsOk": {[]admin.ReplicationSpec{}, []admin.ReplicationSpec{}, []string{}},
+		"emptyIsOk": {[]admin20231115014.ReplicationSpec{}, []admin20231115014.ReplicationSpec{}, []string{}},
 		"zoneNameMatch": {
-			[]admin.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1")}},
-			[]admin.ReplicationSpec{{ZoneName: util.StringPtr("z1")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1")}},
+			[]admin20231115014.ReplicationSpec{{ZoneName: util.StringPtr("z1")}},
 			[]string{"id1"},
 		},
 		"providerRegionMatch": {
-			[]admin.ReplicationSpec{{Id: util.StringPtr("id1"), RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
-			[]admin.ReplicationSpec{{RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("id1"), RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
+			[]admin20231115014.ReplicationSpec{{RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
 			[]string{"id1"},
 		},
 		"noMatchRegion": {
-			[]admin.ReplicationSpec{{Id: util.StringPtr("id1"), RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
-			[]admin.ReplicationSpec{{RegionConfigs: regionConfig("AWS", "US_EAST_2")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("id1"), RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
+			[]admin20231115014.ReplicationSpec{{RegionConfigs: regionConfig("AWS", "US_EAST_2")}},
 			[]string{""},
 		},
 		"noMatchZone": {
-			[]admin.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1")}},
-			[]admin.ReplicationSpec{{ZoneName: util.StringPtr("z2")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1")}},
+			[]admin20231115014.ReplicationSpec{{ZoneName: util.StringPtr("z2")}},
 			[]string{""},
 		},
 		"existingId": {
-			[]admin.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1")}},
-			[]admin.ReplicationSpec{{Id: util.StringPtr("existing"), ZoneName: util.StringPtr("z1")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("existing"), ZoneName: util.StringPtr("z1")}},
 			[]string{"existing"},
 		},
 		"idMatchedOnlyOnce": {
-			[]admin.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1"), RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
-			[]admin.ReplicationSpec{{ZoneName: util.StringPtr("z1")}, {RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
+			[]admin20231115014.ReplicationSpec{{Id: util.StringPtr("id1"), ZoneName: util.StringPtr("z1"), RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
+			[]admin20231115014.ReplicationSpec{{ZoneName: util.StringPtr("z1")}, {RegionConfigs: regionConfig("AWS", "US_EAST_1")}},
 			[]string{"id1", ""},
 		},
 	}
@@ -75,8 +75,8 @@ func TestAddReplicationSpecIDs(t *testing.T) {
 	}
 }
 
-func regionConfig(provider, region string) *[]admin.CloudRegionConfig {
-	return &[]admin.CloudRegionConfig{{
+func regionConfig(provider, region string) *[]admin20231115014.CloudRegionConfig {
+	return &[]admin20231115014.CloudRegionConfig{{
 		RegionName:   &region,
 		ProviderName: &provider,
 	}}

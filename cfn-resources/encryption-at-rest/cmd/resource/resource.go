@@ -29,7 +29,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var (
@@ -155,8 +155,8 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
-	params := &admin.EncryptionAtRest{
-		AwsKms: &admin.AWSKMSConfiguration{Enabled: aws.Bool(false)},
+	params := &admin20231115002.EncryptionAtRest{
+		AwsKms: &admin20231115002.AWSKMSConfiguration{Enabled: aws.Bool(false)},
 	}
 	_, resp, err = client.Atlas20231115002.EncryptionAtRestUsingCustomerKeyManagementApi.UpdateEncryptionAtRest(context.Background(), *currentModel.ProjectId, params).Execute()
 	if err != nil {
@@ -173,7 +173,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func validateExist(info *admin.EncryptionAtRest) *handler.ProgressEvent {
+func validateExist(info *admin20231115002.EncryptionAtRest) *handler.ProgressEvent {
 	if info != nil && info.AwsKms != nil && aws.BoolValue(info.AwsKms.Enabled) {
 		return nil
 	}
@@ -191,9 +191,9 @@ func randInt64() int64 {
 	return val.Int64()
 }
 
-func (m *Model) getParams() *admin.EncryptionAtRest {
-	return &admin.EncryptionAtRest{
-		AwsKms: &admin.AWSKMSConfiguration{
+func (m *Model) getParams() *admin20231115002.EncryptionAtRest {
+	return &admin20231115002.EncryptionAtRest{
+		AwsKms: &admin20231115002.AWSKMSConfiguration{
 			Enabled:             m.AwsKmsConfig.Enabled,
 			CustomerMasterKeyID: m.AwsKmsConfig.CustomerMasterKeyID,
 			RoleId:              m.AwsKmsConfig.RoleID,

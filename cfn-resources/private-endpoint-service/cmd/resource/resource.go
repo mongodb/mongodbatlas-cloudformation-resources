@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -236,7 +236,7 @@ func isCreating(req handler.Request) bool {
 	return callbackValue == ProgressStatusCreating
 }
 
-func (m *Model) completeByConnection(c admin.EndpointService) {
+func (m *Model) completeByConnection(c admin20231115014.EndpointService) {
 	m.Id = c.Id
 	m.EndpointServiceName = c.EndpointServiceName
 	m.ErrorMessage = c.ErrorMessage
@@ -254,7 +254,7 @@ func create(client *util.MongoDBClient, currentModel *Model) handler.ProgressEve
 	groupID := *currentModel.ProjectId
 	cloudProvider := *currentModel.CloudProvider
 
-	privateEndpointRequest := &admin.CloudProviderEndpointServiceRequest{
+	privateEndpointRequest := &admin20231115014.CloudProviderEndpointServiceRequest{
 		ProviderName: cloudProvider,
 		Region:       region,
 	}

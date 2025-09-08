@@ -19,33 +19,33 @@ import (
 	"context"
 	"net/http"
 
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 // Service interface was defined over mocking direct SDK as specific mapping of input parameters to responses is needed
 type TeamUsersAPI interface {
-	GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error)
-	AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error)
+	GetUserByUsername(ctx context.Context, userName string) (*admin20231115002.CloudAppUser, *http.Response, error)
+	AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin20231115002.AddUserToTeam) (*admin20231115002.PaginatedApiAppUser, *http.Response, error)
 	RemoveTeamUser(ctx context.Context, orgID string, teamID string, userID string) (*http.Response, error)
 }
 
 type TeamUsersAPIService struct {
-	mongoDBCloudUsersAPI atlasv2.MongoDBCloudUsersApi
-	teamsAPI             atlasv2.TeamsApi
+	mongoDBCloudUsersAPI admin20231115002.MongoDBCloudUsersApi
+	teamsAPI             admin20231115002.TeamsApi
 }
 
-func NewTeamUsersAPIService(client *atlasv2.APIClient) *TeamUsersAPIService {
+func NewTeamUsersAPIService(client *admin20231115002.APIClient) *TeamUsersAPIService {
 	return &TeamUsersAPIService{
 		mongoDBCloudUsersAPI: client.MongoDBCloudUsersApi,
 		teamsAPI:             client.TeamsApi,
 	}
 }
 
-func (s *TeamUsersAPIService) GetUserByUsername(ctx context.Context, userName string) (*atlasv2.CloudAppUser, *http.Response, error) {
+func (s *TeamUsersAPIService) GetUserByUsername(ctx context.Context, userName string) (*admin20231115002.CloudAppUser, *http.Response, error) {
 	return s.mongoDBCloudUsersAPI.GetUserByUsername(context.Background(), userName).Execute()
 }
 
-func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]atlasv2.AddUserToTeam) (*atlasv2.PaginatedApiAppUser, *http.Response, error) {
+func (s *TeamUsersAPIService) AddTeamUser(ctx context.Context, orgID string, teamID string, addUserToTeam *[]admin20231115002.AddUserToTeam) (*admin20231115002.PaginatedApiAppUser, *http.Response, error) {
 	return s.teamsAPI.AddTeamUser(ctx, orgID, teamID, addUserToTeam).Execute()
 }
 

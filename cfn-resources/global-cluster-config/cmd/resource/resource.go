@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -112,7 +112,7 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 
 	globalCluster, resp, err := client.Atlas20231115002.GlobalClustersApi.GetManagedNamespace(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return nil, handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -135,7 +135,7 @@ func ReadConfig(client *util.MongoDBClient, currentModel *Model) (*Model, handle
 	return readModel, handler.ProgressEvent{}, nil
 }
 
-func newModel(globalCluster *admin.GeoSharding, currentModel *Model) *Model {
+func newModel(globalCluster *admin20231115002.GeoSharding, currentModel *Model) *Model {
 	readModel := new(Model)
 	readModel.ProjectId = currentModel.ProjectId
 	readModel.ClusterName = currentModel.ClusterName
@@ -147,7 +147,7 @@ func newModel(globalCluster *admin.GeoSharding, currentModel *Model) *Model {
 	return readModel
 }
 
-func flattenManagedNamespaces(managedNamespaces []admin.ManagedNamespaces) []ManagedNamespace {
+func flattenManagedNamespaces(managedNamespaces []admin20231115002.ManagedNamespaces) []ManagedNamespace {
 	var results []ManagedNamespace
 	for ind := range managedNamespaces {
 		namespace := ManagedNamespace{
@@ -228,7 +228,7 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 
 func removeManagedNamespaces(ctx context.Context, client *util.MongoDBClient, remove []ManagedNamespace, projectID, clusterName string) {
 	for _, m := range remove {
-		addManagedNamespace := &admin.DeleteManagedNamespaceApiParams{
+		addManagedNamespace := &admin20231115002.DeleteManagedNamespaceApiParams{
 			Collection:  m.Collection,
 			Db:          m.Db,
 			ClusterName: clusterName,
@@ -242,15 +242,15 @@ func removeManagedNamespaces(ctx context.Context, client *util.MongoDBClient, re
 	}
 }
 
-func newCustomZoneMappings(currentModel *Model) *admin.CustomZoneMappings {
-	return &admin.CustomZoneMappings{
+func newCustomZoneMappings(currentModel *Model) *admin20231115002.CustomZoneMappings {
+	return &admin20231115002.CustomZoneMappings{
 		CustomZoneMappings: modelToCustomZoneMappings(currentModel.CustomZoneMappings),
 	}
 }
 
 func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, nameSpaces []ManagedNamespace, projectID, clusterName string) error {
 	for _, mn := range nameSpaces {
-		addManagedNamespace := &admin.ManagedNamespace{
+		addManagedNamespace := &admin20231115002.ManagedNamespace{
 			Collection:     mn.Collection,
 			Db:             mn.Db,
 			CustomShardKey: mn.CustomShardKey,
@@ -266,11 +266,11 @@ func createManagedNamespaces(ctx context.Context, client *util.MongoDBClient, na
 	return nil
 }
 
-func modelToCustomZoneMappings(tfList []ZoneMapping) []admin.ZoneMapping {
-	apiObjects := make([]admin.ZoneMapping, len(tfList))
+func modelToCustomZoneMappings(tfList []ZoneMapping) []admin20231115002.ZoneMapping {
+	apiObjects := make([]admin20231115002.ZoneMapping, len(tfList))
 	for i, tfMapRaw := range tfList {
 		if util.IsStringPresent(tfMapRaw.Location) || util.IsStringPresent(tfMapRaw.Zone) {
-			apiObjects[i] = admin.ZoneMapping{
+			apiObjects[i] = admin20231115002.ZoneMapping{
 				Location: *tfMapRaw.Location,
 				Zone:     *tfMapRaw.Zone,
 			}

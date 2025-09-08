@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.EndpointID}
@@ -72,7 +72,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	ctx := context.Background()
 
-	requestBody := admin.PrivateNetworkEndpointIdEntry{
+	requestBody := admin20231115014.PrivateNetworkEndpointIdEntry{
 		Provider:   currentModel.Provider,
 		Type:       currentModel.Type,
 		EndpointId: *currentModel.EndpointId,
@@ -93,7 +93,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func resourceAlreadyExists(client util.MongoDBClient, currentModel Model) (bool, *handler.ProgressEvent) {
 	_, resp, err := client.Atlas20231115014.DataFederationApi.GetDataFederationPrivateEndpoint(context.Background(), *currentModel.ProjectId, *currentModel.EndpointId).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return false, nil
 		}
 
@@ -196,7 +196,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			ProjectId:  currentModel.ProjectId,
 			Profile:    currentModel.Profile,
 			Comment:    v.Comment,
-			EndpointId: admin.PtrString(v.GetEndpointId()),
+			EndpointId: admin20231115014.PtrString(v.GetEndpointId()),
 			Provider:   v.Provider,
 			Type:       v.Type,
 		})

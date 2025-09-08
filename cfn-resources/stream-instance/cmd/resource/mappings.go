@@ -14,21 +14,21 @@
 
 package resource
 
-import "go.mongodb.org/atlas-sdk/v20231115014/admin"
+import admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
-func NewStreamsTenant(model *Model) *admin.StreamsTenant {
+func NewStreamsTenant(model *Model) *admin20231115014.StreamsTenant {
 	dataProcessRegion := *model.DataProcessRegion
-	streamTenant := &admin.StreamsTenant{
+	streamTenant := &admin20231115014.StreamsTenant{
 		Name:    model.InstanceName,
 		GroupId: model.ProjectId,
-		DataProcessRegion: &admin.StreamsDataProcessRegion{
+		DataProcessRegion: &admin20231115014.StreamsDataProcessRegion{
 			CloudProvider: *dataProcessRegion.CloudProvider,
 			Region:        *dataProcessRegion.Region,
 		},
 	}
 	if streamConfig := model.StreamConfig; streamConfig != nil {
 		if tier := streamConfig.Tier; tier != nil {
-			streamTenant.StreamConfig = &admin.StreamConfig{
+			streamTenant.StreamConfig = &admin20231115014.StreamConfig{
 				Tier: streamConfig.Tier,
 			}
 		}
@@ -36,41 +36,41 @@ func NewStreamsTenant(model *Model) *admin.StreamsTenant {
 	return streamTenant
 }
 
-func newModelDataRegion(dataProcessRegion *admin.StreamsDataProcessRegion) *StreamsDataProcessRegion {
+func newModelDataRegion(dataProcessRegion *admin20231115014.StreamsDataProcessRegion) *StreamsDataProcessRegion {
 	return &StreamsDataProcessRegion{
 		CloudProvider: &dataProcessRegion.CloudProvider,
 		Region:        &dataProcessRegion.Region,
 	}
 }
 
-func newModelStreamConfig(streamConfig *admin.StreamConfig) *StreamConfig {
+func newModelStreamConfig(streamConfig *admin20231115014.StreamConfig) *StreamConfig {
 	return &StreamConfig{
 		Tier: streamConfig.Tier,
 	}
 }
 
-func newModelDBRoleToExecute(dbRole *admin.DBRoleToExecute) *DBRoleToExecute {
+func newModelDBRoleToExecute(dbRole *admin20231115014.DBRoleToExecute) *DBRoleToExecute {
 	return &DBRoleToExecute{
 		Role: dbRole.Role,
 		Type: dbRole.Type,
 	}
 }
 
-func newModelAuthentication(authentication *admin.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
+func newModelAuthentication(authentication *admin20231115014.StreamsKafkaAuthentication) *StreamsKafkaAuthentication {
 	return &StreamsKafkaAuthentication{
 		Mechanism: authentication.Mechanism,
 		Username:  authentication.Username,
 	}
 }
 
-func newModelSecurity(security *admin.StreamsKafkaSecurity) *StreamsKafkaSecurity {
+func newModelSecurity(security *admin20231115014.StreamsKafkaSecurity) *StreamsKafkaSecurity {
 	return &StreamsKafkaSecurity{
 		BrokerPublicCertificate: security.BrokerPublicCertificate,
 		Protocol:                security.Protocol,
 	}
 }
 
-func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConnection {
+func NewModelConnections(streamConfig *[]admin20231115014.StreamsConnection) []StreamsConnection {
 	if streamConfig == nil || len(*streamConfig) == 0 {
 		return nil
 	}
@@ -94,7 +94,7 @@ func NewModelConnections(streamConfig *[]admin.StreamsConnection) []StreamsConne
 	return connections
 }
 
-func newCFNModelFromStreamInstance(prevModel *Model, streamTenant admin.StreamsTenant) *Model {
+func newCFNModelFromStreamInstance(prevModel *Model, streamTenant admin20231115014.StreamsTenant) *Model {
 	return &Model{
 		InstanceName:      streamTenant.Name,
 		DataProcessRegion: newModelDataRegion(streamTenant.DataProcessRegion),

@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"strings"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -89,7 +89,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	var err error
 	cluster, res, err := client.Atlas20231115014.ClustersApi.CreateCluster(context.Background(), *currentModel.ProjectId, clusterRequest).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
+		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          err.Error(),
@@ -181,7 +181,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Update Cluster
 	model, _, err := updateCluster(context.Background(), client, currentModel, adminCluster)
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
@@ -241,7 +241,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateProgress(client, currentModel, constants.DeletedState)
 	}
 
-	params := &admin.DeleteClusterApiParams{
+	params := &admin20231115014.DeleteClusterApiParams{
 		RetainBackups: util.Pointer(false),
 		GroupId:       *currentModel.ProjectId,
 		ClusterName:   *currentModel.Name,
@@ -249,7 +249,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	_, err := client.Atlas20231115014.ClustersApi.DeleteClusterWithParams(ctx, params).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return handler.ProgressEvent{
 				Message:          err.Error(),
 				OperationStatus:  handler.Failed,
@@ -288,11 +288,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	listOptions := &admin.ListClustersApiParams{
-		ItemsPerPage: admin.PtrInt(100),
-		PageNum:      admin.PtrInt(1),
+	listOptions := &admin20231115014.ListClustersApiParams{
+		ItemsPerPage: admin20231115014.PtrInt(100),
+		PageNum:      admin20231115014.PtrInt(1),
 		GroupId:      *currentModel.ProjectId,
-		IncludeCount: admin.PtrBool(true),
+		IncludeCount: admin20231115014.PtrBool(true),
 	}
 	// List call
 	clustersResponse, res, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
@@ -372,7 +372,7 @@ func formatMongoDBMajorVersion(val interface{}) string {
 	return fmt.Sprintf("%.1f", cast.ToFloat32(val))
 }
 
-func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, targetState string) (isReady bool, stateName string, mongoCluster *admin.AdvancedClusterDescription, err error) {
+func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, targetState string) (isReady bool, stateName string, mongoCluster *admin20231115014.AdvancedClusterDescription, err error) {
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
@@ -402,7 +402,7 @@ func readCluster(ctx context.Context, client *util.MongoDBClient, currentModel *
 	return currentModel, res, err
 }
 
-func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model, clusterRequest *admin.AdvancedClusterDescription) (*Model, *http.Response, error) {
+func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model, clusterRequest *admin20231115014.AdvancedClusterDescription) (*Model, *http.Response, error) {
 	_, _ = log.Debugf("params : %+v %+v %+v", ctx, client, clusterRequest)
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(ctx, *currentModel.ProjectId, *currentModel.Name, clusterRequest).Execute()
 
@@ -414,7 +414,7 @@ func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel
 }
 
 func updateAdvancedCluster(ctx context.Context, client *util.MongoDBClient,
-	request *admin.AdvancedClusterDescription, projectID, name string) (*admin.AdvancedClusterDescription, *http.Response, error) {
+	request *admin20231115014.AdvancedClusterDescription, projectID, name string) (*admin20231115014.AdvancedClusterDescription, *http.Response, error) {
 	return client.Atlas20231115014.ClustersApi.UpdateCluster(ctx, projectID, name, request).Execute()
 }
 
@@ -440,7 +440,7 @@ func updateClusterCallback(client *util.MongoDBClient, currentModel *Model, proj
 }
 
 func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
-	projectID string, cluster *admin.AdvancedClusterDescription, pe *handler.ProgressEvent) (handler.ProgressEvent, error) {
+	projectID string, cluster *admin20231115014.AdvancedClusterDescription, pe *handler.ProgressEvent) (handler.ProgressEvent, error) {
 	// Update advanced configuration
 	if currentModel.AdvancedSettings != nil {
 		_, _ = log.Debugf("AdvancedSettings: %+v", *currentModel.AdvancedSettings)
@@ -455,7 +455,7 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 
 	// Update pause
 	if (currentModel.Paused != nil) && (*currentModel.Paused != *cluster.Paused) {
-		_, res, err := updateAdvancedCluster(context.Background(), client, &admin.AdvancedClusterDescription{Paused: currentModel.Paused}, projectID, *currentModel.Name)
+		_, res, err := updateAdvancedCluster(context.Background(), client, &admin20231115014.AdvancedClusterDescription{Paused: currentModel.Paused}, projectID, *currentModel.Name)
 		if err != nil {
 			_, _ = log.Warnf("Cluster Pause - error: %+v", err)
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Cluster Pause error : %s", err.Error()),

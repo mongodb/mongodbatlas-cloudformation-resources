@@ -31,7 +31,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.InstanceName}
@@ -193,7 +193,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return validateCompletion(req, currentModel, client, enums.Available, constants.UPDATE), nil
 	}
 
-	serverlessPrivateEndpointInput := admin.ServerlessTenantEndpointUpdate{
+	serverlessPrivateEndpointInput := admin20231115014.ServerlessTenantEndpointUpdate{
 		Comment:                  currentModel.Comment,
 		ProviderName:             *currentModel.ProviderName,
 		CloudProviderEndpointId:  currentModel.CloudProviderEndpointId,
@@ -359,8 +359,8 @@ func deleteAwsPrivateEndpoint(currentModel *Model, region string, client *util.M
 	return nil
 }
 
-func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient) (*admin.ServerlessTenantEndpoint, *handler.ProgressEvent) {
-	serverlessPrivateEndpointInput := admin.ServerlessTenantCreateRequest{Comment: currentModel.Comment}
+func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient) (*admin20231115014.ServerlessTenantEndpoint, *handler.ProgressEvent) {
+	serverlessPrivateEndpointInput := admin20231115014.ServerlessTenantCreateRequest{Comment: currentModel.Comment}
 
 	createServerlessPrivateEndpointRequest := client.Atlas20231115014.ServerlessPrivateEndpointsApi.CreateServerlessPrivateEndpoint(context.Background(),
 		*currentModel.ProjectId, *currentModel.InstanceName, &serverlessPrivateEndpointInput)
@@ -384,7 +384,7 @@ func createAtlasPrivateEndpoint(currentModel *Model, client *util.MongoDBClient)
 }
 
 func assignAwsPrivateEndpoint(req handler.Request, client *util.MongoDBClient, awsPrivateEndpoint aws_utils.PrivateEndpointOutput, currentModel *Model) handler.ProgressEvent {
-	serverlessPrivateEndpointInput := admin.ServerlessTenantEndpointUpdate{
+	serverlessPrivateEndpointInput := admin20231115014.ServerlessTenantEndpointUpdate{
 		Comment:                 currentModel.Comment,
 		ProviderName:            *currentModel.ProviderName,
 		CloudProviderEndpointId: &awsPrivateEndpoint.InterfaceEndpointID,
@@ -429,7 +429,7 @@ func isTenantPrivateEndpointNotFound(response *http.Response) bool {
 	return errResponse.ErrorCode == "TENANT_PRIVATE_ENDPOINT_NOT_FOUND"
 }
 
-func ConvertListToModelList(endpoints []admin.ServerlessTenantEndpoint, profileName, projectID, instanceName *string) []interface{} {
+func ConvertListToModelList(endpoints []admin20231115014.ServerlessTenantEndpoint, profileName, projectID, instanceName *string) []interface{} {
 	models := make([]interface{}, 0)
 
 	for _, endpoint := range endpoints {
@@ -502,7 +502,7 @@ func getCallbackContext(privateEndpointID string, serviceName *string) map[strin
 	return callbackContext
 }
 
-func (currentModel *Model) completeWithAtlasModel(atlasModel admin.ServerlessTenantEndpoint) {
+func (currentModel *Model) completeWithAtlasModel(atlasModel admin20231115014.ServerlessTenantEndpoint) {
 	currentModel.Id = atlasModel.Id
 	currentModel.Status = atlasModel.Status
 	currentModel.ProviderName = atlasModel.ProviderName

@@ -23,7 +23,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var updateRequiredFields = []string{constants.ProjectID, constants.ID}
@@ -42,14 +42,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := *currentModel.ProjectId
 	containerID := *currentModel.Id
-	containerRequest := &admin.CloudProviderContainer{}
+	containerRequest := &admin20231115002.CloudProviderContainer{}
 
 	CIDR := currentModel.AtlasCidrBlock
 	if CIDR != nil {
 		containerRequest.AtlasCidrBlock = CIDR
 	}
 
-	containerRequest.ProviderName = admin.PtrString(constants.AWS)
+	containerRequest.ProviderName = admin20231115002.PtrString(constants.AWS)
 	containerRequest.RegionName = currentModel.RegionName
 	containerResponse, resp, err := client.Atlas20231115002.NetworkPeeringApi.UpdatePeeringContainer(context.Background(), projectID, containerID, containerRequest).Execute()
 	if err != nil {

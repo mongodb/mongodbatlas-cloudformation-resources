@@ -22,7 +22,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/testutil/mocksvc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func TestInitUserSet(t *testing.T) {
@@ -30,7 +30,7 @@ func TestInitUserSet(t *testing.T) {
 	user2 := "user2"
 	user3 := "user3"
 	// Create a slice of CloudAppUser objects
-	users := []atlasv2.CloudAppUser{
+	users := []admin20231115002.CloudAppUser{
 		{Id: &user1},
 		{Id: &user2},
 		{Id: &user3},
@@ -59,8 +59,8 @@ func TestValidateUsernames(t *testing.T) {
 	usernames := []string{validuser1, validuser2}
 
 	// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-	mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
-	mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
+	mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&admin20231115002.CloudAppUser{Id: &validuser1}, nil, nil)
+	mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&admin20231115002.CloudAppUser{Id: &validuser2}, nil, nil)
 
 	// Call the ValidateUsernames function
 	validUsers, _, err := teamuser.ValidateUsernames(mockClient, usernames)
@@ -82,7 +82,7 @@ func TestValidateUsernamesWithInvalidInput(t *testing.T) {
 	usernames := []string{validuser1, invaliduser1}
 
 	// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
+	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&admin20231115002.CloudAppUser{Id: &validuser1}, nil, nil)
 	mockAtlasV2Client.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
 
 	// Call the ValidateUsernames function
@@ -99,18 +99,18 @@ func TestGetChangesForTeamUsers(t *testing.T) {
 	// Test cases
 	testCases := []struct {
 		testName         string
-		currentUsers     []atlasv2.CloudAppUser
-		newUsers         []atlasv2.CloudAppUser
+		currentUsers     []admin20231115002.CloudAppUser
+		newUsers         []admin20231115002.CloudAppUser
 		expectedToAdd    []string
 		expectedToDelete []string
 	}{
 		{
 			testName: "succeeds adding a new user and removing an existing one",
-			currentUsers: []atlasv2.CloudAppUser{
+			currentUsers: []admin20231115002.CloudAppUser{
 				{Id: &user1},
 				{Id: &user2},
 			},
-			newUsers: []atlasv2.CloudAppUser{
+			newUsers: []admin20231115002.CloudAppUser{
 				{Id: &user1},
 				{Id: &user3},
 			},
@@ -119,8 +119,8 @@ func TestGetChangesForTeamUsers(t *testing.T) {
 		},
 		{
 			testName:     "succeeds adding all users",
-			currentUsers: []atlasv2.CloudAppUser{},
-			newUsers: []atlasv2.CloudAppUser{
+			currentUsers: []admin20231115002.CloudAppUser{},
+			newUsers: []admin20231115002.CloudAppUser{
 				{Id: &user1},
 				{Id: &user2},
 			},
@@ -129,11 +129,11 @@ func TestGetChangesForTeamUsers(t *testing.T) {
 		},
 		{
 			testName: "succeeds removing both users",
-			currentUsers: []atlasv2.CloudAppUser{
+			currentUsers: []admin20231115002.CloudAppUser{
 				{Id: &user1},
 				{Id: &user2},
 			},
-			newUsers:         []atlasv2.CloudAppUser{},
+			newUsers:         []admin20231115002.CloudAppUser{},
 			expectedToAdd:    []string{},
 			expectedToDelete: []string{user1, user2},
 		},
@@ -157,7 +157,7 @@ func TestUpdateTeamUsers(t *testing.T) {
 
 	testCases := []struct {
 		mockFuncExpectations func(*mocksvc.TeamUsersAPI)
-		existingTeamUsers    *atlasv2.PaginatedApiAppUser
+		existingTeamUsers    *admin20231115002.PaginatedApiAppUser
 		expectError          require.ErrorAssertionFunc
 		testName             string
 		usernames            []string
@@ -166,10 +166,10 @@ func TestUpdateTeamUsers(t *testing.T) {
 			testName: "succeeds but no changes are required",
 			mockFuncExpectations: func(mockClient *mocksvc.TeamUsersAPI) {
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&admin20231115002.CloudAppUser{Id: &validuser1}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&admin20231115002.CloudAppUser{Id: &validuser2}, nil, nil)
 			},
-			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}},
+			existingTeamUsers: &admin20231115002.PaginatedApiAppUser{Results: []admin20231115002.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}},
 			usernames:         []string{validuser1, validuser2},
 			expectError:       require.NoError,
 		},
@@ -177,10 +177,10 @@ func TestUpdateTeamUsers(t *testing.T) {
 			testName: "fails because one user is invalid",
 			mockFuncExpectations: func(mockClient *mocksvc.TeamUsersAPI) {
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&admin20231115002.CloudAppUser{Id: &validuser1}, nil, nil)
 				mockClient.EXPECT().GetUserByUsername(context.Background(), invaliduser1).Return(nil, nil, errors.New("invalid username"))
 			},
-			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &invaliduser1}}},
+			existingTeamUsers: &admin20231115002.PaginatedApiAppUser{Results: []admin20231115002.CloudAppUser{{Id: &validuser1}, {Id: &invaliduser1}}},
 			usernames:         []string{validuser1, invaliduser1},
 			expectError:       require.Error,
 		},
@@ -188,14 +188,14 @@ func TestUpdateTeamUsers(t *testing.T) {
 			testName: "succeeds with one user to be added",
 			mockFuncExpectations: func(mockClient *mocksvc.TeamUsersAPI) {
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&admin20231115002.CloudAppUser{Id: &validuser1}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&admin20231115002.CloudAppUser{Id: &validuser2}, nil, nil)
 
-				var newUsers []atlasv2.AddUserToTeam
-				newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: validuser2})
+				var newUsers []admin20231115002.AddUserToTeam
+				newUsers = append(newUsers, admin20231115002.AddUserToTeam{Id: validuser2})
 				mockClient.EXPECT().AddTeamUser(context.Background(), "orgID", "teamID", &newUsers).Return(nil, nil, nil)
 			},
-			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}}},
+			existingTeamUsers: &admin20231115002.PaginatedApiAppUser{Results: []admin20231115002.CloudAppUser{{Id: &validuser1}}},
 			usernames:         []string{validuser1, validuser2},
 			expectError:       require.NoError,
 		},
@@ -203,10 +203,10 @@ func TestUpdateTeamUsers(t *testing.T) {
 			testName: "succeeds with one user to be removed",
 			mockFuncExpectations: func(mockClient *mocksvc.TeamUsersAPI) {
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&atlasv2.CloudAppUser{Id: &validuser2}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser2).Return(&admin20231115002.CloudAppUser{Id: &validuser2}, nil, nil)
 				mockClient.EXPECT().RemoveTeamUser(context.Background(), "orgID", "teamID", validuser1).Return(nil, nil)
 			},
-			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}},
+			existingTeamUsers: &admin20231115002.PaginatedApiAppUser{Results: []admin20231115002.CloudAppUser{{Id: &validuser1}, {Id: &validuser2}}},
 			usernames:         []string{validuser2},
 			expectError:       require.NoError,
 		},
@@ -214,13 +214,13 @@ func TestUpdateTeamUsers(t *testing.T) {
 			testName: "succeeds with one user to be added and the other removed",
 			mockFuncExpectations: func(mockClient *mocksvc.TeamUsersAPI) {
 				// Set up mock expectations for successful and unsuccessful calls to GetUserByUsername
-				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&atlasv2.CloudAppUser{Id: &validuser1}, nil, nil)
+				mockClient.EXPECT().GetUserByUsername(context.Background(), validuser1).Return(&admin20231115002.CloudAppUser{Id: &validuser1}, nil, nil)
 				mockClient.EXPECT().RemoveTeamUser(context.Background(), "orgID", "teamID", validuser2).Return(nil, nil)
-				var newUsers []atlasv2.AddUserToTeam
-				newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: validuser1})
+				var newUsers []admin20231115002.AddUserToTeam
+				newUsers = append(newUsers, admin20231115002.AddUserToTeam{Id: validuser1})
 				mockClient.EXPECT().AddTeamUser(context.Background(), "orgID", "teamID", &newUsers).Return(nil, nil, nil)
 			},
-			existingTeamUsers: &atlasv2.PaginatedApiAppUser{Results: []atlasv2.CloudAppUser{{Id: &validuser2}}},
+			existingTeamUsers: &admin20231115002.PaginatedApiAppUser{Results: []admin20231115002.CloudAppUser{{Id: &validuser2}}},
 			usernames:         []string{validuser1},
 			expectError:       require.NoError,
 		},

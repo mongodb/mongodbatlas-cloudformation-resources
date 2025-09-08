@@ -30,7 +30,7 @@ import (
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 const (
@@ -75,7 +75,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
-	requestBody := admin.ClusterOutageSimulation{
+	requestBody := admin20231115014.ClusterOutageSimulation{
 		OutageFilters: newOutageFilters(currentModel),
 	}
 
@@ -206,11 +206,11 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func newOutageFilters(currentModel *Model) *[]admin.AtlasClusterOutageSimulationOutageFilter {
-	outageFilters := make([]admin.AtlasClusterOutageSimulationOutageFilter, 0)
+func newOutageFilters(currentModel *Model) *[]admin20231115014.AtlasClusterOutageSimulationOutageFilter {
+	outageFilters := make([]admin20231115014.AtlasClusterOutageSimulationOutageFilter, 0)
 
 	for ind := range currentModel.OutageFilters {
-		mMatcher := admin.AtlasClusterOutageSimulationOutageFilter{
+		mMatcher := admin20231115014.AtlasClusterOutageSimulationOutageFilter{
 			CloudProvider: currentModel.OutageFilters[ind].CloudProvider,
 			RegionName:    currentModel.OutageFilters[ind].Region,
 			Type:          currentModel.OutageFilters[ind].Type,
@@ -299,7 +299,7 @@ func setup() {
 func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
-func convertToUIModel(outageSimulation admin.ClusterOutageSimulation, currentModel *Model) *Model {
+func convertToUIModel(outageSimulation admin20231115014.ClusterOutageSimulation, currentModel *Model) *Model {
 	currentModel.SimulationId = outageSimulation.Id
 
 	if outageSimulation.StartRequestDate != nil {
@@ -314,7 +314,7 @@ func convertToUIModel(outageSimulation admin.ClusterOutageSimulation, currentMod
 	return currentModel
 }
 
-func convertOutageFiltersToModel(outageFilters []admin.AtlasClusterOutageSimulationOutageFilter) []Filter {
+func convertOutageFiltersToModel(outageFilters []admin20231115014.AtlasClusterOutageSimulationOutageFilter) []Filter {
 	outageFilterList := make([]Filter, 0)
 
 	for ind := range outageFilters {

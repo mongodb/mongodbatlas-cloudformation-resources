@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Criteria, constants.CriteriaType}
@@ -208,7 +208,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if pe != nil {
 		return *pe, nil
 	}
-	params := admin.ListOnlineArchivesApiParams{
+	params := admin20231115014.ListOnlineArchivesApiParams{
 		GroupId:      *currentModel.ProjectId,
 		ClusterName:  *currentModel.ClusterName,
 		IncludeCount: currentModel.IncludeCount,
@@ -239,8 +239,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func newCreateParams(currentModel *Model) (admin.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
-	requestInput := admin.BackupOnlineArchiveCreate{
+func newCreateParams(currentModel *Model) (admin20231115014.BackupOnlineArchiveCreate, *handler.ProgressEvent) {
+	requestInput := admin20231115014.BackupOnlineArchiveCreate{
 		DbName:   *currentModel.DbName,
 		CollName: *currentModel.CollName,
 	}
@@ -254,13 +254,13 @@ func newCreateParams(currentModel *Model) (admin.BackupOnlineArchiveCreate, *han
 	return requestInput, nil
 }
 
-func newOASchedule(currentModel *Model) *admin.OnlineArchiveSchedule {
+func newOASchedule(currentModel *Model) *admin20231115014.OnlineArchiveSchedule {
 	scheduleModel := currentModel.Schedule
 	if scheduleModel == nil {
 		return nil
 	}
 
-	scheduleInput := &admin.OnlineArchiveSchedule{
+	scheduleInput := &admin20231115014.OnlineArchiveSchedule{
 		Type:        *scheduleModel.Type,
 		EndHour:     scheduleModel.EndHour,
 		EndMinute:   scheduleModel.EndMinute,
@@ -273,8 +273,8 @@ func newOASchedule(currentModel *Model) *admin.OnlineArchiveSchedule {
 	return scheduleInput
 }
 
-func newUpdateParams(currentModel *Model) (admin.BackupOnlineArchive, *handler.ProgressEvent) {
-	requestInput := admin.BackupOnlineArchive{
+func newUpdateParams(currentModel *Model) (admin20231115014.BackupOnlineArchive, *handler.ProgressEvent) {
+	requestInput := admin20231115014.BackupOnlineArchive{
 		DbName:   currentModel.DbName,
 		CollName: currentModel.CollName,
 	}
@@ -288,9 +288,9 @@ func newUpdateParams(currentModel *Model) (admin.BackupOnlineArchive, *handler.P
 	return requestInput, nil
 }
 
-func newCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) {
+func newCriteria(currentModel *Model) (*admin20231115014.Criteria, *handler.ProgressEvent) {
 	criteriaModel := *currentModel.Criteria
-	criteriaInput := &admin.Criteria{
+	criteriaInput := &admin20231115014.Criteria{
 		Type:            criteriaModel.Type,
 		DateField:       criteriaModel.DateField,
 		ExpireAfterDays: criteriaModel.ExpireAfterDays,
@@ -309,11 +309,11 @@ func newCriteria(currentModel *Model) (*admin.Criteria, *handler.ProgressEvent) 
 	return criteriaInput, nil
 }
 
-func newPartitionFields(currentModel *Model) *[]admin.PartitionField {
-	partitionFields := make([]admin.PartitionField, len(currentModel.PartitionFields))
+func newPartitionFields(currentModel *Model) *[]admin20231115014.PartitionField {
+	partitionFields := make([]admin20231115014.PartitionField, len(currentModel.PartitionFields))
 
 	for i := range currentModel.PartitionFields {
-		partitionField := &admin.PartitionField{}
+		partitionField := &admin20231115014.PartitionField{}
 
 		if currentModel.PartitionFields[i].FieldName != nil {
 			partitionField.FieldName = *currentModel.PartitionFields[i].FieldName
@@ -358,12 +358,12 @@ func validateProgress(ctx context.Context, client *util.MongoDBClient, currentMo
 	return p, nil
 }
 
-func ArchiveExists(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin.BackupOnlineArchive, error) {
+func ArchiveExists(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*admin20231115014.BackupOnlineArchive, error) {
 	archive, resp, err := client.Atlas20231115014.OnlineArchiveApi.GetOnlineArchive(ctx, *currentModel.ProjectId, *currentModel.ArchiveId, *currentModel.ClusterName).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			state := "DELETED"
-			return &admin.BackupOnlineArchive{State: &state}, nil
+			return &admin20231115014.BackupOnlineArchive{State: &state}, nil
 		}
 		return nil, err
 	}

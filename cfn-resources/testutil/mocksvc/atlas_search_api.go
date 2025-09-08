@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	mock "github.com/stretchr/testify/mock"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 // NewAtlasSearchApi creates a new instance of AtlasSearchApi. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -40,18 +40,18 @@ func (_m *AtlasSearchApi) EXPECT() *AtlasSearchApi_Expecter {
 }
 
 // CreateAtlasSearchDeployment provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) CreateAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest) admin.CreateAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) CreateAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest) admin20231115014.CreateAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, apiSearchDeploymentRequest)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateAtlasSearchDeployment")
 	}
 
-	var r0 admin.CreateAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *admin.ApiSearchDeploymentRequest) admin.CreateAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.CreateAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *admin20231115014.ApiSearchDeploymentRequest) admin20231115014.CreateAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, apiSearchDeploymentRequest)
 	} else {
-		r0 = ret.Get(0).(admin.CreateAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.CreateAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -65,12 +65,12 @@ type AtlasSearchApi_CreateAtlasSearchDeployment_Call struct {
 //   - ctx context.Context
 //   - groupId string
 //   - clusterName string
-//   - apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest
+//   - apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest
 func (_e *AtlasSearchApi_Expecter) CreateAtlasSearchDeployment(ctx interface{}, groupId interface{}, clusterName interface{}, apiSearchDeploymentRequest interface{}) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
 	return &AtlasSearchApi_CreateAtlasSearchDeployment_Call{Call: _e.mock.On("CreateAtlasSearchDeployment", ctx, groupId, clusterName, apiSearchDeploymentRequest)}
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) Run(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest)) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) Run(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest)) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -84,9 +84,9 @@ func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) Run(run func(ctx cont
 		if args[2] != nil {
 			arg2 = args[2].(string)
 		}
-		var arg3 *admin.ApiSearchDeploymentRequest
+		var arg3 *admin20231115014.ApiSearchDeploymentRequest
 		if args[3] != nil {
-			arg3 = args[3].(*admin.ApiSearchDeploymentRequest)
+			arg3 = args[3].(*admin20231115014.ApiSearchDeploymentRequest)
 		}
 		run(
 			arg0,
@@ -98,45 +98,45 @@ func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) Run(run func(ctx cont
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) Return(createAtlasSearchDeploymentApiRequest admin.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) Return(createAtlasSearchDeploymentApiRequest admin20231115014.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
 	_c.Call.Return(createAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest) admin.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest) admin20231115014.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeployment_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // CreateAtlasSearchDeploymentExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) CreateAtlasSearchDeploymentExecute(r admin.CreateAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error) {
+func (_mock *AtlasSearchApi) CreateAtlasSearchDeploymentExecute(r admin20231115014.CreateAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateAtlasSearchDeploymentExecute")
 	}
 
-	var r0 *admin.ApiSearchDeploymentResponse
+	var r0 *admin20231115014.ApiSearchDeploymentResponse
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.CreateAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.CreateAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.CreateAtlasSearchDeploymentApiRequest) *admin.ApiSearchDeploymentResponse); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.CreateAtlasSearchDeploymentApiRequest) *admin20231115014.ApiSearchDeploymentResponse); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.ApiSearchDeploymentResponse)
+			r0 = ret.Get(0).(*admin20231115014.ApiSearchDeploymentResponse)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.CreateAtlasSearchDeploymentApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.CreateAtlasSearchDeploymentApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.CreateAtlasSearchDeploymentApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.CreateAtlasSearchDeploymentApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -150,16 +150,16 @@ type AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call struct {
 }
 
 // CreateAtlasSearchDeploymentExecute is a helper method to define mock.On call
-//   - r admin.CreateAtlasSearchDeploymentApiRequest
+//   - r admin20231115014.CreateAtlasSearchDeploymentApiRequest
 func (_e *AtlasSearchApi_Expecter) CreateAtlasSearchDeploymentExecute(r interface{}) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
 	return &AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call{Call: _e.mock.On("CreateAtlasSearchDeploymentExecute", r)}
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) Run(run func(r admin.CreateAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) Run(run func(r admin20231115014.CreateAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.CreateAtlasSearchDeploymentApiRequest
+		var arg0 admin20231115014.CreateAtlasSearchDeploymentApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.CreateAtlasSearchDeploymentApiRequest)
+			arg0 = args[0].(admin20231115014.CreateAtlasSearchDeploymentApiRequest)
 		}
 		run(
 			arg0,
@@ -168,29 +168,29 @@ func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) Run(run func(r
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) Return(apiSearchDeploymentResponse *admin.ApiSearchDeploymentResponse, response *http.Response, err error) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) Return(apiSearchDeploymentResponse *admin20231115014.ApiSearchDeploymentResponse, response *http.Response, err error) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(apiSearchDeploymentResponse, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin.CreateAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error)) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin20231115014.CreateAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error)) *AtlasSearchApi_CreateAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // CreateAtlasSearchDeploymentWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) CreateAtlasSearchDeploymentWithParams(ctx context.Context, args *admin.CreateAtlasSearchDeploymentApiParams) admin.CreateAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) CreateAtlasSearchDeploymentWithParams(ctx context.Context, args *admin20231115014.CreateAtlasSearchDeploymentApiParams) admin20231115014.CreateAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateAtlasSearchDeploymentWithParams")
 	}
 
-	var r0 admin.CreateAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.CreateAtlasSearchDeploymentApiParams) admin.CreateAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.CreateAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.CreateAtlasSearchDeploymentApiParams) admin20231115014.CreateAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.CreateAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.CreateAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -202,20 +202,20 @@ type AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call struct {
 
 // CreateAtlasSearchDeploymentWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.CreateAtlasSearchDeploymentApiParams
+//   - args *admin20231115014.CreateAtlasSearchDeploymentApiParams
 func (_e *AtlasSearchApi_Expecter) CreateAtlasSearchDeploymentWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
 	return &AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call{Call: _e.mock.On("CreateAtlasSearchDeploymentWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin.CreateAtlasSearchDeploymentApiParams)) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.CreateAtlasSearchDeploymentApiParams)) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.CreateAtlasSearchDeploymentApiParams
+		var arg1 *admin20231115014.CreateAtlasSearchDeploymentApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.CreateAtlasSearchDeploymentApiParams)
+			arg1 = args[1].(*admin20231115014.CreateAtlasSearchDeploymentApiParams)
 		}
 		run(
 			arg0,
@@ -225,29 +225,29 @@ func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) Run(run fun
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) Return(createAtlasSearchDeploymentApiRequest admin.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) Return(createAtlasSearchDeploymentApiRequest admin20231115014.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(createAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.CreateAtlasSearchDeploymentApiParams) admin.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.CreateAtlasSearchDeploymentApiParams) admin20231115014.CreateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_CreateAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // CreateAtlasSearchIndex provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) CreateAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, clusterSearchIndex *admin.ClusterSearchIndex) admin.CreateAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) CreateAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, clusterSearchIndex *admin20231115014.ClusterSearchIndex) admin20231115014.CreateAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, clusterSearchIndex)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateAtlasSearchIndex")
 	}
 
-	var r0 admin.CreateAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *admin.ClusterSearchIndex) admin.CreateAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.CreateAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *admin20231115014.ClusterSearchIndex) admin20231115014.CreateAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, clusterSearchIndex)
 	} else {
-		r0 = ret.Get(0).(admin.CreateAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.CreateAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -261,12 +261,12 @@ type AtlasSearchApi_CreateAtlasSearchIndex_Call struct {
 //   - ctx context.Context
 //   - groupId string
 //   - clusterName string
-//   - clusterSearchIndex *admin.ClusterSearchIndex
+//   - clusterSearchIndex *admin20231115014.ClusterSearchIndex
 func (_e *AtlasSearchApi_Expecter) CreateAtlasSearchIndex(ctx interface{}, groupId interface{}, clusterName interface{}, clusterSearchIndex interface{}) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
 	return &AtlasSearchApi_CreateAtlasSearchIndex_Call{Call: _e.mock.On("CreateAtlasSearchIndex", ctx, groupId, clusterName, clusterSearchIndex)}
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) Run(run func(ctx context.Context, groupId string, clusterName string, clusterSearchIndex *admin.ClusterSearchIndex)) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) Run(run func(ctx context.Context, groupId string, clusterName string, clusterSearchIndex *admin20231115014.ClusterSearchIndex)) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -280,9 +280,9 @@ func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) Run(run func(ctx context.C
 		if args[2] != nil {
 			arg2 = args[2].(string)
 		}
-		var arg3 *admin.ClusterSearchIndex
+		var arg3 *admin20231115014.ClusterSearchIndex
 		if args[3] != nil {
-			arg3 = args[3].(*admin.ClusterSearchIndex)
+			arg3 = args[3].(*admin20231115014.ClusterSearchIndex)
 		}
 		run(
 			arg0,
@@ -294,45 +294,45 @@ func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) Return(createAtlasSearchIndexApiRequest admin.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) Return(createAtlasSearchIndexApiRequest admin20231115014.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
 	_c.Call.Return(createAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, clusterSearchIndex *admin.ClusterSearchIndex) admin.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, clusterSearchIndex *admin20231115014.ClusterSearchIndex) admin20231115014.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndex_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // CreateAtlasSearchIndexExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) CreateAtlasSearchIndexExecute(r admin.CreateAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error) {
+func (_mock *AtlasSearchApi) CreateAtlasSearchIndexExecute(r admin20231115014.CreateAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateAtlasSearchIndexExecute")
 	}
 
-	var r0 *admin.ClusterSearchIndex
+	var r0 *admin20231115014.ClusterSearchIndex
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.CreateAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.CreateAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.CreateAtlasSearchIndexApiRequest) *admin.ClusterSearchIndex); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.CreateAtlasSearchIndexApiRequest) *admin20231115014.ClusterSearchIndex); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.ClusterSearchIndex)
+			r0 = ret.Get(0).(*admin20231115014.ClusterSearchIndex)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.CreateAtlasSearchIndexApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.CreateAtlasSearchIndexApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.CreateAtlasSearchIndexApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.CreateAtlasSearchIndexApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -346,16 +346,16 @@ type AtlasSearchApi_CreateAtlasSearchIndexExecute_Call struct {
 }
 
 // CreateAtlasSearchIndexExecute is a helper method to define mock.On call
-//   - r admin.CreateAtlasSearchIndexApiRequest
+//   - r admin20231115014.CreateAtlasSearchIndexApiRequest
 func (_e *AtlasSearchApi_Expecter) CreateAtlasSearchIndexExecute(r interface{}) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
 	return &AtlasSearchApi_CreateAtlasSearchIndexExecute_Call{Call: _e.mock.On("CreateAtlasSearchIndexExecute", r)}
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) Run(run func(r admin.CreateAtlasSearchIndexApiRequest)) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) Run(run func(r admin20231115014.CreateAtlasSearchIndexApiRequest)) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.CreateAtlasSearchIndexApiRequest
+		var arg0 admin20231115014.CreateAtlasSearchIndexApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.CreateAtlasSearchIndexApiRequest)
+			arg0 = args[0].(admin20231115014.CreateAtlasSearchIndexApiRequest)
 		}
 		run(
 			arg0,
@@ -364,29 +364,29 @@ func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) Run(run func(r admi
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) Return(clusterSearchIndex *admin.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) Return(clusterSearchIndex *admin20231115014.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
 	_c.Call.Return(clusterSearchIndex, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin.CreateAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin20231115014.CreateAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_CreateAtlasSearchIndexExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // CreateAtlasSearchIndexWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) CreateAtlasSearchIndexWithParams(ctx context.Context, args *admin.CreateAtlasSearchIndexApiParams) admin.CreateAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) CreateAtlasSearchIndexWithParams(ctx context.Context, args *admin20231115014.CreateAtlasSearchIndexApiParams) admin20231115014.CreateAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateAtlasSearchIndexWithParams")
 	}
 
-	var r0 admin.CreateAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.CreateAtlasSearchIndexApiParams) admin.CreateAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.CreateAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.CreateAtlasSearchIndexApiParams) admin20231115014.CreateAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.CreateAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.CreateAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -398,20 +398,20 @@ type AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call struct {
 
 // CreateAtlasSearchIndexWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.CreateAtlasSearchIndexApiParams
+//   - args *admin20231115014.CreateAtlasSearchIndexApiParams
 func (_e *AtlasSearchApi_Expecter) CreateAtlasSearchIndexWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
 	return &AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call{Call: _e.mock.On("CreateAtlasSearchIndexWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin.CreateAtlasSearchIndexApiParams)) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.CreateAtlasSearchIndexApiParams)) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.CreateAtlasSearchIndexApiParams
+		var arg1 *admin20231115014.CreateAtlasSearchIndexApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.CreateAtlasSearchIndexApiParams)
+			arg1 = args[1].(*admin20231115014.CreateAtlasSearchIndexApiParams)
 		}
 		run(
 			arg0,
@@ -421,29 +421,29 @@ func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) Run(run func(ctx
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) Return(createAtlasSearchIndexApiRequest admin.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) Return(createAtlasSearchIndexApiRequest admin20231115014.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(createAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.CreateAtlasSearchIndexApiParams) admin.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.CreateAtlasSearchIndexApiParams) admin20231115014.CreateAtlasSearchIndexApiRequest) *AtlasSearchApi_CreateAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // DeleteAtlasSearchDeployment provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) DeleteAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string) admin.DeleteAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) DeleteAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string) admin20231115014.DeleteAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteAtlasSearchDeployment")
 	}
 
-	var r0 admin.DeleteAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) admin.DeleteAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.DeleteAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) admin20231115014.DeleteAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName)
 	} else {
-		r0 = ret.Get(0).(admin.DeleteAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.DeleteAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -484,18 +484,18 @@ func (_c *AtlasSearchApi_DeleteAtlasSearchDeployment_Call) Run(run func(ctx cont
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeployment_Call) Return(deleteAtlasSearchDeploymentApiRequest admin.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeployment_Call) Return(deleteAtlasSearchDeploymentApiRequest admin20231115014.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeployment_Call {
 	_c.Call.Return(deleteAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string) admin.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string) admin20231115014.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeployment_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // DeleteAtlasSearchDeploymentExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) DeleteAtlasSearchDeploymentExecute(r admin.DeleteAtlasSearchDeploymentApiRequest) (*http.Response, error) {
+func (_mock *AtlasSearchApi) DeleteAtlasSearchDeploymentExecute(r admin20231115014.DeleteAtlasSearchDeploymentApiRequest) (*http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
@@ -504,17 +504,17 @@ func (_mock *AtlasSearchApi) DeleteAtlasSearchDeploymentExecute(r admin.DeleteAt
 
 	var r0 *http.Response
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(admin.DeleteAtlasSearchDeploymentApiRequest) (*http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.DeleteAtlasSearchDeploymentApiRequest) (*http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.DeleteAtlasSearchDeploymentApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.DeleteAtlasSearchDeploymentApiRequest) *http.Response); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.DeleteAtlasSearchDeploymentApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.DeleteAtlasSearchDeploymentApiRequest) error); ok {
 		r1 = returnFunc(r)
 	} else {
 		r1 = ret.Error(1)
@@ -528,16 +528,16 @@ type AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call struct {
 }
 
 // DeleteAtlasSearchDeploymentExecute is a helper method to define mock.On call
-//   - r admin.DeleteAtlasSearchDeploymentApiRequest
+//   - r admin20231115014.DeleteAtlasSearchDeploymentApiRequest
 func (_e *AtlasSearchApi_Expecter) DeleteAtlasSearchDeploymentExecute(r interface{}) *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call {
 	return &AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call{Call: _e.mock.On("DeleteAtlasSearchDeploymentExecute", r)}
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call) Run(run func(r admin.DeleteAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call) Run(run func(r admin20231115014.DeleteAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.DeleteAtlasSearchDeploymentApiRequest
+		var arg0 admin20231115014.DeleteAtlasSearchDeploymentApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.DeleteAtlasSearchDeploymentApiRequest)
+			arg0 = args[0].(admin20231115014.DeleteAtlasSearchDeploymentApiRequest)
 		}
 		run(
 			arg0,
@@ -551,24 +551,24 @@ func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call) Return(respons
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin.DeleteAtlasSearchDeploymentApiRequest) (*http.Response, error)) *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin20231115014.DeleteAtlasSearchDeploymentApiRequest) (*http.Response, error)) *AtlasSearchApi_DeleteAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // DeleteAtlasSearchDeploymentWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) DeleteAtlasSearchDeploymentWithParams(ctx context.Context, args *admin.DeleteAtlasSearchDeploymentApiParams) admin.DeleteAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) DeleteAtlasSearchDeploymentWithParams(ctx context.Context, args *admin20231115014.DeleteAtlasSearchDeploymentApiParams) admin20231115014.DeleteAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteAtlasSearchDeploymentWithParams")
 	}
 
-	var r0 admin.DeleteAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.DeleteAtlasSearchDeploymentApiParams) admin.DeleteAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.DeleteAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.DeleteAtlasSearchDeploymentApiParams) admin20231115014.DeleteAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.DeleteAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.DeleteAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -580,20 +580,20 @@ type AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call struct {
 
 // DeleteAtlasSearchDeploymentWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.DeleteAtlasSearchDeploymentApiParams
+//   - args *admin20231115014.DeleteAtlasSearchDeploymentApiParams
 func (_e *AtlasSearchApi_Expecter) DeleteAtlasSearchDeploymentWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
 	return &AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call{Call: _e.mock.On("DeleteAtlasSearchDeploymentWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin.DeleteAtlasSearchDeploymentApiParams)) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.DeleteAtlasSearchDeploymentApiParams)) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.DeleteAtlasSearchDeploymentApiParams
+		var arg1 *admin20231115014.DeleteAtlasSearchDeploymentApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.DeleteAtlasSearchDeploymentApiParams)
+			arg1 = args[1].(*admin20231115014.DeleteAtlasSearchDeploymentApiParams)
 		}
 		run(
 			arg0,
@@ -603,29 +603,29 @@ func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) Run(run fun
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) Return(deleteAtlasSearchDeploymentApiRequest admin.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) Return(deleteAtlasSearchDeploymentApiRequest admin20231115014.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(deleteAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.DeleteAtlasSearchDeploymentApiParams) admin.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.DeleteAtlasSearchDeploymentApiParams) admin20231115014.DeleteAtlasSearchDeploymentApiRequest) *AtlasSearchApi_DeleteAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // DeleteAtlasSearchIndex provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) DeleteAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, indexId string) admin.DeleteAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) DeleteAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, indexId string) admin20231115014.DeleteAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, indexId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteAtlasSearchIndex")
 	}
 
-	var r0 admin.DeleteAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) admin.DeleteAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.DeleteAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) admin20231115014.DeleteAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, indexId)
 	} else {
-		r0 = ret.Get(0).(admin.DeleteAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.DeleteAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -672,18 +672,18 @@ func (_c *AtlasSearchApi_DeleteAtlasSearchIndex_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndex_Call) Return(deleteAtlasSearchIndexApiRequest admin.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndex_Call) Return(deleteAtlasSearchIndexApiRequest admin20231115014.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndex_Call {
 	_c.Call.Return(deleteAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, indexId string) admin.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, indexId string) admin20231115014.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndex_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // DeleteAtlasSearchIndexExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) DeleteAtlasSearchIndexExecute(r admin.DeleteAtlasSearchIndexApiRequest) (map[string]interface{}, *http.Response, error) {
+func (_mock *AtlasSearchApi) DeleteAtlasSearchIndexExecute(r admin20231115014.DeleteAtlasSearchIndexApiRequest) (map[string]interface{}, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
@@ -693,24 +693,24 @@ func (_mock *AtlasSearchApi) DeleteAtlasSearchIndexExecute(r admin.DeleteAtlasSe
 	var r0 map[string]interface{}
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.DeleteAtlasSearchIndexApiRequest) (map[string]interface{}, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.DeleteAtlasSearchIndexApiRequest) (map[string]interface{}, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.DeleteAtlasSearchIndexApiRequest) map[string]interface{}); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.DeleteAtlasSearchIndexApiRequest) map[string]interface{}); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[string]interface{})
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.DeleteAtlasSearchIndexApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.DeleteAtlasSearchIndexApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.DeleteAtlasSearchIndexApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.DeleteAtlasSearchIndexApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -724,16 +724,16 @@ type AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call struct {
 }
 
 // DeleteAtlasSearchIndexExecute is a helper method to define mock.On call
-//   - r admin.DeleteAtlasSearchIndexApiRequest
+//   - r admin20231115014.DeleteAtlasSearchIndexApiRequest
 func (_e *AtlasSearchApi_Expecter) DeleteAtlasSearchIndexExecute(r interface{}) *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call {
 	return &AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call{Call: _e.mock.On("DeleteAtlasSearchIndexExecute", r)}
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call) Run(run func(r admin.DeleteAtlasSearchIndexApiRequest)) *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call) Run(run func(r admin20231115014.DeleteAtlasSearchIndexApiRequest)) *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.DeleteAtlasSearchIndexApiRequest
+		var arg0 admin20231115014.DeleteAtlasSearchIndexApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.DeleteAtlasSearchIndexApiRequest)
+			arg0 = args[0].(admin20231115014.DeleteAtlasSearchIndexApiRequest)
 		}
 		run(
 			arg0,
@@ -747,24 +747,24 @@ func (_c *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call) Return(stringToIfac
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin.DeleteAtlasSearchIndexApiRequest) (map[string]interface{}, *http.Response, error)) *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin20231115014.DeleteAtlasSearchIndexApiRequest) (map[string]interface{}, *http.Response, error)) *AtlasSearchApi_DeleteAtlasSearchIndexExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // DeleteAtlasSearchIndexWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) DeleteAtlasSearchIndexWithParams(ctx context.Context, args *admin.DeleteAtlasSearchIndexApiParams) admin.DeleteAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) DeleteAtlasSearchIndexWithParams(ctx context.Context, args *admin20231115014.DeleteAtlasSearchIndexApiParams) admin20231115014.DeleteAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteAtlasSearchIndexWithParams")
 	}
 
-	var r0 admin.DeleteAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.DeleteAtlasSearchIndexApiParams) admin.DeleteAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.DeleteAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.DeleteAtlasSearchIndexApiParams) admin20231115014.DeleteAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.DeleteAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.DeleteAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -776,20 +776,20 @@ type AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call struct {
 
 // DeleteAtlasSearchIndexWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.DeleteAtlasSearchIndexApiParams
+//   - args *admin20231115014.DeleteAtlasSearchIndexApiParams
 func (_e *AtlasSearchApi_Expecter) DeleteAtlasSearchIndexWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
 	return &AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call{Call: _e.mock.On("DeleteAtlasSearchIndexWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin.DeleteAtlasSearchIndexApiParams)) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.DeleteAtlasSearchIndexApiParams)) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.DeleteAtlasSearchIndexApiParams
+		var arg1 *admin20231115014.DeleteAtlasSearchIndexApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.DeleteAtlasSearchIndexApiParams)
+			arg1 = args[1].(*admin20231115014.DeleteAtlasSearchIndexApiParams)
 		}
 		run(
 			arg0,
@@ -799,29 +799,29 @@ func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) Run(run func(ctx
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) Return(deleteAtlasSearchIndexApiRequest admin.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) Return(deleteAtlasSearchIndexApiRequest admin20231115014.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(deleteAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.DeleteAtlasSearchIndexApiParams) admin.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.DeleteAtlasSearchIndexApiParams) admin20231115014.DeleteAtlasSearchIndexApiRequest) *AtlasSearchApi_DeleteAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetAtlasSearchDeployment provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) GetAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string) admin.GetAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) GetAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string) admin20231115014.GetAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAtlasSearchDeployment")
 	}
 
-	var r0 admin.GetAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) admin.GetAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.GetAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string) admin20231115014.GetAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName)
 	} else {
-		r0 = ret.Get(0).(admin.GetAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.GetAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -862,45 +862,45 @@ func (_c *AtlasSearchApi_GetAtlasSearchDeployment_Call) Run(run func(ctx context
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeployment_Call) Return(getAtlasSearchDeploymentApiRequest admin.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeployment_Call) Return(getAtlasSearchDeploymentApiRequest admin20231115014.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeployment_Call {
 	_c.Call.Return(getAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string) admin.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string) admin20231115014.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeployment_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetAtlasSearchDeploymentExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) GetAtlasSearchDeploymentExecute(r admin.GetAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error) {
+func (_mock *AtlasSearchApi) GetAtlasSearchDeploymentExecute(r admin20231115014.GetAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAtlasSearchDeploymentExecute")
 	}
 
-	var r0 *admin.ApiSearchDeploymentResponse
+	var r0 *admin20231115014.ApiSearchDeploymentResponse
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.GetAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.GetAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.GetAtlasSearchDeploymentApiRequest) *admin.ApiSearchDeploymentResponse); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.GetAtlasSearchDeploymentApiRequest) *admin20231115014.ApiSearchDeploymentResponse); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.ApiSearchDeploymentResponse)
+			r0 = ret.Get(0).(*admin20231115014.ApiSearchDeploymentResponse)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.GetAtlasSearchDeploymentApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.GetAtlasSearchDeploymentApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.GetAtlasSearchDeploymentApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.GetAtlasSearchDeploymentApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -914,16 +914,16 @@ type AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call struct {
 }
 
 // GetAtlasSearchDeploymentExecute is a helper method to define mock.On call
-//   - r admin.GetAtlasSearchDeploymentApiRequest
+//   - r admin20231115014.GetAtlasSearchDeploymentApiRequest
 func (_e *AtlasSearchApi_Expecter) GetAtlasSearchDeploymentExecute(r interface{}) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
 	return &AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call{Call: _e.mock.On("GetAtlasSearchDeploymentExecute", r)}
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) Run(run func(r admin.GetAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) Run(run func(r admin20231115014.GetAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.GetAtlasSearchDeploymentApiRequest
+		var arg0 admin20231115014.GetAtlasSearchDeploymentApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.GetAtlasSearchDeploymentApiRequest)
+			arg0 = args[0].(admin20231115014.GetAtlasSearchDeploymentApiRequest)
 		}
 		run(
 			arg0,
@@ -932,29 +932,29 @@ func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) Run(run func(r ad
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) Return(apiSearchDeploymentResponse *admin.ApiSearchDeploymentResponse, response *http.Response, err error) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) Return(apiSearchDeploymentResponse *admin20231115014.ApiSearchDeploymentResponse, response *http.Response, err error) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(apiSearchDeploymentResponse, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin.GetAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error)) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin20231115014.GetAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error)) *AtlasSearchApi_GetAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetAtlasSearchDeploymentWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) GetAtlasSearchDeploymentWithParams(ctx context.Context, args *admin.GetAtlasSearchDeploymentApiParams) admin.GetAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) GetAtlasSearchDeploymentWithParams(ctx context.Context, args *admin20231115014.GetAtlasSearchDeploymentApiParams) admin20231115014.GetAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAtlasSearchDeploymentWithParams")
 	}
 
-	var r0 admin.GetAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.GetAtlasSearchDeploymentApiParams) admin.GetAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.GetAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.GetAtlasSearchDeploymentApiParams) admin20231115014.GetAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.GetAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.GetAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -966,20 +966,20 @@ type AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call struct {
 
 // GetAtlasSearchDeploymentWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.GetAtlasSearchDeploymentApiParams
+//   - args *admin20231115014.GetAtlasSearchDeploymentApiParams
 func (_e *AtlasSearchApi_Expecter) GetAtlasSearchDeploymentWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
 	return &AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call{Call: _e.mock.On("GetAtlasSearchDeploymentWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin.GetAtlasSearchDeploymentApiParams)) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.GetAtlasSearchDeploymentApiParams)) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.GetAtlasSearchDeploymentApiParams
+		var arg1 *admin20231115014.GetAtlasSearchDeploymentApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.GetAtlasSearchDeploymentApiParams)
+			arg1 = args[1].(*admin20231115014.GetAtlasSearchDeploymentApiParams)
 		}
 		run(
 			arg0,
@@ -989,29 +989,29 @@ func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) Run(run func(c
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) Return(getAtlasSearchDeploymentApiRequest admin.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) Return(getAtlasSearchDeploymentApiRequest admin20231115014.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(getAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.GetAtlasSearchDeploymentApiParams) admin.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.GetAtlasSearchDeploymentApiParams) admin20231115014.GetAtlasSearchDeploymentApiRequest) *AtlasSearchApi_GetAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetAtlasSearchIndex provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) GetAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, indexId string) admin.GetAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) GetAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, indexId string) admin20231115014.GetAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, indexId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAtlasSearchIndex")
 	}
 
-	var r0 admin.GetAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) admin.GetAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.GetAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) admin20231115014.GetAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, indexId)
 	} else {
-		r0 = ret.Get(0).(admin.GetAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.GetAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -1058,45 +1058,45 @@ func (_c *AtlasSearchApi_GetAtlasSearchIndex_Call) Run(run func(ctx context.Cont
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndex_Call) Return(getAtlasSearchIndexApiRequest admin.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndex_Call) Return(getAtlasSearchIndexApiRequest admin20231115014.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndex_Call {
 	_c.Call.Return(getAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, indexId string) admin.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, indexId string) admin20231115014.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndex_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetAtlasSearchIndexExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) GetAtlasSearchIndexExecute(r admin.GetAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error) {
+func (_mock *AtlasSearchApi) GetAtlasSearchIndexExecute(r admin20231115014.GetAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAtlasSearchIndexExecute")
 	}
 
-	var r0 *admin.ClusterSearchIndex
+	var r0 *admin20231115014.ClusterSearchIndex
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.GetAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.GetAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.GetAtlasSearchIndexApiRequest) *admin.ClusterSearchIndex); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.GetAtlasSearchIndexApiRequest) *admin20231115014.ClusterSearchIndex); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.ClusterSearchIndex)
+			r0 = ret.Get(0).(*admin20231115014.ClusterSearchIndex)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.GetAtlasSearchIndexApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.GetAtlasSearchIndexApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.GetAtlasSearchIndexApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.GetAtlasSearchIndexApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -1110,16 +1110,16 @@ type AtlasSearchApi_GetAtlasSearchIndexExecute_Call struct {
 }
 
 // GetAtlasSearchIndexExecute is a helper method to define mock.On call
-//   - r admin.GetAtlasSearchIndexApiRequest
+//   - r admin20231115014.GetAtlasSearchIndexApiRequest
 func (_e *AtlasSearchApi_Expecter) GetAtlasSearchIndexExecute(r interface{}) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
 	return &AtlasSearchApi_GetAtlasSearchIndexExecute_Call{Call: _e.mock.On("GetAtlasSearchIndexExecute", r)}
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) Run(run func(r admin.GetAtlasSearchIndexApiRequest)) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) Run(run func(r admin20231115014.GetAtlasSearchIndexApiRequest)) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.GetAtlasSearchIndexApiRequest
+		var arg0 admin20231115014.GetAtlasSearchIndexApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.GetAtlasSearchIndexApiRequest)
+			arg0 = args[0].(admin20231115014.GetAtlasSearchIndexApiRequest)
 		}
 		run(
 			arg0,
@@ -1128,29 +1128,29 @@ func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) Run(run func(r admin.G
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) Return(clusterSearchIndex *admin.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) Return(clusterSearchIndex *admin20231115014.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
 	_c.Call.Return(clusterSearchIndex, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin.GetAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin20231115014.GetAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_GetAtlasSearchIndexExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetAtlasSearchIndexWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) GetAtlasSearchIndexWithParams(ctx context.Context, args *admin.GetAtlasSearchIndexApiParams) admin.GetAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) GetAtlasSearchIndexWithParams(ctx context.Context, args *admin20231115014.GetAtlasSearchIndexApiParams) admin20231115014.GetAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAtlasSearchIndexWithParams")
 	}
 
-	var r0 admin.GetAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.GetAtlasSearchIndexApiParams) admin.GetAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.GetAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.GetAtlasSearchIndexApiParams) admin20231115014.GetAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.GetAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.GetAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -1162,20 +1162,20 @@ type AtlasSearchApi_GetAtlasSearchIndexWithParams_Call struct {
 
 // GetAtlasSearchIndexWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.GetAtlasSearchIndexApiParams
+//   - args *admin20231115014.GetAtlasSearchIndexApiParams
 func (_e *AtlasSearchApi_Expecter) GetAtlasSearchIndexWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
 	return &AtlasSearchApi_GetAtlasSearchIndexWithParams_Call{Call: _e.mock.On("GetAtlasSearchIndexWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin.GetAtlasSearchIndexApiParams)) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.GetAtlasSearchIndexApiParams)) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.GetAtlasSearchIndexApiParams
+		var arg1 *admin20231115014.GetAtlasSearchIndexApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.GetAtlasSearchIndexApiParams)
+			arg1 = args[1].(*admin20231115014.GetAtlasSearchIndexApiParams)
 		}
 		run(
 			arg0,
@@ -1185,29 +1185,29 @@ func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) Run(run func(ctx co
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) Return(getAtlasSearchIndexApiRequest admin.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) Return(getAtlasSearchIndexApiRequest admin20231115014.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(getAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.GetAtlasSearchIndexApiParams) admin.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.GetAtlasSearchIndexApiParams) admin20231115014.GetAtlasSearchIndexApiRequest) *AtlasSearchApi_GetAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // ListAtlasSearchIndexes provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) ListAtlasSearchIndexes(ctx context.Context, groupId string, clusterName string, collectionName string, databaseName string) admin.ListAtlasSearchIndexesApiRequest {
+func (_mock *AtlasSearchApi) ListAtlasSearchIndexes(ctx context.Context, groupId string, clusterName string, collectionName string, databaseName string) admin20231115014.ListAtlasSearchIndexesApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, collectionName, databaseName)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListAtlasSearchIndexes")
 	}
 
-	var r0 admin.ListAtlasSearchIndexesApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string, string) admin.ListAtlasSearchIndexesApiRequest); ok {
+	var r0 admin20231115014.ListAtlasSearchIndexesApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string, string) admin20231115014.ListAtlasSearchIndexesApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, collectionName, databaseName)
 	} else {
-		r0 = ret.Get(0).(admin.ListAtlasSearchIndexesApiRequest)
+		r0 = ret.Get(0).(admin20231115014.ListAtlasSearchIndexesApiRequest)
 	}
 	return r0
 }
@@ -1260,45 +1260,45 @@ func (_c *AtlasSearchApi_ListAtlasSearchIndexes_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexes_Call) Return(listAtlasSearchIndexesApiRequest admin.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexes_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexes_Call) Return(listAtlasSearchIndexesApiRequest admin20231115014.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexes_Call {
 	_c.Call.Return(listAtlasSearchIndexesApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexes_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, collectionName string, databaseName string) admin.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexes_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexes_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, collectionName string, databaseName string) admin20231115014.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexes_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // ListAtlasSearchIndexesExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) ListAtlasSearchIndexesExecute(r admin.ListAtlasSearchIndexesApiRequest) ([]admin.ClusterSearchIndex, *http.Response, error) {
+func (_mock *AtlasSearchApi) ListAtlasSearchIndexesExecute(r admin20231115014.ListAtlasSearchIndexesApiRequest) ([]admin20231115014.ClusterSearchIndex, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListAtlasSearchIndexesExecute")
 	}
 
-	var r0 []admin.ClusterSearchIndex
+	var r0 []admin20231115014.ClusterSearchIndex
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.ListAtlasSearchIndexesApiRequest) ([]admin.ClusterSearchIndex, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.ListAtlasSearchIndexesApiRequest) ([]admin20231115014.ClusterSearchIndex, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.ListAtlasSearchIndexesApiRequest) []admin.ClusterSearchIndex); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.ListAtlasSearchIndexesApiRequest) []admin20231115014.ClusterSearchIndex); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]admin.ClusterSearchIndex)
+			r0 = ret.Get(0).([]admin20231115014.ClusterSearchIndex)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.ListAtlasSearchIndexesApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.ListAtlasSearchIndexesApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.ListAtlasSearchIndexesApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.ListAtlasSearchIndexesApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -1312,16 +1312,16 @@ type AtlasSearchApi_ListAtlasSearchIndexesExecute_Call struct {
 }
 
 // ListAtlasSearchIndexesExecute is a helper method to define mock.On call
-//   - r admin.ListAtlasSearchIndexesApiRequest
+//   - r admin20231115014.ListAtlasSearchIndexesApiRequest
 func (_e *AtlasSearchApi_Expecter) ListAtlasSearchIndexesExecute(r interface{}) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
 	return &AtlasSearchApi_ListAtlasSearchIndexesExecute_Call{Call: _e.mock.On("ListAtlasSearchIndexesExecute", r)}
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) Run(run func(r admin.ListAtlasSearchIndexesApiRequest)) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) Run(run func(r admin20231115014.ListAtlasSearchIndexesApiRequest)) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.ListAtlasSearchIndexesApiRequest
+		var arg0 admin20231115014.ListAtlasSearchIndexesApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.ListAtlasSearchIndexesApiRequest)
+			arg0 = args[0].(admin20231115014.ListAtlasSearchIndexesApiRequest)
 		}
 		run(
 			arg0,
@@ -1330,29 +1330,29 @@ func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) Run(run func(r admi
 	return _c
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) Return(clusterSearchIndexs []admin.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) Return(clusterSearchIndexs []admin20231115014.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
 	_c.Call.Return(clusterSearchIndexs, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) RunAndReturn(run func(r admin.ListAtlasSearchIndexesApiRequest) ([]admin.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call) RunAndReturn(run func(r admin20231115014.ListAtlasSearchIndexesApiRequest) ([]admin20231115014.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_ListAtlasSearchIndexesExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // ListAtlasSearchIndexesWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) ListAtlasSearchIndexesWithParams(ctx context.Context, args *admin.ListAtlasSearchIndexesApiParams) admin.ListAtlasSearchIndexesApiRequest {
+func (_mock *AtlasSearchApi) ListAtlasSearchIndexesWithParams(ctx context.Context, args *admin20231115014.ListAtlasSearchIndexesApiParams) admin20231115014.ListAtlasSearchIndexesApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListAtlasSearchIndexesWithParams")
 	}
 
-	var r0 admin.ListAtlasSearchIndexesApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.ListAtlasSearchIndexesApiParams) admin.ListAtlasSearchIndexesApiRequest); ok {
+	var r0 admin20231115014.ListAtlasSearchIndexesApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.ListAtlasSearchIndexesApiParams) admin20231115014.ListAtlasSearchIndexesApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.ListAtlasSearchIndexesApiRequest)
+		r0 = ret.Get(0).(admin20231115014.ListAtlasSearchIndexesApiRequest)
 	}
 	return r0
 }
@@ -1364,20 +1364,20 @@ type AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call struct {
 
 // ListAtlasSearchIndexesWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.ListAtlasSearchIndexesApiParams
+//   - args *admin20231115014.ListAtlasSearchIndexesApiParams
 func (_e *AtlasSearchApi_Expecter) ListAtlasSearchIndexesWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
 	return &AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call{Call: _e.mock.On("ListAtlasSearchIndexesWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) Run(run func(ctx context.Context, args *admin.ListAtlasSearchIndexesApiParams)) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.ListAtlasSearchIndexesApiParams)) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.ListAtlasSearchIndexesApiParams
+		var arg1 *admin20231115014.ListAtlasSearchIndexesApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.ListAtlasSearchIndexesApiParams)
+			arg1 = args[1].(*admin20231115014.ListAtlasSearchIndexesApiParams)
 		}
 		run(
 			arg0,
@@ -1387,29 +1387,29 @@ func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) Run(run func(ctx
 	return _c
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) Return(listAtlasSearchIndexesApiRequest admin.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) Return(listAtlasSearchIndexesApiRequest admin20231115014.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
 	_c.Call.Return(listAtlasSearchIndexesApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.ListAtlasSearchIndexesApiParams) admin.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
+func (_c *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.ListAtlasSearchIndexesApiParams) admin20231115014.ListAtlasSearchIndexesApiRequest) *AtlasSearchApi_ListAtlasSearchIndexesWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UpdateAtlasSearchDeployment provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) UpdateAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest) admin.UpdateAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) UpdateAtlasSearchDeployment(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest) admin20231115014.UpdateAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, apiSearchDeploymentRequest)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateAtlasSearchDeployment")
 	}
 
-	var r0 admin.UpdateAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *admin.ApiSearchDeploymentRequest) admin.UpdateAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.UpdateAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, *admin20231115014.ApiSearchDeploymentRequest) admin20231115014.UpdateAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, apiSearchDeploymentRequest)
 	} else {
-		r0 = ret.Get(0).(admin.UpdateAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.UpdateAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -1423,12 +1423,12 @@ type AtlasSearchApi_UpdateAtlasSearchDeployment_Call struct {
 //   - ctx context.Context
 //   - groupId string
 //   - clusterName string
-//   - apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest
+//   - apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest
 func (_e *AtlasSearchApi_Expecter) UpdateAtlasSearchDeployment(ctx interface{}, groupId interface{}, clusterName interface{}, apiSearchDeploymentRequest interface{}) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
 	return &AtlasSearchApi_UpdateAtlasSearchDeployment_Call{Call: _e.mock.On("UpdateAtlasSearchDeployment", ctx, groupId, clusterName, apiSearchDeploymentRequest)}
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) Run(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest)) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) Run(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest)) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1442,9 +1442,9 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) Run(run func(ctx cont
 		if args[2] != nil {
 			arg2 = args[2].(string)
 		}
-		var arg3 *admin.ApiSearchDeploymentRequest
+		var arg3 *admin20231115014.ApiSearchDeploymentRequest
 		if args[3] != nil {
-			arg3 = args[3].(*admin.ApiSearchDeploymentRequest)
+			arg3 = args[3].(*admin20231115014.ApiSearchDeploymentRequest)
 		}
 		run(
 			arg0,
@@ -1456,45 +1456,45 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) Run(run func(ctx cont
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) Return(updateAtlasSearchDeploymentApiRequest admin.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) Return(updateAtlasSearchDeploymentApiRequest admin20231115014.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
 	_c.Call.Return(updateAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin.ApiSearchDeploymentRequest) admin.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeployment_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, apiSearchDeploymentRequest *admin20231115014.ApiSearchDeploymentRequest) admin20231115014.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeployment_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UpdateAtlasSearchDeploymentExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) UpdateAtlasSearchDeploymentExecute(r admin.UpdateAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error) {
+func (_mock *AtlasSearchApi) UpdateAtlasSearchDeploymentExecute(r admin20231115014.UpdateAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateAtlasSearchDeploymentExecute")
 	}
 
-	var r0 *admin.ApiSearchDeploymentResponse
+	var r0 *admin20231115014.ApiSearchDeploymentResponse
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.UpdateAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.UpdateAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.UpdateAtlasSearchDeploymentApiRequest) *admin.ApiSearchDeploymentResponse); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.UpdateAtlasSearchDeploymentApiRequest) *admin20231115014.ApiSearchDeploymentResponse); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.ApiSearchDeploymentResponse)
+			r0 = ret.Get(0).(*admin20231115014.ApiSearchDeploymentResponse)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.UpdateAtlasSearchDeploymentApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.UpdateAtlasSearchDeploymentApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.UpdateAtlasSearchDeploymentApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.UpdateAtlasSearchDeploymentApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -1508,16 +1508,16 @@ type AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call struct {
 }
 
 // UpdateAtlasSearchDeploymentExecute is a helper method to define mock.On call
-//   - r admin.UpdateAtlasSearchDeploymentApiRequest
+//   - r admin20231115014.UpdateAtlasSearchDeploymentApiRequest
 func (_e *AtlasSearchApi_Expecter) UpdateAtlasSearchDeploymentExecute(r interface{}) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
 	return &AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call{Call: _e.mock.On("UpdateAtlasSearchDeploymentExecute", r)}
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) Run(run func(r admin.UpdateAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) Run(run func(r admin20231115014.UpdateAtlasSearchDeploymentApiRequest)) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.UpdateAtlasSearchDeploymentApiRequest
+		var arg0 admin20231115014.UpdateAtlasSearchDeploymentApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.UpdateAtlasSearchDeploymentApiRequest)
+			arg0 = args[0].(admin20231115014.UpdateAtlasSearchDeploymentApiRequest)
 		}
 		run(
 			arg0,
@@ -1526,29 +1526,29 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) Run(run func(r
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) Return(apiSearchDeploymentResponse *admin.ApiSearchDeploymentResponse, response *http.Response, err error) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) Return(apiSearchDeploymentResponse *admin20231115014.ApiSearchDeploymentResponse, response *http.Response, err error) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(apiSearchDeploymentResponse, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin.UpdateAtlasSearchDeploymentApiRequest) (*admin.ApiSearchDeploymentResponse, *http.Response, error)) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call) RunAndReturn(run func(r admin20231115014.UpdateAtlasSearchDeploymentApiRequest) (*admin20231115014.ApiSearchDeploymentResponse, *http.Response, error)) *AtlasSearchApi_UpdateAtlasSearchDeploymentExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UpdateAtlasSearchDeploymentWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) UpdateAtlasSearchDeploymentWithParams(ctx context.Context, args *admin.UpdateAtlasSearchDeploymentApiParams) admin.UpdateAtlasSearchDeploymentApiRequest {
+func (_mock *AtlasSearchApi) UpdateAtlasSearchDeploymentWithParams(ctx context.Context, args *admin20231115014.UpdateAtlasSearchDeploymentApiParams) admin20231115014.UpdateAtlasSearchDeploymentApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateAtlasSearchDeploymentWithParams")
 	}
 
-	var r0 admin.UpdateAtlasSearchDeploymentApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.UpdateAtlasSearchDeploymentApiParams) admin.UpdateAtlasSearchDeploymentApiRequest); ok {
+	var r0 admin20231115014.UpdateAtlasSearchDeploymentApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.UpdateAtlasSearchDeploymentApiParams) admin20231115014.UpdateAtlasSearchDeploymentApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.UpdateAtlasSearchDeploymentApiRequest)
+		r0 = ret.Get(0).(admin20231115014.UpdateAtlasSearchDeploymentApiRequest)
 	}
 	return r0
 }
@@ -1560,20 +1560,20 @@ type AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call struct {
 
 // UpdateAtlasSearchDeploymentWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.UpdateAtlasSearchDeploymentApiParams
+//   - args *admin20231115014.UpdateAtlasSearchDeploymentApiParams
 func (_e *AtlasSearchApi_Expecter) UpdateAtlasSearchDeploymentWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
 	return &AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call{Call: _e.mock.On("UpdateAtlasSearchDeploymentWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin.UpdateAtlasSearchDeploymentApiParams)) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.UpdateAtlasSearchDeploymentApiParams)) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.UpdateAtlasSearchDeploymentApiParams
+		var arg1 *admin20231115014.UpdateAtlasSearchDeploymentApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.UpdateAtlasSearchDeploymentApiParams)
+			arg1 = args[1].(*admin20231115014.UpdateAtlasSearchDeploymentApiParams)
 		}
 		run(
 			arg0,
@@ -1583,29 +1583,29 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) Run(run fun
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) Return(updateAtlasSearchDeploymentApiRequest admin.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) Return(updateAtlasSearchDeploymentApiRequest admin20231115014.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(updateAtlasSearchDeploymentApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.UpdateAtlasSearchDeploymentApiParams) admin.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.UpdateAtlasSearchDeploymentApiParams) admin20231115014.UpdateAtlasSearchDeploymentApiRequest) *AtlasSearchApi_UpdateAtlasSearchDeploymentWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UpdateAtlasSearchIndex provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) UpdateAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, indexId string, clusterSearchIndex *admin.ClusterSearchIndex) admin.UpdateAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) UpdateAtlasSearchIndex(ctx context.Context, groupId string, clusterName string, indexId string, clusterSearchIndex *admin20231115014.ClusterSearchIndex) admin20231115014.UpdateAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, groupId, clusterName, indexId, clusterSearchIndex)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateAtlasSearchIndex")
 	}
 
-	var r0 admin.UpdateAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string, *admin.ClusterSearchIndex) admin.UpdateAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.UpdateAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string, *admin20231115014.ClusterSearchIndex) admin20231115014.UpdateAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, groupId, clusterName, indexId, clusterSearchIndex)
 	} else {
-		r0 = ret.Get(0).(admin.UpdateAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.UpdateAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -1620,12 +1620,12 @@ type AtlasSearchApi_UpdateAtlasSearchIndex_Call struct {
 //   - groupId string
 //   - clusterName string
 //   - indexId string
-//   - clusterSearchIndex *admin.ClusterSearchIndex
+//   - clusterSearchIndex *admin20231115014.ClusterSearchIndex
 func (_e *AtlasSearchApi_Expecter) UpdateAtlasSearchIndex(ctx interface{}, groupId interface{}, clusterName interface{}, indexId interface{}, clusterSearchIndex interface{}) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
 	return &AtlasSearchApi_UpdateAtlasSearchIndex_Call{Call: _e.mock.On("UpdateAtlasSearchIndex", ctx, groupId, clusterName, indexId, clusterSearchIndex)}
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) Run(run func(ctx context.Context, groupId string, clusterName string, indexId string, clusterSearchIndex *admin.ClusterSearchIndex)) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) Run(run func(ctx context.Context, groupId string, clusterName string, indexId string, clusterSearchIndex *admin20231115014.ClusterSearchIndex)) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1643,9 +1643,9 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) Run(run func(ctx context.C
 		if args[3] != nil {
 			arg3 = args[3].(string)
 		}
-		var arg4 *admin.ClusterSearchIndex
+		var arg4 *admin20231115014.ClusterSearchIndex
 		if args[4] != nil {
-			arg4 = args[4].(*admin.ClusterSearchIndex)
+			arg4 = args[4].(*admin20231115014.ClusterSearchIndex)
 		}
 		run(
 			arg0,
@@ -1658,45 +1658,45 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) Return(updateAtlasSearchIndexApiRequest admin.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) Return(updateAtlasSearchIndexApiRequest admin20231115014.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
 	_c.Call.Return(updateAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, indexId string, clusterSearchIndex *admin.ClusterSearchIndex) admin.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndex_Call) RunAndReturn(run func(ctx context.Context, groupId string, clusterName string, indexId string, clusterSearchIndex *admin20231115014.ClusterSearchIndex) admin20231115014.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndex_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UpdateAtlasSearchIndexExecute provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) UpdateAtlasSearchIndexExecute(r admin.UpdateAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error) {
+func (_mock *AtlasSearchApi) UpdateAtlasSearchIndexExecute(r admin20231115014.UpdateAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error) {
 	ret := _mock.Called(r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateAtlasSearchIndexExecute")
 	}
 
-	var r0 *admin.ClusterSearchIndex
+	var r0 *admin20231115014.ClusterSearchIndex
 	var r1 *http.Response
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(admin.UpdateAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.UpdateAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error)); ok {
 		return returnFunc(r)
 	}
-	if returnFunc, ok := ret.Get(0).(func(admin.UpdateAtlasSearchIndexApiRequest) *admin.ClusterSearchIndex); ok {
+	if returnFunc, ok := ret.Get(0).(func(admin20231115014.UpdateAtlasSearchIndexApiRequest) *admin20231115014.ClusterSearchIndex); ok {
 		r0 = returnFunc(r)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*admin.ClusterSearchIndex)
+			r0 = ret.Get(0).(*admin20231115014.ClusterSearchIndex)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(admin.UpdateAtlasSearchIndexApiRequest) *http.Response); ok {
+	if returnFunc, ok := ret.Get(1).(func(admin20231115014.UpdateAtlasSearchIndexApiRequest) *http.Response); ok {
 		r1 = returnFunc(r)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*http.Response)
 		}
 	}
-	if returnFunc, ok := ret.Get(2).(func(admin.UpdateAtlasSearchIndexApiRequest) error); ok {
+	if returnFunc, ok := ret.Get(2).(func(admin20231115014.UpdateAtlasSearchIndexApiRequest) error); ok {
 		r2 = returnFunc(r)
 	} else {
 		r2 = ret.Error(2)
@@ -1710,16 +1710,16 @@ type AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call struct {
 }
 
 // UpdateAtlasSearchIndexExecute is a helper method to define mock.On call
-//   - r admin.UpdateAtlasSearchIndexApiRequest
+//   - r admin20231115014.UpdateAtlasSearchIndexApiRequest
 func (_e *AtlasSearchApi_Expecter) UpdateAtlasSearchIndexExecute(r interface{}) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
 	return &AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call{Call: _e.mock.On("UpdateAtlasSearchIndexExecute", r)}
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) Run(run func(r admin.UpdateAtlasSearchIndexApiRequest)) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) Run(run func(r admin20231115014.UpdateAtlasSearchIndexApiRequest)) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 admin.UpdateAtlasSearchIndexApiRequest
+		var arg0 admin20231115014.UpdateAtlasSearchIndexApiRequest
 		if args[0] != nil {
-			arg0 = args[0].(admin.UpdateAtlasSearchIndexApiRequest)
+			arg0 = args[0].(admin20231115014.UpdateAtlasSearchIndexApiRequest)
 		}
 		run(
 			arg0,
@@ -1728,29 +1728,29 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) Run(run func(r admi
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) Return(clusterSearchIndex *admin.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) Return(clusterSearchIndex *admin20231115014.ClusterSearchIndex, response *http.Response, err error) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
 	_c.Call.Return(clusterSearchIndex, response, err)
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin.UpdateAtlasSearchIndexApiRequest) (*admin.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call) RunAndReturn(run func(r admin20231115014.UpdateAtlasSearchIndexApiRequest) (*admin20231115014.ClusterSearchIndex, *http.Response, error)) *AtlasSearchApi_UpdateAtlasSearchIndexExecute_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UpdateAtlasSearchIndexWithParams provides a mock function for the type AtlasSearchApi
-func (_mock *AtlasSearchApi) UpdateAtlasSearchIndexWithParams(ctx context.Context, args *admin.UpdateAtlasSearchIndexApiParams) admin.UpdateAtlasSearchIndexApiRequest {
+func (_mock *AtlasSearchApi) UpdateAtlasSearchIndexWithParams(ctx context.Context, args *admin20231115014.UpdateAtlasSearchIndexApiParams) admin20231115014.UpdateAtlasSearchIndexApiRequest {
 	ret := _mock.Called(ctx, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateAtlasSearchIndexWithParams")
 	}
 
-	var r0 admin.UpdateAtlasSearchIndexApiRequest
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin.UpdateAtlasSearchIndexApiParams) admin.UpdateAtlasSearchIndexApiRequest); ok {
+	var r0 admin20231115014.UpdateAtlasSearchIndexApiRequest
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *admin20231115014.UpdateAtlasSearchIndexApiParams) admin20231115014.UpdateAtlasSearchIndexApiRequest); ok {
 		r0 = returnFunc(ctx, args)
 	} else {
-		r0 = ret.Get(0).(admin.UpdateAtlasSearchIndexApiRequest)
+		r0 = ret.Get(0).(admin20231115014.UpdateAtlasSearchIndexApiRequest)
 	}
 	return r0
 }
@@ -1762,20 +1762,20 @@ type AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call struct {
 
 // UpdateAtlasSearchIndexWithParams is a helper method to define mock.On call
 //   - ctx context.Context
-//   - args *admin.UpdateAtlasSearchIndexApiParams
+//   - args *admin20231115014.UpdateAtlasSearchIndexApiParams
 func (_e *AtlasSearchApi_Expecter) UpdateAtlasSearchIndexWithParams(ctx interface{}, args interface{}) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
 	return &AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call{Call: _e.mock.On("UpdateAtlasSearchIndexWithParams", ctx, args)}
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin.UpdateAtlasSearchIndexApiParams)) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) Run(run func(ctx context.Context, args *admin20231115014.UpdateAtlasSearchIndexApiParams)) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 *admin.UpdateAtlasSearchIndexApiParams
+		var arg1 *admin20231115014.UpdateAtlasSearchIndexApiParams
 		if args[1] != nil {
-			arg1 = args[1].(*admin.UpdateAtlasSearchIndexApiParams)
+			arg1 = args[1].(*admin20231115014.UpdateAtlasSearchIndexApiParams)
 		}
 		run(
 			arg0,
@@ -1785,12 +1785,12 @@ func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) Run(run func(ctx
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) Return(updateAtlasSearchIndexApiRequest admin.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) Return(updateAtlasSearchIndexApiRequest admin20231115014.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(updateAtlasSearchIndexApiRequest)
 	return _c
 }
 
-func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin.UpdateAtlasSearchIndexApiParams) admin.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
+func (_c *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call) RunAndReturn(run func(ctx context.Context, args *admin20231115014.UpdateAtlasSearchIndexApiParams) admin20231115014.UpdateAtlasSearchIndexApiRequest) *AtlasSearchApi_UpdateAtlasSearchIndexWithParams_Call {
 	_c.Call.Return(run)
 	return _c
 }

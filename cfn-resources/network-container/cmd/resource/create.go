@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
@@ -48,8 +48,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	containerRequest := &admin.CloudProviderContainer{
-		ProviderName:   admin.PtrString(constants.AWS),
+	containerRequest := &admin20231115002.CloudProviderContainer{
+		ProviderName:   admin20231115002.PtrString(constants.AWS),
 		RegionName:     currentModel.RegionName,
 		AtlasCidrBlock: currentModel.AtlasCidrBlock,
 	}
@@ -71,7 +71,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func createContainer(client *util.MongoDBClient, projectID string, request *admin.CloudProviderContainer) (string, error) {
+func createContainer(client *util.MongoDBClient, projectID string, request *admin20231115002.CloudProviderContainer) (string, error) {
 	container, httpResponse, err := client.Atlas20231115002.NetworkPeeringApi.CreatePeeringContainer(context.Background(), projectID, request).Execute()
 	if err == nil {
 		return *container.Id, nil
@@ -83,7 +83,7 @@ func createContainer(client *util.MongoDBClient, projectID string, request *admi
 
 	_, _ = logger.Debugf("Container already exists for this group. Try return existing container. err: %v", err)
 
-	args := admin.ListPeeringContainerByCloudProviderApiParams{
+	args := admin20231115002.ListPeeringContainerByCloudProviderApiParams{
 		GroupId:      projectID,
 		ProviderName: request.ProviderName,
 	}

@@ -24,13 +24,13 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/test/e2e/utility"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 type localTestContext struct {
 	err                 error
 	cfnClient           *cloudformation.Client
-	atlasClient         *admin.APIClient
+	atlasClient         *admin20231115014.APIClient
 	resourceCtx         utility.ResourceContext
 	template            string
 	replicationIDCreate string
@@ -218,7 +218,7 @@ func newCFNTemplate(tmpl testCluster) (string, error) {
 	return utility.ExecuteGoTemplate(cfnTemplatePath, tmpl)
 }
 
-func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin.ReplicationSpec, nodeCount, length int) {
+func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin20231115014.ReplicationSpec, nodeCount, length int) {
 	a.Len(replicationSpecs, length)
 	for i, spec := range replicationSpecs {
 		for _, config := range spec.GetRegionConfigs() {
@@ -234,7 +234,7 @@ func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin.Replic
 	}
 }
 
-func readFromAtlas(t *testing.T, c *localTestContext) (*admin.Group, *admin.AdvancedClusterDescription) {
+func readFromAtlas(t *testing.T, c *localTestContext) (*admin20231115014.Group, *admin20231115014.AdvancedClusterDescription) {
 	t.Helper()
 
 	context := ctx.Background()

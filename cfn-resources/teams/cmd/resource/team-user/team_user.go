@@ -20,11 +20,11 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	atlasv2 "go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
-func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
-	var newUsers []atlasv2.AddUserToTeam
+func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *admin20231115002.PaginatedApiAppUser, usernames []string, orgID, teamID string) error {
+	var newUsers []admin20231115002.AddUserToTeam
 
 	validUsernames, _, err := ValidateUsernames(c, usernames)
 	if err != nil {
@@ -45,7 +45,7 @@ func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppU
 
 	for ind := range usersToAdd {
 		// add user to team
-		newUsers = append(newUsers, atlasv2.AddUserToTeam{Id: util.SafeString(&usersToAdd[ind])})
+		newUsers = append(newUsers, admin20231115002.AddUserToTeam{Id: util.SafeString(&usersToAdd[ind])})
 	}
 	// save all new users
 	if len(newUsers) > 0 {
@@ -57,8 +57,8 @@ func UpdateTeamUsers(c TeamUsersAPI, existingTeamUsers *atlasv2.PaginatedApiAppU
 	return nil
 }
 
-func ValidateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUser, *http.Response, error) {
-	var validUsers []atlasv2.CloudAppUser
+func ValidateUsernames(c TeamUsersAPI, usernames []string) ([]admin20231115002.CloudAppUser, *http.Response, error) {
+	var validUsers []admin20231115002.CloudAppUser
 	for _, elem := range usernames {
 		userToAdd, httpResp, err := c.GetUserByUsername(context.Background(), elem)
 		if err != nil {
@@ -70,7 +70,7 @@ func ValidateUsernames(c TeamUsersAPI, usernames []string) ([]atlasv2.CloudAppUs
 	return validUsers, nil, nil
 }
 
-func InitUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
+func InitUserSet(users []admin20231115002.CloudAppUser) map[string]interface{} {
 	usersSet := make(map[string]interface{}, len(users))
 	for i := 0; i < len(users); i++ {
 		usersSet[users[i].GetId()] = true
@@ -78,7 +78,7 @@ func InitUserSet(users []atlasv2.CloudAppUser) map[string]interface{} {
 	return usersSet
 }
 
-func GetChangesForTeamUsers(currentUsers []atlasv2.CloudAppUser, newUsers []atlasv2.CloudAppUser) (toAdd []string, toDelete []string, err error) {
+func GetChangesForTeamUsers(currentUsers []admin20231115002.CloudAppUser, newUsers []admin20231115002.CloudAppUser) (toAdd []string, toDelete []string, err error) {
 	// Create two sets to store the elements in A and B
 	currentUsersSet := InitUserSet(currentUsers)
 	newUsersSet := InitUserSet(newUsers)

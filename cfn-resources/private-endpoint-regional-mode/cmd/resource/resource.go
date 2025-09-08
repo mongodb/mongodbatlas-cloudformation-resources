@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID}
@@ -137,7 +137,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 func resourcePrivateEndpointRegionalModeUpdate(currentModel *Model, client *util.MongoDBClient, enabled bool) (handler.ProgressEvent, error) {
 	_, response, err := client.Atlas20231115014.PrivateEndpointServicesApi.ToggleRegionalizedPrivateEndpointSetting(context.Background(), *currentModel.ProjectId,
-		&admin.ProjectSettingItem{
+		&admin20231115014.ProjectSettingItem{
 			Enabled: enabled,
 		}).Execute()
 	if err != nil {

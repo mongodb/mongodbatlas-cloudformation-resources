@@ -3,7 +3,6 @@
   "Profile": "default",
   "Type": "PROMETHEUS",
   "Enabled": true,
-  "Scheme": "http",
   "ServiceDiscovery": "http",
   "UserName": "",
   "Password": ""

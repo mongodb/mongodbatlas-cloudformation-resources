@@ -2,6 +2,10 @@
   "additionalProperties": false,
   "definitions": {},
   "description": "Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.",
+  "required": [
+    "ProjectId",
+    "Type"
+  ],
   "handlers": {
     "create": {
       "permissions": [
@@ -53,7 +57,6 @@
     "/properties/MicrosoftTeamsWebhookUrl",
     "/properties/UserName",
     "/properties/ServiceDiscovery",
-    "/properties/Scheme",
     "/properties/Enabled"
   ],
   "properties": {
@@ -136,14 +139,6 @@
         "file"
       ]
     },
-    "Scheme": {
-      "type": "string",
-      "description": "Security Scheme to apply to HyperText Transfer Protocol (HTTP) traffic between Prometheus and MongoDB Cloud.",
-      "enum": [
-        "http",
-        "https"
-      ]
-    },
     "Enabled": {
       "type": "boolean",
       "description": "Flag that indicates whether someone has activated the Prometheus integration."
@@ -156,6 +151,10 @@
     "TlsPemPath": {
       "type": "string",
       "description": "Root-relative path to the Transport Layer Security (TLS) Privacy Enhanced Mail (PEM) key and certificate file on the host."
+    },
+    "SendUserProvidedResourceTags": {
+      "type": "boolean",
+      "description": "Flag that indicates whether to include user-defined resource tags when sending metrics and alerts to third-party services."
     }
   },
   "typeName": "MongoDB::Atlas::ThirdPartyIntegration",

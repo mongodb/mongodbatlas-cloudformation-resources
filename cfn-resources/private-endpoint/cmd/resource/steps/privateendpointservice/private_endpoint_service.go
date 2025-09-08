@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -53,7 +53,7 @@ func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interfa
 }
 
 func Create(client util.MongoDBClient, region string, groupID string) handler.ProgressEvent {
-	privateEndpointRequest := &admin.CloudProviderEndpointServiceRequest{
+	privateEndpointRequest := &admin20231115002.CloudProviderEndpointServiceRequest{
 		ProviderName: ProviderName,
 		Region:       region,
 	}
@@ -92,7 +92,7 @@ func Create(client util.MongoDBClient, region string, groupID string) handler.Pr
 		nil, 20)
 }
 
-func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req handler.Request) (*admin.EndpointService, *handler.ProgressEvent) {
+func ValidateCreationCompletion(client *util.MongoDBClient, groupID string, req handler.Request) (*admin20231115002.EndpointService, *handler.ProgressEvent) {
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 
 	err := PrivateEndpointCallBackContext.FillStruct(req.CallbackContext)

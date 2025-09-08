@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func setup() {
@@ -43,11 +43,11 @@ func validateModel(fields []string, model *Model) *handler.ProgressEvent {
 	return validator.ValidateModel(fields, model)
 }
 
-func newPaginatedNetworkAccess(model *Model) (*admin.PaginatedNetworkAccess, error) {
-	var accesslist []admin.NetworkPermissionEntry
+func newPaginatedNetworkAccess(model *Model) (*admin20231115002.PaginatedNetworkAccess, error) {
+	var accesslist []admin20231115002.NetworkPermissionEntry
 	for i := range model.AccessList {
 		modelAccessList := model.AccessList[i]
-		projectIPAccessList := admin.NetworkPermissionEntry{}
+		projectIPAccessList := admin20231115002.NetworkPermissionEntry{}
 
 		if modelAccessList.DeleteAfterDate != nil {
 			deleteAfterDate, err := util.StringToTime(*modelAccessList.DeleteAfterDate)
@@ -76,7 +76,7 @@ func newPaginatedNetworkAccess(model *Model) (*admin.PaginatedNetworkAccess, err
 		accesslist = append(accesslist, projectIPAccessList)
 	}
 
-	return &admin.PaginatedNetworkAccess{
+	return &admin20231115002.PaginatedNetworkAccess{
 		Results: accesslist,
 	}, nil
 }
@@ -139,11 +139,11 @@ func deleteEntries(model *Model, client *util.MongoDBClient) handler.ProgressEve
 	return handler.ProgressEvent{}
 }
 
-func getAllEntries(client *util.MongoDBClient, projectID string) (*admin.PaginatedNetworkAccess, error) {
+func getAllEntries(client *util.MongoDBClient, projectID string) (*admin20231115002.PaginatedNetworkAccess, error) {
 	includeCount := true
 	itemPerPage := 500
 
-	listOptions := &admin.ListProjectIpAccessListsApiParams{
+	listOptions := &admin20231115002.ListProjectIpAccessListsApiParams{
 		GroupId:      projectID,
 		IncludeCount: &includeCount,
 		ItemsPerPage: &itemPerPage,
@@ -189,7 +189,7 @@ func isEntryInMap(entry AccessListDefinition, accessListMap map[string]bool) boo
 	return false
 }
 
-func newAccessListMap(accessList []admin.NetworkPermissionEntry) map[string]bool {
+func newAccessListMap(accessList []admin20231115002.NetworkPermissionEntry) map[string]bool {
 	m := make(map[string]bool)
 	for _, entry := range accessList {
 		if util.IsStringPresent(entry.CidrBlock) {
@@ -210,7 +210,7 @@ func newAccessListMap(accessList []admin.NetworkPermissionEntry) map[string]bool
 	return m
 }
 
-func (m *AccessListDefinition) completeByConnection(c admin.NetworkPermissionEntry) {
+func (m *AccessListDefinition) completeByConnection(c admin20231115002.NetworkPermissionEntry) {
 	m.IPAddress = c.IpAddress
 	m.CIDRBlock = c.CidrBlock
 	m.Comment = c.Comment

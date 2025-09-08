@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -61,7 +61,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if *currentModel.InstanceType == clusterInstanceType {
-		params := admin.DiskBackupOnDemandSnapshotRequest{
+		params := admin20231115002.DiskBackupOnDemandSnapshotRequest{
 			Description:     currentModel.Description,
 			RetentionInDays: currentModel.RetentionInDays,
 		}
@@ -271,7 +271,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 	return p, nil
 }
 
-func (m *Model) updateModelServer(snapShot *admin.DiskBackupReplicaSet) {
+func (m *Model) updateModelServer(snapShot *admin20231115002.DiskBackupReplicaSet) {
 	m.SnapshotId = snapShot.Id
 	m.Description = snapShot.Description
 	m.Status = snapShot.Status
@@ -285,7 +285,7 @@ func (m *Model) updateModelServer(snapShot *admin.DiskBackupReplicaSet) {
 	m.CloudProvider = snapShot.CloudProvider
 }
 
-func (m *Model) updateModelServerless(snapShot *admin.ServerlessBackupSnapshot) {
+func (m *Model) updateModelServerless(snapShot *admin20231115002.ServerlessBackupSnapshot) {
 	m.SnapshotId = snapShot.Id
 	m.Status = snapShot.Status
 	m.CreatedAt = util.TimePtrToStringPtr(snapShot.CreatedAt)

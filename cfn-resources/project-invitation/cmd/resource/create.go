@@ -23,7 +23,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -45,7 +45,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	invitationReq := &admin.GroupInvitationRequest{
+	invitationReq := &admin20231115002.GroupInvitationRequest{
 		Roles:    currentModel.Roles,
 		Username: currentModel.Username,
 	}

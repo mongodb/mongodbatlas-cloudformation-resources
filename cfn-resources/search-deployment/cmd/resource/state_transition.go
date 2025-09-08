@@ -23,10 +23,10 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
-func HandleStateTransition(connV2 admin.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
+func HandleStateTransition(connV2 admin20231115014.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()

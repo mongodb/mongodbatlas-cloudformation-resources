@@ -27,7 +27,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -70,7 +70,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return serverlessCallback(client, currentModel, constants.IdleState)
 	}
 
-	serverlessInstanceRequest := &admin.ServerlessInstanceDescriptionCreate{
+	serverlessInstanceRequest := &admin20231115002.ServerlessInstanceDescriptionCreate{
 		Name:                         *currentModel.Name,
 		ProviderSettings:             *setProviderSettings(currentModel),
 		ServerlessBackupOptions:      setBackupOptions(currentModel),
@@ -79,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	serverless, res, err := client.Atlas20231115002.ServerlessInstancesApi.CreateServerlessInstance(context.Background(), *currentModel.ProjectID, serverlessInstanceRequest).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
 			_, _ = log.Debugf("Serverless - Create() - error 400: %+v", err)
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -156,11 +156,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
 	}
 
-	serverlessInstanceRequest := &admin.UpdateServerlessInstanceApiParams{
+	serverlessInstanceRequest := &admin20231115002.UpdateServerlessInstanceApiParams{
 		GroupId: *currentModel.ProjectID,
-		ServerlessInstanceDescriptionUpdate: &admin.ServerlessInstanceDescriptionUpdate{
+		ServerlessInstanceDescriptionUpdate: &admin20231115002.ServerlessInstanceDescriptionUpdate{
 			TerminationProtectionEnabled: currentModel.TerminationProtectionEnabled,
-			ServerlessBackupOptions: &admin.ClusterServerlessBackupOptions{
+			ServerlessBackupOptions: &admin20231115002.ClusterServerlessBackupOptions{
 				ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
 			},
 		},
@@ -235,10 +235,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *peErr, nil
 	}
 
-	listOptions := &admin.ListServerlessInstancesApiParams{
+	listOptions := &admin20231115002.ListServerlessInstancesApiParams{
 		GroupId:      *currentModel.ProjectID,
-		PageNum:      admin.PtrInt(0),
-		ItemsPerPage: admin.PtrInt(1000),
+		PageNum:      admin20231115002.PtrInt(0),
+		ItemsPerPage: admin20231115002.PtrInt(1000),
 	}
 	clustersResp, res, err := client.Atlas20231115002.ServerlessInstancesApi.ListServerlessInstancesWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
@@ -257,25 +257,25 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func setBackupOptions(currentModel *Model) (serverlessBackupOptions *admin.ClusterServerlessBackupOptions) {
+func setBackupOptions(currentModel *Model) (serverlessBackupOptions *admin20231115002.ClusterServerlessBackupOptions) {
 	if currentModel.ContinuousBackupEnabled == nil {
 		return nil
 	}
-	serverlessBackupOptions = &admin.ClusterServerlessBackupOptions{
+	serverlessBackupOptions = &admin20231115002.ClusterServerlessBackupOptions{
 		ServerlessContinuousBackupEnabled: currentModel.ContinuousBackupEnabled,
 	}
 	return serverlessBackupOptions
 }
 
-func setProviderSettings(currentModel *Model) (serverlessProviderSettings *admin.ServerlessProviderSettings) {
+func setProviderSettings(currentModel *Model) (serverlessProviderSettings *admin20231115002.ServerlessProviderSettings) {
 	if currentModel.ProviderSettings == nil {
-		return &admin.ServerlessProviderSettings{
-			ProviderName:        admin.PtrString(constants.Serverless),
+		return &admin20231115002.ServerlessProviderSettings{
+			ProviderName:        admin20231115002.PtrString(constants.Serverless),
 			BackingProviderName: constants.AWS,
 		}
 	}
 
-	serverlessProviderSettings = &admin.ServerlessProviderSettings{
+	serverlessProviderSettings = &admin20231115002.ServerlessProviderSettings{
 		BackingProviderName: constants.AWS,
 	}
 
@@ -288,7 +288,7 @@ func setProviderSettings(currentModel *Model) (serverlessProviderSettings *admin
 	return serverlessProviderSettings
 }
 
-func readServerlessInstance(cluster *admin.ServerlessInstanceDescription, profile *string) (serverless *Model) {
+func readServerlessInstance(cluster *admin20231115002.ServerlessInstanceDescription, profile *string) (serverless *Model) {
 	serverless = &Model{}
 	serverless.Name = cluster.Name
 	serverless.Id = cluster.Id
@@ -317,7 +317,7 @@ func readServerlessInstance(cluster *admin.ServerlessInstanceDescription, profil
 	return serverless
 }
 
-func readPrivateEndpoint(privateEPs []admin.ServerlessConnectionStringsPrivateEndpointList) (endPoints []ServerlessInstancePrivateEndpoint) {
+func readPrivateEndpoint(privateEPs []admin20231115002.ServerlessConnectionStringsPrivateEndpointList) (endPoints []ServerlessInstancePrivateEndpoint) {
 	for i := range privateEPs {
 		var pep = ServerlessInstancePrivateEndpoint{}
 		pep.Endpoints = readPrivateEndpointEndpoints(privateEPs[i].Endpoints)
@@ -328,7 +328,7 @@ func readPrivateEndpoint(privateEPs []admin.ServerlessConnectionStringsPrivateEn
 	return
 }
 
-func readPrivateEndpointEndpoints(peEndpoints []admin.ServerlessConnectionStringsPrivateEndpointItem) (epEndpoints []ServerlessInstancePrivateEndpointEndpoint) {
+func readPrivateEndpointEndpoints(peEndpoints []admin20231115002.ServerlessConnectionStringsPrivateEndpointItem) (epEndpoints []ServerlessInstancePrivateEndpointEndpoint) {
 	for i := range peEndpoints {
 		epEndpoints = append(epEndpoints, ServerlessInstancePrivateEndpointEndpoint{
 			EndpointId:   peEndpoints[i].EndpointId,
@@ -342,7 +342,7 @@ func readPrivateEndpointEndpoints(peEndpoints []admin.ServerlessConnectionString
 func serverlessCallback(client *util.MongoDBClient, currentModel *Model, targtStatus string) (progressEvent handler.ProgressEvent, err error) {
 	serverless, resp, err := client.Atlas20231115002.ServerlessInstancesApi.GetServerlessInstance(context.Background(), *currentModel.ProjectID, *currentModel.Name).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			_, _ = log.Debugf("404: No instance found")
 			return handler.ProgressEvent{
 				OperationStatus: handler.Success,

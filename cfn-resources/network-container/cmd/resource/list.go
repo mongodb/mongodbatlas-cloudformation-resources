@@ -22,7 +22,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var listRequiredFields = []string{constants.ProjectID}
@@ -45,7 +45,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}
 
 	aws := constants.AWS
-	containerRequest := &admin.ListPeeringContainerByCloudProviderApiParams{
+	containerRequest := &admin20231115002.ListPeeringContainerByCloudProviderApiParams{
 		ProviderName: &aws,
 		GroupId:      *currentModel.ProjectId,
 	}
@@ -71,7 +71,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func completeByConnection(c *admin.CloudProviderContainer, projectID, profileName string) Model {
+func completeByConnection(c *admin20231115002.CloudProviderContainer, projectID, profileName string) Model {
 	return Model{
 		RegionName:     c.RegionName,
 		Provisioned:    c.Provisioned,

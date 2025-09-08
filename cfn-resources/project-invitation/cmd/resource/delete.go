@@ -23,7 +23,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -44,7 +44,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	params := &admin.DeleteProjectInvitationApiParams{
+	params := &admin20231115002.DeleteProjectInvitationApiParams{
 		GroupId:      *currentModel.ProjectId,
 		InvitationId: *currentModel.Id,
 	}

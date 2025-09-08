@@ -30,7 +30,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -301,11 +301,11 @@ func isDeleting(req handler.Request) bool {
 	return callbackValue == "DELETING"
 }
 
-func hasInterfaceEndpoints(p admin.EndpointService) bool {
+func hasInterfaceEndpoints(p admin20231115002.EndpointService) bool {
 	return len(p.InterfaceEndpoints) != 0
 }
 
-func (m *Model) completeByConnection(c *admin.EndpointService) {
+func (m *Model) completeByConnection(c *admin20231115002.EndpointService) {
 	m.Id = c.Id
 	m.EndpointServiceName = c.EndpointServiceName
 	m.ErrorMessage = c.ErrorMessage

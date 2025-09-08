@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 const (
@@ -137,7 +137,7 @@ func getMapFromCallBackContext(callBackContext privateEndpointCreationCallBackCo
 
 func Create(client *util.MongoDBClient, groupID string, privateEndpointInput []AtlasPrivateEndpointInput, endpointServiceID string) handler.ProgressEvent {
 	for _, endpoint := range privateEndpointInput {
-		interfaceEndpointRequest := &admin.CreateEndpointRequest{
+		interfaceEndpointRequest := &admin20231115002.CreateEndpointRequest{
 			Id: &endpoint.InterfaceEndpointID,
 		}
 

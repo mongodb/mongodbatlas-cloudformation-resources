@@ -23,7 +23,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/profile"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	progressevents "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -60,7 +60,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		}
 	}
 
-	listOptions := &admin.ListProjectIpAccessListsApiParams{
+	listOptions := &admin20231115002.ListProjectIpAccessListsApiParams{
 		GroupId:      *currentModel.ProjectId,
 		IncludeCount: &includeCount,
 		ItemsPerPage: &itemsPerPage,

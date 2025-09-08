@@ -27,7 +27,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.SnapshotID, constants.DeliveryType, constants.InstanceType, constants.InstanceName}
@@ -370,7 +370,7 @@ func updateModel(client *util.MongoDBClient, model *Model, checkFinish bool) *ha
 	return nil
 }
 
-func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) {
+func updateModelServerless(model *Model, job *admin20231115014.ServerlessBackupRestoreJob) {
 	model.TargetClusterName = &job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
@@ -385,7 +385,7 @@ func updateModelServerless(model *Model, job *admin.ServerlessBackupRestoreJob) 
 	model.Links = flattenLinks(job.GetLinks())
 }
 
-func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
+func updateModelServer(model *Model, job *admin20231115014.DiskBackupSnapshotRestoreJob) {
 	model.TargetClusterName = job.TargetClusterName
 	model.DeliveryType = &job.DeliveryType
 	model.ExpiresAt = util.TimePtrToStringPtr(job.ExpiresAt)
@@ -401,7 +401,7 @@ func updateModelServer(model *Model, job *admin.DiskBackupSnapshotRestoreJob) {
 	model.Links = flattenLinks(job.GetLinks())
 }
 
-func flattenLinks(linksResult []admin.Link) []Links {
+func flattenLinks(linksResult []admin20231115014.Link) []Links {
 	links := make([]Links, 0)
 	for _, link := range linksResult {
 		var lin Links
@@ -412,8 +412,8 @@ func flattenLinks(linksResult []admin.Link) []Links {
 	return links
 }
 
-func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
-	return &admin.DiskBackupSnapshotRestoreJob{
+func paramsServer(model *Model) *admin20231115014.DiskBackupSnapshotRestoreJob {
+	return &admin20231115014.DiskBackupSnapshotRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     model.TargetClusterName,
@@ -424,8 +424,8 @@ func paramsServer(model *Model) *admin.DiskBackupSnapshotRestoreJob {
 	}
 }
 
-func paramsServerless(model *Model) *admin.ServerlessBackupRestoreJob {
-	return &admin.ServerlessBackupRestoreJob{
+func paramsServerless(model *Model) *admin20231115014.ServerlessBackupRestoreJob {
+	return &admin20231115014.ServerlessBackupRestoreJob{
 		SnapshotId:            model.SnapshotId,
 		DeliveryType:          *model.DeliveryType,
 		TargetClusterName:     *model.TargetClusterName,

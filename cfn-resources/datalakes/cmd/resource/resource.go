@@ -26,7 +26,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/spf13/cast"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID, constants.TenantName}
@@ -54,7 +54,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	projectID := *currentModel.ProjectId
-	dataLakeReq := &admin.DataLakeTenant{
+	dataLakeReq := &admin20231115002.DataLakeTenant{
 		CloudProviderConfig: expandCloudProviderConfig(currentModel),
 		Name:                currentModel.TenantName,
 	}
@@ -94,7 +94,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	projectID := *currentModel.ProjectId
 	dataLake, resp, err := client.Atlas20231115002.DataFederationApi.GetFederatedDatabase(context.Background(), projectID, *currentModel.TenantName).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusNotFound {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusNotFound {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
 				Message:          "Resource Not Found",
@@ -135,11 +135,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	projectID := *currentModel.ProjectId
-	bodyRequest := &admin.UpdateFederatedDatabaseApiParams{
+	bodyRequest := &admin20231115002.UpdateFederatedDatabaseApiParams{
 		GroupId:            projectID,
 		TenantName:         *currentModel.TenantName,
-		SkipRoleValidation: admin.PtrBool(false),
-		DataLakeTenant: &admin.DataLakeTenant{
+		SkipRoleValidation: admin20231115002.PtrBool(false),
+		DataLakeTenant: &admin20231115002.DataLakeTenant{
 			CloudProviderConfig: expandCloudProviderConfig(currentModel),
 			DataProcessRegion:   expandDataLakeDataProcessRegion(currentModel.DataProcessRegion),
 		},
@@ -237,7 +237,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModels:  models,
 	}, nil
 }
-func flattenAWSBlock(awsConfig *admin.DataLakeCloudProviderConfig) *DataLakeAWSCloudProviderConfigView {
+func flattenAWSBlock(awsConfig *admin20231115002.DataLakeCloudProviderConfig) *DataLakeAWSCloudProviderConfigView {
 	if awsConfig == nil {
 		return nil
 	}
@@ -250,7 +250,7 @@ func flattenAWSBlock(awsConfig *admin.DataLakeCloudProviderConfig) *DataLakeAWSC
 	}
 }
 
-func flattenDataLakeProcessRegion(processRegion *admin.DataLakeDataProcessRegion) *DataLakeDataProcessRegionView {
+func flattenDataLakeProcessRegion(processRegion *admin20231115002.DataLakeDataProcessRegion) *DataLakeDataProcessRegionView {
 	if processRegion != nil && (processRegion.Region != "" || processRegion.CloudProvider != "") {
 		return &DataLakeDataProcessRegionView{
 			CloudProvider: &processRegion.CloudProvider,
@@ -260,7 +260,7 @@ func flattenDataLakeProcessRegion(processRegion *admin.DataLakeDataProcessRegion
 	return nil
 }
 
-func flattenDataLakeStorageDatabases(databases []admin.DataLakeDatabaseInstance) []DataLakeDatabaseView {
+func flattenDataLakeStorageDatabases(databases []admin20231115002.DataLakeDatabaseInstance) []DataLakeDatabaseView {
 	views := make([]DataLakeDatabaseView, len(databases))
 	for i := range databases {
 		views[i] = DataLakeDatabaseView{
@@ -273,7 +273,7 @@ func flattenDataLakeStorageDatabases(databases []admin.DataLakeDatabaseInstance)
 	return views
 }
 
-func flattenDataLakeStorageDatabaseCollections(collections []admin.DataLakeDatabaseCollection) []DataLakeDatabaseCollectionView {
+func flattenDataLakeStorageDatabaseCollections(collections []admin20231115002.DataLakeDatabaseCollection) []DataLakeDatabaseCollectionView {
 	database := make([]DataLakeDatabaseCollectionView, 0)
 	for ind := range collections {
 		database = append(database, DataLakeDatabaseCollectionView{
@@ -284,7 +284,7 @@ func flattenDataLakeStorageDatabaseCollections(collections []admin.DataLakeDatab
 	return database
 }
 
-func flattenDataLakeStorageDatabaseCollectionsDataSources(dataSources []admin.DataLakeDatabaseDataSourceSettings) []DataLakeDatabaseDataSourceView {
+func flattenDataLakeStorageDatabaseCollectionsDataSources(dataSources []admin20231115002.DataLakeDatabaseDataSourceSettings) []DataLakeDatabaseDataSourceView {
 	database := make([]DataLakeDatabaseDataSourceView, 0)
 	for ind := range dataSources {
 		database = append(database, DataLakeDatabaseDataSourceView{
@@ -296,7 +296,7 @@ func flattenDataLakeStorageDatabaseCollectionsDataSources(dataSources []admin.Da
 	return database
 }
 
-func flattenDataLakeStorageDatabaseViews(views []admin.DataLakeApiBase) []DataLakeViewView {
+func flattenDataLakeStorageDatabaseViews(views []admin20231115002.DataLakeApiBase) []DataLakeViewView {
 	view := make([]DataLakeViewView, 0)
 	for ind := range views {
 		view = append(view, DataLakeViewView{
@@ -308,7 +308,7 @@ func flattenDataLakeStorageDatabaseViews(views []admin.DataLakeApiBase) []DataLa
 	return view
 }
 
-func flattenDataLakeStorageStores(stores []admin.DataLakeStoreSettings) []StoreDetail {
+func flattenDataLakeStorageStores(stores []admin20231115002.DataLakeStoreSettings) []StoreDetail {
 	store := make([]StoreDetail, 0)
 	for ind := range stores {
 		store = append(store, StoreDetail{
@@ -325,8 +325,8 @@ func flattenDataLakeStorageStores(stores []admin.DataLakeStoreSettings) []StoreD
 	return store
 }
 
-func expandDataLakeAwsBlock(cloudProviderConfig DataLakeCloudProviderConfigView) admin.DataLakeAWSCloudProviderConfig {
-	awsConfig := admin.DataLakeAWSCloudProviderConfig{}
+func expandDataLakeAwsBlock(cloudProviderConfig DataLakeCloudProviderConfigView) admin20231115002.DataLakeAWSCloudProviderConfig {
+	awsConfig := admin20231115002.DataLakeAWSCloudProviderConfig{}
 	if cloudProviderConfig.Aws != nil {
 		awsConfig.ExternalId = cloudProviderConfig.Aws.ExternalId
 		awsConfig.IamAssumedRoleARN = cloudProviderConfig.Aws.IamAssumedRoleARN
@@ -336,18 +336,18 @@ func expandDataLakeAwsBlock(cloudProviderConfig DataLakeCloudProviderConfigView)
 	}
 	return awsConfig
 }
-func expandCloudProviderConfig(currentModel *Model) *admin.DataLakeCloudProviderConfig {
+func expandCloudProviderConfig(currentModel *Model) *admin20231115002.DataLakeCloudProviderConfig {
 	if currentModel.CloudProviderConfig != nil {
-		return &admin.DataLakeCloudProviderConfig{
+		return &admin20231115002.DataLakeCloudProviderConfig{
 			Aws: expandDataLakeAwsBlock(*currentModel.CloudProviderConfig),
 		}
 	}
 	return nil
 }
 
-func expandDataLakeDataProcessRegion(dataProcessRegion *DataLakeDataProcessRegionView) *admin.DataLakeDataProcessRegion {
+func expandDataLakeDataProcessRegion(dataProcessRegion *DataLakeDataProcessRegionView) *admin20231115002.DataLakeDataProcessRegion {
 	if dataProcessRegion != nil && dataProcessRegion.Region != nil {
-		return &admin.DataLakeDataProcessRegion{
+		return &admin20231115002.DataLakeDataProcessRegion{
 			CloudProvider: cast.ToString(dataProcessRegion.CloudProvider),
 			Region:        cast.ToString(dataProcessRegion.Region),
 		}
@@ -415,7 +415,7 @@ func dataLakeIsReady(client *util.MongoDBClient, projectID, name, targetState st
 	return false, "", nil
 }
 
-func convertToModel(dataLake *admin.DataLakeTenant, currentModel *Model) *Model {
+func convertToModel(dataLake *admin20231115002.DataLakeTenant, currentModel *Model) *Model {
 	var result = new(Model)
 
 	result.Profile = currentModel.Profile // cfn test

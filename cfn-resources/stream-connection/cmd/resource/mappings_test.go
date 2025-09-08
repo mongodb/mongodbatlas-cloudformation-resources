@@ -17,7 +17,7 @@ package resource_test
 import (
 	"testing"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws/smithy-go/ptr"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/stream-connection/cmd/resource"
@@ -26,7 +26,7 @@ import (
 
 func TestNewModelDBRoleToExecute(t *testing.T) {
 	tests := []struct {
-		input    *admin.DBRoleToExecute
+		input    *admin20231115014.DBRoleToExecute
 		expected *resource.DBRoleToExecute
 		name     string
 	}{
@@ -37,7 +37,7 @@ func TestNewModelDBRoleToExecute(t *testing.T) {
 		},
 		{
 			name: "Valid Input",
-			input: &admin.DBRoleToExecute{
+			input: &admin20231115014.DBRoleToExecute{
 				Role: ptr.String("readWrite"),
 				Type: ptr.String("BUILT_IN"),
 			},
@@ -58,7 +58,7 @@ func TestNewModelDBRoleToExecute(t *testing.T) {
 
 func TestNewModelAuthentication(t *testing.T) {
 	tests := []struct {
-		input    *admin.StreamsKafkaAuthentication
+		input    *admin20231115014.StreamsKafkaAuthentication
 		expected *resource.StreamsKafkaAuthentication
 		name     string
 	}{
@@ -69,7 +69,7 @@ func TestNewModelAuthentication(t *testing.T) {
 		},
 		{
 			name: "Valid Input",
-			input: &admin.StreamsKafkaAuthentication{
+			input: &admin20231115014.StreamsKafkaAuthentication{
 				Mechanism: ptr.String("PLAIN"),
 				Username:  ptr.String("testuser111"),
 				Password:  ptr.String("testpassword"),
@@ -92,7 +92,7 @@ func TestNewModelAuthentication(t *testing.T) {
 
 func TestNewModelSecurity(t *testing.T) {
 	tests := []struct {
-		input    *admin.StreamsKafkaSecurity
+		input    *admin20231115014.StreamsKafkaSecurity
 		expected *resource.StreamsKafkaSecurity
 		name     string
 	}{
@@ -103,7 +103,7 @@ func TestNewModelSecurity(t *testing.T) {
 		},
 		{
 			name: "Valid Input",
-			input: &admin.StreamsKafkaSecurity{
+			input: &admin20231115014.StreamsKafkaSecurity{
 				BrokerPublicCertificate: ptr.String("testcert"),
 				Protocol:                ptr.String("SSL"),
 			},
@@ -125,7 +125,7 @@ func TestNewModelSecurity(t *testing.T) {
 func TestNewDBRoleToExecute(t *testing.T) {
 	tests := []struct {
 		input    *resource.DBRoleToExecute
-		expected *admin.DBRoleToExecute
+		expected *admin20231115014.DBRoleToExecute
 		name     string
 	}{
 		{
@@ -139,7 +139,7 @@ func TestNewDBRoleToExecute(t *testing.T) {
 				Role: ptr.String("customroleadmin"),
 				Type: ptr.String("CUSTOM"),
 			},
-			expected: &admin.DBRoleToExecute{
+			expected: &admin20231115014.DBRoleToExecute{
 				Role: ptr.String("customroleadmin"),
 				Type: ptr.String("CUSTOM"),
 			},
@@ -155,16 +155,16 @@ func TestNewDBRoleToExecute(t *testing.T) {
 }
 
 func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {
-	streamsConnKafka := &admin.StreamsConnection{
+	streamsConnKafka := &admin20231115014.StreamsConnection{
 		Name:             ptr.String("TestConnection"),
 		Type:             ptr.String("Kafka"),
 		BootstrapServers: ptr.String("local.example.com:9192"),
-		Authentication: &admin.StreamsKafkaAuthentication{
+		Authentication: &admin20231115014.StreamsKafkaAuthentication{
 			Mechanism: ptr.String("PLAIN"),
 			Username:  ptr.String("user1"),
 			Password:  ptr.String("passwrd"),
 		},
-		Security: &admin.StreamsKafkaSecurity{
+		Security: &admin20231115014.StreamsKafkaSecurity{
 			BrokerPublicCertificate: ptr.String("cert1"),
 			Protocol:                ptr.String("SSL"),
 		},
@@ -217,11 +217,11 @@ func TestGetStreamConnectionKafkaTypeModel(t *testing.T) {
 }
 
 func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
-	streamsConnKafka := &admin.StreamsConnection{
+	streamsConnKafka := &admin20231115014.StreamsConnection{
 		Name:        ptr.String("TestConnection"),
 		Type:        ptr.String("Cluster"),
 		ClusterName: ptr.String("TestCluster"),
-		DbRoleToExecute: &admin.DBRoleToExecute{
+		DbRoleToExecute: &admin20231115014.DBRoleToExecute{
 			Role: ptr.String("admin"),
 			Type: ptr.String("Custom"),
 		},
@@ -264,7 +264,7 @@ func TestGetStreamConnectionClusterTypeModel(t *testing.T) {
 }
 
 func TestGetStreamConnectionSampleTypeModel(t *testing.T) {
-	streamsConnSample := &admin.StreamsConnection{
+	streamsConnSample := &admin20231115014.StreamsConnection{
 		Name: ptr.String("sample_stream_solar"),
 		Type: ptr.String("Sample"),
 	}

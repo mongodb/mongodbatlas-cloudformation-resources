@@ -28,7 +28,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.Name, constants.Sink}
@@ -88,32 +88,32 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		ResourceModel:   model}, nil
 }
 
-func generateDataLakeIntegrationPipeline(currentModel *Model) *admin.DataLakeIngestionPipeline {
-	partitionFieldsArr := make([]admin.DataLakePipelinesPartitionField, len(currentModel.Sink.PartitionFields))
+func generateDataLakeIntegrationPipeline(currentModel *Model) *admin20231115014.DataLakeIngestionPipeline {
+	partitionFieldsArr := make([]admin20231115014.DataLakePipelinesPartitionField, len(currentModel.Sink.PartitionFields))
 	for i, partitionField := range currentModel.Sink.PartitionFields {
-		partitionFieldsArr[i] = admin.DataLakePipelinesPartitionField{
+		partitionFieldsArr[i] = admin20231115014.DataLakePipelinesPartitionField{
 			FieldName: util.SafeString(partitionField.FieldName),
 			Order:     util.SafeInt(partitionField.Order),
 		}
 	}
 
-	transformationsFieldsArr := make([]admin.FieldTransformation, len(currentModel.Transformations))
+	transformationsFieldsArr := make([]admin20231115014.FieldTransformation, len(currentModel.Transformations))
 	for i, transformation := range currentModel.Transformations {
-		transformationsFieldsArr[i] = admin.FieldTransformation{
+		transformationsFieldsArr[i] = admin20231115014.FieldTransformation{
 			Field: transformation.Field,
 			Type:  transformation.Type,
 		}
 	}
 
-	dataLakeIntegrationPipeline := admin.DataLakeIngestionPipeline{
+	dataLakeIntegrationPipeline := admin20231115014.DataLakeIngestionPipeline{
 		GroupId: currentModel.ProjectId,
 		Name:    currentModel.Name,
-		Sink: &admin.IngestionSink{
+		Sink: &admin20231115014.IngestionSink{
 			MetadataProvider: currentModel.Sink.MetadataProvider,
 			MetadataRegion:   currentModel.Sink.MetadataRegion,
 			PartitionFields:  &partitionFieldsArr,
 		},
-		Source: &admin.IngestionSource{
+		Source: &admin20231115014.IngestionSource{
 			Type:           currentModel.Source.Type,
 			ClusterName:    currentModel.Source.ClusterName,
 			CollectionName: currentModel.Source.CollectionName,
@@ -164,7 +164,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		ResourceModel:   model}, nil
 }
 
-func ReadResponseModelGeneration(pe *admin.DataLakeIngestionPipeline) (model *Model) {
+func ReadResponseModelGeneration(pe *admin20231115014.DataLakeIngestionPipeline) (model *Model) {
 	if pe != nil {
 		source := Source{
 			Type:           pe.Source.Type,

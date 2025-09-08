@@ -25,7 +25,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var RequiredFields = []string{constants.IntegrationType, constants.ProjectID}
@@ -78,7 +78,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	requestBody := modelToIntegration(currentModel)
 	integrations, resModel, err := client.Atlas20231115002.ThirdPartyIntegrationsApi.CreateThirdPartyIntegration(context.Background(), *IntegrationType, *ProjectID, requestBody).Execute()
 	if err != nil {
-		if apiError, ok := admin.AsError(err); ok && *apiError.Error == http.StatusConflict {
+		if apiError, ok := admin20231115002.AsError(err); ok && *apiError.Error == http.StatusConflict {
 			return progressevent.GetFailedEventByCode("INTEGRATION_ALREADY_CONFIGURED.", cloudformation.HandlerErrorCodeAlreadyExists), nil
 		}
 
@@ -156,7 +156,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func updateIntegrationFromSchema(currentModel *Model, integration *admin.ThridPartyIntegration) {
+func updateIntegrationFromSchema(currentModel *Model, integration *admin20231115002.ThridPartyIntegration) {
 	if util.IsStringPresent(currentModel.Url) && !util.AreStringPtrEqual(currentModel.Url, integration.Url) {
 		integration.Url = currentModel.Url
 	}
@@ -270,8 +270,8 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) {
-	out = &admin.ThridPartyIntegration{}
+func modelToIntegration(currentModel *Model) (out *admin20231115002.ThridPartyIntegration) {
+	out = &admin20231115002.ThridPartyIntegration{}
 
 	if util.IsStringPresent(currentModel.Type) {
 		out.Type = currentModel.Type
@@ -325,7 +325,7 @@ func modelToIntegration(currentModel *Model) (out *admin.ThridPartyIntegration) 
 	return out
 }
 
-func integrationToModel(currentModel Model, integration *admin.ThridPartyIntegration) Model {
+func integrationToModel(currentModel Model, integration *admin20231115002.ThridPartyIntegration) Model {
 	// if "Enabled" is not set in the inputs we dont want to return "Enabled" in outputs
 	enabled := currentModel.Enabled != nil
 

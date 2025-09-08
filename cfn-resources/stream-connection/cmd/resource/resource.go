@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 
@@ -40,7 +40,7 @@ var UpdateRequiredFields = []string{constants.ProjectID, constants.InstanceName,
 var DeleteRequiredFields = []string{constants.ProjectID, constants.InstanceName, constants.ConnectionName}
 var ListRequiredFields = []string{constants.ProjectID, constants.InstanceName}
 
-func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
+func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin20231115014.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-connection")
 
 	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
@@ -183,12 +183,12 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	}, nil
 }
 
-func getAllStreamConnections(ctx context.Context, conn *admin.APIClient, projectID, instanceName string) ([]admin.StreamsConnection, *http.Response, error) {
+func getAllStreamConnections(ctx context.Context, conn *admin20231115014.APIClient, projectID, instanceName string) ([]admin20231115014.StreamsConnection, *http.Response, error) {
 	pageNum := 1
-	accumulatedStreamConns := make([]admin.StreamsConnection, 0)
+	accumulatedStreamConns := make([]admin20231115014.StreamsConnection, 0)
 
 	for allRecordsRetrieved := false; !allRecordsRetrieved; {
-		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin.ListStreamConnectionsApiParams{
+		streamConns, apiResp, err := conn.StreamsApi.ListStreamConnectionsWithParams(ctx, &admin20231115014.ListStreamConnectionsApiParams{
 			GroupId:      projectID,
 			TenantName:   instanceName,
 			ItemsPerPage: util.Pointer(constants.DefaultListItemsPerPage),

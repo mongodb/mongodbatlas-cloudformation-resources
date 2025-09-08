@@ -27,7 +27,7 @@ import (
 	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var RequiredFields = []string{constants.ProjectID}
@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	enabled := true
 
-	auditingInput := admin.AuditLog{
+	auditingInput := admin20231115014.AuditLog{
 		Enabled: &enabled,
 	}
 
@@ -163,7 +163,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	var res *http.Response
-	auditingInput := admin.AuditLog{}
+	auditingInput := admin20231115014.AuditLog{}
 	modified := false
 
 	if currentModel.AuditAuthorizationSuccess != nil {
@@ -230,7 +230,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	var res *http.Response
 	enabled := false
 
-	auditingInput := admin.AuditLog{
+	auditingInput := admin20231115014.AuditLog{
 		Enabled:     &enabled,
 		AuditFilter: currentModel.AuditFilter,
 	}
@@ -246,7 +246,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func isEnabled(client admin.APIClient, currentModel Model) (bool, *handler.ProgressEvent) {
+func isEnabled(client admin20231115014.APIClient, currentModel Model) (bool, *handler.ProgressEvent) {
 	atlasAuditing, res, err := client.AuditingApi.GetAuditingConfiguration(context.Background(), *currentModel.ProjectId).Execute()
 
 	if err != nil {

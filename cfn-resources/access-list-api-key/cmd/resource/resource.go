@@ -30,7 +30,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
 var CreateRequiredFields = []string{constants.OrgID, constants.APIUserID}
@@ -90,8 +90,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	// createReq.ApiService.
-	entryList := make([]admin.UserAccessListRequest, 0)
-	var access admin.UserAccessListRequest
+	entryList := make([]admin20231115014.UserAccessListRequest, 0)
+	var access admin20231115014.UserAccessListRequest
 	if currentModel.CidrBlock != nil {
 		access.CidrBlock = currentModel.CidrBlock
 	}

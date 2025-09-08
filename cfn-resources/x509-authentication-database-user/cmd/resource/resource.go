@@ -25,7 +25,7 @@ import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
-	"go.mongodb.org/atlas-sdk/v20231115002/admin"
+	admin20231115002 "go.mongodb.org/atlas-sdk/v20231115002/admin"
 )
 
 var CreateRequiredFields = []string{constants.ProjectID, constants.UserID}
@@ -60,7 +60,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	if expirationMonths := aws.IntValue(currentModel.MonthsUntilExpiration); expirationMonths > 0 {
-		cert := admin.NewUserCert()
+		cert := admin20231115002.NewUserCert()
 		cert.MonthsUntilExpiration = &expirationMonths
 		res, _, err := client.Atlas20231115002.X509AuthenticationApi.CreateDatabaseUserCertificate(context.Background(), *currentModel.ProjectId, *currentModel.UserName, cert).Execute()
 		if err != nil {
@@ -75,8 +75,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			}
 		}
 	} else {
-		customerX509 := &admin.DBUserTLSX509Settings{Cas: currentModel.CustomerX509.Cas}
-		_, _, err := client.Atlas20231115002.LDAPConfigurationApi.SaveLDAPConfiguration(context.Background(), *currentModel.ProjectId, &admin.UserSecurity{CustomerX509: customerX509}).Execute()
+		customerX509 := &admin20231115002.DBUserTLSX509Settings{Cas: currentModel.CustomerX509.Cas}
+		_, _, err := client.Atlas20231115002.LDAPConfigurationApi.SaveLDAPConfiguration(context.Background(), *currentModel.ProjectId, &admin20231115002.UserSecurity{CustomerX509: customerX509}).Execute()
 		if err != nil {
 			return handler.ProgressEvent{
 				OperationStatus:  handler.Failed,
@@ -175,6 +175,6 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-func isEnabled(certificate *admin.UserSecurity) bool {
+func isEnabled(certificate *admin20231115002.UserSecurity) bool {
 	return certificate != nil && certificate.CustomerX509 != nil && util.IsStringPresent(certificate.CustomerX509.Cas)
 }

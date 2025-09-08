@@ -448,7 +448,6 @@ jobs:
         make delete-test-resources
   online-archive:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.online-archive == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -530,7 +529,6 @@ jobs:
           make delete-test-resources
   private-endpoint-aws:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.private-endpoint-aws == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -778,7 +776,6 @@ jobs:
           make delete-test-resources
   serverless-private-endpoint:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.  serverless-private-endpoint == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
@@ -820,7 +817,6 @@ jobs:
           make delete-test-resources
   stream-connection:
     needs: change-detection
-    if: ${{ needs.change-detection.outputs.stream-connection == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8

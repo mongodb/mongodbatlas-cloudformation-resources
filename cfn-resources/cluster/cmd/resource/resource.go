@@ -29,7 +29,6 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
 
@@ -50,7 +49,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
+	if util.IsCallback(&req) {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 	currentModel.validateDefaultLabel()
@@ -68,9 +67,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]interface{}{
-			constants.StateName: cluster.StateName,
-		},
+		CallbackContext:      util.CallbackContext,
 	}, nil
 }
 
@@ -97,7 +94,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if _, ok := req.CallbackContext[constants.StateName]; ok {
+	if util.IsCallback(&req) {
 		return updateClusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 	currentModel.validateDefaultLabel()
@@ -126,9 +123,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		Message:              fmt.Sprintf("Update Cluster %s", state),
 		ResourceModel:        model,
 		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]interface{}{
-			constants.StateName: state,
-		},
+		CallbackContext:      util.CallbackContext,
 	}
 	return event, nil
 }
@@ -139,7 +134,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if _, ok := req.CallbackContext[constants.StateName]; ok {
+	if util.IsCallback(&req) {
 		return validateProgress(client, currentModel, constants.DeletedState)
 	}
 	params := &admin20231115014.DeleteClusterApiParams{
@@ -152,13 +147,13 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              constants.DeleteInProgress,
-		ResourceModel:        currentModel,
-		CallbackDelaySeconds: CallBackSeconds,
-		CallbackContext: map[string]interface{}{
-			constants.StateName: constants.DeletingState,
-		}}, nil
+			OperationStatus:      handler.InProgress,
+			Message:              constants.DeleteInProgress,
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: CallBackSeconds,
+			CallbackContext:      util.CallbackContext,
+		},
+		nil
 }
 
 // List handles the List event from the Cloudformation service.
@@ -178,12 +173,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 			IncludeCount: admin20231115014.PtrBool(true),
 		}
 
-		clustersResponse, res, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error listing resources : %s", err.Error()),
-				res), nil
+		clustersResponse, resp, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
 		}
-
 		clusterResults := clustersResponse.GetResults()
 		for i := range clusterResults {
 			model := &Model{}
@@ -222,13 +215,10 @@ func clusterCallback(client *util.MongoDBClient, currentModel *Model, projectID 
 				Message:         "Create Success",
 				ResourceModel:   currentModel}, nil
 		}
-
-		cluster, res, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, *currentModel.Name).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-				res), nil
+		cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, *currentModel.Name).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
 		}
-
 		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
@@ -257,15 +247,15 @@ func formatMongoDBMajorVersion(val interface{}) string {
 	return fmt.Sprintf("%.1f", cast.ToFloat32(val))
 }
 
-func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, targetState string) (isReady bool, stateName string, mongoCluster *admin20231115014.AdvancedClusterDescription, err error) {
+func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, targetState string) (isReady bool, mongoCluster *admin20231115014.AdvancedClusterDescription, err error) {
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return constants.DeletedState == targetState, constants.DeletedState, nil, nil
+			return constants.DeletedState == targetState, nil, nil
 		}
-		return false, constants.Error, nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
+		return false, nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
-	return *cluster.StateName == targetState, *cluster.StateName, cluster, nil
+	return *cluster.StateName == targetState, cluster, nil
 }
 
 func readCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model) (*Model, *http.Response, error) {
@@ -334,7 +324,7 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 }
 
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	isReady, state, cluster, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
+	isReady, cluster, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
 	if err != nil {
 		return handler.ProgressEvent{
 			Message:          err.Error(),
@@ -348,9 +338,7 @@ func validateProgress(client *util.MongoDBClient, currentModel *Model, targetSta
 		p.OperationStatus = handler.InProgress
 		p.CallbackDelaySeconds = CallBackSeconds
 		p.Message = constants.Pending
-		p.CallbackContext = map[string]interface{}{
-			constants.StateName: state,
-		}
+		p.CallbackContext = util.CallbackContext
 		return p, nil
 	}
 

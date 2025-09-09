@@ -114,42 +114,6 @@
         ]
       }
     },
-    "FlexClusterType": {
-      "Description": "Flex cluster topology",
-      "Value": {
-        "Fn::GetAtt": [
-          "AtlasFlexCluster",
-          "ClusterType"
-        ]
-      }
-    },
-    "MongoDBVersion": {
-      "Description": "Version of MongoDB that the flex cluster runs",
-      "Value": {
-        "Fn::GetAtt": [
-          "AtlasFlexCluster",
-          "MongoDBVersion"
-        ]
-      }
-    },
-    "CreateDate": {
-      "Description": "Date and time when the flex cluster was created",
-      "Value": {
-        "Fn::GetAtt": [
-          "AtlasFlexCluster",
-          "CreatedDate"
-        ]
-      }
-    },
-    "VersionReleaseSystem": {
-      "Description": "Method by which the cluster maintains MongoDB versions",
-      "Value": {
-        "Fn::GetAtt": [
-          "AtlasFlexCluster",
-          "VersionReleaseSystem"
-        ]
-      }
-    },
     "ConnectionStringStandard": {
       "Description": "Public connection string using mongodb:// protocol",
       "Value": {
@@ -165,15 +129,6 @@
         "Fn::GetAtt": [
           "AtlasFlexCluster",
           "ConnectionStrings.StandardSrv"
-        ]
-      }
-    },
-    "BackupEnabled": {
-      "Description": "Flag indicating whether backups are enabled",
-      "Value": {
-        "Fn::GetAtt": [
-          "AtlasFlexCluster",
-          "BackupEnabled"
         ]
       }
     }

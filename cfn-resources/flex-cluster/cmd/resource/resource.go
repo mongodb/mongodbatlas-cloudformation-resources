@@ -16,8 +16,8 @@ package resource
 
 import (
 	"context"
+	"net/http"
 
-	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
@@ -237,13 +237,14 @@ func inProgressEvent(model *Model, flexResp *admin.FlexClusterDescription2024111
 }
 
 func validateProgress(client *util.MongoDBClient, model *Model, isDelete bool) handler.ProgressEvent {
-	state, flexResp, err := util.ValidateFlexClusterProgress(client, *model.ProjectId, *model.Name, isDelete)
-	if err != nil {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
-		}
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
+	if pe := util.HandleClusterError(err, nil); pe != nil && !notFound {
+		return *pe
+	}
+	state := constants.DeletedState
+	if flexResp != nil {
+		state = *flexResp.StateName
 	}
 	targetState := constants.IdleState
 	if isDelete {

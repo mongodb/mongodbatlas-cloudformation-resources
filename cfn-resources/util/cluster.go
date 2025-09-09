@@ -15,7 +15,6 @@
 package util
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
@@ -42,21 +41,6 @@ func HandleClusterError(err error, resp *http.Response) *handler.ProgressEvent {
 		pe.HandlerErrorCode = cloudformation.HandlerErrorCodeNotFound
 	}
 	return &pe
-}
-
-// ValidateFlexClusterProgress validates the progress of a flex cluster operation.
-func ValidateFlexClusterProgress(client *MongoDBClient, projectID, name string, isDelete bool) (state string, flexResp *admin.FlexClusterDescription20241113, err error) {
-	ctx := context.Background()
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(ctx, projectID, name).Execute()
-	notFound := resp != nil && resp.StatusCode == http.StatusNotFound
-	if err != nil && !notFound {
-		return "", nil, err
-	}
-	state = constants.DeletedState
-	if flexResp != nil && flexResp.StateName != nil {
-		state = *flexResp.StateName
-	}
-	return state, flexResp, nil
 }
 
 // CreateFlexClusterRequest creates a flex cluster request from common parameters

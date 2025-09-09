@@ -51,7 +51,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+	if flexModel := clusterToFlexModel(client, currentModel); flexModel != nil {
 		pe := flex.HandleCreate(&req, client, flexModel)
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
@@ -84,7 +84,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+	if flexModel := clusterToFlexModel(client, currentModel); flexModel != nil {
 		pe := flex.HandleRead(&req, client, flexModel)
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
@@ -106,7 +106,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+	if flexModel := clusterToFlexModel(client, currentModel); flexModel != nil {
 		pe := flex.HandleUpdate(&req, client, flexModel)
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil
@@ -151,7 +151,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+	if flexModel := clusterToFlexModel(client, currentModel); flexModel != nil {
 		pe := flex.HandleDelete(&req, client, flexModel)
 		fillModelForFlex(&pe, currentModel)
 		return pe, nil

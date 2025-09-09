@@ -14,6 +14,8 @@
 package resource
 
 import (
+	"context"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	flex "github.com/mongodb/mongodbatlas-cloudformation-resources/flex-cluster/cmd/resource"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
@@ -27,14 +29,16 @@ const (
 
 // clusterToFlexModel transforms a cluster model to a flex cluster model representation.
 // Returns nil if the cluster is not a flex cluster.
-func clusterToFlexModel(c *Model) *flex.Model {
-	if len(c.ReplicationSpecs) != 1 || len(c.ReplicationSpecs[0].AdvancedRegionConfigs) != 1 {
+func clusterToFlexModel(client *util.MongoDBClient, c *Model) *flex.Model {
+	_, _, errFlex := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *c.ProjectId, *c.Name).Execute()
+	existingFlex := errFlex == nil
+	flexCandidate := len(c.ReplicationSpecs) == 1 && len(c.ReplicationSpecs[0].AdvancedRegionConfigs) == 1 && util.SafeString(c.ReplicationSpecs[0].AdvancedRegionConfigs[0].ProviderName) == flexProvider
+	if !existingFlex && !flexCandidate {
 		return nil
 	}
-	firstRegion := c.ReplicationSpecs[0].AdvancedRegionConfigs[0]
-	if firstRegion.ProviderName == nil ||
-		*firstRegion.ProviderName != flexProvider {
-		return nil
+	firstRegion := AdvancedRegionConfig{}
+	if flexCandidate {
+		firstRegion = c.ReplicationSpecs[0].AdvancedRegionConfigs[0]
 	}
 	f := &flex.Model{
 		Profile:                      c.Profile,

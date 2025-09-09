@@ -16,7 +16,6 @@ package resource
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -31,7 +30,6 @@ import (
 
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	log "github.com/mongodb/mongodbatlas-cloudformation-resources/util/logger"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 )
@@ -171,7 +169,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
 		}
 
-		_, _ = log.Warnf("update err: %+v", err)
 		code := cloudformation.HandlerErrorCodeServiceInternalError
 		if strings.Contains(err.Error(), "not exist") { // cfn test needs 404
 			code = cloudformation.HandlerErrorCodeNotFound
@@ -189,7 +186,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if model.StateName != nil {
 		state = *model.StateName
 	}
-	_, _ = log.Debugf("state: %+v", state)
 	event := handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Update Cluster %s", state),
@@ -199,7 +195,6 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			constants.StateName: state,
 		},
 	}
-	_, _ = log.Debugf("Update() return event:%+v", event)
 	return event, nil
 }
 
@@ -304,15 +299,12 @@ func clusterCallback(client *util.MongoDBClient, currentModel *Model, projectID 
 				ResourceModel:   currentModel}, nil
 		}
 
-		_, _ = log.Debugf("Cluster Creation completed:%s", *currentModel.Name)
-
 		cluster, res, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, *currentModel.Name).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
 				res), nil
 		}
 
-		_, _ = log.Debugf("Updating cluster settings:%s", *currentModel.Name)
 		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
@@ -349,7 +341,6 @@ func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, 
 		}
 		return false, constants.Error, nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
 	}
-	_, _ = log.Debugf("Cluster state: %s, targetState : %s", *cluster.StateName, targetState)
 	return *cluster.StateName == targetState, *cluster.StateName, cluster, nil
 }
 
@@ -372,7 +363,6 @@ func readCluster(ctx context.Context, client *util.MongoDBClient, currentModel *
 }
 
 func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model, clusterRequest *admin20231115014.AdvancedClusterDescription) (*Model, *http.Response, error) {
-	_, _ = log.Debugf("params : %+v %+v %+v", ctx, client, clusterRequest)
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(ctx, *currentModel.ProjectId, *currentModel.Name, clusterRequest).Execute()
 
 	if cluster != nil {
@@ -394,15 +384,11 @@ func updateClusterCallback(client *util.MongoDBClient, currentModel *Model, proj
 	}
 
 	if progressEvent.Message == constants.Complete {
-		_, _ = log.Debugf("compelted updation:%s", *currentModel.Name)
 		cluster, res, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, *currentModel.Name).Execute()
 		if err != nil {
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error in Get Cluster : %s", err.Error()),
 				res), nil
 		}
-
-		_, _ = log.Debugf("Updating cluster :%s", *currentModel.Name)
-
 		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
 	return progressEvent, nil
@@ -412,8 +398,6 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 	projectID string, cluster *admin20231115014.AdvancedClusterDescription, pe *handler.ProgressEvent) (handler.ProgressEvent, error) {
 	// Update advanced configuration
 	if currentModel.AdvancedSettings != nil {
-		_, _ = log.Debugf("AdvancedSettings: %+v", *currentModel.AdvancedSettings)
-
 		advancedConfig := expandAdvancedSettings(*currentModel.AdvancedSettings)
 		_, res, err := client.Atlas20231115014.ClustersApi.UpdateClusterAdvancedConfiguration(context.Background(), projectID, *cluster.Name, advancedConfig).Execute()
 		if err != nil {
@@ -426,23 +410,16 @@ func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 	if (currentModel.Paused != nil) && (*currentModel.Paused != *cluster.Paused) {
 		_, res, err := updateAdvancedCluster(context.Background(), client, &admin20231115014.AdvancedClusterDescription{Paused: currentModel.Paused}, projectID, *currentModel.Name)
 		if err != nil {
-			_, _ = log.Warnf("Cluster Pause - error: %+v", err)
 			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Cluster Pause error : %s", err.Error()),
 				res), err
 		}
 	}
-
-	jsonStr, _ := json.Marshal(currentModel)
-	_, _ = log.Debugf("Cluster Response --- value: %s ", jsonStr)
 	return *pe, nil
 }
 
 func validateProgress(client *util.MongoDBClient, currentModel *Model, targetState string) (handler.ProgressEvent, error) {
-	_, _ = log.Debugf(" Cluster validateProgress() currentModel:%+v", currentModel)
-
 	isReady, state, cluster, err := isClusterInTargetState(client, *currentModel.ProjectId, *currentModel.Name, targetState)
 	if err != nil {
-		_, _ = log.Debugf("ERROR Cluster validateProgress() err:%+v", err)
 		return handler.ProgressEvent{
 			Message:          err.Error(),
 			OperationStatus:  handler.Failed,

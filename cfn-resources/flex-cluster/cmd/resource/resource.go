@@ -49,15 +49,8 @@ func Create(req handler.Request, prevModel *Model, model *Model) (handler.Progre
 	if isCallback(&req) {
 		return validateProgress(client, model, false), nil
 	}
-	flexReq := util.CreateFlexClusterRequest(
-		*model.Name,
-		*model.ProviderSettings.BackingProviderName,
-		*model.ProviderSettings.RegionName,
-		model.TerminationProtectionEnabled,
-		expandTags(model.Tags),
-	)
-	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *model.ProjectId, flexReq).Execute()
-	if pe := util.HandleClusterError(err, resp); pe != nil {
+	flexResp, pe := util.CreateFlexCluster(client, *model.ProjectId, *model.Name, *model.ProviderSettings.BackingProviderName, *model.ProviderSettings.RegionName, model.TerminationProtectionEnabled, expandTags(model.Tags))
+	if pe != nil {
 		return *pe, nil
 	}
 	return inProgressEvent(model, flexResp), nil

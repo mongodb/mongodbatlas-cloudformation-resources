@@ -15,6 +15,7 @@
 package util
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -43,9 +44,9 @@ func HandleClusterError(err error, resp *http.Response) *handler.ProgressEvent {
 	return &pe
 }
 
-// CreateFlexClusterRequest creates a flex cluster request from common parameters
-func CreateFlexClusterRequest(name string, backingProvider, region string, terminationProtection *bool, tags *[]admin.ResourceTag) *admin.FlexClusterDescriptionCreate20241113 {
-	return &admin.FlexClusterDescriptionCreate20241113{
+// CreateFlexCluster calls Atlas API to create a flex cluster.
+func CreateFlexCluster(client *MongoDBClient, projectID, name string, backingProvider, region string, terminationProtection *bool, tags *[]admin.ResourceTag) (*admin.FlexClusterDescription20241113, *handler.ProgressEvent) {
+	flexReq := &admin.FlexClusterDescriptionCreate20241113{
 		Name: name,
 		ProviderSettings: admin.FlexProviderSettingsCreate20241113{
 			BackingProviderName: backingProvider,
@@ -54,4 +55,6 @@ func CreateFlexClusterRequest(name string, backingProvider, region string, termi
 		TerminationProtectionEnabled: terminationProtection,
 		Tags:                         tags,
 	}
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), projectID, flexReq).Execute()
+	return flexResp, HandleClusterError(err, resp)
 }

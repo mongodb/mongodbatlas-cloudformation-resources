@@ -58,22 +58,11 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	if errEvent != nil {
 		return *errEvent, nil
 	}
-
-	var err error
-	cluster, res, err := client.Atlas20231115014.ClustersApi.CreateCluster(context.Background(), *currentModel.ProjectId, clusterRequest).Execute()
-	if err != nil {
-		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusBadRequest && strings.Contains(*apiError.ErrorCode, constants.Duplicate) {
-			return handler.ProgressEvent{
-				OperationStatus:  handler.Failed,
-				Message:          err.Error(),
-				HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
-		}
-
-		return progressevent.GetFailedEventByResponse(err.Error(), res), nil
+	cluster, resp, err := client.Atlas20231115014.ClustersApi.CreateCluster(context.Background(), *currentModel.ProjectId, clusterRequest).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
 	}
-
 	currentModel.StateName = cluster.StateName
-
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              fmt.Sprintf("Create Cluster `%s`", *cluster.StateName),
@@ -92,18 +81,8 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return *setupErr, nil
 	}
 	model, resp, err := readCluster(context.Background(), client, currentModel)
-	if err != nil {
-		if resp != nil && resp.StatusCode == http.StatusNotFound {
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
 	}
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
@@ -133,26 +112,9 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *errEvent, nil
 	}
 
-	model, _, err := updateCluster(context.Background(), client, currentModel, adminCluster)
-	if err != nil {
-		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusNotFound {
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-
-		code := cloudformation.HandlerErrorCodeServiceInternalError
-		if strings.Contains(err.Error(), "not exist") { // cfn test needs 404
-			code = cloudformation.HandlerErrorCodeNotFound
-		}
-		if strings.Contains(err.Error(), "being deleted") {
-			code = cloudformation.HandlerErrorCodeNotFound // cfn test needs 404
-		}
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: code}, nil
+	model, resp, err := updateCluster(context.Background(), client, currentModel, adminCluster)
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
 	}
 
 	var state string
@@ -180,28 +142,15 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
 		return validateProgress(client, currentModel, constants.DeletedState)
 	}
-
 	params := &admin20231115014.DeleteClusterApiParams{
 		RetainBackups: util.Pointer(false),
 		GroupId:       *currentModel.ProjectId,
 		ClusterName:   *currentModel.Name,
 	}
-
-	_, err := client.Atlas20231115014.ClustersApi.DeleteClusterWithParams(context.Background(), params).Execute()
-	if err != nil {
-		if apiError, ok := admin20231115014.AsError(err); ok && *apiError.Error == http.StatusNotFound {
-			return handler.ProgressEvent{
-				Message:          err.Error(),
-				OperationStatus:  handler.Failed,
-				HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound}, nil
-		}
-
-		return handler.ProgressEvent{
-			Message:          err.Error(),
-			OperationStatus:  handler.Failed,
-			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError}, nil
+	resp, err := client.Atlas20231115014.ClustersApi.DeleteClusterWithParams(context.Background(), params).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
 	}
-
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              constants.DeleteInProgress,
@@ -225,7 +174,7 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		GroupId:      *currentModel.ProjectId,
 		IncludeCount: admin20231115014.PtrBool(true),
 	}
-	// List call
+
 	clustersResponse, res, err := client.Atlas20231115014.ClustersApi.ListClustersWithParams(context.Background(), listOptions).Execute()
 	if err != nil {
 		return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
@@ -236,11 +185,10 @@ func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	for i := range clusterResults {
 		model := &Model{}
 		mapClusterToModel(model, &clusterResults[i])
-		// Call AdvancedSettings
-		processArgs, res, err := client.Atlas20231115014.ClustersApi.GetClusterAdvancedConfiguration(context.Background(), *model.ProjectId, *model.Name).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-				res), nil
+
+		processArgs, resp, err := client.Atlas20231115014.ClustersApi.GetClusterAdvancedConfiguration(context.Background(), *model.ProjectId, *model.Name).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
 		}
 		model.AdvancedSettings = flattenProcessArgs(processArgs, &clusterResults[i])
 		models[i] = model
@@ -303,7 +251,7 @@ func formatMongoDBMajorVersion(val interface{}) string {
 func isClusterInTargetState(client *util.MongoDBClient, projectID, clusterName, targetState string) (isReady bool, stateName string, mongoCluster *admin20231115014.AdvancedClusterDescription, err error) {
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
+		if resp != nil && resp.StatusCode == http.StatusNotFound {
 			return constants.DeletedState == targetState, constants.DeletedState, nil, nil
 		}
 		return false, constants.Error, nil, fmt.Errorf("error fetching cluster info (%s): %s", clusterName, err)
@@ -331,11 +279,9 @@ func readCluster(ctx context.Context, client *util.MongoDBClient, currentModel *
 
 func updateCluster(ctx context.Context, client *util.MongoDBClient, currentModel *Model, clusterRequest *admin20231115014.AdvancedClusterDescription) (*Model, *http.Response, error) {
 	cluster, resp, err := client.Atlas20231115014.ClustersApi.UpdateCluster(ctx, *currentModel.ProjectId, *currentModel.Name, clusterRequest).Execute()
-
 	if cluster != nil {
 		currentModel.StateName = cluster.StateName
 	}
-
 	return currentModel, resp, err
 }
 
@@ -349,12 +295,10 @@ func updateClusterCallback(client *util.MongoDBClient, currentModel *Model, proj
 	if err != nil {
 		return progressEvent, nil
 	}
-
 	if progressEvent.Message == constants.Complete {
-		cluster, res, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, *currentModel.Name).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error in Get Cluster : %s", err.Error()),
-				res), nil
+		cluster, resp, err := client.Atlas20231115014.ClustersApi.GetCluster(context.Background(), projectID, *currentModel.Name).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
 		}
 		return updateClusterSettings(currentModel, client, projectID, cluster, &progressEvent)
 	}
@@ -363,22 +307,18 @@ func updateClusterCallback(client *util.MongoDBClient, currentModel *Model, proj
 
 func updateClusterSettings(currentModel *Model, client *util.MongoDBClient,
 	projectID string, cluster *admin20231115014.AdvancedClusterDescription, pe *handler.ProgressEvent) (handler.ProgressEvent, error) {
-	// Update advanced configuration
 	if currentModel.AdvancedSettings != nil {
 		advancedConfig := expandAdvancedSettings(*currentModel.AdvancedSettings)
-		_, res, err := client.Atlas20231115014.ClustersApi.UpdateClusterAdvancedConfiguration(context.Background(), projectID, *cluster.Name, advancedConfig).Execute()
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
-				res), err
+		_, resp, err := client.Atlas20231115014.ClustersApi.UpdateClusterAdvancedConfiguration(context.Background(), projectID, *cluster.Name, advancedConfig).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
 		}
 	}
 
-	// Update pause
 	if (currentModel.Paused != nil) && (*currentModel.Paused != *cluster.Paused) {
-		_, res, err := updateAdvancedCluster(context.Background(), client, &admin20231115014.AdvancedClusterDescription{Paused: currentModel.Paused}, projectID, *currentModel.Name)
-		if err != nil {
-			return progressevent.GetFailedEventByResponse(fmt.Sprintf("Cluster Pause error : %s", err.Error()),
-				res), err
+		_, resp, err := updateAdvancedCluster(context.Background(), client, &admin20231115014.AdvancedClusterDescription{Paused: currentModel.Paused}, projectID, *currentModel.Name)
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
 		}
 	}
 	return *pe, nil

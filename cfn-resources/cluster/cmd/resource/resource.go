@@ -22,6 +22,8 @@ import (
 
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 
+	flex "github.com/mongodb/mongodbatlas-cloudformation-resources/flex-cluster/cmd/resource"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -48,6 +50,11 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
+	}
+	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+		pe := flex.HandleCreate(&req, client, flexModel)
+		fillModelForFlex(&pe, currentModel)
+		return pe, nil
 	}
 	if util.IsCallback(&req) {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
@@ -133,6 +140,11 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
 	if setupErr != nil {
 		return *setupErr, nil
+	}
+	if flexModel := clusterToFlexModel(currentModel); flexModel != nil {
+		pe := flex.HandleDelete(&req, client, flexModel)
+		fillModelForFlex(&pe, currentModel)
+		return pe, nil
 	}
 	if util.IsCallback(&req) {
 		return validateProgress(client, currentModel, constants.DeletedState)

@@ -15,6 +15,7 @@ package cluster_test
 
 import (
 	ctx "context"
+	"net/http"
 	"os"
 	"testing"
 
@@ -40,6 +41,7 @@ type localTestContext struct {
 type testCluster struct {
 	ResourceTypeName string
 	Name             string
+	FlexName         string
 	Profile          string
 	ProjectID        string
 	ReplicationSpecs []resource.AdvancedReplicationSpec
@@ -75,6 +77,7 @@ var (
 	e2eRandSuffix              = utility.GetRandNum().String()
 	testProjectName            = "cfn-e2e-cluster" + e2eRandSuffix
 	testClusterName            = "cfn-e2e-cluster" + e2eRandSuffix
+	testFlexClusterName        = "cfn-e2e-cluster-flex" + e2eRandSuffix
 	stackName                  = "stack-cluster-e2e-" + e2eRandSuffix
 	nodeCountCreate            = 3
 	nodeCountUpdate            = 5
@@ -129,16 +132,26 @@ func testCreateStack(t *testing.T, c *localTestContext) {
 
 	output := utility.CreateStack(t, c.cfnClient, stackName, c.template)
 	clusterID := getClusterIDFromStack(output)
+	flexClusterID := getFlexClusterIDFromStack(output)
 
-	project, cluster := readFromAtlas(t, c)
+	project, cluster, flexCluster := readFromAtlas(t, c)
 
 	a := assert.New(t)
-	a.Equal(int64(1), project.ClusterCount)
+	a.Equal(int64(2), project.ClusterCount)
 	a.Equal(cluster.GetId(), clusterID)
+	a.Equal(flexCluster.GetId(), flexClusterID)
+
 	replicationSpecs := cluster.GetReplicationSpecs()
 	checkReplicationSpecs(a, replicationSpecs, nodeCountCreate, 1)
 	a.NotEmpty(replicationSpecs[0].GetId())
 	c.replicationIDCreate = replicationSpecs[0].GetId()
+
+	flexReplicationSpecs := flexCluster.GetReplicationSpecs()
+	a.Len(flexReplicationSpecs, 1)
+	a.Len(flexReplicationSpecs[0].GetRegionConfigs(), 1)
+	flexRegionConfig := flexReplicationSpecs[0].GetRegionConfigs()[0]
+	a.Equal("FLEX", flexRegionConfig.GetProviderName())
+	a.Equal("US_EAST_1", flexRegionConfig.GetRegionName())
 }
 
 func testUpdateStack(t *testing.T, c *localTestContext) {
@@ -149,12 +162,15 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 
 	output := utility.UpdateStack(t, c.cfnClient, stackName, c.template)
 	clusterID := getClusterIDFromStack(output)
+	flexClusterID := getFlexClusterIDFromStack(output)
 
-	project, cluster := readFromAtlas(t, c)
+	project, cluster, flexCluster := readFromAtlas(t, c)
 
 	a := assert.New(t)
-	a.Equal(int64(1), project.ClusterCount)
+	a.Equal(int64(2), project.ClusterCount)
 	a.Equal(cluster.GetId(), clusterID)
+	a.Equal(flexCluster.GetId(), flexClusterID)
+
 	replicationSpecs := cluster.GetReplicationSpecs()
 	checkReplicationSpecs(a, replicationSpecs, nodeCountUpdate, 2)
 	a.NotEmpty(replicationSpecs[0].GetId())
@@ -163,12 +179,12 @@ func testUpdateStack(t *testing.T, c *localTestContext) {
 
 func testDeleteStack(t *testing.T, c *localTestContext) {
 	t.Helper()
-
 	utility.DeleteStack(t, c.cfnClient, stackName)
-	_, resp, _ := c.atlasClient.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
-
 	a := assert.New(t)
+	_, resp, _ := c.atlasClient.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.Name).Execute()
 	a.Equal(404, resp.StatusCode)
+	_, flexResp, _ := c.atlasClient.ClustersApi.GetCluster(ctx.Background(), c.clusterTmplObj.ProjectID, c.clusterTmplObj.FlexName).Execute()
+	a.Equal(404, flexResp.StatusCode)
 }
 
 func cleanupResources(t *testing.T, c *localTestContext) {
@@ -203,6 +219,7 @@ func (c *localTestContext) setupPrerequisites(t *testing.T) {
 
 	c.clusterTmplObj = testCluster{
 		Name:             testClusterName,
+		FlexName:         testFlexClusterName,
 		ProjectID:        projectID,
 		Profile:          profile,
 		NodeCount:        nodeCountCreate,
@@ -234,24 +251,38 @@ func checkReplicationSpecs(a *assert.Assertions, replicationSpecs []admin2023111
 	}
 }
 
-func readFromAtlas(t *testing.T, c *localTestContext) (*admin20231115014.Group, *admin20231115014.AdvancedClusterDescription) {
+func readFromAtlas(t *testing.T, c *localTestContext) (project *admin20231115014.Group, cluster *admin20231115014.AdvancedClusterDescription, flexCluster *admin20231115014.AdvancedClusterDescription) {
 	t.Helper()
-
 	context := ctx.Background()
 	projectID := c.clusterTmplObj.ProjectID
-	project, getProjectResponse, err := c.atlasClient.ProjectsApi.GetProject(context, projectID).Execute()
+	var err error
+	var getProjectResponse, getClusterResponse, getFlexClusterResponse *http.Response
+	project, getProjectResponse, err = c.atlasClient.ProjectsApi.GetProject(context, projectID).Execute()
 	utility.FailNowIfError(t, "Error while retrieving Project from Atlas: %v", err)
-	cluster, getClusterResponse, err := c.atlasClient.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.Name).Execute()
+	cluster, getClusterResponse, err = c.atlasClient.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.Name).Execute()
 	utility.FailNowIfError(t, "Err while retrieving Cluster from Atlas: %v", err)
+	flexCluster, getFlexClusterResponse, err = c.atlasClient.ClustersApi.GetCluster(context, projectID, c.clusterTmplObj.FlexName).Execute()
+	utility.FailNowIfError(t, "Err while retrieving Flex Cluster from Atlas: %v", err)
 	assert.Equal(t, 200, getProjectResponse.StatusCode)
 	assert.Equal(t, 200, getClusterResponse.StatusCode)
-	return project, cluster
+	assert.Equal(t, 200, getFlexClusterResponse.StatusCode)
+	return
 }
 
 func getClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
 	stackOutputs := output.Stacks[0].Outputs
 	for i := 0; i < len(stackOutputs); i++ {
 		if *aws.String(*stackOutputs[i].OutputKey) == "MongoDBAtlasClusterID" {
+			return *aws.String(*stackOutputs[i].OutputValue)
+		}
+	}
+	return ""
+}
+
+func getFlexClusterIDFromStack(output *cloudformation.DescribeStacksOutput) string {
+	stackOutputs := output.Stacks[0].Outputs
+	for i := 0; i < len(stackOutputs); i++ {
+		if *aws.String(*stackOutputs[i].OutputKey) == "MongoDBAtlasFlexClusterID" {
 			return *aws.String(*stackOutputs[i].OutputValue)
 		}
 	}

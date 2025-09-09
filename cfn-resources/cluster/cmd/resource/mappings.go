@@ -439,7 +439,8 @@ func expandAdvancedSettings(processArgs ProcessArgs) *admin20231115014.ClusterDe
 	}
 
 	if processArgs.TransactionLifetimeLimitSeconds != nil {
-		args.TransactionLifetimeLimitSeconds = cast64(processArgs.TransactionLifetimeLimitSeconds)
+		limitSeconds := cast.ToInt64(*processArgs.TransactionLifetimeLimitSeconds)
+		args.TransactionLifetimeLimitSeconds = &limitSeconds
 	}
 
 	return &args

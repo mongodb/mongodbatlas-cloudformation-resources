@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+	admin20250312006 "go.mongodb.org/atlas-sdk/v20250312006/admin"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
@@ -40,46 +41,26 @@ const (
 	CallBackSeconds = 40
 )
 
-var defaultLabel = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
-
-var CreateRequiredFields = []string{constants.ProjectID, constants.Name}
-var UpdateRequiredFields = []string{constants.ProjectID, constants.Name}
-var DeleteRequiredFields = []string{constants.ProjectID, constants.Name}
-var ListRequiredFields = []string{constants.ProjectID}
-
-func setup() {
-	util.SetupLogger("mongodb-atlas-cluster")
-}
-
-func cast64(i *int) *int64 {
-	x := cast.ToInt64(&i)
-	return &x
-}
-
-// validateModel inputs based on the method
-func validateModel(fields []string, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(fields, model)
-}
+var (
+	defaultLabel                         = Labels{Key: aws.String("Infrastructure Tool"), Value: aws.String("MongoDB Atlas CloudFormation Provider")}
+	createReadUpdareDeleteRequiredFields = []string{constants.ProjectID, constants.Name}
+	listRequiredFields                   = []string{constants.ProjectID}
+)
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, _ *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-
-	modelValidation := validateModel(CreateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	if setupErr != nil {
+		return *setupErr, nil
 	}
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
-
-	// Callback
 	if _, idExists := req.CallbackContext[constants.StateName]; idExists {
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
+
+	if util.IsFlexCluster(currentModel.ClusterType) {
+		return createFlexCluster(req, client, currentModel)
+	}
+
 	currentModel.validateDefaultLabel()
 	clusterRequest, errEvent := setClusterRequest(currentModel)
 	if errEvent != nil {
@@ -114,13 +95,21 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 
 // Read handles the Read event from the Cloudformation service.
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	_, _ = log.Debugf("Read() currentModel:%+v", currentModel)
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	if setupErr != nil {
+		return *setupErr, nil
+	}
+	if util.IsFlexCluster(currentModel.ClusterType) {
+		flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
+		if pe := util.HandleClusterError(err, resp); pe != nil {
+			return *pe, nil
+		}
+		updateModelFromFlexCluster(currentModel, flexResp)
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         constants.ReadComplete,
+			ResourceModel:   currentModel,
+		}, nil
 	}
 
 	// Read call
@@ -147,18 +136,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	_, _ = log.Debugf("Update() currentModel:%+v", currentModel)
-
-	modelValidation := validateModel(UpdateRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	if setupErr != nil {
+		return *setupErr, nil
 	}
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	if util.IsFlexCluster(currentModel.ClusterType) {
+		return updateFlexCluster(req, client, currentModel)
 	}
 
 	// Update callback
@@ -222,19 +205,14 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // Delete handles the Delete event from the Cloudformation service.
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	_, _ = log.Debugf("Delete() currentModel:%+v", currentModel)
-
-	modelValidation := validateModel(DeleteRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
+	client, setupErr := setupRequest(req, currentModel, createReadUpdareDeleteRequiredFields)
+	if setupErr != nil {
+		return *setupErr, nil
+	}
+	if util.IsFlexCluster(currentModel.ClusterType) {
+		return deleteFlexCluster(req, client, currentModel)
 	}
 
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
-	}
 	ctx := context.Background()
 
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
@@ -274,18 +252,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 // List handles the List event from the Cloudformation service.
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
-	setup()
-	_, _ = log.Debugf("List() currentModel:%+v", currentModel)
-
-	modelValidation := validateModel(ListRequiredFields, currentModel)
-	if modelValidation != nil {
-		return *modelValidation, nil
-	}
-
-	util.SetDefaultProfileIfNotDefined(&currentModel.Profile)
-	client, peErr := util.NewAtlasClient(&req, currentModel.Profile)
-	if peErr != nil {
-		return *peErr, nil
+	client, setupErr := setupRequest(req, currentModel, listRequiredFields)
+	if setupErr != nil {
+		return *setupErr, nil
 	}
 
 	listOptions := &admin20231115014.ListClustersApiParams{
@@ -509,4 +478,232 @@ func (m *Model) validateDefaultLabel() {
 	if !containsLabelOrKey(m.Labels, defaultLabel) {
 		m.Labels = append(m.Labels, defaultLabel)
 	}
+}
+
+// createFlexCluster handles creation of flex clusters
+func createFlexCluster(req handler.Request, client *util.MongoDBClient, currentModel *Model) (handler.ProgressEvent, error) {
+	// Check if this is a callback
+	if _, isCallback := req.CallbackContext["callback"]; isCallback {
+		return validateFlexClusterProgress(client, currentModel, false)
+	}
+
+	// Extract provider settings from ReplicationSpecs if available
+	backingProvider := "AWS" // Default
+	region := "US_EAST_1"    // Default
+
+	if len(currentModel.ReplicationSpecs) > 0 && len(currentModel.ReplicationSpecs[0].AdvancedRegionConfigs) > 0 {
+		regionConfig := currentModel.ReplicationSpecs[0].AdvancedRegionConfigs[0]
+		if regionConfig.ProviderName != nil {
+			backingProvider = *regionConfig.ProviderName
+		}
+		if regionConfig.RegionName != nil {
+			region = *regionConfig.RegionName
+		}
+	}
+
+	// Convert tags to the new SDK format
+	var tags *[]admin20250312006.ResourceTag
+	if len(currentModel.Tags) > 0 {
+		convertedTags := make([]util.TagModel, len(currentModel.Tags))
+		for i, tag := range currentModel.Tags {
+			convertedTags[i] = util.TagModel{
+				Key:   tag.Key,
+				Value: tag.Value,
+			}
+		}
+		tags = util.ExpandTags(convertedTags)
+	}
+
+	flexReq := util.CreateFlexClusterRequest(
+		*currentModel.Name,
+		backingProvider,
+		region,
+		currentModel.TerminationProtectionEnabled,
+		tags,
+	)
+
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.CreateFlexCluster(context.Background(), *currentModel.ProjectId, flexReq).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
+	}
+
+	updateModelFromFlexCluster(currentModel, flexResp)
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              constants.Pending,
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 10,
+		CallbackContext:      map[string]interface{}{"callback": true},
+	}, nil
+}
+
+// validateFlexClusterProgress validates the progress of flex cluster operations
+func validateFlexClusterProgress(client *util.MongoDBClient, model *Model, isDelete bool) (handler.ProgressEvent, error) {
+	state, flexResp, err := util.ValidateFlexClusterProgress(client, *model.ProjectId, *model.Name, isDelete)
+	if err != nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          err.Error(),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeServiceInternalError,
+		}, nil
+	}
+
+	targetState := constants.IdleState
+	if isDelete {
+		targetState = constants.DeletedState
+	}
+
+	if state != targetState {
+		updateModelFromFlexCluster(model, flexResp)
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              constants.Pending,
+			ResourceModel:        model,
+			CallbackDelaySeconds: 10,
+			CallbackContext:      map[string]interface{}{"callback": true},
+		}, nil
+	}
+
+	if isDelete {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         constants.Complete,
+		}, nil
+	}
+
+	updateModelFromFlexCluster(model, flexResp)
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         constants.Complete,
+		ResourceModel:   model,
+	}, nil
+}
+
+// updateModelFromFlexCluster updates the model with flex cluster response data
+func updateModelFromFlexCluster(model *Model, flexResp *admin20250312006.FlexClusterDescription20241113) {
+	if flexResp == nil {
+		return
+	}
+
+	model.Id = flexResp.Id
+	model.StateName = flexResp.StateName
+	model.CreatedDate = util.TimePtrToStringPtr(flexResp.CreateDate)
+	model.MongoDBVersion = flexResp.MongoDBVersion
+	model.VersionReleaseSystem = flexResp.VersionReleaseSystem
+	model.TerminationProtectionEnabled = flexResp.TerminationProtectionEnabled
+	model.ClusterType = flexResp.ClusterType
+
+	if flexResp.BackupSettings != nil && flexResp.BackupSettings.Enabled != nil {
+		model.BackupEnabled = flexResp.BackupSettings.Enabled
+	}
+
+	if flexResp.ConnectionStrings != nil {
+		model.ConnectionStrings = &ConnectionStrings{
+			Standard:    flexResp.ConnectionStrings.Standard,
+			StandardSrv: flexResp.ConnectionStrings.StandardSrv,
+		}
+	}
+
+	if flexResp.Tags != nil {
+		convertedTags := util.FlattenTags(flexResp.Tags)
+		model.Tags = make([]Tag, len(convertedTags))
+		for i, tag := range convertedTags {
+			model.Tags[i] = Tag{
+				Key:   tag.Key,
+				Value: tag.Value,
+			}
+		}
+	}
+
+	// Update ReplicationSpecs with flex cluster provider settings if needed
+	if flexResp.ProviderSettings.BackingProviderName != nil {
+		if flexResp.ProviderSettings.DiskSizeGB != nil {
+			model.DiskSizeGB = flexResp.ProviderSettings.DiskSizeGB
+		}
+		// Keep ReplicationSpecs minimal for flex clusters
+		if len(model.ReplicationSpecs) == 0 {
+			model.ReplicationSpecs = []AdvancedReplicationSpec{{
+				AdvancedRegionConfigs: []AdvancedRegionConfig{{
+					ProviderName: flexResp.ProviderSettings.BackingProviderName,
+					RegionName:   flexResp.ProviderSettings.RegionName,
+				}},
+			}}
+		}
+	}
+}
+
+// updateFlexCluster handles updating flex clusters
+func updateFlexCluster(req handler.Request, client *util.MongoDBClient, model *Model) (handler.ProgressEvent, error) {
+	// Check if this is a callback
+	if _, isCallback := req.CallbackContext["callback"]; isCallback {
+		return validateFlexClusterProgress(client, model, false)
+	}
+
+	// Convert tags to the new SDK format
+	var tags *[]admin20250312006.ResourceTag
+	if len(model.Tags) > 0 {
+		convertedTags := make([]util.TagModel, len(model.Tags))
+		for i, tag := range model.Tags {
+			convertedTags[i] = util.TagModel{
+				Key:   tag.Key,
+				Value: tag.Value,
+			}
+		}
+		tags = util.ExpandTags(convertedTags)
+	}
+
+	updateReq := &admin20250312006.FlexClusterDescriptionUpdate20241113{
+		TerminationProtectionEnabled: model.TerminationProtectionEnabled,
+		Tags:                         tags,
+	}
+
+	flexResp, resp, err := client.AtlasSDK.FlexClustersApi.UpdateFlexCluster(context.Background(), *model.ProjectId, *model.Name, updateReq).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
+	}
+
+	updateModelFromFlexCluster(model, flexResp)
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              constants.Pending,
+		ResourceModel:        model,
+		CallbackDelaySeconds: 10,
+		CallbackContext:      map[string]interface{}{"callback": true},
+	}, nil
+}
+
+// deleteFlexCluster handles deleting flex clusters
+func deleteFlexCluster(req handler.Request, client *util.MongoDBClient, model *Model) (handler.ProgressEvent, error) {
+	// Check if this is a callback
+	if _, isCallback := req.CallbackContext["callback"]; isCallback {
+		return validateFlexClusterProgress(client, model, true)
+	}
+
+	resp, err := client.AtlasSDK.FlexClustersApi.DeleteFlexCluster(context.Background(), *model.ProjectId, *model.Name).Execute()
+	if pe := util.HandleClusterError(err, resp); pe != nil {
+		return *pe, nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              constants.DeleteInProgress,
+		ResourceModel:        model,
+		CallbackDelaySeconds: 10,
+		CallbackContext:      map[string]interface{}{"callback": true},
+	}, nil
+}
+
+func setupRequest(req handler.Request, model *Model, requiredFields []string) (*util.MongoDBClient, *handler.ProgressEvent) {
+	util.SetupLogger("mongodb-atlas-cluster")
+	if modelValidation := validator.ValidateModel(requiredFields, model); modelValidation != nil {
+		return nil, modelValidation
+	}
+	util.SetDefaultProfileIfNotDefined(&model.Profile)
+	client, peErr := util.NewAtlasClient(&req, model.Profile)
+	if peErr != nil {
+		return nil, peErr
+	}
+	return client, nil
 }

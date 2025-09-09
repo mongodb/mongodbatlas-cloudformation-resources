@@ -55,7 +55,7 @@ func Create(req handler.Request, _ *Model, currentModel *Model) (handler.Progres
 		return clusterCallback(client, currentModel, *currentModel.ProjectId)
 	}
 
-	if util.IsFlexCluster(currentModel.ClusterType) {
+	if isFlex(currentModel) {
 		return createFlexCluster(req, client, currentModel)
 	}
 
@@ -97,7 +97,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if util.IsFlexCluster(currentModel.ClusterType) {
+	if isFlex(currentModel) {
 		flexResp, resp, err := client.AtlasSDK.FlexClustersApi.GetFlexCluster(context.Background(), *currentModel.ProjectId, *currentModel.Name).Execute()
 		if pe := util.HandleClusterError(err, resp); pe != nil {
 			return *pe, nil
@@ -138,7 +138,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if util.IsFlexCluster(currentModel.ClusterType) {
+	if isFlex(currentModel) {
 		return updateFlexCluster(req, client, currentModel)
 	}
 
@@ -204,10 +204,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if setupErr != nil {
 		return *setupErr, nil
 	}
-	if util.IsFlexCluster(currentModel.ClusterType) {
+	if isFlex(currentModel) {
 		return deleteFlexCluster(req, client, currentModel)
 	}
-
 	ctx := context.Background()
 
 	if _, ok := req.CallbackContext[constants.StateName]; ok {
@@ -683,4 +682,8 @@ func setupRequest(req handler.Request, model *Model, requiredFields []string) (*
 		return nil, peErr
 	}
 	return client, nil
+}
+
+func isFlex(model *Model) bool {
+	return false
 }
